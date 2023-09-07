@@ -155,7 +155,6 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     }
 
     const onSubmit = handleSubmit((data) => {
-        debugger
         const callback = () => {
             dispatch(showBackdrop(true));
             dispatch(execute(insAutomatizationRules({...data, messagetemplateparameters: JSON.stringify(data.variables)})));

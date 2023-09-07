@@ -3,6 +3,31 @@
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
 
+export const contactCalculateList = [
+    { value: "PER_CHANNEL", description: "per_channel" },
+    { value: "UNIQUE", description: "unique" },
+];
+
+export const contactCountList = [
+    { value: "SENT_HSM", description: "sent_hsm" },
+    { value: "DELIVERED_HSM", description: "delivered_hsm" },
+];
+
+export const agentModeList = [
+    { value: "PER_DAY", description: "per_day" },
+    { value: "PER_MONTH", description: "per_month" },
+];
+
+export const planModeList = [
+    { value: "YEARLY", description: "yearly" },
+    { value: "MONTHLY", description: "monthly" },
+];
+
+export const dataCurrency = [
+    { value: "PEN", description: "PEN" },
+    { value: "USD", description: "USD" },
+];
+
 export const dataYears = Array.from(Array(21).keys()).map(x => ({ value: `${new Date().getFullYear() + x - 10}` }));
 
 export const dataMonths = [
@@ -45,11 +70,11 @@ export const dataMonths = [
 ];
 
 
-export function datesInMonth(year?:number, month?:number) {
-    if(!!year && !!month){
+export function datesInMonth(year?: number, month?: number) {
+    if (!!year && !!month) {
         let lastdate = new Date(year, month, 0).getDate()
-        return Array.from(Array(lastdate).keys()).map(x => ({ val: `${x+1}` }));
-    }else{
+        return Array.from(Array(lastdate).keys()).map(x => ({ val: `${x + 1}` }));
+    } else {
         return []
     }
 }
@@ -188,16 +213,18 @@ export function formatNumberFourDecimals(num: number) {
 }
 
 export function formatNumberNoDecimals(num: number) {
-    if (num)
-        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-    return "0"
+    if (num) {
+        num = Math.round(num);
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    }
+    else {
+        return "0";
+    }
 }
-
-
 
 export function formattimeMinutes(cc: any) {
     let seconds = 0
-    if(typeof(cc)==="string") seconds = timetoseconds(cc);
+    if (typeof (cc) === "string") seconds = timetoseconds(cc);
     else seconds = cc;
 
     if (!seconds)
@@ -288,29 +315,29 @@ export function substractiontimesTimes(after: string, before: string) {
     let acseconds = timetoseconds(after);
     return secondsToTime(acseconds - bcseconds)
 }
-export function varpercTime(newt: string, oldt: string, decimals:number) {
-    if(!!newt && !!oldt){
+export function varpercTime(newt: string, oldt: string, decimals: number) {
+    if (!!newt && !!oldt) {
         let newtseconds = timetoseconds(newt);
         let oldtseconds = timetoseconds(oldt);
-        return (((newtseconds-oldtseconds)/oldtseconds)*100).toFixed(decimals)
-    }else{
+        return (((newtseconds - oldtseconds) / oldtseconds) * 100).toFixed(decimals)
+    } else {
         return (0).toFixed(decimals)
     }
 }
-export function varpercnumber(newn: number, oldn: number, decimals:number) {
-    if(newn + oldn){
-        return (((newn-oldn)/oldn)*100).toFixed(decimals)
-    }else{
+export function varpercnumber(newn: number, oldn: number, decimals: number) {
+    if (newn + oldn) {
+        return (((newn - oldn) / oldn) * 100).toFixed(decimals)
+    } else {
         return (0).toFixed(decimals)
     }
 }
 
 export function divisionTimeNumber(tim: string, n: number) {
-    if(!!n){
+    if (!!n) {
         let timeseconds = timetoseconds(tim);
-        let divided = Math.floor(timeseconds/n)
+        let divided = Math.floor(timeseconds / n)
         return secondsToTime(divided)
-    }else{
+    } else {
         return "00:00:00"
     }
 }

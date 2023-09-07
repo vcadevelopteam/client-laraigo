@@ -856,7 +856,7 @@ const CRM: FC = () => {
           data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
           optionDesc={'fullname'}
           optionValue={'userid'}
-          disabled={user?.roledesc === "ASESOR" || false}
+          disabled={!!user?.roledesc?.includes("ASESOR") || false}
       />}
       <FieldMultiSelect
           variant="outlined"
@@ -932,7 +932,7 @@ const CRM: FC = () => {
                 data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
                 optionDesc={'fullname'}
                 optionValue={'userid'}
-                disabled={user?.roledesc === "ASESOR" || false}
+                disabled={!!user?.roledesc?.includes("ASESOR") || false}
             />}
             <FieldSelect
               variant="outlined"

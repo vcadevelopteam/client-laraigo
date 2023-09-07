@@ -59,6 +59,7 @@ export interface ICrmLead {
     campaign: string;
     persontype: string;
     persontypedesc?: string;
+    ticketnum?: string;
 }
 export interface IServiceDeskLead2 {
     leadid: number;

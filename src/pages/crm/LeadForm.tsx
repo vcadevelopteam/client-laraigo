@@ -44,6 +44,8 @@ import { emojis } from "common/constants/emojis";
 import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
+import DialogInteractions from 'components/inbox/DialogInteractions';
+
 const isIncremental = window.location.href.includes("incremental")
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
@@ -123,6 +125,11 @@ const useLeadFormStyles = makeStyles(theme => ({
         '&:hover': {
             borderBottom: `2px solid ${theme.palette.text.primary}`,
         },
+    },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
     },
 }));
 
@@ -430,6 +437,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
+    const [openModal, setOpenModal] = useState(false);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
@@ -650,6 +659,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 personcommunicationchannel: lead.value?.personcommunicationchannel,
                 priority: lead.value?.priority,
                 conversationid: lead.value?.conversationid,
+                ticketnum: lead.value?.ticketnum,
                 index: lead.value?.index,
                 phone: lead.value?.phone,
                 email: lead.value?.email,
@@ -971,6 +981,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 return 4;
         }
     }
+    
+    const openDialogInteractions = (row: any) => {
+        setOpenModal(true);
+        setRowSelected({ conversationid: getValues('conversationid'), displayname: values?.displayname, ticketnum: getValues('ticketnum') })
+    };
 
     const translatedPhases = useMemo(() => phases.data.map(x => ({
         columnid: x.columnid,
@@ -1128,6 +1143,27 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
                                 />
+                                {!(lead?.value?.ticketnum)?
+                                        <FieldEdit
+                                            label={t(langKeys.ticket)}
+                                            className={classes.field}
+                                            onChange={(value) => setValue('ticketnum', value)}
+                                            valueDefault={getValues('ticketnum')}
+                                            error={errors?.ticketnum?.message}
+                                        />
+                                    :
+                                    <div className={classes.field}>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                                            {t(langKeys.ticket)}
+                                        </Box>
+                                        <label
+                                            className={classes.labellink}
+                                            onClick={() => openDialogInteractions(lead)}
+                                        >
+                                            {getValues('ticketnum')}
+                                        </label>
+                                    </div>
+                                }
                                 <FieldEdit
                                     label={t(langKeys.email)}
                                     className={classes.field}
@@ -1243,7 +1279,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                 </div>                                                
                                                 {(!!lead?.value?.personid) && <IconButton size="small" disabled={isIncremental} onClick={(e) => {
                                                     e.preventDefault();
-                                                    history.push(`/extras/person/${lead?.value?.personid}`)
+                                                    history.push(`/person/${lead?.value?.personid}`)
                                                 }}>
                                                     <PersonIcon />
                                                 </IconButton>}
@@ -1453,7 +1489,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     setOpenModal={setOpenDialogTemplate}
                     persons={[{...lead?.value, ...extraTriggers}]}
                     type={typeTemplate}
-                />      
+                />
+                <DialogInteractions
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    ticket={rowSelected}
+                />         
             </div>
         </MuiPickersUtilsProvider>
     );

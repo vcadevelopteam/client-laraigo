@@ -15,7 +15,8 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { cleanViewChange, execute, getCollectionAux, setViewChange } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Fab, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import IOSSwitch from "components/fields/IOSSwitch";
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -29,10 +30,12 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Done } from '@material-ui/icons';
+import { Done, FileCopy, Info } from '@material-ui/icons';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import Tooltip from '@material-ui/core/Tooltip';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { generateApiKey } from 'network/service/common';
+import { apiUrls } from 'common/constants';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -154,6 +157,7 @@ type FormFields = {
     tags: string;
     operation: string;
     dataorigin: string;
+    nameapi: string;
     columns: IColumnTemplate[],
     filters: IFilter[],
     summary: ISummarization[],
@@ -375,18 +379,132 @@ const DialogManageColumns: React.FC<{
     )
 }
 
+const transformJsonFilter = (filters: Dictionary[], copy = false) => {
+    return JSON.stringify(filters.filter(x => x.type_filter !== "unique_value").map(x => ({
+        columnname: x.columnname,
+        value: !x.type.includes("timestamp") ? (copy ? "" : "<b>text</b>") : undefined,
+        start: x.type.includes("timestamp") ? (copy ? "yyyy-mm-dd" : "<b>yyyy-mm-dd</b>") : undefined,
+        end: x.type.includes("timestamp") ? (copy ? "yyyy-mm-dd" : "<b>yyyy-mm-dd</b>") : undefined,
+    })), null, '\t')
+}
+
+const DialogIntegration: React.FC<{ 
+    setOpenModal: (param: any) => void, 
+    name: string, 
+    apikey: string, 
+    openModal: boolean, 
+    filters: Dictionary[],
+    setNameApi: (param: any) => void
+}> = ({ setOpenModal, openModal, filters, apikey, name, setNameApi }) => {
+    const { t } = useTranslation();
+    const [value, setValue] = useState(name);
+    const dispatch = useDispatch();
+
+    return (
+        <DialogZyx
+            maxWidth="md"
+            open={openModal}
+            title={"Integraciones vía API"}
+            buttonText1={t(langKeys.close)}
+            handleClickButton1={() => setOpenModal(false)}
+            button2Type="submit"
+        >
+            <div>{t(langKeys.integration_intro)}</div>
+
+            <div className='row-zyx' style={{ marginTop: 24 }}>
+                <FieldEdit
+                    label={t(langKeys.name)}
+                    className="col-3"
+                    onChange={(value) => {
+                        const valueCleaned = value.replace(/[^a-zA-Z]/g, '');
+                        setValue(valueCleaned);
+                        setNameApi(valueCleaned)
+                    }}
+                    valueDefault={value}
+                />
+                <FieldEdit
+                    label={t(langKeys.url)}
+                    className="col-9"
+                    disabled={true}
+                    valueDefault={`${apiUrls.REPORT_DATA}${value}`}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    edge="end"
+                                    size='small'
+                                    onClick={() => {
+                                        dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.copied) }))
+                                        navigator.clipboard.writeText(`${apiUrls.REPORT_DATA}${value}`)
+                                    }}
+                                >
+                                    <FileCopy />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+            </div>
+            <div>{t(langKeys.integration_apikey_intro)}</div>
+            <FieldEdit
+                label={t(langKeys.apikey)}
+                // onChange={(value) => setValue(value.replace(/[^a-zA-Z]/g, ''))}
+                disabled={true}
+                valueDefault={apikey}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <IconButton
+                                aria-label="toggle password visibility"
+                                edge="end"
+                                size='small'
+                                onClick={() => {
+                                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.copied) }))
+                                    navigator.clipboard.writeText(apikey)
+                                }}
+                            >
+                                <FileCopy />
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                }}
+            />
+            <div style={{ marginTop: 20, fontWeight: 'bold' }}>JSON</div>
+            <div>{t(langKeys.integration_json_intro)}</div>
+            <div style={{ position: "relative" }}>
+                <pre style={{ backgroundColor: "#f5f5f5", border: "1px solid #e1e1e1", padding: "16px" }} dangerouslySetInnerHTML={{ __html: transformJsonFilter(filters) }}></pre>
+                <IconButton
+                    aria-label="toggle password visibility"
+                    edge="end"
+                    style={{ position: "absolute", right: 4, top: 4 }}
+                    size='small'
+                    onClick={() => {
+                        dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.copied) }))
+                        navigator.clipboard.writeText(transformJsonFilter(filters, true))
+                    }}
+                >
+                    <FileCopy />
+                </IconButton>
+            </div>
+        </DialogZyx>
+    )
+}
+
 const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [openDialogVariables, setOpenDialogVariables] = useState(false);
+    const [openDialogIntegration, setOpenDialogIntegration] = useState(false);
     const [columnsSelected, setColumnsSelected] = useState<Dictionary[]>([]);
     const [dataColumns, setDataColumns] = useState<Dictionary[]>([]);
     const mainAuxRes = useSelector(state => state.main.mainAux);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const executeRes = useSelector(state => state.main.execute);
+    const [integrationEnable, setIntegrationEnable] = useState(!!row?.nameapi && !!row?.apikey);
+    const [apikey, setapikey] = useState(row?.apikey || "")
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
 
     const dataStatus = multiDataAux.data?.[0] && multiDataAux.data?.[0].success ? multiDataAux.data?.[0].data : [];
     const dataTables = multiDataAux.data?.[1] && multiDataAux.data?.[1].success ? multiDataAux.data?.[1].data : [];
@@ -412,6 +530,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         defaultValues: {
             reporttemplateid: row?.reporttemplateid || 0,
             description: row?.description || '',
+            nameapi: row?.nameapi || '',
             status: row?.status || 'ACTIVO',
             dataorigin: row?.dataorigin || '',
             columns: row?.columns || [],
@@ -475,7 +594,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        const { reporttemplateid, description, status, columns, filters, summary, dataorigin } = data;
+        const { reporttemplateid, description, status, columns, filters, summary, dataorigin, nameapi } = data;
         if (columns.length === 0) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.column_at_least_required) }))
             return;
@@ -484,6 +603,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             dispatch(execute(insertReportTemplate({
                 id: reporttemplateid,
                 description,
+                nameapi,
                 status,
                 type: '',
                 dataorigin,
@@ -518,6 +638,13 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         }
     };
 
+    const integrationChange = async () => {
+        if (!integrationEnable) {
+            const res = await generateApiKey();
+            setapikey(res.data.apikey)
+        }
+        setIntegrationEnable(!integrationEnable);
+    }
 
     return (
         <>
@@ -534,6 +661,18 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             />
                         </div>
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+
+                            <div style={{ fontWeight: "bold" }}>Habilitar API</div>
+                            <IOSSwitch checked={integrationEnable} onChange={integrationChange} name="checkedB" />
+                            {integrationEnable &&
+                                <Fab
+                                    size='small'
+                                    color='inherit'
+                                    onClick={() => setOpenDialogIntegration(true)}
+                                >
+                                    <Info color='action' />
+                                </Fab>
+                            }
                             <Button
                                 variant="contained"
                                 type="button"
@@ -909,6 +1048,14 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                     </div>
                 </form>
             </div>
+            <DialogIntegration
+                setOpenModal={setOpenDialogIntegration}
+                openModal={openDialogIntegration}
+                apikey={apikey}
+                name={row?.nameapi ?? ""}
+                setNameApi={(value) => setValue('nameapi', value)}
+                filters={getValues('filters')}
+            />
             <DialogManageColumns
                 setOpenDialogVariables={setOpenDialogVariables}
                 openDialogVariables={openDialogVariables}

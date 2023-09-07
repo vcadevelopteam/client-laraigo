@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateSwitch, TitleDetail, FieldEdit, FieldSelect, TemplateBreadcrumbs } from 'components';
+import { TemplateSwitch, TitleDetail, FieldEdit, FieldSelect } from 'components';
 import { getSecurityRules, updSecurityRules } from 'common/helpers';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
@@ -12,9 +12,6 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import ClearIcon from '@material-ui/icons/Clear';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 
 
 
@@ -42,7 +39,6 @@ const SecurityRules = () => {
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const history = useHistory();
     const mainResult = useSelector(state => state.main.mainData);
     const dataFieldSelect = [
         {name: "Empieza", value: "01"},
@@ -61,11 +57,6 @@ const SecurityRules = () => {
             dispatch(resetAllMain());
         };
     }, []);
-
-    const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
-        { id: "view-1", name: t(langKeys.securityrules)}
-    ];
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -164,22 +155,9 @@ const SecurityRules = () => {
         }))
     });
 
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
-    }
-
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={redirectFunc}
-                        />
-                </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TitleDetail
@@ -187,14 +165,6 @@ const SecurityRules = () => {
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'  }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CONFIGURATION)}
-                        >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
                             variant="contained"

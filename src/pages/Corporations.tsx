@@ -12,13 +12,11 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
 import { getCollection, execute, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { CommonService } from 'network';
 import { getCountryList } from 'store/signup/actions';
-import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -44,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Corporations: FC = () => {
-    const history = useHistory();
     const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -52,7 +49,6 @@ const Corporations: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
 
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.corporation_plural) },
     ];
     const [mainData, setMainData] = useState<any>([]);
@@ -183,38 +179,17 @@ const Corporations: FC = () => {
         }))
     }
     function redirectFunc(view: string) {
-        if (view === "view-0") {
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
 
     if (viewSelected === "view-1") {
         return (
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.corporation_plural, { count: 2 })}
                     onClickRow={handleEdit}
                     data={mainData}
-                    ButtonsElement={() => (
-                        <Button
-                            disabled={mainResult.mainData.loading}
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CONFIGURATION)}
-                        >{t(langKeys.back)}</Button>
-                    )}
                     download={true}
                     loading={mainResult.mainData.loading}
                     register={['SUPERADMIN'].includes(user?.roledesc || "")}
@@ -335,7 +310,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         });
         register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN" ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('paymentmethod', { validate: (value) => user?.roledesc?.includes("SUPERADMIN") ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentplanid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('automaticpayment');
         register('automaticperiod');
@@ -539,7 +514,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             optionValue="paymentplanid"
                         />
                     </div>
-                    {user?.roledesc === "SUPERADMIN" && <div className="row-zyx">
+                    {user?.roledesc?.includes("SUPERADMIN") && <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.paymentmethod)}
                             className="col-12"
@@ -627,7 +602,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     error={errors?.contactemail?.message}
                                 />
                             </div>
-                            {user?.roledesc === "SUPERADMIN" &&
+                            {user?.roledesc?.includes("SUPERADMIN") &&
                                 <>
                                     <div className="row-zyx">
                                         <FieldSelect
@@ -636,7 +611,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             valueDefault={getValues("credittype")}
                                             onChange={(value) => { setValue("credittype", value?.domainvalue || ""); }}
                                             error={errors?.credittype?.message}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                             data={typeofcreditList}
                                             uset={true}
                                             optionDesc="domainvalue"
@@ -647,7 +622,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             className="col-6"
                                             valueDefault={getValues('autosendinvoice')}
                                             onChange={(value) => setValue('autosendinvoice', value)}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                         />
                                     </div>
                                     <div className="row-zyx">
@@ -656,14 +631,14 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             className="col-6"
                                             valueDefault={getValues('automaticpayment')}
                                             onChange={(value) => setValue('automaticpayment', value)}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                         />
                                         <TemplateSwitch
                                             label={t(langKeys.automaticperiod)}
                                             className="col-6"
                                             valueDefault={getValues('automaticperiod')}
                                             onChange={(value) => setValue('automaticperiod', value)}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                         />
                                     </div>
                                     <div className="row-zyx">
@@ -672,7 +647,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             className="col-6"
                                             valueDefault={getValues('automaticinvoice')}
                                             onChange={(value) => setValue('automaticinvoice', value)}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                         />
                                     </div>
                                 </>
