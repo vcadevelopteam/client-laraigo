@@ -21,7 +21,7 @@ import {
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import TablePaginated from 'components/fields/table-paginated';
-import Map from './MapLocation.js'
+import Map from './MapLocation.jsx'
 
 interface RowSelected {
     row: Dictionary | null,

@@ -1,3 +1,12 @@
+07 - Septiembre - 2023
+
+## Migracion VITE
+1. usar Nodejs version v14.21.3
+2. eliminar la carpeta node_modules
+3. npm install
+4. correr npm start
+4.1 en caso tener problemas borrar el package-lock.json
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
