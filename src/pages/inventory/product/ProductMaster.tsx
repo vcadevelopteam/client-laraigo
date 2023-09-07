@@ -2,9 +2,9 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getPaginatedProducts } from "common/helpers";
+import { getPaginatedProducts, getValuesFromDomain } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
-import { getCollectionPaginated, resetAllMain } from "store/main/actions";
+import { getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import ProductMasterDetail from "./views/ProductMasterDetail";
 import ProductMasterMainView from "./views/ProductMasterMainView";
 
@@ -40,8 +40,16 @@ const ProductMaster: FC = () => {
     })))
 };
 
-
   useEffect(() => {
+    dispatch(getMultiCollectionAux([
+    getValuesFromDomain("TIPOPRODUCTO"),
+    getValuesFromDomain("FAMILIAPRODUCTO"),
+    getValuesFromDomain("SUBFAMILIAPRODUCTO"),
+    getValuesFromDomain("UNIDADCOMPRA"),
+    getValuesFromDomain("UNIDADDESPACHO"),
+    getValuesFromDomain("ESTADOPRODUCTO"),
+    getValuesFromDomain("LOTEPRODUCTO"),
+    ]))
     return () => {
       dispatch(resetAllMain());
     };
