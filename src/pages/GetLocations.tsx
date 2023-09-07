@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC } from 'react';
-import Map from './Map.js'
+import Map from './Map.jsx'
 
 
 
