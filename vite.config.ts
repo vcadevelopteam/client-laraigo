@@ -3,13 +3,17 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import svgrPlugin from "vite-plugin-svgr";
+import fs from 'fs'
 
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
     server: {
         port: 3000,
-        https: false,
+        https: {
+            key: fs.readFileSync('.cert/key.pem'),
+            cert: fs.readFileSync('.cert/cert.pem'),
+        },
     },
     build: {
         outDir: "build",
