@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { insDomain } from 'common/helpers';
+import { insProduct } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -76,9 +76,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
-    const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const executeRes = useSelector(state => state.main.execute);
-    const detailRes = useSelector(state => state.main.mainAux);
     const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
     const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
     const [openModalAddToWarehouse, setOpenModalAddToWarehouse] = useState(false);
@@ -88,27 +86,24 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         { id: "main-view", name: t(langKeys.productMaster) },
         { id: "detail-view", name: `${t(langKeys.productMaster)} ${t(langKeys.detail)}` },
     ];
-
-    useEffect(() => {
-        if (!detailRes.loading && !detailRes.error) {
-            setdataDomain(detailRes.data);
-        }
-    }, [detailRes]);
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row?.domainid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            code: edit? row?.code : '',
+            productid: row?.domainproductid || 0,
             description: row?.description || '',
-            purchase_unit: row?.purchase_unit || '',
-            dispatch_unit: row?.dispatch_unit || '',
-            longdescription: row?.longdescription || '',
-            type: row?.type || '',
-            family: row?.family || '',
-            subfamily: row?.subfamily || '',
-            batch: row?.batch || '',
-            status: row?.status || 'ACTIVO'
+            descriptionlarge: row?.descriptionlarge || '',
+            producttype: row?.producttype || '',
+            familyid: row?.familyid || 0,
+            unitbuyid: row?.unitbuyid || 0,
+            unitydispatchid: row?.unitydispatchid || 0,
+            status: row?.status || '',
+            operation: edit ? "EDIT" : "INSERT",
+            productcode: edit? row?.productcode : '',
+            subfamilyid: row?.subfamilyid || 0,
+            loteid: row?.loteid || 0,
+            type: row?.type || 'NINGUNO',
+            imagereference: row?.imagereference || '',
+            attachments: row?.attachments || '',
         }
     });
 
@@ -129,16 +124,18 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register('id');
-        register('code', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('productid');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('longdescription', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('purchase_unit', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('dispatch_unit', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('family', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('subfamily', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('batch', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('descriptionlarge', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('producttype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('familyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('unitbuyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('unitydispatchid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('productcode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('subfamilyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('loteid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('imagereference');
 
         dispatch(resetMainAux());
     }, [register]);
@@ -146,19 +143,15 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insDomain(data)));
+            dispatch(execute(insProduct(data)));
 
             setWaitSave(true);
         }
-        if(!!dataDomain.length){
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        }else{
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorneedvalues) }))
-        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
     return (
         <>
@@ -256,6 +249,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                         errors={errors}
                     />
                 </AntTabPanel>
+            </form>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <WarehouseTab />
                 </AntTabPanel>
@@ -265,7 +259,6 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 <AntTabPanel index={3} currentIndex={tabIndex}>
                     <SpecificationTabDetail />
                 </AntTabPanel>
-            </form>
             <ChangeStatusDialog 
                 openModal={openModalChangeStatus}
                 setOpenModal={setOpenModalChangeStatus}

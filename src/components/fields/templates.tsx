@@ -99,18 +99,6 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {deleteFunction &&
-                    <MenuItem onClick={(e) => {
-                        e.stopPropagation();
-                        setAnchorEl(null);
-                        deleteFunction?.(e)
-                    }}>
-                        <ListItemIcon color="inherit">
-                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
-                        </ListItemIcon>
-                        <Trans i18nKey={langKeys.delete} />
-                    </MenuItem>
-                }
                 {extraOption &&
                     <MenuItem onClick={(e) => {
                         e.stopPropagation();
@@ -123,6 +111,18 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                             </ListItemIcon>
                         }
                         {extraOption}
+                    </MenuItem>
+                }
+                {deleteFunction &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        deleteFunction?.(e)
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        <Trans i18nKey={langKeys.delete} />
                     </MenuItem>
                 }
             </Menu>

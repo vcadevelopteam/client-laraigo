@@ -4068,3 +4068,22 @@ export const getPaginatedProducts = ({ skip, take, filters, sorts, startdate, en
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const insProduct = ({ productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitydispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  }: Dictionary) => ({
+    method: "UFN_PRODUCT_INS",
+    key: "UFN_PRODUCT_INS",
+    parameters: {  productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitydispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  },
+});
+
+export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATIONGRID_EXPORT",
+    key: "UFN_CONVERSATIONGRID_EXPORT",
+    parameters: {
+        origin: "product",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});

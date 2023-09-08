@@ -13,13 +13,13 @@ import { DuplicateIcon } from "icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
-import { execute } from "store/main/actions";
+import { execute, exportData } from "store/main/actions";
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { insDomain } from "common/helpers";
+import { getProductsExport, insDomain } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -159,51 +159,45 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
               deleteFunction={() => handleDelete(row)}
               editFunction={() => handleEdit(row)}
               extraFunction={() => handleDuplicate(row)}
-              ExtraICon={() => (
-                <DuplicateIcon width={28} style={{ fill: "#7721AD" }} />
-              )}
+              extraOption={t(langKeys.duplicate)}
+              ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
             />
           );
         },
       },
       {
         Header: t(langKeys.product),
-        accessor: "product",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.description),
         accessor: "description",
         width: "auto",
       },
       {
-        Header: t(langKeys.type),
-        accessor: "type",
+        Header: t(langKeys.description),
+        accessor: "descriptionlarge",
         width: "auto",
-        prefixTranslation: "type_domain_",
-        Cell: (props: any) => {
-          const { type } = props.cell.row.original;
-          return (t(`type_domain_${type}`.toLowerCase()) || "").toUpperCase();
-        },
+      },
+      {
+        Header: t(langKeys.type),
+        accessor: "producttype",
+        width: "auto",
       },
       {
         Header: t(langKeys.family),
-        accessor: "family",
+        accessor: "familydescription",
         width: "auto",
       },
       {
         Header: t(langKeys.subfamily),
-        accessor: "subfamily",
+        accessor: "subfamilydescription",
         width: "auto",
       },
       {
         Header: t(langKeys.purchase_unit),
-        accessor: "purchase_unit",
+        accessor: "unitbuydescription",
         width: "auto",
       },
       {
         Header: t(langKeys.dispatch_unit),
-        accessor: "dispatch_unit",
+        accessor: "unitdispacthdescription",
         width: "auto",
       },
       {
@@ -221,22 +215,20 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   );
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-    debugger;
-    /*const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
-          key: x.accessor,
-          alias: x.Header
-      }))
-      dispatch(exportData(getTicketExport({
-          filters: {
-              ...filters,
-          },
-          sorts,
-          startdate: daterange.startDate!,
-          enddate: daterange.endDate!,
-          ...allParameters
-      }), "", "excel", false, columnsExport));
-      dispatch(showBackdrop(true));
-      setWaitSave(true);*/
+    const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+        key: x.accessor,
+        alias: x.Header
+    }))
+    dispatch(exportData(getProductsExport({
+        filters: {
+            ...filters,
+        },
+        sorts,
+        startdate: daterange.startDate!,
+        enddate: daterange.endDate!,
+    }), "", "excel", false, columnsExport));
+    dispatch(showBackdrop(true));
+    setWaitSave(true);
   };
 
   return (

@@ -40,6 +40,19 @@ const ProductMaster: FC = () => {
     })))
 };
 
+const reloadTable = () => {
+  dispatch(getCollectionPaginated(getPaginatedProducts({
+      startdate: fetchDataAux.daterange.startDate!,
+      enddate: fetchDataAux.daterange.endDate!,
+      take: fetchDataAux.pageSize,
+      skip: fetchDataAux.pageIndex * fetchDataAux.pageSize,
+      sorts: fetchDataAux.sorts,
+      filters: {
+          ...fetchDataAux.filters,
+      },
+  })))
+};
+
   useEffect(() => {
     dispatch(getMultiCollectionAux([
     getValuesFromDomain("TIPOPRODUCTO"),
@@ -70,7 +83,7 @@ const ProductMaster: FC = () => {
         data={rowSelected}
         setViewSelected={redirectFunc}
         multiData={mainResult.multiData.data}
-        fetchData={fetchData}
+        fetchData={reloadTable}
       />
     );
 };

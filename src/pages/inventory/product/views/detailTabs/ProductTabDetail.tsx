@@ -67,14 +67,15 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
     const classes = useStyles();
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const uploadResult = useSelector(state => state.main.uploadFile);
-    const dispatch = useDispatch();
-    const [files, setFiles] = useState<IFile[]>([]);
+    const dispatch = useDispatch();    
+    const initialValueAttachments = getValues('attachments');
+    const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
     const multiData = useSelector(state => state.main.multiDataAux);
 
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
-                setValue('image', uploadResult.url)
+                setValue('imagereference', uploadResult.url)
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
 
@@ -102,10 +103,10 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.code)}
-                            valueDefault={getValues('code')}
+                            valueDefault={getValues('productcode')}
                             className="col-4"
-                            error={errors?.code?.message}
-                            onChange={(value) => setValue('code', value)}
+                            error={errors?.productcode?.message}
+                            onChange={(value) => setValue('productcode', value)}
                             inputProps={{ maxLength: 20 }}
                         />
                         <FieldEdit
@@ -120,9 +121,9 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.completedesc)}
-                            valueDefault={getValues('longdescription')}
-                            error={errors?.longdescription?.message}
-                            onChange={(value) => setValue('longdescription', value)}
+                            valueDefault={getValues('descriptionlarge')}
+                            error={errors?.descriptionlarge?.message}
+                            onChange={(value) => setValue('descriptionlarge', value)}
                             inputProps={{ maxLength: 10000 }}
                         />
                     </div>
@@ -130,9 +131,9 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                         <FieldSelect
                             label={t(langKeys.type)}
                             className="col-6"
-                            valueDefault={getValues('type')}
-                            onChange={(value) => setValue('type', value?.domainvalue||"")}
-                            error={errors?.type?.message}
+                            valueDefault={getValues('producttype')}
+                            onChange={(value) => setValue('producttype', value?.domainvalue||"")}
+                            error={errors?.producttype?.message}
                             data={multiData.data[0].data}
                             optionValue="domainvalue"
                             optionDesc="domaindesc"
@@ -140,34 +141,34 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                         <FieldSelect
                             label={t(langKeys.family)}
                             className="col-6"
-                            valueDefault={getValues('family')}
-                            onChange={(value) => setValue('family', value?.domainvalue||"")}
-                            error={errors?.family?.message}
+                            valueDefault={getValues('familyid')}
+                            onChange={(value) => setValue('familyid', value?.domainid||0)}
+                            error={errors?.familyid?.message}
                             data={multiData.data[1].data}
-                            optionDesc="domainvalue"
-                            optionValue="domaindesc"
+                            optionValue="domainid"
+                            optionDesc="domaindesc"
                         />
                     </div>
                     <div className='row-zyx'>
                         <FieldSelect
                             label={t(langKeys.subfamily)}
                             className="col-6"
-                            valueDefault={getValues('subfamily')}
-                            onChange={(value) => setValue('subfamily', value?.domainvalue||"")}
-                            error={errors?.subfamily?.message}
+                            valueDefault={getValues('subfamilyid')}
+                            onChange={(value) => setValue('subfamilyid', value?.domainid||0)}
+                            error={errors?.subfamilyid?.message}
                             data={multiData.data[2].data}
-                            optionDesc="domainvalue"
-                            optionValue="domaindesc"
+                            optionDesc="domaindesc"
+                            optionValue="domainid"
                         />
                         <FieldSelect
                             label={t(langKeys.batch)}
                             className="col-6"
-                            valueDefault={getValues('batch')}
-                            onChange={(value) => setValue('batch', value?.domainvalue||"")}
-                            error={errors?.batch?.message}
+                            valueDefault={getValues('loteid')}
+                            onChange={(value) => setValue('loteid', value?.domainid||0)}
+                            error={errors?.loteid?.message}
                             data={multiData.data[6].data}
-                            optionDesc="domainvalue"
-                            optionValue="domaindesc"
+                            optionDesc="domaindesc"
+                            optionValue="domainid"
                         />
                     </div>
                 </div>
@@ -187,23 +188,23 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                         <div className='row-zyx'>
                             <FieldSelect
                                 label={t(langKeys.purchase_unit)}
-                                valueDefault={getValues('purchase_unit')}
-                                onChange={(value) => setValue('purchase_unit', value?.domainvalue||"")}
-                                error={errors?.purchase_unit?.message}
+                                valueDefault={getValues('unitbuyid')}
+                                onChange={(value) => setValue('unitbuyid', value?.domainid||0)}
+                                error={errors?.unitbuyid?.message}
                                 data={multiData.data[3].data}
-                                optionDesc="domainvalue"
-                                optionValue="domaindesc"
+                                optionDesc="domaindesc"
+                                optionValue="domainid"
                             />
                         </div>
                         <div className='row-zyx'>
                             <FieldSelect
                                 label={t(langKeys.dispatch_unit)}
-                                valueDefault={getValues('dispatch_unit')}
-                                onChange={(value) => setValue('dispatch_unit', value?.domainvalue||"")}
-                                error={errors?.dispatch_unit?.message}
+                                valueDefault={getValues('unitydispatchid')}
+                                onChange={(value) => setValue('unitydispatchid', value?.domainid||0)}
+                                error={errors?.unitydispatchid?.message}
                                 data={multiData.data[4].data}
-                                optionDesc="domainvalue"
-                                optionValue="domaindesc"
+                                optionDesc="domaindesc"
+                                optionValue="domainid"
                             />
                         </div>
                     </div>
@@ -221,16 +222,16 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                         <div className="col-12" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             
                             <div style={{ position: 'relative' }}>
-                                <Avatar style={{ width: 120, height: 120 }} src={getValues('image')} />
+                                <Avatar style={{ width: 120, height: 120 }} src={getValues('imagereference')} />
                                 <input
                                     name="file"
                                     accept="image/*"
-                                    id="laraigo-upload-csv-file"
+                                    id="laraigo-upload-img-file"
                                     type="file"
                                     style={{ display: 'none' }}
                                     onChange={(e) => onSelectImage(e.target.files)}
                                 />
-                                <label htmlFor="laraigo-upload-csv-file">
+                                <label htmlFor="laraigo-upload-img-file">
                                     <Avatar style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: '#7721ad', cursor: 'pointer' }}>
                                         <CameraAltIcon style={{ color: '#FFF' }} />
                                     </Avatar>
