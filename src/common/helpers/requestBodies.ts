@@ -4075,6 +4075,12 @@ export const insProduct = ({ productid, description, descriptionlarge, productty
     parameters: {  productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitdispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  },
 });
 
+export const insWarehouse = ({ warehouseid,description,address,phone,location,status,type,operation  }: Dictionary) => ({
+    method: "UFN_WAREHOUSE_INS",
+    key: "UFN_WAREHOUSE_INS",
+    parameters: {  warehouseid,description,address,phone,location,status,type,operation,  },
+});
+
 export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCT_EXPORT",
     key: "UFN_PRODUCT_EXPORT",
@@ -4099,7 +4105,7 @@ export const getPaginatedWarehouse = ({ skip, take, filters, sorts, startdate, e
         filters,
         sorts,
         origin: "product",
-        productid: 0,
+        warehouseid: 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

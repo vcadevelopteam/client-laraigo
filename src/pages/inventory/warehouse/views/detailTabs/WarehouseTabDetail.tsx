@@ -58,22 +58,7 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const [waitUploadFile, setWaitUploadFile] = useState(false);
-    const uploadResult = useSelector(state => state.main.uploadFile);
     const user = useSelector(state => state.login.validateToken.user);
-    
-
-    useEffect(() => {
-        if (waitUploadFile) {
-            if (!uploadResult.loading && !uploadResult.error) {
-                setValue('image', uploadResult.url)
-                setWaitUploadFile(false);
-            } else if (uploadResult.error) {
-
-                setWaitUploadFile(false);
-            }
-        }
-    }, [waitUploadFile, uploadResult])
 
     return (
         <div className={classes.containerDetail}>
@@ -94,10 +79,10 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 />         
                 <FieldEdit
                     label={t(langKeys.physicaladdress)}
-                    valueDefault={getValues('physicaladdress')}
+                    valueDefault={getValues('address')}
                     className="col-6"
-                    error={errors?.physicaladdress?.message}
-                    onChange={(value) => setValue('physicaladdress', value)}
+                    error={errors?.address?.message}
+                    onChange={(value) => setValue('address', value)}
                 /> 
                 <PhoneFieldEdit
                     value={"+" + getValues('phone')}

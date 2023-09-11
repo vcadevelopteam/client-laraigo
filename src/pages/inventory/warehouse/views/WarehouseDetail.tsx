@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { insDomain } from 'common/helpers';
+import { insDomain, insWarehouse } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -87,12 +87,13 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row?.domainid || 0,
+            warehouseid: row?.warehouseid || 0,
             operation: edit ? "EDIT" : "INSERT",
-            warehouse: edit? row?.warehouse : '',
+            type: row?.typer || '',
             description: row?.description || '',
-            physicaladdress: row?.physicaladdress || '',
+            address: row?.address || '',
             phone: row?.phone || '',
+            location: '',
             latitude: row?.latitude || '',
             longitude: row?.longitude || '',
             status: row?.status || 'ACTIVO'
@@ -116,13 +117,12 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register('id');
-        register('warehouse', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description');
-        register('physicaladdress');
-        register('phone');
-        register('latitude');
-        register('longitude');
+        register('warehouseid');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('latitude', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('longitude', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
         dispatch(resetMainAux());
     }, [register]);
@@ -130,19 +130,15 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insDomain(data)));
+            dispatch(execute(insWarehouse(data)));
 
             setWaitSave(true);
         }
-        if(!!dataDomain.length){
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        }else{
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorneedvalues) }))
-        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
     return (
         <>
