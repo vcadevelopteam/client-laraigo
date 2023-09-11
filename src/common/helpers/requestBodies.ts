@@ -4087,3 +4087,19 @@ export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictio
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+
+export const getPaginatedWarehouse = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_WAREHOUSE_PAG",
+    methodCount: "UFN_WAREHOUSE_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "product",
+        productid: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})

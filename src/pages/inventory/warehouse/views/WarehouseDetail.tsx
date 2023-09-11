@@ -29,7 +29,7 @@ interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData?: () => void;
+    fetchData?: any;
 }
 
 
@@ -190,7 +190,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                 </div>
                 <Tabs
                     value={tabIndex}
-                    onChange={(_, i) => setTabIndex(i)}
+                    onChange={(_:any, i:any) => setTabIndex(i)}
                     className={classes.tabs}
                     textColor="primary"
                     indicatorColor="primary"

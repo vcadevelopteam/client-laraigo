@@ -2,9 +2,9 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getDomainSel } from "common/helpers";
-import { Dictionary } from "@types";
-import { getCollection, resetAllMain } from "store/main/actions";
+import { getDomainSel, getPaginatedProducts } from "common/helpers";
+import { Dictionary, IFetchData } from "@types";
+import { getCollection, getCollectionPaginated, resetAllMain } from "store/main/actions";
 import WarehouseMainView from "./views/WarehouseMainView";
 import WarehouseDetail from "./views/WarehouseDetail";
 
@@ -17,6 +17,13 @@ const Warehouse: FC = () => {
   const dispatch = useDispatch();
   const mainResult = useSelector((state) => state.main);
   const [viewSelected, setViewSelected] = useState("main-view");
+  const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
+    pageSize: 0,
+    pageIndex: 0,
+    filters: {},
+    sorts: {},
+    daterange: null,
+  });
   const [rowSelected, setRowSelected] = useState<RowSelected>({
     row: null,
     edit: false,
@@ -24,7 +31,29 @@ const Warehouse: FC = () => {
   function redirectFunc(view: string) {
     setViewSelected(view);
   }
-  const fetchData = () => dispatch(getCollection(getDomainSel("")));
+  const fetchData = ({
+    pageSize,
+    pageIndex,
+    filters,
+    sorts,
+    daterange,
+  }: IFetchData) => {
+    setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
+    dispatch(
+      getCollectionPaginated(
+        getPaginatedProducts({
+          startdate: daterange.startDate!,
+          enddate: daterange.endDate!,
+          take: pageSize,
+          skip: pageIndex * pageSize,
+          sorts: sorts,
+          filters: {
+            ...filters,
+          },
+        })
+      )
+    );
+  };
 
   useEffect(() => {
     return () => {
@@ -41,7 +70,7 @@ const Warehouse: FC = () => {
         setViewSelected={setViewSelected}
         setRowSelected={setRowSelected}
         fetchData={fetchData}
-        mainData={mainResult.mainData}
+        fetchDataAux={fetchDataAux}
       />
     );
   } else
