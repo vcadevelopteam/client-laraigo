@@ -199,9 +199,9 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                         <div className='row-zyx'>
                             <FieldSelect
                                 label={t(langKeys.dispatch_unit)}
-                                valueDefault={getValues('unitydispatchid')}
-                                onChange={(value) => setValue('unitydispatchid', value?.domainid||0)}
-                                error={errors?.unitydispatchid?.message}
+                                valueDefault={getValues('unitdispatchid')}
+                                onChange={(value) => setValue('unitdispatchid', value?.domainid||0)}
+                                error={errors?.unitdispatchid?.message}
                                 data={multiData.data[4].data}
                                 optionDesc="domaindesc"
                                 optionValue="domainid"

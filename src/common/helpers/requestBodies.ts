@@ -4069,15 +4069,15 @@ export const getPaginatedProducts = ({ skip, take, filters, sorts, startdate, en
     }
 })
 
-export const insProduct = ({ productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitydispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  }: Dictionary) => ({
+export const insProduct = ({ productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitdispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  }: Dictionary) => ({
     method: "UFN_PRODUCT_INS",
     key: "UFN_PRODUCT_INS",
-    parameters: {  productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitydispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  },
+    parameters: {  productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitdispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  },
 });
 
 export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
-    method: "UFN_CONVERSATIONGRID_EXPORT",
-    key: "UFN_CONVERSATIONGRID_EXPORT",
+    method: "UFN_PRODUCT_EXPORT",
+    key: "UFN_PRODUCT_EXPORT",
     parameters: {
         origin: "product",
         filters,

@@ -19,7 +19,7 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { getProductsExport, insDomain } from "common/helpers";
+import { getProductsExport, insProduct } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -70,6 +70,8 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("false");
+  const [waitExport, setWaitExport] = useState(false);
+  const resExportData = useSelector(state => state.main.exportData);
 
   const handleRegister = () => {
     setViewSelected("detail-view");
@@ -88,7 +90,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
-        execute(insDomain({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+        execute(insProduct({ ...row, operation: "DELETE", status: "ELIMINADO" }))
       );
       dispatch(showBackdrop(true));
       setWaitSave(true);
@@ -128,7 +130,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
             message: t(langKeys.successful_delete),
           })
         );
-        fetchData();
+        fetchData(fetchDataAux);
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
@@ -213,6 +215,21 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     ],
     []
   );
+    
+  useEffect(() => {
+      if (waitExport) {
+          if (!resExportData.loading && !resExportData.error) {
+              dispatch(showBackdrop(false));
+              setWaitExport(false);
+              resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+          } else if (resExportData.error) {
+              const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+              dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+              dispatch(showBackdrop(false));
+              setWaitExport(false);
+          }
+      }
+  }, [resExportData, waitExport]);
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
     const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
@@ -228,7 +245,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         enddate: daterange.endDate!,
     }), "", "excel", false, columnsExport));
     dispatch(showBackdrop(true));
-    setWaitSave(true);
+    setWaitExport(true);
   };
 
   return (

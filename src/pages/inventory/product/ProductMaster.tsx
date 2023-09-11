@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getPaginatedProducts, getValuesFromDomain } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
@@ -15,7 +14,6 @@ interface RowSelected {
 
 const ProductMaster: FC = () => {
   const dispatch = useDispatch();
-  const mainResult = useSelector((state) => state.main);
   const [viewSelected, setViewSelected] = useState("main-view");
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [rowSelected, setRowSelected] = useState<RowSelected>({
@@ -38,19 +36,6 @@ const ProductMaster: FC = () => {
             ...filters,
         },
     })))
-};
-
-const reloadTable = () => {
-  dispatch(getCollectionPaginated(getPaginatedProducts({
-      startdate: fetchDataAux.daterange.startDate!,
-      enddate: fetchDataAux.daterange.endDate!,
-      take: fetchDataAux.pageSize,
-      skip: fetchDataAux.pageIndex * fetchDataAux.pageSize,
-      sorts: fetchDataAux.sorts,
-      filters: {
-          ...fetchDataAux.filters,
-      },
-  })))
 };
 
   useEffect(() => {
@@ -82,8 +67,8 @@ const reloadTable = () => {
       <ProductMasterDetail
         data={rowSelected}
         setViewSelected={redirectFunc}
-        multiData={mainResult.multiData.data}
-        fetchData={reloadTable}
+        fetchData={fetchData}
+        fetchDataAux={fetchDataAux}
       />
     );
 };

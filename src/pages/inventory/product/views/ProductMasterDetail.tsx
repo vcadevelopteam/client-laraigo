@@ -8,7 +8,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
 import { insProduct } from 'common/helpers';
-import { Dictionary, MultiData } from "@types";
+import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
@@ -35,8 +35,8 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    multiData: MultiData[];
     fetchData?: any;
+    fetchDataAux?: any;
 }
 
 
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -95,7 +95,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
             producttype: row?.producttype || '',
             familyid: row?.familyid || 0,
             unitbuyid: row?.unitbuyid || 0,
-            unitydispatchid: row?.unitydispatchid || 0,
+            unitdispatchid: row?.unitdispatchid || 0,
             status: row?.status || '',
             operation: edit ? "EDIT" : "INSERT",
             productcode: edit? row?.productcode : '',
@@ -111,7 +111,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
+                fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {
@@ -130,7 +130,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         register('producttype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('familyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('unitbuyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('unitydispatchid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('unitdispatchid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('productcode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('subfamilyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
