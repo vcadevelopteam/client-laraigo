@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { insDomain, insWarehouse } from 'common/helpers';
+import { insWarehouse } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -69,31 +69,23 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
-    const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const executeRes = useSelector(state => state.main.execute);
-    const detailRes = useSelector(state => state.main.mainAux);
     const classes = useStyles();
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.warehouse) },
         { id: "detail-view", name: `${t(langKeys.warehouse)} ${t(langKeys.detail)}` },
     ];
-
-    useEffect(() => {
-        if (!detailRes.loading && !detailRes.error) {
-            setdataDomain(detailRes.data);
-        }
-    }, [detailRes]);
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             warehouseid: row?.warehouseid || 0,
             operation: edit ? "EDIT" : "INSERT",
-            type: row?.typer || '',
+            type: row?.type || '',
+            name: row?.name || '',
             description: row?.description || '',
             address: row?.address || '',
             phone: row?.phone || '',
-            location: '',
             latitude: row?.latitude || '',
             longitude: row?.longitude || '',
             status: row?.status || 'ACTIVO'
@@ -118,6 +110,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
 
     React.useEffect(() => {
         register('warehouseid');
+        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });

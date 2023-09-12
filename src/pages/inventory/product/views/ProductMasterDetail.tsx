@@ -89,7 +89,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            productid: row?.domainproductid || 0,
+            productid: row?.productid || 0,
             description: row?.description || '',
             descriptionlarge: row?.descriptionlarge || '',
             producttype: row?.producttype || '',

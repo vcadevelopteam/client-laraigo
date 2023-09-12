@@ -65,10 +65,10 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.warehouse)}
-                    valueDefault={getValues('warehouse')}
+                    valueDefault={getValues('name')}
                     className="col-6"
-                    error={errors?.warehouse?.message}
-                    onChange={(value) => setValue('warehouse', value)}
+                    error={errors?.name?.message}
+                    onChange={(value) => setValue('name', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.description)}
