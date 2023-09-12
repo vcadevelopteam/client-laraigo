@@ -45,8 +45,8 @@ const ProductMaster: FC = () => {
     dispatch(
       getCollectionPaginated(
         getPaginatedProducts({
-          startdate: daterange.startDate!,
-          enddate: daterange.endDate!,
+          startdate: daterange?.startDate || null,
+          enddate: daterange?.endDate || null,
           take: pageSize,
           skip: pageIndex * pageSize,
           sorts: sorts,

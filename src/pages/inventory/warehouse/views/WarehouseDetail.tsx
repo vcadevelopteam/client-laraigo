@@ -28,8 +28,8 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    multiData: MultiData[];
     fetchData?: any;
+    fetchDataAux?: any;
 }
 
 
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -96,11 +96,11 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
+                fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -114,8 +114,8 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('latitude', { validate: (value) => (value) || t(langKeys.field_required) });
+        register('longitude', { validate: (value) => (value) || t(langKeys.field_required) });
 
         dispatch(resetMainAux());
     }, [register]);

@@ -42,8 +42,8 @@ const Warehouse: FC = () => {
     dispatch(
       getCollectionPaginated(
         getPaginatedWarehouse({
-          startdate: daterange.startDate!,
-          enddate: daterange.endDate!,
+          startdate: daterange?.startDate || null,
+          enddate: daterange?.endDate || null,
           take: pageSize,
           skip: pageIndex * pageSize,
           sorts: sorts,
@@ -78,8 +78,8 @@ const Warehouse: FC = () => {
       <WarehouseDetail
         data={rowSelected}
         setViewSelected={redirectFunc}
-        multiData={mainResult.multiData.data}
         fetchData={fetchData}
+        fetchDataAux={fetchDataAux}
       />
     );
 };

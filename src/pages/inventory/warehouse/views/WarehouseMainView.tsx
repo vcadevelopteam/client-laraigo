@@ -18,13 +18,13 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { insDomain } from "common/helpers";
+import { insDomain, insWarehouse } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
 import TablePaginated from "components/fields/table-paginated";
 
-const selectionKey = "domainname";
+const selectionKey = "warehouseid";
 
 interface WarehouseMainViewProps {
   setViewSelected: (view: string) => void;
@@ -88,7 +88,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
-        execute(insDomain({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+        execute(insWarehouse({ ...row, operation: "DELETE", status: "ELIMINADO" }))
       );
       dispatch(showBackdrop(true));
       setWaitSave(true);
@@ -143,7 +143,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
             message: t(langKeys.successful_delete),
           })
         );
-        fetchData();
+        fetchData(fetchDataAux);
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
@@ -162,7 +162,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "domainid",
+        accessor: "warehouseid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -177,13 +177,14 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
               ExtraICon={() => (
                 <DuplicateIcon width={28} style={{ fill: "#7721AD" }} />
               )}
+              extraOption={t(langKeys.duplicate)}
             />
           );
         },
       },
       {
         Header: t(langKeys.warehouse),
-        accessor: "warehouse",
+        accessor: "name",
         width: "auto",
       },
       {
@@ -193,7 +194,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       },
       {
         Header: t(langKeys.physicaladdress),
-        accessor: "physicaladdress",
+        accessor: "address",
         width: "auto",
       },
       {
