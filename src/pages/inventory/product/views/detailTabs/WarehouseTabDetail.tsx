@@ -31,7 +31,6 @@ interface WarehouseTabProps {
 const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const dispatch = useDispatch();
   const [openModalSearch, setOpenModalSearch] = useState(false);
   const dataWarehouse = useSelector(state => state.main.mainAux);
 
