@@ -7,12 +7,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { insProduct } from 'common/helpers';
+import { getProductsWarehouse, insProduct } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, resetMainAux } from 'store/main/actions';
+import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
 import ProductTabDetail from './detailTabs/ProductTabDetail';
@@ -106,6 +106,12 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
             attachments: row?.attachments || '',
         }
     });
+
+    const fetchProductWarehouse = () => {
+        dispatch(
+          getCollectionAux(getProductsWarehouse(row?.productid))
+        );
+    }
 
     useEffect(() => {
         if (waitSave) {
@@ -262,6 +268,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                         <WarehouseTab
                             row={row}
                             tabIndex={tabIndex}
+                            fetchData={fetchProductWarehouse}
                          />
                     </AntTabPanel>
                 }
@@ -278,7 +285,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
             <ChangeStatusDialog 
                 openModal={openModalChangeStatus}
                 setOpenModal={setOpenModalChangeStatus}
-                getValues={getValues}
+                row={row}
             />
             <StatusHistoryDialog 
                 openModal={openModalStatusHistory}
@@ -290,6 +297,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 setOpenModal={setOpenModalAddToWarehouse}
                 setTabIndex={setTabIndex}
                 productid={row?.productid||0}
+                fetchdata={fetchProductWarehouse}
             />
             </form>
         </>

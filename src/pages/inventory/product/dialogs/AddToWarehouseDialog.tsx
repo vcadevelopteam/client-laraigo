@@ -24,7 +24,8 @@ const AddToWarehouseDialog: React.FC<{
   setTabIndex: (dat: any) => void;
   productid: number;
   row?: any;
-}> = ({ openModal, setOpenModal, setTabIndex, productid, row }) => {
+  fetchdata: any;
+}> = ({ openModal, setOpenModal, setTabIndex, productid, row, fetchdata }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -82,6 +83,7 @@ const AddToWarehouseDialog: React.FC<{
               dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
               dispatch(showBackdrop(false));
               setTabIndex(1);
+              fetchdata();
               setOpenModal(false);
           } else if (executeRes.error) {
               const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })

@@ -7,11 +7,17 @@ import {
   FieldView,
 } from "components";
 import { langKeys } from "lang/keys";
-import { useState } from "react";
-import { UseFormGetValues } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { UseFormGetValues, useForm } from "react-hook-form";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
+import { useSelector } from "hooks";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { execute } from "store/main/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { insProduct, insStatusProduct } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -22,28 +28,83 @@ const useStyles = makeStyles((theme) => ({
 const ChangeStatusDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
-  getValues?: UseFormGetValues<any>;
+  row?: any;
   massive?: boolean;
-}> = ({ openModal, setOpenModal, getValues, massive = false }) => {
+}> = ({ openModal, setOpenModal, row, massive = false }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [newState, setNewState] = useState("");
   const [comment, setComment] = useState("");
   const [moveToInventory, setMoveToInventory] = useState(false);
+  const multiData = useSelector(state => state.main.multiDataAux);
+  const dispatch = useDispatch();
+  const executeRes = useSelector(state => state.main.execute);
+  const [waitSave, setWaitSave] = useState(false);
+
+  const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
+    defaultValues: {
+        statusid: 0,
+        productid: row?.productid || '',
+        status: '',
+        type: 'NINGUNO',
+        comment: '',
+        operation: 'INSERT',
+        ismoveinventory: false
+    }
+  });
+
+  React.useEffect(() => {
+    register('productid');
+    register('statusid');
+    register('comment', { validate: (value:any) => (value && value.length) || t(langKeys.field_required) });
+    register('status', { validate: (value:any) => (value && value.length) || t(langKeys.field_required) });
+    register('type');
+    register('ismoveinventory')
+  }, [register]);
+
+  useEffect(() => {
+    if (waitSave) {
+        if (!executeRes.loading && !executeRes.error) {
+            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+            dispatch(showBackdrop(false));
+            setOpenModal(false);
+        } else if (executeRes.error) {
+            const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+            setWaitSave(false);
+            dispatch(showBackdrop(false));
+        }
+    }
+}, [executeRes, waitSave])
+
+  const onMainSubmit = handleMainSubmit((data:any) => {
+    const callback = () => {
+        dispatch(showBackdrop(true));
+        dispatch(execute(insStatusProduct(data)));
+        setWaitSave(true);
+    }
+    dispatch(manageConfirmation({
+        visible: true,
+        question: t(langKeys.confirmation_save),
+        callback
+    }))
+});
+
   return (
     <DialogZyx open={openModal} title={t(langKeys.change_status)}>
+      <form onSubmit={onMainSubmit}>
       {!massive && (
         <>
           <div className="row-zyx">
             <FieldView
               label={t(langKeys.code)}
               className={"col-6"}
-              value={getValues?getValues("code"):""}
+              value= {row?.productid || ""}
             />
             <FieldView
               label={t(langKeys.description)}
               className={"col-6"}
-              value={getValues?getValues("description"):""}
+              value= {row?.description || ""}
             />
           </div>
         </>
@@ -53,16 +114,16 @@ const ChangeStatusDialog: React.FC<{
           <FieldView
             label={`${t(langKeys.status)} ${t(langKeys.current)}`}
             className={"col-6"}
-            value={getValues?getValues("status"):""}
+            value= {row?.status || ""}
           />
         )}
         <FieldSelect
           label={`${t(langKeys.new)} ${t(langKeys.status)} `}
           className="col-6"
           valueDefault={newState}
-          onChange={(value) => setNewState(value?.domainvalue || "")}
-          error={""}
-          data={[]}
+          onChange={(value) => setValue("status", value?.domainvalue || '')}
+          error={errors?.status?.message}
+          data={multiData?.data?.[5]?.data}
           optionValue="domainvalue"
           optionDesc="domainvalue"
         />
@@ -71,9 +132,9 @@ const ChangeStatusDialog: React.FC<{
         <FieldCheckbox
           label={t(langKeys.move_new_status)}
           className={`col-6`}
-          valueDefault={moveToInventory}
+          valueDefault={getValues('ismoveinventory')}
           onChange={(value) => {
-            setMoveToInventory(value);
+            setValue("ismoveinventory", value);
           }}
         />
       </div>
@@ -81,7 +142,8 @@ const ChangeStatusDialog: React.FC<{
         <FieldEdit
           label={t(langKeys.ticket_comment)}
           valueDefault={comment}
-          onChange={(value) => setComment(value)}
+          onChange={(value) => setValue('comment', value)}
+          error={errors?.comment?.message}
           inputProps={{ maxLength: 256 }}
         />
       </div>
@@ -102,13 +164,15 @@ const ChangeStatusDialog: React.FC<{
           className={classes.button}
           variant="contained"
           color="primary"
-          type="submit"
+          type="button"
           startIcon={<SaveIcon color="secondary" />}
           style={{ backgroundColor: "#55BD84" }}
+          onClick={onMainSubmit}
         >
           {t(langKeys.save)}
         </Button>
       </div>
+      </form>
     </DialogZyx>
   );
 };

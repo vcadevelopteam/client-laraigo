@@ -4081,6 +4081,20 @@ export const insWarehouse = ({ warehouseid,description,address,phone,latitude,lo
     parameters: {  warehouseid,description,address,phone,latitude,longitude,status,type,operation,name  },
 });
 
+export const getWarehouseProducts = (productid: number): IRequestBody => ({
+    method: "UFN_ALL_PRODUCT_WAREHOUSE_SEL",
+    key: "UFN_ALL_PRODUCT_WAREHOUSE_SEL",
+    parameters: {
+        warehouseid: productid
+    }
+});
+
+export const insStatusProduct = ({ statusid,comment,status,type,productid,ismoveinventory,operation}: Dictionary) => ({
+    method: "UFN_STATUSPRODUCT_INS",
+    key: "UFN_STATUSPRODUCT_INS",
+    parameters: {  statusid,comment,status,type,productid,ismoveinventory,operation  },
+});
+
 export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCT_EXPORT",
     key: "UFN_PRODUCT_EXPORT",

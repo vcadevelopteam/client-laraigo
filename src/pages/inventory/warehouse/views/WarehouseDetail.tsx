@@ -7,12 +7,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { insWarehouse } from 'common/helpers';
+import { getWarehouseProducts, insWarehouse } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, resetMainAux } from 'store/main/actions';
+import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
 import WarehouseTabDetail from './detailTabs/WarehouseTabDetail';
@@ -91,6 +91,12 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
             status: row?.status || 'ACTIVO'
         }
     });
+
+    const fetchWarehouseProducts = () => {
+        dispatch(
+          getCollectionAux(getWarehouseProducts(row?.warehouseid))
+        );
+    }
 
     useEffect(() => {
         if (waitSave) {
@@ -209,7 +215,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ProductTabDetail />
+                    <ProductTabDetail fetchdata={fetchWarehouseProducts}/>
                 </AntTabPanel>
             </form>
         </>

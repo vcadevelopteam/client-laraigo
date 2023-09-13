@@ -56,11 +56,6 @@ const Warehouse: FC = () => {
   };
 
   useEffect(() => {
-    dispatch(
-      getMultiCollectionAux([
-        getProducts(),
-      ])
-    );
     return () => {
       dispatch(resetAllMain());
     };

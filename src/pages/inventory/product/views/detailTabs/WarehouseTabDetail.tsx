@@ -25,21 +25,16 @@ const useStyles = makeStyles((theme) => ({
 interface WarehouseTabProps {
   tabIndex: number
   row?: any
-
+  fetchData: any
 }
 
-const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row}) => {
+const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [openModalSearch, setOpenModalSearch] = useState(false);
   const dataWarehouse = useSelector(state => state.main.mainAux);
-  
-  const fetchData = () => {
-      dispatch(
-        getCollectionAux(getProductsWarehouse(row?.productid))
-      );
-  }
+
   useEffect(() => {
     if(tabIndex === 1){
       fetchData()
@@ -50,37 +45,41 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row}) => {
     () => [
       {
         Header: t(langKeys.warehouse),
-        accessor: "name",
+        accessor: "warehousedescription",
         width: "auto",
       },
       {
         Header: t(langKeys.default),
-        accessor: "default",
+        accessor: "ispredeterminate", type: "boolean",
         width: "auto",
+        CELL: (props: any) => {
+          const row = props.cell.row.original;
+          return row?.ispredeterminate.toString()
+        }
       },
       {
         Header: t(langKeys.standard_cost),
-        accessor: "standard_cost",
+        accessor: "standarcost",
         width: "auto",
       },
       {
         Header: t(langKeys.average_cost),
-        accessor: "average_cost",
+        accessor: "averagecost",
         width: "auto",
       },
       {
         Header: t(langKeys.current_balance),
-        accessor: "current_balance",
+        accessor: "currentbalance",
         width: "auto",
       },
       {
         Header: t(langKeys.batch),
-        accessor: "batch",
+        accessor: "lotecode",
         width: "auto",
       },
       {
         Header: t(langKeys.default_shelf),
-        accessor: "default_shelf",
+        accessor: "rackcode",
         width: "auto",
       },
       {

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
@@ -17,18 +17,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface ProductTabDetailProps {}
+interface ProductTabDetailProps {
+  fetchdata: any
+}
 
-const ProductTabDetail: React.FC<ProductTabDetailProps> = () => {
+const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const multiData = useSelector(state => state.main.multiDataAux);
+  const dataProducts = useSelector(state => state.main.mainAux);
+
+  useEffect(() => {
+    fetchdata();
+  }, [])
 
   const columns = React.useMemo(
     () => [
       {
         Header: t(langKeys.product),
-        accessor: "description",
+        accessor: "productdescription",
         width: "auto",
       },
       {
@@ -38,12 +44,12 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = () => {
       },
       {
         Header: t(langKeys.standard_cost),
-        accessor: "standard_cost",
+        accessor: "standarcost",
         width: "auto",
       },
       {
         Header: t(langKeys.average_cost),
-        accessor: "average_cost",
+        accessor: "averagecost",
         width: "auto",
       },
       {
@@ -59,7 +65,7 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = () => {
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={multiData.data[0].data}
+          data={dataProducts.data}
           download={false}
           filterGeneral={false}
           register={false}
