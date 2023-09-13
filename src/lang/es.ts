@@ -3907,6 +3907,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   NONE: 'Libre',
   paymentreferenceview: 'Ver referencia de pago',
   discountvalidmessage: 'El valor debe ser mayor a 0 y menor a la base',
+  no_negative: 'El valor debe ser mayor a 0',
+  typecostdispatch: "Tipo de costo del despacho",
 
   doctype_others_non_home_error: 'Debe ser hasta 15 dígitos',
   doctype_dni_error: 'Debe ser 8 dígitos',

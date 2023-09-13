@@ -10,6 +10,7 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import { Button } from "@material-ui/core";
+import { useSelector } from 'hooks';
 import TableZyx from "components/fields/table-simple";
 import { Search as SearchIcon } from "@material-ui/icons";
 import SearchProductDialog from "../../dialogs/SearchProductDialog";
@@ -91,7 +92,7 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
             className={classes.button}
             variant="contained"
             color="primary"
-            type="submit"
+            type="button"
             startIcon={<SearchIcon style={{ color: "white" }} />}
             style={{ backgroundColor: "#55BD84" }}
             onClick={() => setOpenModalSearch(true)}

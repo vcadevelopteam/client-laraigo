@@ -26,6 +26,7 @@ export const langKeys = {
   appointment_cancellation: "appointment_cancellation",
   unnasigned: "unnasigned",
   downloadhtmlform: "downloadhtmlform",
+  typecostdispatch: "typecostdispatch",
   tooltipintegrationname: "tooltipintegrationname",
   tooltipintegrationurl: "tooltipintegrationurl",
   web_form: "web_form",
@@ -3942,6 +3943,7 @@ export const langKeys = {
   NONE: 'NONE',
   paymentreferenceview: 'paymentreferenceview',
   discountvalidmessage: 'discountvalidmessage',
+  no_negative: 'no_negative',
 
   doctype_others_non_home_error: 'doctype_others_non_home_error',
   doctype_dni_error: 'doctype_dni_error',

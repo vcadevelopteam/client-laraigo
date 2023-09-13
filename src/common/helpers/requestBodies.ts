@@ -4094,6 +4094,30 @@ export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictio
     }
 });
 
+export const getProducts = (): IRequestBody => ({
+    method: "UFN_PRODUCT_SEL",
+    key: "UFN_PRODUCT_SEL",
+    parameters: {
+        productid: 0
+    }
+});
+
+export const getProductsWarehouse = (productid: number): IRequestBody => ({
+    method: "UFN_ALL_WAREHOUSE_PRODUCT_SEL",
+    key: "UFN_ALL_WAREHOUSE_PRODUCT_SEL",
+    parameters: {
+        productid: productid
+    }
+});
+
+export const insProductWarehouse = ({productwarehouseid,productid,warehouseid,priceunit,ispredeterminate,typecostdispatch,unitdispatchid,unitbuyid,lotecode,rackcode,status,type,operation,currentbalance }: Dictionary): IRequestBody => ({
+    method: "UFN_PRODUCTWAREHOUSE_INS",
+    key: "UFN_PRODUCTWAREHOUSE_INS",
+    parameters: {
+        productwarehouseid,productid,warehouseid,priceunit,ispredeterminate,typecostdispatch,unitdispatchid,unitbuyid,lotecode,rackcode,status,type,operation,currentbalance
+    }
+})
+
 export const getPaginatedWarehouse = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_WAREHOUSE_PAG",
     methodCount: "UFN_WAREHOUSE_TOTALRECORDS",
@@ -4109,3 +4133,24 @@ export const getPaginatedWarehouse = ({ skip, take, filters, sorts, startdate, e
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const getWarehouseExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_WAREHOUSE_EXPORT",
+    key: "UFN_WAREHOUSE_EXPORT",
+    parameters: {
+        origin: "product",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getWarehouses = (): IRequestBody => ({
+    method: "UFN_WAREHOUSE_SEL",
+    key: "UFN_WAREHOUSE_SEL",
+    parameters: {
+        warehouseid: 0
+    }
+});

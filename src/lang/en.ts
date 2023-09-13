@@ -4001,6 +4001,8 @@ const translation: LangKeys = {
   NONE: 'None',
   paymentreferenceview: 'View payment reference',
   discountvalidmessage: 'The amount must me higher than 0 and less than the tax base',
+  no_negative: 'The amount must me higher than 0',
+  typecostdispatch: "Dispatch cost type",
 
   doctype_others_non_home_error: 'Must be up to 15 digits',
   doctype_dni_error: 'Must be 8 digits',

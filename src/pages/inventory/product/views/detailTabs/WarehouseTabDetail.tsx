@@ -1,10 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from "react"; 
+import React, { useEffect, useState } from "react"; 
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import SearchProductDialog from "../../dialogs/SearchProductDialog";
+import { useSelector } from "hooks";
+import { getCollectionAux } from "store/main/actions";
+import { IActionCall } from "@types";
+import { getProductsWarehouse } from "common/helpers";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -18,18 +23,34 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface WarehouseTabProps {
+  tabIndex: number
+  row?: any
+
 }
 
-const WarehouseTab: React.FC<WarehouseTabProps> = () => {
+const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [openModalSearch, setOpenModalSearch] = useState(false);;
+  const dispatch = useDispatch();
+  const [openModalSearch, setOpenModalSearch] = useState(false);
+  const dataWarehouse = useSelector(state => state.main.mainAux);
+  
+  const fetchData = () => {
+      dispatch(
+        getCollectionAux(getProductsWarehouse(row?.productid))
+      );
+  }
+  useEffect(() => {
+    if(tabIndex === 1){
+      fetchData()
+    }
+  }, [tabIndex]);
 
   const columns = React.useMemo(
     () => [
       {
         Header: t(langKeys.warehouse),
-        accessor: "warehouse",
+        accessor: "name",
         width: "auto",
       },
       {
@@ -75,10 +96,11 @@ const WarehouseTab: React.FC<WarehouseTabProps> = () => {
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={[]}
+          data={dataWarehouse.data}
           download={false}
           filterGeneral={false}
           register={false}
+          loading={dataWarehouse.loading}
         />
       </div>
       <SearchProductDialog

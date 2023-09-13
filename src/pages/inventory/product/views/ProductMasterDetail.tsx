@@ -86,7 +86,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         { id: "main-view", name: t(langKeys.productMaster) },
         { id: "detail-view", name: `${t(langKeys.productMaster)} ${t(langKeys.detail)}` },
     ];
-    
+
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             productid: row?.productid || 0,
@@ -165,7 +165,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.product)}`}
+                            title={row?.description || `${t(langKeys.new)} ${t(langKeys.product)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -189,7 +189,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             {t(langKeys.save)}
                         </Button>
                         
-                        {!edit && <ExtrasMenu
+                        {edit && <ExtrasMenu
                             changeStatus={()=>{setOpenModalChangeStatus(true)}}
                             statusHistory={()=>setOpenModalStatusHistory(true)}
                             addToWarehouse={()=>setOpenModalAddToWarehouse(true)}
@@ -212,27 +212,33 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             </div>
                         )}
                     />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.warehouses}/>
-                            </div>
-                        )}
-                    />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.dealers} />
-                            </div>
-                        )}
-                    />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.specifications} />
-                            </div>
-                        )}
-                    />
+                    {edit &&
+                        <AntTab
+                            label={(
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                    <Trans i18nKey={langKeys.warehouses}/>
+                                </div>
+                            )}
+                        />
+                    }
+                    {edit &&
+                        <AntTab
+                            label={(
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                    <Trans i18nKey={langKeys.dealers} />
+                                </div>
+                            )}
+                        />
+                    }
+                    {edit &&
+                        <AntTab
+                            label={(
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                    <Trans i18nKey={langKeys.specifications} />
+                                </div>
+                            )}
+                        />
+                    }
                 </Tabs>
 
                 <AntTabPanel index={0} currentIndex={tabIndex}>
@@ -242,23 +248,33 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                         getValues={getValues}
                         errors={errors}
                     />
-                    <AlternativeProductTab
-                        row={row}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                    />
+                    {edit &&
+                        <AlternativeProductTab
+                            row={row}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors}
+                        />
+                    }
                 </AntTabPanel>
-            </form>
-                <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <WarehouseTab />
-                </AntTabPanel>
-                <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <DealerTab />
-                </AntTabPanel>
-                <AntTabPanel index={3} currentIndex={tabIndex}>
-                    <SpecificationTabDetail />
-                </AntTabPanel>
+                {edit &&
+                    <AntTabPanel index={1} currentIndex={tabIndex}>
+                        <WarehouseTab
+                            row={row}
+                            tabIndex={tabIndex}
+                         />
+                    </AntTabPanel>
+                }
+                {edit &&
+                        <AntTabPanel index={2} currentIndex={tabIndex}>
+                            <DealerTab />
+                        </AntTabPanel>
+                }
+                {edit &&
+                    <AntTabPanel index={3} currentIndex={tabIndex}>
+                        <SpecificationTabDetail />
+                    </AntTabPanel>
+                }
             <ChangeStatusDialog 
                 openModal={openModalChangeStatus}
                 setOpenModal={setOpenModalChangeStatus}
@@ -273,7 +289,9 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 openModal={openModalAddToWarehouse}
                 setOpenModal={setOpenModalAddToWarehouse}
                 setTabIndex={setTabIndex}
+                productid={row?.productid||0}
             />
+            </form>
         </>
     );
 }

@@ -114,8 +114,8 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value) || t(langKeys.field_required) });
+        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
+        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
 
         dispatch(resetMainAux());
     }, [register]);

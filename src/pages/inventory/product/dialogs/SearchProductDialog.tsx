@@ -6,8 +6,9 @@ import TableZyx from "components/fields/table-simple";
 import React, { useState } from "react";
 import { Dictionary } from "@types";
 import SearchDealerDialog from "./SearchDealerDialog";
+import { useSelector } from "hooks";
 
-const selectionKey = "domainname";
+const selectionKey = "productid";
 
 interface SearchProductDialogProps {
   openModal: boolean;
@@ -22,26 +23,28 @@ const SearchProductDialog: React.FC<SearchProductDialogProps> = ({
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [cleanSelected, setCleanSelected] = useState(false);
   const [openModalSearch, setOpenModalSearch] = useState(false);
+  const multiData = useSelector(state => state.main.multiDataAux);
+  
   const columns = React.useMemo(
     () => [
       {
         Header: t(langKeys.product),
-        accessor: "product",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.description),
         accessor: "description",
         width: "auto",
       },
       {
+        Header: t(langKeys.description),
+        accessor: "descriptionlarge",
+        width: "auto",
+      },
+      {
         Header: t(langKeys.family),
-        accessor: "family",
+        accessor: "familydescription",
         width: "auto",
       },
       {
         Header: t(langKeys.subfamily),
-        accessor: "subfamily",
+        accessor: "subfamilydescription",
         width: "auto",
       },
     ],
@@ -66,7 +69,7 @@ const SearchProductDialog: React.FC<SearchProductDialogProps> = ({
     >
       <TableZyx
         columns={columns}
-        data={[]}
+        data={multiData.data[7].data}
         download={false}
         filterGeneral={false}
         useSelection={true}

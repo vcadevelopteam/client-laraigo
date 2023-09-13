@@ -12,13 +12,13 @@ import { DuplicateIcon } from "icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
-import { execute } from "store/main/actions";
+import { execute, exportData } from "store/main/actions";
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { insDomain, insWarehouse } from "common/helpers";
+import { getWarehouseExport, insDomain, insWarehouse } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -221,7 +221,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         key: x.accessor,
         alias: x.Header
     }))
-    /*dispatch(exportData(getProductsExport({
+    dispatch(exportData(getWarehouseExport({
         filters: {
             ...filters,
         },
@@ -230,7 +230,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         enddate: daterange.endDate!,
     }), "", "excel", false, columnsExport));
     dispatch(showBackdrop(true));
-    setWaitExport(true);*/
+    setWaitExport(true);
   };
 
   return (

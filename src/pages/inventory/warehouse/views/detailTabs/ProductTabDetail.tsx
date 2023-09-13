@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
+import { useSelector } from "hooks";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -21,17 +22,18 @@ interface ProductTabDetailProps {}
 const ProductTabDetail: React.FC<ProductTabDetailProps> = () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const multiData = useSelector(state => state.main.multiDataAux);
 
   const columns = React.useMemo(
     () => [
       {
         Header: t(langKeys.product),
-        accessor: "product",
+        accessor: "description",
         width: "auto",
       },
       {
         Header: t(langKeys.description),
-        accessor: "description",
+        accessor: "descriptionlarge",
         width: "auto",
       },
       {
@@ -57,7 +59,7 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = () => {
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={[]}
+          data={multiData.data[0].data}
           download={false}
           filterGeneral={false}
           register={false}
