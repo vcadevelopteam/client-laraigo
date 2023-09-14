@@ -1,7 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  DialogZyx, FieldSelect,
-} from "components";
+import { DialogZyx, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
@@ -11,78 +9,82 @@ const TemplateImportDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
 }> = ({ openModal, setOpenModal }) => {
-  const [selectedTemplate, setSelectedTemplate]= useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState("");
   const { t } = useTranslation();
 
   const handleTemplateProduct = () => {
-    const data = [
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-    ];
+    const data = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
     const header = [
-        'description',
-        'descriptionlarge',
-        'producttype',
-        'familyid',
-        'unitbuyid',
-        'unitdispatchid',
-        'imagereference',
-        'attachments',
-        'productcode',
-        'loteid',
-        'subfamilyid',
+      "description",
+      "descriptionlarge",
+      "producttype",
+      "familyid",
+      "unitbuyid",
+      "unitdispatchid",
+      "imagereference",
+      "attachments",
+      "productcode",
+      "loteid",
+      "subfamilyid",
     ];
-    exportExcel(`${t(langKeys.template)} ${t(langKeys.product)}`, templateMaker(data, header));
-    setSelectedTemplate("")
-    setOpenModal(false)
-}
+    exportExcel(
+      `${t(langKeys.template)} ${t(langKeys.product)}`,
+      templateMaker(data, header)
+    );
+    setSelectedTemplate("");
+    setOpenModal(false);
+  };
   const handleTemplateAlmacen = () => {
-    const data = [
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-    ];
+    const data = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
     const header = [
-        'productcode',
-        'warehouse',
-        'ispredeterminate',
-        'standard_cost',
-        'averagecost',
-        'currentbalance',
-        'lotecode',
-        'rackcode',
-        'status',
+      "productid",
+      "warehouseid",
+      "priceunit",
+      "ispredeterminate",
+      "rackcode",
+      "typecostdispatch",
+      "unitdispatchid",
+      "unitbuyid",
+      "currentbalance",
+      "lotecode",
     ];
-    exportExcel(`${t(langKeys.template)} ${t(langKeys.warehouse)}`, templateMaker(data, header));
-    setSelectedTemplate("")
-    setOpenModal(false)
-}
-  function handleDownloadTemplate(){
-    if(selectedTemplate==="PRODUCT"){
-      handleTemplateProduct()
-    }else if(selectedTemplate==="WAREHOUSE"){
-      handleTemplateAlmacen()
-    }
-    
+    exportExcel(
+      `${t(langKeys.template)} ${t(langKeys.warehouse)}`,
+      templateMaker(data, header)
+    );
+    setSelectedTemplate("");
+    setOpenModal(false);
+  };
+  const handleTemplateDealer = () => {
+    const data = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+    const header = [
+      "productid",
+      "manufacturerid",
+      "distributorid",
+      "model",
+      "catalognumber",
+      "webpage",
+      "taxeid",
+      "isstockistdefault",
+      "averagedeliverytime",
+      "lastprice",
+      "lastorderdate",
+      "unitbuy",
+    ];
+    exportExcel(
+      `${t(langKeys.template)} ${t(langKeys.dealer)}`,
+      templateMaker(data, header)
+    );
+    setSelectedTemplate("");
+    setOpenModal(false);
+  };
+  function handleDownloadTemplate() {
+    if (selectedTemplate === "PRODUCT") handleTemplateProduct();
+    if (selectedTemplate === "WAREHOUSE") handleTemplateAlmacen();
+    if (selectedTemplate === "DEALER") handleTemplateDealer();
   }
 
   return (
-    
     <DialogZyx
       open={openModal}
       title={t(langKeys.import)}
@@ -99,8 +101,11 @@ const TemplateImportDialog: React.FC<{
           className="col-12"
           valueDefault={selectedTemplate}
           onChange={(value) => setSelectedTemplate(value?.value)}
-          data={[{ desc: t(langKeys.product), value: "PRODUCT" },
-          { desc: t(langKeys.warehouse), value: "WAREHOUSE" }]}
+          data={[
+            { desc: t(langKeys.product), value: "PRODUCT" },
+            { desc: t(langKeys.warehouse), value: "WAREHOUSE" },
+            { desc: t(langKeys.dealer), value: "DEALER" },
+          ]}
           optionDesc="desc"
           optionValue="value"
         />

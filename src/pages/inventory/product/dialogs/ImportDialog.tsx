@@ -6,7 +6,12 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { importProducts, uploadExcel } from "common/helpers";
+import {
+  importProductManufacturer,
+  importProducts,
+  importProductsWarehouse,
+  uploadExcel,
+} from "common/helpers";
 import { execute } from "store/main/actions";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -22,15 +27,21 @@ const ImportDialog: React.FC<{
   const dispatch = useDispatch();
   const importRes = useSelector((state) => state.main.execute);
   const [waitUpload, setWaitUpload] = useState(false);
-  const multiData = useSelector(state => state.main.multiData);
 
   const handleUploadProduct = async (files: any) => {
     const file = files?.item(0);
     if (file) {
       const data: any = await uploadExcel(file, undefined);
       if (data.length > 0) {
+        let dataToSend = data.map((x: any) => ({
+          ...x,
+          productid: 0,
+          operation: "INSERT",
+          type: "NINGUNO",
+          status: "ACTIVO",
+        }));
         dispatch(showBackdrop(true));
-        dispatch(execute(importProducts(data)));
+        dispatch(execute(importProducts(dataToSend)));
         setWaitUpload(true);
       }
     }
@@ -40,8 +51,34 @@ const ImportDialog: React.FC<{
     if (file) {
       const data: any = await uploadExcel(file, undefined);
       if (data.length > 0) {
+        let dataToSend = data.map((x: any) => ({
+          ...x,
+          productwarehouseid: 0,
+          operation: "INSERT",
+          type: "NINGUNO",
+          status: "ACTIVO",
+        }));
         dispatch(showBackdrop(true));
-        dispatch(execute(importProducts(data)));
+        dispatch(execute(importProductsWarehouse(dataToSend)));
+        setWaitUpload(true);
+      }
+    }
+  };
+  const handleUploadDealer = async (files: any) => {
+    const file = files?.item(0);
+    if (file) {
+      const data: any = await uploadExcel(file, undefined);
+      if (data.length > 0) {
+        let dataToSend = data.map((x: any) => ({
+          ...x,
+          lastorderdate: new Date((x.lastorderdate - 1) * 24 * 3600 * 1000),
+          productcompanyid: 0,
+          operation: "INSERT",
+          type: "NINGUNO",
+          status: "ACTIVO",
+        }));
+        dispatch(showBackdrop(true));
+        dispatch(execute(importProductManufacturer(dataToSend)));
         setWaitUpload(true);
       }
     }
@@ -77,12 +114,9 @@ const ImportDialog: React.FC<{
   }, [importRes, waitUpload]);
 
   const handleUpload = async (files: FileList | null) => {
-    if (selectedTemplate === "PRODUCT") {
-      handleUploadProduct(files);
-    }
-    else if (selectedTemplate === "WAREHOUSE") {
-      handleUploadWarehouse(files);
-    }
+    if (selectedTemplate === "PRODUCT") handleUploadProduct(files);
+    if (selectedTemplate === "WAREHOUSE") handleUploadWarehouse(files);
+    if (selectedTemplate === "DEALER") handleUploadDealer(files);
   };
 
   return (
@@ -99,8 +133,11 @@ const ImportDialog: React.FC<{
           className="col-12"
           valueDefault={selectedTemplate}
           onChange={(value) => setSelectedTemplate(value?.value)}
-          data={[{ desc: t(langKeys.product), value: "PRODUCT" },
-          { desc: t(langKeys.warehouse), value: "WAREHOUSE" }]}
+          data={[
+            { desc: t(langKeys.product), value: "PRODUCT" },
+            { desc: t(langKeys.warehouse), value: "WAREHOUSE" },
+            { desc: t(langKeys.dealer), value: "DEALER" },
+          ]}
           optionDesc="desc"
           optionValue="value"
         />

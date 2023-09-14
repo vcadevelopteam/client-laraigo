@@ -5,8 +5,6 @@ import { Trans, useTranslation } from "react-i18next";
 import {
   TemplateIcons,
   Title,
-  DialogZyx,
-  FieldSelect,
 } from "components";
 import { langKeys } from "lang/keys";
 import { DuplicateIcon } from "icons";
@@ -325,19 +323,6 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
                   style={{ backgroundColor: "#55BD84" }}
                 >
                   <Trans i18nKey={langKeys.template} />
-                </Button>
-              </div>
-              <div>
-                <Button
-                  disabled={!!selectedRows}
-                  className={classes.button}
-                  variant="contained"
-                  component="span"
-                  color="primary"
-                  onClick={() => setOpenModalChangeStatus(true)}
-                  style={{ backgroundColor: "#55BD84" }}
-                >
-                  <Trans i18nKey={langKeys.change_status} />
                 </Button>
               </div>
             </div>

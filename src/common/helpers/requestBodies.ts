@@ -4210,6 +4210,21 @@ export const importProducts = (data:any): IRequestBody => ({
         json: JSON.stringify(data)
     }
 });
+export const importProductManufacturer = (data:any): IRequestBody => ({
+    method: "UFN_PRODUCTMANUFACTURER_MAS",
+    key: "UFN_PRODUCTMANUFACTURER_MAS",
+    parameters: {
+        json: JSON.stringify(data)
+    }
+});
+export const importProductsWarehouse = (data:any): IRequestBody => ({
+    method: "UFN_PRODUCTWAREHOUSE_MAS",
+    key: "UFN_PRODUCTWAREHOUSE_MAS",
+    parameters: {
+        json: JSON.stringify(data)
+    }
+});
+
 export const getManufacturer = (manufacturerid:number): IRequestBody => ({
     method: "UFN_MANUFACTURER_SEL",
     key: "UFN_MANUFACTURER_SEL",
