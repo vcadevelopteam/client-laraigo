@@ -33,7 +33,7 @@ const RegisterDealerDialog: React.FC<{
   const dispatch = useDispatch();
   const multiData = useSelector(state => state.main.multiDataAux);
 
-  const { register,handleSubmit: handleMainSubmit,setValue,getValues,formState: { errors },} = useForm({
+  const { register,handleSubmit: handleMainSubmit,setValue,getValues,formState: { errors },reset} = useForm({
     defaultValues: {
       productid: row.productid,
       productcompanyid: 0,
@@ -79,7 +79,7 @@ const RegisterDealerDialog: React.FC<{
         dispatch(showSnackbar({show: true,severity: "success",message: t(langKeys.successful_register),}));
         dispatch(showBackdrop(false));
         setOpenModal(false)
-        
+        reset();
         fetchData()
       } else if (executeRes.error) {
         const errormessage = t(executeRes.code || "error_unexpected_error", {module: t(langKeys.domain).toLocaleLowerCase(),});
@@ -254,6 +254,7 @@ const RegisterDealerDialog: React.FC<{
             startIcon={<ClearIcon color="secondary" />}
             style={{ backgroundColor: "#FB5F5F" }}
             onClick={() => {
+              reset();
               setOpenModal(false);
             }}
           >
