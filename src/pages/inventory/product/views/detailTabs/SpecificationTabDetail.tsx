@@ -99,7 +99,7 @@ const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchDat
       },
       {
         Header: t(langKeys.measureunit),
-        accessor: "unitmeasureid",
+        accessor: "unitmeasuredescription",
         width: "auto",
       },
     ],

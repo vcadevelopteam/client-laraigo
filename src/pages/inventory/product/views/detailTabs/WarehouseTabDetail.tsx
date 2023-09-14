@@ -49,11 +49,13 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
       },
       {
         Header: t(langKeys.default),
-        accessor: "ispredeterminate", type: "boolean",
+        accessor: "ispredeterminate",
         width: "auto",
-        CELL: (props: any) => {
-          const row = props.cell.row.original;
-          return row?.ispredeterminate.toString()
+        type: 'boolean',
+        sortType: 'basic',
+        Cell: (props: any) => {
+            const { ispredeterminate } = props.cell.row.original;
+            return ispredeterminate ? t(langKeys.yes) : "No"
         }
       },
       {

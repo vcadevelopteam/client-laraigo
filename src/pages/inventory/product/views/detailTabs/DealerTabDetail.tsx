@@ -107,7 +107,7 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
       },
       {
         Header: t(langKeys.dealer),
-        accessor: "distribuidordescription",
+        accessor: "distributordescription",
         width: "auto",
       },
       {
@@ -127,7 +127,7 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
       },
       {
         Header: t(langKeys.current_balance),
-        accessor: "current_balance",
+        accessor: "currentbalance",
         width: "auto",
       },
       {
@@ -142,13 +142,19 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
       },
       {
         Header: t(langKeys.purchase_unit),
-        accessor: "unitbuydesc",
+        accessor: "unitbuydescription",
         width: "auto",
       },
       {
         Header: `${t(langKeys.dealer)} ${t(langKeys.default)}`,
         accessor: "isstockistdefault",
         width: "auto",
+        type: 'boolean',
+        sortType: 'basic',
+        Cell: (props: any) => {
+            const { isstockistdefault } = props.cell.row.original;
+            return isstockistdefault ? t(langKeys.yes) : "No"
+        }
       },
     ],
     []
