@@ -40,6 +40,7 @@ interface AlternativeProductDetailProps {
   getValues: UseFormGetValues<any>;
   errors: FieldErrors<any>;
   fetchData: any
+  tabIndex: any;
 }
 
 const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
@@ -47,7 +48,8 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
   setValue,
   getValues,
   errors,
-  fetchData
+  fetchData,
+  tabIndex
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -60,8 +62,10 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
   const executeRes = useSelector(state => state.main.execute);
   
   useEffect(() => {
-    fetchData(row?.productid)
-  }, []);
+    if(tabIndex === 0) {
+      fetchData(row?.productid)
+    }
+  }, [tabIndex]);
 
   useEffect(() => {
     if (waitSave) {

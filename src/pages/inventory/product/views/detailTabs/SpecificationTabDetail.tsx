@@ -27,9 +27,10 @@ const useStyles = makeStyles((theme) => ({
 interface SpecificationTabDetailProps {
   fetchData: any;
   row: any;
+  tabIndex: any;
 }
 
-const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchData, row}) => {
+const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchData, row, tabIndex}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [openModalDealer, setOpenModalDealer] = useState(false);
@@ -39,8 +40,10 @@ const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchDat
   const executeRes = useSelector(state => state.main.execute);
 
   useEffect(() => {
-    fetchData()
-  }, []);
+    if(tabIndex === 3) {
+      fetchData()
+    }
+  }, [tabIndex]);
 
   useEffect(() => {
     if (waitSave) {

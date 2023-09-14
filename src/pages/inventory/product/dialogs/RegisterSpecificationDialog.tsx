@@ -17,6 +17,7 @@ import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { reset } from "store/activationuser/caseFunctions";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -37,7 +38,7 @@ const RegisterSpecificationDialog: React.FC<{
   const multiData = useSelector(state => state.main.multiDataAux);
   const executeRes = useSelector(state => state.main.execute);
 
-  const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
+  const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } , reset} = useForm({
     defaultValues: {
         productattributeid: 0,
         productid: row.productid,
@@ -56,6 +57,7 @@ const RegisterSpecificationDialog: React.FC<{
             dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
             dispatch(showBackdrop(false));
             fetchData()
+            reset()
             setOpenModal(false);
         } else if (executeRes.error) {
             const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
@@ -124,6 +126,7 @@ const submitData = handleMainSubmit((data) => {
           style={{ backgroundColor: "#FB5F5F" }}
           onClick={() => {
             setOpenModal(false);
+            reset()
           }}
         >
           {t(langKeys.back)}

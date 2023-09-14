@@ -278,6 +278,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             getValues={getValues}
                             errors={errors}
                             fetchData={fetchProductProduct}
+                            tabIndex={tabIndex}
                         />
                     }
                 </AntTabPanel>
@@ -305,6 +306,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                         <SpecificationTabDetail 
                             fetchData={fetchProductAttributes}
                             row={row}
+                            tabIndex={tabIndex}
                         />
                     </AntTabPanel>
                 }
