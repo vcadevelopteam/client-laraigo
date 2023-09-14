@@ -6,10 +6,12 @@ import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import SearchProductDialog from "../../dialogs/SearchProductDialog";
 import { useSelector } from "hooks";
-import { getCollectionAux } from "store/main/actions";
-import { IActionCall } from "@types";
-import { getProductsWarehouse } from "common/helpers";
+import { execute, getCollectionAux } from "store/main/actions";
+import { Dictionary, IActionCall } from "@types";
+import { getProductsWarehouse, insProductWarehouse } from "common/helpers";
 import { useDispatch } from "react-redux";
+import { TemplateIcons } from "components";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -33,6 +35,9 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
   const classes = useStyles();
   const [openModalSearch, setOpenModalSearch] = useState(false);
   const dataWarehouse = useSelector(state => state.main.mainAux);
+  const dispatch = useDispatch();
+  const [waitSave, setWaitSave] = useState(false);
+  const executeRes = useSelector(state => state.main.execute);
 
   useEffect(() => {
     if(tabIndex === 1){
@@ -40,8 +45,49 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
     }
   }, [tabIndex]);
 
+  useEffect(() => {
+    if (waitSave) {
+        if (!executeRes.loading && !executeRes.error) {
+            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+            dispatch(showBackdrop(false));
+            fetchData();
+        } else if (executeRes.error) {
+            const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+            setWaitSave(false);
+            dispatch(showBackdrop(false));
+        }
+    }
+  }, [executeRes, waitSave])
+
+  const handleDelete = (data: Dictionary) => {
+    dispatch(execute(insProductWarehouse({
+      ...data,
+      unitdispatchid: row.unitdispatchid,
+      status: 'ELIMINADO',
+      type: 'NINGUNO',
+      operation: 'DELETE'
+    })))
+    setWaitSave(true);
+  }
+
   const columns = React.useMemo(
     () => [
+      {
+        accessor: 'warehouseid',
+        NoFilter: true,
+        isComponent: true,
+        minWidth: 60,
+        width: '1%',
+        Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return (
+                <TemplateIcons
+                    deleteFunction={() => handleDelete(row)}
+                />
+            )
+        }
+      },
       {
         Header: t(langKeys.warehouse),
         accessor: "warehousedescription",

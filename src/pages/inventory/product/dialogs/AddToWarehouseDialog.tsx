@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { insProductWarehouse } from "common/helpers";
 import { execute } from "store/main/actions";
+import { reset } from "store/activationuser/caseFunctions";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -39,6 +40,7 @@ const AddToWarehouseDialog: React.FC<{
     setValue,
     getValues,
     formState: { errors },
+    reset
   } = useForm({
     defaultValues: {
       productwarehouseid: row?.productwarehouseid || 0,
@@ -84,6 +86,7 @@ const AddToWarehouseDialog: React.FC<{
               dispatch(showBackdrop(false));
               setTabIndex(1);
               fetchdata();
+              reset()
               setOpenModal(false);
           } else if (executeRes.error) {
               const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
@@ -204,6 +207,7 @@ const AddToWarehouseDialog: React.FC<{
             style={{ backgroundColor: "#FB5F5F" }}
             onClick={() => {
               setOpenModal(false);
+              reset();
             }}
           >
             {t(langKeys.back)}
