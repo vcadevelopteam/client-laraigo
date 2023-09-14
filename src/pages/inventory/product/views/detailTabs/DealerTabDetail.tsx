@@ -20,9 +20,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface DealerTabProps {}
+interface DealerTabProps { row:any}
 
-const DealerTab: React.FC<DealerTabProps> = () => {
+const DealerTab: React.FC<DealerTabProps> = ({row}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [openModalSearch, setOpenModalSearch] = useState(false);
@@ -116,6 +116,7 @@ const DealerTab: React.FC<DealerTabProps> = () => {
       <RegisterDealerDialog
         openModal={openModalDealer}
         setOpenModal={setOpenModalDealer}
+        row={row}
       />
     </div>
   );

@@ -4,7 +4,6 @@ import {
   DialogZyx,
 } from "components";
 import { langKeys } from "lang/keys";
-import { UseFormGetValues } from "react-hook-form";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
@@ -12,6 +11,7 @@ import TableZyx from "components/fields/table-simple";
 import { useDispatch } from "react-redux";
 import { getCollectionAux } from "store/main/actions";
 import { useSelector } from "hooks";
+import { getProductStatusHistory } from "common/helpers";
 
 const StatusHistoryDialog: React.FC<{
   openModal: any;
@@ -28,25 +28,20 @@ const StatusHistoryDialog: React.FC<{
         Header: t(langKeys.status),
         accessor: "status",
         width: "auto",
-        prefixTranslation: "status_",
-        Cell: (props: any) => {
-          const { status } = props.cell.row.original;
-          return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
-        },
       },
       {
         Header: t(langKeys.change_date),
-        accessor: "description",
+        accessor: "createdate",
         width: "auto",
       },
       {
         Header: t(langKeys.change_by),
-        accessor: "description2",
+        accessor: "createby",
         width: "auto",
       },
       {
         Header: t(langKeys.ticket_comment),
-        accessor: "description3",
+        accessor: "comment",
         width: "auto",
       },
     ],
@@ -56,7 +51,7 @@ const StatusHistoryDialog: React.FC<{
   
   useEffect(() => {
     if(openModal){
-      //dispatch(getCollectionAux(getProductsWarehouse(row?.productid)));
+      dispatch(getCollectionAux(getProductStatusHistory(row?.productid)));
     }
   }, [openModal]);
 

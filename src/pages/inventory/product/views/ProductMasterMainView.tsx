@@ -24,6 +24,8 @@ import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
 import TablePaginated from "components/fields/table-paginated";
+import TemplateImportDialog from "../dialogs/TemplateImportDialog";
+import ImportDialog from "../dialogs/ImportDialog";
 
 const selectionKey = "productid";
 
@@ -68,8 +70,8 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   const [totalrow, settotalrow] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState("false");
+  const [openModalImport, setOpenModalImport] = useState(false);
+  const [openModalTemplate, setOpenModalTemplate] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
   const resExportData = useSelector(state => state.main.exportData);
 
@@ -104,10 +106,6 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
       })
     );
   };
-
-  function handleImport() {
-    setOpenModal(false);
-  }
 
   useEffect(() => {
     if (!mainPaginated.loading && !mainPaginated.error) {
@@ -310,11 +308,23 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
                   variant="contained"
                   component="span"
                   color="primary"
-                  onClick={() => setOpenModal(true)}
+                  onClick={() => setOpenModalImport(true)}
                   startIcon={<BackupIcon color="secondary" />}
                   style={{ backgroundColor: "#55BD84" }}
                 >
                   <Trans i18nKey={langKeys.import} />
+                </Button>
+              </div>
+              <div>
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  component="span"
+                  color="primary"
+                  onClick={() => setOpenModalTemplate(true)}
+                  style={{ backgroundColor: "#55BD84" }}
+                >
+                  <Trans i18nKey={langKeys.template} />
                 </Button>
               </div>
               <div>
@@ -334,29 +344,16 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
           </div>
         )}
       />
-
-      <DialogZyx
-        open={openModal}
-        title={t(langKeys.import)}
-        button1Type="button"
-        buttonText1={t(langKeys.cancel)}
-        handleClickButton1={() => setOpenModal(false)}
-        button2Type="button"
-        buttonText2={t(langKeys.import)}
-        handleClickButton2={handleImport}
-      >
-        <div className="row-zyx">
-          <FieldSelect
-            label={t(langKeys.template)}
-            className="col-12"
-            valueDefault={selectedTemplate}
-            onChange={(value) => setSelectedTemplate(value?.template)}
-            data={[]}
-            optionDesc="desc"
-            optionValue="value"
-          />
-        </div>
-      </DialogZyx>
+      <TemplateImportDialog 
+        openModal={openModalTemplate}
+        setOpenModal={setOpenModalTemplate}
+      />
+      <ImportDialog 
+        openModal={openModalImport}
+        setOpenModal={setOpenModalImport}
+        fetchData={fetchData}
+        fetchDataAux={fetchDataAux}
+      />
       <ChangeStatusDialog
         openModal={openModalChangeStatus}
         setOpenModal={setOpenModalChangeStatus}

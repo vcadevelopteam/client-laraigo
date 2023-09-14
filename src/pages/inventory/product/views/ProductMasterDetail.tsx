@@ -274,7 +274,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 }
                 {edit &&
                         <AntTabPanel index={2} currentIndex={tabIndex}>
-                            <DealerTab />
+                            <DealerTab row={row}/>
                         </AntTabPanel>
                 }
                 {edit &&

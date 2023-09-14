@@ -1,0 +1,112 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import {
+  DialogZyx, FieldSelect,
+} from "components";
+import { langKeys } from "lang/keys";
+import { useTranslation } from "react-i18next";
+import React, { useEffect, useState } from "react";
+import { exportExcel, templateMaker } from "common/helpers";
+
+const TemplateImportDialog: React.FC<{
+  openModal: any;
+  setOpenModal: (dat: any) => void;
+}> = ({ openModal, setOpenModal }) => {
+  const [selectedTemplate, setSelectedTemplate]= useState("");
+  const { t } = useTranslation();
+
+  const handleTemplateProduct = () => {
+    const data = [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+    ];
+    const header = [
+        'description',
+        'descriptionlarge',
+        'producttype',
+        'familyid',
+        'unitbuyid',
+        'unitdispatchid',
+        'imagereference',
+        'attachments',
+        'productcode',
+        'loteid',
+        'subfamilyid',
+    ];
+    exportExcel(`${t(langKeys.template)} ${t(langKeys.product)}`, templateMaker(data, header));
+    setSelectedTemplate("")
+    setOpenModal(false)
+}
+  const handleTemplateAlmacen = () => {
+    const data = [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+    ];
+    const header = [
+        'productcode',
+        'warehouse',
+        'ispredeterminate',
+        'standard_cost',
+        'averagecost',
+        'currentbalance',
+        'lotecode',
+        'rackcode',
+        'status',
+    ];
+    exportExcel(`${t(langKeys.template)} ${t(langKeys.warehouse)}`, templateMaker(data, header));
+    setSelectedTemplate("")
+    setOpenModal(false)
+}
+  function handleDownloadTemplate(){
+    if(selectedTemplate==="PRODUCT"){
+      handleTemplateProduct()
+    }else if(selectedTemplate==="WAREHOUSE"){
+      handleTemplateAlmacen()
+    }
+    
+  }
+
+  return (
+    
+    <DialogZyx
+      open={openModal}
+      title={t(langKeys.import)}
+      button1Type="button"
+      buttonText1={t(langKeys.cancel)}
+      handleClickButton1={() => setOpenModal(false)}
+      button2Type="button"
+      buttonText2={t(langKeys.download)}
+      handleClickButton2={handleDownloadTemplate}
+    >
+      <div className="row-zyx">
+        <FieldSelect
+          label={t(langKeys.template)}
+          className="col-12"
+          valueDefault={selectedTemplate}
+          onChange={(value) => setSelectedTemplate(value?.value)}
+          data={[{ desc: t(langKeys.product), value: "PRODUCT" },
+          { desc: t(langKeys.warehouse), value: "WAREHOUSE" }]}
+          optionDesc="desc"
+          optionValue="value"
+        />
+      </div>
+    </DialogZyx>
+  );
+};
+
+export default TemplateImportDialog;

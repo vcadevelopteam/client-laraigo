@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getPaginatedProducts, getProducts, getValuesFromDomain, getWarehouses } from "common/helpers";
+import { getManufacturer, getPaginatedProducts, getProducts, getValuesFromDomain, getWarehouses } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
 import {
   getCollectionPaginated,
@@ -71,6 +71,8 @@ const ProductMaster: FC = () => {
         getProducts(),
         getWarehouses(),
         getValuesFromDomain("TIPOCOSTODESPACHO"),
+        getManufacturer(0),
+        getValuesFromDomain("CODIGOSIMPUESTO"),
       ])
     );
     return () => {

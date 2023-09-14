@@ -4168,3 +4168,29 @@ export const getWarehouses = (): IRequestBody => ({
         warehouseid: 0
     }
 });
+export const getProductStatusHistory = (productid:number): IRequestBody => ({
+    method: "UFN_ALL_STATUSPRODUCT_PRODUCT_SEL",
+    key: "UFN_ALL_STATUSPRODUCT_PRODUCT_SEL",
+    parameters: {
+        id: productid
+    }
+});
+export const importProducts = (data:any): IRequestBody => ({
+    method: "UFN_PRODUCT_MAS",
+    key: "UFN_PRODUCT_MAS",
+    parameters: {
+        json: JSON.stringify(data)
+    }
+});
+export const getManufacturer = (manufacturerid:number): IRequestBody => ({
+    method: "UFN_MANUFACTURER_SEL",
+    key: "UFN_MANUFACTURER_SEL",
+    parameters: {
+        manufacturerid: manufacturerid
+    }
+});
+export const insProductManufacturer = ({ productcompanyid, productid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_PRODUCTMANUFACTURER_INS",
+    key: "UFN_PRODUCTMANUFACTURER_INS",
+    parameters: { productcompanyid, productid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, operation }
+});
