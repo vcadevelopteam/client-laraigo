@@ -4103,18 +4103,18 @@ export const insProductAlternative = ({ productalternativeid, productid, product
     parameters: {  productalternativeid, productid, productaltid, status, type, operation  },
 });
 
-export const getProductAttribute = (productid: number): IRequestBody => ({
-    method: "UFN_PRODUCTATTRIBUTE_SEL",
-    key: "UFN_PRODUCTATTRIBUTE_SEL",
+export const getAllAttributeProduct = (productid: number): IRequestBody => ({
+    method: "UFN_ALL_ATTRIBUTE_PRODUCT_SEL",
+    key: "UFN_ALL_ATTRIBUTE_PRODUCT_SEL",
     parameters: {
-        productattributeid: productid
+        productid: productid
     }
 });
 
-export const insProductAttribute = ({ productattributeid, productid, orders, value, unitmeasureid, status, type, operation }: Dictionary) => ({
+export const insProductAttribute = ({ productattributeid, productid, attributeid, value, unitmeasureid, status, type, operation }: Dictionary) => ({
     method: "UFN_PRODUCTATTRIBUTE_INS",
     key: "UFN_PRODUCTATTRIBUTE_INS",
-    parameters: {  productattributeid, productid, orders, value, unitmeasureid, status, type, operation  },
+    parameters: {  productattributeid, productid, attributeid, value, unitmeasureid, status, type, operation  },
 });
 
 export const insStatusProduct = ({ statusid,comment,status,type,productid,ismoveinventory,operation}: Dictionary) => ({

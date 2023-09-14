@@ -109,22 +109,22 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
       },
       {
         Header: t(langKeys.product),
-        accessor: "product",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.description),
         accessor: "productdescription",
         width: "auto",
       },
       {
+        Header: t(langKeys.description),
+        accessor: "productdescriptionlarge",
+        width: "auto",
+      },
+      {
         Header: t(langKeys.family),
-        accessor: "family",
+        accessor: "familydescription",
         width: "auto",
       },
       {
         Header: t(langKeys.subfamily),
-        accessor: "subfamily",
+        accessor: "subfamilydescription",
         width: "auto",
       },
     ],

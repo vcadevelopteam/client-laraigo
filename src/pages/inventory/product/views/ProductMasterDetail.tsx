@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getProductProduct, getProductsWarehouse, insProduct } from 'common/helpers';
+import { getAllAttributeProduct, getProductProduct, getProductsWarehouse, insProduct } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -116,6 +116,12 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const fetchProductProduct = () => {
         dispatch(
           getCollectionAux(getProductProduct(row?.productid))
+        );
+    }
+
+    const fetchProductAttributes = () => {
+        dispatch(
+          getCollectionAux(getAllAttributeProduct(row?.productid))
         );
     }
 
@@ -286,7 +292,10 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 }
                 {edit &&
                     <AntTabPanel index={3} currentIndex={tabIndex}>
-                        <SpecificationTabDetail />
+                        <SpecificationTabDetail 
+                            fetchData={fetchProductAttributes}
+                            row={row}
+                        />
                     </AntTabPanel>
                 }
             <ChangeStatusDialog 
