@@ -4089,6 +4089,34 @@ export const getWarehouseProducts = (productid: number): IRequestBody => ({
     }
 });
 
+export const getProductProduct = (productid: number): IRequestBody => ({
+    method: "UFN_ALL_PRODUCT_PRODUCT_SEL",
+    key: "UFN_ALL_PRODUCT_PRODUCT_SEL",
+    parameters: {
+        productid: productid
+    }
+});
+
+export const insProductAlternative = ({ productalternativeid, productid, productaltid, status, type, operation }: Dictionary) => ({
+    method: "UFN_PRODUCTALTERNATIVE_INS",
+    key: "UFN_PRODUCTALTERNATIVE_INS",
+    parameters: {  productalternativeid, productid, productaltid, status, type, operation  },
+});
+
+export const getProductAttribute = (productid: number): IRequestBody => ({
+    method: "UFN_PRODUCTATTRIBUTE_SEL",
+    key: "UFN_PRODUCTATTRIBUTE_SEL",
+    parameters: {
+        productattributeid: productid
+    }
+});
+
+export const insProductAttribute = ({ productattributeid, productid, orders, value, unitmeasureid, status, type, operation }: Dictionary) => ({
+    method: "UFN_PRODUCTATTRIBUTE_INS",
+    key: "UFN_PRODUCTATTRIBUTE_INS",
+    parameters: {  productattributeid, productid, orders, value, unitmeasureid, status, type, operation  },
+});
+
 export const insStatusProduct = ({ statusid,comment,status,type,productid,ismoveinventory,operation}: Dictionary) => ({
     method: "UFN_STATUSPRODUCT_INS",
     key: "UFN_STATUSPRODUCT_INS",
