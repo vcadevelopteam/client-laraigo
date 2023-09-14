@@ -564,6 +564,7 @@ export const langKeys = {
   move: 'move',
   typecredit_60: "typecredit_60",
   typecredit_90: "typecredit_90",
+  typecredit_7: "typecredit_7",
   columnnotvalid: "columnnotvalid",
   timezone: "timezone",
   notecompletedasesors: "notecompletedasesors",
