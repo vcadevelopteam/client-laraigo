@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, makeStyles } from "@material-ui/core";
 import {
   DialogZyx,
@@ -8,7 +9,7 @@ import {
 } from "components";
 import { langKeys } from "lang/keys";
 import { useEffect, useState } from "react";
-import { UseFormGetValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
@@ -17,7 +18,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { insProduct, insStatusProduct } from "common/helpers";
+import { insStatusProduct } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -33,9 +34,6 @@ const ChangeStatusDialog: React.FC<{
 }> = ({ openModal, setOpenModal, row, massive = false }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [newState, setNewState] = useState("");
-  const [comment, setComment] = useState("");
-  const [moveToInventory, setMoveToInventory] = useState(false);
   const multiData = useSelector(state => state.main.multiDataAux);
   const dispatch = useDispatch();
   const executeRes = useSelector(state => state.main.execute);
@@ -120,7 +118,7 @@ const ChangeStatusDialog: React.FC<{
         <FieldSelect
           label={`${t(langKeys.new)} ${t(langKeys.status)} `}
           className="col-6"
-          valueDefault={newState}
+          valueDefault={getValues("status")}
           onChange={(value) => setValue("status", value?.domainvalue || '')}
           error={errors?.status?.message}
           data={multiData?.data?.[5]?.data}
@@ -141,7 +139,7 @@ const ChangeStatusDialog: React.FC<{
       <div className="row-zyx">
         <FieldEdit
           label={t(langKeys.ticket_comment)}
-          valueDefault={comment}
+          valueDefault={getValues("comment")}
           onChange={(value) => setValue('comment', value)}
           error={errors?.comment?.message}
           inputProps={{ maxLength: 256 }}

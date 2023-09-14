@@ -297,7 +297,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
             <StatusHistoryDialog 
                 openModal={openModalStatusHistory}
                 setOpenModal={setOpenModalStatusHistory}
-                getValues={getValues}
+                row={row}
             />
             <AddToWarehouseDialog 
                 openModal={openModalAddToWarehouse}

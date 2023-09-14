@@ -7,16 +7,21 @@ import { langKeys } from "lang/keys";
 import { UseFormGetValues } from "react-hook-form";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import React from "react";
+import React, { useEffect } from "react";
 import TableZyx from "components/fields/table-simple";
+import { useDispatch } from "react-redux";
+import { getCollectionAux } from "store/main/actions";
+import { useSelector } from "hooks";
 
 const StatusHistoryDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
-  getValues?: UseFormGetValues<any>;
+  row: any;
   massive?: boolean;
-}> = ({ openModal, setOpenModal, getValues, massive = false }) => {
+}> = ({ openModal, setOpenModal, row, massive = false }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const statusHistoryData = useSelector(state => state.main.mainAux);
   const columns = React.useMemo(
     () => [
       {
@@ -48,12 +53,19 @@ const StatusHistoryDialog: React.FC<{
     []
   );
 
+  
+  useEffect(() => {
+    if(openModal){
+      //dispatch(getCollectionAux(getProductsWarehouse(row?.productid)));
+    }
+  }, [openModal]);
+
   return (
     <DialogZyx open={openModal} title={t(langKeys.status_history)}>
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={[]}
+          data={statusHistoryData.data}
           loading={false}
           filterGeneral={false}
         />
