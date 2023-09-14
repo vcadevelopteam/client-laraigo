@@ -348,7 +348,7 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
                     src={carousel[pageSelected].mediaUrl}
                     className={classes.imageCardCarousel}
                     alt="logocarousel"
-                    crossOrigin={carousel[pageSelected].mediaUrl.includes('cloud-object-storage') ? 'anonymous' : undefined}
+                    // crossOrigin={carousel[pageSelected].mediaUrl.includes('cloud-object-storage') ? 'anonymous' : undefined}
                 />
             </div>
             <div style={{ padding: '12px', wordBreak: 'break-word' }}>
@@ -449,7 +449,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     };
 
     const checkUrl = (url: string) => {
-        return (RegExp(/\.(jpeg|jpg|gif|png)$/).exec(url) != null);
+        return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) != null);
     }
 
     const checkFile = (url: string) => {
@@ -552,15 +552,17 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     } else if (interactiontype === "image" || interactiontype === "comment-image")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
-                <img
+                {(checkUrl(interactiontext) && checkFile(interactiontext)) && <img
                     className={classes.imageCard}
                     src={interactiontext}
                     alt=""
-                    crossOrigin={interactiontext.includes('cloud-object-storage') ? 'anonymous' : undefined}
+                    // crossOrigin={interactiontext.includes('cloud-object-storage') ? 'anonymous' : undefined}
                     onClick={() => {
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
-                />
+                />}
+                {(!checkUrl(interactiontext) && checkFile(interactiontext)) && <video className={classes.imageCard} width="200" controls src={interactiontext} />}
+                {(!checkFile) && <>{interactiontext}</>}
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );

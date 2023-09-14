@@ -14,7 +14,6 @@ import { useDispatch } from 'react-redux';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { useHistory, useLocation } from 'react-router';
 import { useSelector } from 'hooks';
-
 import clsx from 'clsx';
 import paths from 'common/constants/paths';
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -73,12 +72,13 @@ const useTabInterfacetyles = makeStyles(theme => ({
 }));
 
 const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
-    const { setValue, getValues, formState: { errors } } = form;
+    const { setValue, getValues, formState: { errors } } = form ;
     const classes = useTabInterfacetyles();
     const { t } = useTranslation();
-    const [chatBtn, setChatBtn] = useState<File | string | null>(getValues('interface.iconbutton'));
-    const [headerBtn, setHeaderBtn] = useState<File | string | null>(getValues('interface.iconheader'));
+    //@ts-ignore
+    const [headerBtn, setHeaderBtn] = useState<File | string | null>(getValues('interface.iconbutton'));
     const [botBtn, setBotBtn] = useState<File | string | null>(getValues('interface.iconbot'));
+    const [chatBtn, setChatBtn] = useState<File | string | null>(getValues('interface.iconbutton'));
 
     const handleChatBtnClick = () => {
         const input = document.getElementById('chatBtnInput');
@@ -1800,7 +1800,6 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
-        debugger
         if (!channel) {
             const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
             dispatch(insertChannel2(body));

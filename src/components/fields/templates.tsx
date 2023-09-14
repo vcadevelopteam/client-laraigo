@@ -635,7 +635,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText="" }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -675,8 +675,18 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
 
     return (
         <div className={className}>
-            {variant === "standard" &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            
+            {(variant === "standard" && !!label) &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{display: "flex"}}>
+                    {label}
+                    {!!helperText &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                            </Tooltip>
+                        </div>
+                    }
+                </Box>
             }
             <Autocomplete
                 filterSelectedOptions
@@ -1132,7 +1142,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
         </div>
     );
 }
-export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ className, onChange, valueDefault, label, style, textYes, textNo, labelPlacement = "end", disabled = false }) => {
+export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ className, onChange, valueDefault, label, style, textYes, textNo, labelPlacement = "end", disabled = false, helperText = "" }) => {
     const [checkedaux, setChecked] = useState(false);
     const { t } = useTranslation();
 
@@ -1142,7 +1152,19 @@ export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ classN
 
     return (
         <div className={className} style={{ ...style, paddingBottom: '3px' }}>
-            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>}
+            
+            {(!!label) &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary" style={{display: "flex"}}>
+                    {label}
+                    {!!helperText &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                            </Tooltip>
+                        </div>
+                    }
+                </Box>
+            }
             <FormControlLabel
                 labelPlacement={labelPlacement}
                 style={{ paddingLeft: 10 }}

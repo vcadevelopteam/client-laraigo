@@ -3,8 +3,8 @@ import { IRequestBody, IRequestBodyPaginated, ITransaction, IRequestBodyDynamic,
 import { APIManager, ExternalRequestManager } from '../manager';
 import { removeAuthorizationToken } from "common/helpers";
 
-export function login(usr: string, password: string, facebookid: string, googleid: string) {
-    const data = { usr, password, facebookid, googleid };
+export function login(usr: string, password: string, facebookid: string, googleid: string, token_recaptcha: string) {
+    const data = { usr, password, facebookid, googleid, token_recaptcha };
     return APIManager.post(apiUrls.LOGIN_URL, { data: { data } }, false);
 }
 
@@ -60,6 +60,10 @@ export function mainPaginated(requestBody: IRequestBodyPaginated) {
 
 export function testRequest(data: Dictionary) {
     return APIManager.post(apiUrls.TEST_REQUEST, { data: data }, true);
+}
+
+export function generateApiKey() {
+    return APIManager.get(apiUrls.GENERATE_APIKEY, {  }, true);
 }
 
 export function mainGraphic(requestBody: IRequestBody) {

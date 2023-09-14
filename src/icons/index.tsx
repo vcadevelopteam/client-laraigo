@@ -66,8 +66,8 @@ export const reportsImage = [
 export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
 export { ReactComponent as Reports2Icon } from 'icons/chart-bar-bargraph.svg';
 export { ReactComponent as ReportsIcon } from 'icons/reports.svg';
-export { ReactComponent as PostCreatorIcon } from 'icons/postcreator.svg';
-export { ReactComponent as TicketIcon } from 'icons/ticket.svg';
+export { ReactComponent as PostCreatorIcon } from 'icons/creador-publicaciones-new.svg';
+export { ReactComponent as TicketIcon } from 'icons/tickets_new.svg';
 export { ReactComponent as EMailInboxIcon } from 'icons/email-mail-letter.svg';
 export { ReactComponent as MessageInboxIcon } from 'icons/chat-message-password-input.svg';
 export { ReactComponent as SupervisorIcon } from 'icons/single-user-setting.svg';
@@ -174,6 +174,7 @@ export { ReactComponent as BloggerColor } from './blogger.svg';
 export { ReactComponent as ChatWebColor } from './web-messenger-color.svg';
 export { ReactComponent as EmailColor } from './email-color.svg';
 export { ReactComponent as FacebookColor } from './facebook-color.svg';
+export { ReactComponent as MetaColor } from './meta-icon.svg';
 export { ReactComponent as FacebookColor2 } from './facebook-color2.svg';
 export { ReactComponent as FacebookMessengerColor } from './facebook-messenger-color.svg';
 export { ReactComponent as FacebookMessengerColor2 } from './facebook-messenger-color2.svg';
@@ -229,6 +230,7 @@ export { ReactComponent as XlsIcon } from './xlsIcon.svg';
 export { ReactComponent as DuplicateIcon } from './duplicate.svg';
 
 export { ReactComponent as LaraigoLogo } from './Laraigo-logo.svg';
+export { ReactComponent as LogoSuscription } from './LogoSuscription.svg';
 export { ReactComponent as LaraigoOnlyLogo } from './laraigo-onlylogo.svg';
 export { ReactComponent as EnvioIcon } from './envioAuto-01.svg';
 export { ReactComponent as TeamsIcon } from './teams.svg';
@@ -254,6 +256,10 @@ export { ReactComponent as ConfiguracionIALogo } from './ConfiguracionIALogo.svg
 export { ReactComponent as EntrenamientoIALogo } from './EntrenamientoIALogo.svg';
 export { ReactComponent as IntencionesIALogo } from './IntencionesIALogo.svg';
 export { ReactComponent as EntidadesIALogo } from './EntidadesIALogo.svg';
+export { ReactComponent as SynonimsRasaLogo } from './sinonimosRasa.svg';
+export { ReactComponent as ModelsRasaLogo } from './modelosRasa.svg';
+export { ReactComponent as TestModelRasa } from './pruebaModeloRasa.svg';
+export { ReactComponent as DashboardIAIcon } from './iconBrainnet.svg';
 
 export { ReactComponent as ChannelAndroid } from './channel/channel-android.svg';
 export { ReactComponent as ChannelAppStore } from './channel/channel-appstore.svg';
@@ -285,3 +291,16 @@ export { ReactComponent as ChannelWhatsApp03 } from './channel/channel-whatsapp0
 export { ReactComponent as ChannelWhatsApp04 } from './channel/channel-whatsapp04.svg';
 export { ReactComponent as ChannelWorkplace } from './channel/channel-workplace.svg';
 export { ReactComponent as ChannelYouTube } from './channel/channel-youtube.svg';
+
+// route icons
+export { ReactComponent as DashboardRouteIcon } from './dashboard_route.svg';
+export { ReactComponent as AnalyticRouteIcon } from './analytics_route.svg';
+export { ReactComponent as AutomatizationRouteIcon } from './automatizacion_route.svg';
+export { ReactComponent as ConectivityIARouteIcon } from './conectividad-IAnew.svg';
+export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IAnew.svg';
+export { ReactComponent as IARouteIcon } from './IA_route.svg';
+export { ReactComponent as SalesRouteIcon } from './sales_route.svg';
+export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg';
+export { ReactComponent as IAEntrenamientoIcon } from './Ai_laraigo_new.svg';
+
+export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';

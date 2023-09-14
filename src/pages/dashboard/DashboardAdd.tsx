@@ -538,7 +538,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const [contentType, setContentType] = useState('');
     const [showLevel, setShowLevel] = useState(true);
     const [tagsdata, settagsdata] = useState<any>(getValues(`${key}.tags`)||[]);
-    // const [graphicType, setgraphicType] = useState(getValues(`${key}.graph`));
+    const [graphicType, setgraphicType] = useState(getValues(`${key}.graph`));
     const [columns, setColumns] = useState<ColumnTemplate[]>([]);
 
     useEffect(() => {
@@ -556,7 +556,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
 
         const defaultGraphicType = getValues(`${key}.contentType`);
         if (defaultGraphicType !== undefined || defaultGraphicType !== null) {
-            // setgraphicType(defaultGraphicType);
+            setgraphicType(defaultGraphicType);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, getValues]);
@@ -760,14 +760,14 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         onChange={(v: typeof graphTypes[number]) => {
                             setValue(`${key}.graph`, v?.key || '')
                             setValue(`${key}.interval`, "")
-                            // setgraphicType(v?.key || '')
+                            setgraphicType(v?.key || '')
                         }}
                         error={errors[key]?.graph?.message}
                         disabled={loading}
                         uset
                         prefixTranslation="dashboard_chartType_"
                     />
-                    {(getValues(`${key}.graph`) === "bar" || getValues(`${key}.graph`) ==="line") && <FieldSelect
+                    {(graphicType === "bar" || graphicType ==="line") && <FieldSelect
                         className={classes.field}
                         label={t(langKeys.displayinterval)}
                         data={[

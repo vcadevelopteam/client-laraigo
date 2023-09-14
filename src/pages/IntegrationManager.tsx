@@ -58,8 +58,6 @@ import { resetRequest } from "store/integrationmanager/actions";
 import { dictToArrayKV, extractVariables, isJson } from "common/helpers";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { useHistory } from "react-router-dom";
-import paths from "common/constants/paths";
 import { TextField } from "@material-ui/core";
 
 interface RowSelected {
@@ -169,7 +167,6 @@ const levelFields: Record<string,string> = {
 // let tailFields: any[] = [];
 
 const IntegrationManager: FC = () => {
-   const history = useHistory();
    const dispatch = useDispatch();
    const { t } = useTranslation();
    const mainResult = useSelector((state) => state.main);
@@ -183,14 +180,9 @@ const IntegrationManager: FC = () => {
    const [waitSave, setWaitSave] = useState(false);
    const [mainData, setMainData] = useState<any>([]);
    const arrayBread = [
-      { id: "view-0", name: t(langKeys.configuration_plural) },
       { id: "view-1", name: t(langKeys.integrationmanager_plural) },
    ];
    function redirectFunc(view: string) {
-      if (view === "view-0") {
-         history.push(paths.CONFIGURATION);
-         return;
-      }
       setViewSelected(view);
    }
 
@@ -343,37 +335,12 @@ const IntegrationManager: FC = () => {
                flex: 1,
             }}
          >
-            <div
-               style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-               }}
-            >
-               <TemplateBreadcrumbs
-                  breadcrumbs={arrayBread}
-                  handleClick={redirectFunc}
-               />
-            </div>
             <TableZyx
                columns={columns}
                titlemodule={t(langKeys.integrationmanager_plural, {
                   count: 2,
                })}
                data={mainData}
-               ButtonsElement={() => (
-                  <Button
-                     disabled={mainResult.mainData.loading}
-                     variant="contained"
-                     type="button"
-                     color="primary"
-                     startIcon={<ClearIcon color="secondary" />}
-                     style={{ backgroundColor: "#FB5F5F" }}
-                     onClick={() => history.push(paths.CONFIGURATION)}
-                  >
-                     {t(langKeys.back)}
-                  </Button>
-               )}
                onClickRow={handleEdit}
                download={true}
                loading={mainResult.mainData.loading}
@@ -2666,7 +2633,6 @@ const ModalTestIntegrationManager: React.FC<
       missingParams.forEach((param) => {
          const { key, value } = param;
          newURL = newURL.replace(`{{${key}}}`, value);
-         // debugger;
       });
       setReplacedURL(newURL);
 
@@ -2681,8 +2647,6 @@ const ModalTestIntegrationManager: React.FC<
       return paramsCleaned;
    };
    const compareParams = (urlParams: Dictionary[], params: string[]) => {
-      //
-      debugger;
       const urlParamsCleaned = urlParams?.reduce(
          (acc: any, x: any) => [...acc, "...-1-1-11"],
          []
@@ -2705,7 +2669,7 @@ const ModalTestIntegrationManager: React.FC<
    };
 
    const testAPI = async (form: FormFields) => {
-      // debugger
+      // 
       const cleanedParams = cleanParams(formData?.url);
 
       const { hasMissingParams } = compareParams(

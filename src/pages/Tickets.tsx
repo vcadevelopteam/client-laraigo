@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker, getAnalyticsIA } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -11,16 +11,16 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized } from 'components';
+import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized, AntTab, AntTabPanel } from 'components';
 import TableZyx from 'components/fields/table-simple';
 import { useForm } from 'react-hook-form';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon } from 'icons';
+import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon, DashboardIAIcon } from 'icons';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
-import { Button, ListItemIcon, Tooltip } from '@material-ui/core';
+import { Button, ListItemIcon, Tabs, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
@@ -76,7 +76,15 @@ const useStyles = makeStyles((theme) => ({
     },
     flex_1: {
         flex: 1
-    }
+    },
+    tabs: {
+        color: '#989898',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        width: 'inherit',
+    },
 }));
 
 const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param: any) => void, openModal: boolean, rowWithDataSelected: Dictionary[] }> = ({ setOpenModal, openModal, rowWithDataSelected, fetchData }) => {
@@ -457,7 +465,8 @@ const IconOptions: React.FC<{
     onHandlerClose?: (e?: any) => void;
     onHandlerShowHistory?: (e?: any) => void;
     onHandlerCallRecord?: (e?: any) => void;
-}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, onHandlerCallRecord, disabled }) => {
+    onHandlerAnalyticsIA?: (e?: any) => void;
+}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, onHandlerCallRecord, onHandlerAnalyticsIA, disabled }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
 
@@ -533,6 +542,17 @@ const IconOptions: React.FC<{
                         {t(langKeys.status_history)}
                     </MenuItem>
                 }
+                {onHandlerAnalyticsIA &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerAnalyticsIA();
+                    }}>
+                        <ListItemIcon>
+                            <DashboardIAIcon width={22} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {"Analytics IA"}
+                    </MenuItem>
+                }
             </Menu>
         </>
     )
@@ -586,13 +606,213 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
         >
             <TableZyx
                 columns={columns}
-                // titlemodule={t(langKeys.hi, { count: 2 })}
                 data={resultHistory.data}
                 filterGeneral={false}
                 download={false}
                 loading={resultHistory.loading}
                 register={false}
             />
+        </DialogZyx>
+    )
+}
+const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolean, setOpenModal: (param: any) => void }> = ({ ticket, openModal, setOpenModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [tabIndex, setTabIndex] = useState(0);
+    
+    const classes = useStyles();
+
+    const resultAnalyticsIA = useSelector(state => state.main.mainAux);
+    useEffect(() => {
+        if (openModal) {
+            if (ticket) {
+                dispatch(getCollectionAux(getAnalyticsIA(ticket.conversationid)))
+            }
+        }
+    }, [ticket, openModal])
+    const trimmedData = React.useMemo(() => {
+        if (resultAnalyticsIA.data && resultAnalyticsIA.data[0]?.interactiontext ) {
+            return resultAnalyticsIA.data.map((row: any) => {
+                return {
+                    ...row,
+                    interactiontext: row.interactiontext.length > 65 
+                    ? row.interactiontext.substring(0, 65) + "..." 
+                    : row.interactiontext
+                }
+            })
+        }
+        return []
+    }, [resultAnalyticsIA.data])
+
+    const columnsWNLU = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.anger),
+                accessor: 'wnluanger',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.dislike),
+                accessor: 'wnludisgust',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.fear),
+                accessor: 'wnlufear',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.happiness),
+                accessor: 'wnlujoy',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.sadness),
+                accessor: 'wnlusadness',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.feeling),
+                accessor: 'wnlusentiment',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
+
+    const columnsWA = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.intention),
+                accessor: 'waintent',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.entityname),
+                accessor: 'waentityname',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.entityvalue),
+                accessor: 'waentityvalue',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
+    const columnsRasa = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.intention),
+                accessor: 'rasintent',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.entityname),
+                accessor: 'rasentityname',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.entityvalue),
+                accessor: 'rasentityvalue',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
+
+    return (
+        <DialogZyx
+            open={openModal}
+            maxWidth="md"
+            title={`Analytics IA`}
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={() => setOpenModal(false)}
+        >            
+            <Tabs
+                value={tabIndex}
+                onChange={(_, i) => setTabIndex(i)}
+                className={classes.tabs}
+                textColor="primary"
+                indicatorColor="primary"
+                variant="fullWidth"
+            >
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>Natural Language Understanding (NLU)</div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>Watson Assistant</div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>Rasa IA</div>
+                    )}
+                />
+            </Tabs>
+            <AntTabPanel index={0} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsWNLU}
+                    data={trimmedData}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
+            <AntTabPanel index={1} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsWA}
+                    data={trimmedData}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
+            <AntTabPanel index={2} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsRasa}
+                    data={trimmedData}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
         </DialogZyx>
     )
 }
@@ -763,6 +983,7 @@ const Tickets = () => {
     const [openDialogClose, setOpenDialogClose] = useState(false);
     const [openDialogReassign, setOpenDialogReassign] = useState(false);
     const [openDialogShowHistory, setOpenDialogShowHistory] = useState(false);
+    const [openDialogShowAnalyticsIA, setOpenDialogShowAnalyticsIA] = useState(false);
 
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -830,324 +1051,324 @@ const Tickets = () => {
     }, [getCallRecordRes, waitDownloadRecord])
 
     const columns = React.useMemo(
-      () => [
-        {
-          accessor: "leadid",
-          isComponent: true,
-          minWidth: 60,
-          width: "1%",
-          Cell: (props: any) => {
-            const ticket = props.cell.row.original;
+        () => [
+            {
+                accessor: "leadid",
+                isComponent: true,
+                minWidth: 60,
+                width: "1%",
+                Cell: (props: any) => {
+                    const ticket = props.cell.row.original;
 
-            return (
-              <IconOptions
-                onHandlerReassign={
-                  ticket.estadoconversacion === "CERRADO"
-                    ? undefined
-                    : () => {
-                        setRowToSend([ticket]);
-                        setOpenDialogReassign(true);
-                      }
-                }
-                onHandlerClassify={
-                  ticket.estadoconversacion === "CERRADO"
-                    ? undefined
-                    : () => {
-                        setRowToSend([ticket]);
-                        setOpenDialogTipify(true);
-                      }
-                }
-                onHandlerClose={
-                  ticket.estadoconversacion === "CERRADO"
-                    ? undefined
-                    : () => {
-                        setRowToSend([ticket]);
-                        setOpenDialogClose(true);
-                      }
-                }
-                onHandlerShowHistory={() => {
-                  setOpenDialogShowHistory(true);
-                  setRowSelected(ticket);
-                  setRowToSend([ticket]);
-                }}
-              />
-            );
-          },
-        },
-        {
-          accessor: "voxiid",
-          isComponent: true,
-          minWidth: 60,
-          width: "1%",
-          Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return row.communicationchanneltype === "VOXI" &&
-              row.postexternalid &&
-              row.callrecording &&
-              row.callanswereddate ? (
-              <Tooltip title={t(langKeys.download_record) || ""}>
-                <IconButton
-                  size="small"
-                  onClick={() => downloadCallRecord(row)}
-                >
-                  <CallRecordIcon style={{ fill: "#7721AD" }} />
-                </IconButton>
-              </Tooltip>
-            ) : null;
-          },
-        },
-        {
-          Header: t(langKeys.ticket_numeroticket),
-          accessor: "numeroticket",
-          Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return (
-              <label
-                className={classes.labellink}
-                onClick={() => openDialogInteractions(row)}
-              >
-                {row.numeroticket}
-              </label>
-            );
-          },
-        },
-        {
-          Header: t(langKeys.ticket_communicationchanneldescription),
-          accessor: "communicationchanneldescription",
-        },
-        {
-          Header: t(langKeys.ticket_name),
-          accessor: "name",
-        },
-        {
-          Header: t(langKeys.origin),
-          accessor: "origin",
-        },
-        {
-          Header: t(langKeys.ticket_firstusergroup),
-          accessor: "firstusergroup",
-        },
-        {
-          Header: t(langKeys.ticket_ticketgroup),
-          accessor: "ticketgroup",
-        },
-        {
-          Header: t(langKeys.ticket_phone),
-          accessor: "phone",
-        },
-        {
-          Header: t(langKeys.ticket_fechainicio),
-          accessor: "fechainicio",
-          type: "date",
-          sortType: "datetime",
-          Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return convertLocalDate(row.fechainicio).toLocaleString();
-          },
-        },
-        {
-          Header: t(langKeys.ticket_fechafin),
-          accessor: "fechafin",
-          type: "date",
-          sortType: "datetime",
-          Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return row.fechafin
-              ? convertLocalDate(row.fechafin).toLocaleString()
-              : "";
-          },
-        },
-        {
-          Header: t(langKeys.status),
-          accessor: "estadoconversacion",
-        },
-        {
-          Header: t(langKeys.ticket_tipocierre),
-          accessor: "tipocierre",
-          helpText: t(langKeys.report_productivity_closetype_help),
-        },
-        {
-          Header: t(langKeys.ticket_duracionreal),
-          accessor: "duracionreal",
-          helpText: t(langKeys.ticket_help_duracionreal),
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_duracionpausa),
-          accessor: "duracionpausa",
-          helpText: t(langKeys.ticket_duracionpausa_help),
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_duraciontotal),
-          helpText: t(langKeys.ticket_duraciontotal_help),
-          accessor: "duraciontotal",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_fechahandoff),
-          helpText: t(langKeys.ticket_fechahandoff_help),
-          accessor: "fechahandoff",
-          type: "date",
-          sortType: "datetime",
-          Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return row.fechahandoff
-              ? convertLocalDate(row.fechahandoff).toLocaleString()
-              : "";
-          },
-        },
-        {
-          Header: t(langKeys.ticket_fechaultimaconversacion),
-          helpText: t(langKeys.ticket_fechaultimaconversacion_help),
-          accessor: "fechaultimaconversacion",
-          type: "date",
-          sortType: "datetime",
-          Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return row.fechaultimaconversacion
-              ? convertLocalDate(row.fechaultimaconversacion).toLocaleString()
-              : "";
-          },
-        },
-        {
-          Header: t(langKeys.ticket_asesorinicial),
-          accessor: "asesorinicial",
-        },
-        {
-          Header: t(langKeys.ticket_asesorfinal),
-          accessor: "asesorfinal",
-        },
-        {
-          Header: t(langKeys.ticket_supervisor),
-          accessor: "supervisor",
-        },
-        {
-          Header: t(langKeys.ticket_agentrol),
-          accessor: "rolasesor",
-        },
-        {
-          Header: t(langKeys.ticket_empresa),
-          accessor: "empresa",
-        },
-        {
-          Header: t(langKeys.campaign),
-          accessor: "campaign",
-        },
-        {
-          Header: t(langKeys.ticket_tmoasesor),
-          helpText: t(langKeys.ticket_tmoasesor_help),
-          accessor: "tmoasesor",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_tiempopromediorespuesta),
-          helpText: t(langKeys.ticket_tiempopromediorespuesta_help),
-          accessor: "tiempopromediorespuesta",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
-          helpText: t(langKeys.ticket_tiempopromediorespuestaasesor_help),
-          accessor: "tiempopromediorespuestaasesor",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
-          helpText: t(langKeys.ticket_tiempoprimerarespuestaasesor_help),
-          accessor: "tiempoprimerarespuestaasesor",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_tiempopromediorespuestapersona),
-          helpText: t(langKeys.ticket_tiempopromediorespuestapersona_help),
-          accessor: "tiempopromediorespuestapersona",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_tiempoprimeraasignacion),
-          helpText: t(langKeys.ticket_tiempoprimeraasignacion_help),
-          accessor: "tiempoprimeraasignacion",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_tdatime),
-          helpText: t(langKeys.ticket_tdatime_help),
-          accessor: "tdatime",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_holdingwaitingtime),
-          helpText: t(langKeys.ticket_holdingwaitingtime_help),
-          accessor: "holdingwaitingtime",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.supervisionduration),
-          accessor: "supervisionduration",
-          type: "time",
-        },
-        {
-          Header: t(langKeys.ticket_classification),
-          helpText: t(langKeys.ticket_tipification_help),
-          accessor: "tipification",
-        },
-
-        {
-          Header: t(langKeys.ticket_documenttype),
-          accessor: "documenttype",
-        },
-        {
-          Header: t(langKeys.documentnumber),
-          accessor: "dni",
-        },
-        {
-          Header: t(langKeys.ticket_email),
-          accessor: "email",
-        },
-        {
-          Header: t(langKeys.ticket_balancetimes),
-          accessor: "balancetimes",
-          type: "number",
-          sortType: "number",
-        },
-        {
-          Header: t(langKeys.ticket_abandoned),
-          accessor: "abandoned",
-          Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return row.abandoned
-              ? t(langKeys.affirmative)
-              : t(langKeys.negative);
-          },
-        },
-        {
-          Header: t(langKeys.ticket_labels),
-          helpText: t(langKeys.ticket_labels_help),
-          accessor: "labels",
-        },
-        {
-            Header: t(langKeys.ticket_originalpublicationdate),
-            helpText: t(langKeys.ticket_originalpublicationdate),
-            accessor: "originalpublicationdate",
-            type: "date",
-            sortType: "datetime",
-            Cell: (props: any) => {
-              const row = props.cell.row.original;
-              return row.originalpublicationdate
-                ? convertLocalDate(row.originalpublicationdate).toLocaleString()
-                : "";
+                    return (
+                        <IconOptions
+                            onHandlerReassign={
+                                ticket.estadoconversacion === "CERRADO"
+                                    ? undefined
+                                    : () => {
+                                        setRowToSend([ticket]);
+                                        setOpenDialogReassign(true);
+                                    }
+                            }
+                            onHandlerClassify={
+                                ticket.estadoconversacion === "CERRADO"
+                                    ? undefined
+                                    : () => {
+                                        setRowToSend([ticket]);
+                                        setOpenDialogTipify(true);
+                                    }
+                            }
+                            onHandlerClose={
+                                ticket.estadoconversacion === "CERRADO"
+                                    ? undefined
+                                    : () => {
+                                        setRowToSend([ticket]);
+                                        setOpenDialogClose(true);
+                                    }
+                            }
+                            onHandlerShowHistory={() => {
+                                setOpenDialogShowHistory(true);
+                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
+                            }}
+                            onHandlerAnalyticsIA={() => {
+                              setOpenDialogShowAnalyticsIA(true);
+                              setRowSelected(ticket);
+                              setRowToSend([ticket]);
+                            }}
+                        />
+                    );
+                },
             },
-          },
-          {
-            Header: t(langKeys.ticket_numberfollowers),
-            helpText: t(langKeys.ticket_numberfollowers),
-            accessor: "numberfollowers",
-            type: "number",
-            sortType: "number",
-          },
-      ],
-      []
+            {
+              accessor: "voxiid",
+              isComponent: true,
+              minWidth: 60,
+              width: "1%",
+              Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return row.communicationchanneltype === "VOXI" &&
+                  row.postexternalid &&
+                  row.callrecording &&
+                  row.callanswereddate ? (
+                  <Tooltip title={t(langKeys.download_record) || ""}>
+                    <IconButton
+                      size="small"
+                      onClick={() => downloadCallRecord(row)}
+                    >
+                      <CallRecordIcon style={{ fill: "#7721AD" }} />
+                    </IconButton>
+                  </Tooltip>
+                ) : null;
+              },
+            },
+            {
+                Header: t(langKeys.ticket_numeroticket),
+                accessor: "numeroticket",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => openDialogInteractions(row)}
+                        >
+                            {row.numeroticket}
+                        </label>
+                    );
+                },
+            },
+            {
+                Header: t(langKeys.ticket_communicationchanneldescription),
+                accessor: "communicationchanneldescription",
+            },
+            {
+                Header: t(langKeys.ticket_name),
+                accessor: "name",
+            },
+            {
+                Header: t(langKeys.origin),
+                accessor: "origin",
+            },
+            {
+                Header: t(langKeys.ticket_firstusergroup),
+                accessor: "firstusergroup",
+            },
+            {
+                Header: t(langKeys.ticket_ticketgroup),
+                accessor: "ticketgroup",
+            },
+            {
+                Header: t(langKeys.ticket_phone),
+                accessor: "phone",
+            },
+            {
+                Header: t(langKeys.ticket_fechainicio),
+                accessor: "fechainicio",
+                type: "date",
+                sortType: "datetime",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.fechainicio).toLocaleString();
+                },
+            },
+            {
+                Header: t(langKeys.ticket_fechafin),
+                accessor: "fechafin",
+                type: "date",
+                sortType: "datetime",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.fechafin
+                        ? convertLocalDate(row.fechafin).toLocaleString()
+                        : "";
+                },
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: "estadoconversacion",
+            },
+            {
+                Header: t(langKeys.ticket_tipocierre),
+                accessor: "tipocierre",
+                helpText: t(langKeys.report_productivity_closetype_help),
+            },
+            {
+                Header: t(langKeys.ticket_duracionreal),
+                accessor: "duracionreal",
+                helpText: t(langKeys.ticket_help_duracionreal),
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_duracionpausa),
+                accessor: "duracionpausa",
+                helpText: t(langKeys.ticket_duracionpausa_help),
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_duraciontotal),
+                helpText: t(langKeys.ticket_duraciontotal_help),
+                accessor: "duraciontotal",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_fechahandoff),
+                helpText: t(langKeys.ticket_fechahandoff_help),
+                accessor: "fechahandoff",
+                type: "date",
+                sortType: "datetime",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.fechahandoff
+                        ? convertLocalDate(row.fechahandoff).toLocaleString()
+                        : "";
+                },
+            },
+            {
+                Header: t(langKeys.ticket_fechaultimaconversacion),
+                helpText: t(langKeys.ticket_fechaultimaconversacion_help),
+                accessor: "fechaultimaconversacion",
+                type: "date",
+                sortType: "datetime",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.fechaultimaconversacion
+                        ? convertLocalDate(row.fechaultimaconversacion).toLocaleString()
+                        : "";
+                },
+            },
+            {
+                Header: t(langKeys.ticket_asesorinicial),
+                accessor: "asesorinicial",
+            },
+            {
+                Header: t(langKeys.ticket_asesorfinal),
+                accessor: "asesorfinal",
+            },
+            {
+                Header: t(langKeys.ticket_supervisor),
+                accessor: "supervisor",
+            },
+            {
+                Header: t(langKeys.ticket_agentrol),
+                accessor: "rolasesor",
+            },
+            {
+                Header: t(langKeys.ticket_empresa),
+                accessor: "empresa",
+            },
+            {
+                Header: t(langKeys.campaign),
+                accessor: "campaign",
+            },
+            {
+                Header: t(langKeys.ticket_tmoasesor),
+                helpText: t(langKeys.ticket_tmoasesor_help),
+                accessor: "tmoasesor",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_tiempopromediorespuesta),
+                helpText: t(langKeys.ticket_tiempopromediorespuesta_help),
+                accessor: "tiempopromediorespuesta",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
+                helpText: t(langKeys.ticket_tiempopromediorespuestaasesor_help),
+                accessor: "tiempopromediorespuestaasesor",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
+                helpText: t(langKeys.ticket_tiempoprimerarespuestaasesor_help),
+                accessor: "tiempoprimerarespuestaasesor",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_tiempopromediorespuestapersona),
+                helpText: t(langKeys.ticket_tiempopromediorespuestapersona_help),
+                accessor: "tiempopromediorespuestapersona",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_tiempoprimeraasignacion),
+                helpText: t(langKeys.ticket_tiempoprimeraasignacion_help),
+                accessor: "tiempoprimeraasignacion",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_tdatime),
+                helpText: t(langKeys.ticket_tdatime_help),
+                accessor: "tdatime",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_holdingwaitingtime),
+                helpText: t(langKeys.ticket_holdingwaitingtime_help),
+                accessor: "holdingwaitingtime",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.supervisionduration),
+                accessor: "supervisionduration",
+                type: "time",
+            },
+            {
+                Header: t(langKeys.ticket_classification),
+                helpText: t(langKeys.ticket_tipification_help),
+                accessor: "tipification",
+            },
+
+            {
+                Header: t(langKeys.ticket_documenttype),
+                accessor: "documenttype",
+            },
+            {
+                Header: t(langKeys.documentnumber),
+                accessor: "dni",
+            },
+            {
+                Header: t(langKeys.ticket_email),
+                accessor: "email",
+            },
+            {
+                Header: t(langKeys.ticket_balancetimes),
+                accessor: "balancetimes",
+                type: "number",
+                sortType: "number",
+            },
+            {
+                Header: t(langKeys.ticket_abandoned),
+                accessor: "abandoned",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.abandoned
+                        ? t(langKeys.affirmative)
+                        : t(langKeys.negative);
+                },
+            },
+            {
+                Header: t(langKeys.ticket_labels),
+                helpText: t(langKeys.ticket_labels_help),
+                accessor: "labels",
+            },
+            {
+                Header: t(langKeys.ticket_originalpublishdate),
+                accessor: 'originalpublicationdate',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.originalpublicationdate ? convertLocalDate(row.originalpublicationdate).toLocaleString() : ''
+                }
+            },
+            {
+                Header: t(langKeys.ticket_followercount),
+                accessor: 'numberfollowers',
+                type: 'number'
+            },
+        ],
+        []
     );
 
     const openDialogInteractions = useCallback((row: any) => {
@@ -1384,6 +1605,11 @@ const Tickets = () => {
             <DialogHistoryStatus
                 openModal={openDialogShowHistory}
                 setOpenModal={setOpenDialogShowHistory}
+                ticket={rowSelected}
+            />
+            <DialogAnalyticsIA
+                openModal={openDialogShowAnalyticsIA}
+                setOpenModal={setOpenDialogShowAnalyticsIA}
                 ticket={rowSelected}
             />
             <DialogTipifications

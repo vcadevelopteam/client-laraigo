@@ -20,10 +20,8 @@ import {
 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 import TablePaginated from 'components/fields/table-paginated';
-import Map from './MapLocation.js'
+import Map from './MapLocation.jsx'
 
 interface RowSelected {
     row: Dictionary | null,
@@ -332,8 +330,6 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
 }
 
 const Location: FC = () => {
-    // const history = useHistory();
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -354,14 +350,9 @@ const Location: FC = () => {
     const classes = useStyles();
 
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.locations) },
     ];
     function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
     const handleView = (row: Dictionary) => {
@@ -665,13 +656,6 @@ const Location: FC = () => {
             
             
             <div style={{ height: '100%', width: 'inherit' }}>
-
-            <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                <TemplateBreadcrumbs
-                    breadcrumbs={arrayBread}
-                    handleClick={redirectFunc}
-                />
-            </div>
             <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
                 <div style={{ flexGrow: 1 }} >
                     <Title><Trans i18nKey={langKeys.location} count={2} /></Title>

@@ -7,8 +7,6 @@ export const icons = {
     SUPERVISOR: './icons/single-user-setting.svg',
     ORGANIZATIONS: './icons/high-rise-building.svg',
     CHANNELS: './icons/chart-bar-bargraph.svg',
-    BILLING_SETUPS: './icons/credit-Card.svg',
     CONFIGURATION: './icons/settings.svg',
     EXTRAS: './icons/grid-layout-menu-more.svg',
 };
-
