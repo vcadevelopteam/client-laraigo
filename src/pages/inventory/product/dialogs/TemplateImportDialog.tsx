@@ -2,7 +2,7 @@
 import { DialogZyx, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { exportExcel, templateMaker } from "common/helpers";
 
 const TemplateImportDialog: React.FC<{

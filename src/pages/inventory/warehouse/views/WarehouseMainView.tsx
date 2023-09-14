@@ -4,13 +4,10 @@ import { Trans, useTranslation } from "react-i18next";
 import {
   TemplateIcons,
   Title,
-  DialogZyx,
-  FieldSelect,
 } from "components";
 import { langKeys } from "lang/keys";
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import { DuplicateIcon } from "icons";
-import { makeStyles } from "@material-ui/core/styles";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
 import { execute, exportData } from "store/main/actions";
@@ -19,10 +16,9 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, getWarehouseExport, importWarehouse, insDomain, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
+import { exportExcel, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
-import BackupIcon from "@material-ui/icons/Backup";
 import TablePaginated from "components/fields/table-paginated";
 
 const selectionKey = "warehouseid";
@@ -34,22 +30,6 @@ interface WarehouseMainViewProps {
   fetchDataAux: any;
 }
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    marginRight: theme.spacing(2),
-  },
-  containerHeader: {
-    padding: theme.spacing(1),
-  },
-  itemDate: {
-    minHeight: 40,
-    height: 40,
-    border: "1px solid #bfbfc0",
-    borderRadius: 4,
-    color: "rgb(143, 146, 161)",
-  },
-}));
-
 const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   setViewSelected,
   setRowSelected,
@@ -58,7 +38,6 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const classes = useStyles();
 
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
@@ -67,9 +46,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   const mainPaginated = useSelector((state) => state.main.mainPaginated);
   const [totalrow, settotalrow] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  const [openModal, setOpenModal] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState("false");
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
   const importRes = useSelector((state) => state.main.execute);
@@ -98,11 +75,9 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
             message: t(langKeys.successful_import),
           })
         );
-        setOpenModal(false);
         dispatch(showBackdrop(false));
         setWaitUpload(false);
         fetchData(fetchDataAux);
-        setOpenModal(false);
       } else if (importRes.error) {
         dispatch(
           showSnackbar({
@@ -134,10 +109,6 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       })
     );
   };
-
-  function handleImport() {
-    setOpenModal(false);
-  }
 
   useEffect(() => {
     if (waitExport) {
@@ -298,7 +269,6 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       `${t(langKeys.template)} ${t(langKeys.specifications)}`,
       templateMaker(data, header)
     );
-    setOpenModal(false);
   };
 
   return (
@@ -333,6 +303,8 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         pageCount={pageCount}
         filterrange={true}
         download={true}
+        initialStartDate={new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime()}
+        initialEndDate={new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getTime()}
         fetchData={fetchData}
         exportPersonalized={triggerExportData}
         useSelection={true}

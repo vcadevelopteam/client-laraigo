@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { DialogZyx, TemplateIcons } from "components";
+import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import TableZyx from "components/fields/table-simple";
@@ -11,8 +11,6 @@ import { insProductAlternative } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-
-const selectionKey = "productid";
 
 interface SearchProductDialogProps {
   openModal: boolean;
@@ -28,8 +26,6 @@ const SearchProductDialog: React.FC<SearchProductDialogProps> = ({
   fetchData
 }) => {
   const { t } = useTranslation();
-  const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-  const [cleanSelected, setCleanSelected] = useState(false);
   const [openModalSearch, setOpenModalSearch] = useState(false);
   const multiData = useSelector(state => state.main.multiDataAux);
   const dispatch = useDispatch();

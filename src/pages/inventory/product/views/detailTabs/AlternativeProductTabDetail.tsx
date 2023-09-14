@@ -14,14 +14,11 @@ import { useSelector } from 'hooks';
 import TableZyx from "components/fields/table-simple";
 import { Search as SearchIcon } from "@material-ui/icons";
 import SearchProductDialog from "../../dialogs/SearchProductDialog";
-import ClearIcon from "@material-ui/icons/Clear";
 import { TemplateIcons } from "components";
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
 import { insProductAlternative } from "common/helpers";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-
-const selectionKey = "domainname";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -54,8 +51,6 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
   const { t } = useTranslation();
   const classes = useStyles();
   const [openModalSearch, setOpenModalSearch] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-  const [cleanSelected, setCleanSelected] = useState(false);
   const dataProduct = useSelector(state => state.main.mainAux);
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);

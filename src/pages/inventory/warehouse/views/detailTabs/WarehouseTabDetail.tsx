@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React from 'react'; // we need this to make JSX compile
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';

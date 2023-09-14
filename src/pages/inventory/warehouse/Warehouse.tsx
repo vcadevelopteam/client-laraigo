@@ -2,9 +2,9 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getPaginatedWarehouse, getProducts } from "common/helpers";
+import { getPaginatedWarehouse } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
-import { getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
+import { getCollectionPaginated, resetAllMain } from "store/main/actions";
 import WarehouseMainView from "./views/WarehouseMainView";
 import WarehouseDetail from "./views/WarehouseDetail";
 

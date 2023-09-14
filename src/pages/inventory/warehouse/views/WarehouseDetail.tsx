@@ -8,7 +8,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
 import { getWarehouseProducts, insWarehouse } from 'common/helpers';
-import { Dictionary, MultiData } from "@types";
+import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
