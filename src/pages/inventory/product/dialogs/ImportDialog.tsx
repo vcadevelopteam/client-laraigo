@@ -9,6 +9,7 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 import {
   importProductManufacturer,
   importProducts,
+  importProductsAttribute,
   importProductsWarehouse,
   uploadExcel,
 } from "common/helpers";
@@ -83,6 +84,24 @@ const ImportDialog: React.FC<{
       }
     }
   };
+  const handleUploadSpecifications = async (files: any) => {
+    const file = files?.item(0);
+    if (file) {
+      const data: any = await uploadExcel(file, undefined);
+      if (data.length > 0) {
+        let dataToSend = data.map((x: any) => ({
+          ...x,
+          productattributeid: 0,
+          operation: "INSERT",
+          type: "NINGUNO",
+          status: "ACTIVO",
+        }));
+        dispatch(showBackdrop(true));
+        dispatch(execute(importProductsAttribute(dataToSend)));
+        setWaitUpload(true);
+      }
+    }
+  };
 
   useEffect(() => {
     if (waitUpload) {
@@ -117,6 +136,7 @@ const ImportDialog: React.FC<{
     if (selectedTemplate === "PRODUCT") handleUploadProduct(files);
     if (selectedTemplate === "WAREHOUSE") handleUploadWarehouse(files);
     if (selectedTemplate === "DEALER") handleUploadDealer(files);
+    if (selectedTemplate === "SPECIFCATION") handleUploadSpecifications(files);
   };
 
   return (
@@ -137,6 +157,7 @@ const ImportDialog: React.FC<{
             { desc: t(langKeys.product), value: "PRODUCT" },
             { desc: t(langKeys.warehouse), value: "WAREHOUSE" },
             { desc: t(langKeys.dealer), value: "DEALER" },
+            { desc: t(langKeys.specifications), value: "SPECIFCATION" },
           ]}
           optionDesc="desc"
           optionValue="value"

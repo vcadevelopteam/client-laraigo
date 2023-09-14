@@ -78,10 +78,26 @@ const TemplateImportDialog: React.FC<{
     setSelectedTemplate("");
     setOpenModal(false);
   };
+  const handleTemplateSpecification = () => {
+    const data = [{}, {}, {}, {}];
+    const header = [
+        "productid",
+        "attributeid",
+        "value",
+        "unitmeasureid"
+    ];
+    exportExcel(
+      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
+      templateMaker(data, header)
+    );
+    setSelectedTemplate("");
+    setOpenModal(false);
+  };
   function handleDownloadTemplate() {
     if (selectedTemplate === "PRODUCT") handleTemplateProduct();
     if (selectedTemplate === "WAREHOUSE") handleTemplateAlmacen();
     if (selectedTemplate === "DEALER") handleTemplateDealer();
+    if (selectedTemplate === "SPECIFICATION") handleTemplateSpecification();
   }
 
   return (
@@ -105,6 +121,7 @@ const TemplateImportDialog: React.FC<{
             { desc: t(langKeys.product), value: "PRODUCT" },
             { desc: t(langKeys.warehouse), value: "WAREHOUSE" },
             { desc: t(langKeys.dealer), value: "DEALER" },
+            { desc: t(langKeys.specifications), value: "SPECIFICATION" },
           ]}
           optionDesc="desc"
           optionValue="value"

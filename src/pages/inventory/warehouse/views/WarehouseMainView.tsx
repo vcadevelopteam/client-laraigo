@@ -8,6 +8,7 @@ import {
   FieldSelect,
 } from "components";
 import { langKeys } from "lang/keys";
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import { DuplicateIcon } from "icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { Dictionary, IFetchData } from "@types";
@@ -18,7 +19,7 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { getWarehouseExport, insDomain, insWarehouse } from "common/helpers";
+import { exportExcel, getWarehouseExport, importWarehouse, insDomain, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -70,6 +71,8 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   const [waitExport, setWaitExport] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("false");
   const resExportData = useSelector(state => state.main.exportData);
+  const [waitUpload, setWaitUpload] = useState(false);  
+  const importRes = useSelector((state) => state.main.execute);
 
   const handleRegister = () => {
     setViewSelected("detail-view");
@@ -84,6 +87,35 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
     setViewSelected("detail-view");
     setRowSelected({ row, edit: false });
   };
+
+  useEffect(() => {
+    if (waitUpload) {
+      if (!importRes.loading && !importRes.error) {
+        dispatch(
+          showSnackbar({
+            show: true,
+            severity: "success",
+            message: t(langKeys.successful_import),
+          })
+        );
+        setOpenModal(false);
+        dispatch(showBackdrop(false));
+        setWaitUpload(false);
+        fetchData(fetchDataAux);
+        setOpenModal(false);
+      } else if (importRes.error) {
+        dispatch(
+          showSnackbar({
+            show: true,
+            severity: "error",
+            message: t(importRes.code || "error_unexpected_error"),
+          })
+        );
+        dispatch(showBackdrop(false));
+        setWaitUpload(false);
+      }
+    }
+  }, [importRes, waitUpload]);
 
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
@@ -233,6 +265,42 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
     setWaitExport(true);
   };
 
+  const handleUpload = async (files: any) => {
+    const file = files?.item(0);
+    if (file) {
+      const data: any = await uploadExcel(file, undefined);
+      if (data.length > 0) {
+        let dataToSend = data.map((x: any) => ({
+          ...x,
+          warehouseid: 0,
+          operation: "INSERT",
+          type: "NINGUNO",
+          status: "ACTIVO",
+        }));
+        dispatch(showBackdrop(true));
+        dispatch(execute(importWarehouse(dataToSend)));
+        setWaitUpload(true);
+      }
+    }
+  };
+
+  const handleTemplateWarehouse = () => {
+    const data = [{}, {}, {}, {}, {}, {}];
+    const header = [
+      "name",
+      "description",
+      "address",
+      "phone",
+      "latitude",
+      "longitude",
+    ];
+    exportExcel(
+      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
+      templateMaker(data, header)
+    );
+    setOpenModal(false);
+  };
+
   return (
     <div
       style={{
@@ -278,57 +346,20 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
         register={true}
+        importCSV={handleUpload}
         ButtonsElement={() => (
-          <div
-            className={classes.containerHeader}
-            style={{
-              display: "flex",
-              gap: 8,
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-            }}
+          <Button
+              variant="contained"
+              color="primary"
+              disabled={mainPaginated.loading}
+              startIcon={<ListAltIcon color="secondary" />}
+              onClick={handleTemplateWarehouse}
+              style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
           >
-            <div style={{ display: "flex", gap: 8 }}>
-              <div>
-                <Button
-                  className={classes.button}
-                  variant="contained"
-                  component="span"
-                  color="primary"
-                  onClick={() => setOpenModal(true)}
-                  startIcon={<BackupIcon color="secondary" />}
-                  style={{ backgroundColor: "#55BD84" }}
-                >
-                  <Trans i18nKey={langKeys.import} />
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+              <Trans i18nKey={langKeys.template} />
+          </Button>
+      )}
       />
-
-      <DialogZyx
-        open={openModal}
-        title={t(langKeys.import)}
-        button1Type="button"
-        buttonText1={t(langKeys.cancel)}
-        handleClickButton1={() => setOpenModal(false)}
-        button2Type="button"
-        buttonText2={t(langKeys.import)}
-        handleClickButton2={handleImport}
-      >
-        <div className="row-zyx">
-          <FieldSelect
-            label={t(langKeys.template)}
-            className="col-12"
-            valueDefault={selectedTemplate}
-            onChange={(value) => setSelectedTemplate(value?.template)}
-            data={[]}
-            optionDesc="desc"
-            optionValue="value"
-          />
-        </div>
-      </DialogZyx>
     </div>
   );
 };
