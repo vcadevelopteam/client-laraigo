@@ -11,6 +11,8 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import React from "react";
+import { execute } from "store/main/actions";
+import { insProductDealer } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -21,22 +23,25 @@ const useStyles = makeStyles((theme) => ({
 const RegisterDealerDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
+  fetchData: any;
   row: any
-}> = ({ openModal, setOpenModal, row }) => {
+}> = ({ openModal, setOpenModal, row, fetchData }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector((state) => state.main.execute);
   const dispatch = useDispatch();
   const multiData = useSelector(state => state.main.multiDataAux);
-  console.log(multiData)
 
   const { register,handleSubmit: handleMainSubmit,setValue,getValues,formState: { errors },} = useForm({
     defaultValues: {
       productid: row.productid,
       productcompanyid: 0,
       manufacturerid: 0,
+      distributorid: 0,
       model: "",
+      distributor: "",
+      manufacturer: "",
       catalognumber: "",
       webpage: "",
       taxeid: 0,
@@ -53,25 +58,29 @@ const RegisterDealerDialog: React.FC<{
 
   React.useEffect(() => {
     register("productid");
-    register("model");
+    register('model')
     register("productcompanyid");
-    register("manufacturerid");
+    register("manufacturerid", { validate: (value) => !!getValues("distributorid")?((value && value>0) ? true : t(langKeys.field_required) + ""):true });
+    register("distributorid", { validate: (value) =>  !!getValues("manufacturerid")?((value && value>0) ? true : t(langKeys.field_required) + ""):true });
     register("catalognumber");
     register("webpage");
     register("taxeid");
     register("isstockistdefault");
-    register("averagedeliverytime");
-    register("lastprice");
+    register("averagedeliverytime", { validate: (value) => ((value && value>0) ? true : t(langKeys.field_required) + "") });
+    register("lastprice", { validate: (value) => ((value && value>=0) ? true : t(langKeys.no_negative) + "") });
     register("lastorderdate");
     register("unitbuy");
 
-  }, [register]);
+  }, [register,getValues]);
 
   useEffect(() => {
     if (waitSave) {
       if (!executeRes.loading && !executeRes.error) {
         dispatch(showSnackbar({show: true,severity: "success",message: t(langKeys.successful_register),}));
         dispatch(showBackdrop(false));
+        setOpenModal(false)
+        
+        fetchData()
       } else if (executeRes.error) {
         const errormessage = t(executeRes.code || "error_unexpected_error", {module: t(langKeys.domain).toLocaleLowerCase(),});
         dispatch(
@@ -86,7 +95,7 @@ const RegisterDealerDialog: React.FC<{
   const onSubmit = handleMainSubmit((data) => {
     const callback = () => {
       dispatch(showBackdrop(true));
-      //dispatch(execute(insProduct(data)));
+      dispatch(execute(insProductDealer(data)));
 
       setWaitSave(true);
     };
@@ -112,39 +121,41 @@ const RegisterDealerDialog: React.FC<{
               <FieldSelect
                 label={t(langKeys.dealer)}
                 className="col-6"
-                valueDefault={"values.dealer"}
-                onChange={(value) =>
-                  {debugger}
-                }
-                error={""}
+                valueDefault={getValues("distributorid")}
+                onChange={(value) =>{
+                  setValue("distributorid",value?.manufacturerid)
+                  setValue("distributor",value?.name)
+                }}
+                error={errors?.distributorid?.message}
                 data={(multiData?.data?.[10]?.data||[]).filter(x=>x.type==="DISTRIBUIDOR")}
                 optionValue="manufacturerid"
                 optionDesc="name"
               />
               <FieldEdit
                 label={t(langKeys.description)}
-                valueDefault={""}
+                valueDefault={getValues("distributor")}
                 className="col-6"
-                onChange={(value) => {}}
+                disabled
                 inputProps={{ maxLength: 256 }}
               />
               <FieldSelect
                 label={t(langKeys.manufacturer)}
                 className="col-6"
-                valueDefault={"values.dealer"}
-                onChange={(value) => 
-                  {debugger}
-                }
-                error={""}
+                valueDefault={getValues("manufacturerid")}
+                onChange={(value) =>{
+                  setValue("manufacturerid",value?.manufacturerid)                  
+                  setValue("manufacturer",value?.name)
+                }}
+                error={errors?.manufacturerid?.message}
                 data={(multiData?.data?.[10]?.data||[]).filter(x=>x.type==="FABRICANTE")}
                 optionValue="manufacturerid"
                 optionDesc="name"
               />
               <FieldEdit
                 label={t(langKeys.description)}
-                valueDefault={""}
+                valueDefault={getValues("manufacturer")}
                 className="col-6"
-                onChange={(value) => {}}
+                disabled
                 inputProps={{ maxLength: 256 }}
               />
               <FieldEdit
@@ -180,8 +191,8 @@ const RegisterDealerDialog: React.FC<{
                 }
                 error={errors?.taxeid?.message}
                 data={multiData?.data?.[11]?.data||[]}
-                optionValue="domainvalue"
-                optionDesc="domainid"
+                optionValue="domainid"
+                optionDesc="domaindesc"
               />
             </div>
           </div>
@@ -227,7 +238,7 @@ const RegisterDealerDialog: React.FC<{
                 className="col-12"
                 valueDefault={getValues("unitbuy")}
                 error={errors?.unitbuy?.message}
-                onChange={(value) => setValue("unitbuy",value)}
+                onChange={(value) => setValue("unitbuy",value?.domainid)}
                 data={multiData?.data?.[3]?.data||[]}
                 optionValue="domainid"
                 optionDesc="domaindesc"

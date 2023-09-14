@@ -4222,3 +4222,18 @@ export const insProductManufacturer = ({ productcompanyid, productid, manufactur
     key: "UFN_PRODUCTMANUFACTURER_INS",
     parameters: { productcompanyid, productid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, operation }
 });
+
+export const insProductDealer = ({ productcompanyid, productid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_PRODUCTMANUFACTURER_INS",
+    key: "UFN_PRODUCTMANUFACTURER_INS",
+    parameters: {
+        productcompanyid, productid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid, operation
+    }
+})
+export const getProductManufacturer = (productid:number): IRequestBody => ({
+    method: "UFN_ALL_MANUFACTURER_PRODUCT_SEL",
+    key: "UFN_ALL_MANUFACTURER_PRODUCT_SEL",
+    parameters: {
+        productid: productid
+    }
+});
