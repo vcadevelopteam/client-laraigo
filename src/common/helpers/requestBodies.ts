@@ -959,7 +959,7 @@ export const insMessageTemplate = (
             body,
             bodyobject: JSON.stringify(bodyobject),
             footerenabled,
-            footer,
+            footer: footer||"",
             buttonsenabled,
             buttons: JSON.stringify(buttons),
             priority,
