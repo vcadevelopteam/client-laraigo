@@ -248,6 +248,8 @@ const paths = {
         path: '/recoverpassword/:token',
         resolve: (token: string) => `/recoverpassword/${token}`
     },
+    INVENTORY: '/inventory',
+    INVENTORYCONSUMPTION: '/inventoryconsumption',
 };
 
 export default paths;

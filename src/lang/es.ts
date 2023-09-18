@@ -1416,6 +1416,7 @@ const translation: LangKeys = {
   cancelenventerror: "Solo se pueden cancelar eventos futuros a la fecha actual.",
   reassign_ticket: 'Reasignar ticket',
   typify: 'Clasificar',
+  inventory: "Inventario",
   typify_ticket: 'Clasificar ticket',
   send_hsm: 'Contactar por Whatsapp',
   send_mail: 'Enviar Correo',

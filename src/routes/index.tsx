@@ -114,6 +114,7 @@ const SecurityRules = lazy(() => import('pages/SecurityRules'));
 const PostCreator = lazy(() => import('pages/PostCreator'));
 const ProductMaster = lazy(() => import('pages/inventory/product/ProductMaster'));
 const Warehouse = lazy(() => import('pages/inventory/warehouse/Warehouse'));
+const Inventory = lazy(() => import('pages/inventory/inventory/Inventory'));
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -336,6 +337,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><IntelligentModels /></Layout>)} />
 					<ProtectRoute exact path={paths.IACONFIGURATION} component={() => (<Layout mainClasses={classes.main}><IAConfiguration /></Layout>)} />
 					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
+					<ProtectRoute exact path={paths.INVENTORY} component={() => (<Layout mainClasses={classes.main}><Inventory /></Layout>)} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />
 					</Route>

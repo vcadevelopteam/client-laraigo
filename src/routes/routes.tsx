@@ -541,6 +541,33 @@ export const routes: RouteConfig[] = [
         initialSubroute: paths.IATRAINING,
         icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
     },
+    {
+        key: paths.PRODUCTMASTER,
+        description: <Trans i18nKey={langKeys.productMaster} />,
+        tooltip: <Trans i18nKey={langKeys.productMaster} />,
+        subroute: true,
+        path: paths.PRODUCTMASTER,
+        initialSubroute: paths.PRODUCTMASTER,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.WAREHOUSE,
+        description: <Trans i18nKey={langKeys.warehouse} />,
+        tooltip: <Trans i18nKey={langKeys.warehouse} />,
+        subroute: true,
+        path: paths.WAREHOUSE,
+        initialSubroute: paths.WAREHOUSE,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.INVENTORY,
+        description: <Trans i18nKey={langKeys.inventory} />,
+        tooltip: <Trans i18nKey={langKeys.inventory} />,
+        subroute: true,
+        path: paths.INVENTORY,
+        initialSubroute: paths.INVENTORY,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
 ];
 
 export const subroutes: RouteConfig[] = [
