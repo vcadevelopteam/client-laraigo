@@ -30,6 +30,7 @@ const translation: LangKeys = {
   inventory: "Inventory",
   add_classification: "Add classification",
   make_call: "Make call",
+  inventory_consumption: "Inventory Consumption",
   question_call_busy: "You have an active call. Do you want to answer anyway?",
 
   ringing: "ringing",

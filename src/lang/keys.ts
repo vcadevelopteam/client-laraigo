@@ -24,6 +24,7 @@ export const langKeys = {
   orderlist: "orderlist",
   class: "class",
   inventory: "inventory",
+  inventory_consumption: "inventory_consumption",
   anger: "anger",
   dislike: "dislike",
   fear: "fear",

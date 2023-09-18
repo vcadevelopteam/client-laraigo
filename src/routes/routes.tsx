@@ -568,6 +568,15 @@ export const routes: RouteConfig[] = [
         initialSubroute: paths.INVENTORY,
         icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
     },
+    {
+        key: paths.INVENTORYCONSUMPTION,
+        description: <Trans i18nKey={langKeys.inventory_consumption} />,
+        tooltip: <Trans i18nKey={langKeys.inventory_consumption} />,
+        subroute: true,
+        path: paths.INVENTORYCONSUMPTION,
+        initialSubroute: paths.INVENTORYCONSUMPTION,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
 ];
 
 export const subroutes: RouteConfig[] = [

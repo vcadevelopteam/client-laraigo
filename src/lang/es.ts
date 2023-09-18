@@ -69,6 +69,7 @@ const translation: LangKeys = {
   feeling: "Sentimiento",
   excited: "Emocionado",
   frustrated: "Frustrado",
+  inventory_consumption: "Consumo de Inventario",
   sad: "Triste",
   courteous: "Cortéz",
   blunt: "Descortez",
