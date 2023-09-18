@@ -102,7 +102,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                 <div className='col-6'>
                     <div className='row-zyx'>
                         <FieldEdit
-                            label={t(langKeys.code)}
+                            label={t(langKeys.product)}
                             valueDefault={getValues('productcode')}
                             className="col-4"
                             error={errors?.productcode?.message}
