@@ -186,7 +186,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         },
       },
       {
-        Header: t(langKeys.warehouse),
+        Header: t(langKeys.product),
         accessor: "name",
         width: "auto",
       },
@@ -196,23 +196,38 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         width: "auto",
       },
       {
-        Header: t(langKeys.physicaladdress),
+        Header: t(langKeys.warehouse),
         accessor: "address",
         width: "auto",
       },
       {
-        Header: t(langKeys.phone),
+        Header: t(langKeys.default_shelf),
         accessor: "phone",
         width: "auto",
       },
       {
-        Header: t(langKeys.latitude),
+        Header: t(langKeys.current_balance),
         accessor: "latitude",
         width: "auto",
       },
       {
-        Header: t(langKeys.longitude),
+        Header: t(langKeys.family),
         accessor: "longitude",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.subfamily),
+        accessor: "subfamily",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.dispatch_unit),
+        accessor: "dispatchunit",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.status),
+        accessor: "status",
         width: "auto",
       },
     ],
@@ -291,7 +306,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.warehouse} />
+            <Trans i18nKey={langKeys.inventory} />
           </Title>
         </div>
       </div>
