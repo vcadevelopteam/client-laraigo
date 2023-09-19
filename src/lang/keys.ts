@@ -120,6 +120,7 @@ export const langKeys = {
   buttonstyles: "buttonstyles",
   inputstyles: "inputstyles",
   ordersdetail: "ordersdetail",
+  newordersdetail: "newordersdetail",
   timeconnected: "timeconnected",
   timedesconnected: "timedesconnected",
   picture: "picture",

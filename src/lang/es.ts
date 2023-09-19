@@ -998,6 +998,7 @@ const translation: LangKeys = {
   ordernumber: "N° de pedido",
   orderstatus: "Estado del pedido",
   ordersdetail: "Detalles de pedido",
+  newordersdetail: "Detalles de nuevo pedido",
   picture: "Foto",
 
   type_domain_ninguno: 'None',

@@ -165,7 +165,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "warehouseid",
+        accessor: "inventoryid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -187,7 +187,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       },
       {
         Header: t(langKeys.product),
-        accessor: "name",
+        accessor: "productid",
         width: "auto",
       },
       {
@@ -197,22 +197,22 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       },
       {
         Header: t(langKeys.warehouse),
-        accessor: "address",
+        accessor: "warehouseid",
         width: "auto",
       },
       {
         Header: t(langKeys.default_shelf),
-        accessor: "phone",
+        accessor: "rackdefault",
         width: "auto",
       },
       {
         Header: t(langKeys.current_balance),
-        accessor: "latitude",
+        accessor: "currentbalance",
         width: "auto",
       },
       {
         Header: t(langKeys.family),
-        accessor: "longitude",
+        accessor: "family",
         width: "auto",
       },
       {

@@ -4214,6 +4214,30 @@ export const getPaginatedWarehouse = ({ skip, take, filters, sorts, startdate, e
     }
 })
 
+export const insInventory= ({ inventoryid, productid, warehousid, iswharehousedefault, rackdefault, typecostdispatch, familyid, subfamilyid, status, type, $urrentbalance, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_INVENTORY_INS",
+    key: "UFN_INVENTORY_INS",
+    parameters: {
+        inventoryid, productid, warehousid, iswharehousedefault, rackdefault, typecostdispatch, familyid, subfamilyid, status, type, $urrentbalance, operation
+    }
+})
+
+export const getPaginatedInventory = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_INVENTORY_PAG",
+    methodCount: "UFN_INVENTORY_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "product",
+        inventoryid: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
 export const getWarehouseExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_WAREHOUSE_EXPORT",
     key: "UFN_WAREHOUSE_EXPORT",

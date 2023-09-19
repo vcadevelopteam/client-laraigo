@@ -2,7 +2,7 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getPaginatedWarehouse } from "common/helpers";
+import { getPaginatedInventory, getPaginatedWarehouse } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, resetAllMain } from "store/main/actions";
 import WarehouseMainView from "./views/WarehouseMainView";
@@ -41,7 +41,7 @@ const Inventory: FC = () => {
     setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
     dispatch(
       getCollectionPaginated(
-        getPaginatedWarehouse({
+        getPaginatedInventory({
           startdate: daterange?.startDate || null,
           enddate: daterange?.endDate || null,
           take: pageSize,

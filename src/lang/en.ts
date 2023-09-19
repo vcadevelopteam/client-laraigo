@@ -566,6 +566,7 @@ const translation: LangKeys = {
   "personalizedreport_conversation.originalpublicationdate": "Original publication date",
   "personalizedreport_conversation.numberfollowers": "Number Followers",
   ordersdetail: "Order details",
+  newordersdetail: "New order details",
   picture: "Picture",
   view: "Watch",
   byway: "By way",

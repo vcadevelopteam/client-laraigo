@@ -73,8 +73,8 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const classes = useStyles();
 
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.warehouse) },
-        { id: "detail-view", name: `${t(langKeys.warehouse)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: t(langKeys.inventory) },
+        { id: "detail-view", name: `${t(langKeys.inventory)} ${t(langKeys.detail)}` },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -151,7 +151,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.warehouse)}`}
+                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.inventory)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -194,14 +194,14 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.warehouses} />
+                                <Trans i18nKey={langKeys.inventory} />
                             </div>
                         )}
                     />
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product_plural}/>
+                                <Trans i18nKey={langKeys.newordersdetail}/>
                             </div>
                         )}
                     />
