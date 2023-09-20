@@ -182,7 +182,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             setSetRegisterSmooch(false);
 
             let partialField = fields;
-            partialField.type = "DIALOG";
+            partialField.type = "WHATSAPP";
 
             setFields(partialField);
         }
