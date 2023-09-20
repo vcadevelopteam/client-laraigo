@@ -15,8 +15,8 @@ import { useForm } from 'react-hook-form';
 import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
-import WarehouseTabDetail from './detailTabs/WarehouseTabDetail';
-import ProductTabDetail from './detailTabs/ProductTabDetail';
+import InventoryTabDetail from './detailTabs/InventoryTabDetail';
+import NewOrderTabDetail from './detailTabs/NewOrderTabDetail';
 
 
 
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -207,7 +207,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     />
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <WarehouseTabDetail
+                    <InventoryTabDetail
                         row={row}
                         setValue={setValue}
                         getValues={getValues}
@@ -215,7 +215,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ProductTabDetail fetchdata={fetchWarehouseProducts}/>
+                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors}/>
                 </AntTabPanel>
             </form>
         </>
@@ -223,4 +223,4 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
 }
 
 
-export default WarehouseDetail;
+export default InventoryDetail;

@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
-import { Button } from "@material-ui/core";
-import { Search as SearchIcon } from "@material-ui/icons";
 import { useSelector } from "hooks";
-import { TitleDetail, FieldEdit, FieldCheckbox } from 'components';
+import { TitleDetail, FieldEdit, FieldCheckbox, FieldSelect } from 'components';
 import { FieldErrors } from "react-hook-form";
+import RegisterDealerDialog from "../../dialogs/RegisterDealerDialog copy";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -21,15 +20,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface ProductTabDetailProps {
+interface NewOrderTabDetailProps {
   fetchdata: any
   errors: FieldErrors<any>
+  row: any
 }
 
-const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata, errors}) => {
+const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors, row}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dataProducts = useSelector(state => state.main.mainAux);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     fetchdata();
@@ -80,6 +81,10 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata, errors}) 
     ],
     []
   );
+  function handleRegister() {
+    setOpenModal(true)
+  }
+
   return (
     <div className={classes.containerDetail}>
       <div className='row-zyx'>
@@ -124,10 +129,12 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata, errors}) 
               />
           </div>
           <div className='row-zyx'>
-              <FieldEdit
-                  label={t(langKeys.purchase_unit)}
-                  className="col-6"
-                  error={errors?.latitude?.message}
+              <FieldSelect
+                label={t(langKeys.purchase_unit)}
+                className="col-6"
+                error={errors?.producttype?.message}
+                optionValue="domainvalue"
+                optionDesc="domaindesc"
               />
           </div>
         </div>
@@ -138,10 +145,12 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata, errors}) 
               />
           </div>
           <div className='row-zyx'>
-              <FieldEdit
-                  label={t(langKeys.dealer)}
-                  className="col-6"
-                  error={errors?.address?.message}
+              <FieldSelect
+                label={t(langKeys.dealer)}
+                className="col-6"
+                error={errors?.producttype?.message}
+                optionValue="domainvalue"
+                optionDesc="domaindesc"
               />
               <FieldEdit
                   label={t(langKeys.description)}
@@ -150,10 +159,12 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata, errors}) 
               /> 
           </div>
           <div className='row-zyx'>
-              <FieldEdit
-                  label={t(langKeys.manufacturer)}
-                  className="col-6"
-                  error={errors?.address?.message}
+              <FieldSelect
+                label={t(langKeys.manufacturer)}
+                className="col-6"
+                error={errors?.producttype?.message}
+                optionValue="domainvalue"
+                optionDesc="domaindesc"
               />
               <FieldEdit
                   label={t(langKeys.description)}
@@ -184,31 +195,23 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata, errors}) 
           />
         </div>
         <div className="row-zyx">
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <Button
-              className={classes.button}
-              variant="contained"
-              color="primary"
-              type="button"
-              startIcon={<SearchIcon style={{ color: "white" }} />}
-              style={{ backgroundColor: "#55BD84" }}
-            >
-              {t(langKeys.register)}
-            </Button>
-          </div>
-        </div>
-        <div className="row-zyx">
           <TableZyx
             columns={columns}
             data={dataProducts.data}
             download={false}
             filterGeneral={false}
-            register={false}
+            register={true}
+            handleRegister={handleRegister}
           />
         </div>
-      </div> 
+      </div>
+      <RegisterDealerDialog
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        row={row}
+      />
     </div>
   );
 };
 
-export default ProductTabDetail;
+export default NewOrderTabDetail;

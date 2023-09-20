@@ -5,8 +5,8 @@ import { useDispatch } from "react-redux";
 import { getPaginatedInventory, getPaginatedWarehouse } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, resetAllMain } from "store/main/actions";
-import WarehouseMainView from "./views/WarehouseMainView";
-import WarehouseDetail from "./views/WarehouseDetail";
+import InventoryMainView from "./views/InventoryMainView";
+import InventoryDetail from "./views/InventoryDetail";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -67,7 +67,7 @@ const Inventory: FC = () => {
       return <h1>ERROR</h1>;
     }
     return (
-      <WarehouseMainView
+      <InventoryMainView
         setViewSelected={setViewSelected}
         setRowSelected={setRowSelected}
         fetchData={fetchData}
@@ -76,7 +76,7 @@ const Inventory: FC = () => {
     );
   } else
     return (
-      <WarehouseDetail
+      <InventoryDetail
         data={rowSelected}
         setViewSelected={redirectFunc}
         fetchData={fetchData}

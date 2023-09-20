@@ -23,14 +23,14 @@ import TablePaginated from "components/fields/table-paginated";
 
 const selectionKey = "warehouseid";
 
-interface WarehouseMainViewProps {
+interface InventoryMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
   fetchDataAux: any;
 }
 
-const WarehouseMainView: FC<WarehouseMainViewProps> = ({
+const InventoryMainView: FC<InventoryMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
@@ -351,4 +351,4 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   );
 };
 
-export default WarehouseMainView;
+export default InventoryMainView;

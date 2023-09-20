@@ -12,6 +12,7 @@ import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form'
 import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons } from 'components';
 import TableZyx from "components/fields/table-simple";
 import { useSelector } from 'hooks';
+import RegisterInventoryBalanceDialog from '../../dialogs/RegisterInventoryBalanceDialog';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -51,14 +52,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-interface WarehouseTabDetailProps {
+interface InventoryTabDetailProps {
     row: Dictionary | null;
     setValue: UseFormSetValue<any>;
     getValues: UseFormGetValues<any>;
     errors: FieldErrors<any>;
 }
 
-const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
+const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
     row,
     setValue,
     getValues,
@@ -69,6 +70,7 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const user = useSelector(state => state.login.validateToken.user);
     const initialValueAttachments = getValues('attachments');
     const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
+    const [openModal, setOpenModal] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -129,6 +131,9 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
         ],
         []
     );
+    function handleRegister() {
+        setOpenModal(true)
+    }
 
     return (
         <div className={classes.containerDetail}>
@@ -370,32 +375,24 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
                         title={t(langKeys.inventorybalance)}
                     />
                 </div>
-                <div className="row-zyx">
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="button"
-                            startIcon={<SearchIcon style={{ color: "white" }} />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            {t(langKeys.register)}
-                        </Button>
-                    </div>
-                </div>
                 <div className='row-zyx'>
                     <TableZyx
                         columns={columns}
                         data={[]}
                         download={false}
                         filterGeneral={false}
-                        register={false}
+                        register={true}
+                        handleRegister={handleRegister}
                     />
                 </div>
             </div>
+            <RegisterInventoryBalanceDialog
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                row={row}
+            />
         </div>
     )
 }
 
-export default WarehouseTabDetail;
+export default InventoryTabDetail;
