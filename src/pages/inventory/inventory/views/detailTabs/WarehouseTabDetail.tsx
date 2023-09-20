@@ -2,12 +2,15 @@
 import React, { useState } from 'react'; // we need this to make JSX compile
 import { Dictionary, IFile } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
+import { Button } from "@material-ui/core";
+import { Search as SearchIcon } from "@material-ui/icons";
 import Box from '@material-ui/core/Box';
 import { ItemFile, UploaderIcon } from '../../components/components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox } from 'components';
+import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons } from 'components';
+import TableZyx from "components/fields/table-simple";
 import { useSelector } from 'hooks';
 
 const useStyles = makeStyles((theme) => ({
@@ -43,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#EBEAED",
         cursor: 'not-allowed',
     },
+    button: {
+        marginRight: theme.spacing(2),
+    },
 }));
 
 interface WarehouseTabDetailProps {
@@ -63,6 +69,66 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const user = useSelector(state => state.login.validateToken.user);
     const initialValueAttachments = getValues('attachments');
     const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
+
+    const columns = React.useMemo(
+        () => [
+          {
+            accessor: 'productalternativeid',
+            NoFilter: true,
+            isComponent: true,
+            minWidth: 60,
+            width: '1%',
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return (
+                    <TemplateIcons
+                    />
+                )
+            }
+          },
+          {
+            Header: t(langKeys.shelf),
+            accessor: "productdescription",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.batch),
+            accessor: "productdescriptionlarge",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.current_balance),
+            accessor: "familydescription",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.physicalcount),
+            accessor: "subfamilydescription",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.dateofphysicalcount),
+            accessor: "dateofphysicalcount",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.isconciliated),
+            accessor: "isconciliated",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.shelflifeindays),
+            accessor: "shelflifeindays",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.dueDate),
+            accessor: "dueDate",
+            width: "auto",
+          },
+        ],
+        []
+    );
 
     return (
         <div className={classes.containerDetail}>
@@ -122,7 +188,7 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     <div className='col-6'>
                         <div className='row-zyx'>
                             <FieldEdit
-                                label={t(langKeys.physicaladdress)}
+                                label={t(langKeys.typecostdispatch)}
                                 valueDefault={getValues('address')}
                                 className="col-6"
                                 error={errors?.address?.message}
@@ -178,6 +244,154 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
                             /> 
                         </div>
                     </div>
+                </div>
+            </div>
+            <div className="row-zyx">
+                <div className='col-6'>
+                    <div className='row-zyx'>
+                        <TitleDetail
+                            title={t(langKeys.availablebalancesummary)}
+                        />
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.current_balance)}
+                            valueDefault={getValues('address')}
+                            className="col-6"
+                            error={errors?.address?.message}
+                            onChange={(value) => setValue('address', value)}
+                        />  
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.overdueamountinstock)}
+                            valueDefault={getValues('latitude')}
+                            className="col-6"
+                            error={errors?.latitude?.message}
+                            onChange={(value) => setValue('latitude', value)}
+                        />
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.availablequantity)}
+                            valueDefault={getValues('address')}
+                            className="col-6"
+                            error={errors?.address?.message}
+                            onChange={(value) => setValue('address', value)}
+                        />  
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.reservedquantity)}
+                            valueDefault={getValues('latitude')}
+                            className="col-6"
+                            error={errors?.latitude?.message}
+                            onChange={(value) => setValue('latitude', value)}
+                        />
+                    </div>
+                </div>
+                <div className='col-6'>
+                    <div className='row-zyx'>
+                        <TitleDetail
+                            title={t(langKeys.dispatchhistory)}
+                        />
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.dateoflastshipment)}
+                            valueDefault={getValues('address')}
+                            className="col-6"
+                            error={errors?.address?.message}
+                            onChange={(value) => setValue('address', value)}
+                        />  
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.accumulatedannual)}
+                            valueDefault={getValues('latitude')}
+                            className="col-6"
+                            error={errors?.latitude?.message}
+                            onChange={(value) => setValue('latitude', value)}
+                        />
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.lastyear)}
+                            valueDefault={getValues('address')}
+                            className="col-6"
+                            error={errors?.address?.message}
+                            onChange={(value) => setValue('address', value)}
+                        />  
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.lasttwoyears)}
+                            valueDefault={getValues('latitude')}
+                            className="col-6"
+                            error={errors?.latitude?.message}
+                            onChange={(value) => setValue('latitude', value)}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="row-zyx">
+                <div className='row-zyx'>
+                    <TitleDetail
+                        title={t(langKeys.inventorycosts)}
+                    />
+                </div>
+                <div className='row-zyx'>
+                    <FieldEdit
+                        label={t(langKeys.standard_cost)}
+                        valueDefault={getValues('address')}
+                        className="col-4"
+                        error={errors?.address?.message}
+                        onChange={(value) => setValue('address', value)}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.average_cost)}
+                        valueDefault={getValues('address')}
+                        className="col-4"
+                        error={errors?.address?.message}
+                        onChange={(value) => setValue('address', value)}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.dateoflastmodification)}
+                        valueDefault={getValues('address')}
+                        className="col-4"
+                        error={errors?.address?.message}
+                        onChange={(value) => setValue('address', value)}
+                    />  
+                </div>
+            </div>
+            <div className='row-zyx'>
+                <div className='row-zyx'>
+                    <TitleDetail
+                        title={t(langKeys.inventorybalance)}
+                    />
+                </div>
+                <div className="row-zyx">
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="button"
+                            startIcon={<SearchIcon style={{ color: "white" }} />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >
+                            {t(langKeys.register)}
+                        </Button>
+                    </div>
+                </div>
+                <div className='row-zyx'>
+                    <TableZyx
+                        columns={columns}
+                        data={[]}
+                        download={false}
+                        filterGeneral={false}
+                        register={false}
+                    />
                 </div>
             </div>
         </div>
