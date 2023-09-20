@@ -72,7 +72,7 @@ export const Channels: FC = () => {
     }
 
     const handleEdit = (row: IChannel) => {
-        if (row.type === 'WHAT' && row.status === 'PENDIENTE' && roledesc === "SUPERADMIN") {
+        if (row.type === 'WHAT' && row.status === 'PENDIENTE' && roledesc?.includes("SUPERADMIN")) {
             var whatsAppData = {
                 typeWhatsApp: 'SMOOCH',
                 row: row
@@ -81,8 +81,8 @@ export const Channels: FC = () => {
         }
         else {
             let pathname = paths.CHANNELS_EDIT.resolve(row.communicationchannelid);
-            if(row.type === "CHAZ") pathname =  paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid);
-            if(row.type === "FORM")pathname =  paths.CHANNELS_EDIT_WEBFORM.resolve(row.communicationchannelid);
+            if (row.type === "CHAZ") pathname = paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid);
+            if (row.type === "FORM") pathname = paths.CHANNELS_EDIT_WEBFORM.resolve(row.communicationchannelid);
 
             history.push({
                 pathname,
