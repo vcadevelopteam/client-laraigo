@@ -234,10 +234,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('automaticperiod');
         register('automaticinvoice');
         register('voximplantautomaticrecharge');
-        register('voximplantrechargerange', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
-        register('voximplantrechargepercentage', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
+        register('voximplantrechargerange', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
+        register('voximplantrechargepercentage', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
         register('voximplantrechargefixed', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('voximplantadditionalperchannel', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
+        register('voximplantadditionalperchannel', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
@@ -544,7 +544,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 >
                     <AntTab label={t(langKeys.informationorganization)} />
                     <AntTab label={t(langKeys.emailconfiguration)} />
-                    {roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
+                    {roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
                     {false && <AntTab label={t(langKeys.chatimages)} />}
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
@@ -735,7 +735,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     error={errors?.contactemail?.message}
                                 />
                             </div>
-                            {roledesc === "SUPERADMIN" &&
+                            {roledesc?.includes("SUPERADMIN") &&
                                 <>
                                     <div className="row-zyx">
                                         <FieldSelect
