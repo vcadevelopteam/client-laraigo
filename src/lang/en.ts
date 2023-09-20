@@ -3394,6 +3394,7 @@ const translation: LangKeys = {
   typecredit_60: "60 day credit",
   typecredit_90: "90 day credit",
   typecredit_7: "7 day credit",
+  typecredit_180: "180 day credit",
   app_email_inbox: "Email inbox",
   app_message_inbox: "Message inbox",
   message_inbox: "Message inbox",
