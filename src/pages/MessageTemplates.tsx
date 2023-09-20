@@ -927,7 +927,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 });
             }
         }
-    }, [register,getValues("type")]);
+    }, [register, getValues("type")]);
 
     useEffect(() => {
         console.log(errors);
@@ -1853,7 +1853,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <CodeMirror
                                                 extensions={htmlLoad}
                                                 height={"600px"}
-                                                value={getValues("body")}
+                                                value={bodyAttachment}
                                                 onChange={(value) => {
                                                     setValue("body", value || "");
                                                     setBodyAttachment(value || "");
