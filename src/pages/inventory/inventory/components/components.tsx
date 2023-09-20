@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Tooltip from '@material-ui/core/Tooltip';
 import { useDispatch } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
@@ -99,6 +99,146 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusH
                     </MenuItem>
                 }
             </Menu>
+        </div>
+    )
+}
+
+interface InventoryIconsProps {
+    currentbalance?: (param: any) => void;
+    pyshicalcount?: (param: any) => void;
+}
+
+export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({currentbalance, pyshicalcount}) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [showSubMenu, setShowSubMenu] = useState(false);
+    const menuItemRef = useRef(null);
+
+    const handleClose = (e: any) => {
+        e.stopPropagation();
+        setAnchorEl(null);
+    }
+
+    const handleMouseEnter = () => {
+        setShowSubMenu(true);
+    };
+
+    const handleCloseSubMenu = () => {
+        setShowSubMenu(false);
+    };
+
+    return (
+        <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+                onClick={(e) => {
+                    setAnchorEl(e.currentTarget);
+                    e.stopPropagation();
+                }}
+                style={{ display: 'block' }}
+            >
+                <MoreVertIcon style={{ color: '#B6B4BA' }} />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem ref={menuItemRef} onMouseEnter={handleMouseEnter}>
+                    <ListItemIcon color="inherit">
+                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    <Trans i18nKey={langKeys.inventorysettings} />
+                </MenuItem>
+                <MenuItem>
+                    <ListItemIcon color="inherit">
+                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    <Trans i18nKey={langKeys.seeproductavailability} />
+                </MenuItem>
+                <MenuItem>
+                    <ListItemIcon color="inherit">
+                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    <Trans i18nKey={langKeys.managereservations} />
+                </MenuItem>
+                <MenuItem>
+                    <ListItemIcon color="inherit">
+                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    <Trans i18nKey={langKeys.seeinventorytransactions} />
+                </MenuItem>
+            </Menu>
+            {showSubMenu && (
+                    <Menu
+                        id="submenu-appbar"
+                        anchorEl={menuItemRef.current}
+                        getContentAnchorEl={null}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        open={showSubMenu}
+                        onClose={handleCloseSubMenu}
+                    >
+                        <MenuItem onClick={(e) => {
+                            e.stopPropagation();
+                            setAnchorEl(null);
+                            currentbalance?.(e)
+                            setShowSubMenu(false);
+                        }}>
+                            <ListItemIcon color="inherit">
+                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            </ListItemIcon>
+                            <Trans i18nKey={langKeys.current_balance} />
+                        </MenuItem>
+                        <MenuItem onClick={(e) => {
+                            e.stopPropagation();
+                            setAnchorEl(null);
+                            pyshicalcount?.(e)
+                            setShowSubMenu(false);
+                        }}>
+                            <ListItemIcon color="inherit">
+                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            </ListItemIcon>
+                            <Trans i18nKey={langKeys.currentcount} />
+                        </MenuItem>
+                        <MenuItem>
+                            <ListItemIcon color="inherit">
+                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            </ListItemIcon>
+                            <Trans i18nKey={langKeys.standard_cost} />
+                        </MenuItem>
+                        <MenuItem>
+                            <ListItemIcon color="inherit">
+                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            </ListItemIcon>
+                            <Trans i18nKey={langKeys.average_cost} />
+                        </MenuItem>
+                        <MenuItem>
+                            <ListItemIcon color="inherit">
+                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            </ListItemIcon>
+                            <Trans i18nKey={langKeys.reconcilebalancesheets} />
+                        </MenuItem>
+                    </Menu>
+                )}
         </div>
     )
 }

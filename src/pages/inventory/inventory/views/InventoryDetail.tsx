@@ -17,7 +17,9 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { Tabs } from '@material-ui/core';
 import InventoryTabDetail from './detailTabs/InventoryTabDetail';
 import NewOrderTabDetail from './detailTabs/NewOrderTabDetail';
-
+import { ExtrasMenuInventory } from '../components/components';
+import AdjustCurrentBalanceDialog from '../dialogs/AdjustCurrentBalanceDialog';
+import AdjustPhysicalCountDialog from '../dialogs/AdjustPhysicalCountDialog';
 
 
 interface RowSelected {
@@ -71,6 +73,8 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const [openModalAdjust, setOpenModalAdjust] = useState(false);
+    const [openModalPhysicalCount, setOpenModalPhysicalCount] = useState(false);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.inventory) },
@@ -129,7 +133,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insWarehouse(data)));
+            //dispatch(execute(insWarehouse(data)));
 
             setWaitSave(true);
         }
@@ -139,6 +143,13 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
             callback
         }))
     });
+    function handleOpenAdjustCurrentBalanceModal() {
+        setOpenModalAdjust(true)
+    }
+    function handleOpenPhysicalCountModal() {
+        setOpenModalPhysicalCount(true)
+    }
+
     return (
         <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -175,11 +186,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             {t(langKeys.save)}
                         </Button>
                         
-                        {/*!edit && <ExtrasMenu
-                            changeStatus={()=>{setOpenModalChangeStatus(true)}}
-                            statusHistory={()=>setOpenModalStatusHistory(true)}
-                            addToWarehouse={()=>setOpenModalAddToWarehouse(true)}
-                        />*/}
+                        <ExtrasMenuInventory currentbalance={handleOpenAdjustCurrentBalanceModal} pyshicalcount={handleOpenPhysicalCountModal} />
                     </div>
 
                 </div>
@@ -215,8 +222,18 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors}/>
+                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row}/>
                 </AntTabPanel>
+                <AdjustCurrentBalanceDialog
+                    openModal={openModalAdjust}
+                    setOpenModal={setOpenModalAdjust}
+                    row={row}
+                />
+                <AdjustPhysicalCountDialog
+                    openModal={openModalPhysicalCount}
+                    setOpenModal={setOpenModalPhysicalCount}
+                    row={row}
+                />
             </form>
         </>
     );
