@@ -12,12 +12,14 @@ import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
 import { insProductAttribute } from "common/helpers";
 import { execute, resetMainAux } from "store/main/actions";
-import { FieldCheckbox } from 'components';
+import { TemplateIcons } from 'components';
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import TableZyx from "components/fields/table-simple";
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -25,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AdjustPhysicalCountDialog: React.FC<{
+const ManageReservationsDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
@@ -85,66 +87,84 @@ const submitData = handleMainSubmit((data) => {
   }))
 });
 
+const handleDelete = (data: Dictionary) => {
+  /*dispatch(execute(insProductAlternative({
+    productalternativeid: data.productalternativeid,
+    productid: data.productid,
+    productaltid: data.productid,
+    status: 'ELIMINADO',
+    type: 'NINGUNO',
+    operation: 'DELETE'
+  })))*/
+  setWaitSave(true);
+}
+
+const columns = React.useMemo(
+  () => [
+    {
+      accessor: 'productalternativeid',
+      NoFilter: true,
+      isComponent: true,
+      minWidth: 60,
+      width: '1%',
+      Cell: (props: any) => {
+          const row = props.cell.row.original;
+          return (
+              <TemplateIcons
+                  deleteFunction={() => handleDelete(row)}
+              />
+          )
+      }
+    },
+    {
+      Header: t(langKeys.ticketapplication),
+      accessor: "ticket",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.reservationtype),
+      accessor: "reservationtype",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.product),
+      accessor: "product",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.description),
+      accessor: "description",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.warehouse),
+      accessor: "warehouse",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.reservedquantity),
+      accessor: "subfamilydescription",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.applicationdate),
+      accessor: "applicationdate",
+      width: "auto",
+    }
+  ],
+  []
+);
+
   return (
-    <DialogZyx open={openModal} title={t(langKeys.adjustphysicalcount)} maxWidth="md">
-      <form onSubmit={submitData}>
+    <DialogZyx open={openModal} title={t(langKeys.managereservations)} maxWidth="lg">
       <div className="row-zyx">
-          <FieldEdit
-            label={t(langKeys.dateofphysicalcount)}
-            valueDefault={getValues('attributeid')}
-            className="col-12"
-            onChange={(value) => {setValue('attributeid', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.product)}
-            valueDefault={getValues('value')}
-            className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.warehouse)}
-            valueDefault={getValues('value')}
-            className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.shelf)}
-            valueDefault={getValues('value')}
-            className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.batch)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.physicalcount)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.newcount)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.dateofphysicalcount)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
+        <TableZyx
+          columns={columns}
+          data={[]}
+          download={false}
+          filterGeneral={false}
+          register={true}
+        />
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
         <Button
@@ -160,21 +180,9 @@ const submitData = handleMainSubmit((data) => {
         >
           {t(langKeys.back)}
         </Button>
-        <Button
-          className={classes.button}
-          variant="contained"
-          color="primary"
-          type="button"
-          startIcon={<SaveIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84" }}
-          onClick={submitData}
-        >
-          {t(langKeys.save)}
-        </Button>
       </div>
-      </form>
     </DialogZyx>
   );
 };
 
-export default AdjustPhysicalCountDialog;
+export default ManageReservationsDialog;

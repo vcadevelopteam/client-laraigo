@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AdjustPhysicalCountDialog: React.FC<{
+const AdjustStandardCostDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
@@ -86,60 +86,32 @@ const submitData = handleMainSubmit((data) => {
 });
 
   return (
-    <DialogZyx open={openModal} title={t(langKeys.adjustphysicalcount)} maxWidth="md">
+    <DialogZyx open={openModal} title={t(langKeys.adjuststandardcost)} maxWidth="md">
       <form onSubmit={submitData}>
       <div className="row-zyx">
           <FieldEdit
-            label={t(langKeys.dateofphysicalcount)}
-            valueDefault={getValues('attributeid')}
-            className="col-12"
-            onChange={(value) => {setValue('attributeid', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
             label={t(langKeys.product)}
-            valueDefault={getValues('value')}
-            className="col-4"
-            onChange={(value) => {setValue('value', value)}}
+            valueDefault={getValues('attributeid')}
+            className="col-3"
+            onChange={(value) => {setValue('attributeid', value)}}
             inputProps={{ maxLength: 256 }}
           />
           <FieldEdit
             label={t(langKeys.warehouse)}
             valueDefault={getValues('value')}
-            className="col-4"
+            className="col-3"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
           />
           <FieldEdit
-            label={t(langKeys.shelf)}
-            valueDefault={getValues('value')}
-            className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.batch)}
+            label={t(langKeys.standard_cost)}
             valueDefault={getValues('value')}
             className="col-3"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
           />
           <FieldEdit
-            label={t(langKeys.physicalcount)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.newcount)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.dateofphysicalcount)}
+            label={`${t(langKeys.new)} ${t(langKeys.standard_cost)}`}
             valueDefault={getValues('value')}
             className="col-3"
             onChange={(value) => {setValue('value', value)}}
@@ -177,4 +149,4 @@ const submitData = handleMainSubmit((data) => {
   );
 };
 
-export default AdjustPhysicalCountDialog;
+export default AdjustStandardCostDialog;

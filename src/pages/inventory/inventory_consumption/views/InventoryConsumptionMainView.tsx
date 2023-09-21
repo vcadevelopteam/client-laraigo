@@ -30,7 +30,7 @@ interface WarehouseMainViewProps {
   fetchDataAux: any;
 }
 
-const WarehouseMainView: FC<WarehouseMainViewProps> = ({
+const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
@@ -186,8 +186,8 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         },
       },
       {
-        Header: t(langKeys.warehouse),
-        accessor: "name",
+        Header: t(langKeys.inventory_consumption),
+        accessor: "inventory_consumption",
         width: "auto",
       },
       {
@@ -196,25 +196,15 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         width: "auto",
       },
       {
-        Header: t(langKeys.physicaladdress),
-        accessor: "address",
+        Header: t(langKeys.transactiontype),
+        accessor: "transactiontype",
         width: "auto",
       },
       {
-        Header: t(langKeys.phone),
-        accessor: "phone",
+        Header: t(langKeys.status),
+        accessor: "status",
         width: "auto",
-      },
-      {
-        Header: t(langKeys.latitude),
-        accessor: "latitude",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.longitude),
-        accessor: "longitude",
-        width: "auto",
-      },
+      }
     ],
     []
   );
@@ -291,7 +281,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.warehouse} />
+            <Trans i18nKey={langKeys.inventory_consumption} />
           </Title>
         </div>
       </div>
@@ -336,4 +326,4 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   );
 };
 
-export default WarehouseMainView;
+export default InventoryConsumptionMainView;

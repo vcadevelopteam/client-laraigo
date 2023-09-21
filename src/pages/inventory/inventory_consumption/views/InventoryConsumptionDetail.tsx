@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -223,4 +223,4 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
 }
 
 
-export default WarehouseDetail;
+export default InventoryConsumptionDetail;

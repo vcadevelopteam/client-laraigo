@@ -1,10 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, makeStyles } from "@material-ui/core";
-import {
-  DialogZyx,
-  FieldEdit,
-  FieldSelect,
-} from "components";
+import { Box, Button, TextField, Typography, makeStyles } from "@material-ui/core";
+import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -25,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AdjustPhysicalCountDialog: React.FC<{
+const ReconcileBalanceDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
@@ -86,65 +82,10 @@ const submitData = handleMainSubmit((data) => {
 });
 
   return (
-    <DialogZyx open={openModal} title={t(langKeys.adjustphysicalcount)} maxWidth="md">
+    <DialogZyx open={openModal} title={t(langKeys.reconcilebalancesheets)} maxWidth="sm">
       <form onSubmit={submitData}>
       <div className="row-zyx">
-          <FieldEdit
-            label={t(langKeys.dateofphysicalcount)}
-            valueDefault={getValues('attributeid')}
-            className="col-12"
-            onChange={(value) => {setValue('attributeid', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.product)}
-            valueDefault={getValues('value')}
-            className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.warehouse)}
-            valueDefault={getValues('value')}
-            className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.shelf)}
-            valueDefault={getValues('value')}
-            className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.batch)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.physicalcount)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.newcount)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.dateofphysicalcount)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
+          <Typography />{t(langKeys.reconcilebalancetext)}
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
         <Button
@@ -177,4 +118,4 @@ const submitData = handleMainSubmit((data) => {
   );
 };
 
-export default AdjustPhysicalCountDialog;
+export default ReconcileBalanceDialog;

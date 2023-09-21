@@ -20,6 +20,12 @@ import NewOrderTabDetail from './detailTabs/NewOrderTabDetail';
 import { ExtrasMenuInventory } from '../components/components';
 import AdjustCurrentBalanceDialog from '../dialogs/AdjustCurrentBalanceDialog';
 import AdjustPhysicalCountDialog from '../dialogs/AdjustPhysicalCountDialog';
+import AdjustStandardCostDialog from '../dialogs/AdjustStandardCostDialog';
+import AdjustAverageCostDialog from '../dialogs/AdjustAverageCostDialog';
+import ReconcileBalanceDialog from '../dialogs/ReconcileBalanceDialog';
+import SeeProductAvailabilityDialog from '../dialogs/SeeProductAvailabilityDialog ';
+import SeeInventoryTransactionsDialog from '../dialogs/SeeInventoryTransactionsDialog ';
+import ManageReservationsDialog from '../dialogs/ManageReservationsDialog';
 
 
 interface RowSelected {
@@ -75,6 +81,12 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const classes = useStyles();
     const [openModalAdjust, setOpenModalAdjust] = useState(false);
     const [openModalPhysicalCount, setOpenModalPhysicalCount] = useState(false);
+    const [openModalStandardCost, setOpenModalStandardCost] = useState(false);
+    const [openModalAverageCost, setOpenModalAverageCost] = useState(false);
+    const [openModalReconcileBalance, setOpenModalReconcileBalance] = useState(false);
+    const [openModalSeeProductAvailability, setOpenModalSeeProductAvailability] = useState(false);
+    const [openModalSeeInventoryTransactions, setOpenModalSeeInventoryTransactions] = useState(false);
+    const [openModalManageReservations, setOpenModalManageReservations] = useState(false);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.inventory) },
@@ -149,6 +161,24 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     function handleOpenPhysicalCountModal() {
         setOpenModalPhysicalCount(true)
     }
+    function handleOpenStandardCostModal() {
+        setOpenModalStandardCost(true)
+    }
+    function handleOpenAverageCostModal() {
+        setOpenModalAverageCost(true)
+    }
+    function handleOpenReconcileBalanceModal() {
+        setOpenModalReconcileBalance(true)
+    }
+    function handleOpenSeeProductAvailabilityModal() {
+        setOpenModalSeeProductAvailability(true)
+    }
+    function handleOpenSeeInventoryTransactionsModal() {
+        setOpenModalSeeInventoryTransactions(true)
+    }
+    function handleOpenManageReservationsModal() {
+        setOpenModalManageReservations(true)
+    }
 
     return (
         <>
@@ -186,7 +216,16 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             {t(langKeys.save)}
                         </Button>
                         
-                        <ExtrasMenuInventory currentbalance={handleOpenAdjustCurrentBalanceModal} pyshicalcount={handleOpenPhysicalCountModal} />
+                        <ExtrasMenuInventory 
+                            currentbalance={handleOpenAdjustCurrentBalanceModal}
+                            pyshicalcount={handleOpenPhysicalCountModal}
+                            standardcost={handleOpenStandardCostModal}
+                            averagecost={handleOpenAverageCostModal}
+                            reconcilebalance={handleOpenReconcileBalanceModal}
+                            seeproductavailability={handleOpenSeeProductAvailabilityModal}
+                            seeinventorytransactions={handleOpenSeeInventoryTransactionsModal}
+                            managereservations={handleOpenManageReservationsModal}
+                        />
                     </div>
 
                 </div>
@@ -232,6 +271,36 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                 <AdjustPhysicalCountDialog
                     openModal={openModalPhysicalCount}
                     setOpenModal={setOpenModalPhysicalCount}
+                    row={row}
+                />
+                <AdjustStandardCostDialog
+                    openModal={openModalStandardCost}
+                    setOpenModal={setOpenModalStandardCost}
+                    row={row}
+                />
+                <AdjustAverageCostDialog
+                    openModal={openModalAverageCost}
+                    setOpenModal={setOpenModalAverageCost}
+                    row={row}
+                />
+                <ReconcileBalanceDialog
+                    openModal={openModalReconcileBalance}
+                    setOpenModal={setOpenModalReconcileBalance}
+                    row={row}
+                />
+                <SeeProductAvailabilityDialog
+                    openModal={openModalSeeProductAvailability}
+                    setOpenModal={setOpenModalSeeProductAvailability}
+                    row={row}
+                />
+                <SeeInventoryTransactionsDialog
+                    openModal={openModalSeeInventoryTransactions}
+                    setOpenModal={setOpenModalSeeInventoryTransactions}
+                    row={row}
+                />
+                <ManageReservationsDialog
+                    openModal={openModalManageReservations}
+                    setOpenModal={setOpenModalManageReservations}
                     row={row}
                 />
             </form>

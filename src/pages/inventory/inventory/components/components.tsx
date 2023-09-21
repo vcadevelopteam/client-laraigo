@@ -106,9 +106,24 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusH
 interface InventoryIconsProps {
     currentbalance?: (param: any) => void;
     pyshicalcount?: (param: any) => void;
+    standardcost?: (param: any) => void;
+    averagecost?: (param: any) => void;
+    reconcilebalance?: (param: any) => void;
+    seeproductavailability?: (param: any) => void;
+    seeinventorytransactions?: (param: any) => void;
+    managereservations?: (param: any) => void;
 }
 
-export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({currentbalance, pyshicalcount}) => {
+export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
+    currentbalance,
+    pyshicalcount,
+    standardcost,
+    averagecost,
+    reconcilebalance,
+    seeproductavailability,
+    seeinventorytransactions,
+    managereservations
+}) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [showSubMenu, setShowSubMenu] = useState(false);
     const menuItemRef = useRef(null);
@@ -162,19 +177,31 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({currentbalan
                     </ListItemIcon>
                     <Trans i18nKey={langKeys.inventorysettings} />
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={(e) => {
+                    e.stopPropagation();
+                    setAnchorEl(null);
+                    seeproductavailability?.(e)
+                }}>
                     <ListItemIcon color="inherit">
                         <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     <Trans i18nKey={langKeys.seeproductavailability} />
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={(e) => {
+                    e.stopPropagation();
+                    setAnchorEl(null);
+                    managereservations?.(e)
+                }}>
                     <ListItemIcon color="inherit">
                         <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     <Trans i18nKey={langKeys.managereservations} />
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={(e) => {
+                    e.stopPropagation();
+                    setAnchorEl(null);
+                    seeinventorytransactions?.(e)
+                }}>
                     <ListItemIcon color="inherit">
                         <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
@@ -219,19 +246,34 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({currentbalan
                             </ListItemIcon>
                             <Trans i18nKey={langKeys.currentcount} />
                         </MenuItem>
-                        <MenuItem>
+                        <MenuItem onClick={(e) => {
+                            e.stopPropagation();
+                            setAnchorEl(null);
+                            standardcost?.(e)
+                            setShowSubMenu(false);
+                        }}>
                             <ListItemIcon color="inherit">
                                 <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                             </ListItemIcon>
                             <Trans i18nKey={langKeys.standard_cost} />
                         </MenuItem>
-                        <MenuItem>
+                        <MenuItem onClick={(e) => {
+                            e.stopPropagation();
+                            setAnchorEl(null);
+                            averagecost?.(e)
+                            setShowSubMenu(false);
+                        }}>
                             <ListItemIcon color="inherit">
                                 <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                             </ListItemIcon>
                             <Trans i18nKey={langKeys.average_cost} />
                         </MenuItem>
-                        <MenuItem>
+                        <MenuItem onClick={(e) => {
+                            e.stopPropagation();
+                            setAnchorEl(null);
+                            reconcilebalance?.(e)
+                            setShowSubMenu(false);
+                        }}>
                             <ListItemIcon color="inherit">
                                 <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                             </ListItemIcon>
