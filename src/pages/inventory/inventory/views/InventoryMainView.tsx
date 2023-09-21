@@ -23,14 +23,14 @@ import TablePaginated from "components/fields/table-paginated";
 
 const selectionKey = "warehouseid";
 
-interface WarehouseMainViewProps {
+interface InventoryMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
   fetchDataAux: any;
 }
 
-const WarehouseMainView: FC<WarehouseMainViewProps> = ({
+const InventoryMainView: FC<InventoryMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
@@ -165,7 +165,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "warehouseid",
+        accessor: "inventoryid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -186,8 +186,8 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         },
       },
       {
-        Header: t(langKeys.warehouse),
-        accessor: "name",
+        Header: t(langKeys.product),
+        accessor: "productid",
         width: "auto",
       },
       {
@@ -196,23 +196,38 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         width: "auto",
       },
       {
-        Header: t(langKeys.physicaladdress),
-        accessor: "address",
+        Header: t(langKeys.warehouse),
+        accessor: "warehouseid",
         width: "auto",
       },
       {
-        Header: t(langKeys.phone),
-        accessor: "phone",
+        Header: t(langKeys.default_shelf),
+        accessor: "rackdefault",
         width: "auto",
       },
       {
-        Header: t(langKeys.latitude),
-        accessor: "latitude",
+        Header: t(langKeys.current_balance),
+        accessor: "currentbalance",
         width: "auto",
       },
       {
-        Header: t(langKeys.longitude),
-        accessor: "longitude",
+        Header: t(langKeys.family),
+        accessor: "family",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.subfamily),
+        accessor: "subfamily",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.dispatch_unit),
+        accessor: "dispatchunit",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.status),
+        accessor: "status",
         width: "auto",
       },
     ],
@@ -291,7 +306,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.warehouse} />
+            <Trans i18nKey={langKeys.inventory} />
           </Title>
         </div>
       </div>
@@ -336,4 +351,4 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   );
 };
 
-export default WarehouseMainView;
+export default InventoryMainView;

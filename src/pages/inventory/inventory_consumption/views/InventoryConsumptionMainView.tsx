@@ -30,7 +30,7 @@ interface WarehouseMainViewProps {
   fetchDataAux: any;
 }
 
-const WarehouseMainView: FC<WarehouseMainViewProps> = ({
+const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
@@ -186,8 +186,8 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         },
       },
       {
-        Header: t(langKeys.product),
-        accessor: "name",
+        Header: t(langKeys.inventory_consumption),
+        accessor: "inventory_consumption",
         width: "auto",
       },
       {
@@ -196,40 +196,15 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         width: "auto",
       },
       {
-        Header: t(langKeys.warehouse),
-        accessor: "address",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.default_shelf),
-        accessor: "phone",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.current_balance),
-        accessor: "latitude",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.family),
-        accessor: "longitude",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.subfamily),
-        accessor: "subfamily",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.dispatch_unit),
-        accessor: "dispatchunit",
+        Header: t(langKeys.transactiontype),
+        accessor: "transactiontype",
         width: "auto",
       },
       {
         Header: t(langKeys.status),
         accessor: "status",
         width: "auto",
-      },
+      }
     ],
     []
   );
@@ -306,7 +281,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.inventory} />
+            <Trans i18nKey={langKeys.inventory_consumption} />
           </Title>
         </div>
       </div>
@@ -351,4 +326,4 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   );
 };
 
-export default WarehouseMainView;
+export default InventoryConsumptionMainView;

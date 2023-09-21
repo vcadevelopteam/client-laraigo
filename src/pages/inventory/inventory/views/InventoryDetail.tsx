@@ -15,9 +15,17 @@ import { useForm } from 'react-hook-form';
 import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
-import WarehouseTabDetail from './detailTabs/WarehouseTabDetail';
-import ProductTabDetail from './detailTabs/ProductTabDetail';
-
+import InventoryTabDetail from './detailTabs/InventoryTabDetail';
+import NewOrderTabDetail from './detailTabs/NewOrderTabDetail';
+import { ExtrasMenuInventory } from '../components/components';
+import AdjustCurrentBalanceDialog from '../dialogs/AdjustCurrentBalanceDialog';
+import AdjustPhysicalCountDialog from '../dialogs/AdjustPhysicalCountDialog';
+import AdjustStandardCostDialog from '../dialogs/AdjustStandardCostDialog';
+import AdjustAverageCostDialog from '../dialogs/AdjustAverageCostDialog';
+import ReconcileBalanceDialog from '../dialogs/ReconcileBalanceDialog';
+import SeeProductAvailabilityDialog from '../dialogs/SeeProductAvailabilityDialog ';
+import SeeInventoryTransactionsDialog from '../dialogs/SeeInventoryTransactionsDialog ';
+import ManageReservationsDialog from '../dialogs/ManageReservationsDialog';
 
 
 interface RowSelected {
@@ -64,17 +72,25 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const [openModalAdjust, setOpenModalAdjust] = useState(false);
+    const [openModalPhysicalCount, setOpenModalPhysicalCount] = useState(false);
+    const [openModalStandardCost, setOpenModalStandardCost] = useState(false);
+    const [openModalAverageCost, setOpenModalAverageCost] = useState(false);
+    const [openModalReconcileBalance, setOpenModalReconcileBalance] = useState(false);
+    const [openModalSeeProductAvailability, setOpenModalSeeProductAvailability] = useState(false);
+    const [openModalSeeInventoryTransactions, setOpenModalSeeInventoryTransactions] = useState(false);
+    const [openModalManageReservations, setOpenModalManageReservations] = useState(false);
 
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.warehouse) },
-        { id: "detail-view", name: `${t(langKeys.warehouse)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: t(langKeys.inventory) },
+        { id: "detail-view", name: `${t(langKeys.inventory)} ${t(langKeys.detail)}` },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -129,7 +145,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insWarehouse(data)));
+            //dispatch(execute(insWarehouse(data)));
 
             setWaitSave(true);
         }
@@ -139,6 +155,31 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
             callback
         }))
     });
+    function handleOpenAdjustCurrentBalanceModal() {
+        setOpenModalAdjust(true)
+    }
+    function handleOpenPhysicalCountModal() {
+        setOpenModalPhysicalCount(true)
+    }
+    function handleOpenStandardCostModal() {
+        setOpenModalStandardCost(true)
+    }
+    function handleOpenAverageCostModal() {
+        setOpenModalAverageCost(true)
+    }
+    function handleOpenReconcileBalanceModal() {
+        setOpenModalReconcileBalance(true)
+    }
+    function handleOpenSeeProductAvailabilityModal() {
+        setOpenModalSeeProductAvailability(true)
+    }
+    function handleOpenSeeInventoryTransactionsModal() {
+        setOpenModalSeeInventoryTransactions(true)
+    }
+    function handleOpenManageReservationsModal() {
+        setOpenModalManageReservations(true)
+    }
+
     return (
         <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -151,7 +192,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.warehouse)}`}
+                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.inventory)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -175,11 +216,16 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             {t(langKeys.save)}
                         </Button>
                         
-                        {/*!edit && <ExtrasMenu
-                            changeStatus={()=>{setOpenModalChangeStatus(true)}}
-                            statusHistory={()=>setOpenModalStatusHistory(true)}
-                            addToWarehouse={()=>setOpenModalAddToWarehouse(true)}
-                        />*/}
+                        <ExtrasMenuInventory 
+                            currentbalance={handleOpenAdjustCurrentBalanceModal}
+                            pyshicalcount={handleOpenPhysicalCountModal}
+                            standardcost={handleOpenStandardCostModal}
+                            averagecost={handleOpenAverageCostModal}
+                            reconcilebalance={handleOpenReconcileBalanceModal}
+                            seeproductavailability={handleOpenSeeProductAvailabilityModal}
+                            seeinventorytransactions={handleOpenSeeInventoryTransactionsModal}
+                            managereservations={handleOpenManageReservationsModal}
+                        />
                     </div>
 
                 </div>
@@ -194,20 +240,20 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.warehouses} />
+                                <Trans i18nKey={langKeys.inventory} />
                             </div>
                         )}
                     />
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product_plural}/>
+                                <Trans i18nKey={langKeys.newordersdetail}/>
                             </div>
                         )}
                     />
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <WarehouseTabDetail
+                    <InventoryTabDetail
                         row={row}
                         setValue={setValue}
                         getValues={getValues}
@@ -215,12 +261,52 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ProductTabDetail fetchdata={fetchWarehouseProducts}/>
+                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row}/>
                 </AntTabPanel>
+                <AdjustCurrentBalanceDialog
+                    openModal={openModalAdjust}
+                    setOpenModal={setOpenModalAdjust}
+                    row={row}
+                />
+                <AdjustPhysicalCountDialog
+                    openModal={openModalPhysicalCount}
+                    setOpenModal={setOpenModalPhysicalCount}
+                    row={row}
+                />
+                <AdjustStandardCostDialog
+                    openModal={openModalStandardCost}
+                    setOpenModal={setOpenModalStandardCost}
+                    row={row}
+                />
+                <AdjustAverageCostDialog
+                    openModal={openModalAverageCost}
+                    setOpenModal={setOpenModalAverageCost}
+                    row={row}
+                />
+                <ReconcileBalanceDialog
+                    openModal={openModalReconcileBalance}
+                    setOpenModal={setOpenModalReconcileBalance}
+                    row={row}
+                />
+                <SeeProductAvailabilityDialog
+                    openModal={openModalSeeProductAvailability}
+                    setOpenModal={setOpenModalSeeProductAvailability}
+                    row={row}
+                />
+                <SeeInventoryTransactionsDialog
+                    openModal={openModalSeeInventoryTransactions}
+                    setOpenModal={setOpenModalSeeInventoryTransactions}
+                    row={row}
+                />
+                <ManageReservationsDialog
+                    openModal={openModalManageReservations}
+                    setOpenModal={setOpenModalManageReservations}
+                    row={row}
+                />
             </form>
         </>
     );
 }
 
 
-export default WarehouseDetail;
+export default InventoryDetail;

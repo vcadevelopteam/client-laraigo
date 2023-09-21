@@ -2,11 +2,11 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getPaginatedWarehouse } from "common/helpers";
+import { getPaginatedInventory, getPaginatedWarehouse } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, resetAllMain } from "store/main/actions";
-import WarehouseMainView from "./views/WarehouseMainView";
-import WarehouseDetail from "./views/WarehouseDetail";
+import InventoryMainView from "./views/InventoryMainView";
+import InventoryDetail from "./views/InventoryDetail";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -41,7 +41,7 @@ const Inventory: FC = () => {
     setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
     dispatch(
       getCollectionPaginated(
-        getPaginatedWarehouse({
+        getPaginatedInventory({
           startdate: daterange?.startDate || null,
           enddate: daterange?.endDate || null,
           take: pageSize,
@@ -67,7 +67,7 @@ const Inventory: FC = () => {
       return <h1>ERROR</h1>;
     }
     return (
-      <WarehouseMainView
+      <InventoryMainView
         setViewSelected={setViewSelected}
         setRowSelected={setRowSelected}
         fetchData={fetchData}
@@ -76,7 +76,7 @@ const Inventory: FC = () => {
     );
   } else
     return (
-      <WarehouseDetail
+      <InventoryDetail
         data={rowSelected}
         setViewSelected={redirectFunc}
         fetchData={fetchData}
