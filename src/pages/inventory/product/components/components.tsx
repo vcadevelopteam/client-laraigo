@@ -20,12 +20,11 @@ interface TemplateIconsProps {
     changeStatus?: (param: any) => void;
     statusHistory?: (param: any) => void;
     addToWarehouse?: (param: any) => void;
+    showattachments?: (param: any) => void;
     extraOption?: string;
-    ExtraICon?: () => JSX.Element;
-    extraFunction?: (param: any) => void;
 }
 
-export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusHistory, addToWarehouse, extraFunction, ExtraICon }) => {
+export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusHistory, addToWarehouse, showattachments }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = (e: any) => {
         e.stopPropagation();
@@ -96,6 +95,18 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusH
                             <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         <Trans i18nKey={langKeys.add_product_to_warehouse} />
+                    </MenuItem>
+                }
+                {showattachments &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        showattachments?.(e)
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        <Trans i18nKey={langKeys.showattachments} />
                     </MenuItem>
                 }
             </Menu>
@@ -192,3 +203,22 @@ export const UploaderIcon: React.FC<{ classes: any, setFiles: (param: any) => vo
         </>
     )
 }
+
+
+export const ItemFileShow: React.FC<{ item: IFile}> = ({ item }) => (
+    <div style={{ position: 'relative' }}>
+        <div>{item?.url?.split("/")?.pop()?.replace("%20"," ")}</div>
+        <div key={item.id} style={{ width: 70, height: 70, border: '1px solid #e1e1e1', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: "pointer" }}
+            onClick={()=>{
+                window.open(item?.url, '_blank');
+            }}
+        >
+            {item.url ?
+                (item.type === 'image' ?
+                    <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%', maxHeight: 70 }} /> :
+                    <img width="30" height="30" alt="loaded" src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/1631292621392file-trans.png" />) :
+                <CircularProgress color="inherit" />
+            }
+        </div>
+    </div>
+)

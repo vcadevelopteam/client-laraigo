@@ -114,6 +114,7 @@ const SecurityRules = lazy(() => import('pages/SecurityRules'));
 const PostCreator = lazy(() => import('pages/PostCreator'));
 const ProductMaster = lazy(() => import('pages/inventory/product/ProductMaster'));
 const Warehouse = lazy(() => import('pages/inventory/warehouse/Warehouse'));
+const Company = lazy(() => import('pages/inventory/company/Company'));
 const Inventory = lazy(() => import('pages/inventory/inventory/Inventory'));
 const InventoryConsumption = lazy(() => import('pages/inventory/inventory_consumption/InventoryConsumption'));
 
@@ -339,6 +340,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.IACONFIGURATION} component={() => (<Layout mainClasses={classes.main}><IAConfiguration /></Layout>)} />
 					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
 					<ProtectRoute exact path={paths.INVENTORY} component={() => (<Layout mainClasses={classes.main}><Inventory /></Layout>)} />
+					<ProtectRoute exact path={paths.COMPANIES} component={() => (<Layout mainClasses={classes.main}><Company /></Layout>)} />
 					<ProtectRoute exact path={paths.INVENTORYCONSUMPTION} component={() => (<Layout mainClasses={classes.main}><InventoryConsumption /></Layout>)} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />

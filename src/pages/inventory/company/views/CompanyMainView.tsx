@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
-import ChangeStatusDialog from "../dialogs/ChangeStatusDialog";
 import { Trans, useTranslation } from "react-i18next";
 import {
   TemplateIcons,
   Title,
 } from "components";
 import { langKeys } from "lang/keys";
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import { DuplicateIcon } from "icons";
-import { makeStyles } from "@material-ui/core/styles";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
 import { execute, exportData } from "store/main/actions";
@@ -17,40 +16,21 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { duplicateProduct, getProductsExport, insProduct } from "common/helpers";
+import { exportExcel, getCompanyExport, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
-import BackupIcon from "@material-ui/icons/Backup";
 import TablePaginated from "components/fields/table-paginated";
-import TemplateImportDialog from "../dialogs/TemplateImportDialog";
-import ImportDialog from "../dialogs/ImportDialog";
 
-const selectionKey = "productid";
+const selectionKey = "warehouseid";
 
-interface ProductMasterMainViewProps {
+interface CompanyMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
   fetchDataAux: any;
 }
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    marginRight: theme.spacing(2),
-  },
-  containerHeader: {
-    padding: theme.spacing(1),
-  },
-  itemDate: {
-    minHeight: 40,
-    height: 40,
-    border: "1px solid #bfbfc0",
-    borderRadius: 4,
-    color: "rgb(143, 146, 161)",
-  },
-}));
-
-const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
+const CompanyMainView: FC<CompanyMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
@@ -58,22 +38,18 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const classes = useStyles();
 
   const executeResult = useSelector((state) => state.main.execute);
-  const mainPaginated = useSelector((state) => state.main.mainPaginated);
   const [waitSave, setWaitSave] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [cleanSelected, setCleanSelected] = useState(false);
+  const mainPaginated = useSelector((state) => state.main.mainPaginated);
   const [totalrow, settotalrow] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
-  const [openModalImport, setOpenModalImport] = useState(false);
-  const [openModalTemplate, setOpenModalTemplate] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
-  const [waitDuplicate, setWaitDuplicate] = useState(false);
-  const [rowToDuplicate, setRowToDuplicate] = useState<any>(null);
   const resExportData = useSelector(state => state.main.exportData);
+  const [waitUpload, setWaitUpload] = useState(false);  
+  const importRes = useSelector((state) => state.main.execute);
 
   const handleRegister = () => {
     setViewSelected("detail-view");
@@ -85,16 +61,41 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     setRowSelected({ row, edit: true, duplicated: false });
   };
   const handleDuplicate = (row: Dictionary) => {
-    setRowToDuplicate(row);
-    dispatch(execute(duplicateProduct(row)))
-    setWaitDuplicate(true)
-    dispatch(showBackdrop(true));
+    setViewSelected("detail-view");
+    setRowSelected({ row:{...row, name:""}, edit: false, duplicated: true });
   };
+
+  useEffect(() => {
+    if (waitUpload) {
+      if (!importRes.loading && !importRes.error) {
+        dispatch(
+          showSnackbar({
+            show: true,
+            severity: "success",
+            message: t(langKeys.successful_import),
+          })
+        );
+        dispatch(showBackdrop(false));
+        setWaitUpload(false);
+        fetchData(fetchDataAux);
+      } else if (importRes.error) {
+        dispatch(
+          showSnackbar({
+            show: true,
+            severity: "error",
+            message: t(importRes.code || "error_unexpected_error"),
+          })
+        );
+        dispatch(showBackdrop(false));
+        setWaitUpload(false);
+      }
+    }
+  }, [importRes, waitUpload]);
 
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
-        execute(insProduct({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+        execute(insWarehouse({ ...row, operation: "DELETE", status: "ELIMINADO" }))
       );
       dispatch(showBackdrop(true));
       setWaitSave(true);
@@ -108,6 +109,21 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
       })
     );
   };
+
+  useEffect(() => {
+    if (waitExport) {
+        if (!resExportData.loading && !resExportData.error) {
+            dispatch(showBackdrop(false));
+            setWaitExport(false);
+            resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+        } else if (resExportData.error) {
+            const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+            dispatch(showBackdrop(false));
+            setWaitExport(false);
+        }
+    }
+}, [resExportData, waitExport]);
 
   useEffect(() => {
     if (!mainPaginated.loading && !mainPaginated.error) {
@@ -146,38 +162,10 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     }
   }, [executeResult, waitSave]);
 
-  useEffect(() => {
-    if (waitDuplicate) {
-      if (!executeResult.loading && !executeResult.error) {
-        dispatch(
-          showSnackbar({
-            show: true,
-            severity: "success",
-            message: t(langKeys.satisfactoryduplication),
-          })
-        );
-        fetchData(fetchDataAux);
-        dispatch(showBackdrop(false));
-        setWaitDuplicate(false);
-        setRowSelected({ row: {...rowToDuplicate,productid: executeResult.data[0].p_tableid}, edit: true, duplicated: true });
-        setViewSelected("detail-view");
-      } else if (executeResult.error) {
-        const errormessage = t(executeResult.code || "error_unexpected_error", {
-          module: t(langKeys.domain).toLocaleLowerCase(),
-        });
-        dispatch(
-          showSnackbar({ show: true, severity: "error", message: errormessage })
-        );
-        dispatch(showBackdrop(false));
-        setWaitDuplicate(false);
-      }
-    }
-  }, [executeResult, waitDuplicate]);
-
   const columns = React.useMemo(
     () => [
       {
-        accessor: "domainid",
+        accessor: "manufacturerid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -189,15 +177,17 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
               deleteFunction={() => handleDelete(row)}
               editFunction={() => handleEdit(row)}
               extraFunction={() => handleDuplicate(row)}
+              ExtraICon={() => (
+                <DuplicateIcon width={28} style={{ fill: "#7721AD" }} />
+              )}
               extraOption={t(langKeys.duplicate)}
-              ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
             />
           );
         },
       },
       {
-        Header: t(langKeys.product),
-        accessor: "productcode",
+        Header: t(langKeys.company),
+        accessor: "name",
         width: "auto",
       },
       {
@@ -207,59 +197,34 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
       },
       {
         Header: t(langKeys.type),
-        accessor: "producttype",
+        accessor: "address",
         width: "auto",
       },
       {
-        Header: t(langKeys.family),
-        accessor: "familydescription",
+        Header: `N° ${t(langKeys.client)}`,
+        accessor: "phone",
         width: "auto",
       },
       {
-        Header: t(langKeys.subfamily),
-        accessor: "subfamilydescription",
+        Header: t(langKeys.homepage),
+        accessor: "latitude",
         width: "auto",
       },
       {
-        Header: t(langKeys.purchase_unit),
-        accessor: "unitbuydescription",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.dispatch_unit),
-        accessor: "unitdispacthdescription",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.status),
-        accessor: "status",
+        Header: t(langKeys.currency),
+        accessor: "longitude",
         width: "auto",
       },
     ],
     []
   );
-    
-  useEffect(() => {
-      if (waitExport) {
-          if (!resExportData.loading && !resExportData.error) {
-              dispatch(showBackdrop(false));
-              setWaitExport(false);
-              resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
-          } else if (resExportData.error) {
-              const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-              dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-              dispatch(showBackdrop(false));
-              setWaitExport(false);
-          }
-      }
-  }, [resExportData, waitExport]);
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
     const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
         key: x.accessor,
         alias: x.Header
     }))
-    dispatch(exportData(getProductsExport({
+    dispatch(exportData(getCompanyExport({
         filters: {
             ...filters,
         },
@@ -269,6 +234,41 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     }), "", "excel", false, columnsExport));
     dispatch(showBackdrop(true));
     setWaitExport(true);
+  };
+
+  const handleUpload = async (files: any) => {
+    const file = files?.item(0);
+    if (file) {
+      const data: any = await uploadExcel(file, undefined);
+      if (data.length > 0) {
+        let dataToSend = data.map((x: any) => ({
+          ...x,
+          warehouseid: 0,
+          operation: "INSERT",
+          type: "NINGUNO",
+          status: "ACTIVO",
+        }));
+        dispatch(showBackdrop(true));
+        dispatch(execute(importWarehouse(dataToSend)));
+        setWaitUpload(true);
+      }
+    }
+  };
+
+  const handleTemplateWarehouse = () => {
+    const data = [{}, {}, {}, {}, {}, {}];
+    const header = [
+      "name",
+      "description",
+      "address",
+      "phone",
+      "latitude",
+      "longitude",
+    ];
+    exportExcel(
+      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
+      templateMaker(data, header)
+    );
   };
 
   return (
@@ -291,7 +291,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.productMaster} />
+            <Trans i18nKey={langKeys.company_plural} />
           </Title>
         </div>
       </div>
@@ -318,63 +318,22 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
         register={true}
+        importCSV={handleUpload}
         ButtonsElement={() => (
-          <div
-            className={classes.containerHeader}
-            style={{
-              display: "flex",
-              gap: 8,
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-            }}
+          <Button
+              variant="contained"
+              color="primary"
+              disabled={mainPaginated.loading}
+              startIcon={<ListAltIcon color="secondary" />}
+              onClick={handleTemplateWarehouse}
+              style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
           >
-            <div style={{ display: "flex", gap: 8 }}>
-              <div>
-                <Button
-                  className={classes.button}
-                  variant="contained"
-                  component="span"
-                  color="primary"
-                  onClick={() => setOpenModalImport(true)}
-                  startIcon={<BackupIcon color="secondary" />}
-                  style={{ backgroundColor: "#55BD84" }}
-                >
-                  <Trans i18nKey={langKeys.import} />
-                </Button>
-              </div>
-              <div>
-                <Button
-                  className={classes.button}
-                  variant="contained"
-                  component="span"
-                  color="primary"
-                  onClick={() => setOpenModalTemplate(true)}
-                  style={{ backgroundColor: "#55BD84" }}
-                >
-                  <Trans i18nKey={langKeys.template} />
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-      />
-      <TemplateImportDialog 
-        openModal={openModalTemplate}
-        setOpenModal={setOpenModalTemplate}
-      />
-      <ImportDialog 
-        openModal={openModalImport}
-        setOpenModal={setOpenModalImport}
-        fetchData={fetchData}
-        fetchDataAux={fetchDataAux}
-      />
-      <ChangeStatusDialog
-        openModal={openModalChangeStatus}
-        setOpenModal={setOpenModalChangeStatus}
-        massive={true}
+              <Trans i18nKey={langKeys.template} />
+          </Button>
+      )}
       />
     </div>
   );
 };
 
-export default ProductMasterMainView;
+export default CompanyMainView;

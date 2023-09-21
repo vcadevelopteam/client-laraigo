@@ -4208,7 +4208,7 @@ export const getPaginatedWarehouse = ({ skip, take, filters, sorts, startdate, e
         take,
         filters,
         sorts,
-        origin: "product",
+        origin: "warehouse",
         warehouseid: 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -4305,4 +4305,47 @@ export const importWarehouse = (data:any): IRequestBody => ({
     parameters: {
         json: JSON.stringify(data)
     }
+});
+
+export const getPaginatedCompanies = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MANUFACTURER_PAG",
+    methodCount: "UFN_MANUFACTURER_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "product",
+        manufacturerid: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getCompanyExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_MANUFACTURER_EXPORT",
+    key: "UFN_MANUFACTURER_EXPORT",
+    parameters: {
+        origin: "product",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const duplicateProduct = ({ productid }: Dictionary): IRequestBody => ({
+    method: "UFN_PRODUCT_DUP",
+    key: "UFN_PRODUCT_DUP",
+    parameters: {
+        productid,
+        operation: "DUPLICATE"
+    }
+});
+
+export const insCompany = ({ manufacturerid,description, status,type,descriptionlarge,clientenumbers,beginpage,currencyid,taxeid,ispaymentdelivery,typemanufacterid,taxecodes,operation  }: Dictionary) => ({
+    method: "UFN_MANUFACTURER_INS",
+    key: "UFN_MANUFACTURER_INS",
+    parameters: {  manufacturerid,description, status,type,descriptionlarge,clientenumbers,beginpage,currencyid,taxeid,ispaymentdelivery,typemanufacterid,taxecodes,operation  },
 });

@@ -39,7 +39,6 @@ const ImportDialog: React.FC<{
           productid: 0,
           operation: "INSERT",
           type: "NINGUNO",
-          status: "ACTIVO",
         }));
         dispatch(showBackdrop(true));
         dispatch(execute(importProducts(dataToSend)));

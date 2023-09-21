@@ -20,6 +20,7 @@ import { exportExcel, getWarehouseExport, importWarehouse, insWarehouse, templat
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
+import { type } from 'os';
 
 const selectionKey = "warehouseid";
 
@@ -53,16 +54,16 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
 
   const handleRegister = () => {
     setViewSelected("detail-view");
-    setRowSelected({ row: null, edit: false });
+    setRowSelected({ row: null, edit: false, duplicated: false });
   };
 
   const handleEdit = (row: Dictionary) => {
     setViewSelected("detail-view");
-    setRowSelected({ row, edit: true });
+    setRowSelected({ row, edit: true, duplicated: false });
   };
   const handleDuplicate = (row: Dictionary) => {
     setViewSelected("detail-view");
-    setRowSelected({ row, edit: false });
+    setRowSelected({ row, edit: false, duplicated: true });
   };
 
   useEffect(() => {
@@ -209,11 +210,13 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         Header: t(langKeys.latitude),
         accessor: "latitude",
         width: "auto",
+        type:'number'
       },
       {
         Header: t(langKeys.longitude),
         accessor: "longitude",
         width: "auto",
+        type:'number'
       },
     ],
     []

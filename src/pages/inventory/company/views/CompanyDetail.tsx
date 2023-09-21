@@ -7,17 +7,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getWarehouseProducts, insWarehouse } from 'common/helpers';
+import { getWarehouseProducts, insCompany, insWarehouse } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Tabs } from '@material-ui/core';
-import WarehouseTabDetail from './detailTabs/WarehouseTabDetail';
-import ProductTabDetail from './detailTabs/ProductTabDetail';
-
+import CompanyTabDetail from './detailTabs/CompanyTabDetail';
 interface RowSelected {
     row: Dictionary | null;
     edit: boolean;
@@ -63,10 +60,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated }, setViewSelected, fetchData, fetchDataAux }) => {
+const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [tabIndex, setTabIndex] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
@@ -74,30 +70,26 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
         dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.satisfactoryduplication) }))
     }
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.warehouse) },
-        { id: "detail-view", name: `${t(langKeys.warehouse)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: t(langKeys.company) },
+        { id: "detail-view", name: `${t(langKeys.company)} ${t(langKeys.detail)}` },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            warehouseid: row?.warehouseid || 0,
+            manufacturerid: row?.manufacturerid || 0,
             operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || '',
-            name: row?.name || '',
             description: row?.description || '',
-            address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            status: row?.status || 'ACTIVO'
+            status: row?.status || 'ACTIVO',
+            type: row?.type || 'NINGUNO',
+            descriptionlarge: row?.descriptionlarge || '',
+            clientenumbers: row?.clientenumbers || '',
+            beginpage: row?.beginpage || '',
+            currencyid: row?.currencyid || 0,
+            taxeid: row?.taxeid || 0,
+            ispaymentdelivery: row?.ispaymentdelivery || false,
+            typemanufacterid: row?.typemanufacterid || 0,
         }
     });
-
-    const fetchWarehouseProducts = () => {
-        dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
-        );
-    }
 
     useEffect(() => {
         if (waitSave) {
@@ -116,13 +108,14 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register('warehouseid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('manufacturerid');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
+        register('descriptionlarge');
+        register('clientenumbers', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('beginpage', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('currencyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('taxeid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('typemanufacterid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
 
         dispatch(resetMainAux());
     }, [register]);
@@ -130,7 +123,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insWarehouse(data)));
+            dispatch(execute(insCompany(data)));
 
             setWaitSave(true);
         }
@@ -173,7 +166,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.warehouse)}`}
+                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.company)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -205,46 +198,16 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
                     </div>
 
                 </div>
-                <Tabs
-                    value={tabIndex}
-                    onChange={(_:any, i:any) => setTabIndex(i)}
-                    className={classes.tabs}
-                    textColor="primary"
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                >
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.warehouses} />
-                            </div>
-                        )}
-                    />
-                    {edit &&
-                        <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product_plural}/>
-                            </div>
-                        )}
-                    />}
-                </Tabs>
-                <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <WarehouseTabDetail
-                        row={row}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                    />
-                </AntTabPanel>
-                {edit &&
-                <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ProductTabDetail fetchdata={fetchWarehouseProducts}/>
-                </AntTabPanel>}
+                <CompanyTabDetail
+                    row={row}
+                    setValue={setValue}
+                    getValues={getValues}
+                    errors={errors}
+                />
             </form>
         </>
     );
 }
 
 
-export default WarehouseDetail;
+export default CompanyDetail;
