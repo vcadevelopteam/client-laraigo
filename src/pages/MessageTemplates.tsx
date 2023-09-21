@@ -802,34 +802,29 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
 
     React.useEffect(() => {
-        unregister("body")
-        unregister("name")
-        unregister("namespace")
-        unregister("header")
-        unregister("footer")
-        register("header")
-        register("footer")
+        register("body");
+        register("category");
         register("communicationchannelid");
         register("communicationchanneltype");
         register("exampleparameters");
         register("externalid");
         register("externalstatus");
+        register("footer");
         register("fromprovider");
+        register("header");
         register("integrationid");
-        register("servicecredentials");
-        register("typeattachment");
-        register("body");
-        register("category");
         register("language");
         register("name");
         register("namespace");
+        register("servicecredentials");
         register("templatetype");
         register("type");
-        let type = getValues("type") || "HSM"
-        console.log(type)
+        register("typeattachment");
+
+        let type = getValues("type") || "HSM";
+
         switch (type) {
             case "HSM":
-                setValue("body", "");
                 register("body", {
                     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
                 });
@@ -853,10 +848,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setTemplateTypeDisabled(false);
                 onChangeTemplateMedia();
                 break;
+
             case "MAIL":
             case "HTML":
-                setValue("body", "");
-                setValue("namespace", "");
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
@@ -915,9 +909,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
             if (getValues("type") === "SMS") {
                 register("body", {
-                    validate: (value) => (value && (value).length <= 160) || "" + t(langKeys.validationchar),
+                    validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
                 });
-
             } else {
                 register("body", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -1023,7 +1016,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }, [waitUploadFile, uploadResult]);
 
     const onSubmit = handleSubmit((data) => {
-        debugger
+        debugger;
         if (data.type === "MAIL") {
             data.body = renderToString(toElement(bodyObject));
             if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
@@ -1115,7 +1108,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     useEffect(() => {
         if (row) {
             if (row.fromprovider && row.communicationchanneltype) {
-                setDisableNamespace(row.communicationchanneltype === "WHAT" ? false : true);
+                setDisableNamespace(row.communicationchanneltype !== "WHAT");
             } else {
                 setDisableNamespace(false);
             }
@@ -1135,23 +1128,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue("externalid", "");
         setValue("externalstatus", "");
         setValue("fromprovider", false);
-        setValue("fromprovider", false);
         setValue("integrationid", "");
         setValue("servicecredentials", "");
+        setValue("type", data?.value || "");
 
+        trigger("body");
+        trigger("category");
         trigger("communicationchannelid");
         trigger("communicationchanneltype");
         trigger("exampleparameters");
         trigger("externalid");
         trigger("externalstatus");
+        trigger("footer");
         trigger("fromprovider");
-        trigger("fromprovider");
+        trigger("header");
         trigger("integrationid");
+        trigger("language");
+        trigger("name");
+        trigger("namespace");
         trigger("servicecredentials");
-
-        setValue("type", data?.value || "");
-
+        trigger("templatetype");
         trigger("type");
+        trigger("typeattachment");
     };
 
     const onChangeTemplateMedia = async () => {
@@ -1171,13 +1169,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             register("footer");
         }
 
-        await trigger("footer");
-        await trigger("header");
+        trigger("footer");
+        trigger("footerenabled");
+        trigger("header");
+        trigger("headerenabled");
     };
 
     const onChangeTemplateType = async (data: Dictionary) => {
         setValue("templatetype", data?.value || "");
-        await trigger("templatetype");
+
+        trigger("templatetype");
     };
 
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
@@ -1187,8 +1188,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("headerenabled", !getValues("headerenabled"));
         }
 
-        await trigger("headerenabled");
-        await trigger("header");
+        trigger("headerenabled");
+        trigger("header");
 
         await onChangeTemplateMedia();
     };
@@ -1200,8 +1201,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("footerenabled", !getValues("footerenabled"));
         }
 
-        await trigger("footerenabled");
-        await trigger("footer");
+        trigger("footerenabled");
+        trigger("footer");
 
         await onChangeTemplateMedia();
     };
@@ -1213,12 +1214,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("buttonsenabled", !getValues("buttonsenabled"));
         }
 
-        await trigger("buttonsenabled");
+        trigger("buttonsenabled");
     };
 
     const onChangeHeaderType = async (data: Dictionary) => {
         setValue("headertype", data?.value || "");
-        await trigger("headertype");
+
+        trigger("headertype");
     };
 
     const onChangeButton = (index: number, param: string, value: string) => {
@@ -1230,7 +1232,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("buttons", [...getValues("buttons"), { title: "", type: "", payload: "" }]);
         }
 
-        await trigger("buttons");
+        trigger("buttons");
     };
 
     const onClickRemoveButton = async () => {
@@ -1244,7 +1246,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             );
         }
 
-        await trigger("buttons");
+        trigger("buttons");
     };
 
     const onClickAttachment = useCallback(() => {
@@ -1299,7 +1301,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 .join(",")
         );
 
-        await trigger("attachment");
+        trigger("attachment");
     };
 
     const changeProvider = async (value: any) => {
@@ -1315,7 +1317,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("exampleparameters", "");
             setValue("externalid", "");
             setValue("externalstatus", "PENDING");
-            setValue("fromprovider", true);
             setValue("fromprovider", true);
             setValue("integrationid", value.integrationid);
             setValue("servicecredentials", value.servicecredentials);
@@ -1335,22 +1336,30 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("externalid", "");
             setValue("externalstatus", "NONE");
             setValue("fromprovider", false);
-            setValue("fromprovider", false);
             setValue("integrationid", "");
             setValue("servicecredentials", "");
 
             setDisableNamespace(false);
         }
 
+        trigger("body");
+        trigger("category");
         trigger("communicationchannelid");
         trigger("communicationchanneltype");
         trigger("exampleparameters");
         trigger("externalid");
         trigger("externalstatus");
+        trigger("footer");
         trigger("fromprovider");
-        trigger("fromprovider");
+        trigger("header");
         trigger("integrationid");
+        trigger("language");
+        trigger("name");
+        trigger("namespace");
         trigger("servicecredentials");
+        trigger("templatetype");
+        trigger("type");
+        trigger("typeattachment");
     };
 
     return (

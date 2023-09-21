@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     badge: {
         paddingRight: "0.6em",
         paddingLeft: "0.6em",
-        borderRadius: "10rem",        
+        borderRadius: "10rem",
         display: "inline-block",
         padding: "0.25em 0.4em",
         fontSize: "75%",
@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
         color: "#fff",
         backgroundColor: "#fb5f5f",
     },
-    
+
 }));
 
 interface DetailProps {
@@ -219,7 +219,7 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const [waitsave, setwaitsave] = useState(false);
     const [passwordConditions, setpasswordConditions] = useState({
-        samepassword:false,
+        samepassword: false,
         mincharacters: false,
         maxcharacters: false,
         consecutivecharacters: false,
@@ -229,11 +229,11 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
         specialcharacters: false,
     });
     const dataFieldSelect = [
-        {name: "Empieza", value: "01"},
-        {name: "Incluye", value: "02"},
-        {name: "Más de 1", value: "03"},
-        {name: "No Considera", value: "04"},
-        {name: "Termina", value: "05"},
+        { name: "Empieza", value: "01" },
+        { name: "Incluye", value: "02" },
+        { name: "Más de 1", value: "03" },
+        { name: "No Considera", value: "04" },
+        { name: "Termina", value: "05" },
     ]
     const resSetting = useSelector(state => state.setting.setting);
     const securityRules = useSelector(state => state.main.mainData);
@@ -272,7 +272,7 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
     }, [resSetting])
 
     const onSubmit = handleSubmit((data) => {
-        if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
+        if (!!Object.values(passwordConditions).reduce((acc, x) => acc * (+ x), 1)) {
             const callback = () => {
                 setwaitsave(true)
                 dispatch(updateUserSettings(data))
@@ -282,7 +282,7 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                 question: t(langKeys.confirmation_changepassword),
                 callback
             }))
-        }else{
+        } else {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_password) }));
         }
     });
@@ -356,15 +356,16 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                         valueDefault={getValues('password')}
                         type={showPassword ? 'text' : 'password'}
                         onChange={(value) => {
-                            setpasswordConditions({...passwordConditions,
-                                samepassword:getValues("confirmpassword")===value,
-                                mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
-                                maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-                                consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
-                                lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
-                                uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
-                                numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
-                                specialcharacters: validateDomainCharactersSpecials(value, securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+                            setpasswordConditions({
+                                ...passwordConditions,
+                                samepassword: getValues("confirmpassword") === value,
+                                mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
+                                maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
+                                consecutivecharacters: validateNumbersEqualsConsecutive(value, securityRules?.data?.[0]?.numequalconsecutivecharacterspwd || securityRules?.data?.[0]?.maxcharacterspwd || 0),
+                                lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd || "04"),
+                                uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd || "04"),
+                                numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd || "04"),
+                                specialcharacters: validateDomainCharactersSpecials(value, securityRules?.data?.[0]?.specialcharacterspwd || "04"),
                             })
                             setValue('password', value)
                         }}
@@ -374,7 +375,7 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                                 <InputAdornment position="end">
                                     <IconButton
                                         aria-label="toggle password visibility"
-                                        onClick={() => {setShowPassword(!showPassword)}}
+                                        onClick={() => { setShowPassword(!showPassword) }}
                                         edge="end"
                                     >
                                         {showPassword ? <Visibility /> : <VisibilityOff />}
@@ -389,7 +390,7 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                         valueDefault={getValues('confirmpassword')}
                         type={showConfirmPassword ? 'text' : 'password'}
                         onChange={(value) => {
-                            setpasswordConditions({...passwordConditions,samepassword:getValues("password")===value})
+                            setpasswordConditions({ ...passwordConditions, samepassword: getValues("password") === value })
                             setValue('confirmpassword', value)
                         }}
                         error={errors?.confirmpassword?.message}
@@ -412,7 +413,7 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                     <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond1)}</span><span className={clsx(classes.badge, {
                         [classes.badgeSuccess]: passwordConditions.samepassword,
                         [classes.badgeFailure]: !passwordConditions.samepassword,
-                    })}>{passwordConditions.samepassword?t(langKeys.yes):t(langKeys.no)}</span></div>
+                    })}>{passwordConditions.samepassword ? t(langKeys.yes) : t(langKeys.no)}</span></div>
                     {!!securityRules?.data?.[0]?.mincharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond2)}</span><span className={clsx(classes.badge, {
                         [classes.badgeSuccess]: passwordConditions.mincharacters,
                         [classes.badgeFailure]: !passwordConditions.mincharacters,
@@ -425,22 +426,22 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                         [classes.badgeSuccess]: passwordConditions.consecutivecharacters,
                         [classes.badgeFailure]: !passwordConditions.consecutivecharacters,
                     })}>{securityRules?.data?.[0]?.numequalconsecutivecharacterspwd}</span></div>}
-                    {(securityRules?.data?.[0]?.lowercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
+                    {(securityRules?.data?.[0]?.lowercaseletterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
                         [classes.badgeSuccess]: passwordConditions.lowercaseletters,
                         [classes.badgeFailure]: !passwordConditions.lowercaseletters,
-                    })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.lowercaseletterspwd||"04"))[0].name}</span></div>}
-                    {(securityRules?.data?.[0]?.uppercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
+                    })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.lowercaseletterspwd || "04"))[0].name}</span></div>}
+                    {(securityRules?.data?.[0]?.uppercaseletterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
                         [classes.badgeSuccess]: passwordConditions.uppercaseletters,
                         [classes.badgeFailure]: !passwordConditions.uppercaseletters,
-                    })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.uppercaseletterspwd||"04"))[0].name}</span></div>}
-                    {(securityRules?.data?.[0]?.numericalcharacterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
+                    })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.uppercaseletterspwd || "04"))[0].name}</span></div>}
+                    {(securityRules?.data?.[0]?.numericalcharacterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
                         [classes.badgeSuccess]: passwordConditions.numbers,
                         [classes.badgeFailure]: !passwordConditions.numbers,
-                    })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.numericalcharacterspwd||"04"))[0].name}</span></div>}
+                    })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.numericalcharacterspwd || "04"))[0].name}</span></div>}
                     <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond5)}</span><span className={clsx(classes.badge, {
                         [classes.badgeSuccess]: passwordConditions.specialcharacters,
                         [classes.badgeFailure]: !passwordConditions.specialcharacters,
-                    })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.specialcharacterspwd||"04"))[0].name}</span></div>
+                    })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.specialcharacterspwd || "04"))[0].name}</span></div>
                     <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond6)}</span></div>
                 </div>
             </div>
@@ -623,13 +624,13 @@ const UserSettings: FC = () => {
     }, []);
 
     function changePlan() {
-        if (["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')) {
+        if ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v))) {
             setView('view-4')
         } else {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.notpermisionforaction) }));
         }
     }
-    
+
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -645,7 +646,7 @@ const UserSettings: FC = () => {
     }, [executeResult])
 
     function cancelSuscription() {
-        if (["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')) {
+        if ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v))) {
             const callback = () => {
                 setWaitSave(true);
                 dispatch(execute(cancelSuscriptionFunction()));
@@ -700,35 +701,35 @@ const UserSettings: FC = () => {
                         </div>
                     </div>
                 </div>
-                {(["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')) &&
-                <>
-                <div className={classes.containerDetail}>
-                    <div className={classes.seccionTitle}>{t(langKeys.planinformation)}</div>
-                    <div className="row-zyx">
-                        <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <FieldView
-                                label={"Plan"}
-                                value={user?.plan}
-                            />
-                        </div>
-                        <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div className="col-6">
-                                <Box lineHeight="20px" fontSize={15} color="textPrimary"><div className={classes.hyperlinkstyle} onClick={() => changePlan()}>{t(langKeys.changeplan)}</div></Box>
+                {((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v))) &&
+                    <>
+                        <div className={classes.containerDetail}>
+                            <div className={classes.seccionTitle}>{t(langKeys.planinformation)}</div>
+                            <div className="row-zyx">
+                                <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                    <FieldView
+                                        label={"Plan"}
+                                        value={user?.plan}
+                                    />
+                                </div>
+                                <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                    <div className="col-6">
+                                        <Box lineHeight="20px" fontSize={15} color="textPrimary"><div className={classes.hyperlinkstyle} onClick={() => changePlan()}>{t(langKeys.changeplan)}</div></Box>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <div className={classes.seccionTitle}>{t(langKeys.suscription)}</div>
-                    <div className="row-zyx">
-                        <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div className="col-6">
-                                <Box lineHeight="20px" fontSize={15} color="textPrimary"><div className={classes.hyperlinkstyle} onClick={() => cancelSuscription()}>{t(langKeys.cancelsuscription)}</div></Box>
+                        <div className={classes.containerDetail}>
+                            <div className={classes.seccionTitle}>{t(langKeys.suscription)}</div>
+                            <div className="row-zyx">
+                                <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                    <div className="col-6">
+                                        <Box lineHeight="20px" fontSize={15} color="textPrimary"><div className={classes.hyperlinkstyle} onClick={() => cancelSuscription()}>{t(langKeys.cancelsuscription)}</div></Box>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                </>
+                    </>
                 }
             </div>
         )
