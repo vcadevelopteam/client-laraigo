@@ -11298,7 +11298,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            {user?.roledesc.includes("SUPERADMIN") && (
+            {user?.roledesc?.includes("SUPERADMIN") && (
                 <div>
                     <Tabs
                         indicatorColor="primary"
