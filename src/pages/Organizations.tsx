@@ -551,7 +551,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     <div className="row-zyx">
                         {edit ?
                             (
-                                !row && ['SUPERADMIN'].includes(roledesc || "") ?
+                                !row && ((roledesc ?? "").split(",").some(v => ['SUPERADMIN'].includes(v))) ?
                                     <FieldSelect
                                         label={t(langKeys.corporation)}
                                         className="col-6"
@@ -564,7 +564,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                         triggerOnChangeOnFirst={true}
                                         error={errors?.corpid?.message}
                                         data={dataCorp}
-                                        disabled={!['SUPERADMIN'].includes(roledesc || "")}
+                                        disabled={!((roledesc ?? "").split(",").some(v => ['SUPERADMIN'].includes(v)))}
                                         optionDesc="description"
                                         optionValue="corpid"
                                     />

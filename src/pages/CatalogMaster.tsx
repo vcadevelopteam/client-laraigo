@@ -57,7 +57,7 @@ const CatalogMaster: FC = () => {
     const resultManageCatalog = useSelector(state => state.catalog.requestCatalogManageCatalog);
     const resultSynchroCatalog = useSelector(state => state.catalog.requestCatalogSynchroCatalog);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
+    const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
 
     const [businessId, setBusinessId] = useState(0);
     const [metaBusinessList, setMetaBusinessList] = useState<Dictionary[]>([]);
@@ -308,7 +308,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
 
     const classes = useStyles();
     const user = useSelector(state => state.login.validateToken.user);
-    const useradmin = ["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
+    const useradmin = (user?.roledesc ?? "").split(",").some(v => ["ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
     const domainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const domainCatalogType = multiData[1] && multiData[1].success ? (useradmin ? multiData[1].data.filter(x => x.domainvalue === "BOT") : multiData[1].data) : [];
     const resultBusinessList = useSelector(state => state.catalog.requestCatalogBusinessList);

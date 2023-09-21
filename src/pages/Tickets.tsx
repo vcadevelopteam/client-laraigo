@@ -619,7 +619,7 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
-    
+
     const classes = useStyles();
 
     const resultAnalyticsIA = useSelector(state => state.main.mainAux);
@@ -631,13 +631,13 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
         }
     }, [ticket, openModal])
     const trimmedData = React.useMemo(() => {
-        if (resultAnalyticsIA.data && resultAnalyticsIA.data[0]?.interactiontext ) {
+        if (resultAnalyticsIA.data && resultAnalyticsIA.data[0]?.interactiontext) {
             return resultAnalyticsIA.data.map((row: any) => {
                 return {
                     ...row,
-                    interactiontext: row.interactiontext.length > 65 
-                    ? row.interactiontext.substring(0, 65) + "..." 
-                    : row.interactiontext
+                    interactiontext: row.interactiontext.length > 65
+                        ? row.interactiontext.substring(0, 65) + "..."
+                        : row.interactiontext
                 }
             })
         }
@@ -758,7 +758,7 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
             title={`Analytics IA`}
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenModal(false)}
-        >            
+        >
             <Tabs
                 value={tabIndex}
                 onChange={(_, i) => setTabIndex(i)}
@@ -1092,35 +1092,35 @@ const Tickets = () => {
                                 setRowToSend([ticket]);
                             }}
                             onHandlerAnalyticsIA={() => {
-                              setOpenDialogShowAnalyticsIA(true);
-                              setRowSelected(ticket);
-                              setRowToSend([ticket]);
+                                setOpenDialogShowAnalyticsIA(true);
+                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
                             }}
                         />
                     );
                 },
             },
             {
-              accessor: "voxiid",
-              isComponent: true,
-              minWidth: 60,
-              width: "1%",
-              Cell: (props: any) => {
-                const row = props.cell.row.original;
-                return row.communicationchanneltype === "VOXI" &&
-                  row.postexternalid &&
-                  row.callrecording &&
-                  row.callanswereddate ? (
-                  <Tooltip title={t(langKeys.download_record) || ""}>
-                    <IconButton
-                      size="small"
-                      onClick={() => downloadCallRecord(row)}
-                    >
-                      <CallRecordIcon style={{ fill: "#7721AD" }} />
-                    </IconButton>
-                  </Tooltip>
-                ) : null;
-              },
+                accessor: "voxiid",
+                isComponent: true,
+                minWidth: 60,
+                width: "1%",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.communicationchanneltype === "VOXI" &&
+                        row.postexternalid &&
+                        row.callrecording &&
+                        row.callanswereddate ? (
+                        <Tooltip title={t(langKeys.download_record) || ""}>
+                            <IconButton
+                                size="small"
+                                onClick={() => downloadCallRecord(row)}
+                            >
+                                <CallRecordIcon style={{ fill: "#7721AD" }} />
+                            </IconButton>
+                        </Tooltip>
+                    ) : null;
+                },
             },
             {
                 Header: t(langKeys.ticket_numeroticket),
@@ -1522,7 +1522,7 @@ const Tickets = () => {
                 ButtonsElement={() => (
                     <>
                         {
-                            ['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P'].includes(user?.roledesc || '')
+                            ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v)))
                             && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
                             && <Button
                                 className={classes.button}
