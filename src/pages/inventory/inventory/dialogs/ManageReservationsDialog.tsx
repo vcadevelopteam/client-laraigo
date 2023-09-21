@@ -20,6 +20,7 @@ import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import TableZyx from "components/fields/table-simple";
 import { Dictionary } from "@types";
+import AddReservationDialog from "./AddReservationDialog";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -37,6 +38,7 @@ const ManageReservationsDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const [openModalAddReservation, setOpenModalAddReservation] = useState(false);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -155,33 +157,45 @@ const columns = React.useMemo(
   []
 );
 
+function handleOpenAddReservationModal() {
+  setOpenModalAddReservation(true)
+}
+
   return (
-    <DialogZyx open={openModal} title={t(langKeys.managereservations)} maxWidth="lg">
-      <div className="row-zyx">
-        <TableZyx
-          columns={columns}
-          data={[]}
-          download={false}
-          filterGeneral={false}
-          register={true}
-        />
-      </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-        <Button
-          variant="contained"
-          type="button"
-          color="primary"
-          startIcon={<ClearIcon color="secondary" />}
-          style={{ backgroundColor: "#FB5F5F" }}
-          onClick={() => {
-            setOpenModal(false);
-            reset()
-          }}
-        >
-          {t(langKeys.back)}
-        </Button>
-      </div>
-    </DialogZyx>
+    <>
+      <DialogZyx open={openModal} title={t(langKeys.managereservations)} maxWidth="lg">
+        <div className="row-zyx">
+          <TableZyx
+            columns={columns}
+            data={[]}
+            download={false}
+            filterGeneral={false}
+            register={true}
+            handleRegister={handleOpenAddReservationModal}
+          />
+        </div>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <Button
+            variant="contained"
+            type="button"
+            color="primary"
+            startIcon={<ClearIcon color="secondary" />}
+            style={{ backgroundColor: "#FB5F5F" }}
+            onClick={() => {
+              setOpenModal(false);
+              reset()
+            }}
+          >
+            {t(langKeys.back)}
+          </Button>
+        </div>
+      </DialogZyx>
+      <AddReservationDialog
+        openModal={openModalAddReservation}
+        setOpenModal={setOpenModalAddReservation}
+        row={row}
+      />
+    </>
   );
 };
 

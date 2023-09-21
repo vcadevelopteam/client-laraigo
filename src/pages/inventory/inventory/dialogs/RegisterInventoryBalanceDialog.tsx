@@ -98,6 +98,7 @@ const submitData = handleMainSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.dateofphysicalcount)}
+            type="date"
             valueDefault={getValues('value')}
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
@@ -139,6 +140,7 @@ const submitData = handleMainSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.dueDate)}
+            type="date"
             valueDefault={getValues('value')}
             className="col-6"
             onChange={(value) => {setValue('value', value)}}

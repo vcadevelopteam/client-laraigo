@@ -304,6 +304,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.dateoflastshipment)}
+                            type="date"
                             valueDefault={getValues('address')}
                             className="col-6"
                             error={errors?.address?.message}
@@ -362,6 +363,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     />
                     <FieldEdit
                         label={t(langKeys.dateoflastmodification)}
+                        type="date"
                         valueDefault={getValues('address')}
                         className="col-4"
                         error={errors?.address?.message}

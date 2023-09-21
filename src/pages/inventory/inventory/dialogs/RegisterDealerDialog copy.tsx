@@ -81,7 +81,7 @@ const submitData = handleMainSubmit((data) => {
 });
 
   return (
-    <DialogZyx open={openModal} title={`${t(langKeys.new)} ${t(langKeys.dealer )}`} maxWidth="sm">
+    <DialogZyx open={openModal} title={`${t(langKeys.new)} ${t(langKeys.dealer )}`} maxWidth="md">
       <form onSubmit={submitData}>
       <div className="row-zyx">
           <FieldSelect
@@ -134,6 +134,7 @@ const submitData = handleMainSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.dateoflastorder)}
+            type="date"
             valueDefault={getValues('value')}
             className="col-4"
             onChange={(value) => {setValue('value', value)}}

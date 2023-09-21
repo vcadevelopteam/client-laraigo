@@ -18,6 +18,7 @@ import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import TableZyx from "components/fields/table-simple";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -85,38 +86,50 @@ const submitData = handleMainSubmit((data) => {
   }))
 });
 
+const columns = React.useMemo(
+  () => [
+    {
+      accessor: 'warehouseid',
+      NoFilter: true,
+      isComponent: true,
+      minWidth: 60,
+      width: '1%',
+    },
+    {
+      Header: t(langKeys.shelf),
+      accessor: "warehouse",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.batch),
+      accessor: "current_balance",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.current_balance),
+      accessor: "overdueamount",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.newbalance),
+      accessor: "subfamilydescription",
+      width: "auto",
+    }
+  ],
+  []
+);
+
   return (
-    <DialogZyx open={openModal} title={t(langKeys.adjustcurrentbalance)} maxWidth="sm">
+    <DialogZyx open={openModal} title={t(langKeys.adjustcurrentbalance)} maxWidth="md">
       <form onSubmit={submitData}>
       <div className="row-zyx">
-          <FieldEdit
-            label={t(langKeys.shelf)}
-            valueDefault={getValues('attributeid')}
-            className="col-3"
-            onChange={(value) => {setValue('attributeid', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.batch)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.current_balance)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
-          <FieldEdit
-            label={t(langKeys.newbalance)}
-            valueDefault={getValues('value')}
-            className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
-          />
+      <TableZyx
+          columns={columns}
+          data={[]}
+          download={false}
+          filterGeneral={false}
+          register={false}
+        /> 
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
         <Button
