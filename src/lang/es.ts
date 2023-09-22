@@ -5392,6 +5392,23 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingreport_channeltotal: 'Canales Adicionales',
   billingreport_contactwhatsapp: 'Contactos en Canales WhatsApp',
   billingreport_contactother: 'Contactos en Canales No WhatsApp',
+
+  isenterprise: '¿Es Socio Enterprise?',
+  monthlyplancost: 'Costo Mensual del plan',
+  additionalcontactcalculationtype: "Tipo de cálculo de contacto adicional",
+  numbercontactsperbag: "Cantidad de contactos por bolsa",
+  priceperbag: "Precio por bolsa",
+  puadditionalcontacts: "PU contactos adicionales",
+  partners: "Socios",
+  clients: "Clientes",
+  contractsigningdate: "Fecha de firma de contrato",
+  automaticdrafts: "Generación automática de borradores",
+  numberofcontactsperbag: "Cantidad de Contactos por bolsa",
+  partnertype: "Tipo de Socio",
+  commissionpercentage: "Porcentaje de comisión",
+  creationuser: "Usuario de creación",
+  lastmodificationuser: "Usuario de última modificación",
+  lastmodificationdate: "Fecha de última modificación",
 };
 
 const esResource: ResourceLanguage = {

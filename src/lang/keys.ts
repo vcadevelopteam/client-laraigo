@@ -5380,6 +5380,23 @@ export const langKeys = {
   billingreport_channeltotal: 'billingreport_channeltotal',
   billingreport_contactwhatsapp: 'billingreport_contactwhatsapp',
   billingreport_contactother: 'billingreport_contactother',
+
+  isenterprise: 'isenterprise',
+  monthlyplancost: 'monthlyplancost',
+  additionalcontactcalculationtype: 'additionalcontactcalculationtype',
+  numbercontactsperbag: "numbercontactsperbag",
+  priceperbag: "priceperbag",
+  puadditionalcontacts: "puadditionalcontacts",
+  partners: "partners",
+  clients: "clients",
+  contractsigningdate: "contractsigningdate",
+  automaticdrafts: "automaticdrafts",
+  numberofcontactsperbag: "contactsquantityperbag",
+  partnertype: "partnertype",
+  commissionpercentage: "commissionpercentage",
+  creationuser: "creationuser",
+  lastmodificationuser: "lastmodificationuser",
+  lastmodificationdate: "lastmodificationdate",
 };
 
 export type LangKeys = typeof langKeys;

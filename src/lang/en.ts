@@ -5465,6 +5465,23 @@ const translation: LangKeys = {
   billingreport_channeltotal: 'Additional Channels',
   billingreport_contactwhatsapp: 'WhatsApp Channels Contacts',
   billingreport_contactother: 'Other Channels Contacts',
+
+  isenterprise: 'Are you an Enterprise Partner?',
+  monthlyplancost: 'Monthly Plan Cost',
+  additionalcontactcalculationtype: "Additional contact calculation type",
+  numbercontactsperbag: "Number of contacts per bag",
+  priceperbag: "Price per bag",
+  puadditionalcontacts: "PU additional contacts",
+  partners: "Partners",
+  clients: "Clients",
+  contractsigningdate: "Contract signing date",
+  automaticdrafts: "Automatic generation of drafts",
+  numberofcontactsperbag: "Number of contacts per bag",
+  partnertype: "Partner Type",
+  commissionpercentage: "Commission percentage",
+  creationuser: "Creation user",
+  lastmodificationuser: "Last modification user",
+  lastmodificationdate: "Last modification date",
 };
 
 const enResource: ResourceLanguage = {

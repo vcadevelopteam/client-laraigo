@@ -286,6 +286,15 @@ export const routes: RouteConfig[] = [
         icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
+        key: paths.PARTNERS,
+        description: <Trans i18nKey={langKeys.partner} />,
+        tooltip: <Trans i18nKey={langKeys.partner} />,
+        subroute: true,
+        path: paths.PARTNERS,
+        initialSubroute: paths.PARTNERS,
+        icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
         key: paths.ORGANIZATIONS,
         description: <Trans i18nKey={langKeys.organization_plural} />,
         tooltip: <Trans i18nKey={langKeys.organization_plural} />,
