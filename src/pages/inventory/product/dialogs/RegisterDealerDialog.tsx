@@ -127,9 +127,9 @@ const RegisterDealerDialog: React.FC<{
                   setValue("distributor",value?.name)
                 }}
                 error={errors?.distributorid?.message}
-                data={(multiData?.data?.[10]?.data||[]).filter(x=>x.type==="DISTRIBUIDOR")}
+                data={(multiData?.data?.[10]?.data||[]).filter(x=>x.typemanufacter_desc ==="DISTRIBUIDOR")}
                 optionValue="manufacturerid"
-                optionDesc="name"
+                optionDesc="description"
               />
               <FieldEdit
                 label={t(langKeys.description)}
@@ -147,9 +147,9 @@ const RegisterDealerDialog: React.FC<{
                   setValue("manufacturer",value?.name)
                 }}
                 error={errors?.manufacturerid?.message}
-                data={(multiData?.data?.[10]?.data||[]).filter(x=>x.type==="FABRICANTE")}
+                data={(multiData?.data?.[10]?.data||[]).filter(x=>x.typemanufacter_desc ==="FABRICANTE")}
                 optionValue="manufacturerid"
-                optionDesc="name"
+                optionDesc="description"
               />
               <FieldEdit
                 label={t(langKeys.description)}

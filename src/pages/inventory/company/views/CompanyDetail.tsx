@@ -79,6 +79,7 @@ const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated },
             manufacturerid: row?.manufacturerid || 0,
             operation: edit ? "EDIT" : "INSERT",
             description: row?.description || '',
+            manufacturercode: row?.manufacturercode || '',
             status: row?.status || 'ACTIVO',
             type: row?.type || 'NINGUNO',
             descriptionlarge: row?.descriptionlarge || '',
@@ -110,6 +111,7 @@ const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated },
     React.useEffect(() => {
         register('manufacturerid');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('manufacturercode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('descriptionlarge');
         register('clientenumbers', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('beginpage', { validate: (value) => (value && value.length) || t(langKeys.field_required) });

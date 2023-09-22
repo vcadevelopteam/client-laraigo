@@ -70,10 +70,10 @@ const CompanyTabDetail: React.FC<CompanyTabDetailProps> = ({
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.company)}
-                    valueDefault={getValues('taxecodes')}
+                    valueDefault={getValues('manufacturercode')}
                     className="col-6"
-                    error={errors?.taxecodes?.message}
-                    onChange={(value) => setValue('taxecodes', value)}
+                    error={errors?.manufacturercode?.message}
+                    onChange={(value) => setValue('manufacturercode', value)}
                     inputProps={{ maxLength: 20 }}
                 />
                 <FieldEdit
@@ -95,7 +95,7 @@ const CompanyTabDetail: React.FC<CompanyTabDetailProps> = ({
                     label={t(langKeys.type)}
                     className="col-6"
                     valueDefault={getValues('typemanufacterid')}
-                    onChange={(value) => setValue('typemanufacterid', value?.domainid||"")}
+                    onChange={(value) => {setValue('typemanufacterid', value?.domainid||"");}}
                     error={errors?.typemanufacterid?.message}
                     data={multiData.data[0].data}
                     optionValue="domainid"
@@ -122,9 +122,9 @@ const CompanyTabDetail: React.FC<CompanyTabDetailProps> = ({
                 <FieldSelect
                     label={t(langKeys.taxcodes)}
                     className="col-6"
-                    valueDefault={getValues('taxecodes')}
+                    valueDefault={getValues('taxeid')}
                     onChange={(value) => setValue('taxeid', value?.domainid||"")}
-                    error={errors?.taxecodes?.message}
+                    error={errors?.taxeid?.message}
                     data={multiData.data[2].data}
                     optionValue="domainid"
                     optionDesc="domaindesc"

@@ -16,12 +16,12 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, getCompanyExport, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
+import { exportExcel, getCompanyExport, importManufacturer, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 
-const selectionKey = "warehouseid";
+const selectionKey = "manufacturerid";
 
 interface CompanyMainViewProps {
   setViewSelected: (view: string) => void;
@@ -50,6 +50,7 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
   const importRes = useSelector((state) => state.main.execute);
+  const multiData = useSelector(state => state.main.multiDataAux);
 
   const handleRegister = () => {
     setViewSelected("detail-view");
@@ -187,7 +188,7 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
       },
       {
         Header: t(langKeys.company),
-        accessor: "name",
+        accessor: "manufacturercode",
         width: "auto",
       },
       {
@@ -197,22 +198,22 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
       },
       {
         Header: t(langKeys.type),
-        accessor: "address",
+        accessor: "typemanufacter_desc",
         width: "auto",
       },
       {
         Header: `N° ${t(langKeys.client)}`,
-        accessor: "phone",
+        accessor: "clientenumbers",
         width: "auto",
       },
       {
         Header: t(langKeys.homepage),
-        accessor: "latitude",
+        accessor: "beginpage",
         width: "auto",
       },
       {
         Header: t(langKeys.currency),
-        accessor: "longitude",
+        accessor: "currency_desc",
         width: "auto",
       },
     ],
@@ -243,30 +244,40 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
       if (data.length > 0) {
         let dataToSend = data.map((x: any) => ({
           ...x,
-          warehouseid: 0,
+          manufacturerid: 0,
           operation: "INSERT",
           type: "NINGUNO",
           status: "ACTIVO",
         }));
         dispatch(showBackdrop(true));
-        dispatch(execute(importWarehouse(dataToSend)));
+        dispatch(execute(importManufacturer(dataToSend)));
         setWaitUpload(true);
       }
     }
   };
 
   const handleTemplateWarehouse = () => {
-    const data = [{}, {}, {}, {}, {}, {}];
+    const data = [{}, {}, {}, 
+      multiData.data[0].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      multiData.data[1].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+       {}, 
+       multiData.data[2].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+       {},
+       {true:"true",false:"false"},
+      ];
     const header = [
-      "name",
+      "manufacturercode",
       "description",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
+      "descriptionlarge",
+      "typemanufacterid",
+      "currencyid",
+      "clientenumbers",
+      "currencyid",
+      "beginpage",
+      "ispaymentdelivery",
     ];
     exportExcel(
-      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
+      `${t(langKeys.template)} ${t(langKeys.company)}`,
       templateMaker(data, header)
     );
   };
