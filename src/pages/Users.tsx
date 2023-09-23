@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     badge: {
         paddingRight: "0.6em",
         paddingLeft: "0.6em",
-        borderRadius: "10rem",        
+        borderRadius: "10rem",
         display: "inline-block",
         padding: "0.25em 0.4em",
         fontSize: "75%",
@@ -157,7 +157,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const data = getValues();
                 if (allOk) {
                     updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-                        p[index] = { ...data, operation: (p[index].id === 0 || p[index].operation ==="INSERT") ? "INSERT" : "UPDATE" }
+                        p[index] = { ...data, operation: (p[index].id === 0 || p[index].operation === "INSERT") ? "INSERT" : "UPDATE" }
                         return p;
                     })
                 }
@@ -286,7 +286,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     const onChangeRole = (value: Dictionary) => {
         setValue('rolegroups', value.map((o: Dictionary) => o.roleid).join());
         setValue('roledesc', value.map((o: Dictionary) => o.roledesc).join());
-        setValue('redirect', ''); 
+        setValue('redirect', '');
         updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
@@ -334,7 +334,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 helperText={t(langKeys.default_organization_tooltip)}
                                 onChange={(value) => { setValue('bydefault', value); updatefield('bydefault', value) }} />
                             <FieldMultiSelect
-                                label={ getValues('rolegroups')?.length > 2 ? 'Roles' : t(langKeys.role)}
+                                label={getValues('rolegroups')?.length > 2 ? 'Roles' : t(langKeys.role)}
                                 className={classes.mb2}
                                 valueDefault={row?.rolegroups || ""}
                                 onChange={onChangeRole}
@@ -347,7 +347,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 label={"Balanceo"}
                                 className={classes.mb2}
                                 valueDefault={getValues("type") === "ASESOR"}
-                                onChange={(value) => { setValue('type', value?"ASESOR":"SUPERVISOR"); }} />
+                                onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -440,23 +440,23 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const mainMultiResult = useSelector(state => state.main.multiData);
-    const securityRules = mainMultiResult.data.filter(x=>x.key==="UFN_SECURITYRULES_SEL")?.[0]
+    const securityRules = mainMultiResult.data.filter(x => x.key === "UFN_SECURITYRULES_SEL")?.[0]
     const [passwordConditions, setpasswordConditions] = useState({
         samepassword: !!data?.password,
-        mincharacters: (data?.password||"").length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
-        maxcharacters: (data?.password||"").length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-        consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
-        lowercaseletters: validateDomainCharacters(data?.password||"", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
-        uppercaseletters: validateDomainCharacters(data?.password||"", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
-        numbers: validateDomainCharacters(data?.password||"", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
-        specialcharacters: validateDomainCharactersSpecials(data?.password||"", securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+        mincharacters: (data?.password || "").length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
+        maxcharacters: (data?.password || "").length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
+        consecutivecharacters: validateNumbersEqualsConsecutive(data?.password || "", securityRules?.data?.[0]?.numequalconsecutivecharacterspwd || securityRules?.data?.[0]?.maxcharacterspwd || 0),
+        lowercaseletters: validateDomainCharacters(data?.password || "", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd || "04"),
+        uppercaseletters: validateDomainCharacters(data?.password || "", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd || "04"),
+        numbers: validateDomainCharacters(data?.password || "", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd || "04"),
+        specialcharacters: validateDomainCharactersSpecials(data?.password || "", securityRules?.data?.[0]?.specialcharacterspwd || "04"),
     });
     const dataFieldSelect = [
-        {name: "Empieza", value: "01"},
-        {name: "Incluye", value: "02"},
-        {name: "Más de 1", value: "03"},
-        {name: "No Considera", value: "04"},
-        {name: "Termina", value: "05"},
+        { name: "Empieza", value: "01" },
+        { name: "Incluye", value: "02" },
+        { name: "Más de 1", value: "03" },
+        { name: "No Considera", value: "04" },
+        { name: "Termina", value: "05" },
     ]
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
@@ -497,25 +497,26 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         setValue('send_password_by_email', data?.send_password_by_email);
         setValue('change_password_on_login', data?.pwdchangefirstlogin);
         clearErrors();
-        setpasswordConditions({...passwordConditions,
+        setpasswordConditions({
+            ...passwordConditions,
             samepassword: !!data?.password,
-            mincharacters: (data?.password||"").length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
-            maxcharacters: (data?.password||"").length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-            consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
-            lowercaseletters: validateDomainCharacters(data?.password||"", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
-            uppercaseletters: validateDomainCharacters(data?.password||"", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
-            numbers: validateDomainCharacters(data?.password||"", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
-            specialcharacters: validateDomainCharactersSpecials(data?.password||"", securityRules?.data?.[0]?.specialcharacterspwd||"04"),
-        })        
+            mincharacters: (data?.password || "").length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
+            maxcharacters: (data?.password || "").length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
+            consecutivecharacters: validateNumbersEqualsConsecutive(data?.password || "", securityRules?.data?.[0]?.numequalconsecutivecharacterspwd || securityRules?.data?.[0]?.maxcharacterspwd || 0),
+            lowercaseletters: validateDomainCharacters(data?.password || "", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd || "04"),
+            uppercaseletters: validateDomainCharacters(data?.password || "", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd || "04"),
+            numbers: validateDomainCharacters(data?.password || "", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd || "04"),
+            specialcharacters: validateDomainCharactersSpecials(data?.password || "", securityRules?.data?.[0]?.specialcharacterspwd || "04"),
+        })
     }
 
-    const onSubmitPassword = handleSubmit((data) => {    
-        if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
+    const onSubmitPassword = handleSubmit((data) => {
+        if (!!Object.values(passwordConditions).reduce((acc, x) => acc * (+ x), 1)) {
             parentSetValue('password', data.password);
             parentSetValue('send_password_by_email', data.send_password_by_email);
             parentSetValue('pwdchangefirstlogin', data.change_password_on_login);
             setOpenModal(false);
-        }else{
+        } else {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_password) }));
         }
     });
@@ -556,15 +557,16 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     valueDefault={getValues('password')}
                     type={showPassword ? 'text' : 'password'}
                     onChange={(value) => {
-                        setpasswordConditions({...passwordConditions,
-                            samepassword:getValues("confirmpassword")===value,
-                            mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
-                            maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-                            consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
-                            lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
-                            uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
-                            numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
-                            specialcharacters: validateDomainCharactersSpecials(value, securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+                        setpasswordConditions({
+                            ...passwordConditions,
+                            samepassword: getValues("confirmpassword") === value,
+                            mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
+                            maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
+                            consecutivecharacters: validateNumbersEqualsConsecutive(value, securityRules?.data?.[0]?.numequalconsecutivecharacterspwd || securityRules?.data?.[0]?.maxcharacterspwd || 0),
+                            lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd || "04"),
+                            uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd || "04"),
+                            numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd || "04"),
+                            specialcharacters: validateDomainCharactersSpecials(value, securityRules?.data?.[0]?.specialcharacterspwd || "04"),
                         })
                         setValue('password', value)
                     }}
@@ -589,7 +591,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     valueDefault={getValues('confirmpassword')}
                     type={showConfirmPassword ? 'text' : 'password'}
                     onChange={(value) => {
-                        setpasswordConditions({...passwordConditions,samepassword:getValues("password")===value})
+                        setpasswordConditions({ ...passwordConditions, samepassword: getValues("password") === value })
                         setValue('confirmpassword', value)
                     }}
                     error={errors?.confirmpassword?.message}
@@ -612,7 +614,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                 <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond1)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.samepassword,
                     [classes.badgeFailure]: !passwordConditions.samepassword,
-                })}>{passwordConditions.samepassword?t(langKeys.yes):t(langKeys.no)}</span></div>
+                })}>{passwordConditions.samepassword ? t(langKeys.yes) : t(langKeys.no)}</span></div>
                 {!!securityRules?.data?.[0]?.mincharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond2)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.mincharacters,
                     [classes.badgeFailure]: !passwordConditions.mincharacters,
@@ -625,29 +627,29 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     [classes.badgeSuccess]: passwordConditions.consecutivecharacters,
                     [classes.badgeFailure]: !passwordConditions.consecutivecharacters,
                 })}>{securityRules?.data?.[0]?.numequalconsecutivecharacterspwd}</span></div>}
-                {(securityRules?.data?.[0]?.lowercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
+                {(securityRules?.data?.[0]?.lowercaseletterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.lowercaseletters,
                     [classes.badgeFailure]: !passwordConditions.lowercaseletters,
-                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.lowercaseletterspwd||"04"))[0].name}</span></div>}
-                {(securityRules?.data?.[0]?.uppercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
+                })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.lowercaseletterspwd || "04"))[0].name}</span></div>}
+                {(securityRules?.data?.[0]?.uppercaseletterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.uppercaseletters,
                     [classes.badgeFailure]: !passwordConditions.uppercaseletters,
-                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.uppercaseletterspwd||"04"))[0].name}</span></div>}
-                {(securityRules?.data?.[0]?.numericalcharacterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
+                })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.uppercaseletterspwd || "04"))[0].name}</span></div>}
+                {(securityRules?.data?.[0]?.numericalcharacterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.numbers,
                     [classes.badgeFailure]: !passwordConditions.numbers,
-                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.numericalcharacterspwd||"04"))[0].name}</span></div>}
+                })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.numericalcharacterspwd || "04"))[0].name}</span></div>}
                 <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond5)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.specialcharacters,
                     [classes.badgeFailure]: !passwordConditions.specialcharacters,
-                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.specialcharacterspwd||"04"))[0].name}</span></div>
+                })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.specialcharacterspwd || "04"))[0].name}</span></div>
                 <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond6)}</span></div>
             </div>
         </DialogZyx>
     )
 }
 
-const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
+const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -771,12 +773,14 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('usr', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('email', { validate: emailRequired, value: '' });
         register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('docnum', { validate: {
-            needsvalidation: (value:any) => ((value && value.length) || t(langKeys.field_required)),
-            dnivalidation: (value:any) => (getValues("doctype") === "DNI")? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
-            cevalidation: (value:any) => (getValues("doctype") === "CE")? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
-            rucvalidation: (value:any) => (getValues("doctype") === "RUC")? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
-        }});
+        register('docnum', {
+            validate: {
+                needsvalidation: (value: any) => ((value && value.length) || t(langKeys.field_required)),
+                dnivalidation: (value: any) => (getValues("doctype") === "DNI") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
+                cevalidation: (value: any) => (getValues("doctype") === "CE") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
+                rucvalidation: (value: any) => (getValues("doctype") === "RUC") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
+            }
+        });
         register('billinggroupid');
         register('description');
         register('twofactorauthentication');
@@ -849,7 +853,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }]}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -1045,7 +1049,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <ListItemSkeleton /> :
                             dataOrganizations.map((item, index) => (
                                 <DetailOrgUser
-                                    key={item?.orgid || `detail${index*1000}`}
+                                    key={item?.orgid || `detail${index * 1000}`}
                                     index={index}
                                     data={{ row: item, edit }}
                                     multiData={multiData}
@@ -1114,7 +1118,7 @@ const Users: FC = () => {
     const arrayBread = [
         { id: "view-1", name: t(langKeys.user_plural) },
     ];
-    function redirectFunc(view:string){
+    function redirectFunc(view: string) {
         setViewSelected(view)
     }
 
@@ -1351,7 +1355,7 @@ const Users: FC = () => {
     }
 
     const handleUpload = async (files: any, useravailable: number, limit: number) => {
-        
+
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
@@ -1386,19 +1390,19 @@ const Users: FC = () => {
 
                     dispatch(showBackdrop(true));
                     setImportCount(data.length);
-                    let channelError:any[]=[]
-                    data.forEach((x,i)=>{
+                    let channelError: any[] = []
+                    data.forEach((x, i) => {
                         const pattern = /^(\d+(,\s*\d+)*)?$/;
-                        if(!pattern.test(x.channels)){
+                        if (!pattern.test(x.channels)) {
                             channelError.push(x.email)
                         }
                     })
-                    if(channelError.length === 0){
+                    if (channelError.length === 0) {
                         let table: Dictionary = data.reduce((a: any, d) => ({
                             ...a,
                             [`${d.user}_${d.docnum}`]: {
                                 id: 0,
-                                usr: String(d.user||d.email),
+                                usr: String(d.user || d.email),
                                 doctype: d.doctype,
                                 docnum: String(d.docnum),
                                 password: String(d.password),
@@ -1412,7 +1416,7 @@ const Users: FC = () => {
                                 company: d.company,
                                 twofactorauthentication: d.twofactorauthentication === "ACTIVO",
                                 registercode: String(d.registercode),
-                                billinggroupid: parseInt(d.billinggroup.match(/\d+/)[0]),
+                                billinggroupid: parseInt(String(d.billinggroup).match(/\d+/)[0]),
                                 image: d?.image || "",
                                 detail: {
                                     rolegroups: d.role,
@@ -1436,10 +1440,11 @@ const Users: FC = () => {
                             }, true));
                         })
                         setWaitImport(true)
-                    }else{
-                        dispatch(showSnackbar({ show: true, severity: "error", 
-                        message: t(langKeys.error_rows_channel, { rows: channelError.join(','), }),
-                    }));
+                    } else {
+                        dispatch(showSnackbar({
+                            show: true, severity: "error",
+                            message: t(langKeys.error_rows_channel, { rows: channelError.join(','), }),
+                        }));
                     }
                 }
 
@@ -1523,7 +1528,7 @@ const Users: FC = () => {
                     dispatch(showBackdrop(false));
                     setWaitCheck(false);
                     if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
-                        
+
                         dispatch(showSnackbar({
                             show: true, severity: "error", message: t(langKeys.userlimit, {
                                 limit: mainAuxResult.data[0].userscontracted
