@@ -5391,7 +5391,7 @@ export const langKeys = {
   clients: "clients",
   contractsigningdate: "contractsigningdate",
   automaticdrafts: "automaticdrafts",
-  numberofcontactsperbag: "contactsquantityperbag",
+  numberofcontactsperbag: "numberofcontactsperbag",
   partnertype: "partnertype",
   commissionpercentage: "commissionpercentage",
   creationuser: "creationuser",

@@ -6,8 +6,6 @@ import {
   Title,
 } from "components";
 import { langKeys } from "lang/keys";
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import { DuplicateIcon } from "icons";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
 import { execute, exportData } from "store/main/actions";
@@ -19,8 +17,6 @@ import {
 } from "store/popus/actions";
 import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
-import { Button } from "@material-ui/core";
-import TablePaginated from "components/fields/table-paginated";
 
 const selectionKey = "warehouseid";
 

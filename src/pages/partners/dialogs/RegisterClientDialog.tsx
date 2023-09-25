@@ -110,6 +110,7 @@ const submitData = handleMainSubmit((data) => {
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
+            disabled={true}
           />
           <FieldEdit
             label={t(langKeys.billingplan)}
@@ -117,13 +118,15 @@ const submitData = handleMainSubmit((data) => {
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
+            disabled={true}
           />
           <FieldEdit
-            label={t(langKeys.commissionpercentage)}
+            label={t(langKeys.billingcurrency)}
             valueDefault={getValues('value')}
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
+            disabled={true}
           />
           <FieldEdit
             label={t(langKeys.creationuser)}
@@ -131,13 +134,15 @@ const submitData = handleMainSubmit((data) => {
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
+            disabled={true}
           />
           <FieldEdit
-            label={t(langKeys.creationDate)}
+            label={t(langKeys.commissionpercentage)}
             valueDefault={getValues('value')}
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
+            disabled={true}
           />
           <FieldEdit
             label={t(langKeys.lastmodificationuser)}
@@ -145,6 +150,15 @@ const submitData = handleMainSubmit((data) => {
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
+            disabled={true}
+          />
+          <FieldEdit
+            label={t(langKeys.creationDate)}
+            valueDefault={getValues('value')}
+            className="col-6"
+            onChange={(value) => {setValue('value', value)}}
+            inputProps={{ maxLength: 256 }}
+            disabled={true}
           />
           <FieldEdit
             label={t(langKeys.lastmodificationdate)}
@@ -152,6 +166,7 @@ const submitData = handleMainSubmit((data) => {
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
+            disabled={true}
           />
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
