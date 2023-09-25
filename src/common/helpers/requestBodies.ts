@@ -4161,6 +4161,12 @@ export const insStatusProduct = ({ statusid,comment,status,type,productid,ismove
     parameters: {  statusid,comment,status,type,productid,ismoveinventory,operation  },
 });
 
+export const insStatusProductMas = ({ statusid,comment,productid,ismoveinventory,operation}: Dictionary) => ({
+    method: "UFN_STATUSPRODUCT_INS",
+    key: "UFN_STATUSPRODUCT_INS",
+    parameters: {  statusid,comment,productid,ismoveinventory,operation  },
+});
+
 export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCT_EXPORT",
     key: "UFN_PRODUCT_EXPORT",

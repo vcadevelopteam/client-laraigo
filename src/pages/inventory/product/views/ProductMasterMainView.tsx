@@ -335,6 +335,19 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
                   variant="contained"
                   component="span"
                   color="primary"
+                  disabled={!Object.keys(selectedRows).length}
+                  onClick={() => setOpenModalChangeStatus(true)}
+                  style={{ backgroundColor: "#55BD84" }}
+                >
+                  <Trans i18nKey={langKeys.change_status} />
+                </Button>
+              </div>
+              <div>
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  component="span"
+                  color="primary"
                   onClick={() => setOpenModalImport(true)}
                   startIcon={<BackupIcon color="secondary" />}
                   style={{ backgroundColor: "#55BD84" }}
@@ -372,6 +385,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         openModal={openModalChangeStatus}
         setOpenModal={setOpenModalChangeStatus}
         massive={true}
+        selectedRows={selectedRows}
       />
     </div>
   );
