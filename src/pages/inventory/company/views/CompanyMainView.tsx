@@ -29,7 +29,17 @@ interface CompanyMainViewProps {
   fetchData: any;
   fetchDataAux: any;
 }
-
+interface InsertCompany {
+  manufacturercode: string;
+  description: string;
+  descriptionlarge: string;
+  typemanufacterid: number;
+  currencyid: number;
+  clientenumbers: string;
+  taxeid: number;
+  beginpage: string;
+  ispaymentdelivery: string;
+}
 const CompanyMainView: FC<CompanyMainViewProps> = ({
   setViewSelected,
   setRowSelected,
@@ -237,24 +247,60 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
     setWaitExport(true);
   };
 
+  const isValidData = (element:InsertCompany) => {
+    const validDomainTypeManufacturer = multiData.data[0].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainTaxes = multiData.data[2].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainCurrency = multiData.data[1].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+
+    return (
+      ((element.ispaymentdelivery === 'true')||(element.ispaymentdelivery === 'false')) &&
+      typeof element.beginpage === 'string' && element.beginpage.length <= 136 &&
+      validDomainTaxes[element.taxeid] &&
+      typeof element.clientenumbers === 'string' && element.clientenumbers.length <= 136 &&
+      validDomainCurrency[element.currencyid] &&
+      validDomainTypeManufacturer[element.typemanufacterid] &&
+      typeof element.description === 'string' && element.description.length <= 256 &&
+      typeof element.descriptionlarge === 'string' && element.descriptionlarge.length <= 1000 &&
+      typeof element.manufacturercode === 'string' && element.manufacturercode.length <= 20
+    );
+  };
+
   const handleUpload = async (files: any) => {
     const file = files?.item(0);
     if (file) {
-      const data: any = await uploadExcel(file, undefined);
+      const data: InsertCompany[] = (await uploadExcel(file, undefined)) as InsertCompany[];
       if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          manufacturerid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        dispatch(execute(importManufacturer(dataToSend)));
-        setWaitUpload(true);
+        const error = data.some((element) => !isValidData(element));
+        if(!error){
+          let dataToSend = data.map((x: any) => ({
+            ...x,
+            manufacturerid: 0,
+            operation: "INSERT",
+            type: "NINGUNO",
+            status: "ACTIVO",
+          }));
+          dispatch(showBackdrop(true));
+          dispatch(execute(importManufacturer(dataToSend)));
+          setWaitUpload(true);
+        }else{          
+          dispatch(
+            showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+          );
+        }
       }
     }
   };
+
+
 
   const handleTemplateWarehouse = () => {
     const data = [{}, {}, {}, 
@@ -272,7 +318,7 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
       "typemanufacterid",
       "currencyid",
       "clientenumbers",
-      "currencyid",
+      "taxeid",
       "beginpage",
       "ispaymentdelivery",
     ];

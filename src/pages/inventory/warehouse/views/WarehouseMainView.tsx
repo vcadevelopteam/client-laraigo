@@ -30,6 +30,14 @@ interface WarehouseMainViewProps {
   fetchData: any;
   fetchDataAux: any;
 }
+interface WarehouseMassData {
+  name:string;
+  description:string;
+  address:string;
+  phone:number;
+  latitude:number;
+  longitude:number;
+}
 
 const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   setViewSelected,
@@ -238,22 +246,40 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
     dispatch(showBackdrop(true));
     setWaitExport(true);
   };
+  const isValidData = (element:WarehouseMassData) => {
+
+    return (
+      typeof element.name === 'string' && element.name.length > 0 &&
+      typeof element.description === 'string' && element.description.length > 0 &&
+      typeof element.address === 'string' && element.address.length > 0 &&
+      Number.isInteger(element.phone) &&
+      typeof element.latitude === 'number' && 
+      typeof element.longitude === 'number'
+    );
+  };
 
   const handleUpload = async (files: any) => {
     const file = files?.item(0);
     if (file) {
-      const data: any = await uploadExcel(file, undefined);
+      const data: WarehouseMassData[] = (await uploadExcel(file, undefined)) as WarehouseMassData[];
       if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          warehouseid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        dispatch(execute(importWarehouse(dataToSend)));
-        setWaitUpload(true);
+        const error = data.some((element) => !isValidData(element));
+        if(!error){
+          let dataToSend = data.map((x: any) => ({
+            ...x,
+            warehouseid: 0,
+            operation: "INSERT",
+            type: "NINGUNO",
+            status: "ACTIVO",
+          }));
+          dispatch(showBackdrop(true));
+          dispatch(execute(importWarehouse(dataToSend)));
+          setWaitUpload(true);
+        }else{                 
+          dispatch(
+            showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+          );
+        }
       }
     }
   };

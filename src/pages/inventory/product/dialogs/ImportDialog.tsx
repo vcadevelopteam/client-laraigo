@@ -17,6 +17,53 @@ import { execute } from "store/main/actions";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
 
+interface ProductMassData {
+  description: string;
+  descriptionlarge: string;
+  producttype: string;
+  familyid: number;
+  unitbuyid: number;
+  unitdispatchid: number;
+  imagereference: string;
+  attachments: string;
+  productcode: string;
+  loteid: number;
+  subfamilyid: number;
+  status: string;
+}
+interface ProductWarehouseMassData {
+  productid: number;
+  warehouseid: number;
+  priceunit: number;
+  ispredeterminate: string;
+  rackcode: string;
+  typecostdispatch: number;
+  unitdispatchid: number;
+  unitbuyid: number;
+  currentbalance: number;
+  lotecode: string;
+}
+interface ProductDealerMassData {
+  productid: number;
+  manufacturerid: number;
+  distributorid: number;
+  model: string;
+  catalognumber: string;
+  webpage: string;
+  taxeid: number;
+  isstockistdefault: string;
+  averagedeliverytime: string;
+  lastprice: string;
+  lastorderdate: string;
+  unitbuy: number;
+}
+interface ProductSpecificationMassData {
+  productid: number;
+  attributeid: string;
+  value: string;
+  unitmeasureid: number;
+}
+
 const ImportDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
@@ -28,76 +75,241 @@ const ImportDialog: React.FC<{
   const dispatch = useDispatch();
   const importRes = useSelector((state) => state.main.execute);
   const [waitUpload, setWaitUpload] = useState(false);
+  const multiData = useSelector(state => state.main.multiDataAux);
+
+  const isValidProduct = (element:ProductMassData) => {
+    const validDomainProductType = multiData.data[0].data.reduce(
+      (a, d) => ({ ...a, [d.domainvalue]: true }),
+      {}
+    );
+    const validDomainFamily = multiData.data[1].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainSubFamily = multiData.data[2].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainUnitBuy = multiData.data[3].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainUnitDispatch = multiData.data[4].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainLote = multiData.data[6].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainStatus = multiData.data[5].data.reduce(
+      (a, d) => ({ ...a, [d.domainvalue]: true }),
+      {}
+    );
+
+    return (
+      typeof element.description === 'string' && element.description.length <= 256 &&
+      typeof element.productcode === 'string' && element.productcode.length <= 20 &&
+      typeof element.descriptionlarge === 'string' && element.descriptionlarge.length <= 1000 &&
+      validDomainProductType[element.producttype] &&
+      validDomainFamily[element.familyid] &&
+      validDomainSubFamily[element.subfamilyid] &&
+      validDomainUnitBuy[element.unitbuyid] &&
+      validDomainUnitDispatch[element.unitdispatchid] &&
+      validDomainLote[element.loteid] &&
+      validDomainStatus[element.status] &&
+      typeof element.imagereference === 'string' && element.description.length > 0 &&
+      typeof element.attachments === 'string'
+    );
+  };
 
   const handleUploadProduct = async (files: any) => {
     const file = files?.item(0);
     if (file) {
-      const data: any = await uploadExcel(file, undefined);
+      const data: ProductMassData[] = (await uploadExcel(file, undefined)) as ProductMassData[];
       if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          productid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-        }));
-        dispatch(showBackdrop(true));
-        dispatch(execute(importProducts(dataToSend)));
-        setWaitUpload(true);
+        const error = data.some((element) => !isValidProduct(element));
+        if(!error){
+          let dataToSend = data.map((x: any) => ({
+            ...x,
+            productid: 0,
+            operation: "INSERT",
+            type: "NINGUNO",
+          }));
+          dispatch(showBackdrop(true));
+          dispatch(execute(importProducts(dataToSend)));
+          setWaitUpload(true);
+        }else{      
+          dispatch(
+            showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+          );
+        }
       }
     }
   };
+
+  const isValidProductWarehouse = (element:ProductWarehouseMassData) => {
+    const validDomainProduct = multiData.data[7].data.reduce(
+      (a, d) => ({ ...a, [d.productid]: true }),
+      {}
+    );
+    const validDomainWarehouse = multiData.data[8].data.reduce(
+      (a, d) => ({ ...a, [d.warehouseid]: true }),
+      {}
+    );
+    const validDomainTypeCostDispatch = multiData.data[9].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainUnitBuy = multiData.data[3].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainUnitDispatch = multiData.data[4].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+
+    return (
+      validDomainProduct[element.productid] &&
+      validDomainWarehouse[element.warehouseid] &&
+      typeof element.priceunit === 'number' && element.priceunit > 0 &&
+      typeof element.currentbalance === 'number' && element.currentbalance > 0 &&
+      ((element.ispredeterminate === 'true')||(element.ispredeterminate === 'false')) &&
+      typeof element.rackcode === 'string' && element.rackcode.length > 0 &&
+      validDomainTypeCostDispatch[element.typecostdispatch]&&
+      validDomainUnitDispatch[element.unitdispatchid] &&
+      validDomainUnitBuy[element.unitbuyid] &&
+      typeof element.lotecode === 'string'
+    );
+  };
+
+
   const handleUploadWarehouse = async (files: any) => {
     const file = files?.item(0);
     if (file) {
-      const data: any = await uploadExcel(file, undefined);
+      const data: ProductWarehouseMassData[] = (await uploadExcel(file, undefined)) as ProductWarehouseMassData[];
       if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          productwarehouseid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        dispatch(execute(importProductsWarehouse(dataToSend)));
-        setWaitUpload(true);
+        const error = data.some((element) => !isValidProductWarehouse(element));
+        if(!error){
+          let dataToSend = data.map((x: any) => ({
+            ...x,
+            productwarehouseid: 0,
+            operation: "INSERT",
+            type: "NINGUNO",
+            status: "ACTIVO",
+          }));
+          dispatch(showBackdrop(true));
+          dispatch(execute(importProductsWarehouse(dataToSend)));
+          setWaitUpload(true);
+        }else{      
+          dispatch(
+            showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+          );
+        }
       }
     }
   };
+
+  const isValidProductDealer = (element:ProductDealerMassData) => {
+    const validDomainProduct = multiData.data[7].data.reduce(
+      (a, d) => ({ ...a, [d.productid]: true }),
+      {}
+    );
+    const validDomainManufacturer = multiData.data[10].data.reduce(
+      (a, d) => ({ ...a, [d.manufacturerid]: true }),
+      {}
+    );
+    const validDomainTaxe = multiData.data[11].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainUnitBuy = multiData.data[3].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+
+    return (
+      validDomainProduct[element.productid] &&
+      validDomainManufacturer[element.manufacturerid] &&
+      validDomainManufacturer[element.distributorid] &&
+      typeof element.model === 'string' && element.model.length <=256 &&
+      typeof element.catalognumber === 'string' && element.catalognumber.length <=256 &&
+      typeof element.webpage === 'string' && element.webpage.length <=256 &&
+      validDomainTaxe[element.taxeid] &&
+      ((element.isstockistdefault === 'true')||(element.isstockistdefault === 'false')) &&
+      typeof element.averagedeliverytime === 'number' && element.averagedeliverytime > 0 &&
+      typeof element.lastprice === 'number' && element.lastprice > 0 &&
+      typeof element.lastorderdate === 'string' && element.lastorderdate.length >0 &&
+      validDomainUnitBuy[element.unitbuy]
+    );
+  };
+  
   const handleUploadDealer = async (files: any) => {
     const file = files?.item(0);
     if (file) {
-      const data: any = await uploadExcel(file, undefined);
+      const data: ProductDealerMassData[] = (await uploadExcel(file, undefined)) as ProductDealerMassData[];
       if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          lastorderdate: new Date((x.lastorderdate - 1) * 24 * 3600 * 1000),
-          productcompanyid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        dispatch(execute(importProductManufacturer(dataToSend)));
-        setWaitUpload(true);
+        const error = data.some((element) => !isValidProductDealer(element));
+        if(!error){
+          let dataToSend = data.map((x: any) => ({
+            ...x,
+            lastorderdate: new Date((x.lastorderdate - 1) * 24 * 3600 * 1000),
+            productcompanyid: 0,
+            operation: "INSERT",
+            type: "NINGUNO",
+            status: "ACTIVO",
+          }));
+          dispatch(showBackdrop(true));
+          dispatch(execute(importProductManufacturer(dataToSend)));
+          setWaitUpload(true);
+        }else{      
+          dispatch(
+            showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+          );
+        }
       }
     }
   };
+  const isValidProductSpecifications = (element:ProductSpecificationMassData) => {
+    const validDomainProduct = multiData.data[7].data.reduce(
+      (a, d) => ({ ...a, [d.productid]: true }),
+      {}
+    );
+    const validDomainUnitBuy = multiData.data[3].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    return (
+      validDomainProduct[element.productid] &&
+      typeof element.attributeid === 'string' && element.attributeid.length <=256 &&
+      typeof element.value === 'string' && element.value.length <=256 &&
+      validDomainUnitBuy[element.unitmeasureid]
+    );
+  };
+  
   const handleUploadSpecifications = async (files: any) => {
     const file = files?.item(0);
     if (file) {
-      const data: any = await uploadExcel(file, undefined);
+      const data: ProductSpecificationMassData[] = (await uploadExcel(file, undefined)) as ProductSpecificationMassData[];
       if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          productattributeid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        dispatch(execute(importProductsAttribute(dataToSend)));
-        setWaitUpload(true);
+        const error = data.some((element) => !isValidProductSpecifications(element));
+        if(!error){
+          let dataToSend = data.map((x: any) => ({
+            ...x,
+            productattributeid: 0,
+            operation: "INSERT",
+            type: "NINGUNO",
+            status: "ACTIVO",
+          }));
+          dispatch(showBackdrop(true));
+          dispatch(execute(importProductsAttribute(dataToSend)));
+          setWaitUpload(true);
+        }else{      
+          dispatch(
+            showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+          );
+        }
       }
     }
   };

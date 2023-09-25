@@ -4375,8 +4375,8 @@ export const insCompany = ({ manufacturerid,description, status,type,description
 });
 
 export const importManufacturer = (data:any): IRequestBody => ({
-    method: "UFN_MANUFACTURER_INS",
-    key: "UFN_MANUFACTURER_INS",
+    method: "UFN_MANUFACTURER_MAS",
+    key: "UFN_MANUFACTURER_MAS",
     parameters: {
         json: JSON.stringify(data)
     }
