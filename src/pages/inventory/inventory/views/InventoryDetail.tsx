@@ -192,7 +192,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.inventory)}`}
+                            title={t(langKeys.inventory)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
