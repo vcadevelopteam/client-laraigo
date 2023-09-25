@@ -4161,6 +4161,12 @@ export const insStatusProduct = ({ statusid,comment,status,type,productid,ismove
     parameters: {  statusid,comment,status,type,productid,ismoveinventory,operation  },
 });
 
+export const insStatusProductMas = ({ statusid,comment,productid,ismoveinventory,operation}: Dictionary) => ({
+    method: "UFN_STATUSPRODUCT_INS",
+    key: "UFN_STATUSPRODUCT_INS",
+    parameters: {  statusid,comment,productid,ismoveinventory,operation  },
+});
+
 export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCT_EXPORT",
     key: "UFN_PRODUCT_EXPORT",
@@ -4208,7 +4214,7 @@ export const getPaginatedWarehouse = ({ skip, take, filters, sorts, startdate, e
         take,
         filters,
         sorts,
-        origin: "product",
+        origin: "warehouse",
         warehouseid: 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -4326,6 +4332,57 @@ export const importProductsAttribute = (data:any): IRequestBody => ({
 export const importWarehouse = (data:any): IRequestBody => ({
     method: "UFN_WAREHOUSE_MAS",
     key: "UFN_WAREHOUSE_MAS",
+    parameters: {
+        json: JSON.stringify(data)
+    }
+});
+
+export const getPaginatedCompanies = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MANUFACTURER_PAG",
+    methodCount: "UFN_MANUFACTURER_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "manufacturer",
+        manufacturerid: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getCompanyExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_MANUFACTURER_EXPORT",
+    key: "UFN_MANUFACTURER_EXPORT",
+    parameters: {
+        origin: "product",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const duplicateProduct = ({ productid }: Dictionary): IRequestBody => ({
+    method: "UFN_PRODUCT_DUP",
+    key: "UFN_PRODUCT_DUP",
+    parameters: {
+        productid,
+        operation: "DUPLICATE"
+    }
+});
+
+export const insCompany = ({ manufacturerid,description, status,type,descriptionlarge,clientenumbers,beginpage,currencyid,taxeid,ispaymentdelivery,typemanufacterid,manufacturercode,operation  }: Dictionary) => ({
+    method: "UFN_MANUFACTURER_INS",
+    key: "UFN_MANUFACTURER_INS",
+    parameters: {  manufacturerid,description, status,type,descriptionlarge,clientenumbers,beginpage,currencyid,taxeid,ispaymentdelivery,typemanufacterid,manufacturercode,operation  },
+});
+
+export const importManufacturer = (data:any): IRequestBody => ({
+    method: "UFN_MANUFACTURER_MAS",
+    key: "UFN_MANUFACTURER_MAS",
     parameters: {
         json: JSON.stringify(data)
     }

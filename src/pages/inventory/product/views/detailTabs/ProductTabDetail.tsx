@@ -55,6 +55,8 @@ interface ProductDetailProps {
     setValue: UseFormSetValue<any>;
     getValues: UseFormGetValues<any>;
     errors: FieldErrors<any>;
+    files: IFile[];
+    setFiles: (param: any) => void;
 }
 
 const ProductTabDetail: React.FC<ProductDetailProps> = ({
@@ -62,14 +64,14 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
     setValue,
     getValues,
     errors,
+    files,
+    setFiles
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const uploadResult = useSelector(state => state.main.uploadFile);
     const dispatch = useDispatch();    
-    const initialValueAttachments = getValues('attachments');
-    const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
     const multiData = useSelector(state => state.main.multiDataAux);
 
     useEffect(() => {
@@ -83,7 +85,6 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
             }
         }
     }, [waitUploadFile, uploadResult])
-
 
     const onSelectImage = (files: any) => {
         const selectedFile = files[0];
@@ -102,7 +103,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                 <div className='col-6'>
                     <div className='row-zyx'>
                         <FieldEdit
-                            label={t(langKeys.code)}
+                            label={t(langKeys.product)}
                             valueDefault={getValues('productcode')}
                             className="col-4"
                             error={errors?.productcode?.message}

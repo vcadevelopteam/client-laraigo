@@ -4,6 +4,7 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { exportExcel, templateMaker } from "common/helpers";
+import { useSelector } from "hooks";
 
 const TemplateImportDialog: React.FC<{
   openModal: any;
@@ -11,9 +12,21 @@ const TemplateImportDialog: React.FC<{
 }> = ({ openModal, setOpenModal }) => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const { t } = useTranslation();
+  const multiData = useSelector(state => state.main.multiDataAux);
 
   const handleTemplateProduct = () => {
-    const data = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+    const data = [{}, {}, 
+      multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: `${d.domaindesc}`}),{}),
+      multiData.data[1].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      multiData.data[3].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      multiData.data[4].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      {}, 
+      {}, 
+      {}, 
+      multiData.data[6].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      multiData.data[2].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      multiData.data[5].data.reduce((a,d) => ({...a, [d.domainvalue]: `${d.domaindesc}`}),{}),
+      ];
     const header = [
       "description",
       "descriptionlarge",
@@ -26,6 +39,7 @@ const TemplateImportDialog: React.FC<{
       "productcode",
       "loteid",
       "subfamilyid",
+      "status"
     ];
     exportExcel(
       `${t(langKeys.template)} ${t(langKeys.product)}`,
@@ -35,7 +49,16 @@ const TemplateImportDialog: React.FC<{
     setOpenModal(false);
   };
   const handleTemplateAlmacen = () => {
-    const data = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+    const data = [
+      multiData.data[7].data.reduce((a,d) => ({...a, [d.productid]: `${d.description}`}),{}),
+      multiData.data[8].data.reduce((a,d) => ({...a, [d.warehouseid]: `${d.description}`}),{}),
+      {}, 
+      {true:"true",false:"false"},
+      {},      
+      multiData.data[9].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      multiData.data[4].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      multiData.data[3].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      {}, {}];
     const header = [
       "productid",
       "warehouseid",
@@ -56,7 +79,20 @@ const TemplateImportDialog: React.FC<{
     setOpenModal(false);
   };
   const handleTemplateDealer = () => {
-    const data = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+    const data = [
+      multiData.data[7].data.reduce((a,d) => ({...a, [d.productid]: `${d.description}`}),{}),
+      (multiData?.data?.[10]?.data||[]).filter(x=>x.type==="DISTRIBUIDOR").reduce((a,d) => ({...a, [d.manufacturerid]: `${d.name}`}),{}),
+      (multiData?.data?.[10]?.data||[]).filter(x=>x.type==="FABRICANTE").reduce((a,d) => ({...a, [d.manufacturerid]: `${d.name}`}),{}),
+      {},
+      {},
+      {},
+      multiData.data[11].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      {true:"true",false:"false"},
+      {},
+      {},
+      {},
+      multiData.data[3].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+    ];
     const header = [
       "productid",
       "manufacturerid",
@@ -79,7 +115,10 @@ const TemplateImportDialog: React.FC<{
     setOpenModal(false);
   };
   const handleTemplateSpecification = () => {
-    const data = [{}, {}, {}, {}];
+    const data = [
+      multiData.data[7].data.reduce((a,d) => ({...a, [d.productid]: `${d.description}`}),{}),
+      {}, {}, 
+      multiData.data[3].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{})];
     const header = [
         "productid",
         "attributeid",

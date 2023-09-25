@@ -560,6 +560,15 @@ export const routes: RouteConfig[] = [
         icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
+        key: paths.COMPANIES,
+        description: <Trans i18nKey={langKeys.company_plural} />,
+        tooltip: <Trans i18nKey={langKeys.company_plural} />,
+        subroute: true,
+        path: paths.COMPANIES,
+        initialSubroute: paths.COMPANIES,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
         key: paths.INVENTORY,
         description: <Trans i18nKey={langKeys.inventory} />,
         tooltip: <Trans i18nKey={langKeys.inventory} />,

@@ -18,7 +18,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { insStatusProduct } from "common/helpers";
+import { insStatusProduct, insStatusProductMas } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -31,7 +31,8 @@ const ChangeStatusDialog: React.FC<{
   setOpenModal: (dat: any) => void;
   row?: any;
   massive?: boolean;
-}> = ({ openModal, setOpenModal, row, massive = false }) => {
+  selectedRows?: any;
+}> = ({ openModal, setOpenModal, row, massive = false, selectedRows }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const multiData = useSelector(state => state.main.multiDataAux);
@@ -76,14 +77,19 @@ const ChangeStatusDialog: React.FC<{
 }, [executeRes, waitSave])
 
   const onMainSubmit = handleMainSubmit((data:any) => {
+    debugger
     const callback = () => {
         dispatch(showBackdrop(true));
-        dispatch(execute(insStatusProduct(data)));
+        if(massive){
+          dispatch(execute(insStatusProductMas({...data, productid: Object.keys(selectedRows).join(",")})));
+        }else{
+          dispatch(execute(insStatusProduct(data)));
+        }
         setWaitSave(true);
     }
     dispatch(manageConfirmation({
         visible: true,
-        question: t(langKeys.confirmation_save),
+        question: massive?`Esto acción afectará a ${Object.keys(selectedRows).length} registros que se encuentran en la aplicación, ¿Desea continuar con dicho cambio?`:t(langKeys.confirmation_save),
         callback
     }))
 });

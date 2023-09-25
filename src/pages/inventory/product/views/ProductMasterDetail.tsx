@@ -8,7 +8,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
 import { getAllAttributeProduct, getProductManufacturer, getProductProduct, getProductsWarehouse, insProduct } from 'common/helpers';
-import { Dictionary } from "@types";
+import { Dictionary, IFile } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
@@ -24,12 +24,14 @@ import AddToWarehouseDialog from '../dialogs/AddToWarehouseDialog';
 import WarehouseTab from './detailTabs/WarehouseTabDetail';
 import DealerTab from './detailTabs/DealerTabDetail';
 import SpecificationTabDetail from './detailTabs/SpecificationTabDetail';
+import AttachmentDialog from '../dialogs/AttachmentDialog';
 
 
 
 interface RowSelected {
     row: Dictionary | null;
     edit: boolean;
+    duplicated: boolean;
 }
 
 interface DetailProps {
@@ -71,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -80,8 +82,11 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
     const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
     const [openModalAddToWarehouse, setOpenModalAddToWarehouse] = useState(false);
+    const [openModalAttachments, setOpenModalAttachments] = useState(false);
+    const [cancelDuplication, setCancelDuplication] = useState(false);
+    const initialValueAttachments = row?.attachments;
+    const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
     const classes = useStyles();
-
     const arrayBread = [
         { id: "main-view", name: t(langKeys.productMaster) },
         { id: "detail-view", name: `${t(langKeys.productMaster)} ${t(langKeys.detail)}` },
@@ -133,14 +138,19 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                if(!cancelDuplication){
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                }
                 fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
+                setCancelDuplication(false)
+                setWaitSave(false);
                 setViewSelected("main-view");
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
+                setCancelDuplication(false)
                 dispatch(showBackdrop(false));
             }
         }
@@ -166,16 +176,45 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insProduct(data)));
+            dispatch(execute(insProduct({
+                ...data,
+                attachments:files?.map(item => item.url)?.join(',')||""
+            })));
 
             setWaitSave(true);
         }
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        if(duplicated){
+            callback()
+        }else{
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }
     });
+    function handleReturnMainView(){
+        if(duplicated){
+            const callback = () => {
+                onMainSubmit()
+            }
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.saveduplicatechanges),
+                callback,
+                callbackcancel: ()=>{
+                    setCancelDuplication(true)
+                    dispatch(
+                      execute(insProduct({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+                    );
+                    setWaitSave(true)
+                }
+            }))
+        }else{
+            setViewSelected("main-view")
+        }        
+    }
+
     return (
         <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -199,7 +238,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => {
-                                setViewSelected("main-view")
+                                handleReturnMainView()
                             }}
                         >{t(langKeys.back)}</Button>
                         <Button
@@ -216,6 +255,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             changeStatus={()=>{setOpenModalChangeStatus(true)}}
                             statusHistory={()=>setOpenModalStatusHistory(true)}
                             addToWarehouse={()=>setOpenModalAddToWarehouse(true)}
+                            showattachments={()=>setOpenModalAttachments(true)}
                         />}
                     </div>
 
@@ -270,6 +310,9 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                         setValue={setValue}
                         getValues={getValues}
                         errors={errors}
+                        files={files}
+                        setFiles={setFiles}
+                        
                     />
                     {edit &&
                         <AlternativeProductTab
@@ -326,6 +369,11 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 setTabIndex={setTabIndex}
                 productid={row?.productid||0}
                 fetchdata={fetchProductWarehouse}
+            />
+            <AttachmentDialog 
+                openModal={openModalAttachments}
+                setOpenModal={setOpenModalAttachments}
+                row={row}
             />
             </form>
         </>

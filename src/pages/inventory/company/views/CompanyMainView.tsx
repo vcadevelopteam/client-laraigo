@@ -16,30 +16,31 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
+import { exportExcel, getCompanyExport, importManufacturer, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
-import { type } from 'os';
 
-const selectionKey = "warehouseid";
+const selectionKey = "manufacturerid";
 
-interface WarehouseMainViewProps {
+interface CompanyMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
   fetchDataAux: any;
 }
-interface WarehouseMassData {
-  name:string;
-  description:string;
-  address:string;
-  phone:number;
-  latitude:number;
-  longitude:number;
+interface InsertCompany {
+  manufacturercode: string;
+  description: string;
+  descriptionlarge: string;
+  typemanufacterid: number;
+  currencyid: number;
+  clientenumbers: string;
+  taxeid: number;
+  beginpage: string;
+  ispaymentdelivery: string;
 }
-
-const WarehouseMainView: FC<WarehouseMainViewProps> = ({
+const CompanyMainView: FC<CompanyMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
@@ -59,6 +60,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
   const importRes = useSelector((state) => state.main.execute);
+  const multiData = useSelector(state => state.main.multiDataAux);
 
   const handleRegister = () => {
     setViewSelected("detail-view");
@@ -71,7 +73,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   };
   const handleDuplicate = (row: Dictionary) => {
     setViewSelected("detail-view");
-    setRowSelected({ row, edit: false, duplicated: true });
+    setRowSelected({ row:{...row, name:""}, edit: false, duplicated: true });
   };
 
   useEffect(() => {
@@ -174,7 +176,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "warehouseid",
+        accessor: "manufacturerid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -195,8 +197,8 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         },
       },
       {
-        Header: t(langKeys.warehouse),
-        accessor: "name",
+        Header: t(langKeys.company),
+        accessor: "manufacturercode",
         width: "auto",
       },
       {
@@ -205,26 +207,24 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         width: "auto",
       },
       {
-        Header: t(langKeys.physicaladdress),
-        accessor: "address",
+        Header: t(langKeys.type),
+        accessor: "typemanufacter_desc",
         width: "auto",
       },
       {
-        Header: t(langKeys.phone),
-        accessor: "phone",
+        Header: `N° ${t(langKeys.client)}`,
+        accessor: "clientenumbers",
         width: "auto",
       },
       {
-        Header: t(langKeys.latitude),
-        accessor: "latitude",
+        Header: t(langKeys.homepage),
+        accessor: "beginpage",
         width: "auto",
-        type:'number'
       },
       {
-        Header: t(langKeys.longitude),
-        accessor: "longitude",
+        Header: t(langKeys.currency),
+        accessor: "currency_desc",
         width: "auto",
-        type:'number'
       },
     ],
     []
@@ -235,7 +235,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         key: x.accessor,
         alias: x.Header
     }))
-    dispatch(exportData(getWarehouseExport({
+    dispatch(exportData(getCompanyExport({
         filters: {
             ...filters,
         },
@@ -246,36 +246,52 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
     dispatch(showBackdrop(true));
     setWaitExport(true);
   };
-  const isValidData = (element:WarehouseMassData) => {
+
+  const isValidData = (element:InsertCompany) => {
+    const validDomainTypeManufacturer = multiData.data[0].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainTaxes = multiData.data[2].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
+    const validDomainCurrency = multiData.data[1].data.reduce(
+      (a, d) => ({ ...a, [d.domainid]: true }),
+      {}
+    );
 
     return (
-      typeof element.name === 'string' && element.name.length > 0 &&
-      typeof element.description === 'string' && element.description.length > 0 &&
-      typeof element.address === 'string' && element.address.length > 0 &&
-      Number.isInteger(element.phone) &&
-      typeof element.latitude === 'number' && 
-      typeof element.longitude === 'number'
+      ((element.ispaymentdelivery === 'true')||(element.ispaymentdelivery === 'false')) &&
+      typeof element.beginpage === 'string' && element.beginpage.length <= 136 &&
+      validDomainTaxes[element.taxeid] &&
+      typeof element.clientenumbers === 'string' && element.clientenumbers.length <= 136 &&
+      validDomainCurrency[element.currencyid] &&
+      validDomainTypeManufacturer[element.typemanufacterid] &&
+      typeof element.description === 'string' && element.description.length <= 256 &&
+      typeof element.descriptionlarge === 'string' && element.descriptionlarge.length <= 1000 &&
+      typeof element.manufacturercode === 'string' && element.manufacturercode.length <= 20
     );
   };
 
   const handleUpload = async (files: any) => {
     const file = files?.item(0);
     if (file) {
-      const data: WarehouseMassData[] = (await uploadExcel(file, undefined)) as WarehouseMassData[];
+      const data: InsertCompany[] = (await uploadExcel(file, undefined)) as InsertCompany[];
       if (data.length > 0) {
         const error = data.some((element) => !isValidData(element));
         if(!error){
           let dataToSend = data.map((x: any) => ({
             ...x,
-            warehouseid: 0,
+            manufacturerid: 0,
             operation: "INSERT",
             type: "NINGUNO",
             status: "ACTIVO",
           }));
           dispatch(showBackdrop(true));
-          dispatch(execute(importWarehouse(dataToSend)));
+          dispatch(execute(importManufacturer(dataToSend)));
           setWaitUpload(true);
-        }else{                 
+        }else{          
           dispatch(
             showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
           );
@@ -284,18 +300,30 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
     }
   };
 
+
+
   const handleTemplateWarehouse = () => {
-    const data = [{}, {}, {}, {}, {}, {}];
+    const data = [{}, {}, {}, 
+      multiData.data[0].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+      multiData.data[1].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+       {}, 
+       multiData.data[2].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{}),
+       {},
+       {true:"true",false:"false"},
+      ];
     const header = [
-      "name",
+      "manufacturercode",
       "description",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
+      "descriptionlarge",
+      "typemanufacterid",
+      "currencyid",
+      "clientenumbers",
+      "taxeid",
+      "beginpage",
+      "ispaymentdelivery",
     ];
     exportExcel(
-      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
+      `${t(langKeys.template)} ${t(langKeys.company)}`,
       templateMaker(data, header)
     );
   };
@@ -320,7 +348,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.warehouse} />
+            <Trans i18nKey={langKeys.company_plural} />
           </Title>
         </div>
       </div>
@@ -365,4 +393,4 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   );
 };
 
-export default WarehouseMainView;
+export default CompanyMainView;

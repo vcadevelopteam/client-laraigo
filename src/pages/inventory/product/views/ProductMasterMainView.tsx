@@ -17,7 +17,7 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { getProductsExport, insProduct } from "common/helpers";
+import { duplicateProduct, getProductsExport, insProduct } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -71,20 +71,24 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   const [openModalImport, setOpenModalImport] = useState(false);
   const [openModalTemplate, setOpenModalTemplate] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
+  const [waitDuplicate, setWaitDuplicate] = useState(false);
+  const [rowToDuplicate, setRowToDuplicate] = useState<any>(null);
   const resExportData = useSelector(state => state.main.exportData);
 
   const handleRegister = () => {
     setViewSelected("detail-view");
-    setRowSelected({ row: null, edit: false });
+    setRowSelected({ row: null, edit: false, duplicated: false });
   };
 
   const handleEdit = (row: Dictionary) => {
     setViewSelected("detail-view");
-    setRowSelected({ row, edit: true });
+    setRowSelected({ row, edit: true, duplicated: false });
   };
   const handleDuplicate = (row: Dictionary) => {
-    setViewSelected("detail-view");
-    setRowSelected({ row, edit: false });
+    setRowToDuplicate(row);
+    dispatch(execute(duplicateProduct(row)))
+    setWaitDuplicate(true)
+    dispatch(showBackdrop(true));
   };
 
   const handleDelete = (row: Dictionary) => {
@@ -142,6 +146,34 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     }
   }, [executeResult, waitSave]);
 
+  useEffect(() => {
+    if (waitDuplicate) {
+      if (!executeResult.loading && !executeResult.error) {
+        dispatch(
+          showSnackbar({
+            show: true,
+            severity: "success",
+            message: t(langKeys.satisfactoryduplication),
+          })
+        );
+        fetchData(fetchDataAux);
+        dispatch(showBackdrop(false));
+        setWaitDuplicate(false);
+        setRowSelected({ row: {...rowToDuplicate,productid: executeResult.data[0].p_tableid}, edit: true, duplicated: true });
+        setViewSelected("detail-view");
+      } else if (executeResult.error) {
+        const errormessage = t(executeResult.code || "error_unexpected_error", {
+          module: t(langKeys.domain).toLocaleLowerCase(),
+        });
+        dispatch(
+          showSnackbar({ show: true, severity: "error", message: errormessage })
+        );
+        dispatch(showBackdrop(false));
+        setWaitDuplicate(false);
+      }
+    }
+  }, [executeResult, waitDuplicate]);
+
   const columns = React.useMemo(
     () => [
       {
@@ -165,12 +197,12 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
       },
       {
         Header: t(langKeys.product),
-        accessor: "description",
+        accessor: "productcode",
         width: "auto",
       },
       {
         Header: t(langKeys.description),
-        accessor: "descriptionlarge",
+        accessor: "description",
         width: "auto",
       },
       {
@@ -202,11 +234,6 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         Header: t(langKeys.status),
         accessor: "status",
         width: "auto",
-        prefixTranslation: "status_",
-        Cell: (props: any) => {
-          const { status } = props.cell.row.original;
-          return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
-        },
       },
     ],
     []
@@ -308,6 +335,19 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
                   variant="contained"
                   component="span"
                   color="primary"
+                  disabled={!Object.keys(selectedRows).length}
+                  onClick={() => setOpenModalChangeStatus(true)}
+                  style={{ backgroundColor: "#55BD84" }}
+                >
+                  <Trans i18nKey={langKeys.change_status} />
+                </Button>
+              </div>
+              <div>
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  component="span"
+                  color="primary"
                   onClick={() => setOpenModalImport(true)}
                   startIcon={<BackupIcon color="secondary" />}
                   style={{ backgroundColor: "#55BD84" }}
@@ -345,6 +385,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         openModal={openModalChangeStatus}
         setOpenModal={setOpenModalChangeStatus}
         massive={true}
+        selectedRows={selectedRows}
       />
     </div>
   );

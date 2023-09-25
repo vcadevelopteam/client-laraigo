@@ -19,6 +19,7 @@ const paths = {
     POSTCREATOR: '/postcreator',
     PRODUCTMASTER: '/ProductMaster',
     WAREHOUSE: '/warehouse',
+    COMPANIES: '/companies',
     TICKETS: '/tickets',
     EMAIL_INBOX: '/email_inbox',
     MESSAGE_INBOX: '/message_inbox',
