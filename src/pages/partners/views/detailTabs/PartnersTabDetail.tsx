@@ -8,7 +8,7 @@ import Box from '@material-ui/core/Box';
 import { ItemFile, UploaderIcon } from '../../components/components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { FieldErrors, UseFormGetValues, UseFormSetValue, useForm } from 'react-hook-form';
 import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, FieldSelect } from 'components';
 import TableZyx from "components/fields/table-simple";
 import { useSelector } from 'hooks';
@@ -68,27 +68,40 @@ interface PartnersTabDetailProps {
 
 const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
     row,
-    setValue,
-    getValues,
     multiData,
-    errors,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const user = useSelector(state => state.login.validateToken.user);
-    const initialValueAttachments = getValues('attachments');
-    const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
-    const [openModal, setOpenModal] = useState(false);
     const countryList = useSelector(state => state.signup.countryList);
     const dispatch = useDispatch();
     const [isEnterprise, setIsEnterprise] = useState(false);
     const [isAutomaticDrafts, setIsAutomaticDrafts] = useState(false);
     const [isAutomaticPeriod, setIsAutomaticPeriod] = useState(false);
-    //const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
-    function handleRegister() {
-        setOpenModal(true)
-    }
+    const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row ? row.corpid : 0,
+            sunatcountry: row?.sunatcountry || '',
+            billingcurrency: row?.billingcurrency || '',
+            doctype: row?.doctype || '',
+            docnum: row?.docnum || '',
+            businessname: row?.businessname || '',
+            fiscaladdress: row?.fiscaladdress || '',
+            contact: row?.contact || '',
+            contactemail: row?.contactemail || '',
+            signdate: row?.signdate || '',
+            automaticdrafts: row?.automaticdrafts || false,
+            automaticperiod: row?.automaticperiod || false,
+            isEnterprise: row?.isEnterprise || false,
+            billingplan: row?.billingplan || '',
+            additionalcontacttype: row?.additionalcontacttype || '',
+            bagcontactsquantity: row?.bagcontactsquantity || '',
+            pucontacts: row?.pucontacts || '',
+            bagprice: row?.bagprice || '',
+            operation: row ? "UPDATE" : "INSERT",
+        }
+    });
 
     useEffect(() => {
         dispatch(getCountryList())
@@ -123,76 +136,82 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.country)}
+                    valueDefault={getValues('sunatcountry')}
+                    onChange={(value) => setValue('sunatcountry', value)}
                     className="col-6"
                     data={countries}
-                    error={errors?.producttype?.message}
+                    error={errors?.sunatcountry?.message}
+                    optionValue="code"
+                    optionDesc="description"
+                />
+                <FieldSelect
+                    label={t(langKeys.billingperiod_billingcurrency)}
+                    valueDefault={getValues('billingcurrency')}
+                    onChange={(value) => setValue('billingcurrency', value)}
+                    className="col-6"
+                    error={errors?.billingcurrency?.message}
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                 />
                 <FieldSelect
-                    label={t(langKeys.billingperiod_billingcurrency)}
-                    className="col-6"
-                    error={errors?.producttype?.message}
-                    optionValue="domainvalue"
-                    optionDesc="domaindesc"direccion fiscal
-                />
-                <FieldSelect
                     label={t(langKeys.documenttype)}
+                    valueDefault={getValues('doctype')}
+                    onChange={(value) => setValue('doctype', value)}
                     className="col-6"
-                    error={errors?.producttype?.message}
+                    error={errors?.doctype?.message}
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                 />
                 <FieldEdit
                     label={t(langKeys.documentnumber)}
-                    valueDefault={getValues('name')}
+                    valueDefault={getValues('docnum')}
                     className="col-6"
-                    error={errors?.name?.message}
-                    onChange={(value) => setValue('name', value)}
+                    error={errors?.docnum?.message}
+                    onChange={(value) => setValue('docnum', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.businessname)}
-                    valueDefault={getValues('name')}
+                    valueDefault={getValues('businessname')}
                     className="col-6"
-                    error={errors?.name?.message}
-                    onChange={(value) => setValue('name', value)}
+                    error={errors?.businessname?.message}
+                    onChange={(value) => setValue('businessname', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.fiscaladdress)}
-                    valueDefault={getValues('name')}
+                    valueDefault={getValues('fiscaladdress')}
                     className="col-6"
-                    error={errors?.name?.message}
-                    onChange={(value) => setValue('name', value)}
+                    error={errors?.fiscaladdress?.message}
+                    onChange={(value) => setValue('fiscaladdress', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.billingcontact)}
-                    valueDefault={getValues('name')}
+                    valueDefault={getValues('contact')}
                     className="col-6"
-                    error={errors?.name?.message}
-                    onChange={(value) => setValue('name', value)}
+                    error={errors?.contact?.message}
+                    onChange={(value) => setValue('contact', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.billingcontactmail)}
-                    valueDefault={getValues('name')}
+                    valueDefault={getValues('contactemail')}
                     className="col-6"
-                    error={errors?.name?.message}
-                    onChange={(value) => setValue('name', value)}
+                    error={errors?.contactemail?.message}
+                    onChange={(value) => setValue('contactemail', value)}
                 />
                 <div className='row-zyx'>
                     <FieldEdit
                         label={t(langKeys.contractsigningdate)}
                         type='date'
-                        valueDefault={getValues('name')}
+                        valueDefault={getValues('signdate')}
                         className="col-6"
-                        error={errors?.name?.message}
-                        onChange={(value) => setValue('name', value)}
+                        error={errors?.signdate?.message}
+                        onChange={(value) => setValue('signdate', value)}
                     />
                 </div>
                 <FormControlLabel
                     control={
                     <Switch
-                        checked={isAutomaticDrafts}
-                        onChange={(event) => setIsAutomaticDrafts(event.target.checked)}
+                        checked={getValues('automaticdrafts')}
+                        onChange={(event) => setValue('automaticdrafts', event.target.checked)}
                         color='primary'
                     />}
                     label={t(langKeys.automaticdrafts)}
@@ -201,8 +220,8 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 <FormControlLabel
                     control={
                     <Switch
-                        checked={isAutomaticPeriod}
-                        onChange={(event) => setIsAutomaticPeriod(event.target.checked)}
+                        checked={getValues('automaticperiod')}
+                        onChange={(event) => setValue('automaticperiod', event.target.checked)}
                         color='primary'
                     />}
                     label={t(langKeys.automaticperiod)}
@@ -211,8 +230,8 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 <FormControlLabel
                     control={
                     <Switch
-                        checked={isEnterprise}
-                        onChange={(event) => setIsEnterprise(event.target.checked)}
+                        checked={getValues('isEnterprise')}
+                        onChange={(event) => setValue('isEnterprise', event.target.checked)}
                         color='primary'
                     />}
                     label={t(langKeys.isenterprise)}
@@ -222,38 +241,42 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     <>
                         <FieldSelect
                             label={t(langKeys.billingplan)}
+                            valueDefault={getValues('billingplan')}
+                            onChange={(value) => setValue('billingplan', value)}
                             className="col-6"
-                            error={errors?.producttype?.message}
+                            error={errors?.billingplan?.message}
                             optionValue="domainvalue"
                             optionDesc="domaindesc"direccion fiscal
                         />
                         <FieldSelect
                             label={t(langKeys.additionalcontactcalculationtype)}
+                            valueDefault={getValues('additionalcontacttype')}
+                            onChange={(value) => setValue('additionalcontacttype', value)}
                             className="col-6"
-                            error={errors?.producttype?.message}
+                            error={errors?.additionalcontacttype?.message}
                             optionValue="domainvalue"
-                            optionDesc="domaindesc"direccion fiscal
+                            optionDesc="domaindesc"
                         />
                         <FieldEdit
                             label={t(langKeys.numberofcontactsperbag)}
-                            valueDefault={getValues('name')}
+                            valueDefault={getValues('bagcontactsquantity')}
                             className="col-6"
-                            error={errors?.name?.message}
-                            onChange={(value) => setValue('name', value)}
+                            error={errors?.bagcontactsquantity?.message}
+                            onChange={(value) => setValue('bagcontactsquantity', value)}
                         />
                         <FieldEdit
                             label={t(langKeys.puadditionalcontacts)}
-                            valueDefault={getValues('name')}
+                            valueDefault={getValues('pucontacts')}
                             className="col-6"
-                            error={errors?.name?.message}
-                            onChange={(value) => setValue('name', value)}
+                            error={errors?.pucontacts?.message}
+                            onChange={(value) => setValue('pucontacts', value)}
                         />
                         <FieldEdit
                             label={t(langKeys.priceperbag)}
-                            valueDefault={getValues('name')}
+                            valueDefault={getValues('bagprice')}
                             className="col-6"
-                            error={errors?.name?.message}
-                            onChange={(value) => setValue('name', value)}
+                            error={errors?.bagprice?.message}
+                            onChange={(value) => setValue('bagprice', value)}
                         />
                     </>
                 )}
