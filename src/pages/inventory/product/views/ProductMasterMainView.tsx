@@ -386,6 +386,8 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         setOpenModal={setOpenModalChangeStatus}
         massive={true}
         selectedRows={selectedRows}
+        fetchData={fetchData}
+        fetchDataAux={fetchDataAux}
       />
     </div>
   );

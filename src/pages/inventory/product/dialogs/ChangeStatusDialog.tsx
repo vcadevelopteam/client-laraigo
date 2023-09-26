@@ -32,7 +32,10 @@ const ChangeStatusDialog: React.FC<{
   row?: any;
   massive?: boolean;
   selectedRows?: any;
-}> = ({ openModal, setOpenModal, row, massive = false, selectedRows }) => {
+  fetchData: any;
+  fetchDataAux: any;
+  setValueOutside?:any;
+}> = ({ openModal, setOpenModal, row, massive = false, selectedRows, fetchData, fetchDataAux, setValueOutside }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const multiData = useSelector(state => state.main.multiDataAux);
@@ -40,7 +43,7 @@ const ChangeStatusDialog: React.FC<{
   const executeRes = useSelector(state => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
 
-  const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
+  const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset, formState: { errors } } = useForm({
     defaultValues: {
         statusid: 0,
         productid: row?.productid || '',
@@ -66,7 +69,14 @@ const ChangeStatusDialog: React.FC<{
         if (!executeRes.loading && !executeRes.error) {
             dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
             dispatch(showBackdrop(false));
+            if(!!setValueOutside){
+              console.log(getValues("status"))
+              setValueOutside("status", getValues("status"))
+            }else{
+              fetchData(fetchDataAux)
+            }
             setOpenModal(false);
+            reset()
         } else if (executeRes.error) {
             const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -77,7 +87,6 @@ const ChangeStatusDialog: React.FC<{
 }, [executeRes, waitSave])
 
   const onMainSubmit = handleMainSubmit((data:any) => {
-    debugger
     const callback = () => {
         dispatch(showBackdrop(true));
         if(massive){

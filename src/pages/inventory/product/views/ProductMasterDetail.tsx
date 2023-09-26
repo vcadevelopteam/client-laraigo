@@ -101,7 +101,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit, duplica
             familyid: row?.familyid || 0,
             unitbuyid: row?.unitbuyid || 0,
             unitdispatchid: row?.unitdispatchid || 0,
-            status: row?.status || '',
+            status: row?.status || 'ACTIVO',
             operation: edit ? "EDIT" : "INSERT",
             productcode: edit? row?.productcode : '',
             subfamilyid: row?.subfamilyid || 0,
@@ -357,6 +357,9 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit, duplica
                 openModal={openModalChangeStatus}
                 setOpenModal={setOpenModalChangeStatus}
                 row={row}
+                fetchData={fetchData}
+                fetchDataAux={fetchDataAux}
+                setValueOutside={setValue}
             />
             <StatusHistoryDialog 
                 openModal={openModalStatusHistory}

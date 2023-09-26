@@ -11,7 +11,7 @@ import TableZyx from "components/fields/table-simple";
 import { useDispatch } from "react-redux";
 import { getCollectionAux } from "store/main/actions";
 import { useSelector } from "hooks";
-import { getProductStatusHistory } from "common/helpers";
+import { convertLocalDate, getProductStatusHistory } from "common/helpers";
 
 const StatusHistoryDialog: React.FC<{
   openModal: any;
@@ -33,6 +33,12 @@ const StatusHistoryDialog: React.FC<{
         Header: t(langKeys.change_date),
         accessor: "createdate",
         width: "auto",
+        type:"date",        
+        sortType: "datetime",
+        Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return convertLocalDate(row.createdate).toLocaleString();
+        },
       },
       {
         Header: t(langKeys.change_by),
@@ -56,11 +62,11 @@ const StatusHistoryDialog: React.FC<{
   }, [openModal]);
 
   return (
-    <DialogZyx open={openModal} title={t(langKeys.status_history)}>
+    <DialogZyx open={openModal} title={t(langKeys.status_history)} maxWidth="md">
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={statusHistoryData.data}
+          data={statusHistoryData.data.reverse()}
           loading={false}
           filterGeneral={false}
         />

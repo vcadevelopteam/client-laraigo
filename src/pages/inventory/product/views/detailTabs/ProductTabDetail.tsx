@@ -182,6 +182,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                                 onChange={(value) => setValue('status', value?.domainvalue||"")}
                                 error={errors?.status?.message}
                                 data={multiData.data[5].data}
+                                disabled
                                 optionDesc="domainvalue"
                                 optionValue="domaindesc"
                             />
