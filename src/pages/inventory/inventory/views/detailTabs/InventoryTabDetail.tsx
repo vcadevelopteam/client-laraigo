@@ -146,6 +146,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.name?.message}
                             onChange={(value) => setValue('name', value)}
+                            disabled={true}
                         />
                         <FieldEdit
                             label={t(langKeys.description)}
@@ -153,6 +154,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.description?.message}
                             onChange={(value) => setValue('description', value)}
+                            disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
@@ -162,6 +164,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.name?.message}
                             onChange={(value) => setValue('name', value)}
+                            disabled={true}
                         />
                         <FieldEdit
                             label={t(langKeys.description)}
@@ -169,6 +172,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.description?.message}
                             onChange={(value) => setValue('description', value)}
+                            disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
@@ -177,6 +181,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             valueDefault={getValues("ispredeterminate")}
                             onChange={(value) => setValue("ispredeterminate", value)}
+                            disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
@@ -198,6 +203,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                                 className="col-6"
                                 error={errors?.address?.message}
                                 onChange={(value) => setValue('address', value)}
+                                disabled={true}
                             />  
                         </div>
                         <div className='row-zyx'>
@@ -207,6 +213,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                                 className="col-6"
                                 error={errors?.latitude?.message}
                                 onChange={(value) => setValue('latitude', value)}
+                                disabled={true}
                             />
                         </div>
                         <div className='row-zyx'>
@@ -216,6 +223,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                                 className="col-6"
                                 error={errors?.longitude?.message}
                                 onChange={(value) => setValue('longitude', value)}
+                                disabled={true}
                             /> 
                         </div>
                         <div className='row-zyx'>
@@ -225,6 +233,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                                 className="col-6"
                                 error={errors?.longitude?.message}
                                 onChange={(value) => setValue('longitude', value)}
+                                disabled={true}
                             /> 
                         </div>  
                     </div>
@@ -246,6 +255,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                                 className="col-6"
                                 error={errors?.longitude?.message}
                                 onChange={(value) => setValue('longitude', value)}
+                                disabled={true}
                             /> 
                         </div>
                     </div>
@@ -265,6 +275,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.address?.message}
                             onChange={(value) => setValue('address', value)}
+                            disabled={true}
                         />  
                     </div>
                     <div className='row-zyx'>
@@ -274,6 +285,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.latitude?.message}
                             onChange={(value) => setValue('latitude', value)}
+                            disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
@@ -283,6 +295,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.address?.message}
                             onChange={(value) => setValue('address', value)}
+                            disabled={true}
                         />  
                     </div>
                     <div className='row-zyx'>
@@ -292,6 +305,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.latitude?.message}
                             onChange={(value) => setValue('latitude', value)}
+                            disabled={true}
                         />
                     </div>
                 </div>
@@ -304,20 +318,33 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.dateoflastshipment)}
-                            type="date"
+                            type="datetime-local"
                             valueDefault={getValues('address')}
                             className="col-6"
                             error={errors?.address?.message}
                             onChange={(value) => setValue('address', value)}
+                            disabled={true}
                         />  
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.accumulatedannual)}
+                            
+                            InputProps={{
+                                inputProps: {
+                                  step: 0.01, // Specify step as 0.01 for 2 decimal places
+                                },
+                            }}
                             valueDefault={getValues('latitude')}
                             className="col-6"
                             error={errors?.latitude?.message}
-                            onChange={(value) => setValue('latitude', value)}
+                            onChange={(value) => {
+                                const inputValue = value;
+                                const regexPattern = /^-?\d+(\.\d{0,2})?/;
+                                if (regexPattern.test(inputValue)) {
+                                  setValue('latitude', inputValue);
+                                }}}
+                                disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
@@ -327,6 +354,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.address?.message}
                             onChange={(value) => setValue('address', value)}
+                            disabled={true}
                         />  
                     </div>
                     <div className='row-zyx'>
@@ -336,6 +364,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             className="col-6"
                             error={errors?.latitude?.message}
                             onChange={(value) => setValue('latitude', value)}
+                            disabled={true}
                         />
                     </div>
                 </div>
@@ -353,6 +382,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         className="col-4"
                         error={errors?.address?.message}
                         onChange={(value) => setValue('address', value)}
+                        disabled={true}
                     />
                     <FieldEdit
                         label={t(langKeys.average_cost)}
@@ -360,14 +390,16 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         className="col-4"
                         error={errors?.address?.message}
                         onChange={(value) => setValue('address', value)}
+                        disabled={true}
                     />
                     <FieldEdit
                         label={t(langKeys.dateoflastmodification)}
-                        type="date"
+                        type="datetime-local"
                         valueDefault={getValues('address')}
                         className="col-4"
                         error={errors?.address?.message}
                         onChange={(value) => setValue('address', value)}
+                        disabled={true}
                     />  
                 </div>
             </div>

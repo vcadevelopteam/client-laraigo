@@ -30,6 +30,7 @@ const RegisterDealerDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const multiDataAux = useSelector(state => state.main.multiDataAux);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -87,9 +88,9 @@ const submitData = handleMainSubmit((data) => {
           <FieldSelect
             label={t(langKeys.dealer)}
             className="col-4"
-            data={[]}
-            optionValue="domainvalue"
-            optionDesc="domaindesc"
+            data={(multiDataAux?.data?.[4]?.data||[]).filter(x=>x.typemanufacter_desc ==="D")}
+            optionValue="manufacturerid"
+            optionDesc="description"
           />
           <FieldEdit
             label={t(langKeys.description)}
@@ -101,7 +102,7 @@ const submitData = handleMainSubmit((data) => {
           <FieldSelect
             label={t(langKeys.purchase_unit)}
             className="col-4"
-            data={[]}
+            data={multiDataAux?.data?.[0]?.data}
             optionValue="domainvalue"
             optionDesc="domaindesc"
           />
@@ -121,9 +122,9 @@ const submitData = handleMainSubmit((data) => {
           <FieldSelect
             label={t(langKeys.manufacturer)}
             className="col-4"
-            data={[]}
-            optionValue="domainvalue"
-            optionDesc="domaindesc"
+            data={(multiDataAux?.data?.[4]?.data||[]).filter(x=>x.typemanufacter_desc ==="F")}
+            optionValue="manufacturerid"
+            optionDesc="description"
           />
           <FieldEdit
             label={t(langKeys.description)}

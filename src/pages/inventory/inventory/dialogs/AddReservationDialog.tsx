@@ -15,7 +15,7 @@ import { execute, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 
@@ -29,12 +29,14 @@ const AddReservationDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
-}> = ({ openModal, setOpenModal, row }) => {
+  errors: any;
+}> = ({ openModal, setOpenModal, row, errors }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const multiDataAux = useSelector(state => state.main.multiDataAux);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -89,26 +91,28 @@ const submitData = handleMainSubmit((data) => {
     <DialogZyx open={openModal} title={`${t(langKeys.add)} ${t(langKeys.reservations)}`} maxWidth="md">
       <form onSubmit={submitData}>
       <div className="row-zyx">
-          <FieldEdit
+          <FieldSelect
             label={t(langKeys.ticketapplication)}
-            valueDefault={getValues('attributeid')}
+            data={[]}
             className="col-3"
-            onChange={(value) => {setValue('attributeid', value)}}
-            inputProps={{ maxLength: 256 }}
+            optionValue="domainvalue"
+            optionDesc="domaindesc"
           />
-          <FieldEdit
+          <FieldSelect
             label={t(langKeys.reservationtype)}
-            valueDefault={getValues('value')}
             className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
+            error={errors?.producttype?.message}
+            data={multiDataAux?.data?.[5]?.data}
+            optionValue="domainvalue"
+            optionDesc="domaindesc"
           />
-          <FieldEdit
+          <FieldSelect
             label={t(langKeys.product)}
-            valueDefault={getValues('value')}
             className="col-3"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
+            error={errors?.producttype?.message}
+            data={multiDataAux?.data?.[2]?.data}
+            optionValue="productid"
+            optionDesc="description"
           />
           <FieldEdit
             label={t(langKeys.description)}
@@ -117,12 +121,13 @@ const submitData = handleMainSubmit((data) => {
             onChange={(value) => {setValue('value', value)}}
             inputProps={{ maxLength: 256 }}
           />
-          <FieldEdit
+          <FieldSelect
             label={t(langKeys.warehouse)}
-            valueDefault={getValues('value')}
             className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
+            error={errors?.producttype?.message}
+            data={multiDataAux?.data?.[3]?.data}
+            optionValue="warehouseid"
+            optionDesc="description"
           />
           <FieldEdit
             label={t(langKeys.reservedquantity)}

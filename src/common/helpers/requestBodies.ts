@@ -4238,7 +4238,7 @@ export const getPaginatedInventory = ({ skip, take, filters, sorts, startdate, e
         take,
         filters,
         sorts,
-        origin: "product",
+        origin: "inventory",
         inventoryid: 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }

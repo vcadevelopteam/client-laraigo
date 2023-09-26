@@ -94,7 +94,7 @@ const submitData = handleMainSubmit((data) => {
             valueDefault={getValues('attributeid')}
             className="col-6"
             onChange={(value) => {setValue('attributeid', value)}}
-            inputProps={{ maxLength: 256 }}
+            inputProps={{ maxLength: 15 }}
           />
           <FieldEdit
             label={t(langKeys.dateofphysicalcount)}
@@ -109,7 +109,7 @@ const submitData = handleMainSubmit((data) => {
             valueDefault={getValues('value')}
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
+            inputProps={{ maxLength: 50 }}
           />
           <FieldCheckbox
             label={t(langKeys.isconciliated)}
@@ -119,10 +119,11 @@ const submitData = handleMainSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.current_balance)}
+            type={'number'}
             valueDefault={getValues('value')}
             className="col-6"
             onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
+            inputProps={{ maxLength: 15 }}
           />
           <FieldEdit
             label={t(langKeys.shelflifeindays)}

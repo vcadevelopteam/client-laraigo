@@ -31,6 +31,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
   const classes = useStyles();
   const dataProducts = useSelector(state => state.main.mainAux);
   const [openModal, setOpenModal] = useState(false);
+  const multiDataAux = useSelector(state => state.main.multiDataAux);
 
   useEffect(() => {
     fetchdata();
@@ -98,18 +99,24 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
               <FieldCheckbox
                   label={t(langKeys.neworder)}
                   className="col-6"
+                  valueDefault={true}
               />
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.restockingpoint)}
+                  type="number"
+                  valueDefault={0}
                   className="col-6"
                   error={errors?.address?.message}
+                  inputProps={{ maxLength: 15 }}
               />  
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.deliverytimedays)}
+                  type="number"
+                  valueDefault={0}
                   className="col-6"
                   error={errors?.latitude?.message}
               />
@@ -124,6 +131,8 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.economicquantityoforders)}
+                  type="number"
+                  valueDefault={1}
                   className="col-6"
                   error={errors?.latitude?.message}
               />
@@ -133,6 +142,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                 label={t(langKeys.purchase_unit)}
                 className="col-6"
                 error={errors?.producttype?.message}
+                data={multiDataAux?.data?.[0]?.data}
                 optionValue="domainvalue"
                 optionDesc="domaindesc"
               />
@@ -149,8 +159,9 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                 label={t(langKeys.dealer)}
                 className="col-6"
                 error={errors?.producttype?.message}
-                optionValue="domainvalue"
-                optionDesc="domaindesc"
+                data={(multiDataAux?.data?.[4]?.data||[]).filter(x=>x.typemanufacter_desc ==="D")}
+                optionValue="manufacturerid"
+                optionDesc="description"
               />
               <FieldEdit
                   label={t(langKeys.description)}
@@ -163,8 +174,9 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                 label={t(langKeys.manufacturer)}
                 className="col-6"
                 error={errors?.producttype?.message}
-                optionValue="domainvalue"
-                optionDesc="domaindesc"
+                data={(multiDataAux?.data?.[4]?.data||[]).filter(x=>x.typemanufacter_desc ==="F")}
+                optionValue="manufacturerid"
+                optionDesc="description"
               />
               <FieldEdit
                   label={t(langKeys.description)}
