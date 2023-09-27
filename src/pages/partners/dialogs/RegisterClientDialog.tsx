@@ -29,6 +29,7 @@ const RegisterClientDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const multiDataAux = useSelector(state => state.main.multiDataAux);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -86,16 +87,16 @@ const submitData = handleMainSubmit((data) => {
           <FieldSelect
             label={t(langKeys.corporation)}
             className="col-6"
-            data={[]}
-            optionValue="domainvalue"
-            optionDesc="domaindesc"
+            data={(multiDataAux?.data?.[1]?.data||[])}
+            optionValue="corpid"
+            optionDesc="description"
           />
           <FieldSelect
             label={t(langKeys.organization)}
             className="col-6"
-            data={[]}
-            optionValue="domainvalue"
-            optionDesc="domaindesc"
+            data={(multiDataAux?.data?.[0]?.data||[])}
+            optionValue="orgid"
+            optionDesc="orgdesc"
           />
           <FieldSelect
             label={t(langKeys.partnertype)}

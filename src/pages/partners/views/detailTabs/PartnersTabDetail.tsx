@@ -78,6 +78,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
     const [isEnterprise, setIsEnterprise] = useState(false);
     const [isAutomaticDrafts, setIsAutomaticDrafts] = useState(false);
     const [isAutomaticPeriod, setIsAutomaticPeriod] = useState(false);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
 
     const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -169,6 +170,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     valueDefault={getValues('billingcurrency')}
                     onChange={(value) => setValue('billingcurrency', value)}
                     className="col-6"
+                    data={(multiDataAux?.data?.[2]?.data||[])}
                     error={errors?.billingcurrency?.message}
                     optionValue="domainvalue"
                     optionDesc="domaindesc"

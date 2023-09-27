@@ -3,9 +3,10 @@ import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { Dictionary, IFetchData } from "@types";
-import { getCollectionPaginated, resetAllMain } from "store/main/actions";
+import { getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import PartnersMainView from "./views/PartnersMainView";
 import PartnersDetail from "./views/PartnersDetail";
+import { getCorpSel, getOrgSel, getOrgSelList, getValuesFromDomain } from "common/helpers";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -53,6 +54,19 @@ const Partners: FC = () => {
       )
     );*/
   };
+
+  useEffect(() => {
+    dispatch(
+      getMultiCollectionAux([
+        getOrgSelList(0),
+        getCorpSel(0),
+        getValuesFromDomain('PRODUCTOMONEDA')
+      ])
+    );
+    return () => {
+      dispatch(resetAllMain());
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
