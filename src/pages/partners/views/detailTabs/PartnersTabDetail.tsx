@@ -103,6 +103,9 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
         }
     });
 
+    const [docType, setDocType] = useState(getValues('doctype'));
+    const [sunatCountry, setSunatCountry] = useState(getValues('sunatcountry'));
+
     useEffect(() => {
         dispatch(getCountryList())
     }, []);
@@ -113,6 +116,20 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
             return a.description.localeCompare(b.description);
         });
     }, [countryList]);
+
+    const handleCountryChange = (value: string) => {
+        setValue('sunatcountry', value);
+        console.log(getValues('sunatcountry'));
+    
+        if (value === 'PE') {
+          setValue('doctype', 'RUC');
+          setDocType('RUC')
+        } else {
+          setValue('doctype', 'NO DOMICILIADO');
+          setDocType('NO DOMICILIADO')
+        }
+        console.log(getValues('doctype'))
+    };
 
     /*const docTypes = useMemo(() => {
         if (!dataDocType || dataDocType.length === 0) return [];
@@ -136,8 +153,11 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.country)}
-                    valueDefault={getValues('sunatcountry')}
-                    onChange={(value) => setValue('sunatcountry', value)}
+                    valueDefault={sunatCountry}
+                    onChange={(value) => {
+                        setSunatCountry(value.description)
+                        handleCountryChange(value.code)
+                    }}
                     className="col-6"
                     data={countries}
                     error={errors?.sunatcountry?.message}
@@ -153,14 +173,12 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                 />
-                <FieldSelect
+                <FieldEdit
                     label={t(langKeys.documenttype)}
-                    valueDefault={getValues('doctype')}
-                    onChange={(value) => setValue('doctype', value)}
+                    valueDefault={docType}
                     className="col-6"
                     error={errors?.doctype?.message}
-                    optionValue="domainvalue"
-                    optionDesc="domaindesc"
+                    disabled={sunatCountry !== ''}
                 />
                 <FieldEdit
                     label={t(langKeys.documentnumber)}
@@ -210,8 +228,11 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 <FormControlLabel
                     control={
                     <Switch
-                        checked={getValues('automaticdrafts')}
-                        onChange={(event) => setValue('automaticdrafts', event.target.checked)}
+                        checked={isAutomaticDrafts}
+                        onChange={(event) => {
+                            setValue('automaticdrafts', event.target.checked)
+                            setIsAutomaticDrafts(event.target.checked)
+                        }}
                         color='primary'
                     />}
                     label={t(langKeys.automaticdrafts)}
@@ -220,8 +241,11 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 <FormControlLabel
                     control={
                     <Switch
-                        checked={getValues('automaticperiod')}
-                        onChange={(event) => setValue('automaticperiod', event.target.checked)}
+                        checked={isAutomaticPeriod}
+                        onChange={(event) => {
+                            setIsAutomaticPeriod(event.target.checked)
+                            setValue('automaticperiod', event.target.checked)
+                        }}
                         color='primary'
                     />}
                     label={t(langKeys.automaticperiod)}
@@ -230,14 +254,17 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 <FormControlLabel
                     control={
                     <Switch
-                        checked={getValues('isEnterprise')}
-                        onChange={(event) => setValue('isEnterprise', event.target.checked)}
+                        checked={isEnterprise}
+                        onChange={(event) => {
+                            setIsEnterprise(event.target.checked)
+                            setValue('isEnterprise', event.target.checked)
+                        }}
                         color='primary'
                     />}
                     label={t(langKeys.isenterprise)}
                     className="col-12"
                 />
-                { isEnterprise && (
+                { getValues('isEnterprise') && (
                     <>
                         <FieldSelect
                             label={t(langKeys.billingplan)}
