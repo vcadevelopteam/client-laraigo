@@ -110,7 +110,7 @@ const ImportDialog: React.FC<{
     return (
       typeof element.description === 'string' && element.description.length <= 256 &&
       typeof element.productcode === 'string' && element.productcode.length <= 20 &&
-      typeof element.descriptionlarge === 'string' && element.descriptionlarge.length <= 1000 &&
+      typeof element.descriptionlarge === 'string' && element.descriptionlarge.length <= 10000 &&
       validDomainProductType[element.producttype] &&
       validDomainFamily[element.familyid] &&
       validDomainSubFamily[element.subfamilyid] &&

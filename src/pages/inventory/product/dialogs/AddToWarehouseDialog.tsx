@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldCheckbox, FieldEdit, FieldSelect } from "components";
+import { Button, IconButton, makeStyles } from "@material-ui/core";
+import { DialogZyx, FieldCheckbox, FieldEdit, FieldSelect, FieldView } from "components";
 import { langKeys } from "lang/keys";
 import ClearIcon from "@material-ui/icons/Clear";
 import SaveIcon from "@material-ui/icons/Save";
@@ -11,7 +11,9 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { insProductWarehouse } from "common/helpers";
+import { Add } from '@material-ui/icons';
 import { execute } from "store/main/actions";
+import WarehouseSelectionDialog from "./WarehouseSelectionDialog";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -32,6 +34,8 @@ const AddToWarehouseDialog: React.FC<{
   const multiData = useSelector((state) => state.main.multiDataAux);
   const executeRes = useSelector(state => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
+  const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
+  const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
 
   const {
     register,
@@ -45,6 +49,7 @@ const AddToWarehouseDialog: React.FC<{
       productwarehouseid: row?.productwarehouseid || 0,
       productid: row?.productid || productid,
       warehouseid: row?.warehouseid || 0,
+      warehousename: row?.warehousename || "",
       priceunit: row?.priceunit || 0,
       ispredeterminate: row?.ispredeterminate || false,
       rackcode: row?.rackcode || "",
@@ -61,6 +66,7 @@ const AddToWarehouseDialog: React.FC<{
 
   React.useEffect(() => {
     register("productid");
+    register("warehousename");
     register("warehouseid", {
       validate: (value) => (value && value > 0) || t(langKeys.field_required),
     });
@@ -98,6 +104,10 @@ const AddToWarehouseDialog: React.FC<{
           }
       }
   }, [executeRes, waitSave])
+  useEffect(() => {
+    setValue("warehouseid",selectedWarehouse?.warehouseid||"")
+    setValue("warehousename",selectedWarehouse?.name||"")
+  }, [selectedWarehouse])
 
   const onMainSubmit = handleSubmitWarehouse((data) => {
     const callback = () => {
@@ -113,23 +123,26 @@ const AddToWarehouseDialog: React.FC<{
     }))
   });
   return (
+    <>
     <DialogZyx open={openModal} title={t(langKeys.add_product_to_warehouse)}>
       <form
         onSubmit={onMainSubmit}
         style={{ display: "flex", flexDirection: "column", width: "100%" }}
       >
         <div className="row-zyx">
-          <FieldSelect
+          <FieldEdit
             label={t(langKeys.warehouse)}
+            valueDefault={selectedWarehouse?.name||""}
             className="col-6"
-            valueDefault={getValues("warehouseid")}
-            onChange={(e) => {
-              setValue("warehouseid", e.warehouseid);
-            }}
-            data={multiData.data[8].data}
+            disabled
             error={errors?.warehouseid?.message}
-            optionDesc="description"
-            optionValue="warehouseid"
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={()=>{setOpenModalWarehouse(true)}} edge="end">
+                  <Add  />
+                </IconButton>
+              ),
+            }}
           />
           <FieldSelect
             label={t(langKeys.typecostdispatch)}
@@ -219,6 +232,7 @@ const AddToWarehouseDialog: React.FC<{
             style={{ backgroundColor: "#FB5F5F" }}
             onClick={() => {
               setOpenModal(false);
+              setSelectedWarehouse(null)
               reset();
             }}
           >
@@ -238,6 +252,12 @@ const AddToWarehouseDialog: React.FC<{
         </div>
       </form>
     </DialogZyx>
+    <WarehouseSelectionDialog
+      openModal={openModalWarehouse}
+      setOpenModal={setOpenModalWarehouse}
+      setRow={setSelectedWarehouse}
+    />
+    </>
   );
 };
 
