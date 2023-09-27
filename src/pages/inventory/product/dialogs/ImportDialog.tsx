@@ -169,18 +169,17 @@ const ImportDialog: React.FC<{
       (a, d) => ({ ...a, [d.domainid]: true }),
       {}
     );
-
+    debugger
     return (
       validDomainProduct[element.productid] &&
       validDomainWarehouse[element.warehouseid] &&
       typeof element.priceunit === 'number' && element.priceunit > 0 &&
-      typeof element.currentbalance === 'number' && element.currentbalance > 0 &&
+      typeof element.currentbalance === 'number' && element.currentbalance >= 0 &&
       ((element.ispredeterminate === 'true')||(element.ispredeterminate === 'false')) &&
-      typeof element.rackcode === 'string' && element.rackcode.length > 0 &&
+      element.rackcode.toString().length > 0 &&
       validDomainTypeCostDispatch[element.typecostdispatch]&&
       validDomainUnitDispatch[element.unitdispatchid] &&
-      validDomainUnitBuy[element.unitbuyid] &&
-      typeof element.lotecode === 'string'
+      validDomainUnitBuy[element.unitbuyid]
     );
   };
 
@@ -190,7 +189,7 @@ const ImportDialog: React.FC<{
     if (file) {
       const data: ProductWarehouseMassData[] = (await uploadExcel(file, undefined)) as ProductWarehouseMassData[];
       if (data.length > 0) {
-        const error = data.some((element) => !isValidProductWarehouse(element));
+        const error = data.some((element) => !isValidProductWarehouse(element as ProductWarehouseMassData));
         if(!error){
           let dataToSend = data.map((x: any) => ({
             ...x,
