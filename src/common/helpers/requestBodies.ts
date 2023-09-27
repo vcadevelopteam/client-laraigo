@@ -4365,14 +4365,6 @@ export const getCompanyExport = ({ filters, sorts, startdate, enddate }: Diction
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const duplicateProduct = ({ productid }: Dictionary): IRequestBody => ({
-    method: "UFN_PRODUCT_DUP",
-    key: "UFN_PRODUCT_DUP",
-    parameters: {
-        productid,
-        operation: "DUPLICATE"
-    }
-});
 
 export const insCompany = ({ manufacturerid,description, status,type,descriptionlarge,clientenumbers,beginpage,currencyid,taxeid,ispaymentdelivery,typemanufacterid,manufacturercode,operation  }: Dictionary) => ({
     method: "UFN_MANUFACTURER_INS",
@@ -4385,5 +4377,13 @@ export const importManufacturer = (data:any): IRequestBody => ({
     key: "UFN_MANUFACTURER_MAS",
     parameters: {
         json: JSON.stringify(data)
+    }
+});
+
+export const duplicateProduct = ({ productid, productreferenceid  }: Dictionary): IRequestBody => ({
+    method: "UFN_PRODUCT_DUP",
+    key: "UFN_PRODUCT_DUP",
+    parameters: {
+        productid, productreferenceid
     }
 });

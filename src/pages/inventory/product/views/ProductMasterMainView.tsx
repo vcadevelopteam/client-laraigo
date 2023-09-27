@@ -71,8 +71,6 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   const [openModalImport, setOpenModalImport] = useState(false);
   const [openModalTemplate, setOpenModalTemplate] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
-  const [waitDuplicate, setWaitDuplicate] = useState(false);
-  const [rowToDuplicate, setRowToDuplicate] = useState<any>(null);
   const resExportData = useSelector(state => state.main.exportData);
 
   const handleRegister = () => {
@@ -85,10 +83,8 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     setRowSelected({ row, edit: true, duplicated: false });
   };
   const handleDuplicate = (row: Dictionary) => {
-    setRowToDuplicate(row);
-    dispatch(execute(duplicateProduct(row)))
-    setWaitDuplicate(true)
-    dispatch(showBackdrop(true));
+    setRowSelected({ row, edit: false, duplicated: true });
+    setViewSelected("detail-view");
   };
 
   const handleDelete = (row: Dictionary) => {
@@ -145,34 +141,6 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
       }
     }
   }, [executeResult, waitSave]);
-
-  useEffect(() => {
-    if (waitDuplicate) {
-      if (!executeResult.loading && !executeResult.error) {
-        dispatch(
-          showSnackbar({
-            show: true,
-            severity: "success",
-            message: t(langKeys.satisfactoryduplication),
-          })
-        );
-        fetchData(fetchDataAux);
-        dispatch(showBackdrop(false));
-        setWaitDuplicate(false);
-        setRowSelected({ row: {...rowToDuplicate,productid: executeResult.data[0].p_tableid}, edit: true, duplicated: true });
-        setViewSelected("detail-view");
-      } else if (executeResult.error) {
-        const errormessage = t(executeResult.code || "error_unexpected_error", {
-          module: t(langKeys.domain).toLocaleLowerCase(),
-        });
-        dispatch(
-          showSnackbar({ show: true, severity: "error", message: errormessage })
-        );
-        dispatch(showBackdrop(false));
-        setWaitDuplicate(false);
-      }
-    }
-  }, [executeResult, waitDuplicate]);
 
   const columns = React.useMemo(
     () => [

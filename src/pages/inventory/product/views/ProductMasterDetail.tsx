@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getAllAttributeProduct, getProductManufacturer, getProductProduct, getProductsWarehouse, insProduct } from 'common/helpers';
+import { duplicateProduct, getAllAttributeProduct, getProductManufacturer, getProductProduct, getProductsWarehouse, insProduct } from 'common/helpers';
 import { Dictionary, IFile } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -141,11 +141,16 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit, duplica
                 if(!cancelDuplication){
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 }
+                if(duplicated){
+                    let product_id = executeRes.data[0].p_tableid
+                    dispatch(execute(duplicateProduct({productid: product_id, productreferenceid: row?.productid||0})))
+                }
                 fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setCancelDuplication(false)
                 setWaitSave(false);
                 setViewSelected("main-view");
+
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -194,25 +199,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit, duplica
         }
     });
     function handleReturnMainView(){
-        if(duplicated){
-            const callback = () => {
-                onMainSubmit()
-            }
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.saveduplicatechanges),
-                callback,
-                callbackcancel: ()=>{
-                    setCancelDuplication(true)
-                    dispatch(
-                      execute(insProduct({ ...row, operation: "DELETE", status: "ELIMINADO" }))
-                    );
-                    setWaitSave(true)
-                }
-            }))
-        }else{
-            setViewSelected("main-view")
-        }        
+        setViewSelected("main-view")    
     }
 
     return (
