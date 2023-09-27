@@ -62,13 +62,11 @@ interface PartnersTabDetailProps {
     row: Dictionary | null;
     setValue: UseFormSetValue<any>;
     getValues: UseFormGetValues<any>;
-    multiData: MultiData[];
     errors: FieldErrors<any>;
 }
 
 const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
     row,
-    multiData,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -184,6 +182,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 />
                 <FieldEdit
                     label={t(langKeys.documentnumber)}
+                    type='number'
                     valueDefault={getValues('docnum')}
                     className="col-6"
                     error={errors?.docnum?.message}
@@ -288,24 +287,36 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                         />
                         <FieldEdit
                             label={t(langKeys.numberofcontactsperbag)}
+                            type='number'
                             valueDefault={getValues('bagcontactsquantity')}
                             className="col-6"
                             error={errors?.bagcontactsquantity?.message}
-                            onChange={(value) => setValue('bagcontactsquantity', value)}
+                            onChange={(value) => {
+                                const sanitizedValue = value.replace(/-/g, '');
+                                setValue('bagcontactsquantity', sanitizedValue)
+                            }}
                         />
                         <FieldEdit
                             label={t(langKeys.puadditionalcontacts)}
+                            type='number'
                             valueDefault={getValues('pucontacts')}
                             className="col-6"
                             error={errors?.pucontacts?.message}
-                            onChange={(value) => setValue('pucontacts', value)}
+                            onChange={(value) => {
+                                const sanitizedValue = value.replace(/-/g, '');
+                                setValue('pucontacts', sanitizedValue)
+                            }}
                         />
                         <FieldEdit
                             label={t(langKeys.priceperbag)}
+                            type='number'
                             valueDefault={getValues('bagprice')}
                             className="col-6"
                             error={errors?.bagprice?.message}
-                            onChange={(value) => setValue('bagprice', value)}
+                            onChange={(value) => {
+                                const sanitizedValue = value.replace(/-/g, '');
+                                setValue('bagprice', sanitizedValue)
+                            }}
                         />
                     </>
                 )}

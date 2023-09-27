@@ -149,9 +149,6 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                                 setViewSelected(view);
                             }}
                         />
-                        <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.partner)}`}
-                        />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
