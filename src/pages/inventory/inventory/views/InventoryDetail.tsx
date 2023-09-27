@@ -104,6 +104,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
             phone: row?.phone || '',
             latitude: row?.latitude || '',
             longitude: row?.longitude || '',
+            rackdefault: row?.rackdefault || '',
             status: row?.status || 'ACTIVO'
         }
     });

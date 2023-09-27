@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import TableZyx from "components/fields/table-simple";
 import { useDispatch } from "react-redux";
-import { getCollectionAux } from "store/main/actions";
+import { getCollectionAux2 } from "store/main/actions";
 import { useSelector } from "hooks";
 import { convertLocalDate, getProductStatusHistory } from "common/helpers";
 
@@ -21,7 +21,7 @@ const StatusHistoryDialog: React.FC<{
 }> = ({ openModal, setOpenModal, row, massive = false }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const statusHistoryData = useSelector(state => state.main.mainAux);
+  const statusHistoryData = useSelector(state => state.main.mainAux2);
   const columns = React.useMemo(
     () => [
       {
@@ -57,7 +57,7 @@ const StatusHistoryDialog: React.FC<{
   
   useEffect(() => {
     if(openModal){
-      dispatch(getCollectionAux(getProductStatusHistory(row?.productid)));
+      dispatch(getCollectionAux2(getProductStatusHistory(row?.productid)));
     }
   }, [openModal]);
 

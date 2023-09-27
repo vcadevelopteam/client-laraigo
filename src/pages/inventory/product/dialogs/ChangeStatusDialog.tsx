@@ -62,7 +62,7 @@ const ChangeStatusDialog: React.FC<{
     register('status', { validate: (value:any) => (value && value.length) || t(langKeys.field_required) });
     register('type');
     register('ismoveinventory')
-  }, [register]);
+  }, [openModal,register]);
 
   useEffect(() => {
     if (waitSave) {

@@ -39,7 +39,7 @@ const AddToWarehouseDialog: React.FC<{
     setValue,
     getValues,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
     defaultValues: {
       productwarehouseid: row?.productwarehouseid || 0,
@@ -66,17 +66,20 @@ const AddToWarehouseDialog: React.FC<{
     });
     register('typecostdispatch', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
     register("priceunit", {
-      validate: (value) => (value && value >= 0) || t(langKeys.no_negative),
+      validate: (value) => (value && value > 0) || t(langKeys.no_negative),
     });
     register("currentbalance", {
-      validate: (value) => (value && value >= 0) || t(langKeys.no_negative),
+      validate: {
+        negative: (value) => (value >= 0) || t(langKeys.no_negative),
+        nodecimal: (value) => (value % 1 === 0) || t(langKeys.mustbeinteger),
+      }
     });
     register('unitdispatchid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
     register('lotecode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     register('unitbuyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
     register("ispredeterminate");
     register("rackcode");
-  }, [register]);
+  }, [openModal, register]);
 
   useEffect(() => {
       if (waitSave) {
@@ -147,6 +150,11 @@ const AddToWarehouseDialog: React.FC<{
             type="number"
             error={errors?.priceunit?.message}
             onChange={(value) => setValue("priceunit", value)}
+            InputProps={{
+              inputProps: {
+                min: 0,
+              },
+            }}
           />
           <FieldCheckbox
             label={`${t(langKeys.warehouse)} ${t(langKeys.default)}`}
@@ -161,6 +169,11 @@ const AddToWarehouseDialog: React.FC<{
             type="number"
             error={errors?.currentbalance?.message}
             onChange={(value) => setValue("currentbalance", value)}
+            InputProps={{
+              inputProps: {
+                min: 0,
+              },
+            }}
           />
           <FieldEdit
             label={t(langKeys.default_shelf)}

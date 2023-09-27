@@ -71,7 +71,7 @@ const RegisterDealerDialog: React.FC<{
     register("lastorderdate");
     register("unitbuy");
 
-  }, [register,getValues]);
+  }, [openModal,register,getValues]);
 
   useEffect(() => {
     if (waitSave) {

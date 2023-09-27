@@ -67,7 +67,6 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const user = useSelector(state => state.login.validateToken.user);
     const initialValueAttachments = getValues('attachments');
     const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
     const [openModal, setOpenModal] = useState(false);
@@ -134,7 +133,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
     function handleRegister() {
         setOpenModal(true)
     }
-
+    console.log(row)
     return (
         <div className={classes.containerDetail}>
             <div className="row-zyx">
@@ -142,36 +141,28 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.product)}
-                            valueDefault={getValues('name')}
+                            valueDefault={row?.productcode}
                             className="col-6"
-                            error={errors?.name?.message}
-                            onChange={(value) => setValue('name', value)}
                             disabled={true}
                         />
                         <FieldEdit
                             label={t(langKeys.description)}
-                            valueDefault={getValues('description')}
+                            valueDefault={row?.productdescription}
                             className="col-6"
-                            error={errors?.description?.message}
-                            onChange={(value) => setValue('description', value)}
                             disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.warehouse)}
-                            valueDefault={getValues('name')}
+                            valueDefault={row?.warehousename}
                             className="col-6"
-                            error={errors?.name?.message}
-                            onChange={(value) => setValue('name', value)}
                             disabled={true}
                         />
                         <FieldEdit
                             label={t(langKeys.description)}
-                            valueDefault={getValues('description')}
+                            valueDefault={row?.warehousedescription}
                             className="col-6"
-                            error={errors?.description?.message}
-                            onChange={(value) => setValue('description', value)}
                             disabled={true}
                         />
                     </div>
@@ -179,18 +170,17 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         <FieldCheckbox
                             label={`${t(langKeys.warehouse)} ${t(langKeys.default)}`}
                             className="col-6"
-                            valueDefault={getValues("ispredeterminate")}
-                            onChange={(value) => setValue("ispredeterminate", value)}
+                            valueDefault={row?.iswharehousedefault}
                             disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.default_shelf)}
-                            valueDefault={getValues('address')}
+                            valueDefault={getValues('rackdefault')}
                             className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
+                            error={errors?.rackdefault?.message}
+                            onChange={(value) => setValue('rackdefault', value)}
                         />
                     </div>
                 </div>
@@ -199,40 +189,32 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         <div className='row-zyx'>
                             <FieldEdit
                                 label={t(langKeys.typecostdispatch)}
-                                valueDefault={getValues('address')}
+                                valueDefault={row?.unitdispatchdescription}
                                 className="col-6"
-                                error={errors?.address?.message}
-                                onChange={(value) => setValue('address', value)}
                                 disabled={true}
                             />  
                         </div>
                         <div className='row-zyx'>
                             <FieldEdit
                                 label={t(langKeys.current_balance)}
-                                valueDefault={getValues('latitude')}
+                                valueDefault={row?.currentbalance}
                                 className="col-6"
-                                error={errors?.latitude?.message}
-                                onChange={(value) => setValue('latitude', value)}
                                 disabled={true}
                             />
                         </div>
                         <div className='row-zyx'>
                             <FieldEdit
                                 label={t(langKeys.family)}
-                                valueDefault={getValues('longitude')}
+                                valueDefault={row?.familydescription}
                                 className="col-6"
-                                error={errors?.longitude?.message}
-                                onChange={(value) => setValue('longitude', value)}
                                 disabled={true}
                             /> 
                         </div>
                         <div className='row-zyx'>
                             <FieldEdit
                                 label={t(langKeys.status)}
-                                valueDefault={getValues('longitude')}
+                                valueDefault={row?.status}
                                 className="col-6"
-                                error={errors?.longitude?.message}
-                                onChange={(value) => setValue('longitude', value)}
                                 disabled={true}
                             /> 
                         </div>  
@@ -251,10 +233,8 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         <div className='col-12'>
                             <FieldEdit
                                 label={t(langKeys.subfamily)}
-                                valueDefault={getValues('longitude')}
+                                valueDefault={row?.subfamilydescription}
                                 className="col-6"
-                                error={errors?.longitude?.message}
-                                onChange={(value) => setValue('longitude', value)}
                                 disabled={true}
                             /> 
                         </div>
@@ -271,7 +251,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.current_balance)}
-                            valueDefault={getValues('address')}
+                            valueDefault={row?.currentbalance}
                             className="col-6"
                             error={errors?.address?.message}
                             onChange={(value) => setValue('address', value)}
