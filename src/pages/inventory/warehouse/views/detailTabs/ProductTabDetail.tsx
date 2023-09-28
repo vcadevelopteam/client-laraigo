@@ -34,12 +34,12 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata}) => {
     () => [
       {
         Header: t(langKeys.product),
-        accessor: "productdescription",
+        accessor: "productcode",
         width: "auto",
       },
       {
         Header: t(langKeys.description),
-        accessor: "descriptionlarge",
+        accessor: "productdescription",
         width: "auto",
       },
       {
@@ -54,7 +54,7 @@ const ProductTabDetail: React.FC<ProductTabDetailProps> = ({fetchdata}) => {
       },
       {
         Header: t(langKeys.current_balance),
-        accessor: "current_balance",
+        accessor: "currentbalance",
         width: "auto",
       },
     ],

@@ -90,7 +90,7 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
       },
       {
         Header: t(langKeys.warehouse),
-        accessor: "warehousedescription",
+        accessor: "warehousename",
         width: "auto",
       },
       {
