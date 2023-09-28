@@ -266,6 +266,7 @@ const translation: LangKeys = {
   with: 'with',
   address: 'Address',
   periodreport: 'Period Report',
+  partnersperiodreport: 'Partners Period Report',
   totalize: 'Totalize',
   client: "Client",
   rate: "Rate",

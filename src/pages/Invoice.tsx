@@ -153,6 +153,7 @@ import TableZyx from "../components/fields/table-simple";
 import Typography from "@material-ui/core/Typography";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import PartnerPeriodReport from "./PartnerPeriodReport";
 
 interface RowSelected {
     edit: boolean;
@@ -11366,6 +11367,7 @@ const Invoice: FC = () => {
                             variant="fullWidth"
                         >
                             <AntTab label={t(langKeys.periodreport)} />
+                            <AntTab label={t(langKeys.partnersperiodreport)} />
                             <AntTab label={t(langKeys.payments)} />
                             <AntTab label={t(langKeys.messagingpackages)} />
                             <AntTab label={t(langKeys.paymentmethods)} />
@@ -11377,15 +11379,20 @@ const Invoice: FC = () => {
                         )}
                         {pageSelected === 1 && (
                             <div style={{ marginTop: 16 }}>
-                                <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
+                                <PartnerPeriodReport dataCorp={dataCorp} dataOrg={dataOrg} customSearch={customSearch} />
                             </div>
                         )}
                         {pageSelected === 2 && (
                             <div style={{ marginTop: 16 }}>
-                                <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                                <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                             </div>
                         )}
                         {pageSelected === 3 && (
+                            <div style={{ marginTop: 16 }}>
+                                <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                            </div>
+                        )}
+                        {pageSelected === 4 && (
                             <div style={{ marginTop: 16 }}>
                                 <PaymentMethods />
                             </div>

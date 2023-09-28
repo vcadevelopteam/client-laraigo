@@ -5397,6 +5397,7 @@ export const langKeys = {
   creationuser: "creationuser",
   lastmodificationuser: "lastmodificationuser",
   lastmodificationdate: "lastmodificationdate",
+  partnersperiodreport: "partnersperiodreport",
 };
 
 export type LangKeys = typeof langKeys;

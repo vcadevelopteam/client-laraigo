@@ -1566,6 +1566,7 @@ const translation: LangKeys = {
   affirmative: 'Si',
   negative: 'No',
   periodreport: 'Reporte del Período',
+  partnersperiodreport: 'Reporte del Período Socios',
   totalize: 'Totalizar',
   client: "Cliente",
   rate: "Tasa",
