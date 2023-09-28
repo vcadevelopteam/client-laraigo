@@ -73,6 +73,7 @@ const ProductMaster: FC = () => {
         getValuesFromDomain("TIPOCOSTODESPACHO"),
         getManufacturer(0),
         getValuesFromDomain("CODIGOSIMPUESTO"),
+        getValuesFromDomain("UNIDADMEDIDA"),
       ])
     );
     return () => {

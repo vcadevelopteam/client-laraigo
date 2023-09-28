@@ -108,9 +108,9 @@ const ImportDialog: React.FC<{
     );
 
     return (
-      typeof element.description === 'string' && element.description.length <= 256 &&
-      typeof element.productcode === 'string' && element.productcode.length <= 20 &&
-      typeof element.descriptionlarge === 'string' && element.descriptionlarge.length <= 10000 &&
+      element.description.toString().length <= 256 &&
+      element.productcode.toString().length <= 20 &&
+      element.descriptionlarge.toString().length <= 10000 &&
       validDomainProductType[element.producttype] &&
       validDomainFamily[element.familyid] &&
       validDomainSubFamily[element.subfamilyid] &&
@@ -118,8 +118,7 @@ const ImportDialog: React.FC<{
       validDomainUnitDispatch[element.unitdispatchid] &&
       validDomainLote[element.loteid] &&
       validDomainStatus[element.status] &&
-      typeof element.imagereference === 'string' && element.description.length > 0 &&
-      typeof element.attachments === 'string'
+      element.description.toString().length > 0
     );
   };
 
@@ -232,14 +231,14 @@ const ImportDialog: React.FC<{
       validDomainProduct[element.productid] &&
       validDomainManufacturer[element.manufacturerid] &&
       validDomainManufacturer[element.distributorid] &&
-      typeof element.model === 'string' && element.model.length <=256 &&
-      typeof element.catalognumber === 'string' && element.catalognumber.length <=256 &&
-      typeof element.webpage === 'string' && element.webpage.length <=256 &&
+      element.model.toString().length <=256 &&
+      element.catalognumber.toString().length <=256 &&
+      element.webpage.toString().length <=256 &&
       validDomainTaxe[element.taxeid] &&
       ((element.isstockistdefault === 'true')||(element.isstockistdefault === 'false')) &&
       typeof element.averagedeliverytime === 'number' && element.averagedeliverytime > 0 &&
       typeof element.lastprice === 'number' && element.lastprice > 0 &&
-      typeof element.lastorderdate === 'string' && element.lastorderdate.length >0 &&
+      element.lastorderdate.toString().length >0 &&
       validDomainUnitBuy[element.unitbuy]
     );
   };
@@ -275,14 +274,14 @@ const ImportDialog: React.FC<{
       (a, d) => ({ ...a, [d.productid]: true }),
       {}
     );
-    const validDomainUnitBuy = multiData.data[3].data.reduce(
+    const validDomainUnitBuy = multiData.data[12].data.reduce(
       (a, d) => ({ ...a, [d.domainid]: true }),
       {}
     );
     return (
       validDomainProduct[element.productid] &&
-      typeof element.attributeid === 'string' && element.attributeid.length <=256 &&
-      typeof element.value === 'string' && element.value.length <=256 &&
+      element.attributeid.toString().length <=56 &&
+      element.value.toString().length <=9 &&
       validDomainUnitBuy[element.unitmeasureid]
     );
   };

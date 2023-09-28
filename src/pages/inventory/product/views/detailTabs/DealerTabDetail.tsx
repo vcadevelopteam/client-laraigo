@@ -38,7 +38,6 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [openModalSearch, setOpenModalSearch] = useState(false);
   const [waitSave, setWaitSave] = useState(false);
   const [openModalDealer, setOpenModalDealer] = useState(false);
   const dataDealer = useSelector(state => state.main.mainAux);
@@ -168,9 +167,6 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
   function handleRegister() {
     setOpenModalDealer(true)
   }
-  function search() {
-    setOpenModalSearch(true)
-  }
   return (
     <div className={classes.containerDetail}>
       <div className="row-zyx">
@@ -180,26 +176,9 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
           download={false}
           filterGeneral={false}
           register={true}
-          ButtonsElement={() => (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ width: 120, backgroundColor: "#55BD84" }}
-                startIcon={<SearchIcon style={{ color: "white" }} />}
-                onClick={() => search()}
-              >
-                {t(langKeys.search)}
-              </Button>
-            </div>
-          )}
           handleRegister={handleRegister}
         />
       </div>
-      <SearchDealerDialog
-        openModal={openModalSearch}
-        setOpenModal={setOpenModalSearch}
-      />
       <RegisterDealerDialog
         fetchData={fetchData}
         openModal={openModalDealer}

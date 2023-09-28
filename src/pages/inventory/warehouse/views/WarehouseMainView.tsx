@@ -203,6 +203,14 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         Header: t(langKeys.description),
         accessor: "description",
         width: "auto",
+        Cell: (props: any) => {
+          const row = props.cell.row.original;
+          if(row.description.length>50){
+            return `${row.description.substring(0, 50)}...`
+          }else{
+            return row.description;
+          }
+      }
       },
       {
         Header: t(langKeys.physicaladdress),
@@ -250,7 +258,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
 
     return (
       typeof element.name === 'string' && element.name.length > 0 &&
-      typeof element.description === 'string' && element.description.length > 0 &&
+      typeof element.description === 'string' && element.description.length <= 256 &&
       typeof element.address === 'string' && element.address.length > 0 &&
       Number.isInteger(element.phone) &&
       typeof element.latitude === 'number' && 

@@ -118,7 +118,7 @@ const TemplateImportDialog: React.FC<{
     const data = [
       multiData.data[7].data.reduce((a,d) => ({...a, [d.productid]: `${d.description}`}),{}),
       {}, {}, 
-      multiData.data[3].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{})];
+      multiData.data[12].data.reduce((a,d) => ({...a, [d.domainid]: `${d.domaindesc}`}),{})];
     const header = [
         "productid",
         "attributeid",

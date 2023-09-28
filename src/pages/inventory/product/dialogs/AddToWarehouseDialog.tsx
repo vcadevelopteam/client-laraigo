@@ -13,7 +13,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { insProductWarehouse } from "common/helpers";
 import { Add } from '@material-ui/icons';
 import { execute } from "store/main/actions";
-import WarehouseSelectionDialog from "./WarehouseSelectionDialog";
+import TableSelectionDialog from "./TableSelectionDialog";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -36,6 +36,27 @@ const AddToWarehouseDialog: React.FC<{
   const [waitSave, setWaitSave] = useState(false);
   const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
   const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
+
+  const columnsSelectionTable = React.useMemo(
+    () => [
+      {
+        Header: t(langKeys.warehouse),
+        accessor: "name",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.description),
+        accessor: "description",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.status),
+        accessor: "status",
+        width: "auto",
+      },
+    ],
+    []
+  )
 
   const {
     register,
@@ -94,8 +115,7 @@ const AddToWarehouseDialog: React.FC<{
               dispatch(showBackdrop(false));
               setTabIndex(1);
               fetchdata();
-              reset()
-              setOpenModal(false);
+              closeModal()
           } else if (executeRes.error) {
               const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
               dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -104,6 +124,7 @@ const AddToWarehouseDialog: React.FC<{
           }
       }
   }, [executeRes, waitSave])
+
   useEffect(() => {
     setValue("warehouseid",selectedWarehouse?.warehouseid||"")
     setValue("warehousename",selectedWarehouse?.name||"")
@@ -122,6 +143,13 @@ const AddToWarehouseDialog: React.FC<{
         callback
     }))
   });
+
+  function closeModal(){
+    setOpenModal(false);
+    setSelectedWarehouse(null)
+    reset();
+  }
+
   return (
     <>
     <DialogZyx open={openModal} title={t(langKeys.add_product_to_warehouse)}>
@@ -230,11 +258,7 @@ const AddToWarehouseDialog: React.FC<{
             color="primary"
             startIcon={<ClearIcon color="secondary" />}
             style={{ backgroundColor: "#FB5F5F" }}
-            onClick={() => {
-              setOpenModal(false);
-              setSelectedWarehouse(null)
-              reset();
-            }}
+            onClick={closeModal}
           >
             {t(langKeys.back)}
           </Button>
@@ -252,10 +276,13 @@ const AddToWarehouseDialog: React.FC<{
         </div>
       </form>
     </DialogZyx>
-    <WarehouseSelectionDialog
+    <TableSelectionDialog
       openModal={openModalWarehouse}
       setOpenModal={setOpenModalWarehouse}
       setRow={setSelectedWarehouse}
+      data={multiData.data[8].data}
+      columns={columnsSelectionTable}
+      title={t(langKeys.warehouse)}
     />
     </>
   );

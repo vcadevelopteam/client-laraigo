@@ -8,43 +8,23 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import TableZyx from "components/fields/table-simple";
-import { useSelector } from "hooks";
-import { convertLocalDate, getProductStatusHistory } from "common/helpers";
 
-const WarehouseSelectionDialog: React.FC<{
+const TableSelectionDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
-  setRow: any
-}> = ({ openModal, setOpenModal, setRow }) => {
+  setRow: any;
+  columns: any;
+  data: any;
+  title: string;
+}> = ({ openModal, setOpenModal, setRow, columns, data,title }) => {
   const { t } = useTranslation();
-  const multiData = useSelector((state) => state.main.multiDataAux);
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: t(langKeys.warehouse),
-        accessor: "name",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.description),
-        accessor: "description",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.status),
-        accessor: "status",
-        width: "auto",
-      },
-    ],
-    []
-  );
-
+  
   return (
-    <DialogZyx open={openModal} title={t(langKeys.warehouse)} maxWidth="md">
+    <DialogZyx open={openModal} title={title} maxWidth="md">
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={multiData.data[8].data}
+          data={data||[]}
           loading={false}
           filterGeneral={false}
           onClickRow={(e)=>{setRow(e);setOpenModal(false)}}
@@ -68,4 +48,4 @@ const WarehouseSelectionDialog: React.FC<{
   );
 };
 
-export default WarehouseSelectionDialog;
+export default TableSelectionDialog;

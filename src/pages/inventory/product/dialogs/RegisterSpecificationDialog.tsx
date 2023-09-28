@@ -37,7 +37,7 @@ const RegisterSpecificationDialog: React.FC<{
   const multiData = useSelector(state => state.main.multiDataAux);
   const executeRes = useSelector(state => state.main.execute);
 
-  const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
+  const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset,formState: { errors }} = useForm({
     defaultValues: {
         productattributeid: 0,
         productid: row.productid,
@@ -72,7 +72,7 @@ React.useEffect(() => {
   register('attributeid', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
   register('value', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
   dispatch(resetMainAux());
-}, [register]);
+}, [openModal,register]);
   
 const submitData = handleMainSubmit((data) => {
   const callback = () => {
@@ -88,30 +88,32 @@ const submitData = handleMainSubmit((data) => {
 });
 
   return (
-    <DialogZyx open={openModal} title={t(langKeys.change_status)} maxWidth="sm">
+    <DialogZyx open={openModal} title={t(langKeys.specifications)} maxWidth="sm">
       <form onSubmit={submitData}>
       <div className="row-zyx">
           <FieldEdit
             label={t(langKeys.attribute)}
             valueDefault={getValues('attributeid')}
             className="col-12"
+            error={errors?.attributeid?.message}
             onChange={(value) => {setValue('attributeid', value)}}
-            inputProps={{ maxLength: 256 }}
+            inputProps={{ maxLength: 56 }}
           />
           <FieldEdit
             label={t(langKeys.value)}
             valueDefault={getValues('value')}
             className="col-12"
             onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
+            error={errors?.value?.message}
+            inputProps={{ maxLength: 9 }}
           />
           <FieldSelect
             label={t(langKeys.measureunit)}
             className="col-12"
             valueDefault={getValues('unitmeasureid')}
             onChange={(value) => setValue('unitmeasureid', value?.domainid)}
-            error={""}
-            data={multiData.data[3].data}
+            error={errors?.unitmeasureid?.message}
+            data={multiData.data[12].data}
             optionValue="domainid"
             optionDesc="domainvalue"
           />  

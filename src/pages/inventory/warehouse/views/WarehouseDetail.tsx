@@ -70,9 +70,6 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
-    if(duplicated){
-        dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.satisfactoryduplication) }))
-    }
     const arrayBread = [
         { id: "main-view", name: t(langKeys.warehouse) },
         { id: "detail-view", name: `${t(langKeys.warehouse)} ${t(langKeys.detail)}` },
@@ -83,7 +80,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
             warehouseid: row?.warehouseid || 0,
             operation: edit ? "EDIT" : "INSERT",
             type: row?.type || '',
-            name: row?.name || '',
+            name: edit? row?.name : '',
             description: row?.description || '',
             address: row?.address || '',
             phone: row?.phone || '',
@@ -102,7 +99,11 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                if(duplicated){
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.satisfactoryduplication) }))
+                }else{
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                }
                 fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
@@ -118,11 +119,11 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
     React.useEffect(() => {
         register('warehouseid');
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
+        register('description');
+        register('address');
+        register('phone');
+        register('latitude');
+        register('longitude');
 
         dispatch(resetMainAux());
     }, [register]);

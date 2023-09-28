@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, makeStyles } from "@material-ui/core";
+import { Button, IconButton, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldCheckbox, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import { useEffect, useState } from "react";
@@ -11,8 +11,10 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import React from "react";
+import { Add } from '@material-ui/icons';
 import { execute } from "store/main/actions";
 import { insProductDealer } from "common/helpers";
+import TableSelectionDialog from "./TableSelectionDialog";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -32,6 +34,31 @@ const RegisterDealerDialog: React.FC<{
   const executeRes = useSelector((state) => state.main.execute);
   const dispatch = useDispatch();
   const multiData = useSelector(state => state.main.multiDataAux);
+  const [openModalManufacturer, setOpenModalManufacturer] = useState(false);
+  const [openModalDistributor, setOpenModalDistributor] = useState(false);
+  const [selectedManufacturer, setSelectedManufacturer] = useState<any>(null);
+  const [selectedDistributor, setSelectedDistributor] = useState<any>(null);
+
+  const columnsSelectionTable = React.useMemo(
+    () => [
+      {
+        Header: t(langKeys.company),
+        accessor: "manufacturercode",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.description),
+        accessor: "description",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.status),
+        accessor: "status",
+        width: "auto",
+      },
+    ],
+    []
+  )
 
   const { register,handleSubmit: handleMainSubmit,setValue,getValues,formState: { errors },reset} = useForm({
     defaultValues: {
@@ -60,8 +87,8 @@ const RegisterDealerDialog: React.FC<{
     register("productid");
     register('model')
     register("productcompanyid");
-    register("manufacturerid", { validate: (value) => !!getValues("distributorid")?((value && value>0) ? true : t(langKeys.field_required) + ""):true });
-    register("distributorid", { validate: (value) =>  !!getValues("manufacturerid")?((value && value>0) ? true : t(langKeys.field_required) + ""):true });
+    register("manufacturerid", { validate: (value) => ((value && value>0) ? true : t(langKeys.field_required) + "") });
+    register("distributorid", { validate: (value) =>  ((value && value>0) ? true : t(langKeys.field_required) + "") });
     register("catalognumber");
     register("webpage");
     register("taxeid");
@@ -74,13 +101,21 @@ const RegisterDealerDialog: React.FC<{
   }, [openModal,register,getValues]);
 
   useEffect(() => {
+    setValue("manufacturerid",selectedDistributor?.manufacturerid)
+    setValue("manufacturer",selectedDistributor?.name)
+  }, [selectedManufacturer])
+  useEffect(() => {
+    setValue("distributorid",selectedDistributor?.manufacturerid)
+    setValue("distributor",selectedDistributor?.name)
+  }, [selectedDistributor])
+
+  useEffect(() => {
     if (waitSave) {
       if (!executeRes.loading && !executeRes.error) {
         dispatch(showSnackbar({show: true,severity: "success",message: t(langKeys.successful_register),}));
         dispatch(showBackdrop(false));
-        setOpenModal(false)
-        reset();
         fetchData()
+        closeModal()
       } else if (executeRes.error) {
         const errormessage = t(executeRes.code || "error_unexpected_error", {module: t(langKeys.domain).toLocaleLowerCase(),});
         dispatch(
@@ -108,7 +143,15 @@ const RegisterDealerDialog: React.FC<{
     );
   });
 
+  function closeModal(){
+    setOpenModal(false);
+    setSelectedDistributor(null)
+    setSelectedManufacturer(null)
+    reset();
+  }
+
   return (
+    <>
     <DialogZyx
       open={openModal}
       title={`${t(langKeys.new)} ${t(langKeys.dealer)}`}
@@ -118,45 +161,45 @@ const RegisterDealerDialog: React.FC<{
         <div className="row-zyx">
           <div className="col-8">
             <div className="row-zyx">
-              <FieldSelect
+              <FieldEdit
                 label={t(langKeys.dealer)}
+                valueDefault={selectedDistributor?.manufacturercode||""}
                 className="col-6"
-                valueDefault={getValues("distributorid")}
-                onChange={(value) =>{
-                  setValue("distributorid",value?.manufacturerid)
-                  setValue("distributor",value?.name)
-                }}
+                disabled
                 error={errors?.distributorid?.message}
-                data={(multiData?.data?.[10]?.data||[]).filter(x=>x.typemanufacter_desc ==="D")}
-                optionValue="manufacturerid"
-                optionDesc="description"
-              />
-              <FieldEdit
-                label={t(langKeys.description)}
-                valueDefault={getValues("distributor")}
-                className="col-6"
-                disabled
-                inputProps={{ maxLength: 256 }}
-              />
-              <FieldSelect
-                label={t(langKeys.manufacturer)}
-                className="col-6"
-                valueDefault={getValues("manufacturerid")}
-                onChange={(value) =>{
-                  setValue("manufacturerid",value?.manufacturerid)                  
-                  setValue("manufacturer",value?.name)
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={()=>{setOpenModalDistributor(true)}} edge="end">
+                      <Add  />
+                    </IconButton>
+                  ),
                 }}
-                error={errors?.manufacturerid?.message}
-                data={(multiData?.data?.[10]?.data||[]).filter(x=>x.typemanufacter_desc ==="F")}
-                optionValue="manufacturerid"
-                optionDesc="description"
               />
               <FieldEdit
                 label={t(langKeys.description)}
-                valueDefault={getValues("manufacturer")}
+                valueDefault={selectedDistributor?.description||""}
                 className="col-6"
                 disabled
-                inputProps={{ maxLength: 256 }}
+              />
+              <FieldEdit
+                label={t(langKeys.manufacturer)}
+                valueDefault={selectedManufacturer?.manufacturercode||""}
+                className="col-6"
+                disabled
+                error={errors?.manufacturerid?.message}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={()=>{setOpenModalManufacturer(true)}} edge="end">
+                      <Add  />
+                    </IconButton>
+                  ),
+                }}
+              />
+              <FieldEdit
+                label={t(langKeys.description)}
+                valueDefault={selectedManufacturer?.description||""}
+                className="col-6"
+                disabled
               />
               <FieldEdit
                 label={t(langKeys.model)}
@@ -253,10 +296,7 @@ const RegisterDealerDialog: React.FC<{
             color="primary"
             startIcon={<ClearIcon color="secondary" />}
             style={{ backgroundColor: "#FB5F5F" }}
-            onClick={() => {
-              reset();
-              setOpenModal(false);
-            }}
+            onClick={closeModal}
           >
             {t(langKeys.back)}
           </Button>
@@ -274,6 +314,23 @@ const RegisterDealerDialog: React.FC<{
         </div>
       </form>
     </DialogZyx>
+    <TableSelectionDialog
+      openModal={openModalDistributor}
+      setOpenModal={setOpenModalDistributor}
+      setRow={setSelectedDistributor}
+      data={(multiData?.data?.[10]?.data||[]).filter(x=>x.typemanufacter_desc ==="D")}
+      columns={columnsSelectionTable}
+      title={t(langKeys.dealer)}
+    />
+    <TableSelectionDialog
+      openModal={openModalManufacturer}
+      setOpenModal={setOpenModalManufacturer}
+      setRow={setSelectedManufacturer}
+      data={(multiData?.data?.[10]?.data||[]).filter(x=>x.typemanufacter_desc ==="F")}
+      columns={columnsSelectionTable}
+      title={t(langKeys.manufacturer)}
+    />
+    </>
   );
 };
 

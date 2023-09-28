@@ -4248,7 +4248,7 @@ export const getWarehouseExport = ({ filters, sorts, startdate, enddate }: Dicti
     method: "UFN_WAREHOUSE_EXPORT",
     key: "UFN_WAREHOUSE_EXPORT",
     parameters: {
-        origin: "product",
+        origin: "warehouse",
         filters,
         startdate,
         enddate,
@@ -4357,7 +4357,7 @@ export const getCompanyExport = ({ filters, sorts, startdate, enddate }: Diction
     method: "UFN_MANUFACTURER_EXPORT",
     key: "UFN_MANUFACTURER_EXPORT",
     parameters: {
-        origin: "product",
+        origin: "manufacturer",
         filters,
         startdate,
         enddate,
