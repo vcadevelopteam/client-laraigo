@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Test'){
             steps {
-                sh 'echo aqui va los test'
+                sh 'aws --endpoint-url https://s3.us-south.cloud-object-storage.appdomain.cloud s3 ls'
             }
         }
         stage ('Deploy') {
