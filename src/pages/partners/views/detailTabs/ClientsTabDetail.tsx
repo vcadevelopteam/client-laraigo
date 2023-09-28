@@ -32,7 +32,7 @@ interface ClientsTabDetailProps {
 const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, row}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const dataProducts = useSelector(state => state.main.mainAux);
+  const dataCustomers = useSelector(state => state.main.mainAux);
   const [openModal, setOpenModal] = useState(false);
   const [waitSave, setWaitSave] = useState(false);
   const dispatch = useDispatch();
@@ -78,27 +78,27 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
       },
       {
         Header: t(langKeys.corporation),
-        accessor: "productdescription",
+        accessor: "corporation",
         width: "auto",
       },
       {
         Header: t(langKeys.organization),
-        accessor: "descriptionlarge",
+        accessor: "organization",
         width: "auto",
       },
       {
         Header: t(langKeys.partnertype),
-        accessor: "standarcost",
+        accessor: "typepartner",
         width: "auto",
       },
       {
         Header: t(langKeys.billingplan),
-        accessor: "averagecost",
+        accessor: "billingplan",
         width: "auto",
       },
       {
         Header: t(langKeys.active),
-        accessor: "current_balance",
+        accessor: "status",
         width: "auto",
       }
     ],
@@ -117,7 +117,7 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
           <TableZyx
             columns={columns}
             titlemodule={t(langKeys.clients, { count: 2 })}
-            data={dataProducts.data}
+            data={dataCustomers.data}
             download={true}
             onClickRow={handleEdit}
             register={true}

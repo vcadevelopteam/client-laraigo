@@ -4090,3 +4090,21 @@ export const rasaModelSel = () => ({
     key: "UFN_RASA_MODEL_SEL",
     parameters: {},
 });
+
+export const partnerSel = ({ id, all }: Dictionary) => ({
+    method: "UFN_PARTNER_SEL",
+    key: "UFN_PARTNER_SEL",
+    parameters: { id, all },
+});
+
+export const partnerIns = ({ id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, status, type, operation }: Dictionary) => ({
+    method: "UFN_PARTNER_INS",
+    key: "UFN_PARTNER_INS",
+    parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, status, type, operation },
+});
+
+export const customerByPartnerSel = ( partnerid: number ) => ({
+    method: "UFN_CUSTOMER_BY_PARTNER_SEL",
+    key: "UFN_CUSTOMER_BY_PARTNER_SEL",
+    parameters: { partnerid },
+});

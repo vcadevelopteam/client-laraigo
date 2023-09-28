@@ -16,6 +16,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { Tabs } from '@material-ui/core';
 import PartnersTabDetail from './detailTabs/PartnersTabDetail';
 import ClientsTabDetail from './detailTabs/ClientsTabDetail';
+import { customerByPartnerSel, partnerIns } from 'common/helpers';
 
 
 interface RowSelected {
@@ -26,8 +27,7 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData?: any;
-    fetchDataAux?: any;
+    fetchData: any;
 }
 
 
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -75,32 +75,42 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
         { id: "detail-view", name: `${t(langKeys.partner)} ${t(langKeys.detail)}` },
     ];
     
-    const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            warehouseid: row?.warehouseid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || '',
-            name: row?.name || '',
-            description: row?.description || '',
+            id: row ? row.id : 0,
+            country: row?.country || '',
+            billingcurrency: row?.billingcurrency || '',
+            documenttype: row?.documenttype || '',
+            documentnumber: row?.documentnumber || '',
+            company: row?.company || '',
             address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            status: row?.status || 'ACTIVO'
+            billingcontact: row?.billingcontact || '',
+            email: row?.email || '',
+            signaturedate: row?.signaturedate || '',
+            enterprisepartner: row?.isEnterprise || false,
+            billingplan: row?.billingplan || '',
+            typecalculation: row?.typecalculation || '',            
+            numbercontactsbag: row?.numbercontactsbag || 0,
+            puadditionalcontacts: row?.puadditionalcontacts || 0,
+            priceperbag: row?.priceperbag || 0,
+            automaticgenerationdrafts: row?.automaticgenerationdrafts || false,
+            automaticperiodgeneration: row?.automaticperiodgeneration || false,
+            status: row?.status || '',
+            type: row?.type || '',
+            operation: row ? "UPDATE" : "INSERT",
         }
     });
 
-    const fetchWarehouseProducts = () => {
-        /*dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
-        );*/
+    const fetchCustomerByPartner = () => {
+        dispatch(getCollectionAux(customerByPartnerSel(row?.partnerid)));
     }
 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData(fetchDataAux);
+                fetchCustomerByPartner();
+                fetchData
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {
@@ -113,22 +123,36 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register('warehouseid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
+        register('id');
+        register('country');
+        register('billingcurrency');
+        register('documenttype');
+        register('documentnumber')
+        register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('address');
+        register('billingcontact');
+        register('email');
+        register('signaturedate');
+        register('enterprisepartner');
+        register('billingplan');
+        register('typecalculation')
+        register('numbercontactsbag');
+        register('puadditionalcontacts');
+        register('priceperbag');
+        register('automaticgenerationdrafts');
+        register('automaticperiodgeneration');
+        register('status');
+        register('type');
+        register('operation');
 
         dispatch(resetMainAux());
-    }, [register]);
+    }, [register, setValue]);
 
-    const onMainSubmit = handleMainSubmit((data) => {
+    const onMainSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            //dispatch(execute(insWarehouse(data)));
-
+            dispatch(execute(partnerIns(data)));
+            fetchData();
             setWaitSave(true);
         }
         dispatch(manageConfirmation({
@@ -205,7 +229,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ClientsTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row}/>
+                    <ClientsTabDetail fetchdata={fetchCustomerByPartner} errors={errors} row={row}/>
                 </AntTabPanel>
             </form>
         </>
@@ -214,3 +238,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
 
 
 export default PartnersDetail;
+
+function handleMainSubmit(arg0: (data: any) => void) {
+    throw new Error('Function not implemented.');
+}

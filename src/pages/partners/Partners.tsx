@@ -3,10 +3,12 @@ import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { Dictionary, IFetchData } from "@types";
-import { getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
+import { getCollection, getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import PartnersMainView from "./views/PartnersMainView";
 import PartnersDetail from "./views/PartnersDetail";
-import { getCorpSel, getOrgSel, getOrgSelList, getValuesFromDomain } from "common/helpers";
+import { customerByPartnerSel, getCorpSel, getOrgSelList, getValuesFromDomain, partnerSel } from "common/helpers";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { langKeys } from "lang/keys";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -17,13 +19,8 @@ const Partners: FC = () => {
   const dispatch = useDispatch();
   const mainResult = useSelector((state) => state.main);
   const [viewSelected, setViewSelected] = useState("main-view");
-  const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
-    pageSize: 0,
-    pageIndex: 0,
-    filters: {},
-    sorts: {},
-    daterange: null,
-  });
+  const [waitSave, setWaitSave] = useState(false);
+  const executeResult = useSelector(state => state.main.execute);
   const [rowSelected, setRowSelected] = useState<RowSelected>({
     row: null,
     edit: false,
@@ -31,42 +28,40 @@ const Partners: FC = () => {
   function redirectFunc(view: string) {
     setViewSelected(view);
   }
-  const fetchData = ({
-    pageSize,
-    pageIndex,
-    filters,
-    sorts,
-    daterange,
-  }: IFetchData) => {
-    setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
-    /*dispatch(
-      getCollectionPaginated(
-        getPaginatedInventory({
-          startdate: daterange?.startDate || null,
-          enddate: daterange?.endDate || null,
-          take: pageSize,
-          skip: pageIndex * pageSize,
-          sorts: sorts,
-          filters: {
-            ...filters,
-          },
-        })
-      )
-    );*/
-  };
+  const fetchData = () => dispatch(getCollection(partnerSel({id: 0, all: true})));
 
   useEffect(() => {
+    fetchData()
     dispatch(
       getMultiCollectionAux([
         getOrgSelList(0),
         getCorpSel(0),
-        getValuesFromDomain('PRODUCTOMONEDA')
+        getValuesFromDomain('PRODUCTOMONEDA'),
+        getValuesFromDomain('PLANFACTURACIONPARTNERS'),
+        getValuesFromDomain('CALCULOCONTACTOADICIONAL'),
+        getValuesFromDomain('TIPOSSOCIOS')
       ])
     );
     return () => {
       dispatch(resetAllMain());
     };
   }, []);
+
+  useEffect(() => {
+    if (waitSave) {
+        if (!executeResult.loading && !executeResult.error) {
+            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+            fetchData();
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        } else if (executeResult.error) {
+            const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        }
+    }
+  }, [executeResult, waitSave])
 
   useEffect(() => {
     return () => {
@@ -84,7 +79,6 @@ const Partners: FC = () => {
         setViewSelected={setViewSelected}
         setRowSelected={setRowSelected}
         fetchData={fetchData}
-        fetchDataAux={fetchDataAux}
       />
     );
   } else
@@ -93,7 +87,6 @@ const Partners: FC = () => {
         data={rowSelected}
         setViewSelected={redirectFunc}
         fetchData={fetchData}
-        fetchDataAux={fetchDataAux}
       />
     );
 };

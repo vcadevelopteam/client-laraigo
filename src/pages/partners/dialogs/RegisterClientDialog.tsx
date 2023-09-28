@@ -101,7 +101,7 @@ const submitData = handleMainSubmit((data) => {
           <FieldSelect
             label={t(langKeys.partnertype)}
             className="col-6"
-            data={[]}
+            data={(multiDataAux?.data?.[5]?.data||[])}
             optionValue="domainvalue"
             optionDesc="domaindesc"
           />

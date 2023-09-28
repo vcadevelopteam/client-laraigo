@@ -17,6 +17,7 @@ import {
 } from "store/popus/actions";
 import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
+import { main } from "network/service/common";
 
 const selectionKey = "warehouseid";
 
@@ -24,14 +25,12 @@ interface PartnersMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
-  fetchDataAux: any;
 }
 
 const PartnersMainView: FC<PartnersMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
-  fetchDataAux,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -40,7 +39,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
   const [waitSave, setWaitSave] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [cleanSelected, setCleanSelected] = useState(false);
-  const mainPaginated = useSelector((state) => state.main.mainPaginated);
+  const main = useSelector((state) => state.main.mainData);
   const [totalrow, settotalrow] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [waitExport, setWaitExport] = useState(false);
@@ -74,7 +73,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         );
         dispatch(showBackdrop(false));
         setWaitUpload(false);
-        fetchData(fetchDataAux);
+        fetchData(fetchData);
       } else if (importRes.error) {
         dispatch(
           showSnackbar({
@@ -123,17 +122,6 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
 }, [resExportData, waitExport]);
 
   useEffect(() => {
-    if (!mainPaginated.loading && !mainPaginated.error) {
-      setPageCount(
-        fetchDataAux.pageSize
-          ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize)
-          : 0
-      );
-      settotalrow(mainPaginated.count);
-    }
-  }, [mainPaginated]);
-
-  useEffect(() => {
     if (waitSave) {
       if (!executeResult.loading && !executeResult.error) {
         dispatch(
@@ -143,7 +131,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
             message: t(langKeys.successful_delete),
           })
         );
-        fetchData(fetchDataAux);
+        fetchData(fetchData);
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
@@ -162,7 +150,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "inventoryid",
+        accessor: "partnerid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -173,30 +161,28 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
             <TemplateIcons
               deleteFunction={() => handleDelete(row)}
               editFunction={() => handleEdit(row)}
-              extraFunction={() => handleDuplicate(row)}
-              extraOption={t(langKeys.duplicate)}
             />
           );
         },
       },
       {
         Header: t(langKeys.partner),
-        accessor: "productid",
+        accessor: "company",
         width: "auto",
       },
       {
         Header: t(langKeys.isenterprise),
-        accessor: "description",
+        accessor: "enterprisepartner",
         width: "auto",
       },
       {
         Header: t(langKeys.billingplan),
-        accessor: "warehouseid",
+        accessor: "billingplan",
         width: "auto",
       },
       {
         Header: t(langKeys.billingperiod_billingcurrency),
-        accessor: "rackdefault",
+        accessor: "billingcurrency",
         width: "auto",
       },
       {
@@ -206,22 +192,22 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
       },
       {
         Header: t(langKeys.additionalcontactcalculationtype),
-        accessor: "family",
+        accessor: "typecalculation",
         width: "auto",
       },
       {
         Header: t(langKeys.numbercontactsperbag),
-        accessor: "subfamily",
+        accessor: "numbercontactsbag",
         width: "auto",
       },
       {
         Header: t(langKeys.priceperbag),
-        accessor: "dispatchunit",
+        accessor: "priceperbag",
         width: "auto",
       },
       {
         Header: t(langKeys.puadditionalcontacts),
-        accessor: "status",
+        accessor: "puadditionalcontacts",
         width: "auto",
       },
     ],
@@ -292,7 +278,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
       <TableZyx
         columns={columns}
         titlemodule={t(langKeys.partners, { count: 2 })}
-        data={mainPaginated.data}
+        data={main.data}
         download={true}
         onClickRow={handleEdit}
         register={true}
