@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getWarehouseProducts, insWarehouse } from 'common/helpers';
+import { getProductManufacturer, insWarehouse } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -111,7 +111,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
 
     const fetchWarehouseProducts = () => {
         dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
+          getCollectionAux(getProductManufacturer(row?.productid))
         );
     }
 

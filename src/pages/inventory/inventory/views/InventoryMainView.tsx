@@ -187,17 +187,17 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
       },
       {
         Header: t(langKeys.product),
-        accessor: "productid",
+        accessor: "productcode",
         width: "auto",
       },
       {
         Header: t(langKeys.description),
-        accessor: "description",
+        accessor: "productdescription",
         width: "auto",
       },
       {
         Header: t(langKeys.warehouse),
-        accessor: "warehouseid",
+        accessor: "warehousename",
         width: "auto",
       },
       {
@@ -212,17 +212,17 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
       },
       {
         Header: t(langKeys.family),
-        accessor: "family",
+        accessor: "familydescription",
         width: "auto",
       },
       {
         Header: t(langKeys.subfamily),
-        accessor: "subfamily",
+        accessor: "subfamilydescription",
         width: "auto",
       },
       {
         Header: t(langKeys.dispatch_unit),
-        accessor: "dispatchunit",
+        accessor: "unitdispatchdescription",
         width: "auto",
       },
       {

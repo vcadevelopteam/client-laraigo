@@ -261,30 +261,24 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.overdueamountinstock)}
-                            valueDefault={getValues('latitude')}
+                            valueDefault={row?.expiredamountstock}
                             className="col-6"
-                            error={errors?.latitude?.message}
-                            onChange={(value) => setValue('latitude', value)}
                             disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.availablequantity)}
-                            valueDefault={getValues('address')}
+                            valueDefault={row?.quantityavailable}
                             className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
                             disabled={true}
                         />  
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.reservedquantity)}
-                            valueDefault={getValues('latitude')}
+                            valueDefault={row?.reservedquantity}
                             className="col-6"
-                            error={errors?.latitude?.message}
-                            onChange={(value) => setValue('latitude', value)}
                             disabled={true}
                         />
                     </div>
@@ -299,51 +293,32 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         <FieldEdit
                             label={t(langKeys.dateoflastshipment)}
                             type="datetime-local"
-                            valueDefault={getValues('address')}
+                            valueDefault={new Date(row?.lastdispatch).toISOString().substring(0, 16)}
                             className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
                             disabled={true}
                         />  
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.accumulatedannual)}
-                            
-                            InputProps={{
-                                inputProps: {
-                                  step: 0.01, // Specify step as 0.01 for 2 decimal places
-                                },
-                            }}
-                            valueDefault={getValues('latitude')}
+                            valueDefault={row?.annualcumulative}
                             className="col-6"
-                            error={errors?.latitude?.message}
-                            onChange={(value) => {
-                                const inputValue = value;
-                                const regexPattern = /^-?\d+(\.\d{0,2})?/;
-                                if (regexPattern.test(inputValue)) {
-                                  setValue('latitude', inputValue);
-                                }}}
-                                disabled={true}
+                            disabled={true}
                         />
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.lastyear)}
-                            valueDefault={getValues('address')}
+                            valueDefault={row?.lastyear}
                             className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
                             disabled={true}
                         />  
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.lasttwoyears)}
-                            valueDefault={getValues('latitude')}
+                            valueDefault={row?.last2year}
                             className="col-6"
-                            error={errors?.latitude?.message}
-                            onChange={(value) => setValue('latitude', value)}
                             disabled={true}
                         />
                     </div>
@@ -358,24 +333,20 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 <div className='row-zyx'>
                     <FieldEdit
                         label={t(langKeys.standard_cost)}
-                        valueDefault={getValues('address')}
+                        valueDefault={row?.standarcost}
                         className="col-4"
-                        error={errors?.address?.message}
-                        onChange={(value) => setValue('address', value)}
                         disabled={true}
                     />
                     <FieldEdit
                         label={t(langKeys.average_cost)}
-                        valueDefault={getValues('address')}
+                        valueDefault={row?.averagecost}
                         className="col-4"
-                        error={errors?.address?.message}
-                        onChange={(value) => setValue('address', value)}
                         disabled={true}
                     />
                     <FieldEdit
                         label={t(langKeys.dateoflastmodification)}
                         type="datetime-local"
-                        valueDefault={getValues('address')}
+                        valueDefault={new Date(row?.lastmodified).toISOString().substring(0, 16)}
                         className="col-4"
                         error={errors?.address?.message}
                         onChange={(value) => setValue('address', value)}

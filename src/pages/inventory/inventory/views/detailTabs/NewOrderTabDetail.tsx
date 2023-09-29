@@ -7,7 +7,7 @@ import TableZyx from "components/fields/table-simple";
 import { useSelector } from "hooks";
 import { TitleDetail, FieldEdit, FieldCheckbox, FieldSelect } from 'components';
 import { FieldErrors } from "react-hook-form";
-import RegisterDealerDialog from "../../dialogs/RegisterDealerDialog copy";
+import RegisterDealerDialog from "../../dialogs/RegisterDealerDialog";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -41,37 +41,43 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
     () => [
       {
         Header: t(langKeys.dealer),
-        accessor: "productdescription",
+        accessor: "distributordescription",
         width: "auto",
       },
       {
         Header: t(langKeys.defaultdealer),
-        accessor: "descriptionlarge",
+        accessor: "isstockistdefault",
         width: "auto",
+        type: 'boolean',
+        sortType: 'basic',
+        Cell: (props: any) => {
+            const { isstockistdefault } = props.cell.row.original;
+            return isstockistdefault ? t(langKeys.yes) : "No"
+        }
       },
       {
         Header: t(langKeys.manufacturer),
-        accessor: "standarcost",
+        accessor: "manufacturerdescription",
         width: "auto",
       },
       {
         Header: t(langKeys.model),
-        accessor: "averagecost",
+        accessor: "model",
         width: "auto",
       },
       {
         Header: t(langKeys.catalog_nro),
-        accessor: "current_balance",
+        accessor: "catalognumber",
         width: "auto",
       },
       {
         Header: t(langKeys.purchase_unit),
-        accessor: "purchase_unit",
+        accessor: "unitbuydescription",
         width: "auto",
       },
       {
         Header: t(langKeys.last_price),
-        accessor: "last_price",
+        accessor: "lastprice",
         width: "auto",
       },
       {
@@ -220,6 +226,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
       <RegisterDealerDialog
         openModal={openModal}
         setOpenModal={setOpenModal}
+        fetchData={fetchdata}
         row={row}
       />
     </div>
