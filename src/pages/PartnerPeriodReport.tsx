@@ -5,8 +5,8 @@ import { Fragment, useEffect, useState } from "react";
 import { langKeys } from "lang/keys";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { execute, exportData, getCollection } from "store/main/actions";
-import { billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp } from "common/helpers";
+import { execute, exportData, getCollection, getMultiCollectionAux, resetAllMain } from "store/main/actions";
+import { billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, customerByPartnerSel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getOrgSelList, getValuesFromDomain } from "common/helpers";
 import { reportPdf } from "network/service/culqi";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, makeStyles, withStyles } from "@material-ui/core";
 import { FieldSelect, FieldView } from "components";
@@ -104,10 +104,9 @@ const StyledTableCell = withStyles((theme) => ({
 
 const StyledTableRow = withStyles(() => ({}))(TableRow);
 
-const PartnerPeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }> = ({
+const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = ({
     customSearch,
-    dataCorp,
-    dataOrg,
+    multiResult
 }) => {
     const dispatch = useDispatch();
 
@@ -141,8 +140,8 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg:
     const [waitSearch, setWaitSearch] = useState(false);
 
     const datatotalize = [
-        { value: 1, description: t(langKeys.corporation) },
-        { value: 2, description: t(langKeys.organization) },
+        { value: 1, description: t(langKeys.organization) },
+        { value: 2, description: t(langKeys.type) },
     ];
 
     function handleDateChange(e: any) {
@@ -694,32 +693,23 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg:
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
-                        data={dataCorp}
-                        label={t(langKeys.corporation)}
+                        data={(multiResult.data[5].data||[])}
+                        label={t(langKeys.organization)}
                         onChange={(value) => setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
-                        optionDesc="description"
-                        optionValue="corpid"
+                        optionDesc="organization"
+                        optionValue="orgid"
                         orderbylabel={true}
-                        valueDefault={dataMain.corpid}
                         variant="outlined"
-                        disabled={(user?.roledesc ?? "")
-                            .split(",")
-                            .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))}
-
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
-                        disabled={disableOrg}
-                        label={t(langKeys.organization)}
+                        label={t(langKeys.type)}
                         onChange={(value) => setdataMain((prev) => ({ ...prev, orgid: value?.orgid || 0 }))}
-                        optionDesc="orgdesc"
-                        optionValue="orgid"
+                        optionDesc="domaindesc"
+                        optionValue="domainvalue"
                         orderbylabel={true}
-                        valueDefault={dataMain.orgid}
                         variant="outlined"
-                        data={dataOrg.filter((e: any) => {
-                            return e.corpid === dataMain.corpid;
-                        })}
+                        data={(multiResult.data[6].data||[])}
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}

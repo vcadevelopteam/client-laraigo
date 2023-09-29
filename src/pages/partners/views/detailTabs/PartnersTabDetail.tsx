@@ -78,7 +78,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
     const countryList = useSelector(state => state.signup.countryList);
     const dispatch = useDispatch();
     const multiDataAux = useSelector(state => state.main.multiDataAux);
-    const [docType, setDocType] = useState(row?.docType);
+    const [docType, setDocType] = useState(row?.documenttype);
     const [sunatCountry, setSunatCountry] = useState(row?.country);
     const [additionalContactType, setAdditionAlcontactType] = useState(row?.typecalculation);
     const [isEnterprise, setIsEnterprise] = useState(row?.enterprisepartner);
@@ -181,7 +181,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 <div className='row-zyx'>
                     <FieldEdit
                         label={t(langKeys.contractsigningdate)}
-                        type='datetime-local'
+                        type='date'
                         valueDefault={getValues('signaturedate')}
                         className="col-6"
                         error={errors?.signaturedate?.message}

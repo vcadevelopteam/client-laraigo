@@ -91,7 +91,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
-        execute(partnerIns({ ...row, operation: "DELETE", status: "ELIMINADO", id: row.partnerid }))
+        execute(partnerIns({ ...row, operation: "DELETE", status: "ELIMINADO", id: row.partnerid, type: "NINGUNO", signaturedate: new Date(row.signaturedate) }))
       );
       dispatch(showBackdrop(true));
       setWaitSave(true);
@@ -174,6 +174,12 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         Header: t(langKeys.isenterprise),
         accessor: "enterprisepartner",
         width: "auto",
+        type: 'boolean',
+        sortType: 'basic',
+        Cell: (props: any) => {
+            const { enterprisepartner } = props.cell.row.original;
+            return enterprisepartner ? t(langKeys.yes) : "No"
+        }
       },
       {
         Header: t(langKeys.billingplan),

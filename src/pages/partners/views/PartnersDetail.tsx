@@ -86,7 +86,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
             address: row?.address || '',
             billingcontact: row?.billingcontact || '',
             email: row?.email || '',
-            signaturedate: row?.signaturedate || '',
+            signaturedate: new Date(row?.signaturedate || null).toISOString().split('T')[0],
             enterprisepartner: row?.isEnterprise || false,
             billingplan: row?.billingplan || '',
             typecalculation: row?.typecalculation || '',            
@@ -110,7 +110,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchCustomerByPartner();
-                fetchData
+                fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {
@@ -144,15 +144,16 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
         register('status');
         register('type');
         register('operation');
-
-        dispatch(resetMainAux());
     }, [register, setValue]);
 
     const onMainSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(partnerIns(data)));
-            fetchData();
+            if (getValues('operation') === 'INSERT') {
+                dispatch(execute(partnerIns(data)));
+            } else {
+                dispatch(execute(partnerIns({...data, id: row?.partnerid})));
+            }
             setWaitSave(true);
         }
         dispatch(manageConfirmation({
@@ -212,13 +213,15 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                             </div>
                         )}
                     />
-                    <AntTab
+                    {!!row && (
+                        <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <Trans i18nKey={langKeys.clients}/>
                             </div>
                         )}
                     />
+                    )}
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <PartnersTabDetail

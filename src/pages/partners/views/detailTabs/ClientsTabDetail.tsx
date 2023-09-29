@@ -9,7 +9,7 @@ import { FieldErrors } from "react-hook-form";
 import RegisterClientDialog from "../../dialogs/RegisterClientDialog";
 import { Dictionary } from "@types";
 import { TemplateIcons } from "components";
-import { manageConfirmation, showBackdrop } from "store/popus/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
 import { customerByPartnerIns } from "common/helpers";
@@ -25,6 +25,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+interface RowSelected {
+  row2: Dictionary | null;
+  edit: boolean;
+}
+
 interface ClientsTabDetailProps {
   fetchdata: any
   errors: FieldErrors<any>
@@ -38,17 +43,36 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
   const [openModal, setOpenModal] = useState(false);
   const [waitSave, setWaitSave] = useState(false);
   const dispatch = useDispatch();
+  const executeRes = useSelector(state => state.main.execute);
+  const [selectedRow, setSelectedRow] = useState<RowSelected>({
+    row2: null,
+    edit: false,
+  });
 
   useEffect(() => {
     fetchdata();
   }, [])
+
+  useEffect(() => {
+    if (waitSave) {
+        if (!executeRes.loading && !executeRes.error) {
+            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+            fetchdata();
+            dispatch(showBackdrop(false));
+        } else if (executeRes.error) {
+            const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.customer).toLocaleLowerCase() })
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+            setWaitSave(false);
+            dispatch(showBackdrop(false));
+        }
+    }
+}, [executeRes, waitSave])
 
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
         execute(customerByPartnerIns({ ...row, operation: "DELETE", status: "ELIMINADO" }))
       );
-      fetchdata();
       dispatch(showBackdrop(true));
       setWaitSave(true);
     };
@@ -75,6 +99,7 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
           return (
             <TemplateIcons
               deleteFunction={() => handleDelete(row)}
+              editFunction={() => handleEdit(row)}
             />
           );
         },
@@ -108,10 +133,12 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
     []
   );
   function handleRegister() {
+    setSelectedRow({row2: null, edit: false})
     setOpenModal(true)
   }
-  const handleEdit = (row: Dictionary) => {
-
+  const handleEdit = (row2: Dictionary) => {
+    setSelectedRow({ row2, edit: true });
+    setOpenModal(true)
   }
 
   return (
@@ -132,6 +159,7 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
         setOpenModal={setOpenModal}
         row={row}
         fetchData={fetchdata}
+        data={selectedRow}
       />
     </>
   );
