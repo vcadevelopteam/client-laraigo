@@ -4387,3 +4387,33 @@ export const duplicateProduct = ({ productid, productreferenceid  }: Dictionary)
         productid, productreferenceid
     }
 });
+
+
+export const getInventoryBalance = (inventorybalanceid:number): IRequestBody => ({
+    method: "UFN_INVENTORYBALANCE_SEL",
+    key: "UFN_INVENTORYBALANCE_SEL",
+    parameters: {
+        inventorybalanceid
+    }
+});
+
+export const insInventoryBalance = ({ inventorybalanceid, inventoryid, shelf, lotecode, currentbalance, recountphysical, recountphysicaldate, isreconciled, shelflifedays, duedate, status, type, operation  }: Dictionary): IRequestBody => ({
+    method: "UFN_INVENTORYBALANCE_INS",
+    key: "UFN_INVENTORYBALANCE_INS",
+    parameters: {
+        inventorybalanceid, inventoryid, shelf, lotecode, currentbalance, recountphysical, recountphysicaldate, isreconciled, shelflifedays, duedate, status, type, operation
+    }
+});
+
+export const getInventoryExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_INVENTORY_EXPORT",
+    key: "UFN_INVENTORY_EXPORT",
+    parameters: {
+        origin: "inventory",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});

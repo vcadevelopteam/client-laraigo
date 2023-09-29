@@ -6,7 +6,6 @@ import {
   Title,
 } from "components";
 import { langKeys } from "lang/keys";
-import ListAltIcon from '@material-ui/icons/ListAlt';
 import { DuplicateIcon } from "icons";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
@@ -16,9 +15,8 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
+import { exportExcel, getInventoryExport, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
-import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 
 const selectionKey = "warehouseid";
@@ -239,7 +237,7 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
         key: x.accessor,
         alias: x.Header
     }))
-    dispatch(exportData(getWarehouseExport({
+    dispatch(exportData(getInventoryExport({
         filters: {
             ...filters,
         },
@@ -249,41 +247,6 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
     }), "", "excel", false, columnsExport));
     dispatch(showBackdrop(true));
     setWaitExport(true);
-  };
-
-  const handleUpload = async (files: any) => {
-    const file = files?.item(0);
-    if (file) {
-      const data: any = await uploadExcel(file, undefined);
-      if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          warehouseid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        dispatch(execute(importWarehouse(dataToSend)));
-        setWaitUpload(true);
-      }
-    }
-  };
-
-  const handleTemplateWarehouse = () => {
-    const data = [{}, {}, {}, {}, {}, {}];
-    const header = [
-      "name",
-      "description",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
-    ];
-    exportExcel(
-      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
-      templateMaker(data, header)
-    );
   };
 
   return (
@@ -333,19 +296,6 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
         register={false}
-        importCSV={handleUpload}
-        ButtonsElement={() => (
-          <Button
-              variant="contained"
-              color="primary"
-              disabled={mainPaginated.loading}
-              startIcon={<ListAltIcon color="secondary" />}
-              onClick={handleTemplateWarehouse}
-              style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
-          >
-              <Trans i18nKey={langKeys.template} />
-          </Button>
-      )}
       />
     </div>
   );

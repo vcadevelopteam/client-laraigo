@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { Dictionary, IFile } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from "@material-ui/core";
@@ -13,6 +13,10 @@ import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons } from 'components
 import TableZyx from "components/fields/table-simple";
 import { useSelector } from 'hooks';
 import RegisterInventoryBalanceDialog from '../../dialogs/RegisterInventoryBalanceDialog';
+import { convertLocalDate, insInventoryBalance } from 'common/helpers';
+import { useDispatch } from 'react-redux';
+import { execute } from 'store/main/actions';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -57,6 +61,8 @@ interface InventoryTabDetailProps {
     setValue: UseFormSetValue<any>;
     getValues: UseFormGetValues<any>;
     errors: FieldErrors<any>;
+    tabIndex:any
+    fetchdata:any
 }
 
 const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
@@ -64,16 +70,58 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
     setValue,
     getValues,
     errors,
+    tabIndex,
+    fetchdata
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const initialValueAttachments = getValues('attachments');
     const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
     const [openModal, setOpenModal] = useState(false);
+    const dataBalance = useSelector(state => state.main.mainAux);
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeResult = useSelector(state => state.main.execute);
+
+    useEffect(() => {
+      if(tabIndex===0){
+        fetchdata();
+      }
+    }, [tabIndex])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                fetchdata();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(insInventoryBalance({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
 
     const columns = React.useMemo(
         () => [
-          {
+        {
             accessor: 'productalternativeid',
             NoFilter: true,
             isComponent: true,
@@ -83,48 +131,60 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 const row = props.cell.row.original;
                 return (
                     <TemplateIcons
+                        deleteFunction={() => handleDelete(row)}
                     />
                 )
             }
-          },
+        },
           {
             Header: t(langKeys.shelf),
-            accessor: "productdescription",
+            accessor: "shelf",
             width: "auto",
           },
           {
             Header: t(langKeys.batch),
-            accessor: "productdescriptionlarge",
+            accessor: "lotecode",
             width: "auto",
           },
           {
             Header: t(langKeys.current_balance),
-            accessor: "familydescription",
+            accessor: "currentbalance",
             width: "auto",
           },
           {
             Header: t(langKeys.physicalcount),
-            accessor: "subfamilydescription",
+            accessor: "recountphysical",
             width: "auto",
           },
           {
             Header: t(langKeys.dateofphysicalcount),
-            accessor: "dateofphysicalcount",
+            accessor: "recountphysicaldate",
             width: "auto",
+            sortType: 'datetime',
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return convertLocalDate(row.recountphysicaldate).toLocaleString()
+            }
           },
           {
             Header: t(langKeys.isconciliated),
             accessor: "isconciliated",
             width: "auto",
+            type: 'boolean',
+            sortType: 'basic',
+            Cell: (props: any) => {
+                const { isconciliated } = props.cell.row.original;
+                return isconciliated ? t(langKeys.yes) : "No"
+            }
           },
           {
             Header: t(langKeys.shelflifeindays),
-            accessor: "shelflifeindays",
+            accessor: "shelflifedays",
             width: "auto",
           },
           {
             Header: t(langKeys.dueDate),
-            accessor: "dueDate",
+            accessor: "duedate",
             width: "auto",
           },
         ],
@@ -133,7 +193,6 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
     function handleRegister() {
         setOpenModal(true)
     }
-    console.log(row)
     return (
         <div className={classes.containerDetail}>
             <div className="row-zyx">
@@ -363,7 +422,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 <div className='row-zyx'>
                     <TableZyx
                         columns={columns}
-                        data={[]}
+                        data={dataBalance?.data||[]}
                         download={false}
                         filterGeneral={false}
                         register={true}

@@ -24,9 +24,10 @@ interface NewOrderTabDetailProps {
   fetchdata: any
   errors: FieldErrors<any>
   row: any
+  tabIndex:any
 }
 
-const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors, row}) => {
+const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors, row, tabIndex}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dataProducts = useSelector(state => state.main.mainAux);
@@ -34,8 +35,10 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
   const multiDataAux = useSelector(state => state.main.multiDataAux);
 
   useEffect(() => {
-    fetchdata();
-  }, [])
+    if(tabIndex===1){
+      fetchdata();
+    }
+  }, [tabIndex])
 
   const columns = React.useMemo(
     () => [

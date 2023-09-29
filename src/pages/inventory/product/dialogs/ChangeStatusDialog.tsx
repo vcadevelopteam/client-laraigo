@@ -70,7 +70,6 @@ const ChangeStatusDialog: React.FC<{
             dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
             dispatch(showBackdrop(false));
             if(!!setValueOutside){
-              console.log(getValues("status"))
               setValueOutside("status", getValues("status"))
             }else{
               fetchData(fetchDataAux)

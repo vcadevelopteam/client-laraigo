@@ -73,7 +73,6 @@ React.useEffect(() => {
   register('unitmeasureid', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
   register('attributeid', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
   register('value', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  dispatch(resetMainAux());
 }, [register]);
   
 const submitData = handleMainSubmit((data) => {

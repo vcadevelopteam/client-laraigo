@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getProductManufacturer, insWarehouse } from 'common/helpers';
+import { getInventoryBalance, getProductManufacturer, insWarehouse } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -112,6 +112,11 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const fetchWarehouseProducts = () => {
         dispatch(
           getCollectionAux(getProductManufacturer(row?.productid))
+        );
+    }
+    const fetchInventoryBalance = () => {
+        dispatch(
+          getCollectionAux(getInventoryBalance(row?.inventoryid))
         );
     }
 
@@ -259,10 +264,12 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                         setValue={setValue}
                         getValues={getValues}
                         errors={errors}
+                        tabIndex={tabIndex}
+                        fetchdata={fetchInventoryBalance}
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row}/>
+                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row} tabIndex={tabIndex}/>
                 </AntTabPanel>
                 <AdjustCurrentBalanceDialog
                     openModal={openModalAdjust}
