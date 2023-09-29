@@ -15,7 +15,7 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
+import { exportExcel, partnerIns, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { main } from "network/service/common";
 
@@ -90,9 +90,9 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
 
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
-      /*dispatch(
-        execute(insWarehouse({ ...row, operation: "DELETE", status: "ELIMINADO" }))
-      );*/
+      dispatch(
+        execute(partnerIns({ ...row, operation: "DELETE", status: "ELIMINADO", id: row.partnerid }))
+      );
       dispatch(showBackdrop(true));
       setWaitSave(true);
     };

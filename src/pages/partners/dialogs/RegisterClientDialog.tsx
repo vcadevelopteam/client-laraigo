@@ -12,6 +12,7 @@ import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { customerByPartnerIns } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -23,7 +24,8 @@ const RegisterClientDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
-}> = ({ openModal, setOpenModal, row }) => {
+  fetchData: any;
+}> = ({ openModal, setOpenModal, row, fetchData }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -32,11 +34,15 @@ const RegisterClientDialog: React.FC<{
   const multiDataAux = useSelector(state => state.main.multiDataAux);
   const [corpId, setCorpId] = useState('');
 
-  const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
+  const { register, handleSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
-        corpid: '',
-        type: 'NINGUNO',
-        operation: "INSERT"
+        corpid: 0,
+        orgid: 0,
+        partnerid: row?.partnerid || 0,
+        typepartner: '',
+        billingplan: row?.billingplan || '',
+        comissionpercentage: 0.00,
+        operation: 'INSERT' 
     }
   });
 
@@ -56,17 +62,22 @@ const RegisterClientDialog: React.FC<{
     }
 }, [executeRes, waitSave])
 
-/*React.useEffect(() => {
-  register('unitmeasureid', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
-  register('attributeid', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('value', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+React.useEffect(() => {
+  register('corpid');
+  register('orgid');
+  register('partnerid');
+  register('typepartner', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('billingplan', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('comissionpercentage');
+  register('operation');
   dispatch(resetMainAux());
-}, [register]);*/
+}, [register]);
   
-const submitData = handleMainSubmit((data) => {
+const onMainSubmit = handleSubmit((data) => {
   const callback = () => {
       dispatch(showBackdrop(true));
-      //dispatch(execute(insProductAttribute(data)));
+      dispatch(execute(customerByPartnerIns(data)));
+      fetchData();
       setWaitSave(true);
   }
   dispatch(manageConfirmation({
@@ -78,7 +89,7 @@ const submitData = handleMainSubmit((data) => {
 
   return (
     <DialogZyx open={openModal} title={`${t(langKeys.new)} ${t(langKeys.client )}`} maxWidth="md">
-      <form onSubmit={submitData}>
+      <form onSubmit={onMainSubmit}>
       <div className="row-zyx">
           <FieldSelect
             label={t(langKeys.corporation)}
@@ -95,6 +106,7 @@ const submitData = handleMainSubmit((data) => {
             label={t(langKeys.organization)}
             className="col-6"
             data={corpId? ( multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === corpId): []}
+            onChange={(value) => setValue('orgid', value.orgid)}
             optionValue="orgid"
             optionDesc="orgdesc"
           />
@@ -102,6 +114,7 @@ const submitData = handleMainSubmit((data) => {
             label={t(langKeys.partnertype)}
             className="col-6"
             data={(multiDataAux?.data?.[5]?.data||[])}
+            onChange={(value) => setValue('typepartner', value.domainvalue)}
             optionValue="domainvalue"
             optionDesc="domaindesc"
           />
@@ -114,7 +127,7 @@ const submitData = handleMainSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.billingplan)}
-            valueDefault={getValues('corpid')}
+            valueDefault={getValues('billingplan')}
             className="col-6"
             inputProps={{ maxLength: 256 }}
             disabled={true}
@@ -135,7 +148,7 @@ const submitData = handleMainSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.commissionpercentage)}
-            valueDefault={getValues('corpid')}
+            valueDefault={getValues('comissionpercentage')}
             className="col-6"
             inputProps={{ maxLength: 256 }}
             disabled={true}
@@ -186,7 +199,7 @@ const submitData = handleMainSubmit((data) => {
           style={{ backgroundColor: "#55BD84" }}
           onClick={() => {
             setCorpId('')
-            submitData
+            onMainSubmit()
           }}
         >
           {t(langKeys.save)}

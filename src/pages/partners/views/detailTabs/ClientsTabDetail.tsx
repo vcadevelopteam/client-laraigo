@@ -11,6 +11,8 @@ import { Dictionary } from "@types";
 import { TemplateIcons } from "components";
 import { manageConfirmation, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
+import { execute } from "store/main/actions";
+import { customerByPartnerIns } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -43,9 +45,10 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
 
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
-      /*dispatch(
-        execute(insWarehouse({ ...row, operation: "DELETE", status: "ELIMINADO" }))
-      );*/
+      dispatch(
+        execute(customerByPartnerIns({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+      );
+      fetchdata();
       dispatch(showBackdrop(true));
       setWaitSave(true);
     };
@@ -128,6 +131,7 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
         openModal={openModal}
         setOpenModal={setOpenModal}
         row={row}
+        fetchData={fetchdata}
       />
     </>
   );

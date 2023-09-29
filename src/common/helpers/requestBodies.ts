@@ -4108,3 +4108,9 @@ export const customerByPartnerSel = ( partnerid: number ) => ({
     key: "UFN_CUSTOMER_BY_PARTNER_SEL",
     parameters: { partnerid },
 });
+
+export const customerByPartnerIns = ({ corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, operation }: Dictionary) => ({
+    method: "UFN_CUSTOMER_BY_PARTNER_INS",
+    key: "UFN_CUSTOMER_BY_PARTNER_INS",
+    parameters: { corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, operation },
+});
