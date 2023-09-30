@@ -11302,7 +11302,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            {user?.roledesc?.includes("SUPERADMIN") && (
+            {user?.roledesc?.includes("SUPERADMIN") ? (
                 <div>
                     <Tabs
                         indicatorColor="primary"
@@ -11314,6 +11314,7 @@ const Invoice: FC = () => {
                     >
                         <AntTab label={t(langKeys.costperperiod)} />
                         <AntTab label={t(langKeys.periodreport)} />
+                        <AntTab label={t(langKeys.partnersperiodreport)} />
                         <AntTab label={t(langKeys.payments)} />
                         <AntTab label={t(langKeys.invoice)} />
                         <AntTab label={t(langKeys.messagingpackages)} />
@@ -11337,27 +11338,32 @@ const Invoice: FC = () => {
                     )}
                     {pageSelected === 2 && (
                         <div style={{ marginTop: 16 }}>
-                            <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
+                            <PartnerPeriodReport multiResult={multiResult} customSearch={customSearch} />
                         </div>
                     )}
                     {pageSelected === 3 && (
                         <div style={{ marginTop: 16 }}>
-                            <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
+                            <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                         </div>
                     )}
                     {pageSelected === 4 && (
                         <div style={{ marginTop: 16 }}>
-                            <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                            <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
                         </div>
                     )}
                     {pageSelected === 5 && (
+                        <div style={{ marginTop: 16 }}>
+                            <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                        </div>
+                    )}
+                    {pageSelected === 6 && (
                         <div style={{ marginTop: 16 }}>
                             <PaymentMethods />
                         </div>
                     )}
                 </div>
-            )}
-            {(user?.roledesc ?? "")
+            ) : (
+            (user?.roledesc ?? "")
                 .split(",")
                 .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
                     <div>
@@ -11370,7 +11376,6 @@ const Invoice: FC = () => {
                             variant="fullWidth"
                         >
                             <AntTab label={t(langKeys.periodreport)} />
-                            <AntTab label={t(langKeys.partnersperiodreport)} />
                             <AntTab label={t(langKeys.payments)} />
                             <AntTab label={t(langKeys.messagingpackages)} />
                             <AntTab label={t(langKeys.paymentmethods)} />
@@ -11382,26 +11387,21 @@ const Invoice: FC = () => {
                         )}
                         {pageSelected === 1 && (
                             <div style={{ marginTop: 16 }}>
-                                <PartnerPeriodReport multiResult={multiResult} customSearch={customSearch} />
+                                <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                             </div>
                         )}
                         {pageSelected === 2 && (
                             <div style={{ marginTop: 16 }}>
-                                <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
-                            </div>
-                        )}
-                        {pageSelected === 3 && (
-                            <div style={{ marginTop: 16 }}>
                                 <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
                             </div>
                         )}
-                        {pageSelected === 4 && (
+                        {pageSelected === 3 && (
                             <div style={{ marginTop: 16 }}>
                                 <PaymentMethods />
                             </div>
                         )}
                     </div>
-                )}
+                ))}
         </div>
     );
 };

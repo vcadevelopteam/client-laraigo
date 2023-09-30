@@ -4114,3 +4114,9 @@ export const customerByPartnerIns = ({ corpid, orgid, partnerid, typepartner, bi
     key: "UFN_CUSTOMER_BY_PARTNER_INS",
     parameters: { corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, operation },
 });
+
+export const billingPeriodPartnerEnterprise = ({ year, month }: Dictionary) => ({
+    method: "UFN_BILLINGPERIODPARTNER_ENTERPRISE",
+    key: "UFN_BILLINGPERIODPARTNER_ENTERPRISE",
+    parameters: { year, month },
+});

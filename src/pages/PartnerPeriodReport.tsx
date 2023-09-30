@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { execute, exportData, getCollection, getMultiCollectionAux, resetAllMain } from "store/main/actions";
-import { billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, customerByPartnerSel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getOrgSelList, getValuesFromDomain } from "common/helpers";
+import { billingPeriodPartnerEnterprise, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, customerByPartnerSel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getOrgSelList, getValuesFromDomain } from "common/helpers";
 import { reportPdf } from "network/service/culqi";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, makeStyles, withStyles } from "@material-ui/core";
 import { FieldSelect, FieldView } from "components";
@@ -144,6 +144,11 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
         { value: 2, description: t(langKeys.type) },
     ];
 
+    const [dataPartner, setDataPartner] = useState({
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+    });
+
     function handleDateChange(e: any) {
         if (e !== "") {
             let datetochange = new Date(e + "-02");
@@ -151,16 +156,13 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
             let year = datetochange?.getFullYear();
             let datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
             setdataMain((prev) => ({ ...prev, datetoshow, year, month: mes }));
+            setDataPartner(() => ({month: mes, year: year}))
         }
     }
 
     function search() {
         dispatch(showBackdrop(true));
-        if (dataMain.totalize === 2) {
-            dispatch(getCollection(getBillingPeriodSummarySel(dataMain)));
-        } else {
-            dispatch(getCollection(getBillingPeriodSummarySelCorp(dataMain)));
-        }
+        dispatch(getCollection(billingPeriodPartnerEnterprise(dataPartner)));
     }
 
     useEffect(() => {
