@@ -123,7 +123,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
     const [dataMain, setdataMain] = useState({
         corpid: 0,
         orgid: 0,
-        partnerid: 1,
+        partnerid: user?.partnerid,
         month: new Date().getMonth() + 1 ?? 9,
         year: new Date().getFullYear() ?? 2023,
         reporttype: '',
@@ -135,7 +135,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
 
     const [canSearch, setCanSearch] = useState(false);
     const [dataReport, setDataReport] = useState<any>([]);
-    const [disableOrg, setDisableOrg] = useState(false);
+    const [dataAux, setDataAux] = useState<any>([]);
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [waitPdf, setWaitPdf] = useState(false);
@@ -184,12 +184,16 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
         if (!mainResult.mainData.loading) {
             if (mainResult.mainData.data.length) {
                 setDataReport(mainResult.mainData.data[0]);
+                setDataAux(mainResult.mainData.data);
             } else {
                 setDataReport(null);
+                setDataAux(null);
             }
             dispatch(showBackdrop(false));
         }
     }, [mainResult.mainData]);
+
+    console.log(dataAux)
 
     useEffect(() => {
         if (waitCalculate) {
@@ -213,392 +217,6 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
             }
         }
     }, [executeResult, waitCalculate]);
-
-    const triggerExportDataPerson = () => {
-        dispatch(exportData(billingpersonreportsel(dataMain), "BillingPerson", "excel", true));
-        dispatch(showBackdrop(true));
-        setWaitExport(true);
-    };
-
-    const triggerExportDataUser = () => {
-        dispatch(exportData(billinguserreportsel(dataMain), "BillingUser", "excel", true));
-        dispatch(showBackdrop(true));
-        setWaitExport(true);
-    };
-
-    const triggerExportDataConsulting = () => {
-        dispatch(exportData(billingReportConsulting(dataMain), "BillingConsulting", "excel", true));
-        dispatch(showBackdrop(true));
-        setWaitExport(true);
-    };
-
-    const triggerExportDataConversation = () => {
-        dispatch(exportData(billingReportConversationWhatsApp(dataMain), "BillingConversation", "excel", true));
-        dispatch(showBackdrop(true));
-        setWaitExport(true);
-    };
-
-    const triggerExportDataHsmHistory = (datatype: string) => {
-        dispatch(
-            exportData(
-                billingReportHsmHistory({
-                    corpid: dataMain.corpid,
-                    month: dataMain.month,
-                    orgid: dataMain.orgid,
-                    type: datatype,
-                    year: dataMain.year,
-                }),
-                "BillingUserHsmHistory",
-                "excel",
-                true
-            )
-        );
-        dispatch(showBackdrop(true));
-        setWaitExport(true);
-    };
-
-    const handleCalculate = () => {
-        const callback = () => {
-            dispatch(
-                execute(getBillingPeriodCalcRefreshAll(dataMain.year, dataMain.month, dataMain.corpid, dataMain.orgid))
-            );
-            dispatch(showBackdrop(true));
-            setWaitCalculate(true);
-        };
-
-        dispatch(
-            manageConfirmation({
-                callback,
-                question: t(langKeys.confirmation_calculate),
-                visible: true,
-            })
-        );
-    };
-
-    const handleReportPdf = () => {
-        if (dataReport) {
-            let intelligenceDetail: {}[] = [];
-
-            if (dataReport.artificialintelligencedata) {
-                dataReport.artificialintelligencedata.forEach((element: any) => {
-                    intelligenceDetail.push({
-                        intelligenceadditionalfee:
-                            element.aiquantity <= element.freeinteractions
-                                ? ""
-                                : `${dataReport.symbol}${formatNumberFourDecimals(
-                                    element.additionalfee
-                                )}`,
-                        intelligenceaicost: `${dataReport.symbol}${formatNumber(element.additionalfee)}`,
-                        intelligenceaiquantity: `${formatNumberNoDecimals(element.aiquantity)}`,
-                        intelligencefreeinteractions: `${formatNumberNoDecimals(element.freeinteractions)}`,
-                        intelligenceigv: `${dataReport.symbol}${formatNumber(
-                            element.additionalfee - element.additionalfee / dataReport.exchangetax
-                        )}`,
-                        intelligenceplan: element.plan,
-                        intelligenceprovider: element.provider,
-                        intelligenceservice: element.type,
-                        intelligencetaxableamount: `${dataReport.symbol}${formatNumber(
-                            element.additionalfee / dataReport.exchangetax
-                        )}`,
-                    });
-                });
-            }
-
-            let reportBody = {
-                dataonparameters: true,
-                key: "period-report",
-                method: "",
-                reportname: "period-report",
-                template: t(langKeys.billingreport_template),
-                parameters: {
-                    reporttitle: `${dataReport.orgdescription || dataReport.corpdescription}`,
-                    reportplan: `${dataReport.billingplan}`,
-                    reportperiod: `${dataReport.year} - ${String(dataReport.month).padStart(2, "0")}`,
-                    basecostnet: `${dataReport.symbol}${formatNumber(
-                        dataReport.billingplanfee / dataReport.exchangetax
-                    )}`,
-                    basecosttax: `${dataReport.symbol}${formatNumber(
-                        dataReport.billingplanfee - dataReport.billingplanfee / dataReport.exchangetax
-                    )}`,
-                    basecost: `${dataReport.symbol}${formatNumber(dataReport.billingplanfee)}`,
-                    agentcontractedquantity: `${formatNumberNoDecimals(dataReport.agentcontractedquantity)}`,
-                    agentadditionalquantity: `${formatNumberNoDecimals(dataReport.agentadditionalquantity)}`,
-                    agentfee: `${dataReport.symbol}${formatNumberFourDecimals(
-                        dataReport.agentadditionalfee
-                    )}`,
-                    agentcostnet: `${dataReport.symbol}${formatNumber(
-                        dataReport.agenttotalfee / dataReport.exchangetax
-                    )}`,
-                    agentcosttax: `${dataReport.symbol}${formatNumber(
-                        dataReport.agenttotalfee - dataReport.agenttotalfee / dataReport.exchangetax
-                    )}`,
-                    agentcost: `${dataReport.symbol}${formatNumber(dataReport.agenttotalfee)}`,
-                    channelotherquantity: `${formatNumberNoDecimals(dataReport.channelothercontractedquantity)}`,
-                    channelotheradditional: `${formatNumberNoDecimals(
-                        Math.max(dataReport.channelotherquantity - dataReport.channelothercontractedquantity, 0)
-                    )}`,
-                    channelwhatsappquantity: `${formatNumberNoDecimals(dataReport.channelwhatsappcontractedquantity)}`,
-                    channelwhatsappadditional: `${formatNumberNoDecimals(
-                        Math.max(dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity, 0)
-                    )}`,
-                    channeladditional: `${formatNumberNoDecimals(
-                        Math.max(
-                            dataReport.channelotherquantity -
-                            dataReport.channelothercontractedquantity +
-                            (dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity),
-                            0
-                        )
-                    )}`,
-                    channelotherfee: `${dataReport.symbol}${formatNumberFourDecimals(
-                        dataReport.channelotheradditionalfee
-                    )}`,
-                    channelwhatsappfee: `${dataReport.symbol}${formatNumberFourDecimals(
-                        dataReport.channelwhatsappadditionalfee
-                    )}`,
-                    channelcostnet: `${dataReport.symbol}${formatNumber(
-                        dataReport.channeltotalfee / dataReport.exchangetax
-                    )}`,
-                    channelcosttax: `${dataReport.symbol}${formatNumber(
-                        dataReport.channeltotalfee - dataReport.channeltotalfee / dataReport.exchangetax
-                    )}`,
-                    channelcost: `${dataReport.symbol}${formatNumber(dataReport.channeltotalfee)}`,
-                    conversationfreequantity: `${formatNumberNoDecimals(dataReport.channelwhatsappfreequantity)}`,
-                    conversationuserservicequantity: `${formatNumberNoDecimals(
-                        dataReport.conversationuserservicequantity
-                    )}`,
-                    conversationbusinessutilityquantity: `${formatNumberNoDecimals(
-                        dataReport.conversationbusinessutilityquantity
-                    )}`,
-                    conversationbusinessauthenticationquantity: `${formatNumberNoDecimals(
-                        dataReport.conversationbusinessauthenticationquantity
-                    )}`,
-                    conversationbusinessmarketingquantity: `${formatNumberNoDecimals(
-                        dataReport.conversationbusinessmarketingquantity
-                    )}`,
-                    conversationuserfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationuserservicetotalfee / dataReport.exchangetax
-                    )}`,
-                    conversationbusinessutilityfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessutilitytotalfee / dataReport.exchangetax
-                    )}`,
-                    conversationbusinessauthenticationfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessauthenticationtotalfee / dataReport.exchangetax
-                    )}`,
-                    conversationbusinessmarketingfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessmarketingtotalfee / dataReport.exchangetax
-                    )}`,
-                    conversationuserfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationuserservicetotalfee -
-                        dataReport.conversationuserservicetotalfee / dataReport.exchangetax
-                    )}`,
-                    conversationbusinessutilityfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessutilitytotalfee -
-                        dataReport.conversationbusinessutilitytotalfee / dataReport.exchangetax
-                    )}`,
-                    conversationbusinessauthenticationfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessauthenticationtotalfee -
-                        dataReport.conversationbusinessauthenticationtotalfee / dataReport.exchangetax
-                    )}`,
-                    conversationbusinessmarketingfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessmarketingtotalfee -
-                        dataReport.conversationbusinessmarketingtotalfee / dataReport.exchangetax
-                    )}`,
-                    conversationuserfee: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationuserservicetotalfee
-                    )}`,
-                    conversationbusinessutilityfee: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessutilitytotalfee
-                    )}`,
-                    conversationbusinessauthenticationfee: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessauthenticationtotalfee
-                    )}`,
-                    conversationbusinessmarketingfee: `${dataReport.symbol}${formatNumber(
-                        dataReport.conversationbusinessmarketingtotalfee
-                    )}`,
-                    messagingsmslimit: `${formatNumberNoDecimals(dataReport.messagingsmsquantitylimit)}`,
-                    messagingsmsquantity: `${formatNumberNoDecimals(dataReport.messagingsmsquantity)}`,
-                    messagingmaillimit: `${formatNumberNoDecimals(dataReport.messagingmailquantitylimit)}`,
-                    messagingmailquantity: `${formatNumberNoDecimals(dataReport.messagingmailquantity)}`,
-                    messagingsmsadditional: `${dataReport.symbol}${formatNumberFourDecimals(
-                        dataReport.messagingsmsadditionalfee
-                    )}`,
-                    messagingmailadditional: `${dataReport.symbol}${formatNumberFourDecimals(
-                        dataReport.messagingmailadditionalfee
-                    )}`,
-                    messagingsmsfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.messagingsmstotalfee / dataReport.exchangetax
-                    )}`,
-                    messagingmailfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.messagingmailtotalfee / dataReport.exchangetax
-                    )}`,
-                    messagingsmsfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.messagingsmstotalfee - dataReport.messagingsmstotalfee / dataReport.exchangetax
-                    )}`,
-                    messagingmailfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.messagingmailtotalfee - dataReport.messagingmailtotalfee / dataReport.exchangetax
-                    )}`,
-                    messagingsmsfee: `${dataReport.symbol}${formatNumber(
-                        dataReport.messagingsmstotalfee
-                    )}`,
-                    messagingmailfee: `${dataReport.symbol}${formatNumber(
-                        dataReport.messagingmailtotalfee
-                    )}`,
-                    voicephonefeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicetelephonefee / dataReport.exchangetax
-                    )}`,
-                    voicepstnfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicepstnfee / dataReport.exchangetax
-                    )}`,
-                    voicevoipfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicevoipfee / dataReport.exchangetax
-                    )}`,
-                    voicerecordingfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicerecordingfee / dataReport.exchangetax
-                    )}`,
-                    voiceotherfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.voiceotherfee / dataReport.exchangetax
-                    )}`,
-                    voicephonefeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicetelephonefee - dataReport.voicetelephonefee / dataReport.exchangetax
-                    )}`,
-                    voicepstnfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicepstnfee - dataReport.voicepstnfee / dataReport.exchangetax
-                    )}`,
-                    voicevoipfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicevoipfee - dataReport.voicevoipfee / dataReport.exchangetax
-                    )}`,
-                    voicerecordingfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicerecordingfee - dataReport.voicerecordingfee / dataReport.exchangetax
-                    )}`,
-                    voiceotherfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.voiceotherfee - dataReport.voiceotherfee / dataReport.exchangetax
-                    )}`,
-                    voicephonefee: `${dataReport.symbol}${formatNumber(dataReport.voicetelephonefee)}`,
-                    voicepstnfee: `${dataReport.symbol}${formatNumber(dataReport.voicepstnfee)}`,
-                    voicevoipfee: `${dataReport.symbol}${formatNumber(dataReport.voicevoipfee)}`,
-                    voicerecordingfee: `${dataReport.symbol}${formatNumber(
-                        dataReport.voicerecordingfee
-                    )}`,
-                    voiceotherfee: `${dataReport.symbol}${formatNumber(dataReport.voiceotherfee)}`,
-                    contactcalculateunique: (dataReport?.contactcalculatemode || "").includes("UNIQUE"),
-                    contactuniquelimit: `${formatNumberNoDecimals(dataReport.contactuniquelimit)}`,
-                    contactuniquequantity: `${formatNumberNoDecimals(dataReport.contactuniquequantity)}`,
-                    contactuniquequantityadditional: `${formatNumberNoDecimals(
-                        Math.max(dataReport.contactuniquequantity - dataReport.contactuniquelimit, 0)
-                    )}`,
-                    contactuniqueadditional: `${dataReport.symbol}${formatNumberFourDecimals(
-                        dataReport.contactuniqueadditionalfee
-                    )}`,
-                    contactuniquefeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.contactuniquefee / dataReport.exchangetax
-                    )}`,
-                    contactuniquefeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.contactuniquefee - dataReport.contactuniquefee / dataReport.exchangetax
-                    )}`,
-                    contactuniquefee: `${dataReport.symbol}${formatNumber(dataReport.contactuniquefee)}`,
-                    contactotherquantity: `${formatNumberNoDecimals(dataReport.contactotherquantity)}`,
-                    contactwhatsappquantity: `${formatNumberNoDecimals(dataReport.contactwhatsappquantity)}`,
-                    contactotheradditional: `${dataReport.symbol}${formatNumberFourDecimals(
-                        dataReport.contactotheradditionalfee
-                    )}`,
-                    contactwhatsappadditional: `${dataReport.symbol}${formatNumberFourDecimals(
-                        dataReport.contactwhatsappadditionalfee
-                    )}`,
-                    contactotherfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.contactotherfee / dataReport.exchangetax
-                    )}`,
-                    contactwhatsappfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.contactwhatsappfee / dataReport.exchangetax
-                    )}`,
-                    contactotherfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.contactotherfee - dataReport.contactotherfee / dataReport.exchangetax
-                    )}`,
-                    contactwhatsappfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.contactwhatsappfee - dataReport.contactwhatsappfee / dataReport.exchangetax
-                    )}`,
-                    contactotherfee: `${dataReport.symbol}${formatNumber(dataReport.contactotherfee)}`,
-                    contactwhatsappfee: `${dataReport.symbol}${formatNumber(
-                        dataReport.contactwhatsappfee
-                    )}`,
-                    infrastructureenabled: (dataReport?.billinginfrastructurefee || 0) > 0,
-                    infrastructurefeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.billinginfrastructurefee / dataReport.exchangetax
-                    )}`,
-                    infrastructurefeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.billinginfrastructurefee -
-                        dataReport.billinginfrastructurefee / dataReport.exchangetax
-                    )}`,
-                    infrastructurefee: `${dataReport.symbol}${formatNumber(
-                        dataReport.billinginfrastructurefee
-                    )}`,
-                    supportplan: `${t(langKeys.supportplan)}: ${dataReport.billingsupportplan}`,
-                    supportfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.billingsupportfee / dataReport.exchangetax
-                    )}`,
-                    supportfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.billingsupportfee - dataReport.billingsupportfee / dataReport.exchangetax
-                    )}`,
-                    supportfee: `${dataReport.symbol}${formatNumber(dataReport.billingsupportfee)}`,
-                    consultingquantity: `${formatNumberNoDecimals(dataReport.consultinghourquantity)}`,
-                    consultingfeenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.consultingtotalfee / dataReport.exchangetax
-                    )}`,
-                    consultingfeetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.consultingtotalfee - dataReport.consultingtotalfee / dataReport.exchangetax
-                    )}`,
-                    consultingfee: `${dataReport.symbol}${formatNumber(dataReport.consultingtotalfee)}`,
-                    additionalservice01: `${dataReport.additionalservice01}`,
-                    additionalservice01feenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice01fee / dataReport.exchangetax
-                    )}`,
-                    additionalservice01feetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice01fee - dataReport.additionalservice01fee / dataReport.exchangetax
-                    )}`,
-                    additionalservice01fee: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice01fee
-                    )}`,
-                    additionalservice02: `${dataReport.additionalservice02}`,
-                    additionalservice02feenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice02fee / dataReport.exchangetax
-                    )}`,
-                    additionalservice02feetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice02fee - dataReport.additionalservice02fee / dataReport.exchangetax
-                    )}`,
-                    additionalservice02fee: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice02fee
-                    )}`,
-                    additionalservice03: `${dataReport.additionalservice03}`,
-                    additionalservice03feenet: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice03fee / dataReport.exchangetax
-                    )}`,
-                    additionalservice03feetax: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice03fee - dataReport.additionalservice03fee / dataReport.exchangetax
-                    )}`,
-                    additionalservice03fee: `${dataReport.symbol}${formatNumber(
-                        dataReport.additionalservice03fee
-                    )}`,
-                    billingtotalnet: `${dataReport.symbol}${formatNumber(
-                        dataReport.billingtotalfeenet
-                    )}`,
-                    billingtotaltax: `${dataReport.symbol}${formatNumber(
-                        dataReport.billingtotalfeetax
-                    )}`,
-                    billingtotal: `${dataReport.symbol}${formatNumber(dataReport.billingtotalfee)}`,
-                    generalwhatsappquantity: `${formatNumberNoDecimals(dataReport.contactwhatsappquantity)}`,
-                    generalotherquantity: `${formatNumberNoDecimals(dataReport.contactotherquantity)}`,
-                    generalconversationquantity: `${formatNumberNoDecimals(dataReport.conversationquantity)}`,
-                    generalinteractionquantity: `${formatNumberNoDecimals(dataReport.conversationinteractionquantity)}`,
-                    generalsupervisorquantity: `${formatNumberNoDecimals(dataReport.agentsupervisoractivequantity)}`,
-                    generaladviserquantity: `${formatNumberNoDecimals(dataReport.agentadviseractivequantity)}`,
-                    intelligencedetail: intelligenceDetail || [],
-                },
-            };
-
-            dispatch(reportPdf(reportBody));
-            dispatch(showBackdrop(true));
-            setWaitPdf(true);
-        }
-    };
 
     useEffect(() => {
         if (waitExport) {
@@ -697,31 +315,6 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                     >
                         {t(langKeys.search)}
                     </Button>
-                    {!mainResult.mainData.loading && dataReport && (
-                        <Fragment>
-                            <Button
-                                className={classes.button}
-                                color="primary"
-                                disabled={exportResult.loading}
-                                onClick={() => handleCalculate()}
-                                startIcon={<Refresh color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                                variant="contained"
-                            >
-                                {`${t(langKeys.calculate)}`}
-                            </Button>
-                            <Button
-                                className={classes.button}
-                                color="primary"
-                                disabled={exportResult.loading}
-                                onClick={() => handleReportPdf()}
-                                startIcon={<DownloadIcon />}
-                                variant="contained"
-                            >
-                                {t(langKeys.download)}
-                            </Button>
-                        </Fragment>
-                    )}
                 </div>
             </div>
             {!mainResult.mainData.loading && (
@@ -739,7 +332,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                 <FieldView
                                     className="col-6"
                                     label={t(langKeys.partnertype)}
-                                    value={dataReport.typepartner}
+                                    value={dataReport.typepartner === 'DEVELOPER' || dataReport.typepartner === 'RESELLER' ? 'DEVELOPER / RESELLER' : 'ENTERPRISE'}
                                 />
                             </div>
                             <div className="row-zyx">
@@ -941,41 +534,43 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            <StyledTableRow>
-                                                <StyledTableCell>
-                                                    <div>{dataReport.orgdescription}</div>
-                                                </StyledTableCell>
-                                                <StyledTableCell align="right">
-                                                    <div>
-                                                        <b>{dataReport.typepartner}</b>
-                                                    </div>
-                                                </StyledTableCell>
-                                                <StyledTableCell align="right">
-                                                    <div>{`${dataReport.symbol}${formatNumber(
-                                                        dataReport.billingplanfee
-                                                    )}`}</div>
-                                                </StyledTableCell>
-                                                <StyledTableCell align="right">
-                                                    <div>{`${formatNumber(
-                                                        100 - dataReport.comissionpercentage
-                                                    )}%`}</div>
-                                                </StyledTableCell>
-                                                <StyledTableCell align="right">
-                                                    <div>{`${dataReport.symbol}${formatNumber(
-                                                        dataReport.billingplanfee * ((100 - dataReport.comissionpercentage) / 100)
-                                                    )}`}</div>
-                                                </StyledTableCell>
-                                                <StyledTableCell align="right">
-                                                    <div>{`${dataReport.symbol}${formatNumber(
-                                                        dataReport.othercost
-                                                    )}`}</div>
-                                                </StyledTableCell>
-                                                <StyledTableCell align="right">
-                                                    <div>{`${dataReport.symbol}${formatNumber(
-                                                        (dataReport.billingplanfee * ((100 - dataReport.comissionpercentage) / 100)) + parseFloat(dataReport.othercost)
-                                                    )}`}</div>
-                                                </StyledTableCell>
-                                            </StyledTableRow>
+                                            {dataAux.map((item:any, index:number) => (
+                                                <StyledTableRow key={index}>
+                                                    <StyledTableCell>
+                                                        <div>{item.orgdescription}</div>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="right">
+                                                        <div>
+                                                            <b>{item.typepartner}</b>
+                                                        </div>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="right">
+                                                        <div>{`${item.symbol}${formatNumber(
+                                                            item.billingplanfee
+                                                        )}`}</div>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="right">
+                                                        <div>{`${formatNumber(
+                                                            100 - item.comissionpercentage
+                                                        )}%`}</div>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="right">
+                                                        <div>{`${item.symbol}${formatNumber(
+                                                            item.billingplanfee * ((100 - item.comissionpercentage) / 100)
+                                                        )}`}</div>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="right">
+                                                        <div>{`${item.symbol}${formatNumber(
+                                                            item.othercost
+                                                        )}`}</div>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="right">
+                                                        <div>{`${item.symbol}${formatNumber(
+                                                            (item.billingplanfee * ((100 - item.comissionpercentage) / 100)) + parseFloat(item.othercost)
+                                                        )}`}</div>
+                                                    </StyledTableCell>
+                                                </StyledTableRow>
+                                            ))}
                                             <StyledTableRow>
                                                 <StyledTableCell>
                                                     <b>{t(langKeys.periodamount)}</b>
@@ -984,12 +579,16 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(dataReport.billingplanfee * ((100 - dataReport.comissionpercentage) / 100))}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(dataReport.othercost)}`}</StyledTableCell>
+                                                    }${formatNumber(
+                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + (parseFloat(item.billingplanfee) * ((100 - item.comissionpercentage) / 100)), 0)
+                                                    )}`}</StyledTableCell>
                                                 <StyledTableCell align="right">{`${dataReport.symbol
                                                     }${formatNumber(
-                                                        (dataReport.billingplanfee * ((100 - dataReport.comissionpercentage) / 100)) + parseFloat(dataReport.othercost)
+                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0)
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol
+                                                    }${formatNumber(
+                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + ((parseFloat(item.billingplanfee) * ((100 - item.comissionpercentage) / 100)) + parseFloat(item.othercost)), 0)
                                                     )}`}</StyledTableCell>
                                             </StyledTableRow>
                                         </TableBody>
