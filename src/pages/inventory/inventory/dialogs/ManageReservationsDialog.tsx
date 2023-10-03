@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insProductAttribute } from "common/helpers";
-import { execute, resetMainAux } from "store/main/actions";
+import { getInventoryBooking, insProductAttribute } from "common/helpers";
+import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
 import { TemplateIcons } from 'components';
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -39,6 +39,13 @@ const ManageReservationsDialog: React.FC<{
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
   const [openModalAddReservation, setOpenModalAddReservation] = useState(false);
+  const data = useSelector(state => state.main.mainAux2);
+
+  useEffect(() => {
+    if(openModal){
+      dispatch(getCollectionAux2(getInventoryBooking(row?.inventoryid)));
+    }
+  }, [openModal]);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -103,7 +110,7 @@ const handleDelete = (data: Dictionary) => {
 const columns = React.useMemo(
   () => [
     {
-      accessor: 'productalternativeid',
+      accessor: 'inventorywarehouseid',
       NoFilter: true,
       isComponent: true,
       minWidth: 60,
@@ -119,37 +126,37 @@ const columns = React.useMemo(
     },
     {
       Header: t(langKeys.ticketapplication),
-      accessor: "ticket",
+      accessor: "ticketid",
       width: "auto",
     },
     {
       Header: t(langKeys.reservationtype),
-      accessor: "reservationtype",
+      accessor: "bookingtype",
       width: "auto",
     },
     {
       Header: t(langKeys.product),
-      accessor: "product",
+      accessor: "productcode",
       width: "auto",
     },
     {
       Header: t(langKeys.description),
-      accessor: "description",
+      accessor: "productdescription",
       width: "auto",
     },
     {
       Header: t(langKeys.warehouse),
-      accessor: "warehouse",
+      accessor: "warehousename",
       width: "auto",
     },
     {
       Header: t(langKeys.reservedquantity),
-      accessor: "subfamilydescription",
+      accessor: "bookingquantity",
       width: "auto",
     },
     {
       Header: t(langKeys.applicationdate),
-      accessor: "applicationdate",
+      accessor: "createdate",
       width: "auto",
     }
   ],
@@ -166,7 +173,8 @@ function handleOpenAddReservationModal() {
         <div className="row-zyx">
           <TableZyx
             columns={columns}
-            data={[]}
+            data={data?.data}
+            loading={data?.loading}
             download={false}
             filterGeneral={false}
             register={true}

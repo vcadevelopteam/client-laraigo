@@ -4438,3 +4438,24 @@ export const getInventoryWarehouse = (inventoryid:number): IRequestBody => ({
         inventoryid
     }
 });
+export const getInventoryLote = (inventoryid:number): IRequestBody => ({
+    method: "UFN_INVENTORYLOTE_SEL",
+    key: "UFN_INVENTORYLOTE_SEL",
+    parameters: {
+        inventoryid
+    }
+});
+export const getInventoryBooking = (inventoryid:number): IRequestBody => ({
+    method: "UFN_INVENTORYBOOKING_SEL",
+    key: "UFN_INVENTORYBOOKING_SEL",
+    parameters: {
+        inventoryid
+    }
+});
+export const insInventoryBooking = ({ inventorywarehouseid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation  }: Dictionary): IRequestBody => ({
+    method: "UFN_INVENTORBOOKING_INS",
+    key: "UFN_INVENTORBOOKING_INS",
+    parameters: {
+        inventorywarehouseid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation
+    }
+});

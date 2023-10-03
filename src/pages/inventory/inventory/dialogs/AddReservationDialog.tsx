@@ -41,7 +41,8 @@ const AddReservationDialog: React.FC<{
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
         productattributeid: 0,
-        productid: 0,
+        productid: row?.productid,
+        warehouseid: row?.warehouseid,
         attributeid: '',
         value: '',
         unitmeasureid: 0,
@@ -90,12 +91,12 @@ const submitData = handleMainSubmit((data) => {
     <DialogZyx open={openModal} title={`${t(langKeys.add)} ${t(langKeys.reservations)}`} maxWidth="md">
       <form onSubmit={submitData}>
       <div className="row-zyx">
-          <FieldSelect
+          <FieldEdit
             label={t(langKeys.ticketapplication)}
-            data={[]}
+            //data={[]}
             className="col-3"
-            optionValue="domainvalue"
-            optionDesc="domaindesc"
+            //optionValue="domainvalue"
+            //optionDesc="domaindesc"
           />
           <FieldSelect
             label={t(langKeys.reservationtype)}
@@ -110,6 +111,8 @@ const submitData = handleMainSubmit((data) => {
             className="col-3"
             error={errors?.producttype?.message}
             data={multiDataAux?.data?.[2]?.data}
+            valueDefault={getValues("productid")}
+            disabled
             optionValue="productid"
             optionDesc="description"
           />
@@ -124,6 +127,7 @@ const submitData = handleMainSubmit((data) => {
             label={t(langKeys.warehouse)}
             className="col-4"
             error={errors?.producttype?.message}
+            valueDefault={getValues("warehouseid")}
             data={multiDataAux?.data?.[3]?.data}
             optionValue="warehouseid"
             optionDesc="description"
