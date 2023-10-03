@@ -17,6 +17,9 @@ const paths = {
     REPORTS: '/reports',
     REPORTDESIGNER: '/reportdesigner',
     POSTCREATOR: '/postcreator',
+    PRODUCTMASTER: '/ProductMaster',
+    WAREHOUSE: '/warehouse',
+    COMPANIES: '/companies',
     TICKETS: '/tickets',
     EMAIL_INBOX: '/email_inbox',
     MESSAGE_INBOX: '/message_inbox',
@@ -246,6 +249,8 @@ const paths = {
         path: '/recoverpassword/:token',
         resolve: (token: string) => `/recoverpassword/${token}`
     },
+    INVENTORY: '/inventory',
+    INVENTORYCONSUMPTION: '/inventoryconsumption',
 };
 
 export default paths;

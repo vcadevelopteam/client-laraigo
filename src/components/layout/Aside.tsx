@@ -213,8 +213,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const calls = useSelector(state => state.voximplant.calls);
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
-    const userData = useSelector(state => state.login.validateToken.user);
-
+    const userData = useSelector(state => state.login?.validateToken?.user);
     //Conseguir todas las subrutas y asignarlas a los modulos padres
     const showableViews = viewsClassifications.reduce((acc: any[], view) => {
         const subroutes = Object.entries(applications as Object)
