@@ -666,7 +666,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                         data={(multiResult.data[5].data||[])}
                         label={t(langKeys.partner)}
                         onChange={(value) => {
-                            setdataMain((prev) => ({ ...prev, partnerid: value?.partnerid }))
+                            setdataMain((prev) => ({ ...prev, partnerid: 1 }))
                             if(value?.partnerid === 1) {
                                 setdataMain((prev) => ({ ...prev, corpid: 556, orgid: 1214 }))
                             } else if(value?.partnerid === 5) {
