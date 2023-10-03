@@ -5398,6 +5398,15 @@ export const langKeys = {
   lastmodificationuser: "lastmodificationuser",
   lastmodificationdate: "lastmodificationdate",
   partnersperiodreport: "partnersperiodreport",
+  othercosts: "othercosts",
+  contacts: "contacts",
+  totalcontacts: "totalcontacts",
+  partnercontacts: "partnercontacts",
+  additionalcontacts: "additionalcontacts",
+  additionalcontactsperbag: "additionalcontactsperbag",
+  applicablediscountamount: "applicablediscountamount",
+  amountwithmembershipdiscount: "amountwithmembershipdiscount",
+  amountnotapplicabletodiscount: "amountnotapplicabletodiscount",
 };
 
 export type LangKeys = typeof langKeys;

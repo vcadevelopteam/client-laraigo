@@ -6,7 +6,7 @@ import { Dictionary, IFetchData } from "@types";
 import { getCollection, getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import PartnersMainView from "./views/PartnersMainView";
 import PartnersDetail from "./views/PartnersDetail";
-import { customerByPartnerSel, getCorpSel, getOrgSelList, getValuesFromDomain, partnerSel } from "common/helpers";
+import { customerByPartnerSel, getCorpSel, getOrgSelList, getPropertySelByName, getValuesFromDomain, partnerSel } from "common/helpers";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 
@@ -39,7 +39,10 @@ const Partners: FC = () => {
         getValuesFromDomain('PRODUCTOMONEDA'),
         getValuesFromDomain('PLANFACTURACIONPARTNERS'),
         getValuesFromDomain('CALCULOCONTACTOADICIONAL'),
-        getValuesFromDomain('TIPOSSOCIOS')
+        getValuesFromDomain('TIPOSSOCIOS'),
+        getPropertySelByName('PORCENTAJEDECOMISIONDEVELOPER'),
+        getPropertySelByName('PORCENTAJEDECOMISIONRESELLER'),
+        getPropertySelByName('PORCENTAJEDECOMISIONENTERPRISE'),
       ])
     );
     return () => {

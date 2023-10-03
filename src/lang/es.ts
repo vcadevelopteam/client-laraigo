@@ -5410,6 +5410,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   creationuser: "Usuario de creación",
   lastmodificationuser: "Usuario de última modificación",
   lastmodificationdate: "Fecha de última modificación",
+  othercosts: "Otros Costos",
+  contacts: "Contactos",
+  totalcontacts: "Contactos Totales",
+  partnercontacts: "Contactos del Socio",
+  additionalcontacts: "Contactos Adicionales",
+  additionalcontactsperbag: "Contactos Adicionales por bolsa",
+  applicablediscountamount: "Monto aplicable a descuento",
+  amountwithmembershipdiscount: "Monto con descuento de socio",
+  amountnotapplicabletodiscount: "Monto no aplicable a descuento",
 };
 
 const esResource: ResourceLanguage = {

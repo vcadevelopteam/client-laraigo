@@ -5483,6 +5483,15 @@ const translation: LangKeys = {
   creationuser: "Creation user",
   lastmodificationuser: "Last modification user",
   lastmodificationdate: "Last modification date",
+  othercosts: "Other Costs",
+  contacts: "Contacts",
+  totalcontacts: "Total Contacts",
+  partnercontacts: "Partner Contacts",
+  additionalcontacts: "Additional Contacts",
+  additionalcontactsperbag: "Additional Contacts per bag",
+  applicablediscountamount: "Applicable discount amount",
+  amountwithmembershipdiscount: "Amount with membership discount",
+  amountnotapplicabletodiscount: "Amount not applicable to discount",
 };
 
 const enResource: ResourceLanguage = {

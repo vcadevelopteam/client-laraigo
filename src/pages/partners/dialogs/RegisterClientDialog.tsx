@@ -12,7 +12,7 @@ import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { customerByPartnerIns } from "common/helpers";
+import { customerByPartnerIns, getPropertySelByName } from "common/helpers";
 import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
@@ -40,7 +40,8 @@ const RegisterClientDialog: React.FC<{
   const executeRes = useSelector(state => state.main.execute);
   const multiDataAux = useSelector(state => state.main.multiDataAux);
   const [corpId, setCorpId] = useState(row2 ? row2?.corpId : 0);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState(row2 ? row2?.status : '');
+  const [comissionPercentageValue, setComissionPercentageValue] = useState(row2 ? row2?.comissionPercentageValue : 0);
 
   console.log(row2)
   console.log(corpId)
@@ -72,6 +73,16 @@ const RegisterClientDialog: React.FC<{
         }
     }
 }, [executeRes, waitSave])
+
+function setComissionPercentage(value: string) {
+  if (value === 'ENTERPRISE') {
+    setValue('comissionpercentage', multiDataAux?.data?.[8]?.data?.[0]?.propertyvalue);
+  } else if (value === 'RESELLER') {
+    setValue('comissionpercentage', multiDataAux?.data?.[7]?.data?.[0]?.propertyvalue);
+  } else if (value === 'DEVELOPER') {
+    setValue('comissionpercentage', multiDataAux?.data?.[6]?.data?.[0]?.propertyvalue);
+  }
+}
 
 React.useEffect(() => {
   register('corpid');
@@ -133,7 +144,11 @@ const onMainSubmit = handleSubmit((data) => {
             className="col-6"
             valueDefault={row2?.typepartner || ''}
             data={(multiDataAux?.data?.[5]?.data||[])}
-            onChange={(value) => setValue('typepartner', value.domainvalue)}
+            onChange={(value) => {
+              setValue('typepartner', value.domainvalue)
+              setComissionPercentage(value.domainvalue)
+              setComissionPercentageValue(getValues('comissionpercentage'))
+            }}
             optionValue="domainvalue"
             optionDesc="domaindesc"
           />
@@ -167,7 +182,7 @@ const onMainSubmit = handleSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.commissionpercentage)}
-            valueDefault={getValues('comissionpercentage')}
+            valueDefault={comissionPercentageValue}
             className="col-6"
             inputProps={{ maxLength: 256 }}
             disabled={true}

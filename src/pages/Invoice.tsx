@@ -82,7 +82,7 @@ import {
     templateMaker,
     timeSheetPeriodSel,
     uploadExcel,
-    customerByPartnerSel,
+    partnerSel,
 } from "common/helpers";
 
 import {
@@ -11283,7 +11283,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerByPartnerSel(5), getValuesFromDomain('TIPOSSOCIOS')])
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), partnerSel({id: 0, all: true}), getValuesFromDomain('TIPOSSOCIOS')])
             );
         } else {
             dispatch(
@@ -11293,7 +11293,7 @@ const Invoice: FC = () => {
                     getCorpSelVariant(user?.corpid ?? 0, user?.orgid ?? 0, user?.usr ?? ""),
                     getPaymentPlanSel(),
                     currencySel(),
-                    customerByPartnerSel(5),
+                    partnerSel({id: 0, all: true}),
                     getValuesFromDomain('TIPOSSOCIOS')
                 ])
             );
