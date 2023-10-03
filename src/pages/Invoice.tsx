@@ -82,6 +82,8 @@ import {
     templateMaker,
     timeSheetPeriodSel,
     uploadExcel,
+    partnerSel,
+    customerByPartnerSel,
 } from "common/helpers";
 
 import {
@@ -153,6 +155,7 @@ import TableZyx from "../components/fields/table-simple";
 import Typography from "@material-ui/core/Typography";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import PartnerPeriodReport from "./PartnerPeriodReport";
 
 interface RowSelected {
     edit: boolean;
@@ -11281,7 +11284,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()])
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerByPartnerSel(1), getValuesFromDomain('TIPOSSOCIOS')])
             );
         } else {
             dispatch(
@@ -11291,6 +11294,8 @@ const Invoice: FC = () => {
                     getCorpSelVariant(user?.corpid ?? 0, user?.orgid ?? 0, user?.usr ?? ""),
                     getPaymentPlanSel(),
                     currencySel(),
+                    partnerSel({id: 0, all: true}),
+                    getValuesFromDomain('TIPOSSOCIOS')
                 ])
             );
         }
@@ -11298,7 +11303,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            {user?.roledesc?.includes("SUPERADMIN") && (
+            {user?.roledesc?.includes("SUPERADMIN") ? (
                 <div>
                     <Tabs
                         indicatorColor="primary"
@@ -11310,6 +11315,7 @@ const Invoice: FC = () => {
                     >
                         <AntTab label={t(langKeys.costperperiod)} />
                         <AntTab label={t(langKeys.periodreport)} />
+                        <AntTab label={t(langKeys.partnersperiodreport)} />
                         <AntTab label={t(langKeys.payments)} />
                         <AntTab label={t(langKeys.invoice)} />
                         <AntTab label={t(langKeys.messagingpackages)} />
@@ -11333,27 +11339,32 @@ const Invoice: FC = () => {
                     )}
                     {pageSelected === 2 && (
                         <div style={{ marginTop: 16 }}>
-                            <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
+                            <PartnerPeriodReport multiResult={multiResult} customSearch={customSearch} />
                         </div>
                     )}
                     {pageSelected === 3 && (
                         <div style={{ marginTop: 16 }}>
-                            <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
+                            <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                         </div>
                     )}
                     {pageSelected === 4 && (
                         <div style={{ marginTop: 16 }}>
-                            <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                            <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
                         </div>
                     )}
                     {pageSelected === 5 && (
+                        <div style={{ marginTop: 16 }}>
+                            <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                        </div>
+                    )}
+                    {pageSelected === 6 && (
                         <div style={{ marginTop: 16 }}>
                             <PaymentMethods />
                         </div>
                     )}
                 </div>
-            )}
-            {(user?.roledesc ?? "")
+            ) : (
+            (user?.roledesc ?? "")
                 .split(",")
                 .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
                     <div>
@@ -11391,7 +11402,7 @@ const Invoice: FC = () => {
                             </div>
                         )}
                     </div>
-                )}
+                ))}
         </div>
     );
 };

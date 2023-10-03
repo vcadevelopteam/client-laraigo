@@ -26,6 +26,7 @@ const paths = {
     SUPERVISOR: '/supervisor',
     INVOICE: '/invoice',
     CORPORATIONS: '/corporations',
+    PARTNERS: '/partners',
     IACONECTORS: '/iaconectors',
     IACONFIGURATION: '/iaconfigurations',
     IATRAINING: '/iatraining',
