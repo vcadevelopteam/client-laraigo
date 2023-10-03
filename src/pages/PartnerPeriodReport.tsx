@@ -121,11 +121,9 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
     const user = useSelector((state) => state.login.validateToken.user);
 
     const [dataMain, setdataMain] = useState({
-        corpid: 1,
-        orgid: 1071,
-        //corpid: 556,
-        //orgid: 1214,
-        partnerid: 0,
+        corpid: 0,
+        orgid: 0,
+        partnerid: 1,
         month: new Date().getMonth() + 1 ?? 9,
         year: new Date().getFullYear() ?? 2023,
         reporttype: '',
@@ -148,7 +146,8 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
             let datetochange = new Date(e + "-02");
             let mes = datetochange?.getMonth() + 1;
             let year = datetochange?.getFullYear();
-            setdataMain((prev) => ({...prev, month: mes, year: year}))
+            let datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
+            setdataMain((prev) => ({...prev, datetoshow, month: mes, year: year}))
         }
     }
 
@@ -165,10 +164,11 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
 
     useEffect(() => {
         if (dataMain) {
-            if (dataMain.partnerid != 0) {
-                if(dataMain.reporttype != '') {
-                    setCanSearch(true)
-                }
+            if(dataMain.reporttype != '') {
+                setCanSearch(true)
+            }
+            else if(dataMain.reporttype == '') {
+                setCanSearch(false)
             }
         }
     }, [dataMain]);
@@ -664,24 +664,23 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                     <FieldSelect
                         className={classes.fieldsfilter}
                         data={(multiResult.data[5].data||[])}
-                        label={t(langKeys.partner)}
+                        label={t(langKeys.client)}
                         onChange={(value) => {
-                            setdataMain((prev) => ({ ...prev, partnerid: 1 }))
-                            if(value?.partnerid === 1) {
-                                setdataMain((prev) => ({ ...prev, corpid: 556, orgid: 1214 }))
-                            } else if(value?.partnerid === 5) {
-                                setdataMain((prev) => ({ ...prev, corpid: 1, orgid: 1071 }))
-                            }
+                            value ? setdataMain((prev) => ({ ...prev, corpid: value.corpid, orgid: value.orgid })) :
+                            setdataMain((prev) => ({...prev, corpid: 0, orgid: 0}))
                         }}
-                        optionDesc="company"
-                        optionValue="partnerid"
+                        optionDesc="organization"
+                        optionValue="orgid"
                         orderbylabel={true}
                         variant="outlined"
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
                         label={t(langKeys.type)}
-                        onChange={(value) => setdataMain((prev) => ({ ...prev, reporttype: value?.domainvalue }))}
+                        onChange={(value) => {
+                            value?.domainvalue ? setdataMain((prev) => ({ ...prev, reporttype: value?.domainvalue })) :
+                            setdataMain((prev) => ({ ...prev, reporttype: '' }))
+                        }}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
                         orderbylabel={true}

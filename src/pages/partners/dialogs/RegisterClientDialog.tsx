@@ -234,6 +234,10 @@ const onMainSubmit = handleSubmit((data) => {
           startIcon={<SaveIcon color="secondary" />}
           style={{ backgroundColor: "#55BD84" }}
           onClick={() => {
+            if(edit){
+              setValue('corpid', row2?.corpid)
+              setValue('orgid', row2?.orgid)
+            }
             setStatus('');
             row2 = null
             onMainSubmit()
