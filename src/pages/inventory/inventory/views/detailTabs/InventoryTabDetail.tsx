@@ -168,13 +168,13 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
           },
           {
             Header: t(langKeys.isconciliated),
-            accessor: "isconciliated",
+            accessor: "isreconciled",
             width: "auto",
             type: 'boolean',
             sortType: 'basic',
             Cell: (props: any) => {
-                const { isconciliated } = props.cell.row.original;
-                return isconciliated ? t(langKeys.yes) : "No"
+                const { isreconciled } = props.cell.row.original;
+                return isreconciled ? t(langKeys.yes) : "No"
             }
           },
           {
@@ -434,6 +434,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 row={row}
+                fetchData={fetchdata}
             />
         </div>
     )

@@ -4417,3 +4417,24 @@ export const getInventoryExport = ({ filters, sorts, startdate, enddate }: Dicti
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+export const getInventoryCost = (inventoryid:number): IRequestBody => ({
+    method: "UFN_ALL_INVENTORY_INVENTORYCOST_SEL",
+    key: "UFN_ALL_INVENTORY_INVENTORYCOST_SEL",
+    parameters: {
+        inventoryid
+    }
+});
+export const getInventoryRecount = (inventoryid:number): IRequestBody => ({
+    method: "UFN_INVENTORYRECOUNT_SEL",
+    key: "UFN_INVENTORYRECOUNT_SEL",
+    parameters: {
+        inventoryid
+    }
+});
+export const getInventoryWarehouse = (inventoryid:number): IRequestBody => ({
+    method: "UFN_INVENTORYWAREHOUSE_SEL",
+    key: "UFN_INVENTORYWAREHOUSE_SEL",
+    parameters: {
+        inventoryid
+    }
+});

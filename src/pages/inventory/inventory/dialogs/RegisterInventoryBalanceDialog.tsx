@@ -26,8 +26,9 @@ const useStyles = makeStyles((theme) => ({
 const RegisterInventoryBalanceDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
+  fetchData:any;
   row: any;
-}> = ({ openModal, setOpenModal, row }) => {
+}> = ({ openModal, setOpenModal, row,fetchData }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ const RegisterInventoryBalanceDialog: React.FC<{
         if (!executeRes.loading && !executeRes.error) {
             dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
             dispatch(showBackdrop(false));
+            fetchData()
             reset()
             setOpenModal(false);
         } else if (executeRes.error) {

@@ -19,7 +19,7 @@ import { exportExcel, getInventoryExport, getWarehouseExport, importWarehouse, i
 import { useSelector } from "hooks";
 import TablePaginated from "components/fields/table-paginated";
 
-const selectionKey = "warehouseid";
+const selectionKey = "inventoryid";
 
 interface InventoryMainViewProps {
   setViewSelected: (view: string) => void;
@@ -207,6 +207,7 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
         Header: t(langKeys.current_balance),
         accessor: "currentbalance",
         width: "auto",
+        type:"number"
       },
       {
         Header: t(langKeys.family),

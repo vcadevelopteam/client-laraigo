@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insProductAttribute } from "common/helpers";
-import { execute, resetMainAux } from "store/main/actions";
+import { getInventoryBalance, insProductAttribute } from "common/helpers";
+import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -36,6 +36,13 @@ const AdjustCurrentBalanceDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const data = useSelector(state => state.main.mainAux2);
+  
+  useEffect(() => {
+    if(openModal){
+      dispatch(getCollectionAux2(getInventoryBalance(row?.inventoryid)));
+    }
+  }, [openModal]);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -88,7 +95,7 @@ const submitData = handleMainSubmit((data) => {
 const columns = React.useMemo(
   () => [
     {
-      accessor: 'warehouseid',
+      accessor: 'productalternativeid',
       NoFilter: true,
       isComponent: true,
       minWidth: 60,
@@ -96,22 +103,22 @@ const columns = React.useMemo(
     },
     {
       Header: t(langKeys.shelf),
-      accessor: "warehouse",
+      accessor: "shelf",
       width: "auto",
     },
     {
       Header: t(langKeys.batch),
-      accessor: "current_balance",
+      accessor: "lotecode",
       width: "auto",
     },
     {
       Header: t(langKeys.current_balance),
-      accessor: "overdueamount",
+      accessor: "averagecost",
       width: "auto",
     },
     {
       Header: t(langKeys.newbalance),
-      accessor: "subfamilydescription",
+      accessor: "currentbalance2",
       width: "auto",
     }
   ],
@@ -124,7 +131,8 @@ const columns = React.useMemo(
       <div className="row-zyx">
       <TableZyx
           columns={columns}
-          data={[]}
+          data={data?.data}
+          loading={data?.loading}
           download={false}
           filterGeneral={false}
           register={false}

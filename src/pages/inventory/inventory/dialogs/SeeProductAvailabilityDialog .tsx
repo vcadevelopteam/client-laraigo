@@ -5,8 +5,8 @@ import { langKeys } from "lang/keys";
 import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import SaveIcon from "@material-ui/icons/Save";
-import { insProductAttribute } from "common/helpers";
-import { execute, resetMainAux } from "store/main/actions";
+import { getInventoryWarehouse, getProductProduct, getProductsWarehouse, insProductAttribute } from "common/helpers";
+import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -43,6 +43,21 @@ const SeeProductAvailabilityDialog : React.FC<{
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
   const [tabIndex, setTabIndex] = useState(0);
+  const data = useSelector(state => state.main.mainAux2);
+
+  useEffect(() => {
+    if(openModal){
+      if(tabIndex === 0)
+        dispatch(getCollectionAux2(getInventoryWarehouse(row?.productid)));
+      if(tabIndex === 1)
+        dispatch(getCollectionAux2(getProductsWarehouse(row?.productid)));
+      if(tabIndex === 2)
+        dispatch(getCollectionAux2(getProductProduct(row?.productid)));
+      if(tabIndex === 3)
+        dispatch(getCollectionAux2(getProductsWarehouse(row?.productid)));
+
+    }
+  }, [openModal, tabIndex]);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -82,20 +97,13 @@ React.useEffect(() => {
 const warehousecolumns = React.useMemo(
   () => [
     {
-      accessor: 'warehouseid',
-      NoFilter: true,
-      isComponent: true,
-      minWidth: 60,
-      width: '1%',
-    },
-    {
       Header: t(langKeys.warehouse),
-      accessor: "warehouse",
+      accessor: "warehousename",
       width: "auto",
     },
     {
       Header: t(langKeys.current_balance),
-      accessor: "current_balance",
+      accessor: "currentbalance",
       width: "auto",
     },
     {
@@ -173,30 +181,23 @@ const batchcolumns = React.useMemo(
 const alternativecolumns = React.useMemo(
   () => [
     {
-      accessor: 'productalternativeid',
-      NoFilter: true,
-      isComponent: true,
-      minWidth: 60,
-      width: '1%',
-    },
-    {
       Header: t(langKeys.product),
       accessor: "product",
       width: "auto",
     },
     {
       Header: t(langKeys.description),
-      accessor: "description",
+      accessor: "productdescription",
       width: "auto",
     },
     {
       Header: t(langKeys.warehouse),
-      accessor: "warehouse",
+      accessor: "warehousename",
       width: "auto",
     },
     {
       Header: t(langKeys.current_balance),
-      accessor: "current_balance",
+      accessor: "currentbalance",
       width: "auto",
     }
   ],
@@ -282,7 +283,8 @@ const reservationscolumns = React.useMemo(
       <AntTabPanel index={0} currentIndex={tabIndex}>
         <TableZyx
           columns={warehousecolumns}
-          data={[]}
+          data={data?.data}
+          loading={data?.loading}
           download={false}
           filterGeneral={false}
           register={false}
@@ -291,7 +293,8 @@ const reservationscolumns = React.useMemo(
       <AntTabPanel index={1} currentIndex={tabIndex}>
         <TableZyx
           columns={batchcolumns}
-          data={[]}
+          data={data?.data}
+          loading={data?.loading}
           download={false}
           filterGeneral={false}
           register={false}
@@ -300,7 +303,8 @@ const reservationscolumns = React.useMemo(
       <AntTabPanel index={2} currentIndex={tabIndex}>
         <TableZyx
           columns={alternativecolumns}
-          data={[]}
+          data={data?.data}
+          loading={data?.loading}
           download={false}
           filterGeneral={false}
           register={false}
@@ -309,7 +313,8 @@ const reservationscolumns = React.useMemo(
       <AntTabPanel index={3} currentIndex={tabIndex}>
         <TableZyx
           columns={reservationscolumns}
-          data={[]}
+          data={data?.data}
+          loading={data?.loading}
           download={false}
           filterGeneral={false}
           register={false}

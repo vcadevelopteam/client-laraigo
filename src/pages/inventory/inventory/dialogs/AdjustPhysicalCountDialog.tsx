@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insProductAttribute } from "common/helpers";
-import { execute, resetMainAux } from "store/main/actions";
+import { getInventoryRecount, insProductAttribute } from "common/helpers";
+import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -36,7 +36,15 @@ const AdjustPhysicalCountDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const data = useSelector(state => state.main.mainAux2);
+  
 
+  useEffect(() => {
+    if(openModal){
+      dispatch(getCollectionAux2(getInventoryRecount(row?.inventoryid)));
+    }
+  }, [openModal]);
+  
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
         productattributeid: 0,
@@ -88,45 +96,38 @@ const submitData = handleMainSubmit((data) => {
 const columns = React.useMemo(
   () => [
     {
-      accessor: 'warehouseid',
-      NoFilter: true,
-      isComponent: true,
-      minWidth: 60,
-      width: '1%',
-    },
-    {
       Header: t(langKeys.product),
-      accessor: "warehouse",
+      accessor: "productcode",
       width: "auto",
     },
     {
       Header: t(langKeys.warehouse),
-      accessor: "current_balance",
+      accessor: "warehousename",
       width: "auto",
     },
     {
       Header: t(langKeys.shelf),
-      accessor: "overdueamount",
+      accessor: "shelfcode",
       width: "auto",
     },
     {
       Header: t(langKeys.batch),
-      accessor: "subfamilydescription",
+      accessor: "lotecode",
       width: "auto",
     },
     {
       Header: t(langKeys.physicalcount),
-      accessor: "physicalcount",
+      accessor: "recount",
       width: "auto",
     },
     {
       Header: t(langKeys.newcount),
-      accessor: "newcount",
+      accessor: "newrecount",
       width: "auto",
     },
     {
       Header: t(langKeys.dateofphysicalcount),
-      accessor: "dateofphysicalcount",
+      accessor: "recountdate",
       width: "auto",
     },
   ],
@@ -159,7 +160,8 @@ const columns = React.useMemo(
           <div className="row-zyx">
             <TableZyx
               columns={columns}
-              data={[]}
+              data={data?.data}
+              loading={data?.loading}
               download={false}
               filterGeneral={false}
               register={false}

@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insProductAttribute } from "common/helpers";
-import { execute, resetMainAux } from "store/main/actions";
+import { getInventoryCost, insProductAttribute } from "common/helpers";
+import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -36,6 +36,13 @@ const AdjustAverageCostDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const data = useSelector(state => state.main.mainAux2);
+  
+  useEffect(() => {
+    if(openModal){
+      dispatch(getCollectionAux2(getInventoryCost(row?.inventoryid)));
+    }
+  }, [openModal]);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -88,25 +95,18 @@ const submitData = handleMainSubmit((data) => {
 const columns = React.useMemo(
   () => [
     {
-      accessor: 'warehouseid',
-      NoFilter: true,
-      isComponent: true,
-      minWidth: 60,
-      width: '1%',
-    },
-    {
       Header: t(langKeys.product),
-      accessor: "warehouse",
+      accessor: "productcode",
       width: "auto",
     },
     {
       Header: t(langKeys.warehouse),
-      accessor: "current_balance",
+      accessor: "warehousename",
       width: "auto",
     },
     {
       Header: t(langKeys.average_cost),
-      accessor: "overdueamount",
+      accessor: "averagecost",
       width: "auto",
     },
     {
@@ -124,7 +124,8 @@ const columns = React.useMemo(
       <div className="row-zyx">
       <TableZyx
           columns={columns}
-          data={[]}
+          data={data?.data}
+          loading={data?.loading}
           download={false}
           filterGeneral={false}
           register={false}
