@@ -1,5 +1,9 @@
 pipeline {
     agent any
+
+    environment {
+        AWS_DEFAULT_REGION="us-south"
+    }
     
     tools {
         nodejs '14.21.3'
@@ -15,7 +19,10 @@ pipeline {
         }
         stage('Test'){
             steps {
-                sh 'aws --endpoint-url https://s3.us-south.cloud-object-storage.appdomain.cloud s3 ls'
+                withCredentials([aws(accesskeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'cos-laraigo-dev', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]){
+                    sh 'aws --version'
+                    sh 'aws --endpoint-url https://s3.us-south.cloud-object-storage.appdomain.cloud s3 ls'
+                }
             }
         }
         stage ('Deploy') {
