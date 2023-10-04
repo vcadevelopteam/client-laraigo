@@ -28,7 +28,7 @@ pipeline {
             steps {
                 withCredentials([aws(accesskeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'cos-laraigo-dev', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]){
                     sh 'aws --endpoint-url https://s3.us-south.cloud-object-storage.appdomain.cloud s3 rm s3://scanvirus-cos-static-web-hosting-w26/ --recursive'
-                    sh 'aws --endpoint-url https://s3.us-south.cloud-object-storage.appdomain.cloud s3 cp /build/ s3://scanvirus-cos-static-web-hosting-w26/ --recursive'
+                    sh 'aws --endpoint-url https://s3.us-south.cloud-object-storage.appdomain.cloud s3 cp ./build/ s3://scanvirus-cos-static-web-hosting-w26/ --recursive'
                 }
             }
         }
