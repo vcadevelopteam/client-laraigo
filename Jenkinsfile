@@ -13,6 +13,7 @@ pipeline {
         stage ('Build') {
             steps {
                 sh 'cd /home/client-laraigo'
+                sh 'git pull'
                 sh 'npm install'
                 sh 'npm run build'
             }
