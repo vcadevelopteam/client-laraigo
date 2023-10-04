@@ -11284,7 +11284,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerByPartnerSel(1), getValuesFromDomain('TIPOSSOCIOS')])
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerByPartnerSel(user?.partnerid), getValuesFromDomain('TIPOSSOCIOS')])
             );
         } else {
             dispatch(
@@ -11303,7 +11303,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            {user?.roledesc?.includes("SUPERADMIN") ? (
+            {user?.roledesc?.split(',')?.includes("SUPERADMIN") ? (
                 <div>
                     <Tabs
                         indicatorColor="primary"
@@ -11313,13 +11313,15 @@ const Invoice: FC = () => {
                         value={pageSelected}
                         variant="fullWidth"
                     >
-                        <AntTab label={t(langKeys.costperperiod)} />
-                        <AntTab label={t(langKeys.periodreport)} />
-                        <AntTab label={t(langKeys.partnersperiodreport)} />
-                        <AntTab label={t(langKeys.payments)} />
-                        <AntTab label={t(langKeys.invoice)} />
-                        <AntTab label={t(langKeys.messagingpackages)} />
-                        <AntTab label={t(langKeys.paymentmethods)} />
+                        <AntTab label={t(langKeys.costperperiod)} value={0}/>
+                        <AntTab label={t(langKeys.periodreport)} value={1}/>
+                        { user?.roledesc?.includes("SUPERADMINISTRADOR SOCIOS") && (
+                            <AntTab label={t(langKeys.partnersperiodreport)} value={2}/>
+                        )}
+                        <AntTab label={t(langKeys.payments)} value={3}/>
+                        <AntTab label={t(langKeys.invoice)} value={4}/>
+                        <AntTab label={t(langKeys.messagingpackages)} value={5}/>
+                        <AntTab label={t(langKeys.paymentmethods)} value={6}/>
                     </Tabs>
                     {pageSelected === 0 && (
                         <div style={{ marginTop: 16 }}>
