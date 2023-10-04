@@ -5,7 +5,7 @@ import { langKeys } from "lang/keys";
 import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import SaveIcon from "@material-ui/icons/Save";
-import { getInventoryWarehouse, getProductProduct, getProductsWarehouse, insProductAttribute } from "common/helpers";
+import { getInventoryBooking, getInventoryLote, getInventoryWarehouse, getProductProduct, getProductsWarehouse, insProductAttribute } from "common/helpers";
 import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
@@ -48,13 +48,13 @@ const SeeProductAvailabilityDialog : React.FC<{
   useEffect(() => {
     if(openModal){
       if(tabIndex === 0)
-        dispatch(getCollectionAux2(getInventoryWarehouse(row?.productid)));
+        dispatch(getCollectionAux2(getInventoryWarehouse(row?.inventoryid)));
       if(tabIndex === 1)
-        dispatch(getCollectionAux2(getProductsWarehouse(row?.productid)));
+        dispatch(getCollectionAux2(getInventoryLote(row?.inventoryid)));
       if(tabIndex === 2)
         dispatch(getCollectionAux2(getProductProduct(row?.productid)));
       if(tabIndex === 3)
-        dispatch(getCollectionAux2(getProductsWarehouse(row?.productid)));
+        dispatch(getCollectionAux2(getInventoryBooking(row?.inventoryid)));
 
     }
   }, [openModal, tabIndex]);
@@ -108,17 +108,17 @@ const warehousecolumns = React.useMemo(
     },
     {
       Header: t(langKeys.overdueamount),
-      accessor: "overdueamount",
+      accessor: "expiredquantity",
       width: "auto",
     },
     {
       Header: t(langKeys.currentreservedamount),
-      accessor: "subfamilydescription",
+      accessor: "reservedquantity",
       width: "auto",
     },
     {
       Header: t(langKeys.availablequantity),
-      accessor: "availablequantity",
+      accessor: "avaiblequantity",
       width: "auto",
     },
   ],
@@ -135,45 +135,51 @@ const batchcolumns = React.useMemo(
     },
     {
       Header: t(langKeys.warehouse),
-      accessor: "warehouse",
+      accessor: "warehousename",
       width: "auto",
     },
     {
       Header: t(langKeys.shelf),
-      accessor: "shelf",
+      accessor: "rackcode",
       width: "auto",
     },
     {
       Header: t(langKeys.batch),
-      accessor: "batch",
+      accessor: "lotecode",
       width: "auto",
     },
     {
       Header: t(langKeys.dueDate),
-      accessor: "dueDate",
+      accessor: "expiredate",
       width: "auto",
     },
     {
       Header: t(langKeys.current_balance),
-      accessor: "current_balance",
+      accessor: "currentbalance",
       width: "auto",
     },
     {
       Header: t(langKeys.physicalcount),
-      accessor: "physicalcount",
+      accessor: "recount",
       width: "auto",
     }
     ,
     {
       Header: t(langKeys.lastcountdate),
-      accessor: "lastcountdate",
+      accessor: "lastrecountdate",
       width: "auto",
     }
     ,
     {
       Header: t(langKeys.isconciliated),
-      accessor: "isconciliated",
+      accessor: "isreconciled",
       width: "auto",
+      sortType: "basic",
+      type: "boolean",
+      Cell: (props: any) => {
+          const { isreconciled } = props.cell.row.original;
+          return isreconciled ? t(langKeys.yes) : "No";
+      },
     }
   ],
   []
@@ -206,35 +212,28 @@ const alternativecolumns = React.useMemo(
 const reservationscolumns = React.useMemo(
   () => [
     {
-      accessor: 'productalternativeid',
-      NoFilter: true,
-      isComponent: true,
-      minWidth: 60,
-      width: '1%',
-    },
-    {
       Header: t(langKeys.ticketapplication),
-      accessor: "ticketapplication",
+      accessor: "ticketid",
       width: "auto",
     },
     {
       Header: t(langKeys.creationdate),
-      accessor: "creationdate",
+      accessor: "createdate",
       width: "auto",
     },
     {
       Header: t(langKeys.reservationtype),
-      accessor: "reservationtype",
+      accessor: "bookingtype",
       width: "auto",
     },
     {
       Header: t(langKeys.reservedquantity),
-      accessor: "reservedquantity",
+      accessor: "bookingquantity",
       width: "auto",
     },
     {
       Header: t(langKeys.warehouse),
-      accessor: "warehouse",
+      accessor: "warehousename",
       width: "auto",
     },
   ],
