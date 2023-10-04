@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insProductAttribute } from "common/helpers";
+import { insInventoryBooking, insProductAttribute } from "common/helpers";
 import { execute, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
@@ -29,8 +29,8 @@ const AddReservationDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
-  errors: any;
-}> = ({ openModal, setOpenModal, row, errors }) => {
+  fetchData:any;
+}> = ({ openModal, setOpenModal, row, fetchData }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -38,14 +38,17 @@ const AddReservationDialog: React.FC<{
   const executeRes = useSelector(state => state.main.execute);
   const multiDataAux = useSelector(state => state.main.multiDataAux);
 
-  const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
+  const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset, formState:{errors}} = useForm({
     defaultValues: {
-        productattributeid: 0,
+        inventorywarehouseid:0,
+        inventoryid: row.inventoryid,
+        productdescription: row.productdescription,
+        ticketid: "",
+        bookingtype: "",
+        applicationdate: new Date(),
         productid: row?.productid,
         warehouseid: row?.warehouseid,
-        attributeid: '',
-        value: '',
-        unitmeasureid: 0,
+        bookingquantity: 0,
         status: 'ACTIVO',
         type: 'NINGUNO',
         operation: "INSERT"
@@ -57,6 +60,7 @@ const AddReservationDialog: React.FC<{
         if (!executeRes.loading && !executeRes.error) {
             dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
             dispatch(showBackdrop(false));
+            fetchData()
             reset()
             setOpenModal(false);
         } else if (executeRes.error) {
@@ -69,15 +73,15 @@ const AddReservationDialog: React.FC<{
 }, [executeRes, waitSave])
 
 React.useEffect(() => {
-  register('unitmeasureid', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
-  register('attributeid', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('value', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-}, [register]);
+  register('bookingquantity', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
+  register('bookingtype', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('applicationdate', { validate: (value) =>((value) ? true : t(langKeys.field_required) + "") });
+}, [register, openModal]);
   
 const submitData = handleMainSubmit((data) => {
   const callback = () => {
       dispatch(showBackdrop(true));
-      //dispatch(execute(insProductAttribute(data)));
+      dispatch(execute(insInventoryBooking(data)));
       setWaitSave(true);
   }
   dispatch(manageConfirmation({
@@ -94,6 +98,8 @@ const submitData = handleMainSubmit((data) => {
           <FieldEdit
             label={t(langKeys.ticketapplication)}
             //data={[]}
+            valueDefault={getValues("ticketid")}
+            onChange={(e)=>setValue("ticketid",e)}
             className="col-3"
             //optionValue="domainvalue"
             //optionDesc="domaindesc"
@@ -101,7 +107,9 @@ const submitData = handleMainSubmit((data) => {
           <FieldSelect
             label={t(langKeys.reservationtype)}
             className="col-3"
-            error={errors?.producttype?.message}
+            valueDefault={getValues("bookingtype")}
+            onChange={(e)=>setValue("bookingtype", e?.domainvalue||"")}
+            error={errors?.bookingtype?.message}
             data={multiDataAux?.data?.[5]?.data}
             optionValue="domainvalue"
             optionDesc="domaindesc"
@@ -109,42 +117,43 @@ const submitData = handleMainSubmit((data) => {
           <FieldSelect
             label={t(langKeys.product)}
             className="col-3"
-            error={errors?.producttype?.message}
             data={multiDataAux?.data?.[2]?.data}
             valueDefault={getValues("productid")}
             disabled
             optionValue="productid"
-            optionDesc="description"
+            optionDesc="productcode"
           />
           <FieldEdit
             label={t(langKeys.description)}
-            valueDefault={getValues('value')}
+            valueDefault={getValues('productdescription')}
             className="col-3"
-            onChange={(value) => {setValue('value', value)}}
+            disabled
             inputProps={{ maxLength: 256 }}
           />
           <FieldSelect
             label={t(langKeys.warehouse)}
             className="col-4"
-            error={errors?.producttype?.message}
             valueDefault={getValues("warehouseid")}
             data={multiDataAux?.data?.[3]?.data}
+            disabled
             optionValue="warehouseid"
             optionDesc="description"
           />
           <FieldEdit
             label={t(langKeys.reservedquantity)}
-            valueDefault={getValues('value')}
+            valueDefault={getValues('bookingquantity')}
+            error={errors?.bookingquantity?.message}
             className="col-4"
-            onChange={(value) => {setValue('value', value)}}
-            inputProps={{ maxLength: 256 }}
+            type="number"
+            onChange={(value) => {setValue('bookingquantity', value)}}
           />
           <FieldEdit
             label={t(langKeys.applicationdate)}
             type="date"
-            valueDefault={getValues('value')}
+            valueDefault={getValues('applicationdate')}
+            error={errors?.applicationdate?.message}
             className="col-4"
-            onChange={(value) => {setValue('value', value)}}
+            onChange={(value) => {setValue('applicationdate', value)}}
             inputProps={{ maxLength: 256 }}
           />
       </div>
