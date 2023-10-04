@@ -11284,7 +11284,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerByPartnerSel(1), getValuesFromDomain('TIPOSSOCIOS')])
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerByPartnerSel(user?.partnerid), getValuesFromDomain('TIPOSSOCIOS')])
             );
         } else {
             dispatch(
