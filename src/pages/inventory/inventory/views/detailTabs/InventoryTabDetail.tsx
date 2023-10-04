@@ -352,7 +352,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         <FieldEdit
                             label={t(langKeys.dateoflastshipment)}
                             type="datetime-local"
-                            valueDefault={new Date(row?.lastdispatch).toISOString().substring(0, 16)}
+                            valueDefault={new Date(row?.lastdispatch || null).toISOString().substring(0, 16)}
                             className="col-6"
                             disabled={true}
                         />  
@@ -405,7 +405,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <FieldEdit
                         label={t(langKeys.dateoflastmodification)}
                         type="datetime-local"
-                        valueDefault={new Date(row?.lastmodified).toISOString().substring(0, 16)}
+                        valueDefault={new Date(row?.lastmodified || null).toISOString().substring(0, 16)}
                         className="col-4"
                         error={errors?.address?.message}
                         onChange={(value) => setValue('address', value)}

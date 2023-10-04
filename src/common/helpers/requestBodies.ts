@@ -4459,3 +4459,10 @@ export const insInventoryBooking = ({ inventorywarehouseid, inventoryid, warehou
         inventorywarehouseid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation
     }
 });
+export const getInventoryMovement = (inventoryid:number): IRequestBody => ({
+    method: "UFN_ALL_INVENTORY_INVENTORYMOVEMENT_SEL",
+    key: "UFN_ALL_INVENTORY_INVENTORYMOVEMENT_SEL",
+    parameters: {
+        inventoryid
+    }
+});

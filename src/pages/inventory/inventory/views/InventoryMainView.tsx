@@ -296,7 +296,7 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
         initialSelectedRows={selectedRows}
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
-        register={false}
+        register={true}
       />
     </div>
   );

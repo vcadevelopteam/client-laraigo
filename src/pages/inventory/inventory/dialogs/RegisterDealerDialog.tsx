@@ -62,7 +62,7 @@ const RegisterDealerDialog: React.FC<{
 
   const { register,handleSubmit: handleMainSubmit,setValue,getValues,formState: { errors },reset} = useForm({
     defaultValues: {
-      productid: row.productid,
+      productid: row?.productid || 0,
       productcompanyid: 0,
       manufacturerid: 0,
       distributorid: 0,

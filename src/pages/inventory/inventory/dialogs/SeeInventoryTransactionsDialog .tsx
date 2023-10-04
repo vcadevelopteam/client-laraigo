@@ -5,8 +5,8 @@ import { langKeys } from "lang/keys";
 import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import SaveIcon from "@material-ui/icons/Save";
-import { insProductAttribute } from "common/helpers";
-import { execute, resetMainAux } from "store/main/actions";
+import { getInventoryMovement, insProductAttribute } from "common/helpers";
+import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -43,26 +43,13 @@ const SeeInventoryTransactionsDialog  : React.FC<{
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
   const [tabIndex, setTabIndex] = useState(0);
-
-  const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
-    defaultValues: {
-        productattributeid: 0,
-        productid: 0,
-        attributeid: '',
-        value: '',
-        unitmeasureid: 0,
-        status: 'ACTIVO',
-        type: 'NINGUNO',
-        operation: "INSERT"
-    }
-  });
+  const data = useSelector(state => state.main.mainAux2);
 
   useEffect(() => {
     if (waitSave) {
         if (!executeRes.loading && !executeRes.error) {
             dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
             dispatch(showBackdrop(false));
-            reset()
             setOpenModal(false);
         } else if (executeRes.error) {
             const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
@@ -73,11 +60,11 @@ const SeeInventoryTransactionsDialog  : React.FC<{
     }
 }, [executeRes, waitSave])
 
-React.useEffect(() => {
-  register('unitmeasureid', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
-  register('attributeid', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('value', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-}, [register]);
+useEffect(() => {
+  if(openModal) {
+    dispatch(getCollectionAux2(getInventoryMovement(row?.inventoryid)));
+  }
+}, [openModal]);
 
 const dispatchcolumns = React.useMemo(
   () => [
@@ -90,12 +77,12 @@ const dispatchcolumns = React.useMemo(
     },
     {
       Header: t(langKeys.inventoryconsumptionnumber),
-      accessor: "inventoryconsumptionnumber",
+      accessor: "inventorymovementid",
       width: "auto",
     },
     {
       Header: t(langKeys.transactiontype),
-      accessor: "transactiontype",
+      accessor: "movementtype",
       width: "auto",
     },
     {
@@ -115,25 +102,25 @@ const dispatchcolumns = React.useMemo(
     },
     {
       Header: t(langKeys.unitcost),
-      accessor: "unitcost",
+      accessor: "priceunit",
       width: "auto",
     }
     ,
     {
       Header: t(langKeys.linecost),
-      accessor: "linecost",
+      accessor: "priceonline",
       width: "auto",
     }
     ,
     {
       Header: t(langKeys.createdBy),
-      accessor: "createdBy",
+      accessor: "createBy",
       width: "auto",
     }
     ,
     {
       Header: t(langKeys.dispatchedto),
-      accessor: "dispatchedto",
+      accessor: "dispatchto",
       width: "auto",
     }
   ],
@@ -312,7 +299,8 @@ const settingscolumns = React.useMemo(
       <AntTabPanel index={0} currentIndex={tabIndex}>
         <TableZyx
           columns={dispatchcolumns}
-          data={[]}
+          data={data?.data}
+          loading={data?.loading}
           download={false}
           filterGeneral={false}
           register={false}
@@ -345,7 +333,6 @@ const settingscolumns = React.useMemo(
           style={{ backgroundColor: "#FB5F5F" }}
           onClick={() => {
             setOpenModal(false);
-            reset()
           }}
         >
           {t(langKeys.back)}
