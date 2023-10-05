@@ -69,7 +69,7 @@ useEffect(() => {
 const dispatchcolumns = React.useMemo(
   () => [
     {
-      accessor: 'productalternativeid',
+      accessor: 'globalid',
       NoFilter: true,
       isComponent: true,
       minWidth: 60,
@@ -130,7 +130,7 @@ const dispatchcolumns = React.useMemo(
 const transferscolumns = React.useMemo(
   () => [
     {
-      accessor: 'productalternativeid',
+      accessor: 'globalid',
       NoFilter: true,
       isComponent: true,
       minWidth: 60,
@@ -138,12 +138,12 @@ const transferscolumns = React.useMemo(
     },
     {
       Header: t(langKeys.inventoryconsumptionnumber),
-      accessor: "inventoryconsumptionnumber",
+      accessor: "inventorymovementid",
       width: "auto",
     },
     {
       Header: t(langKeys.transactiontype),
-      accessor: "transactiontype",
+      accessor: "movementtype",
       width: "auto",
     },
     {
@@ -164,12 +164,12 @@ const transferscolumns = React.useMemo(
     ,
     {
       Header: t(langKeys.unitcost),
-      accessor: "unitcost",
+      accessor: "priceunit",
       width: "auto",
     },
     {
       Header: t(langKeys.linecost),
-      accessor: "linecost",
+      accessor: "priceonline",
       width: "auto",
     },
     {
@@ -209,7 +209,7 @@ const transferscolumns = React.useMemo(
 const settingscolumns = React.useMemo(
   () => [
     {
-      accessor: 'productalternativeid',
+      accessor: 'globalid',
       NoFilter: true,
       isComponent: true,
       minWidth: 60,
@@ -217,7 +217,7 @@ const settingscolumns = React.useMemo(
     },
     {
       Header: t(langKeys.transactiontype),
-      accessor: "transactiontype",
+      accessor: "movementtype",
       width: "auto",
     },
     {
@@ -257,7 +257,7 @@ const settingscolumns = React.useMemo(
     },
     {
       Header: t(langKeys.modifiedBy),
-      accessor: "modifiedBy",
+      accessor: "changeby",
       width: "auto",
     }
   ],
