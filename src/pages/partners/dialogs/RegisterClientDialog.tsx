@@ -45,7 +45,7 @@ const RegisterClientDialog: React.FC<{
   const [comissionPercentageValue, setComissionPercentageValue] = useState(edit ? row2?.comissionPercentageValue : 0);
 
   console.log(row2)
-  console.log(orgId)
+  console.log(corpId)
 
   const { register, handleSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
@@ -124,7 +124,7 @@ const onMainSubmit = handleSubmit((data) => {
             className="col-6"
             data={(multiDataAux?.data?.[1]?.data||[])}
             onChange={(value) => {
-              setCorpId(value.corpid);
+              value ? setCorpId(value.corpid) : setCorpId(0)
               setValue('corpid', value.corpid)
             }}
             optionValue="corpid"
