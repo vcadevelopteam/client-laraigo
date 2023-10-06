@@ -148,6 +148,14 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     valueDefault={getValues('documentnumber')}
                     className="col-6"
                     error={errors?.documentnumber?.message}
+                    maxLength={11}
+                    onInput={(event:any) => {
+                        const value = event.target.value;
+                        if (value.length > 11) {
+                          event.target.value = value.slice(0, 11);
+                        }
+                        setValue('documentnumber', event.target.value);
+                      }}
                     onChange={(value) => setValue('documentnumber', value)}
                 />
                 <FieldEdit
