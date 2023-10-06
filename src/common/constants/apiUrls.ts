@@ -1,4 +1,4 @@
-const ENV = "PRODUCTION";
+const ENV = import.meta.env.VITE_ENV || 'DEVELOP';
 
 const APIS_URL = {
     DEVELOP: {
