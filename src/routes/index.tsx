@@ -28,6 +28,7 @@ const Groupconfig = lazy(() => import('pages/GroupConfig'));
 const Whitelist = lazy(() => import('pages/Whitelist'));
 const InappropriateWords = lazy(() => import('pages/InappropriateWords'));
 const IntelligentModels = lazy(() => import('pages/IntelligentModels'));
+const IAConfiguration = lazy(() => import('pages/Iaservices'));
 const SLA = lazy(() => import('pages/SLA'));
 const Domains = lazy(() => import('pages/Domains'));
 const Reports = lazy(() => import('pages/Reports'));
@@ -41,7 +42,7 @@ const InputValidation = lazy(() => import('pages/InputValidation'));
 const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
 const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
 const Emojis = lazy(() => import('pages/Emojis'));
-const Iaservices = lazy(() => import('pages/LaraigoIA'));
+const IATraining = lazy(() => import('pages/LaraigoIA'));
 const Campaign = lazy(() => import('pages/campaign/Campaign'));
 const NotFound = lazy(() => import('pages/NotFound'));
 const Forbidden = lazy(() => import('pages/Forbidden'));
@@ -125,6 +126,21 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 	component: React.ElementType;
 }
 
+const cleanPath = (pathx: string) => {
+	if (pathx.includes('channels')) {
+		return "/channels";
+	} else if (pathx.includes('person')) {
+		return "/person";
+	} else if (pathx.includes('crm')) {
+		return "/crm";
+	} else if (pathx.includes('dashboard')) {
+		return "/dashboard";
+	} else if (pathx.includes('servicedesk')) {
+		return "/servicedesk";
+	}
+	return pathx
+}
+
 // view: 0
 // modify: 1
 // insert: 2
@@ -187,7 +203,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (!ignorePwdchangefirstloginValidation && resValidateToken.user!.pwdchangefirstlogin === true) {
 		return <Redirect to={{ pathname: paths.CHNAGE_PWD_FIRST_LOGIN }} />;
-	} else if (location.pathname !== "/" && !applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard') && !location.pathname.includes('servicedesk')) {
+	} else if (location.pathname !== "/" && !applications?.[cleanPath(location.pathname)]?.[0]) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (location.pathname === "/") {
 		return <Redirect to={{ pathname: resValidateToken.user?.redirect }} />
@@ -204,8 +220,10 @@ const RouterApp: FC = () => {
 		removeAuthorizationToken()
 	}, [dispatch]));
 
+	console.log(import.meta.env.DEV)
+	console.log(import.meta.env.BASE_URL)
 	return (
-		<Router basename={process.env.PUBLIC_URL}>
+		<Router basename={ import.meta.env.BASE_URL}>
 			<React.Suspense fallback={(
 				<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
 					<CircularProgress color="inherit" />
@@ -267,7 +285,6 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />
-					<ProtectRoute exact path={paths.IASERVICES} component={() => (<Layout mainClasses={classes.main}><Iaservices /></Layout>)} />
 					<ProtectRoute exact path={paths.SUPERVISOR} component={() => (<Layout ><Supervisor /></Layout>)} />
 					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
 					<ProtectRoute exact path={paths.TIMESHEET} component={() => (<Layout mainClasses={classes.main}><TimeSheet /></Layout>)} />
@@ -312,6 +329,9 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.SECURITYRULES} component={() => <Layout mainClasses={classes.main}><SecurityRules /></Layout>} />
 					<ProtectRoute exact path={paths.EXTRASLOCATION} component={() => <Layout mainClasses={classes.main}><Location /></Layout>} />
 					<ProtectRoute exact path={paths.POSTCREATOR} component={() => (<Layout mainClasses={classes.main}><PostCreator /></Layout>)} />
+					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><IntelligentModels /></Layout>)} />
+					<ProtectRoute exact path={paths.IACONFIGURATION} component={() => (<Layout mainClasses={classes.main}><IAConfiguration /></Layout>)} />
+					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />
 					</Route>

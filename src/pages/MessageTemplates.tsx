@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { addTemplate, deleteTemplate, synchronizeTemplate } from "store/channel/actions";
 import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
 import { Close, Delete, FileCopy, GetApp, Search } from "@material-ui/icons";
@@ -801,45 +802,129 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
 
     React.useEffect(() => {
+        register("body");
+        register("category");
         register("communicationchannelid");
         register("communicationchanneltype");
         register("exampleparameters");
         register("externalid");
         register("externalstatus");
+        register("footer");
         register("fromprovider");
+        register("header");
         register("integrationid");
+        register("language");
+        register("name");
+        register("namespace");
         register("servicecredentials");
+        register("templatetype");
+        register("type");
         register("typeattachment");
 
-        register("body", {
-            validate: (value) => (value && value.length) || t(langKeys.field_required),
-        });
+        let type = getValues("type") || "HSM";
 
-        register("category", {
-            validate: (value) => (value && value.length) || t(langKeys.field_required),
-        });
+        switch (type) {
+            case "HSM":
+                register("body", {
+                    validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
+                });
+                register("name", {
+                    validate: (value) =>
+                        (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
+                });
+                register("namespace", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
+                if (getValues("headerenabled")) {
+                    register("header", {
+                        validate: (value) => (value && value.length) || t(langKeys.field_required),
+                    });
+                }
+                if (getValues("footerenabled")) {
+                    register("footer", {
+                        validate: (value) => (value && value.length) || t(langKeys.field_required),
+                    });
+                }
+                setTemplateTypeDisabled(false);
+                onChangeTemplateMedia();
+                break;
 
-        register("language", {
-            validate: (value) => (value && value.length) || t(langKeys.field_required),
-        });
+            case "MAIL":
+            case "HTML":
+                register("header", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
+                register("name", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
+                onChangeTemplateType({ value: "STANDARD" });
+                setTemplateTypeDisabled(true);
+                break;
 
-        register("name", {
-            validate: (value) =>
-                (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
-        });
+            case "SMS":
+                register("body", {
+                    validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
+                });
+                register("name", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
+                onChangeTemplateType({ value: "STANDARD" });
+                setTemplateTypeDisabled(true);
+                break;
+        }
 
-        register("namespace", {
-            validate: (value) => (value && value.length) || t(langKeys.field_required),
-        });
+        if (getValues("type") === "HSM") {
+            register("body", {
+                validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
+            });
 
-        register("templatetype", {
-            validate: (value) => (value && value.length) || t(langKeys.field_required),
-        });
+            register("name", {
+                validate: (value) =>
+                    (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
+            });
 
-        register("type", {
-            validate: (value) => (value && value.length) || t(langKeys.field_required),
-        });
-    }, [edit, register]);
+            register("namespace", {
+                validate: (value) => (value && value.length) || t(langKeys.field_required),
+            });
+
+            if (row?.headerenabled) {
+                register("header", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
+            }
+
+            if (row?.footerenabled) {
+                register("footer", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
+            }
+
+            onChangeTemplateMedia();
+        } else {
+            register("name", {
+                validate: (value) => (value && value.length) || t(langKeys.field_required),
+            });
+
+            register("namespace");
+
+            if (getValues("type") === "SMS") {
+                register("body", {
+                    validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
+                });
+            } else {
+                register("body", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
+                register("header", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
+            }
+        }
+    }, [register, getValues("type")]);
+
+    useEffect(() => {
+        console.log(errors);
+    }, [errors]);
 
     useEffect(() => {
         import("@codemirror/lang-html").then((html) => {
@@ -931,6 +1016,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }, [waitUploadFile, uploadResult]);
 
     const onSubmit = handleSubmit((data) => {
+        debugger;
         if (data.type === "MAIL") {
             data.body = renderToString(toElement(bodyObject));
             if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
@@ -1022,70 +1108,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     useEffect(() => {
         if (row) {
             if (row.fromprovider && row.communicationchanneltype) {
-                setDisableNamespace(row.communicationchanneltype === "WHAT" ? false : true);
+                setDisableNamespace(row.communicationchanneltype !== "WHAT");
             } else {
                 setDisableNamespace(false);
             }
-
-            const type = row?.type || "HSM";
-
-            if (type === "HSM") {
-                register("body", {
-                    validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
-                });
-
-                register("footer", { validate: (value) => value || true });
-                register("header", { validate: (value) => value || true });
-
-                register("name", {
-                    validate: (value) =>
-                        (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
-                });
-
-                register("namespace", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
-
-                if (row?.headerenabled) {
-                    register("header", {
-                        validate: (value) => (value && value.length) || t(langKeys.field_required),
-                    });
-                }
-
-                if (row?.footerenabled) {
-                    register("footer", {
-                        validate: (value) => (value && value.length) || t(langKeys.field_required),
-                    });
-                }
-
-                onChangeTemplateMedia();
-            } else {
-                register("name", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
-
-                register("namespace", { validate: (value) => value || true });
-
-                if (type === "SMS") {
-                    register("body", {
-                        validate: (value) => (value && (value || "").length <= 160) || "" + t(langKeys.validationchar),
-                    });
-
-                    register("footer", { validate: (value) => value || true });
-                    register("header", { validate: (value) => value || true });
-                } else {
-                    register("body", {
-                        validate: (value) => (value && value.length) || t(langKeys.field_required),
-                    });
-
-                    register("footer", { validate: (value) => value || true });
-                    register("header", {
-                        validate: (value) => (value && value.length) || t(langKeys.field_required),
-                    });
-                }
-            }
         }
-    }, [row]);
+    }, [row, register]);
 
     const onChangeMessageType = (data: Dictionary) => {
         if (getValues("type") === "MAIL" && (data?.value || "") !== "MAIL") {
@@ -1100,103 +1128,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue("externalid", "");
         setValue("externalstatus", "");
         setValue("fromprovider", false);
-        setValue("fromprovider", false);
         setValue("integrationid", "");
         setValue("servicecredentials", "");
+        setValue("type", data?.value || "");
 
+        trigger("body");
+        trigger("category");
         trigger("communicationchannelid");
         trigger("communicationchanneltype");
         trigger("exampleparameters");
         trigger("externalid");
         trigger("externalstatus");
+        trigger("footer");
         trigger("fromprovider");
-        trigger("fromprovider");
+        trigger("header");
         trigger("integrationid");
+        trigger("language");
+        trigger("name");
+        trigger("namespace");
         trigger("servicecredentials");
-
-        setValue("type", data?.value || "");
-
+        trigger("templatetype");
         trigger("type");
-
-        switch (data?.value || "HSM") {
-            case "HSM":
-                setValue("body", "");
-
-                register("body", {
-                    validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
-                });
-
-                register("footer", { validate: (value) => value || true });
-                register("header", { validate: (value) => value || true });
-
-                register("name", {
-                    validate: (value) =>
-                        (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
-                });
-
-                register("namespace", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
-
-                if (getValues("headerenabled")) {
-                    register("header", {
-                        validate: (value) => (value && value.length) || t(langKeys.field_required),
-                    });
-                }
-
-                if (getValues("footerenabled")) {
-                    register("footer", {
-                        validate: (value) => (value && value.length) || t(langKeys.field_required),
-                    });
-                }
-
-                setTemplateTypeDisabled(false);
-                onChangeTemplateMedia();
-                break;
-
-            case "MAIL":
-            case "HTML":
-                setValue("body", "");
-                setValue("namespace", "");
-
-                register("body", { validate: (value) => value || true });
-                register("footer", { validate: (value) => value || true });
-
-                register("header", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
-
-                register("name", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
-
-                register("namespace", { validate: (value) => value || true });
-
-                onChangeTemplateType({ value: "STANDARD" });
-                setTemplateTypeDisabled(true);
-                break;
-
-            case "SMS":
-                setValue("body", "");
-                setValue("namespace", "");
-
-                register("body", {
-                    validate: (value) => (value && (value || "").length <= 160) || "" + t(langKeys.validationchar),
-                });
-
-                register("footer", { validate: (value) => value || true });
-                register("header", { validate: (value) => value || true });
-
-                register("name", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
-
-                register("namespace", { validate: (value) => value || true });
-
-                onChangeTemplateType({ value: "STANDARD" });
-                setTemplateTypeDisabled(true);
-                break;
-        }
+        trigger("typeattachment");
     };
 
     const onChangeTemplateMedia = async () => {
@@ -1205,7 +1158,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 validate: (value) => (value && value.length) || t(langKeys.field_required),
             });
         } else {
-            register("header", { validate: (value) => value || true });
+            register("header");
         }
 
         if (getValues("footerenabled")) {
@@ -1213,16 +1166,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 validate: (value) => (value && value.length) || t(langKeys.field_required),
             });
         } else {
-            register("footer", { validate: (value) => value || true });
+            register("footer");
         }
 
-        await trigger("footer");
-        await trigger("header");
+        trigger("footer");
+        trigger("footerenabled");
+        trigger("header");
+        trigger("headerenabled");
     };
 
     const onChangeTemplateType = async (data: Dictionary) => {
         setValue("templatetype", data?.value || "");
-        await trigger("templatetype");
+
+        trigger("templatetype");
     };
 
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
@@ -1232,8 +1188,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("headerenabled", !getValues("headerenabled"));
         }
 
-        await trigger("headerenabled");
-        await trigger("header");
+        trigger("headerenabled");
+        trigger("header");
 
         await onChangeTemplateMedia();
     };
@@ -1245,8 +1201,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("footerenabled", !getValues("footerenabled"));
         }
 
-        await trigger("footerenabled");
-        await trigger("footer");
+        trigger("footerenabled");
+        trigger("footer");
 
         await onChangeTemplateMedia();
     };
@@ -1258,12 +1214,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("buttonsenabled", !getValues("buttonsenabled"));
         }
 
-        await trigger("buttonsenabled");
+        trigger("buttonsenabled");
     };
 
     const onChangeHeaderType = async (data: Dictionary) => {
         setValue("headertype", data?.value || "");
-        await trigger("headertype");
+
+        trigger("headertype");
     };
 
     const onChangeButton = (index: number, param: string, value: string) => {
@@ -1275,7 +1232,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("buttons", [...getValues("buttons"), { title: "", type: "", payload: "" }]);
         }
 
-        await trigger("buttons");
+        trigger("buttons");
     };
 
     const onClickRemoveButton = async () => {
@@ -1289,7 +1246,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             );
         }
 
-        await trigger("buttons");
+        trigger("buttons");
     };
 
     const onClickAttachment = useCallback(() => {
@@ -1344,7 +1301,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 .join(",")
         );
 
-        await trigger("attachment");
+        trigger("attachment");
     };
 
     const changeProvider = async (value: any) => {
@@ -1360,7 +1317,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("exampleparameters", "");
             setValue("externalid", "");
             setValue("externalstatus", "PENDING");
-            setValue("fromprovider", true);
             setValue("fromprovider", true);
             setValue("integrationid", value.integrationid);
             setValue("servicecredentials", value.servicecredentials);
@@ -1380,22 +1336,30 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("externalid", "");
             setValue("externalstatus", "NONE");
             setValue("fromprovider", false);
-            setValue("fromprovider", false);
             setValue("integrationid", "");
             setValue("servicecredentials", "");
 
             setDisableNamespace(false);
         }
 
+        trigger("body");
+        trigger("category");
         trigger("communicationchannelid");
         trigger("communicationchanneltype");
         trigger("exampleparameters");
         trigger("externalid");
         trigger("externalstatus");
+        trigger("footer");
         trigger("fromprovider");
-        trigger("fromprovider");
+        trigger("header");
         trigger("integrationid");
+        trigger("language");
+        trigger("name");
+        trigger("namespace");
         trigger("servicecredentials");
+        trigger("templatetype");
+        trigger("type");
+        trigger("typeattachment");
     };
 
     return (
@@ -1898,7 +1862,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <CodeMirror
                                                 extensions={htmlLoad}
                                                 height={"600px"}
-                                                value={getValues("body")}
+                                                value={bodyAttachment}
                                                 onChange={(value) => {
                                                     setValue("body", value || "");
                                                     setBodyAttachment(value || "");

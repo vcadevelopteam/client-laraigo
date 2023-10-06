@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
     drawerItemActive: {
         color: theme.palette.primary.main,
         fill: theme.palette.primary.main,
-        stroke: theme.palette.primary.main,
+        // stroke: theme.palette.primary.main,
     },
     drawerCloseItemActive: {
         color: 'white',
@@ -123,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
         opacity: 1,
     },
     drawerItemInactive: {
-        stroke: "#8F92A1",
+        // stroke: "#8F92A1",
         fill: "#8F92A1",
     },
     drawerCloseItemInactive: {

@@ -24,8 +24,6 @@ import { useDispatch } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -62,7 +60,6 @@ const useStyles = makeStyles((theme) => ({
 
 const IDPROPERTIES = 'IDPROPERTIES';
 const Properties: FC = () => {
-    const history = useHistory();
     const [categoryFilter, setCategoryFilter] = useState('');
     const [levelFilter, setLevelFilter] = useState('');
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -81,14 +78,9 @@ const Properties: FC = () => {
 
     const dispatch = useDispatch();
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.property_plural) },
     ];
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
+    function redirectFunc(view: string) {
         setViewSelected(view)
     }
 
@@ -191,23 +183,9 @@ const Properties: FC = () => {
         }
         return (
             <div style={{ width: '100%' }}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
                 <div style={{ position: 'relative' }}>
                     <Box className={classes.containerHeader} justifyContent='space-between' alignItems='center' mb={1}>
                         <span className={classes.title}>{t(langKeys.property_plural, { count: 2 })}</span>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CONFIGURATION)}
-                        >{t(langKeys.back)}</Button>
                     </Box>
                     <div style={{ position: 'absolute', display: 'flex', gap: 16 }}>
                         <FieldSelect
@@ -251,7 +229,7 @@ const Properties: FC = () => {
                     filterGeneral={false}
                     onClickRow={handleEdit}
                     loading={mainResult.loading}
-                    register={['SUPERADMIN'].includes(user?.roledesc || "")}
+                    register={(user?.roledesc ?? "").split(",").some(v => ['SUPERADMIN'].includes(v))}
                     handleRegister={handleRegister}
                     pageSizeDefault={IDPROPERTIES === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
                     initialPageIndex={IDPROPERTIES === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
@@ -280,7 +258,7 @@ interface DetailPropertyProps {
     fetchData: () => void;
     multiData: MultiData[];
     setViewSelected: (view: string) => void;
-    arrayBread:any;
+    arrayBread: any;
 }
 
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected, arrayBread }) => {
@@ -294,7 +272,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     const [orgList, setorgList] = useState<any>([]);
     const [channelList, setchannelList] = useState<any>([]);
     const [groupList, setgroupList] = useState<any>([]);
-    const allowEdition = !(['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P', 'SUPERVISOR'].includes(user?.roledesc || ""))
+    const allowEdition = !((user?.roledesc ?? "").split(",").some(v => ['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P', 'SUPERVISOR'].includes(v)))
     const isView = (!allowEdition && row !== null);
 
     const detailResult = useSelector(state => state.main.mainAux);
@@ -727,14 +705,14 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
     const dispatch = useDispatch();
 
     var valueInput = null;
-    
+
     if (row) {
         switch (row?.inputtype) {
             case 'BOOL':
                 if (edit) {
                     valueInput =
                         <TemplateSwitchArray
-                            tooltip={{true: row?.tooltipenable, false: row?.tooltipdisable}}
+                            tooltip={{ true: row?.tooltipenable, false: row?.tooltipdisable }}
                             className={classes.mb2}
                             error={errors?.table?.[index]?.propertyvalue?.message}
                             /*fregister={{

@@ -115,7 +115,7 @@ export const getSupervisors = (orgid: number, userid: number, keytmp?: any): IRe
     }
 })
 
-export const getApplicationsByRole = (roleid: number, keytmp?: number): IRequestBody => ({
+export const getApplicationsByRole = (roleid: string, keytmp?: number): IRequestBody => ({
     method: "UFN_APPS_DATA_SEL",
     key: "UFN_APPS_DATA_SEL" + (keytmp || ""),
     parameters: {
@@ -231,10 +231,10 @@ export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, pass
     parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
-export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect }: Dictionary): IRequestBody => ({
+export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect }: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
-    parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
+    parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
 });
 export const selOrgSimpleList = (): IRequestBody => ({
     method: "UFN_ORG_LST_SIMPLE",
@@ -959,7 +959,7 @@ export const insMessageTemplate = (
             body,
             bodyobject: JSON.stringify(bodyobject),
             footerenabled,
-            footer,
+            footer: footer||"",
             buttonsenabled,
             buttons: JSON.stringify(buttons),
             priority,
@@ -1154,6 +1154,11 @@ export const dupChatflowBlock = ({
 export const getVariableConfigurationLst = (): IRequestBody => ({
     method: "UFN_VARIABLECONFIGURATION_LST",
     parameters: {}
+});
+
+export const updateGroupOnHSM = (conversationid: number): IRequestBody => ({
+    method: "UFN_CONVERSATION_REASSIGNTICKET_HSM",
+    parameters: { conversationid }
 });
 
 export const getTicketsByFilter = (lastmessage: string, start_createticket: string, end_createticket: string, channels: string, conversationstatus: string, displayname: string, phone: string): IRequestBody => ({
@@ -1552,6 +1557,7 @@ export const insertReportTemplate = (
         filterjson,
         dataorigin,
         summaryjson,
+        nameapi,
         operation }: Dictionary
 ) => ({
     method: "UFN_REPORTTEMPLATE_INS",
@@ -1565,6 +1571,7 @@ export const insertReportTemplate = (
         summaryjson,
         dataorigin,
         communicationchannelid: '',
+        nameapi,
         operation,
     },
 });
@@ -1755,11 +1762,11 @@ export const dashboardKPISummarySel = ({ date, origin, usergroup, supervisorid, 
         offset: (new Date().getTimezoneOffset() / 60) * -1, userid
     }
 });
-export const dashboardKPIMonthSummarySel = ({ enddate, origin, usergroup, supervisorid, userid }: Dictionary): IRequestBody => ({
+export const dashboardKPIMonthSummarySel = ({ origin, usergroup, supervisorid, userid }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_KPI_SUMMARY_BY_MONTH',
     key: "UFN_DASHBOARD_KPI_SUMMARY_BY_MONTH",
     parameters: {
-        date: enddate, origin, usergroup, supervisorid,
+        date: new Date(), origin, usergroup, supervisorid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, userid
     }
 });
@@ -3001,6 +3008,14 @@ export const getHistoryStatusConversation = (personid: number, conversationid: n
         personid,
         conversationid,
         communicationchannelid
+    },
+});
+
+export const getAnalyticsIA = (conversationid: number) => ({
+    method: "UFN_CONVERSATION_SEL_ANALYTICS_V2",
+    key: "UFN_CONVERSATION_SEL_ANALYTICS_V2",
+    parameters: {
+        conversationid,
     },
 });
 

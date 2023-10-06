@@ -125,32 +125,32 @@ export const editChannel = (payload: IRequestBody<IChannel | IChatWebAdd>, chann
     callAPI: async () => {
         if (channelType === "CHAZ" || channelType === "SMOOCHANDROID") {
             const service = payload.service as IChatWebAdd;
-            let chatIcon = service.interface.iconbutton as File | string | null;
-            let headerIcon = service.interface.iconheader as File | string | null;
-            let botIcon = service.interface.iconbot as File | string | null;
-            let bubbleIcon = service.bubble.iconbubble as File | string | null;
+            let chatIcon: File | string | null = service.interface.iconbutton as File | string | null;
+            let headerIcon: File | string | null = service.interface.iconheader as File | string | null;
+            let botIcon: File | string | null = service.interface.iconbot as File | string | null;
+            let bubbleIcon: File | string | null = service.bubble.iconbubble as File | string | null;
 
             if (chatIcon && typeof chatIcon === "object") {
                 const fd = new FormData();
-                fd.append('file', chatIcon, chatIcon.name);
+                fd.append('file', chatIcon as File, (chatIcon as File).name);
                 chatIcon = (await CommonService.uploadFile(fd)).data["url"] as string;
             }
 
             if (headerIcon && typeof headerIcon === "object") {
                 const fd = new FormData();
-                fd.append('file', headerIcon, headerIcon.name);
+                fd.append('file', headerIcon as File, (headerIcon as File).name);
                 headerIcon = (await CommonService.uploadFile(fd)).data["url"] as string;
             }
 
             if (botIcon && typeof botIcon === "object") {
                 const fd = new FormData();
-                fd.append('file', botIcon, botIcon.name);
+                fd.append('file', botIcon as File, (botIcon as File).name);
                 botIcon = (await CommonService.uploadFile(fd)).data["url"] as string;
             }
 
             if (bubbleIcon && typeof bubbleIcon === "object") {
                 const fd = new FormData();
-                fd.append('file', bubbleIcon, bubbleIcon.name);
+                fd.append('file', bubbleIcon as File, (bubbleIcon as File).name);
                 bubbleIcon = (await CommonService.uploadFile(fd)).data["url"] as string;
             }
 

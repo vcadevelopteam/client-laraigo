@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { apiUrls } from "common/constants";
 import { Box, Breadcrumbs, Button, FormControlLabel, makeStyles } from "@material-ui/core";
 import { ChannelWhatsApp01 } from "icons";
@@ -274,7 +275,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                         label={t(langKeys.connect_whatsappnumber)}
                         partnerId={apiUrls.DIALOG360PARTNERID}
                         queryParameters={{
-                            redirect_url: `${window.location.origin}/configuration/channels/:id/add/ChannelAddWhatsAppOnboarding`,
+                            redirect_url: `${window.location.origin}/channels/:id/add/ChannelAddWhatsAppOnboarding`,
                         }}
                         style={{
                             alignItems: "center",

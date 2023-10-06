@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Box } from "@material-ui/core";
 import { Dictionary, MultiData } from "@types";
 import { DialogZyx, FieldEdit, FieldSelect, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
@@ -310,7 +311,7 @@ const TimeSheet: FC = () => {
     };
 
     if (viewSelected === "view-1") {
-        if (mainResult.mainData.error || userRole !== "SUPERADMIN") {
+        if (mainResult.mainData.error || !userRole?.includes("SUPERADMIN")) {
             return <h1>ERROR</h1>;
         } else {
             return (
@@ -470,7 +471,6 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
     useEffect(() => {
         if (!multiResult.loading) {
             setProfileAllowed(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
-            console.log(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
         }
     }, [multiResult]);
 

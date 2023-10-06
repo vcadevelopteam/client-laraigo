@@ -9,14 +9,12 @@ import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
-import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -204,7 +202,6 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
 }
 
 const Whitelist: FC = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -215,7 +212,6 @@ const Whitelist: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
 
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.whitelist)}
     ];
 
@@ -324,10 +320,6 @@ const Whitelist: FC = () => {
         }))
     }
     function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
 
@@ -335,29 +327,12 @@ const Whitelist: FC = () => {
 
         return (
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={redirectFunc}
-                        />
-                </div>
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.whitelist, { count: 2 })}
                     data={mainResult.mainData.data}
                     download={true}
                     onClickRow={handleEdit}
-                    ButtonsElement={() => (
-                        <Button
-                            disabled={mainResult.mainData.loading}
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CONFIGURATION)}
-                        >{t(langKeys.back)}</Button>
-                    )}
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}

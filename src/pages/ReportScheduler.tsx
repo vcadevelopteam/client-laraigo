@@ -9,7 +9,7 @@ import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectEmails } from 'components';
-import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, reportSchedulerIns , getReportschedulerreportsSel} from 'common/helpers';
+import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, reportSchedulerIns, getReportschedulerreportsSel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -59,20 +59,20 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
+const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [filters, setfilters] = useState<any[]>(row?.filterjson ? Object.entries(row.filterjson).reduce((acc:any,[key,value]) => [...acc, {"filter": key, "value": value} ] ,[]): [])
+    const [filters, setfilters] = useState<any[]>(row?.filterjson ? Object.entries(row.filterjson).reduce((acc: any, [key, value]) => [...acc, { "filter": key, "value": value }], []) : [])
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [origin, setOrigin] = useState(row?.origin || '');
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataReportSimpleAll = multiData[1] && multiData[1].success ? multiData[1].data: [];
-    const dataReportSimple = dataReportSimpleAll.filter(x=>x.origin !== "TICKET") 
+    const dataReportSimpleAll = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataReportSimple = dataReportSimpleAll.filter(x => x.origin !== "TICKET")
     const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const [filterData, setfilterData] = useState(origin==="TICKET"?JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"):JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
+    const [filterData, setfilterData] = useState(origin === "TICKET" ? JSON.parse(dataReportSimpleAll.filter(x => x.origin === "TICKET")?.[0].filterjson || "[]") : JSON.parse(dataReportSimple.find(x => (x.reportname === (row?.reportname)))?.filterjson || "[]").filter((x: any) => x.type !== "timestamp without time zone"));
     const [showError, setShowError] = useState("");
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -119,18 +119,22 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origintype');
-        register('reportname', { validate: (value) => (getValues("origin") ==="REPORT" || getValues("origin") ==="CAMPAIGN") ? (value && value.length) || t(langKeys.field_required) : true });
+        register('reportname', { validate: (value) => (getValues("origin") === "REPORT" || getValues("origin") === "CAMPAIGN") ? (value && value.length) || t(langKeys.field_required) : true });
         register('frecuency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         //register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('datarange', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('mailto', { validate: {
-            validation: (value) => (value && value.length) || t(langKeys.field_required) ,
-            isemail: (value)=> (value.split(",").some((x:any)=>x.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) 
-        }});
-        register('mailcc', { validate: {
-            isemail: (value)=> value?(value.split(",").some((x:any)=>x.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) : true
-        }});
+        register('mailto', {
+            validate: {
+                validation: (value) => (value && value.length) || t(langKeys.field_required),
+                isemail: (value) => (value.split(",").some((x: any) => x.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification)
+            }
+        });
+        register('mailcc', {
+            validate: {
+                isemail: (value) => value ? (value.split(",").some((x: any) => x.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) : true
+            }
+        });
         register('mailsubject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
         dispatch(resetMainAux());
@@ -161,11 +165,11 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
             data.mailbody = renderToString(toElement(bodyobject));
             if (data.mailbody === '<div data-reactroot=""><p><span></span></p></div>')
                 return;
-                
+
             const filtertosend = filters.reduce((accumulator, element) => {
-                return {...accumulator, [element.filter]: element.value};
-              }, {});
-            
+                return { ...accumulator, [element.filter]: element.value };
+            }, {});
+
             dispatch(execute(reportSchedulerIns({ ...data, filterjson: JSON.stringify(filtertosend), mailbodyobject: bodyobject })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
@@ -176,14 +180,14 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
             callback
         }))
     });
-    
+
     return (
-        <div style={{width: "100%"}}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.reportscheduler_singular)} ${t(langKeys.detail)}` }]}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: `${t(langKeys.reportscheduler_singular)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -237,32 +241,32 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                         />
                     </div>
                     <div className="row-zyx">
-                        {/* {value:"DASHBOARD", desc: t(langKeys.dashboard)},*/ }
+                        {/* {value:"DASHBOARD", desc: t(langKeys.dashboard)},*/}
                         <FieldSelect
                             label={t(langKeys.origin)}
                             className="col-6"
                             valueDefault={getValues("origin")}
-                            onChange={(value) =>{ 
+                            onChange={(value) => {
                                 setOrigin(value?.value || '');
                                 setValue('origin', value?.value || '')
                                 setfilterData([])
-                                if(value?.value==="TICKET"){
-                                    setfilterData(JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"))
+                                if (value?.value === "TICKET") {
+                                    setfilterData(JSON.parse(dataReportSimpleAll.filter(x => x.origin === "TICKET")?.[0].filterjson || "[]"))
                                 }
-                                if(value?.value!=="REPORT"){
+                                if (value?.value !== "REPORT") {
                                     setfilters([])
                                 }
                             }}
                             error={errors?.origin?.message}
                             data={[
-                                {value:"REPORT", desc: t(langKeys.report_plural)},
-                                {value:"TICKET", desc: t(langKeys.ticket_plural)},
-                                {value:"CAMPAIGN", desc: t(langKeys.campaign_plural)},
+                                { value: "REPORT", desc: t(langKeys.report_plural) },
+                                { value: "TICKET", desc: t(langKeys.ticket_plural) },
+                                { value: "CAMPAIGN", desc: t(langKeys.campaign_plural) },
                             ]}
                             optionDesc="desc"
                             optionValue="value"
                         />
-                        {!((origin!=="REPORT") && (origin!=="DASHBOARD")) && <FieldSelect
+                        {!((origin !== "REPORT") && (origin !== "DASHBOARD")) && <FieldSelect
                             label={t(langKeys.report)}
                             className="col-6"
                             valueDefault={getValues("reportname")}
@@ -270,18 +274,18 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 setValue('reportname', value?.reportname || '')
                                 setValue('origintype', value?.origintype || '')
                                 setValue('reportid', value?.reportid || 0)
-                                setfilterData(JSON.parse(value?.filterjson || "[]").filter((x:any)=>x.type!=="timestamp without time zone"))
+                                setfilterData(JSON.parse(value?.filterjson || "[]").filter((x: any) => x.type !== "timestamp without time zone"))
                                 setfilters([])
                             }}
                             error={errors?.reportname?.message}
-                            disabled={(origin!=="REPORT") && (origin!=="DASHBOARD")}
+                            disabled={(origin !== "REPORT") && (origin !== "DASHBOARD")}
                             data={dataReportSimple}
                             optionDesc="reportname"
                             optionValue="reportname"
                             uset={true}
                             prefixTranslation=""
                         />}
-                        {!((origin!=="CAMPAIGN") && (origin!=="DASHBOARD")) && <FieldSelect
+                        {!((origin !== "CAMPAIGN") && (origin !== "DASHBOARD")) && <FieldSelect
                             label={t(langKeys.reporttype)}
                             className="col-6"
                             valueDefault={getValues("reportname")}
@@ -289,21 +293,21 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 setValue('reportname', value?.value || '');
                                 setValue('origintype', 'STANDARD');
                                 setValue('reportid', 0);
-                                setfilterData(JSON.parse("[]").filter((x:any)=>x.type!=="timestamp without time zone"))
+                                setfilterData(JSON.parse("[]").filter((x: any) => x.type !== "timestamp without time zone"))
                                 setfilters([])
                             }}
                             error={errors?.reportname?.message}
-                            disabled={(origin!=="CAMPAIGN") && (origin!=="DASHBOARD")}
+                            disabled={(origin !== "CAMPAIGN") && (origin !== "DASHBOARD")}
                             data={[
-                                {value: "DEFAULT", desc: t(langKeys.defaulttype)},
-                                {value: "PROACTIVE", desc: t(langKeys.proactivetype)},
+                                { value: "DEFAULT", desc: t(langKeys.defaulttype) },
+                                { value: "PROACTIVE", desc: t(langKeys.proactivetype) },
                             ]}
                             optionDesc="desc"
                             optionValue="value"
                         />}
                     </div>
-                    {((filterData && filters) && (filterData.length > 0)) &&<div className="row-zyx">
-                        
+                    {((filterData && filters) && (filterData.length > 0)) && <div className="row-zyx">
+
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.subtitle2}>{t(langKeys.filters)}</div>
                             <div>
@@ -318,8 +322,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 </Button>
                             </div>
                         </div>
-                        {filters.map((x,i)=> (
-                            <div className="row-zyx" key={i}>                                
+                        {filters.map((x, i) => (
+                            <div className="row-zyx" key={i}>
                                 <FieldSelect
                                     label={t(langKeys.filter)}
                                     className="col-6"
@@ -338,7 +342,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                     className="col-5"
                                     valueDefault={x?.value || ""}
                                     onChange={(value) => setValuefilter('value', value, i)}
-                                />                                
+                                />
                                 <div className="col-1" style={{ paddingTop: "15px" }}>
                                     <IconButton aria-label="delete" onClick={() => deleteitem(i)}>
                                         <DeleteIcon />
@@ -355,9 +359,9 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             onChange={(value) => setValue('frecuency', value?.value || '')}
                             error={errors?.frecuency?.message}
                             data={[
-                                {value:"DAY", desc: t(langKeys.day)},
-                                {value:"WEEK", desc: t(langKeys.week)},
-                                {value:"MONTH", desc: t(langKeys.month)},
+                                { value: "DAY", desc: t(langKeys.day) },
+                                { value: "WEEK", desc: t(langKeys.week) },
+                                { value: "MONTH", desc: t(langKeys.month) },
                             ]}
                             optionDesc="desc"
                             optionValue="value"
@@ -408,7 +412,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             label={t(langKeys.to)}
                             className="col-12"
                             valueDefault={getValues("mailto")}
-                            onChange={(value: ({domaindesc: string} | string)[]) => {
+                            onChange={(value: ({ domaindesc: string } | string)[]) => {
                                 const mailto = value.map((o: any) => o.domaindesc || o).join();
                                 setValue('mailto', mailto);
                             }}
@@ -422,7 +426,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             label={"Cc"}
                             className="col-12"
                             valueDefault={getValues("mailcc")}
-                            onChange={(value: ({domaindesc: string} | string)[]) => {
+                            onChange={(value: ({ domaindesc: string } | string)[]) => {
                                 const mailcc = value.map((o: any) => o.domaindesc || o).join();
                                 setValue('mailcc', mailcc);
                             }}
@@ -476,13 +480,13 @@ const ReportScheduler: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = ["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
+    const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.reportscheduler) },
     ];
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
+    function redirectFunc(view: string) {
+        if (view === "view-0") {
             history.push(paths.CONFIGURATION)
             return;
         }
@@ -583,7 +587,7 @@ const ReportScheduler: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(reportSchedulerIns({ ...row, id: row.reportschedulerid ,operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(reportSchedulerIns({ ...row, id: row.reportschedulerid, operation: 'DELETE', status: 'ELIMINADO' })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -602,7 +606,7 @@ const ReportScheduler: FC = () => {
         }
 
         return (
-            <div style={{width:"100%"}}>
+            <div style={{ width: "100%" }}>
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.reportscheduler, { count: 2 })}
@@ -612,7 +616,7 @@ const ReportScheduler: FC = () => {
                     loading={mainResult.mainData.loading}
                     register={superadmin}
                     handleRegister={handleRegister}
-            />
+                />
             </div>
         )
     }

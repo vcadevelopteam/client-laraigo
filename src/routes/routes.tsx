@@ -1,4 +1,4 @@
-import { RouteConfig } from "@types";
+import { ViewsClassificationConfig, RouteConfig } from "@types";
 import paths from "common/constants/paths";
 import {
     DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,
@@ -18,10 +18,96 @@ import {
     OrdersIcon,
     IALaraigoLogo,
     ServiceDeskIcon,
+    AnalyticRouteIcon,
+    DashboardRouteIcon,
+    AutomatizationRouteIcon,
+    SalesRouteIcon,
+    ServiceDeskRouteIcon,
+    IARouteIcon,
+    UserGroupIcon,
+    ConfigPropertiesIcon,
+    QuickReplyIcon,
+    ForbiddenWordsIcon,
+    EmojiSadFaceIcon,
+    DomainsIcon,
+    OrganizationsIcon,
+    IntegrationIcon,
+    ClassificationIcon,
+    LocationIcon,
+    Corporation2Icon,
+    ChannelsIcon,
+    WhitelistIcon,
+    ConfiguratuinIARouteIcon,
+    ConectivityIARouteIcon,
+    IAEntrenamientoIcon,
+    SLAIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import InputIcon from '@material-ui/icons/Input';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
+
+export const viewsClassifications: ViewsClassificationConfig[] = [
+    {
+        id: 1,
+        key: "analytics",
+        description: <Trans i18nKey={langKeys.analytics} />,
+        // tooltip: <Trans i18nKey={langKeys.analytics} />,
+        icon: (className) => <AnalyticRouteIcon style={{ width: 22, height: 22 }} className={className} />,
+        // options: [paths.DASHBOARD,paths.REPORTS,paths.KPIMANAGER]
+    },
+    {
+        id: 2,
+        key: "CRM",
+        description: <span>CRM</span>, 
+        // description: <Trans i18nKey={langKeys.crm} />,
+        // tooltip: <Trans i18nKey={langKeys.crm} />,
+        icon: (className) => <DashboardRouteIcon style={{ width: 22, height: 22 }} className={className} />,
+        // options: [paths.MESSAGE_INBOX,paths.SUPERVISOR,paths.PERSON, paths.CRM, paths.CAMPAIGN, paths.MESSAGETEMPLATE, paths.POSTCREATOR, paths.TICKETS]
+    },
+    {
+        id: 3,
+        key: "automatization",
+        description: <Trans i18nKey={langKeys.automatization}/>,
+        // tooltip: <Trans i18nKey={langKeys.automatization}/>,
+        icon: (className) => <AutomatizationRouteIcon style={{ width: 22, height: 22 }} className={className} />,
+        // options:[paths.BOTDESIGNER, paths.VARIABLECONFIGURATION,  paths.INTEGRATIONMANAGER, paths.CALENDAR, paths.AUTOMATIZATIONRULES, paths.REPORTSCHEDULER]
+    },
+    {
+        id: 4,
+        key: "sales",
+        description: <Trans i18nKey={langKeys.reason_sales} />,
+        // tooltip: <Trans i18nKey={langKeys.reason_sales} />,
+        icon: (className) => <SalesRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        // options: [paths.ORDERS,paths.PRODUCTCATALOG,paths.CATALOGMASTER]
+    },
+    {
+        id: 5,
+        key: "servicedesk",
+        description: <span>Service Desk</span>, 
+        // description: <Trans i18nKey={langKeys.servicedesk} />,
+        // tooltip: <Trans i18nKey={langKeys.servicedesk} />,
+        icon: (className) => <ServiceDeskRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        // options: [paths.SERVICE_DESK, paths.SLA]
+    },
+    {
+        id: 6,
+        key: "ia",
+        description: <Trans i18nKey={langKeys.ia} />, // prop:count for plural purposes
+        // tooltip: <Trans i18nKey={langKeys.ia} />,
+        icon: (className) => <IARouteIcon style={{ width: 22, height: 22 }} className={className} />,
+        // options: [paths.IACONECTORS, paths.IACONFIGURATION,  paths.IATRAINING]
+    },
+    {
+        id: 7,
+        key: "configuration",
+        description: <Trans i18nKey={langKeys.configuration} />,
+        // tooltip: <Trans i18nKey={langKeys.configuration} />,
+        icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
+        // options: [paths.CORPORATIONS, paths.ORGANIZATIONS, paths.DOMAINS,  paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
+        // paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
+    },
+];
 
 export const routes: RouteConfig[] = [
     {
@@ -191,6 +277,34 @@ export const routes: RouteConfig[] = [
     //     tooltip: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
     // },
     {
+        key: paths.CORPORATIONS,
+        description: <Trans i18nKey={langKeys.corporation_plural} />,
+        tooltip: <Trans i18nKey={langKeys.corporation_plural} />,
+        subroute: true,
+        path: paths.CORPORATIONS,
+        initialSubroute: paths.CORPORATIONS,
+        icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.ORGANIZATIONS,
+        description: <Trans i18nKey={langKeys.organization_plural} />,
+        tooltip: <Trans i18nKey={langKeys.organization_plural} />,
+        subroute: true,
+        path: paths.ORGANIZATIONS,
+        initialSubroute: paths.ORGANIZATIONS,
+        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: '/channels',
+        description: <Trans i18nKey={langKeys.channel_plural} />,
+        tooltip: <Trans i18nKey={langKeys.channel} />,
+        subroute: true,
+        path: paths.CHANNELS,
+        initialSubroute: paths.CHANNELS,
+        icon: (className) => <ChannelsIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+
+    {
         key: paths.MESSAGETEMPLATE,
         description: <Trans i18nKey={langKeys.messagetemplate} count={2} />,
         tooltip: <Trans i18nKey={langKeys.messagetemplate} count={2} />,
@@ -218,13 +332,7 @@ export const routes: RouteConfig[] = [
         path: paths.ASSISTANT,
         icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
-    {
-        key: paths.VARIABLECONFIGURATION,
-        description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
-        tooltip: <Trans i18nKey={langKeys.variableconfiguration} />,
-        path: paths.VARIABLECONFIGURATION,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
-    },
+  
     // {
     //     key: 'ia-services-label',
     //     description: <Trans i18nKey={langKeys.iaservices} count={2} />,
@@ -255,79 +363,105 @@ export const routes: RouteConfig[] = [
     //     initialSubroute: paths.USERS,
     //     icon: (className) => <ExtrasIcon style={{width: 22, height: 22}} className={className} />,
     // },
-];
-
-export const subroutes: RouteConfig[] = [
     {
-        key: paths.USERS,
-        description: <Trans i18nKey={langKeys.user} />,
+        key: paths.TIPIFICATIONS,
+        description: <Trans i18nKey={langKeys.tipification_plural} count={2} />,
         tooltip: "",
-        path: paths.USERS,
+        path: paths.TIPIFICATIONS,
+        icon: (className) => <ClassificationIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+    },
+    {
+        key: paths.INTEGRATIONMANAGER,
+        description: <Trans i18nKey={langKeys.integrationmanager_plural} count={2} />,
+        tooltip: "",
+        path: paths.INTEGRATIONMANAGER,
+        icon: (className) => <IntegrationIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.PROPERTIES,
         description: <Trans i18nKey={langKeys.property} count={2} />,
         tooltip: "",
         path: paths.PROPERTIES,
+        icon: (className) => <ConfigPropertiesIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
+    {
+        key: paths.EXTRASLOCATION,
+        description: <Trans i18nKey={langKeys.location} count={2} />,
+        tooltip: "",
+        path: paths.EXTRASLOCATION,
+        icon: (className) => <LocationIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+    },
+    {
+        key: paths.VARIABLECONFIGURATION,
+        description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.variableconfiguration} />,
+        path: paths.VARIABLECONFIGURATION,
+        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
+    },
+    {
+        key: paths.USERS,
+        description: <Trans i18nKey={langKeys.user_plural} />,
+        tooltip: "",
+        path: paths.USERS,
+        icon: (className) => <UserGroupIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+    },
+   
     {
         key: paths.GROUPCONFIG,
         description: <Trans i18nKey={langKeys.groupconfig} />,
         tooltip: "",
         path: paths.GROUPCONFIG,
+        icon: (className) => <QuickReplyIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.QUICKREPLIES,
         description: <Trans i18nKey={langKeys.quickreplies} />,
         tooltip: "",
         path: paths.QUICKREPLIES,
+        icon: (className) => <QuickReplyIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.INPUTVALIDATION,
         description: <Trans i18nKey={langKeys.inputvalidation} />,
         tooltip: "",
         path: paths.INPUTVALIDATION,
+        icon: (className) => <InputIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.INAPPROPRIATEWORDS,
         description: <Trans i18nKey={langKeys.inappropriatewords} />,
         tooltip: "",
         path: paths.INAPPROPRIATEWORDS,
+        icon: (className) => <ForbiddenWordsIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.INTELLIGENTMODELS,
         description: <Trans i18nKey={langKeys.intelligentmodels} count={2} />,
         tooltip: "",
         path: paths.INTELLIGENTMODELS,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
-    {
-        key: paths.TIPIFICATIONS,
-        description: <Trans i18nKey={langKeys.tipification_plural} count={2} />,
-        tooltip: "",
-        path: paths.TIPIFICATIONS,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
-    },
+    
     {
         key: paths.SLA,
         description: <Trans i18nKey={langKeys.sla} count={2} />,
         tooltip: "",
         path: paths.SLA,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <SLAIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.DOMAINS,
         description: <Trans i18nKey={langKeys.domain_plural} count={2} />,
         tooltip: "",
         path: paths.DOMAINS,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <DomainsIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.WHITELIST,
         description: <Trans i18nKey={langKeys.whitelist} count={2} />,
         tooltip: "",
         path: paths.WHITELIST,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <WhitelistIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.SECURITYRULES,
@@ -336,60 +470,78 @@ export const subroutes: RouteConfig[] = [
         path: paths.SECURITYRULES,
         icon: (className) => <LockOpenIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
+    
     {
-        key: paths.EXTRASLOCATION,
-        description: <Trans i18nKey={langKeys.location} count={2} />,
-        tooltip: "",
-        path: paths.EXTRASLOCATION,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
-    },
-    {
-        key: paths.PERSON,
+        key: '/person',
         description: <Trans i18nKey={langKeys.person_plural} count={2} />,
         tooltip: "",
         path: paths.PERSON,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.MESSAGETEMPLATE,
         description: <Trans i18nKey={langKeys.messagetemplate_plural} count={2} />,
         tooltip: "",
         path: paths.MESSAGETEMPLATE,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
-    {
-        key: paths.INTEGRATIONMANAGER,
-        description: <Trans i18nKey={langKeys.integrationmanager_plural} count={2} />,
-        tooltip: "",
-        path: paths.INTEGRATIONMANAGER,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
-    },
+   
     {
         key: paths.CAMPAIGN,
         description: <Trans i18nKey={langKeys.campaign} count={2} />,
         tooltip: "",
         path: paths.CAMPAIGN,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.BOTDESIGNER,
         description: <Trans i18nKey={langKeys.botdesigner} count={2} />,
         tooltip: "",
         path: paths.BOTDESIGNER,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.VARIABLECONFIGURATION,
         description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
         tooltip: "",
         path: paths.VARIABLECONFIGURATION,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.EMOJIS,
-        description: <Trans i18nKey={langKeys.emoji_plural} count={2} />,
+        description: <Trans i18nKey={langKeys.restrictedEmoji} count={2} />,
         tooltip: "",
         path: paths.EMOJIS,
-        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
-    }
+        icon: (className) => <EmojiSadFaceIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+    },
+    {
+        key: paths.IACONECTORS,
+        description: <Trans i18nKey={langKeys.connectors} />,
+        tooltip: <Trans i18nKey={langKeys.iaconnectors} />,
+        subroute: true,
+        path: paths.IACONECTORS,
+        initialSubroute: paths.IACONECTORS,
+        icon: (className) => <ConectivityIARouteIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.IACONFIGURATION,
+        description: <Trans i18nKey={langKeys.iaconfiguration} />,
+        tooltip: <Trans i18nKey={langKeys.iaconfiguration} />,
+        subroute: true,
+        path: paths.IACONFIGURATION,
+        initialSubroute: paths.IACONFIGURATION,
+        icon: (className) => <ConfiguratuinIARouteIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.IATRAINING,
+        description: <Trans i18nKey={langKeys.training} />,
+        tooltip: <Trans i18nKey={langKeys.trainingwithai} />,
+        subroute: true,
+        path: paths.IATRAINING,
+        initialSubroute: paths.IATRAINING,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+];
+
+export const subroutes: RouteConfig[] = [
 ];

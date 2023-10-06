@@ -39,8 +39,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { DuplicateIcon } from 'icons';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -93,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     badge: {
         paddingRight: "0.6em",
         paddingLeft: "0.6em",
-        borderRadius: "10rem",        
+        borderRadius: "10rem",
         display: "inline-block",
         padding: "0.25em 0.4em",
         fontSize: "75%",
@@ -159,7 +157,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const data = getValues();
                 if (allOk) {
                     updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-                        p[index] = { ...data, operation: (p[index].id === 0 || p[index].operation ==="INSERT") ? "INSERT" : "UPDATE" }
+                        p[index] = { ...data, operation: (p[index].id === 0 || p[index].operation === "INSERT") ? "INSERT" : "UPDATE" }
                         return p;
                     })
                 }
@@ -212,7 +210,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
             orgid: row ? row.orgid : (dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0),
-            roleid: row ? row.roleid : 0,
+            rolegroups: row ? row.rolegroups : "",
             roledesc: row ? row.roledesc : '', //for table
             orgdesc: row ? row.orgdesc : '', //for table
             supervisordesc: row ? row.supervisordesc : '', //for table
@@ -228,7 +226,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         })
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-        register('roleid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('rolegroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type');
         register('supervisor');
         // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels');
@@ -248,7 +247,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (row && row.id !== 0) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
-                getApplicationsByRole(row.roleid, index + 1),
+                getApplicationsByRole(row.rolegroups, index + 1),
             ]))
         }
     }, [preData])
@@ -285,26 +284,24 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     const onChangeRole = (value: Dictionary) => {
-        setValue('roleid', value ? value.roleid : 0);
-        setValue('roledesc', value ? value.roldesc : 0);
-        setValue('type', value ? value.type : 0);
-        setValue('redirect', ''); 
+        setValue('rolegroups', value.map((o: Dictionary) => o.roleid).join());
+        setValue('roledesc', value.map((o: Dictionary) => o.roledesc).join());
+        setValue('redirect', '');
         updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-            p[index] = { ...p[index], roleid: value?.roleid || 0, roledesc: value?.roldesc || 0, type: value?.type || 0 }
+            p[index] = { ...p[index], rolegroups: value.map((o: Dictionary) => o.roleid).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join() }
             return p;
         })
-        if (value) {
+        if (!!value.length) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
-                getApplicationsByRole(value.roleid, index + 1),
+                getApplicationsByRole(value.map((o: Dictionary) => o.roleid).join(), index + 1),
             ]))
         } else {
             setDataApplications({ loading: false, data: [] })
         }
     }
-
     return (
         <Accordion defaultExpanded={row?.id === 0} style={{ marginBottom: '8px' }}>
 
@@ -330,40 +327,29 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
                             />
-                            <FieldSelect
-                                label={t(langKeys.role)}
-                                className={classes.mb2}
-                                valueDefault={row?.roleid || ""}
-                                onChange={onChangeRole}
-                                error={errors?.roleid?.message}
-                                // triggerOnChangeOnFirst={true}
-                                data={dataRoles}
-                                optionDesc="roldesc"
-                                optionValue="roleid"
-                            />
-                            <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
-                                label={t(langKeys.channel)}
-                                className={classes.mb2}
-                                valueDefault={row?.channels || ""}
-                                onChange={(value) => {
-                                    setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
-                                    setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
-                                    updatefield('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
-                                    updatefield('channelsdesc', value.map((o: Dictionary) => o.description).join())
-                                }}
-                                error={errors?.channels?.message}
-                                loading={dataChannels.loading}
-                                data={dataChannels.data}
-                                optionDesc="description"
-                                optionValue="communicationchannelid"
-                            />
-                        </div>
-                        <div className="col-6">
                             <TemplateSwitchYesNo
                                 label={t(langKeys.default_organization)}
                                 className={classes.mb2}
                                 valueDefault={row?.bydefault || false}
+                                helperText={t(langKeys.default_organization_tooltip)}
                                 onChange={(value) => { setValue('bydefault', value); updatefield('bydefault', value) }} />
+                            <FieldMultiSelect
+                                label={getValues('rolegroups')?.length > 2 ? 'Roles' : t(langKeys.role)}
+                                className={classes.mb2}
+                                valueDefault={row?.rolegroups || ""}
+                                onChange={onChangeRole}
+                                error={errors?.rolegroups?.message}
+                                data={dataRoles}
+                                optionDesc="roldesc"
+                                optionValue="roleid"
+                            />
+                            <TemplateSwitchYesNo
+                                label={"Balanceo"}
+                                className={classes.mb2}
+                                valueDefault={getValues("type") === "ASESOR"}
+                                onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
+                        </div>
+                        <div className="col-6">
                             <FieldSelect
                                 label={t(langKeys.supervisor)}
                                 className={classes.mb2}
@@ -391,6 +377,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataApplications.data}
                                 loading={dataApplications.loading}
                                 triggerOnChangeOnFirst={true}
+                                helperText={t(langKeys.default_application_tooltip)}
                                 optionDesc="description"
                                 optionValue="path"
                             />
@@ -404,6 +391,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataGroups.data}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
+                            />
+                            <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
+                                label={t(langKeys.channel)}
+                                className={classes.mb2}
+                                valueDefault={row?.channels || ""}
+                                onChange={(value) => {
+                                    setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
+                                    setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
+                                    updatefield('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
+                                    updatefield('channelsdesc', value.map((o: Dictionary) => o.description).join())
+                                }}
+                                error={errors?.channels?.message}
+                                loading={dataChannels.loading}
+                                data={dataChannels.data}
+                                optionDesc="description"
+                                optionValue="communicationchannelid"
                             />
                         </div>
                     </div>
@@ -437,23 +440,23 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const mainMultiResult = useSelector(state => state.main.multiData);
-    const securityRules = mainMultiResult.data.filter(x=>x.key==="UFN_SECURITYRULES_SEL")?.[0]
+    const securityRules = mainMultiResult.data.filter(x => x.key === "UFN_SECURITYRULES_SEL")?.[0]
     const [passwordConditions, setpasswordConditions] = useState({
         samepassword: !!data?.password,
-        mincharacters: (data?.password||"").length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
-        maxcharacters: (data?.password||"").length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-        consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
-        lowercaseletters: validateDomainCharacters(data?.password||"", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
-        uppercaseletters: validateDomainCharacters(data?.password||"", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
-        numbers: validateDomainCharacters(data?.password||"", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
-        specialcharacters: validateDomainCharactersSpecials(data?.password||"", securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+        mincharacters: (data?.password || "").length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
+        maxcharacters: (data?.password || "").length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
+        consecutivecharacters: validateNumbersEqualsConsecutive(data?.password || "", securityRules?.data?.[0]?.numequalconsecutivecharacterspwd || securityRules?.data?.[0]?.maxcharacterspwd || 0),
+        lowercaseletters: validateDomainCharacters(data?.password || "", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd || "04"),
+        uppercaseletters: validateDomainCharacters(data?.password || "", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd || "04"),
+        numbers: validateDomainCharacters(data?.password || "", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd || "04"),
+        specialcharacters: validateDomainCharactersSpecials(data?.password || "", securityRules?.data?.[0]?.specialcharacterspwd || "04"),
     });
     const dataFieldSelect = [
-        {name: "Empieza", value: "01"},
-        {name: "Incluye", value: "02"},
-        {name: "Más de 1", value: "03"},
-        {name: "No Considera", value: "04"},
-        {name: "Termina", value: "05"},
+        { name: "Empieza", value: "01" },
+        { name: "Incluye", value: "02" },
+        { name: "Más de 1", value: "03" },
+        { name: "No Considera", value: "04" },
+        { name: "Termina", value: "05" },
     ]
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
@@ -494,25 +497,26 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         setValue('send_password_by_email', data?.send_password_by_email);
         setValue('change_password_on_login', data?.pwdchangefirstlogin);
         clearErrors();
-        setpasswordConditions({...passwordConditions,
+        setpasswordConditions({
+            ...passwordConditions,
             samepassword: !!data?.password,
-            mincharacters: (data?.password||"").length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
-            maxcharacters: (data?.password||"").length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-            consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
-            lowercaseletters: validateDomainCharacters(data?.password||"", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
-            uppercaseletters: validateDomainCharacters(data?.password||"", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
-            numbers: validateDomainCharacters(data?.password||"", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
-            specialcharacters: validateDomainCharactersSpecials(data?.password||"", securityRules?.data?.[0]?.specialcharacterspwd||"04"),
-        })        
+            mincharacters: (data?.password || "").length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
+            maxcharacters: (data?.password || "").length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
+            consecutivecharacters: validateNumbersEqualsConsecutive(data?.password || "", securityRules?.data?.[0]?.numequalconsecutivecharacterspwd || securityRules?.data?.[0]?.maxcharacterspwd || 0),
+            lowercaseletters: validateDomainCharacters(data?.password || "", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd || "04"),
+            uppercaseletters: validateDomainCharacters(data?.password || "", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd || "04"),
+            numbers: validateDomainCharacters(data?.password || "", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd || "04"),
+            specialcharacters: validateDomainCharactersSpecials(data?.password || "", securityRules?.data?.[0]?.specialcharacterspwd || "04"),
+        })
     }
 
-    const onSubmitPassword = handleSubmit((data) => {    
-        if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
+    const onSubmitPassword = handleSubmit((data) => {
+        if (!!Object.values(passwordConditions).reduce((acc, x) => acc * (+ x), 1)) {
             parentSetValue('password', data.password);
             parentSetValue('send_password_by_email', data.send_password_by_email);
             parentSetValue('pwdchangefirstlogin', data.change_password_on_login);
             setOpenModal(false);
-        }else{
+        } else {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_password) }));
         }
     });
@@ -553,15 +557,16 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     valueDefault={getValues('password')}
                     type={showPassword ? 'text' : 'password'}
                     onChange={(value) => {
-                        setpasswordConditions({...passwordConditions,
-                            samepassword:getValues("confirmpassword")===value,
-                            mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
-                            maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-                            consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
-                            lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
-                            uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
-                            numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
-                            specialcharacters: validateDomainCharactersSpecials(value, securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+                        setpasswordConditions({
+                            ...passwordConditions,
+                            samepassword: getValues("confirmpassword") === value,
+                            mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
+                            maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
+                            consecutivecharacters: validateNumbersEqualsConsecutive(value, securityRules?.data?.[0]?.numequalconsecutivecharacterspwd || securityRules?.data?.[0]?.maxcharacterspwd || 0),
+                            lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd || "04"),
+                            uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd || "04"),
+                            numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd || "04"),
+                            specialcharacters: validateDomainCharactersSpecials(value, securityRules?.data?.[0]?.specialcharacterspwd || "04"),
                         })
                         setValue('password', value)
                     }}
@@ -586,7 +591,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     valueDefault={getValues('confirmpassword')}
                     type={showConfirmPassword ? 'text' : 'password'}
                     onChange={(value) => {
-                        setpasswordConditions({...passwordConditions,samepassword:getValues("password")===value})
+                        setpasswordConditions({ ...passwordConditions, samepassword: getValues("password") === value })
                         setValue('confirmpassword', value)
                     }}
                     error={errors?.confirmpassword?.message}
@@ -609,7 +614,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                 <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond1)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.samepassword,
                     [classes.badgeFailure]: !passwordConditions.samepassword,
-                })}>{passwordConditions.samepassword?t(langKeys.yes):t(langKeys.no)}</span></div>
+                })}>{passwordConditions.samepassword ? t(langKeys.yes) : t(langKeys.no)}</span></div>
                 {!!securityRules?.data?.[0]?.mincharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond2)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.mincharacters,
                     [classes.badgeFailure]: !passwordConditions.mincharacters,
@@ -622,29 +627,29 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     [classes.badgeSuccess]: passwordConditions.consecutivecharacters,
                     [classes.badgeFailure]: !passwordConditions.consecutivecharacters,
                 })}>{securityRules?.data?.[0]?.numequalconsecutivecharacterspwd}</span></div>}
-                {(securityRules?.data?.[0]?.lowercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
+                {(securityRules?.data?.[0]?.lowercaseletterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.lowercaseletters,
                     [classes.badgeFailure]: !passwordConditions.lowercaseletters,
-                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.lowercaseletterspwd||"04"))[0].name}</span></div>}
-                {(securityRules?.data?.[0]?.uppercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
+                })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.lowercaseletterspwd || "04"))[0].name}</span></div>}
+                {(securityRules?.data?.[0]?.uppercaseletterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.uppercaseletters,
                     [classes.badgeFailure]: !passwordConditions.uppercaseletters,
-                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.uppercaseletterspwd||"04"))[0].name}</span></div>}
-                {(securityRules?.data?.[0]?.numericalcharacterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
+                })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.uppercaseletterspwd || "04"))[0].name}</span></div>}
+                {(securityRules?.data?.[0]?.numericalcharacterspwd !== "04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.numbers,
                     [classes.badgeFailure]: !passwordConditions.numbers,
-                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.numericalcharacterspwd||"04"))[0].name}</span></div>}
+                })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.numericalcharacterspwd || "04"))[0].name}</span></div>}
                 <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond5)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.specialcharacters,
                     [classes.badgeFailure]: !passwordConditions.specialcharacters,
-                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.specialcharacterspwd||"04"))[0].name}</span></div>
+                })}>{dataFieldSelect.filter((x: any) => x.value === (securityRules?.data?.[0]?.specialcharacterspwd || "04"))[0].name}</span></div>
                 <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond6)}</span></div>
             </div>
         </DialogZyx>
     )
 }
 
-const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
+const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -768,12 +773,14 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('usr', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('email', { validate: emailRequired, value: '' });
         register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('docnum', { validate: {
-            needsvalidation: (value:any) => ((value && value.length) || t(langKeys.field_required)),
-            dnivalidation: (value:any) => (getValues("doctype") === "DNI")? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
-            cevalidation: (value:any) => (getValues("doctype") === "CE")? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
-            rucvalidation: (value:any) => (getValues("doctype") === "RUC")? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
-        }});
+        register('docnum', {
+            validate: {
+                needsvalidation: (value: any) => ((value && value.length) || t(langKeys.field_required)),
+                dnivalidation: (value: any) => (getValues("doctype") === "DNI") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
+                cevalidation: (value: any) => (getValues("doctype") === "CE") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
+                rucvalidation: (value: any) => (getValues("doctype") === "RUC") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
+            }
+        });
         register('billinggroupid');
         register('description');
         register('twofactorauthentication');
@@ -846,7 +853,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }]}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -882,22 +889,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <FieldEdit
-                                label={t(langKeys.firstname)}
-                                style={{ marginBottom: 8 }}
-                                valueDefault={row?.firstname || ""}
-                                onChange={(value) => setValue('firstname', value)}
-                                error={errors?.firstname?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.lastname)}
-                                className="col-6"
-                                valueDefault={row?.lastname || ""}
-                                onChange={(value) => setValue('lastname', value)}
-                                error={errors?.lastname?.message}
-                            />
-                        </div>
                         <div className="col-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <div style={{ position: 'relative' }}>
                                 <Avatar style={{ width: 120, height: 120 }} src={getValues('image')} />
@@ -919,51 +910,12 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={`${t(langKeys.user)}`}
+                            label={t(langKeys.firstname)}
+                            style={{ marginBottom: 8 }}
                             className="col-6"
-                            valueDefault={edit ? (row?.usr || "") : ""}
-                            onChange={(value) => setValue('usr', value)}
-                            error={errors?.usr?.message}
-                        />
-                        <FieldEdit
-                            label={`${t(langKeys.email)}`}
-                            className="col-6"
-                            valueDefault={edit ? (row?.email || "") : ""}
-                            onChange={(value) => setValue('email', value)}
-                            error={errors?.email?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.company)}
-                            className="col-6"
-                            valueDefault={row?.company || ""}
-                            onChange={(value) => setValue('company', value ? value.domainvalue : '')}
-                            error={errors?.company?.message}
-                            data={dataCompanies}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.docType)}
-                            className="col-6"
-                            valueDefault={row?.doctype || ""}
-                            onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
-                            error={errors?.doctype?.message}
-                            data={dataDocType}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                    </div>
-
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.docNumber)}
-                            className="col-6"
-                            valueDefault={row?.docnum || ""}
-                            type="number"
-                            onChange={(value) => setValue('docnum', value)}
-                            error={errors?.docnum?.message}
+                            valueDefault={row?.firstname || ""}
+                            onChange={(value) => setValue('firstname', value)}
+                            error={errors?.firstname?.message}
                         />
                         <FieldSelect
                             label={t(langKeys.billingGroup)}
@@ -974,15 +926,16 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             data={dataBillingGroups}
                             optionDesc="domaindesc"
                             optionValue="domainid"
+                            helperText={t(langKeys.billingGroup_tooltip)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.registerCode)}
+                            label={t(langKeys.lastname)}
                             className="col-6"
-                            valueDefault={row?.registercode || ""}
-                            onChange={(value) => setValue('registercode', value)}
-                            error={errors?.registercode?.message}
+                            valueDefault={row?.lastname || ""}
+                            onChange={(value) => setValue('lastname', value)}
+                            error={errors?.lastname?.message}
                         />
                         <FieldSelect
                             label={t(langKeys.twofactorauthentication)}
@@ -992,9 +945,60 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             error={errors?.twofactorauthentication?.message}
                             data={dataStatus}
                             uset={true}
+                            helperText={t(langKeys.twofactorauthentication_tooltip)}
                             prefixTranslation="status_"
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={`${t(langKeys.email)}`}
+                            className="col-6"
+                            valueDefault={edit ? (row?.email || "") : ""}
+                            onChange={(value) => setValue('email', value)}
+                            error={errors?.email?.message}
+                        />
+                        <FieldSelect
+                            label={t(langKeys.company)}
+                            className="col-6"
+                            valueDefault={row?.company || ""}
+                            onChange={(value) => setValue('company', value ? value.domainvalue : '')}
+                            error={errors?.company?.message}
+                            data={dataCompanies}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                            helperText={t(langKeys.company_tooltip)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.docType)}
+                            className="col-6"
+                            valueDefault={row?.doctype || ""}
+                            onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
+                            error={errors?.doctype?.message}
+                            data={dataDocType}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.registerCode)}
+                            className="col-6"
+                            valueDefault={row?.registercode || ""}
+                            onChange={(value) => setValue('registercode', value)}
+                            error={errors?.registercode?.message}
+                            helperText={t(langKeys.registerCode_tooltip)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.docNumber)}
+                            className="col-6"
+                            valueDefault={row?.docnum || ""}
+                            type="number"
+                            onChange={(value) => setValue('docnum', value)}
+                            error={errors?.docnum?.message}
                         />
                         <FieldSelect
                             label={t(langKeys.status)}
@@ -1007,6 +1011,17 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             prefixTranslation="status_"
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                            helperText={t(langKeys.userstatus_tooltip)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={`${t(langKeys.user)}`}
+                            className="col-6"
+                            valueDefault={edit ? (row?.usr || "") : ""}
+                            onChange={(value) => setValue('usr', value)}
+                            error={errors?.usr?.message}
+                            helperText={t(langKeys.user_tooltip)}
                         />
                     </div>
                 </div>
@@ -1034,7 +1049,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <ListItemSkeleton /> :
                             dataOrganizations.map((item, index) => (
                                 <DetailOrgUser
-                                    key={item?.orgid || `detail${index*1000}`}
+                                    key={item?.orgid || `detail${index * 1000}`}
                                     index={index}
                                     data={{ row: item, edit }}
                                     multiData={multiData}
@@ -1074,7 +1089,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 }
 
 const Users: FC = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main.mainData);
@@ -1102,14 +1116,9 @@ const Users: FC = () => {
     const [messageError, setMessageError] = useState('');
     const [importCount, setImportCount] = useState(0)
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.user_plural) },
     ];
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
+    function redirectFunc(view: string) {
         setViewSelected(view)
     }
 
@@ -1346,11 +1355,12 @@ const Users: FC = () => {
     }
 
     const handleUpload = async (files: any, useravailable: number, limit: number) => {
-        
+
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             const datainit = array_trimmer(excel);
+            debugger
             const data = datainit.filter((f: any) => {
                 return (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
@@ -1358,9 +1368,8 @@ const Users: FC = () => {
                     && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                    && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    && (f.role !== undefined)
             });
-
             const messageerrors = datainit.filter((f: any) => {
                 return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
@@ -1368,7 +1377,7 @@ const Users: FC = () => {
                     || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                    || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    || !(f.role !== undefined)
             }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, '');
 
             setMessageError(messageerrors)
@@ -1378,50 +1387,65 @@ const Users: FC = () => {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.userlimit, { limit }) }))
                 }
                 else {
+
                     dispatch(showBackdrop(true));
                     setImportCount(data.length);
-                    let table: Dictionary = data.reduce((a: any, d) => ({
-                        ...a,
-                        [`${d.user}_${d.docnum}`]: {
-                            id: 0,
-                            usr: String(d.user||d.email),
-                            doctype: d.doctype,
-                            docnum: String(d.docnum),
-                            password: String(d.password),
-                            firstname: String(d.firstname),
-                            lastname: String(d.lastname),
-                            email: String(d.email),
-                            pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
-                            type: "NINGUNO",
-                            status: d.status,
-                            operation: "INSERT",
-                            company: d.company,
-                            twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                            registercode: String(d.registercode),
-                            billinggroupid: d.billinggroup,
-                            image: d?.image || "",
-                            detail: {
-                                roleid: d.role,
-                                orgid: user?.orgid,
-                                bydefault: true,
-                                labels: "",
-                                groups: d.groups || "",
-                                channels: d.channels || "",
-                                status: "DESCONECTADO",
-                                type: (domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"").slice(0,6) === 'ASESOR' ? 'ASESOR' : 'SUPERVISOR',
-                                supervisor: "",
-                                operation: "INSERT",
-                                redirect: "/usersettings"
-                            }
+                    let channelError: any[] = []
+                    data.forEach((x, i) => {
+                        const pattern = /^(\d+(,\s*\d+)*)?$/;
+                        if (!pattern.test(x.channels)) {
+                            channelError.push(x.email)
                         }
-                    }), {});
-                    Object.values(table).forEach((p) => {
-                        dispatch(saveUser({
-                            header: insUser({ ...p, key: p.usr }),
-                            detail: [insOrgUser({ ...p.detail })]
-                        }, true));
                     })
-                    setWaitImport(true)
+                    if (channelError.length === 0) {
+                        let table: Dictionary = data.reduce((a: any, d) => ({
+                            ...a,
+                            [`${d.user}_${d.docnum}`]: {
+                                id: 0,
+                                usr: String(d.user || d.email),
+                                doctype: d.doctype,
+                                docnum: String(d.docnum),
+                                password: String(d.password),
+                                firstname: String(d.firstname),
+                                lastname: String(d.lastname),
+                                email: String(d.email),
+                                pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
+                                type: "NINGUNO",
+                                status: d.status,
+                                operation: "INSERT",
+                                company: d.company,
+                                twofactorauthentication: d.twofactorauthentication === "ACTIVO",
+                                registercode: String(d.registercode),
+                                billinggroupid: parseInt(String(d.billinggroup).match(/\d+/)[0]),
+                                image: d?.image || "",
+                                detail: {
+                                    rolegroups: d.role,
+                                    orgid: user?.orgid,
+                                    bydefault: true,
+                                    labels: "",
+                                    groups: d.groups || "",
+                                    channels: d.channels || "",
+                                    status: "DESCONECTADO",
+                                    type: 'SUPERVISOR',
+                                    supervisor: "",
+                                    operation: "INSERT",
+                                    redirect: "/usersettings"
+                                }
+                            }
+                        }), {});
+                        Object.values(table).forEach((p) => {
+                            dispatch(saveUser({
+                                header: insUser({ ...p, key: p.usr }),
+                                detail: [insOrgUser({ ...p.detail })]
+                            }, true));
+                        })
+                        setWaitImport(true)
+                    } else {
+                        dispatch(showSnackbar({
+                            show: true, severity: "error",
+                            message: t(langKeys.error_rows_channel, { rows: channelError.join(','), }),
+                        }));
+                    }
                 }
 
             }
@@ -1504,7 +1528,7 @@ const Users: FC = () => {
                     dispatch(showBackdrop(false));
                     setWaitCheck(false);
                     if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
-                        
+
                         dispatch(showSnackbar({
                             show: true, severity: "error", message: t(langKeys.userlimit, {
                                 limit: mainAuxResult.data[0].userscontracted
@@ -1537,12 +1561,6 @@ const Users: FC = () => {
 
         return (
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.user, { count: 2 })}
@@ -1559,15 +1577,6 @@ const Users: FC = () => {
                     onClickRow={handleEdit}
                     ButtonsElement={() => (
                         <>
-                            <Button
-                                disabled={mainResult.loading}
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                startIcon={<ClearIcon color="secondary" />}
-                                style={{ backgroundColor: "#FB5F5F" }}
-                                onClick={() => history.push(paths.CONFIGURATION)}
-                            >{t(langKeys.back)}</Button>
                             <Button
                                 variant="contained"
                                 color="primary"

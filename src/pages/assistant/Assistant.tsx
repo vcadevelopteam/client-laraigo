@@ -16,7 +16,7 @@ export const Assistant: FC = () => {
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
 
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
+    const [pageSelected, setPageSelected] = useState(user?.roledesc?.includes("SUPERADMIN") ? 0 : 6);
 
 
     return (
@@ -29,16 +29,16 @@ export const Assistant: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.intentions)} />
                 }
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.entities)} />
                 }
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={"Test"} />
                 }
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.dialog)} />
                 }
             </Tabs>

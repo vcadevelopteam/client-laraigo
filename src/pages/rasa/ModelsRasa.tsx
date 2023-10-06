@@ -88,7 +88,6 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 dispatch(showBackdrop(false));
                 setWaitDownload(false);
                 window.open(dowloadResult?.url||"", "_blank");
-                debugger
             } else if (dowloadResult.error) {
                 const errormessage = t(dowloadResult.code || "error_unexpected_error", { module: t(langKeys.model_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))

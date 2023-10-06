@@ -28,3 +28,6 @@ Jenkinsfile
 
 # VSCode settings
 .vscode/settings.json
+package-lock.json
+package.json
+package-lock.json

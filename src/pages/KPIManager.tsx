@@ -20,7 +20,7 @@ import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { CalendarIcon, DuplicateIcon } from 'icons';
 import GaugeChart from 'react-gauge-chart'
-import {Search as SearchIcon }  from '@material-ui/icons';
+import { Search as SearchIcon } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
@@ -116,7 +116,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         alertat: row?.alertat
     })
 
-    const [gaugeArcs, setGaugeArcs] = useState([0,0,0]);
+    const [gaugeArcs, setGaugeArcs] = useState([0, 0, 0]);
 
     useEffect(() => {
         if (detaildata) {
@@ -125,7 +125,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                     [
                         detaildata.cautionat / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)),
                         (detaildata.alertat - detaildata.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)),
-                        ((Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)) - detaildata.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)) 
+                        ((Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)) - detaildata.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10))
                     ]
                 )
             }
@@ -140,7 +140,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
             }
         }
     }, [detaildata])
-    
+
     React.useEffect(() => {
         register('kpiname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -261,7 +261,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
     );
 
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
-    const [filterRangeDate, ] = useState("month");
+    const [filterRangeDate,] = useState("month");
     const [dateRange, setdateRange] = useState<Range>({
         startDate: filterRangeDate === "month" ? getFirstDayMonth() : getDateToday(),
         endDate: filterRangeDate === "month" ? getLastDayMonth() : getDateToday(),
@@ -282,8 +282,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         if (!mainAuxRes.loading && mainAuxRes.data) {
             setKpiHistoryData(mainAuxRes.data.map((d: any) => ({
                 ...d,
-                createdate: convertLocalDate(d?.createdate).toLocaleString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric"}),
-                changedate: convertLocalDate(d?.createdate).toLocaleString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric"}),
+                createdate: convertLocalDate(d?.createdate).toLocaleString(undefined, { year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric" }),
+                changedate: convertLocalDate(d?.createdate).toLocaleString(undefined, { year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric" }),
             })));
         }
     }, [mainAuxRes]);
@@ -330,7 +330,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
     }, [executeRes, waitCalc])
 
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.kpimanager)},
+        { id: "view-1", name: t(langKeys.kpimanager) },
         { id: "view-2", name: t(langKeys.kpimanager_detail) }
     ];
     return (
@@ -439,61 +439,61 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             />
                         }
                     </div>
-                    {['SUPERADMIN'].includes(user?.roledesc || "") &&
-                    <div className="row-zyx">
-                        {edit ?
-                            (
-                                ['SUPERADMIN'].includes(user?.roledesc || "") ?
-                                <FieldEditMulti
+                    {((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN"].includes(v))) &&
+                        <div className="row-zyx">
+                            {edit ?
+                                (
+                                    ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN"].includes(v))) ?
+                                        <FieldEditMulti
+                                            label="Select"
+                                            className="col-6"
+                                            valueDefault={getValues('sqlselect')}
+                                            onChange={(value) => setValue('sqlselect', value)}
+                                            error={errors?.sqlselect?.message}
+                                            disabled={!((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN"].includes(v)))}
+                                        />
+                                        :
+                                        <FieldEditMulti
+                                            label="Select"
+                                            className="col-6"
+                                            valueDefault={row ? (row.sqlselect || "") : user?.corpdesc}
+                                            disabled={true}
+                                        />
+                                )
+                                :
+                                <FieldView
                                     label="Select"
+                                    value={row ? (row.sqlselect || "") : ""}
                                     className="col-6"
-                                    valueDefault={getValues('sqlselect')}
-                                    onChange={(value) => setValue('sqlselect', value)}
-                                    error={errors?.sqlselect?.message}
-                                    disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
                                 />
+                            }
+                            {edit ?
+                                (
+                                    ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN"].includes(v))) ?
+                                        <FieldEditMulti
+                                            label="Where"
+                                            className="col-6"
+                                            valueDefault={getValues('sqlwhere')}
+                                            onChange={(value) => setValue('sqlwhere', value)}
+                                            error={errors?.sqlwhere?.message}
+                                            disabled={!((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN"].includes(v)))}
+                                        />
+                                        :
+                                        <FieldEditMulti
+                                            label="Where"
+                                            className="col-6"
+                                            valueDefault={row ? (row.sqlwhere || "") : user?.corpdesc}
+                                            disabled={true}
+                                        />
+                                )
                                 :
-                                <FieldEditMulti
-                                label="Select"
-                                    className="col-6"
-                                    valueDefault={row ? (row.sqlselect || "") : user?.corpdesc}
-                                    disabled={true}
-                                />
-                            )
-                            :
-                            <FieldView
-                            label="Select"
-                            value={row ? (row.sqlselect || "") : ""}
-                                className="col-6"
-                            />
-                        }
-                        {edit ?
-                            (
-                                ['SUPERADMIN'].includes(user?.roledesc || "") ?
-                                <FieldEditMulti
+                                <FieldView
                                     label="Where"
+                                    value={row ? (row.sqlwhere || "") : ""}
                                     className="col-6"
-                                    valueDefault={getValues('sqlwhere')}
-                                    onChange={(value) => setValue('sqlwhere', value)}
-                                    error={errors?.sqlwhere?.message}
-                                    disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
                                 />
-                                :
-                                <FieldEditMulti
-                                label="Where"
-                                    className="col-6"
-                                    valueDefault={row ? (row.sqlwhere || "") : user?.corpdesc}
-                                    disabled={true}
-                                />
-                            )
-                            :
-                            <FieldView
-                            label="Where"
-                            value={row ? (row.sqlwhere || "") : ""}
-                                className="col-6"
-                            />
-                        }
-                    </div>}
+                            }
+                        </div>}
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
@@ -602,7 +602,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                         }
                     </div>
                     {(row && row.id) && <div className="row-zyx">
-                        <Box style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Typography variant="h6" component="h6">
                                 {t(langKeys.graphic_detail)}
                             </Typography>
@@ -637,20 +637,20 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                         <TableCell>{detaildata?.currentvalue - row?.target}</TableCell>
                                         <TableCell>
                                             <GaugeChart
-                                                style={{width: '150px'}}
+                                                style={{ width: '150px' }}
                                                 id="gauge-chart"
                                                 arcsLength={gaugeArcs}
                                                 colors={
                                                     detaildata.target < detaildata.alertat
-                                                    ? ['#5BE12C', '#F5CD19', '#EA4228']
-                                                    : ['#EA4228', '#F5CD19', '#5BE12C']
+                                                        ? ['#5BE12C', '#F5CD19', '#EA4228']
+                                                        : ['#EA4228', '#F5CD19', '#5BE12C']
                                                 }
                                                 textColor="#000000"
                                                 animate={false}
                                                 percent={
                                                     detaildata.target < detaildata.alertat
-                                                    ? detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10))
-                                                    : detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.target * 1.2 / 10) * 10))
+                                                        ? detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10))
+                                                        : detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.target * 1.2 / 10) * 10))
                                                 }
                                                 formatTextValue={() => ``}
                                             /></TableCell>
@@ -670,7 +670,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 value={getValues('createby')}
                                 className="col-6"
                             />
-                             <FieldView
+                            <FieldView
                                 label={t(langKeys.creationDate)}
                                 value={row?.createdate && convertLocalDate(getValues('createdate')).toLocaleString(undefined, {
                                     year: "numeric",
@@ -684,12 +684,12 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             />
                         </div>
                         <div className="row-zyx">
-                        <FieldView
+                            <FieldView
                                 label={t(langKeys.change_by)}
                                 value={getValues('changeby')}
                                 className="col-6"
                             />
-                             <FieldView
+                            <FieldView
                                 label={t(langKeys.change_date)}
                                 value={row?.changedate && convertLocalDate(getValues('changedate')).toLocaleString(undefined, {
                                     year: "numeric",
@@ -854,7 +854,7 @@ const KPIManager: FC = () => {
                     minute: "numeric",
                     second: "numeric"
                 })
-        })))
+            })))
     }, [mainResult.mainData.data])
 
     const columns = React.useMemo(
@@ -977,20 +977,22 @@ const KPIManager: FC = () => {
 
     const handleDuplicate = (row: Dictionary) => {
         setViewSelected("view-2");
-        setRowSelected({ row: {
-            kpiname: row.kpiname,
-            description: row.description,
-            status: row.status,
-            type: row.type,
-            sqlselect: row.sqlselect,
-            sqlwhere: row.sqlwhere,
-            target: row.target,
-            cautionat: row.cautionat,
-            alertat: row.alertat,
-            taskperiod: row.taskperiod,
-            taskinterval: row.taskinterval,
-            taskstartdate: row.taskstartdate,
-        }, edit: true });
+        setRowSelected({
+            row: {
+                kpiname: row.kpiname,
+                description: row.description,
+                status: row.status,
+                type: row.type,
+                sqlselect: row.sqlselect,
+                sqlwhere: row.sqlwhere,
+                target: row.target,
+                cautionat: row.cautionat,
+                alertat: row.alertat,
+                taskperiod: row.taskperiod,
+                taskinterval: row.taskinterval,
+                taskstartdate: row.taskstartdate,
+            }, edit: true
+        });
     }
 
     const handleCalc = (row: Dictionary) => {

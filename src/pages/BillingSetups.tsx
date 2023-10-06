@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Box, FormControlLabel, Tabs, TextField } from "@material-ui/core";
 import { Dictionary, MultiData } from "@types";
 import { getCountryList } from "store/signup/actions";
@@ -4372,7 +4373,7 @@ const BillingSetup: FC = () => {
     const [currencyList, setCurrencyList] = useState<any>([]);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
     const [dataPlan, setDataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
+    const [pageSelected, setPageSelected] = useState(user?.roledesc?.includes("SUPERADMIN") ? 0 : 6);
     const [planList, setPlanList] = useState<any>([]);
     const [providerList, setProviderList] = useState<any>([]);
     const [sentFirstInfo, setSentFirstInfo] = useState(false);
@@ -4421,12 +4422,12 @@ const BillingSetup: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />}
-                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.contractedplanbyperiod)} />}
-                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.conversationcost)} />}
-                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.billingsetup_artificialintelligence)} />}
-                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.messagingcost)} />}
-                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.supportplan)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.contractedplanbyperiod)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.conversationcost)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.billingsetup_artificialintelligence)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.messagingcost)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.supportplan)} />}
             </Tabs>
             {pageSelected === 0 && (
                 <div style={{ marginTop: 16 }}>
