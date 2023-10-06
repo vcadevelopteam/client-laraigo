@@ -11303,7 +11303,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            {user?.roledesc?.split(',')?.includes("SUPERADMIN") ? (
+            {user?.roledesc?.includes("SUPERADMIN") ? (
                 <div>
                     <Tabs
                         indicatorColor="primary"

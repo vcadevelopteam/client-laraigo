@@ -6,7 +6,7 @@ import { Dictionary, IFetchData } from "@types";
 import { getCollection, getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import PartnersMainView from "./views/PartnersMainView";
 import PartnersDetail from "./views/PartnersDetail";
-import { customerByPartnerSel, getCorpSel, getOrgSelList, getPropertySelByName, getValuesFromDomain, partnerSel } from "common/helpers";
+import { customerByPartnerSel, getCorpSel, getOrgSel, getOrgSelList, getPropertySelByName, getValuesFromDomain, partnerSel } from "common/helpers";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 
@@ -34,7 +34,7 @@ const Partners: FC = () => {
     fetchData()
     dispatch(
       getMultiCollectionAux([
-        getOrgSelList(0),
+        getOrgSel(0),
         getCorpSel(0),
         getValuesFromDomain('PRODUCTOMONEDA'),
         getValuesFromDomain('PLANFACTURACIONPARTNERS'),
