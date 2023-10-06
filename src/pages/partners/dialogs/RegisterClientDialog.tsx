@@ -39,23 +39,26 @@ const RegisterClientDialog: React.FC<{
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
   const multiDataAux = useSelector(state => state.main.multiDataAux);
-  const [corpId, setCorpId] = useState(row2 ? row2?.corpId : 0);
-  const [status, setStatus] = useState(row2 ? row2?.status : '');
-  const [comissionPercentageValue, setComissionPercentageValue] = useState(row2 ? row2?.comissionPercentageValue : 0);
+  const [corpId, setCorpId] = useState(edit ? row2?.corpid : 0);
+  const [orgId, setOrgId] = useState(edit ? row2?.orgid : 0);
+  const [status, setStatus] = useState(edit ? row2?.status : '');
+  const [comissionPercentageValue, setComissionPercentageValue] = useState(edit ? row2?.comissionPercentageValue : 0);
 
   console.log(row2)
-  console.log(corpId)
+  console.log(orgId)
 
   const { register, handleSubmit, setValue, getValues, reset} = useForm({
     defaultValues: {
         partnerid: row?.partnerid || 0,
         orgid: row2?.orgid || 0,
-        corpid: row2?.corpid || 3,
+        corpid: row2?.corpid || 0,
         typepartner: row2?.typepartner || '',
         billingplan: row?.billingplan || '',
-        comissionpercentage: row2?.comissionpercentage || 0.00,
+        comissionpercentage: row2?.comissionpercentage || 0,
     }
   });
+
+  console.log(getValues('orgid'))
 
   useEffect(() => {
     if (waitSave) {
@@ -129,10 +132,11 @@ const onMainSubmit = handleSubmit((data) => {
           />
           <FieldSelect
             label={t(langKeys.organization)}
-            valueDefault={row2?.orgid || 0}
+            valueDefault={edit ? row2?.orgid : orgId}
             className="col-6"
             data={edit ? (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === row2?.corpid): (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === corpId)}
             onChange={(value) => {
+              setOrgId(value.orgid)
               setValue('orgid', value.orgid)
               setStatus(value.status)
             }}
@@ -154,7 +158,7 @@ const onMainSubmit = handleSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.status)}
-            valueDefault={status}
+            valueDefault={edit ? row2?.status : status}
             className="col-6"
             inputProps={{ maxLength: 256 }}
             disabled={true}
@@ -182,7 +186,7 @@ const onMainSubmit = handleSubmit((data) => {
           />
           <FieldEdit
             label={t(langKeys.commissionpercentage)}
-            valueDefault={comissionPercentageValue}
+            valueDefault={edit ? row2?.comissionpercentage : comissionPercentageValue}
             className="col-6"
             inputProps={{ maxLength: 256 }}
             disabled={true}
@@ -220,6 +224,8 @@ const onMainSubmit = handleSubmit((data) => {
             setOpenModal(false);
             row2 = null
             setCorpId(0)
+            setOrgId(0)
+            setComissionPercentageValue(0)
             setStatus('');
             reset()
           }}
@@ -238,9 +244,11 @@ const onMainSubmit = handleSubmit((data) => {
               setValue('corpid', row2?.corpid)
               setValue('orgid', row2?.orgid)
             }
-            setStatus('');
-            row2 = null
             onMainSubmit()
+            row2 = null
+            setStatus('');
+            setOrgId(0)
+            setComissionPercentageValue(0)
           }}
         >
           {t(langKeys.save)}
