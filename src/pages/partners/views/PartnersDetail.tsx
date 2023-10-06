@@ -86,7 +86,9 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
             address: row?.address || '',
             billingcontact: row?.billingcontact || '',
             email: row?.email || '',
-            signaturedate: new Date(row?.signaturedate || null).toISOString().split('T')[0],
+            signaturedate: row?.signaturedate
+            ? new Date(row.signaturedate).toISOString().split('T')[0]
+            : new Date().toISOString().split('T')[0] + " 19:00:00",
             enterprisepartner: row?.isEnterprise || false,
             billingplan: row?.billingplan || '',
             typecalculation: row?.typecalculation || '',            
@@ -102,7 +104,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
     });
 
     const fetchCustomerByPartner = () => {
-        dispatch(getCollectionAux(customerByPartnerSel(row?.partnerid)));
+        dispatch(getCollectionAux(customerByPartnerSel(row?.partnerid || 0)));
     }
 
     useEffect(() => {
@@ -213,15 +215,13 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                             </div>
                         )}
                     />
-                    {!!row && (
-                        <AntTab
+                    <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <Trans i18nKey={langKeys.clients}/>
                             </div>
                         )}
                     />
-                    )}
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <PartnersTabDetail
