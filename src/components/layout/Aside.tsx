@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { FC, useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { IconButton, Tooltip, Typography, Box } from '@material-ui/core';
@@ -214,7 +214,6 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
     const userData = useSelector(state => state.login.validateToken.user);
-
     //Conseguir todas las subrutas y asignarlas a los modulos padres
     const showableViews = viewsClassifications.reduce((acc: any[], view) => {
         const subroutes = Object.entries(applications as Object)
@@ -223,20 +222,17 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             .sort((a, b) => a.menuorder - b.menuorder)
             .map(entry => entry.route);
         if (subroutes.length > 0) {
-            acc.push({ ...view, options: subroutes });
             if (subroutes.includes('/invoice')) {
                 if (userData?.roledesc?.includes('SUPERADMIN')) {
                     const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
-                    acc.push({ ...view, id: 8, key: 'invoice', options: filteredSubroutes, description: t(langKeys.invoice), icon: (className: string) => <InvoiceIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />, });
+                    acc.push({ ...view, options: filteredSubroutes });
 
-                    acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/invoice'), 1);
-                    acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/billing_setups'), 1);
-                    acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/timesheet'), 1);
                 } else if (userData?.roledesc?.includes('ADMINISTRADOR') || userData?.roledesc?.includes('SUPERVISOR')) {
                     const filteredSubroutes = ['/invoice']
-                    acc.push({ ...view, id: 8, key: 'invoice', options: filteredSubroutes, description: t(langKeys.invoice), icon: (className: string) => <InvoiceIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />, });
-                    acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/invoice'), 1);
+                    acc.push({ ...view, options: filteredSubroutes });
                 }
+            }else{
+                acc.push({ ...view, options: subroutes });
             }
         }
         return acc;
