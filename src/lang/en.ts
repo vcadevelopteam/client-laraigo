@@ -1481,6 +1481,7 @@ const translation: LangKeys = {
   confirmation: 'Process Confirmation',
   contractedplan: "Contracted Plan",
   confirmation_save: 'Are you sure that you want to save the record?',
+  confirmation_exit: 'Do you want to exit the application without saving?',
   confirmation_reschedule: 'Your current appointment {{current_event}} will be rescheduled for {{new_event}}. Do you wish to continue?',
   confirmation_delete: 'Are you sure that you want to delete the record?',
   confirmation_stop: 'Are you sure that you want to stop the operation?',

@@ -71,7 +71,7 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
-        execute(customerByPartnerIns({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+        execute(customerByPartnerIns({ ...row, operation: "DELETE", status: "ELIMINADO", id: row.customerpartnerid }))
       );
       dispatch(showBackdrop(true));
       setWaitSave(true);

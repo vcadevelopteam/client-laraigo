@@ -1993,6 +1993,7 @@ export const langKeys = {
   continue: 'continue',
   confirmation: 'confirmation',
   confirmation_save: 'confirmation_save',
+  confirmation_exit: 'confirmation_exit',
   confirmation_reschedule: 'confirmation_reschedule',
   confirmation_delete: 'confirmation_delete',
   confirmation_stop: 'confirmation_stop',
