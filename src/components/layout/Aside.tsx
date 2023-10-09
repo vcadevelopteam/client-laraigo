@@ -151,7 +151,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     return (
         <>
             {
-                (userRole?.includes('ADMINISTRADOR') || userRole?.includes('SUPERVISOR')) && config.key === 'invoice'
+                (userRole?.split(",")?.includes('ADMINISTRADOR') || userRole?.split(",")?.includes('SUPERVISOR')) && config.key === 'invoice'
                     ?
                     <ListItem
                         button
@@ -224,11 +224,11 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
         if (subroutes.length > 0) {
             if (subroutes.includes('/invoice')) {
                 debugger
-                if (userData?.roledesc?.includes('SUPERADMIN') || userData?.roledesc?.includes("SUPERADMINISTRADOR SOCIOS")) {
+                if (userData?.roledesc?.split(",")?.includes('SUPERADMIN') || userData?.roledesc?.split(",")?.includes("SUPERADMINISTRADOR SOCIOS")) {
                     const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
                     acc.push({ ...view, options: filteredSubroutes });
 
-                } else if (userData?.roledesc?.includes('ADMINISTRADOR') || userData?.roledesc?.includes('SUPERVISOR')) {
+                } else if (userData?.roledesc?.split(",")?.includes('ADMINISTRADOR') || userData?.roledesc?.split(",")?.includes('SUPERVISOR')) {
                     const filteredSubroutes = ['/invoice']
                     acc.push({ ...view, options: filteredSubroutes });
                 }
