@@ -182,6 +182,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
+            debugger
             if (mainResult.mainData.data.length) {
                 setDataReport(mainResult.mainData.data[0]);
                 setDataAux(mainResult.mainData.data);
@@ -349,7 +350,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                     value={`${dataReport.year} - ${String(dataReport.month).padStart(2, "0")}`}
                                 />
                             </div>
-                            { dataReport.typepartner === 'RESELLER' || dataReport.typepartner === 'DEVELOPER' && (
+                            { dataReport.typepartner === 'ENTERPRISE' && (
                                 <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                     <Table aria-label="customized table">
                                         <TableHead>
@@ -434,7 +435,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
                                                         <div>
-                                                            <b>{t(langKeys.additionalcontactsperbag)}</b>
+                                                            <b>{t(langKeys.additionalcontactsperbag)} ({dataReport.contactsadditionalbag})</b>
                                                         </div>
                                                     )}
                                                 </StyledTableCell>
@@ -456,7 +457,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
                                                         <div>
-                                                            {formatNumberNoDecimals(dataReport.numbercontactsbag)}
+                                                            {Math.ceil(dataReport.contactsadditionalbag / dataReport.numbercontactsbag)}
                                                         </div>
                                                     )}
                                                 </StyledTableCell>
@@ -492,7 +493,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            dataReport.numbercontactsbag * dataReport.priceperbag
+                                                            Math.ceil(dataReport.contactsadditionalbag / dataReport.numbercontactsbag) * dataReport.priceperbag
                                                         )}`}</div>
                                                     )}
                                                 </StyledTableCell>
@@ -510,7 +511,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            dataReport.numbercontactsbag * dataReport.priceperbag * dataReport.tax
+                                                            (Math.ceil(dataReport.contactsadditionalbag / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax
                                                         )}`}</div>
                                                     )}
                                                 </StyledTableCell>
@@ -528,7 +529,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            dataReport.numbercontactsbag * dataReport.priceperbag * dataReport.tax_costneto
+                                                            (Math.ceil(dataReport.contactsadditionalbag / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax_costneto
                                                         )}`}</div>
                                                     )}
                                                 </StyledTableCell>
@@ -550,7 +551,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                         formatNumber(
                                                             (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.billingplanfee), 0) / dataReport.tax_costneto) +
                                                             (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) / dataReport.tax_costneto) +
-                                                            (dataReport.numbercontactsbag * dataReport.priceperbag)
+                                                            (Math.ceil(dataReport.contactsadditionalbag / dataReport.numbercontactsbag) * dataReport.priceperbag)
                                                         )
                                                     }`}
                                                 </StyledTableCell>
@@ -593,7 +594,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                     </Table>
                                 </TableContainer>
                             )}
-                            { dataReport.typepartner === 'ENTERPRISE' && (
+                            { dataReport.typepartner === 'RESELLER' || dataReport.typepartner === 'DEVELOPER' && (
                                 <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                     <Table aria-label="customized table">
                                         <TableHead>
