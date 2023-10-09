@@ -80,7 +80,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
     const dispatch = useDispatch();
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [docType, setDocType] = useState(row?.documenttype);
-    const [priceBag, setPriceBag] = useState(row?.priceperbag);
+    const [priceBag, setPriceBag] = useState(row?.priceperbag || '');
     const [docNumber, setDocNumber] = useState(row?.documentnumber);
     const [sunatCountry, setSunatCountry] = useState(row?.country);
     const [additionalContactType, setAdditionAlcontactType] = useState(row?.typecalculation);

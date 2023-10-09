@@ -123,7 +123,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
     const [dataMain, setdataMain] = useState({
         corpid: 0,
         orgid: 0,
-        partnerid: user?.partnerid,
+        partnerid: 0,
         month: new Date().getMonth() + 1 ?? 9,
         year: new Date().getFullYear() ?? 2023,
         reporttype: '',
@@ -284,7 +284,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                         data={(multiResult.data[5].data||[])}
                         label={t(langKeys.client)}
                         onChange={(value) => {
-                            value ? setdataMain((prev) => ({ ...prev, corpid: value.corpid, orgid: value.orgid })) :
+                            value ? setdataMain((prev) => ({ ...prev, corpid: value.corpid, orgid: value.orgid, partnerid: value.partnerid })) :
                             setdataMain((prev) => ({...prev, corpid: 0, orgid: 0}))
                         }}
                         optionDesc="organization"
@@ -349,7 +349,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                     value={`${dataReport.year} - ${String(dataReport.month).padStart(2, "0")}`}
                                 />
                             </div>
-                            { dataReport.typepartner === 'ENTERPRISE' && (
+                            { dataReport.typepartner === 'RESELLER' || dataReport.typepartner === 'DEVELOPER' && (
                                 <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                     <Table aria-label="customized table">
                                         <TableHead>
@@ -593,7 +593,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                     </Table>
                                 </TableContainer>
                             )}
-                            { dataReport.typepartner === 'RESELLER' || dataReport.typepartner === 'DEVELOPER' && (
+                            { dataReport.typepartner === 'ENTERPRISE' && (
                                 <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                     <Table aria-label="customized table">
                                         <TableHead>
