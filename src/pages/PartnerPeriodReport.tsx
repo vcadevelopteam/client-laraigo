@@ -183,6 +183,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
             debugger
+            
             if (mainResult.mainData.data.length) {
                 setDataReport(mainResult.mainData.data[0]);
                 setDataAux(mainResult.mainData.data);
