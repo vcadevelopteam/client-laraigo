@@ -1758,6 +1758,7 @@ const translation: LangKeys = {
   continue: 'Continuar',
   confirmation: 'Confirmación del Proceso',
   confirmation_save: '¿Está seguro que desea guardar el registro?',
+  confirmation_exit: '¿Desea salir de la aplicación sin guardar?',
   confirmation_reschedule: 'Se va a proceder con la reprogramación de su cita actual {{current_event}} para {{new_event}}. ¿Desea continuar?',
   confirmation_delete: '¿Está seguro de eliminar el registro?',
   filletoobigerror: 'El archivo adjunto que desea cargar al sistema supera el tamaño permitido (15mb) como límite máximo',

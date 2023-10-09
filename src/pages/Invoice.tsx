@@ -84,6 +84,7 @@ import {
     uploadExcel,
     partnerSel,
     customerByPartnerSel,
+    customerPartnersByUserSel,
 } from "common/helpers";
 
 import {
@@ -11284,7 +11285,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerByPartnerSel(user?.partnerid), getValuesFromDomain('TIPOSSOCIOS')])
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerPartnersByUserSel(), getValuesFromDomain('TIPOSSOCIOS')])
             );
         } else {
             dispatch(

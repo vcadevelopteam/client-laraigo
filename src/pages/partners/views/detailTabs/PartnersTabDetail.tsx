@@ -15,6 +15,7 @@ import { useSelector } from 'hooks';
 import { getCountryList } from 'store/signup/actions';
 import { useDispatch } from 'react-redux';
 import { resetMainAux } from 'store/main/actions';
+import { format, parse } from 'date-fns';
 
 interface MultiData {
     data: Dictionary[];
@@ -79,11 +80,17 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
     const dispatch = useDispatch();
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [docType, setDocType] = useState(row?.documenttype);
+    const [priceBag, setPriceBag] = useState(row?.priceperbag);
+    const [docNumber, setDocNumber] = useState(row?.documentnumber);
     const [sunatCountry, setSunatCountry] = useState(row?.country);
     const [additionalContactType, setAdditionAlcontactType] = useState(row?.typecalculation);
     const [isEnterprise, setIsEnterprise] = useState(row?.enterprisepartner);
     const [isAutomaticDrafts, setIsAutomaticDrafts] = useState(row?.automaticgenerationdrafts);
     const [isAutomaticPeriod, setIsAutomaticPeriod] = useState(row?.automaticperiodgeneration);
+
+    const signatureDateDefault = row?.signaturedate
+    ? format(parse(row.signaturedate, 'dd/MM/yyyy HH:mm:ss', new Date()), 'yyyy-MM-dd')
+    : format(new Date(), 'yyyy-MM-dd');
 
     useEffect(() => {
         dispatch(getCountryList())
@@ -103,9 +110,13 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
         if (value === 'PE') {
           setValue('documenttype', 'RUC');
           setDocType('RUC')
+          setDocNumber(0)
+          setValue('documentnumber', 0)
         } else {
           setValue('documenttype', 'NO DOMICILIADO');
           setDocType('NO DOMICILIADO')
+          setValue('documentnumber', 0)
+          setDocNumber(0)
         }
     };
 
@@ -145,18 +156,22 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 <FieldEdit
                     label={t(langKeys.documentnumber)}
                     type='number'
-                    valueDefault={getValues('documentnumber')}
+                    valueDefault={docNumber}
                     className="col-6"
                     error={errors?.documentnumber?.message}
-                    maxLength={11}
+                    maxLength={docType === 'RUC' ? 11 : undefined}
                     onInput={(event:any) => {
                         const value = event.target.value;
-                        if (value.length > 11) {
+                        if (docType === 'RUC' && value.length > 11) {
                           event.target.value = value.slice(0, 11);
                         }
+                        setDocNumber(event.target.value)
                         setValue('documentnumber', event.target.value);
                       }}
-                    onChange={(value) => setValue('documentnumber', value)}
+                    onChange={(value) => {
+                        setValue('documentnumber', value)
+                        setDocNumber(value)
+                    }}
                 />
                 <FieldEdit
                     label={t(langKeys.businessname)}
@@ -190,10 +205,10 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     <FieldEdit
                         label={t(langKeys.contractsigningdate)}
                         type='date'
-                        valueDefault={getValues('signaturedate')}
+                        valueDefault={signatureDateDefault}
                         className="col-6"
                         error={errors?.signaturedate?.message}
-                        onChange={(value) => setValue('signaturedate', value)}
+                        onChange={(value) => setValue('signaturedate', value + ' 19:00:00')}
                     />
                 </div>
                 <FormControlLabel
@@ -235,7 +250,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     label={t(langKeys.isenterprise)}
                     className="col-12"
                 />
-                { getValues('enterprisepartner') && (
+                { isEnterprise && (
                     <>
                         <FieldSelect
                             label={t(langKeys.billingplan)}
@@ -278,10 +293,11 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                                     type='number'
                                     valueDefault={getValues('priceperbag')}
                                     className="col-6"
+                                    maxLength={ priceBag.split('.').length > 1 ? priceBag.split('.')[0].length + 3 : undefined}
                                     error={errors?.priceperbag?.message}
                                     onChange={(value) => {
-                                        const sanitizedValue = value.replace(/-/g, '');
-                                        setValue('priceperbag', sanitizedValue)
+                                        setValue('priceperbag', value);
+                                        setPriceBag(value)
                                     }}
                                 />
                             </>

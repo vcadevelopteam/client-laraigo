@@ -17,6 +17,7 @@ import { Tabs } from '@material-ui/core';
 import PartnersTabDetail from './detailTabs/PartnersTabDetail';
 import ClientsTabDetail from './detailTabs/ClientsTabDetail';
 import { customerByPartnerSel, partnerIns } from 'common/helpers';
+import { format, parse } from 'date-fns';
 
 
 interface RowSelected {
@@ -87,9 +88,9 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
             billingcontact: row?.billingcontact || '',
             email: row?.email || '',
             signaturedate: row?.signaturedate
-            ? new Date(row.signaturedate).toISOString().split('T')[0]
-            : new Date().toISOString().split('T')[0] + " 19:00:00",
-            enterprisepartner: row?.isEnterprise || false,
+            ? format(parse(row.signaturedate, 'dd/MM/yyyy HH:mm:ss', new Date()), 'yyyy-MM-dd') + ' 19:00:00'
+            : new Date().toLocaleDateString('en-GB'),
+            enterprisepartner: row?.enterprisepartner || false,
             billingplan: row?.billingplan || '',
             typecalculation: row?.typecalculation || '',            
             numbercontactsbag: row?.numbercontactsbag || 0,
@@ -97,7 +98,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
             priceperbag: row?.priceperbag || 0,
             automaticgenerationdrafts: row?.automaticgenerationdrafts || false,
             automaticperiodgeneration: row?.automaticperiodgeneration || false,
-            status: row?.status || '',
+            status: row?.status || 'ACTIVO',
             type: row?.type || '',
             operation: row ? "UPDATE" : "INSERT",
         }
@@ -152,9 +153,17 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
         const callback = () => {
             dispatch(showBackdrop(true));
             if (getValues('operation') === 'INSERT') {
-                dispatch(execute(partnerIns(data)));
+                if(getValues('priceperbag').split('.').length === 1) {
+                    dispatch(execute(partnerIns({...data, priceperbag: getValues('priceperbag')+'.00'})));
+                } else {
+                    dispatch(execute(partnerIns(data)));
+                }
             } else {
-                dispatch(execute(partnerIns({...data, id: row?.partnerid})));
+                if(getValues('priceperbag').split('.').length === 1) {
+                    dispatch(execute(partnerIns({...data, id: row?.partnerid, priceperbag: getValues('priceperbag')+'.00'})));
+                } else {
+                    dispatch(execute(partnerIns({...data, id: row?.partnerid})));
+                }
             }
             setWaitSave(true);
         }
@@ -241,7 +250,3 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
 
 
 export default PartnersDetail;
-
-function handleMainSubmit(arg0: (data: any) => void) {
-    throw new Error('Function not implemented.');
-}

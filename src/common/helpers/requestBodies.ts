@@ -4478,10 +4478,16 @@ export const customerByPartnerSel = ( partnerid: number ) => ({
     parameters: { partnerid },
 });
 
-export const customerByPartnerIns = ({ corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, operation }: Dictionary) => ({
+export const customerPartnersByUserSel = () => ({
+    method: "UFN_CUSTOMERPARTNER_BY_USER_SEL",
+    key: "UFN_CUSTOMERPARTNER_BY_USER_SEL",
+    parameters: {},
+});
+
+export const customerByPartnerIns = ({ id, corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, status, operation }: Dictionary) => ({
     method: "UFN_CUSTOMER_BY_PARTNER_INS",
     key: "UFN_CUSTOMER_BY_PARTNER_INS",
-    parameters: { corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, operation },
+    parameters: { id, corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, status, operation },
 });
 
 export const billingPeriodPartnerEnterprise = ({ partnerid, corpid, orgid, year, month, reporttype, username }: Dictionary) => ({
