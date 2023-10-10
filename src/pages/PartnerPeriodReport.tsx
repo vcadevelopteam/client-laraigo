@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { execute, exportData, getCollection, getMultiCollectionAux, resetAllMain } from "store/main/actions";
-import { billingPeriodPartnerEnterprise, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, customerByPartnerSel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getOrgSelList, getValuesFromDomain } from "common/helpers";
+import { billingPeriodPartnerEnterprise, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, customerByPartnerSel, customerPartnersByUserSel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getOrgSelList, getValuesFromDomain } from "common/helpers";
 import { reportPdf } from "network/service/culqi";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, makeStyles, withStyles } from "@material-ui/core";
 import { FieldSelect, FieldView } from "components";
@@ -104,9 +104,8 @@ const StyledTableCell = withStyles((theme) => ({
 
 const StyledTableRow = withStyles(() => ({}))(TableRow);
 
-const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = ({
-    customSearch,
-    multiResult
+const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
+    customSearch
 }) => {
     const dispatch = useDispatch();
 
@@ -119,6 +118,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
     const exportResult = useSelector((state) => state.main.exportData);
     const culqiReportResult = useSelector((state) => state.culqi.requestReportPdf);
     const user = useSelector((state) => state.login.validateToken.user);
+    const multiResultAux = useSelector((state) => state.main.multiDataAux);
 
     const [dataMain, setdataMain] = useState({
         corpid: 0,
@@ -159,6 +159,12 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
         //dispatch(getCollection(billingPeriodPartnerEnterprise({partnerid: 1, corpid: 556, orgid: 1214, year: 2023, month: 9, reporttype: '', username: 1})));
         setCanSearch(false)
     }
+
+    useEffect(() => {
+        dispatch(
+            getMultiCollectionAux([customerPartnersByUserSel(), getValuesFromDomain('TIPOSSOCIOS')]),
+        );
+    }, []);
 
     useEffect(() => {
         search();
@@ -283,14 +289,14 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
-                        data={(multiResult?.data[5]?.data||[])}
+                        data={(multiResultAux?.data[0]?.data||[])}
                         label={t(langKeys.client)}
                         onChange={(value) => {
                             if(value) {
                                 setdataMain((prev) => ({ ...prev, corpid: value.corpid, orgid: value.orgid, partnerid: value.partnerid, reporttype: value.typepartner }))
                                 setAuxType(true)
                             } else {
-                                setdataMain((prev) => ({...prev, corpid: 0, orgid: 0, reporttype: ''}))
+                                setdataMain((prev) => ({...prev, corpid: 0, orgid: 0, partnerid: 0, reporttype: ''}))
                                 setAuxType(false)
                             }
                         }}
@@ -317,7 +323,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                         disabled={auxType}
                         orderbylabel={true}
                         variant="outlined"
-                        data={(multiResult?.data[6]?.data||[])}
+                        data={(multiResultAux?.data[1]?.data||[])}
                     />
                     <Button
                         color="primary"
