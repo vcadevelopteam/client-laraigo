@@ -11,8 +11,8 @@ import { langKeys } from 'lang/keys';
 import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Avatar } from '@material-ui/core';
-import MapFixedLocation from 'pages/MapFixedLocation';
 import Tabs from '@material-ui/core/Tabs';
+import MapLeaflet from 'components/fields/MapLeaflet';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -202,7 +202,10 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
                     <div className="row-zyx">
                         <div>
                             <div style={{ width: "100%" }}>
-                                <MapFixedLocation height={"200px"} longitude={parseFloat(row?.longitude || 0)} latitude={parseFloat(row?.latitude || 0)} />
+                                <MapLeaflet
+                                    height={200}
+                                    marker={row && { lat: parseFloat(row?.longitude || 0), lng: parseFloat(row?.latitude || 0) }}
+                                />
                             </div>
                         </div>
                     </div>
