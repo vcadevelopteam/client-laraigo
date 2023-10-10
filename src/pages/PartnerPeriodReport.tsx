@@ -140,6 +140,8 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
     const [waitExport, setWaitExport] = useState(false);
     const [waitPdf, setWaitPdf] = useState(false);
     const [waitSearch, setWaitSearch] = useState(false);
+    const [auxClient, setAuxClient] = useState(false);
+    const [auxType, setAuxType] = useState(false);
 
     function handleDateChange(e: any) {
         if (e !== "") {
@@ -281,14 +283,20 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
-                        data={(multiResult.data[5].data||[])}
+                        data={(multiResult?.data[5]?.data||[])}
                         label={t(langKeys.client)}
                         onChange={(value) => {
-                            value ? setdataMain((prev) => ({ ...prev, corpid: value.corpid, orgid: value.orgid, partnerid: value.partnerid })) :
-                            setdataMain((prev) => ({...prev, corpid: 0, orgid: 0}))
+                            if(value) {
+                                setdataMain((prev) => ({ ...prev, corpid: value.corpid, orgid: value.orgid, partnerid: value.partnerid, reporttype: value.typepartner }))
+                                setAuxType(true)
+                            } else {
+                                setdataMain((prev) => ({...prev, corpid: 0, orgid: 0, reporttype: ''}))
+                                setAuxType(false)
+                            }
                         }}
                         optionDesc="organization"
                         optionValue="orgid"
+                        disabled={auxClient}
                         orderbylabel={true}
                         variant="outlined"
                     />
@@ -296,14 +304,20 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                         className={classes.fieldsfilter}
                         label={t(langKeys.type)}
                         onChange={(value) => {
-                            value?.domainvalue ? setdataMain((prev) => ({ ...prev, reporttype: value?.domainvalue })) :
-                            setdataMain((prev) => ({ ...prev, reporttype: '' }))
+                            if(value?.domainvalue) {
+                                setdataMain((prev) => ({ ...prev, reporttype: value.domainvalue }))
+                                setAuxClient(true)
+                            } else {
+                                setdataMain((prev) => ({ ...prev, reporttype: '' }))
+                                setAuxClient(false)
+                            }
                         }}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
+                        disabled={auxType}
                         orderbylabel={true}
                         variant="outlined"
-                        data={(multiResult.data[6].data||[])}
+                        data={(multiResult?.data[6]?.data||[])}
                     />
                     <Button
                         color="primary"

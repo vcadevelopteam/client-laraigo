@@ -11295,7 +11295,7 @@ const Invoice: FC = () => {
                     getCorpSelVariant(user?.corpid ?? 0, user?.orgid ?? 0, user?.usr ?? ""),
                     getPaymentPlanSel(),
                     currencySel(),
-                    partnerSel({id: 0, all: true}),
+                    customerPartnersByUserSel(),
                     getValuesFromDomain('TIPOSSOCIOS')
                 ])
             );
