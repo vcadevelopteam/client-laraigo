@@ -182,8 +182,6 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
-            debugger
-            
             if (mainResult.mainData.data.length) {
                 setDataReport(mainResult.mainData.data[0]);
                 setDataAux(mainResult.mainData.data);
@@ -453,7 +451,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     </div>
                                                     { dataReport.typecalculation === 'Por contacto' &&(
                                                         <div>
-                                                            {formatNumberNoDecimals(dataReport.contactsadditionalbag)}
+                                                            {Math.max(0, dataReport.contactuniquequantity - parseFloat(dataReport.contactuniquelimit))}
                                                         </div>
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
@@ -489,7 +487,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     { dataReport.typecalculation === 'Por contacto' &&(
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            dataReport.contactuniquequantity * dataReport.puadditionalcontacts
+                                                            Math.max(0, dataReport.contactuniquequantity - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts
                                                         )}`}</div>
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
@@ -507,7 +505,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     { dataReport.typecalculation === 'Por contacto' &&(
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            dataReport.contactuniquequantity * dataReport.puadditionalcontacts * dataReport.tax
+                                                            (Math.max(0, dataReport.contactuniquequantity - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts) * dataReport.tax
                                                         )}`}</div>
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
@@ -525,7 +523,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     { dataReport.typecalculation === 'Por contacto' &&(
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            dataReport.contactuniquequantity * dataReport.puadditionalcontacts * dataReport.tax_costneto
+                                                            (Math.max(0, dataReport.contactuniquequantity - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts) * dataReport.tax_costneto
                                                         )}`}</div>
                                                     )}
                                                     { dataReport.typecalculation === 'Por bolsa' && (
@@ -547,7 +545,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                         formatNumber(
                                                             (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.billingplanfee), 0) / dataReport.tax_costneto) +
                                                             (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) / dataReport.tax_costneto) +
-                                                            (dataReport.contactuniquequantity * dataReport.puadditionalcontacts)
+                                                            (Math.max(0, dataReport.contactuniquequantity - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts)
                                                         ) : 
                                                         formatNumber(
                                                             (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.billingplanfee), 0) / dataReport.tax_costneto) +
@@ -564,14 +562,14 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                             dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.billingplanfee), 0) / dataReport.tax_costneto) +
                                                             (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) -
                                                             dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) / dataReport.tax_costneto) +
-                                                            (dataReport.contactuniquequantity * dataReport.puadditionalcontacts * dataReport.tax)
+                                                            ((Math.max(0, dataReport.contactuniquequantity - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts) * dataReport.tax)
                                                         ) : 
                                                         formatNumber(
                                                             (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.billingplanfee), 0) -
                                                             dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.billingplanfee), 0) / dataReport.tax_costneto) +
                                                             (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) -
                                                             dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) / dataReport.tax_costneto) +
-                                                            (dataReport.numbercontactsbag * dataReport.priceperbag * dataReport.tax)
+                                                            (Math.ceil(dataReport.contactsadditionalbag / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax
                                                         )
                                                     }`}
                                                 </StyledTableCell>
@@ -581,12 +579,12 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                                         formatNumber(
                                                             dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.billingplanfee), 0) +
                                                             dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) +
-                                                            (dataReport.contactuniquequantity * dataReport.puadditionalcontacts * dataReport.tax_costneto)
+                                                            ((Math.max(0, dataReport.contactuniquequantity - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts) * dataReport.tax_costneto)
                                                         ) : 
                                                         formatNumber(
                                                             dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.billingplanfee), 0) +
                                                             dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) +
-                                                            (dataReport.numbercontactsbag * dataReport.priceperbag * dataReport.tax_costneto)
+                                                            (Math.ceil(dataReport.contactsadditionalbag / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax_costneto
                                                         )
                                                     }`}
                                                 </StyledTableCell>
@@ -595,7 +593,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; multiResult: any; }> = 
                                     </Table>
                                 </TableContainer>
                             )}
-                            { dataReport.typepartner === 'RESELLER' || dataReport.typepartner === 'DEVELOPER' && (
+                            { (dataReport.typepartner === 'RESELLER' || dataReport.typepartner === 'DEVELOPER') && (
                                 <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                     <Table aria-label="customized table">
                                         <TableHead>
