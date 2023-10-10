@@ -34,7 +34,7 @@ const Partners: FC = () => {
     fetchData()
     dispatch(
       getMultiCollectionAux([
-        getOrgSel(0),
+        getOrgSelList(0),
         getCorpSel(0),
         getValuesFromDomain('PRODUCTOMONEDA'),
         getValuesFromDomain('PLANFACTURACIONPARTNERS'),
