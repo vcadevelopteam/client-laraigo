@@ -153,14 +153,23 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
         const callback = () => {
             dispatch(showBackdrop(true));
             if (getValues('operation') === 'INSERT') {
-                if(getValues('priceperbag').split('.').length === 1) {
-                    dispatch(execute(partnerIns({...data, priceperbag: getValues('priceperbag')+'.00'})));
+                if(getValues('typecalculation') === 'Por bolsa') {
+                    if(getValues('priceperbag').split('.').length === 1){
+                        dispatch(execute(partnerIns({...data, priceperbag: getValues('priceperbag')+'.00'})));
+                    }
+                    else {
+                        dispatch(execute(partnerIns(data)));
+                    }
                 } else {
                     dispatch(execute(partnerIns(data)));
                 }
             } else {
-                if(getValues('priceperbag').split('.').length === 1) {
-                    dispatch(execute(partnerIns({...data, id: row?.partnerid, priceperbag: getValues('priceperbag')+'.00'})));
+                if(getValues('typecalculation') === 'Por bolsa') {
+                    if(getValues('priceperbag').split('.').length === 1) {
+                        dispatch(execute(partnerIns({...data, id: row?.partnerid, priceperbag: getValues('priceperbag')+'.00'})));
+                    } else {
+                        dispatch(execute(partnerIns(data)));
+                    }
                 } else {
                     dispatch(execute(partnerIns({...data, id: row?.partnerid})));
                 }
