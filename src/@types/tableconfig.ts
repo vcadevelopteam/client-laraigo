@@ -9,7 +9,7 @@ export interface MultiData {
   success: boolean;
   key?: string;
 }
-o
+
 export interface TableConfig {
   columns: any;
   data: Dictionary[];
