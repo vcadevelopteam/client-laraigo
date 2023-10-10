@@ -223,7 +223,6 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             .map(entry => entry.route);
         if (subroutes.length > 0) {
             if (subroutes.includes('/invoice')) {
-                debugger
                 if (userData?.roledesc?.split(",")?.includes('SUPERADMIN') || userData?.roledesc?.split(",")?.includes("SUPERADMINISTRADOR SOCIOS")) {
                     const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
                     acc.push({ ...view, options: filteredSubroutes });

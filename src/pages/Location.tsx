@@ -21,7 +21,7 @@ import {
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import TablePaginated from 'components/fields/table-paginated';
-import Map from './MapLocation.jsx'
+import MapLocation from './MapLocation.jsx'
 
 interface RowSelected {
     row: Dictionary | null,
@@ -319,7 +319,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         <div>
                             <div style={{ width: "100%" }}>
-                                <Map directionData={directionData} setDirectionData={setDirectionData}/>
+                                <MapLocation directionData={directionData} setDirectionData={setDirectionData}/>
                             </div>
                         </div>
                     </div>
