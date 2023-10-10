@@ -11285,7 +11285,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel(), customerPartnersByUserSel(), getValuesFromDomain('TIPOSSOCIOS')])
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()]),
             );
         } else {
             dispatch(
@@ -11294,9 +11294,7 @@ const Invoice: FC = () => {
                     getOrgSelList(user?.corpid ?? 0),
                     getCorpSelVariant(user?.corpid ?? 0, user?.orgid ?? 0, user?.usr ?? ""),
                     getPaymentPlanSel(),
-                    currencySel(),
-                    customerPartnersByUserSel(),
-                    getValuesFromDomain('TIPOSSOCIOS')
+                    currencySel()
                 ])
             );
         }
@@ -11342,7 +11340,7 @@ const Invoice: FC = () => {
                     )}
                     {pageSelected === 2 && (
                         <div style={{ marginTop: 16 }}>
-                            <PartnerPeriodReport multiResult={multiResult} customSearch={customSearch} />
+                            <PartnerPeriodReport customSearch={customSearch} />
                         </div>
                     )}
                     {pageSelected === 3 && (
