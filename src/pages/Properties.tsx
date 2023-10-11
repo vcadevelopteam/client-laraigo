@@ -272,7 +272,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     const [orgList, setorgList] = useState<any>([]);
     const [channelList, setchannelList] = useState<any>([]);
     const [groupList, setgroupList] = useState<any>([]);
-    const allowEdition = !((user?.roledesc ?? "").split(",").some(v => ['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P', 'SUPERVISOR'].includes(v)))
+    const allowEdition = !((user?.roledesc ?? "").split(",").some(v => ['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P', 'SUPERVISOR', 'SUPERADMINISTRADOR SOCIOS'].includes(v)))
     const isView = (!allowEdition && row !== null);
 
     const detailResult = useSelector(state => state.main.mainAux);
