@@ -295,6 +295,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                                 setdataMain((prev) => ({...prev, partnerid: 0}))
                             }
                         }}
+                        valueDefault={dataMain.partnerid}
                         optionDesc="company"
                         optionValue="partnerid"
                         orderbylabel={true}
