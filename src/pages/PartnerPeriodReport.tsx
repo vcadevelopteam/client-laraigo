@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { execute, exportData, getCollection, getMultiCollectionAux, resetAllMain } from "store/main/actions";
-import { billingPeriodPartnerEnterprise, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, customerByPartnerSel, customerPartnersByUserSel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getOrgSelList, getValuesFromDomain } from "common/helpers";
+import { billingPeriodPartnerEnterprise, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, customerByPartnerSel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getOrgSelList, getValuesFromDomain, partnerSel } from "common/helpers";
 import { reportPdf } from "network/service/culqi";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, makeStyles, withStyles } from "@material-ui/core";
 import { FieldSelect, FieldView } from "components";
@@ -140,8 +140,6 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
     const [waitExport, setWaitExport] = useState(false);
     const [waitPdf, setWaitPdf] = useState(false);
     const [waitSearch, setWaitSearch] = useState(false);
-    const [auxClient, setAuxClient] = useState(false);
-    const [auxType, setAuxType] = useState(false);
 
     function handleDateChange(e: any) {
         if (e !== "") {
@@ -156,13 +154,12 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
     function search() {
         dispatch(showBackdrop(true));
         dispatch(getCollection(billingPeriodPartnerEnterprise(dataMain)));
-        //dispatch(getCollection(billingPeriodPartnerEnterprise({partnerid: 1, corpid: 556, orgid: 1214, year: 2023, month: 9, reporttype: '', username: 1})));
         setCanSearch(false)
     }
 
     useEffect(() => {
         dispatch(
-            getMultiCollectionAux([customerPartnersByUserSel(), getValuesFromDomain('TIPOSSOCIOS')]),
+            getMultiCollectionAux([partnerSel({id: 0, all: true}), getValuesFromDomain('TIPOSSOCIOS')]),
         );
     }, []);
 
@@ -172,10 +169,10 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
 
     useEffect(() => {
         if (dataMain) {
-            if(dataMain.reporttype != '') {
+            if(dataMain.reporttype != '' && dataMain.partnerid != 0) {
                 setCanSearch(true)
             }
-            else if(dataMain.reporttype == '') {
+            else if(dataMain.reporttype === '' || dataMain.partnerid === 0) {
                 setCanSearch(false)
             }
         }
@@ -290,19 +287,16 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                     <FieldSelect
                         className={classes.fieldsfilter}
                         data={(multiResultAux?.data[0]?.data||[])}
-                        label={t(langKeys.client)}
+                        label={t(langKeys.partner)}
                         onChange={(value) => {
                             if(value) {
-                                setdataMain((prev) => ({ ...prev, corpid: value.corpid, orgid: value.orgid, partnerid: value.partnerid, reporttype: value.typepartner }))
-                                setAuxType(true)
+                                setdataMain((prev) => ({ ...prev, partnerid: value.partnerid}))
                             } else {
-                                setdataMain((prev) => ({...prev, corpid: 0, orgid: 0, partnerid: 0, reporttype: ''}))
-                                setAuxType(false)
+                                setdataMain((prev) => ({...prev, partnerid: 0}))
                             }
                         }}
-                        optionDesc="organization"
-                        optionValue="orgid"
-                        disabled={auxClient}
+                        optionDesc="company"
+                        optionValue="partnerid"
                         orderbylabel={true}
                         variant="outlined"
                     />
@@ -312,15 +306,12 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                         onChange={(value) => {
                             if(value?.domainvalue) {
                                 setdataMain((prev) => ({ ...prev, reporttype: value.domainvalue }))
-                                setAuxClient(true)
                             } else {
                                 setdataMain((prev) => ({ ...prev, reporttype: '' }))
-                                setAuxClient(false)
                             }
                         }}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
-                        disabled={auxType}
                         orderbylabel={true}
                         variant="outlined"
                         data={(multiResultAux?.data[1]?.data||[])}
@@ -464,10 +455,10 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                                                         <div key={index}>{formatNumberNoDecimals(item.contactuniquequantity)}</div>
                                                     ))}
                                                     <div>
-                                                        {formatNumberNoDecimals(dataReport.contactuniquequantity)}
+                                                        {formatNumberNoDecimals(dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))}
                                                     </div>
                                                     <div>
-                                                        {formatNumberNoDecimals(dataReport.contactuniquequantity)}
+                                                        {formatNumberNoDecimals(dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))}
                                                     </div>
                                                     { dataReport.typecalculation === 'Por contacto' &&(
                                                         <div>
