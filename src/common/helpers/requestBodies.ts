@@ -4321,6 +4321,14 @@ export const getProductManufacturer = (productid:number): IRequestBody => ({
     }
 });
 
+export const getProductOrderProp = (productid:number): IRequestBody => ({
+    method: "UFN_ALL_PRODUCT_ORDER_SEL",
+    key: "UFN_ALL_PRODUCT_ORDER_SEL",
+    parameters: {
+        productid: productid
+    }
+});
+
 export const importProductsAttribute = (data:any): IRequestBody => ({
     method: "UFN_PRODUCTATTRIBUTE_MAS",
     key: "UFN_PRODUCTATTRIBUTE_MAS",

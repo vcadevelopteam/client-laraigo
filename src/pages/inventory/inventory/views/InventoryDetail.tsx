@@ -7,12 +7,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getInventoryBalance, getProductManufacturer, insWarehouse } from 'common/helpers';
+import { getInventoryBalance, getProductManufacturer, getProductOrderProp } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { getCollectionAux, getMultiCollectionAux2, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
 import InventoryTabDetail from './detailTabs/InventoryTabDetail';
@@ -87,38 +87,62 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const [openModalSeeProductAvailability, setOpenModalSeeProductAvailability] = useState(false);
     const [openModalSeeInventoryTransactions, setOpenModalSeeInventoryTransactions] = useState(false);
     const [openModalManageReservations, setOpenModalManageReservations] = useState(false);
+    const dataProducts = useSelector(state => state.main.multiDataAux2);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.inventory) },
         { id: "detail-view", name: `${t(langKeys.inventory)} ${t(langKeys.detail)}` },
     ];
-    
+    const fetchWarehouseProducts = () => {
+        dispatch(
+            getMultiCollectionAux2([getProductManufacturer(row?.productid),getProductOrderProp(row?.productid)])
+        );
+    }
+
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            warehouseid: row?.warehouseid || 0,
+            inventorybalanceid: row?.inventorybalanceid || 0,
             operation: edit ? "EDIT" : "INSERT",
+            isneworder:  true,
+            replenishmentpoint: 0,
+            deliverytimedays:  0,
+            securitystock:  0,
+            unitbuyid:  0,
+            distributorid:  0,
+            manufacturerid:  0,
+            economicorderquantity:  1,
+            model: '',
+            catalognumber:  '',
             type: row?.type || '',
-            name: row?.name || '',
-            description: row?.description || '',
-            address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            rackdefault: row?.rackdefault || '',
             status: row?.status || 'ACTIVO'
         }
     });
 
-    const fetchWarehouseProducts = () => {
-        dispatch(
-          getCollectionAux(getProductManufacturer(row?.productid))
-        );
-    }
     const fetchInventoryBalance = () => {
         dispatch(
           getCollectionAux(getInventoryBalance(row?.inventoryid))
         );
     }
+
+    useEffect(() => {
+        fetchWarehouseProducts()
+    }, [])
+    useEffect(() => {
+      if(!dataProducts?.loading && dataProducts.data.length){
+        console.log(dataProducts.data[1])
+        const dataorder = dataProducts.data[1].data[0]
+        setValue("isneworder", dataorder?.isneworder||true)
+        setValue("replenishmentpoint", dataorder?.replenishmentpoint||0)
+        setValue("deliverytimedays", parseInt(dataorder?.deliverytimedays)||0)
+        setValue("securitystock", parseInt(dataorder?.securitystock)||0)
+        setValue("unitbuyid", parseInt(dataorder?.unitbuyid)||0)
+        setValue("model", dataorder?.model||"")
+        setValue("catalognumber", dataorder?.catalognumber||"")
+        setValue("distributorid", parseInt(dataorder?.distributorid)||0)
+        setValue("manufacturerid", parseInt(dataorder?.manufacturerid)||0)
+        setValue("economicorderquantity", parseInt(dataorder?.economicorderquantity)||1)
+      }
+    }, [dataProducts])
 
     useEffect(() => {
         if (waitSave) {
@@ -137,14 +161,17 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register('warehouseid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-
+        register("inventorybalanceid");
+        register("isneworder");
+        register("replenishmentpoint");
+        register("deliverytimedays");
+        register("securitystock");
+        register("unitbuyid");
+        register("distributorid");
+        register("manufacturerid");
+        register("economicorderquantity");
+        register("model");
+        register("catalognumber");
         dispatch(resetMainAux());
     }, [register]);
 
@@ -269,7 +296,9 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row} tabIndex={tabIndex}/>
+                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts}
+                        setValue={setValue}
+                        getValues={getValues} errors={errors} row={row} tabIndex={tabIndex}/>
                 </AntTabPanel>
                 <AdjustCurrentBalanceDialog
                     openModal={openModalAdjust}
