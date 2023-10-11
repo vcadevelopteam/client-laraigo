@@ -286,7 +286,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
-                        data={(multiResultAux?.data[0]?.data||[])}
+                        data={(multiResultAux?.data?.[0]?.data||[]).filter(x => x.enterprisepartner === true)}
                         label={t(langKeys.partner)}
                         onChange={(value) => {
                             if(value) {

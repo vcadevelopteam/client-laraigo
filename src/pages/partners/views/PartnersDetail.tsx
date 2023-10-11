@@ -78,7 +78,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
     
     const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row ? row.id : 0,
+            id: row ? row.partnerid : 0,
             country: row?.country || '',
             billingcurrency: row?.billingcurrency || '',
             documenttype: row?.documenttype || '',
