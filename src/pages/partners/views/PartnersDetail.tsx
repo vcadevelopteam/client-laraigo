@@ -75,6 +75,14 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
         { id: "main-view", name: t(langKeys.partner) },
         { id: "detail-view", name: `${t(langKeys.partner)} ${t(langKeys.detail)}` },
     ];
+
+    const emailRequired = (value: string) => {
+        if (value.length === 0) {
+            return t(langKeys.field_required) as string;
+        } else if (!/\S+@\S+\.\S+/.test(value)) {
+            return t(langKeys.emailverification) as string;
+        }
+    }
     
     const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -89,13 +97,13 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
             email: row?.email || '',
             signaturedate: row?.signaturedate
             ? format(parse(row.signaturedate, 'dd/MM/yyyy HH:mm:ss', new Date()), 'yyyy-MM-dd') + ' 19:00:00'
-            : new Date().toLocaleDateString('en-GB'),
+            : format(new Date(), 'yyyy-MM-dd') + ' 19:00:00',
             enterprisepartner: row?.enterprisepartner || false,
             billingplan: row?.billingplan || '',
             typecalculation: row?.typecalculation || '',            
             numbercontactsbag: row?.numbercontactsbag || 0,
             puadditionalcontacts: row?.puadditionalcontacts || 0,
-            priceperbag: row?.priceperbag || 0,
+            priceperbag: row?.priceperbag || '0',
             automaticgenerationdrafts: row?.automaticgenerationdrafts || false,
             automaticperiodgeneration: row?.automaticperiodgeneration || false,
             status: row?.status || 'ACTIVO',
@@ -134,7 +142,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
         register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('billingcontact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('email', { validate: emailRequired, value: '' });
         register('signaturedate');
         register('enterprisepartner');
         register('billingplan');
