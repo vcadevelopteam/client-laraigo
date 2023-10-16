@@ -6,7 +6,7 @@ import { Dictionary, IFetchData } from "@types";
 import { getCollection, getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import PartnersMainView from "./views/PartnersMainView";
 import PartnersDetail from "./views/PartnersDetail";
-import { customerByPartnerSel, getCorpSel, getOrgSel, getOrgSelList, getPropertySelByName, getValuesFromDomain, partnerSel } from "common/helpers";
+import { customerByPartnerSel, getCorpSel, getCurrencyList, getOrgSel, getOrgSelList, getPropertySelByName, getValuesFromDomain, partnerSel } from "common/helpers";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 
@@ -36,7 +36,7 @@ const Partners: FC = () => {
       getMultiCollectionAux([
         getOrgSelList(0),
         getCorpSel(0),
-        getValuesFromDomain('PRODUCTOMONEDA'),
+        getCurrencyList(),
         getValuesFromDomain('PLANFACTURACIONPARTNERS'),
         getValuesFromDomain('CALCULOCONTACTOADICIONAL'),
         getValuesFromDomain('TIPOSSOCIOS'),
