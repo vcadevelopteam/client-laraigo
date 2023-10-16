@@ -139,12 +139,12 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 <FieldSelect
                     label={t(langKeys.billingperiod_billingcurrency)}
                     valueDefault={getValues('billingcurrency')}
-                    onChange={(value) => setValue('billingcurrency', value.domainvalue)}
+                    onChange={(value) => setValue('billingcurrency', value.code)}
                     className="col-6"
                     data={(multiDataAux?.data?.[2]?.data||[])}
                     error={errors?.billingcurrency?.message}
-                    optionValue="domainvalue"
-                    optionDesc="domaindesc"
+                    optionValue="code"
+                    optionDesc="description"
                 />
                 <FieldEdit
                     label={t(langKeys.documenttype)}

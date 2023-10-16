@@ -127,14 +127,14 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
 
     React.useEffect(() => {
         register('id');
-        register('country');
-        register('billingcurrency');
-        register('documenttype');
-        register('documentnumber')
+        register('country', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('billingcurrency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('documenttype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('documentnumber', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
         register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address');
-        register('billingcontact');
-        register('email');
+        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('billingcontact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('signaturedate');
         register('enterprisepartner');
         register('billingplan');
