@@ -44,7 +44,6 @@ const RegisterClientDialog: React.FC<{
   const [status, setStatus] = useState(edit ? row2?.status : '');
   const [comissionPercentageValue, setComissionPercentageValue] = useState(edit ? row2?.comissionPercentageValue : 0);
 
-  console.log(row2)
   const { register, handleSubmit, setValue, getValues, reset, formState:{errors}} = useForm({
     defaultValues: {
         id: row2?.customerpartnerid || 0,
@@ -147,9 +146,6 @@ const exitConfirmation = (() => {
       callbackcancel: callback
   }))
 });
-
-console.log(getValues('typepartner'))
-console.log(row2)
 
   return (
     <form onSubmit={onMainSubmit}>

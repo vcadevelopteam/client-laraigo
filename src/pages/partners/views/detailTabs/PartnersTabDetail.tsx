@@ -244,6 +244,9 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                         onChange={(event) => {
                             setIsEnterprise(event.target.checked)
                             setValue('enterprisepartner', event.target.checked)
+                            setValue('priceperbag', '0')
+                            setValue('numbercontactsbag', 0)
+                            setValue('puadditionalcontacts', 0)
                         }}
                         color='primary'
                     />}
@@ -268,6 +271,9 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                             onChange={(value) => {
                                 setAdditionAlcontactType(value.domainvalue)
                                 setValue('typecalculation', value.domainvalue)
+                                setValue('priceperbag', '0')
+                                setValue('numbercontactsbag', 0)
+                                setValue('puadditionalcontacts', 0)
                             }}
                             className="col-6"
                             data={(multiDataAux?.data?.[4]?.data||[])}
@@ -284,8 +290,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                                     className="col-6"
                                     error={errors?.numbercontactsbag?.message}
                                     onChange={(value) => {
-                                        const sanitizedValue = value.replace(/-/g, '');
-                                        setValue('numbercontactsbag', sanitizedValue)
+                                        setValue('numbercontactsbag', value)
                                     }}
                                 />
                                 <FieldEdit
@@ -309,9 +314,8 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                                 valueDefault={getValues('puadditionalcontacts')}
                                 className="col-6"
                                 error={errors?.puadditionalcontacts?.message}
-                                onChange={(value) => {
-                                    const sanitizedValue = value.replace(/-/g, '');
-                                    setValue('puadditionalcontacts', sanitizedValue)
+                                onChange={(value) => {;
+                                    setValue('puadditionalcontacts', value)
                                 }}
                             />
                         )}
