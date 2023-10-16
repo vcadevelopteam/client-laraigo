@@ -1215,6 +1215,30 @@ export const insarrayVariableConfiguration = (table: Dictionary[]): IRequestBody
         table: JSON.stringify(table)
     }
 });
+export const insarrayInventoryBalance = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_INVENTORYBALANCE_UPD",
+    parameters: {
+        json: JSON.stringify(table)
+    }
+});
+export const insarrayInventoryRecount = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_INVENTORYRECOUNT_UPD",
+    parameters: {
+        json: JSON.stringify(table)
+    }
+});
+export const insarrayInventoryStandarCost = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_INVENTORYRECOUNT_UPD",
+    parameters: {
+        json: JSON.stringify(table)
+    }
+});
+export const insarrayInventoryCost = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_INVENTORYCOST_UPD",
+    parameters: {
+        json: JSON.stringify(table)
+    }
+});
 
 export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
@@ -4472,5 +4496,12 @@ export const getInventoryMovement = (inventoryid:number): IRequestBody => ({
     key: "UFN_ALL_INVENTORY_INVENTORYMOVEMENT_SEL",
     parameters: {
         inventoryid
+    }
+});
+export const insOrderInventory = ({ inventoryorderid, inventoryid, isneworder, replenishmentpoint, deliverytimedays, securitystock, economicorderquantity, unitbuyid, distributorid, manufacturerid, catalognumber, model, status, type, operation  }: Dictionary): IRequestBody => ({
+    method: "UFN_ORDER_INS",
+    key: "UFN_ORDER_INS",
+    parameters: {
+        inventoryorderid, inventoryid, isneworder, replenishmentpoint, deliverytimedays, securitystock, economicorderquantity, unitbuyid, distributorid, manufacturerid, catalognumber, model, status, type, operation
     }
 });

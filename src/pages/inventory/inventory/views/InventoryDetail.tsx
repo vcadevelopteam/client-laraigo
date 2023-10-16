@@ -7,12 +7,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getInventoryBalance, getProductManufacturer, getProductOrderProp } from 'common/helpers';
+import { getInventoryBalance, getProductManufacturer, insOrderInventory } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollectionAux, getMultiCollectionAux2, resetMainAux } from 'store/main/actions';
+import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
 import InventoryTabDetail from './detailTabs/InventoryTabDetail';
@@ -83,11 +83,11 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const [openModalPhysicalCount, setOpenModalPhysicalCount] = useState(false);
     const [openModalStandardCost, setOpenModalStandardCost] = useState(false);
     const [openModalAverageCost, setOpenModalAverageCost] = useState(false);
+    const [disableSave, setdisableSave] = useState(false);
     const [openModalReconcileBalance, setOpenModalReconcileBalance] = useState(false);
     const [openModalSeeProductAvailability, setOpenModalSeeProductAvailability] = useState(false);
     const [openModalSeeInventoryTransactions, setOpenModalSeeInventoryTransactions] = useState(false);
     const [openModalManageReservations, setOpenModalManageReservations] = useState(false);
-    const dataProducts = useSelector(state => state.main.multiDataAux2);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.inventory) },
@@ -95,26 +95,28 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     ];
     const fetchWarehouseProducts = () => {
         dispatch(
-            getMultiCollectionAux2([getProductManufacturer(row?.productid),getProductOrderProp(row?.productid)])
+            getCollectionAux(getProductManufacturer(row?.productid))
         );
     }
 
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            inventorybalanceid: row?.inventorybalanceid || 0,
-            operation: edit ? "EDIT" : "INSERT",
+            inventoryorderid: 0,
+            inventoryid: row?.inventoryid,
+            operation: "INSERT",
             isneworder:  true,
             replenishmentpoint: 0,
             deliverytimedays:  0,
             securitystock:  0,
             unitbuyid:  0,
+            orderid:0,
             distributorid:  0,
             manufacturerid:  0,
             economicorderquantity:  1,
             model: '',
             catalognumber:  '',
-            type: row?.type || '',
-            status: row?.status || 'ACTIVO'
+            type:  '',
+            status: 'ACTIVO'
         }
     });
 
@@ -127,22 +129,6 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     useEffect(() => {
         fetchWarehouseProducts()
     }, [])
-    useEffect(() => {
-      if(!dataProducts?.loading && dataProducts.data.length){
-        console.log(dataProducts.data[1])
-        const dataorder = dataProducts.data[1].data[0]
-        setValue("isneworder", dataorder?.isneworder||true)
-        setValue("replenishmentpoint", dataorder?.replenishmentpoint||0)
-        setValue("deliverytimedays", parseInt(dataorder?.deliverytimedays)||0)
-        setValue("securitystock", parseInt(dataorder?.securitystock)||0)
-        setValue("unitbuyid", parseInt(dataorder?.unitbuyid)||0)
-        setValue("model", dataorder?.model||"")
-        setValue("catalognumber", dataorder?.catalognumber||"")
-        setValue("distributorid", parseInt(dataorder?.distributorid)||0)
-        setValue("manufacturerid", parseInt(dataorder?.manufacturerid)||0)
-        setValue("economicorderquantity", parseInt(dataorder?.economicorderquantity)||1)
-      }
-    }, [dataProducts])
 
     useEffect(() => {
         if (waitSave) {
@@ -152,7 +138,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -161,15 +147,16 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register("inventorybalanceid");
+        register("inventoryorderid");
+        register("inventoryid");
         register("isneworder");
-        register("replenishmentpoint");
-        register("deliverytimedays");
-        register("securitystock");
-        register("unitbuyid");
+        register("replenishmentpoint", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("deliverytimedays", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("securitystock", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("unitbuyid", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
         register("distributorid");
         register("manufacturerid");
-        register("economicorderquantity");
+        register("economicorderquantity", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
         register("model");
         register("catalognumber");
         dispatch(resetMainAux());
@@ -178,7 +165,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            //dispatch(execute(insWarehouse(data)));
+            dispatch(execute(insOrderInventory(data)));
 
             setWaitSave(true);
         }
@@ -244,6 +231,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             variant="contained"
                             color="primary"
                             type="submit"
+                            disabled={disableSave}
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}>
                             {t(langKeys.save)}
@@ -298,6 +286,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <NewOrderTabDetail fetchdata={fetchWarehouseProducts}
                         setValue={setValue}
+                        setdisableSave={setdisableSave}
                         getValues={getValues} errors={errors} row={row} tabIndex={tabIndex}/>
                 </AntTabPanel>
                 <AdjustCurrentBalanceDialog

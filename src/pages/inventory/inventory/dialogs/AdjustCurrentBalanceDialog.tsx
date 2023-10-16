@@ -1,24 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
 import { Button, makeStyles } from "@material-ui/core";
-import {
-  DialogZyx,
-  FieldEdit,
-  FieldSelect,
-} from "components";
+import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
-import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { getInventoryBalance, insProductAttribute } from "common/helpers";
-import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
-import { FieldCheckbox } from 'components';
+import { getInventoryBalance, insarrayInventoryBalance } from "common/helpers";
+import { execute, getCollectionAux2 } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { useForm } from "react-hook-form";
-import React from "react";
-import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import TableZyx from "components/fields/table-simple";
+import {
+  manageConfirmation,
+  showBackdrop,
+  showSnackbar,
+} from "store/popus/actions";
+import TableZyxEditable from "components/fields/table-editable";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -35,135 +32,181 @@ const AdjustCurrentBalanceDialog: React.FC<{
   const classes = useStyles();
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
-  const executeRes = useSelector(state => state.main.execute);
-  const data = useSelector(state => state.main.mainAux2);
-  
+  const executeRes = useSelector((state) => state.main.execute);
+  const data = useSelector((state) => state.main.mainAux2);
+  const [dataTable, setDataTable] = useState<any[]>([]);
+  const [skipAutoReset, setSkipAutoReset] = useState(false);
+  const [updatingDataTable, setUpdatingDataTable] = useState(false);
+
   useEffect(() => {
-    if(openModal){
+    if (openModal) {
       dispatch(getCollectionAux2(getInventoryBalance(row?.inventoryid)));
     }
   }, [openModal]);
 
-  const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset} = useForm({
-    defaultValues: {
-        productattributeid: 0,
-        productid: 0,
-        attributeid: '',
-        value: '',
-        unitmeasureid: 0,
-        status: 'ACTIVO',
-        type: 'NINGUNO',
-        operation: "INSERT"
+  useEffect(() => {
+    if (!data.loading && !data.error) {
+      const newdata:any = data.data.reduce((acc:any,x)=>[...acc,{...x,oldbalance: x.currentbalance}],[])
+      setDataTable(newdata);
     }
-  });
+  }, [data]);
 
   useEffect(() => {
     if (waitSave) {
-        if (!executeRes.loading && !executeRes.error) {
-            dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-            dispatch(showBackdrop(false));
-            reset()
-            setOpenModal(false);
-        } else if (executeRes.error) {
-            const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-            setWaitSave(false);
-            dispatch(showBackdrop(false));
-        }
+      if (!executeRes.loading && !executeRes.error) {
+        dispatch(
+          showSnackbar({
+            show: true,
+            severity: "success",
+            message: t(
+              row ? langKeys.successful_edit : langKeys.successful_register
+            ),
+          })
+        );
+        dispatch(showBackdrop(false));
+        setOpenModal(false);
+      } else if (executeRes.error) {
+        const errormessage = t(executeRes.code ?? "error_unexpected_error", {
+          module: t(langKeys.domain).toLocaleLowerCase(),
+        });
+        dispatch(
+          showSnackbar({ show: true, severity: "error", message: errormessage })
+        );
+        setWaitSave(false);
+        dispatch(showBackdrop(false));
+      }
     }
-}, [executeRes, waitSave])
+  }, [executeRes, waitSave]);
 
-React.useEffect(() => {
-  register('unitmeasureid', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
-  register('attributeid', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('value', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-}, [register]);
-  
-const submitData = handleMainSubmit((data) => {
-  const callback = () => {
+  function submitData() {
+    const callback = () => {
       dispatch(showBackdrop(true));
-      //dispatch(execute(insProductAttribute(data)));
+      dispatch(execute(insarrayInventoryBalance(dataTable)));
       setWaitSave(true);
-  }
-  dispatch(manageConfirmation({
-      visible: true,
-      question: t(langKeys.confirmation_save),
-      callback
-  }))
-});
+    };
+    dispatch(
+      manageConfirmation({
+        visible: true,
+        question: t(langKeys.confirmation_save),
+        callback,
+      })
+    );
+  };
 
-const columns = React.useMemo(
-  () => [
-    {
-      accessor: 'productalternativeid',
-      NoFilter: true,
-      isComponent: true,
-      minWidth: 60,
-      width: '1%',
-    },
-    {
-      Header: t(langKeys.shelf),
-      accessor: "shelf",
-      width: "auto",
-    },
-    {
-      Header: t(langKeys.batch),
-      accessor: "lotecode",
-      width: "auto",
-    },
-    {
-      Header: t(langKeys.current_balance),
-      accessor: "averagecost",
-      width: "auto",
-    },
-    {
-      Header: t(langKeys.newbalance),
-      accessor: "currentbalance2",
-      width: "auto",
-    }
-  ],
-  []
-);
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: t(langKeys.shelf),
+        accessor: "shelf",
+        sortType: "string",
+      },
+      {
+        Header: t(langKeys.batch),
+        accessor: "lotecode",
+        sortType: "string",
+      },
+      {
+        Header: t(langKeys.current_balance),
+        accessor: "oldbalance",
+        type: "number",
+        sortType: "number",        
+        Cell: (props: any) => {
+          const row = props.cell.row.original;
+          return parseFloat(row.oldbalance);
+      }
+      },
+      {
+        Header: t(langKeys.newbalance),
+        accessor: "currentbalance",
+        type: "number",
+        sortType: "number",
+        editable: true,
+      },
+    ],
+    []
+  );
+  useEffect(() => {
+    setSkipAutoReset(false);
+  }, [updatingDataTable]);
+
+  const updateCell = (rowIndex: number, columnId: any, value: any) => {
+    // We also turn on the flag to not reset the page
+    setSkipAutoReset(true);
+    setDataTable((old: any) =>
+      old.map((row: any, index: number) => {
+        if (index === rowIndex) {
+          return {
+            ...old[rowIndex],
+            [columnId]: value,
+          };
+        }
+        return row;
+      })
+    );
+    setUpdatingDataTable(!updatingDataTable);
+  };
+  const updateColumn = (rowIndexs: number[], columnId: any, value: any) => {
+    // We also turn on the flag to not reset the page
+    setSkipAutoReset(true);
+    setDataTable((old: any) =>
+      old.map((row: any, index: number) => {
+        if (rowIndexs.includes(index)) {
+          return {
+            ...old[index],
+            [columnId]: value,
+          };
+        }
+        return row;
+      })
+    );
+    setUpdatingDataTable(!updatingDataTable);
+  };
 
   return (
-    <DialogZyx open={openModal} title={t(langKeys.adjustcurrentbalance)} maxWidth="md">
+    <DialogZyx
+      open={openModal}
+      title={t(langKeys.adjustcurrentbalance)}
+      maxWidth="md"
+    >
       <form onSubmit={submitData}>
-      <div className="row-zyx">
-      <TableZyx
-          columns={columns}
-          data={data?.data}
-          loading={data?.loading}
-          download={false}
-          filterGeneral={false}
-          register={false}
-        /> 
-      </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-        <Button
-          variant="contained"
-          type="button"
-          color="primary"
-          startIcon={<ClearIcon color="secondary" />}
-          style={{ backgroundColor: "#FB5F5F" }}
-          onClick={() => {
-            setOpenModal(false);
-            reset()
-          }}
-        >
-          {t(langKeys.back)}
-        </Button>
-        <Button
-          className={classes.button}
-          variant="contained"
-          color="primary"
-          type="button"
-          startIcon={<SaveIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84" }}
-          onClick={submitData}
-        >
-          {t(langKeys.save)}
-        </Button>
-      </div>
+        <div className="row-zyx">
+          <TableZyxEditable
+            columns={columns}
+            data={dataTable}
+            loading={data?.loading}
+            download={false}
+            filterGeneral={false}
+            register={false}
+            updateCell={updateCell}
+            updateColumn={updateColumn}
+            skipAutoReset={skipAutoReset}
+          />
+        </div>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <Button
+            variant="contained"
+            type="button"
+            color="primary"
+            startIcon={<ClearIcon color="secondary" />}
+            style={{ backgroundColor: "#FB5F5F" }}
+            onClick={() => {
+              setOpenModal(false);
+            }}
+          >
+            {t(langKeys.back)}
+          </Button>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            type="button"
+            startIcon={<SaveIcon color="secondary" />}
+            style={{ backgroundColor: "#55BD84" }}
+            onClick={submitData}
+          >
+            {t(langKeys.save)}
+          </Button>
+        </div>
       </form>
     </DialogZyx>
   );
