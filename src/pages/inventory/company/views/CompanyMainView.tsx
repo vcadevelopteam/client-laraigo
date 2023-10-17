@@ -376,7 +376,7 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
         setCleanSelection={setCleanSelected}
         register={true}
         importCSV={handleUpload}
-        ButtonsElement={() => (
+        FiltersElement={(
           <Button
               variant="contained"
               color="primary"

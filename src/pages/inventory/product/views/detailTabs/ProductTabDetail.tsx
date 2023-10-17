@@ -106,7 +106,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             label={t(langKeys.product)}
                             valueDefault={getValues('productcode')}
                             className="col-4"
-                            error={errors?.productcode?.message}
+                            error={errors?.productcode?.message||""}
                             onChange={(value) => setValue('productcode', value)}
                             inputProps={{ maxLength: 20 }}
                         />
@@ -121,7 +121,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
-                            label={t(langKeys.completedesc)}
+                            label={t(langKeys.longdesc)}
                             valueDefault={getValues('descriptionlarge')}
                             error={errors?.descriptionlarge?.message}
                             onChange={(value) => setValue('descriptionlarge', value)}

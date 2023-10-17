@@ -34,9 +34,9 @@ interface WarehouseMassData {
   name:string;
   description:string;
   address:string;
-  phone:number;
-  latitude:number;
-  longitude:number;
+  phone:number|string;
+  latitude:number|string;
+  longitude:number|string;
 }
 
 const WarehouseMainView: FC<WarehouseMainViewProps> = ({
@@ -255,14 +255,13 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
     setWaitExport(true);
   };
   const isValidData = (element:WarehouseMassData) => {
-
     return (
       typeof element.name === 'string' && element.name.length > 0 &&
       typeof element.description === 'string' && element.description.length <= 256 &&
       typeof element.address === 'string' && element.address.length > 0 &&
-      Number.isInteger(element.phone) &&
-      typeof element.latitude === 'number' && 
-      typeof element.longitude === 'number'
+      Number.isInteger(parseInt(element.phone.toString())) &&
+      !Number.isNaN(parseFloat(element.latitude.toString())) &&
+      !Number.isNaN(parseFloat(element.longitude.toString())) 
     );
   };
 
@@ -293,17 +292,18 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   };
 
   const handleTemplateWarehouse = () => {
-    const data = [{}, {}, {}, {}, {}, {}];
+    const data = [{testname:"testname"}, {testdesc:"testdesc"}, {testdesclong:"testdesclong"}, {testaddress:"testaddress"}, {"999999999":"999999999"}, {"12":"12"}, {"15":"15"}];
     const header = [
       "name",
       "description",
+      "descriptionlarge",
       "address",
       "phone",
       "latitude",
       "longitude",
     ];
     exportExcel(
-      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
+      `${t(langKeys.template)} ${t(langKeys.warehouses)}`,
       templateMaker(data, header)
     );
   };
@@ -356,7 +356,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         setCleanSelection={setCleanSelected}
         register={true}
         importCSV={handleUpload}
-        ButtonsElement={() => (
+        FiltersElement={(
           <Button
               variant="contained"
               color="primary"
