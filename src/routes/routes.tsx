@@ -570,8 +570,8 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.WAREHOUSE,
-        description: <Trans i18nKey={langKeys.warehouse} />,
-        tooltip: <Trans i18nKey={langKeys.warehouse} />,
+        description: <Trans i18nKey={langKeys.warehouses} />,
+        tooltip: <Trans i18nKey={langKeys.warehouses} />,
         subroute: true,
         path: paths.WAREHOUSE,
         initialSubroute: paths.WAREHOUSE,

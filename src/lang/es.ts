@@ -22,6 +22,7 @@ const translation: LangKeys = {
 
   model_type: 'Tipo de Modelo',
   model_type_plural: 'Tipos de Modelos',
+  longdesc: "Descripción larga",
 
   type_service: 'Tipo de Servicio',
   type_service_plural: 'Tipos de Servicio',

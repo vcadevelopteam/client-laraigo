@@ -21,6 +21,7 @@ const translation: LangKeys = {
 
   model_type: 'Model Type',
   model_type_plural: 'Models Type',
+  longdesc: "Long description",
 
   show_logs: 'Show logs',
   function_count_unique: 'Count unique',

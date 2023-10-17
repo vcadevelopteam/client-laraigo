@@ -285,6 +285,7 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
         initialStartDate={new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime()}
         initialEndDate={new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getTime()}
         fetchData={fetchData}
+        FiltersElement={(<div></div>)}
         exportPersonalized={triggerExportData}
         useSelection={true}
         selectionKey={selectionKey}

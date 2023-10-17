@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { useSelector } from "hooks";
 import { TitleDetail, FieldEdit, FieldCheckbox, FieldSelect } from 'components';
-import { FieldErrors } from "react-hook-form";
+import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import RegisterDealerDialog from "../../dialogs/RegisterDealerDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,11 +23,14 @@ const useStyles = makeStyles((theme) => ({
 interface NewOrderTabDetailProps {
   fetchdata: any
   errors: FieldErrors<any>
+  setValue: UseFormSetValue<any>;
+  getValues: UseFormGetValues<any>;
   row: any
   tabIndex:any
+  setdisableSave:any
 }
 
-const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors, row, tabIndex}) => {
+const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors, row, tabIndex,setValue,getValues, setdisableSave}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dataProducts = useSelector(state => state.main.mainAux);
@@ -108,16 +111,17 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
               <FieldCheckbox
                   label={t(langKeys.neworder)}
                   className="col-6"
-                  valueDefault={true}
+                  valueDefault={getValues("isneworder")}
+                  onChange={(value) => {setValue("isneworder", value); setdisableSave(!value)}}               
               />
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.restockingpoint)}
                   type="number"
-                  valueDefault={0}
+                  valueDefault={getValues("replenishmentpoint")}
+                  onChange={(value) => setValue("replenishmentpoint", value)}   
                   className="col-6"
-                  error={errors?.address?.message}
                   inputProps={{ maxLength: 15 }}
               />  
           </div>
@@ -125,35 +129,38 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
               <FieldEdit
                   label={t(langKeys.deliverytimedays)}
                   type="number"
-                  valueDefault={0}
+                  valueDefault={getValues("deliverytimedays")}
+                  onChange={(value) => setValue("deliverytimedays", value)}   
                   className="col-6"
-                  error={errors?.latitude?.message}
               />
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.safetystock)}
                   className="col-6"
-                  error={errors?.address?.message}
+                  type="number"
+                  valueDefault={getValues("securitystock")}
+                  onChange={(value) => setValue("securitystock", value)}   
               />  
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.economicquantityoforders)}
                   type="number"
-                  valueDefault={1}
                   className="col-6"
-                  error={errors?.latitude?.message}
+                  valueDefault={getValues("economicorderquantity")}
+                  onChange={(value) => setValue("economicorderquantity", value)}   
               />
           </div>
           <div className='row-zyx'>
               <FieldSelect
                 label={t(langKeys.purchase_unit)}
                 className="col-6"
-                error={errors?.producttype?.message}
                 data={multiDataAux?.data?.[0]?.data}
-                optionValue="domainvalue"
+                optionValue="domainid"
                 optionDesc="domaindesc"
+                valueDefault={getValues("unitbuyid")}
+                onChange={(value) => setValue("unitbuyid", value.domainid)}   
               />
           </div>
         </div>
@@ -167,44 +174,38 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
               <FieldSelect
                 label={t(langKeys.dealer)}
                 className="col-6"
-                error={errors?.producttype?.message}
                 data={(multiDataAux?.data?.[4]?.data||[]).filter(x=>x.typemanufacter_desc ==="D")}
-                optionValue="manufacturerid"
+                optionValue="distributorid"
                 optionDesc="description"
+                valueDefault={getValues("distributorid")}
+                onChange={(value) => setValue("distributorid", value.manufacturerid)}  
               />
-              <FieldEdit
-                  label={t(langKeys.description)}
-                  className="col-6"
-                  error={errors?.address?.message}
-              /> 
           </div>
           <div className='row-zyx'>
               <FieldSelect
                 label={t(langKeys.manufacturer)}
                 className="col-6"
-                error={errors?.producttype?.message}
                 data={(multiDataAux?.data?.[4]?.data||[]).filter(x=>x.typemanufacter_desc ==="F")}
                 optionValue="manufacturerid"
                 optionDesc="description"
+                valueDefault={getValues("manufacturerid")}
+                onChange={(value) => setValue("manufacturerid", value.manufacturerid)}  
               />
-              <FieldEdit
-                  label={t(langKeys.description)}
-                  className="col-6"
-                  error={errors?.address?.message}
-              />   
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.model)}
                   className="col-6"
-                  error={errors?.latitude?.message}
+                  valueDefault={getValues("model")}
+                  onChange={(value) => setValue("model", value)}  
               />
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.catalog_nro)}
                   className="col-6"
-                  error={errors?.address?.message}
+                  valueDefault={getValues("catalognumber")}
+                  onChange={(value) => setValue("catalognumber", value)}  
               />  
           </div>
         </div>
@@ -218,7 +219,8 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
         <div className="row-zyx">
           <TableZyx
             columns={columns}
-            data={dataProducts.data}
+            data={dataProducts?.data||[]}
+            loading={dataProducts?.loading}
             download={false}
             filterGeneral={false}
             register={true}

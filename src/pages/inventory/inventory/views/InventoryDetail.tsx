@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getInventoryBalance, getProductManufacturer, insWarehouse } from 'common/helpers';
+import { getInventoryBalance, getProductManufacturer, insOrderInventory } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -83,6 +83,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const [openModalPhysicalCount, setOpenModalPhysicalCount] = useState(false);
     const [openModalStandardCost, setOpenModalStandardCost] = useState(false);
     const [openModalAverageCost, setOpenModalAverageCost] = useState(false);
+    const [disableSave, setdisableSave] = useState(false);
     const [openModalReconcileBalance, setOpenModalReconcileBalance] = useState(false);
     const [openModalSeeProductAvailability, setOpenModalSeeProductAvailability] = useState(false);
     const [openModalSeeInventoryTransactions, setOpenModalSeeInventoryTransactions] = useState(false);
@@ -92,33 +93,42 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
         { id: "main-view", name: t(langKeys.inventory) },
         { id: "detail-view", name: `${t(langKeys.inventory)} ${t(langKeys.detail)}` },
     ];
-    
+    const fetchWarehouseProducts = () => {
+        dispatch(
+            getCollectionAux(getProductManufacturer(row?.productid))
+        );
+    }
+
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            warehouseid: row?.warehouseid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || '',
-            name: row?.name || '',
-            description: row?.description || '',
-            address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            rackdefault: row?.rackdefault || '',
-            status: row?.status || 'ACTIVO'
+            inventoryorderid: 0,
+            inventoryid: row?.inventoryid,
+            operation: "INSERT",
+            isneworder:  true,
+            replenishmentpoint: 0,
+            deliverytimedays:  0,
+            securitystock:  0,
+            unitbuyid:  0,
+            orderid:0,
+            distributorid:  0,
+            manufacturerid:  0,
+            economicorderquantity:  1,
+            model: '',
+            catalognumber:  '',
+            type:  '',
+            status: 'ACTIVO'
         }
     });
 
-    const fetchWarehouseProducts = () => {
-        dispatch(
-          getCollectionAux(getProductManufacturer(row?.productid))
-        );
-    }
     const fetchInventoryBalance = () => {
         dispatch(
           getCollectionAux(getInventoryBalance(row?.inventoryid))
         );
     }
+
+    useEffect(() => {
+        fetchWarehouseProducts()
+    }, [])
 
     useEffect(() => {
         if (waitSave) {
@@ -128,7 +138,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -137,21 +147,25 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register('warehouseid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-
+        register("inventoryorderid");
+        register("inventoryid");
+        register("isneworder");
+        register("replenishmentpoint", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("deliverytimedays", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("securitystock", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("unitbuyid", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("distributorid");
+        register("manufacturerid");
+        register("economicorderquantity", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("model");
+        register("catalognumber");
         dispatch(resetMainAux());
     }, [register]);
 
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            //dispatch(execute(insWarehouse(data)));
+            dispatch(execute(insOrderInventory(data)));
 
             setWaitSave(true);
         }
@@ -217,6 +231,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             variant="contained"
                             color="primary"
                             type="submit"
+                            disabled={disableSave}
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}>
                             {t(langKeys.save)}
@@ -269,7 +284,10 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row} tabIndex={tabIndex}/>
+                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts}
+                        setValue={setValue}
+                        setdisableSave={setdisableSave}
+                        getValues={getValues} errors={errors} row={row} tabIndex={tabIndex}/>
                 </AntTabPanel>
                 <AdjustCurrentBalanceDialog
                     openModal={openModalAdjust}
