@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker, getAnalyticsIA } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker, getAnalyticsIA, getUserAsesorByOrgID } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -1422,7 +1422,7 @@ const Tickets = () => {
             getValuesFromDomainLight("MOTIVOCIERRE"),
             getComunicationChannelDelegate(""),
             getClassificationLevel1("TIPIFICACION"),
-            getUserSel(0),
+            getUserAsesorByOrgID(),
             getValuesFromDomainLight("GRUPOS"),
             getCampaignLst(),
             getPropertySelByName('CARGARCONVERSACIONES')
@@ -1459,7 +1459,7 @@ const Tickets = () => {
         if (!mainResult?.multiData.loading && !mainResult?.multiData.error) {
             setUserList((mainResult?.multiData?.data[5]?.data || []).map(x => ({
                 ...x,
-                fullname: `${x.firstname} ${x.lastname}`
+                fullname: `${x.userdesc}`
             })).sort((a, b) => a.fullname.localeCompare(b.fullname)))
         }
     }, [mainResult?.multiData])
