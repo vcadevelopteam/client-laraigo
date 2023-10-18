@@ -4137,10 +4137,10 @@ export const insProduct = ({ productid, description, descriptionlarge, productty
     parameters: {  productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitdispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  },
 });
 
-export const insWarehouse = ({ warehouseid,description,address,phone,latitude,longitude,status,type,operation,name  }: Dictionary) => ({
+export const insWarehouse = ({ warehouseid,description,address,phone,latitude,longitude,status,type,operation,name, descriptionlarge  }: Dictionary) => ({
     method: "UFN_WAREHOUSE_INS",
     key: "UFN_WAREHOUSE_INS",
-    parameters: {  warehouseid,description,address,phone,latitude,longitude,status,type,operation,name  },
+    parameters: {  warehouseid,description,address,phone,latitude,longitude,status,type,operation,name, descriptionlarge  },
 });
 
 export const getWarehouseProducts = (productid: number): IRequestBody => ({

@@ -286,20 +286,9 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
         register={true}
-        ButtonsElement={() => (
-          <div
-            className={classes.containerHeader}
-            style={{
-              display: "flex",
-              gap: 8,
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-            }}
-          >
-            <div style={{ display: "flex", gap: 8 }}>
-              <div>
-                <Button
-                  className={classes.button}
+        FiltersElement={(
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {/*<Button
                   variant="contained"
                   component="span"
                   color="primary"
@@ -308,11 +297,8 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
                   style={{ backgroundColor: "#55BD84" }}
                 >
                   <Trans i18nKey={langKeys.change_status} />
-                </Button>
-              </div>
-              <div>
+        </Button>*/}
                 <Button
-                  className={classes.button}
                   variant="contained"
                   component="span"
                   color="primary"
@@ -322,20 +308,15 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
                 >
                   <Trans i18nKey={langKeys.import} />
                 </Button>
-              </div>
-              <div>
                 <Button
-                  className={classes.button}
                   variant="contained"
                   component="span"
                   color="primary"
                   onClick={() => setOpenModalTemplate(true)}
                   style={{ backgroundColor: "#55BD84" }}
                 >
-                  <Trans i18nKey={langKeys.template} />
+                  {t(langKeys.template) + " " + t(langKeys.import)} 
                 </Button>
-              </div>
-            </div>
           </div>
         )}
       />

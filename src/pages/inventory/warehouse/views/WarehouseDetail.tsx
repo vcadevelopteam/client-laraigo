@@ -80,6 +80,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
             warehouseid: row?.warehouseid || 0,
             operation: edit ? "EDIT" : "INSERT",
             type: row?.type || '',
+            descriptionlarge: row?.descriptionlarge || '',
             name: edit? row?.name : '',
             description: row?.description || '',
             address: row?.address || '',
@@ -124,6 +125,7 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
         register('phone');
         register('latitude');
         register('longitude');
+        register('descriptionlarge');
 
         dispatch(resetMainAux());
     }, [register]);

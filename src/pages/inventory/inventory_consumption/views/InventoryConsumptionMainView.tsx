@@ -308,8 +308,8 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
         register={true}
-        importCSV={handleUpload}
-        ButtonsElement={() => (
+        importCSV={handleUpload}        
+        FiltersElement={(
           <Button
               variant="contained"
               color="primary"

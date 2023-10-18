@@ -164,15 +164,15 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit, duplica
     React.useEffect(() => {
         register('productid');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('descriptionlarge', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('descriptionlarge');
         register('producttype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('familyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('unitbuyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('unitdispatchid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('familyid');
+        register('unitbuyid');
+        register('unitdispatchid');
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('productcode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('subfamilyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('loteid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('subfamilyid');
+        register('loteid');
         register('imagereference');
 
         dispatch(resetMainAux());
