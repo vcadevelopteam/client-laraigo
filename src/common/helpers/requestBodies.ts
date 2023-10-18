@@ -4506,9 +4506,9 @@ export const insOrderInventory = ({ inventoryorderid, inventoryid, isneworder, r
     }
 });
 
-export const getAllInventoryBalance = (inventoryid:number): IRequestBody => ({
-    method: "UFN_ALL_INVENTORY_INVENTORYBALANCE_SEL",
-    key: "UFN_ALL_INVENTORY_INVENTORYBALANCE_SEL",
+export const updateInventoryBalances = (inventoryid:number): IRequestBody => ({
+    method: "UFN_INVENTORY_INVENTORYBALANCE_UPD",
+    key: "UFN_INVENTORY_INVENTORYBALANCE_UPD",
     parameters: {
         inventoryid
     }
