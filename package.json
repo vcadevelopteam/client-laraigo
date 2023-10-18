@@ -77,7 +77,8 @@
         "prede  ploy": "npm run build",
         "analyze": "source-map-explorer 'build/static/js/*.js'",
         "deploy": "gh-pages -d build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "prepare": "husky install"
     },
     "eslintConfig": {
         "extends": [
@@ -128,6 +129,8 @@
         "eslint-plugin-prettier": "^4.2.1",
         "eslint-plugin-react": "^7.33.2",
         "gh-pages": "^3.2.3",
+        "husky": "^8.0.0",
+        "lint-staged": "^13.1.0",
         "prettier": "^2.8.1",
         "vite": "^4.4.9",
         "vite-plugin-svgr": "^3.2.0",
