@@ -15,7 +15,7 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, getInventoryExport, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
+import { getInventoryExport, insWarehouse } from "common/helpers";
 import { useSelector } from "hooks";
 import TablePaginated from "components/fields/table-paginated";
 
@@ -81,7 +81,7 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
           showSnackbar({
             show: true,
             severity: "error",
-            message: t(importRes.code || "error_unexpected_error"),
+            message: t(importRes.code ?? "error_unexpected_error"),
           })
         );
         dispatch(showBackdrop(false));
@@ -115,7 +115,7 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
             setWaitExport(false);
             resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
         } else if (resExportData.error) {
-            const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+            const errormessage = t(resExportData.code ?? "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
             dispatch(showBackdrop(false));
             setWaitExport(false);
@@ -148,7 +148,7 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
-        const errormessage = t(executeResult.code || "error_unexpected_error", {
+        const errormessage = t(executeResult.code ?? "error_unexpected_error", {
           module: t(langKeys.domain).toLocaleLowerCase(),
         });
         dispatch(

@@ -2,7 +2,7 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getManufacturer, getPaginatedInventory, getPaginatedWarehouse, getProducts, getValuesFromDomain, getWarehouses } from "common/helpers";
+import { getManufacturer, getPaginatedInventory, getProducts, getValuesFromDomain, getWarehouses } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import InventoryMainView from "./views/InventoryMainView";

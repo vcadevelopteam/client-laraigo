@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getAllInventoryBalance, getInventoryBalance, getProductManufacturer, insOrderInventory } from 'common/helpers';
+import { getAllInventoryBalance, getProductManufacturer, insOrderInventory } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -313,9 +313,10 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                 />
                 <ReconcileBalanceDialog
                     openModal={openModalReconcileBalance}
+                    fetchData={fetchInventoryBalance}
                     setOpenModal={setOpenModalReconcileBalance}
                     row={row}
-                    data={dataBalances.data}
+                    data={dataBalances}
                 />
                 <SeeProductAvailabilityDialog
                     openModal={openModalSeeProductAvailability}
