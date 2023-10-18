@@ -14,11 +14,14 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": [
-        "@typescript-eslint",
-        "react"
-    ],
+    "plugins": ["@typescript-eslint", "react"],
     "rules": {
-        "prettier/prettier": 0
+        "prettier/prettier": 0,
+        "eqeqeq": ["error", "always"],
+        "no-empty-function": "error",
+        "no-implicit-coercion": "error",
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-duplicate-enum-values": "error",
+        "@typescript-eslint/no-inferrable-types": "off"
     }
 }
