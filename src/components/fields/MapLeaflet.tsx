@@ -35,7 +35,7 @@ const MapLeaflet: React.FC<MapProps> = ({ marker, height, onClick, id = uuidv4()
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.current);
 
         if (onClick) {
-            map.current.on("click", (e) => {
+            map.current.on("click", (e: any) => {
                 onClick(e.latlng)
             });
         }
@@ -61,7 +61,9 @@ const MapLeaflet: React.FC<MapProps> = ({ marker, height, onClick, id = uuidv4()
     }, [marker])
     
 
-    return <div id={`map${id}`} style={{ height: height }}></div>;
+    return (
+        <div id={`map${id}`} style={{ height: height }}></div>
+    )
 }
 
 export default MapLeaflet;
