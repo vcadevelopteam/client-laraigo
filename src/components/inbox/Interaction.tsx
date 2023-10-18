@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/iframe-has-title */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,8 +20,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
-import { apiUrls } from 'common/constants';
+import MapLeaflet from 'components/fields/MapLeaflet';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -98,6 +97,7 @@ const useStylesInteraction = makeStyles((theme) => ({
         gap: 4
     }
 }));
+
 
 const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, createdate: string, classes: any, userType: string }> = ({ interactiontext, createdate, classes, userType, onlyTime }) => {
     const [open, setOpen] = React.useState(false);
@@ -348,7 +348,7 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
                     src={carousel[pageSelected].mediaUrl}
                     className={classes.imageCardCarousel}
                     alt="logocarousel"
-                    // crossOrigin={carousel[pageSelected].mediaUrl.includes('cloud-object-storage') ? 'anonymous' : undefined}
+                // crossOrigin={carousel[pageSelected].mediaUrl.includes('cloud-object-storage') ? 'anonymous' : undefined}
                 />
             </div>
             <div style={{ padding: '12px', wordBreak: 'break-word' }}>
@@ -439,9 +439,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: apiUrls.APIKEY_GMAPS,
-    });
 
     const [height, setHeight] = React.useState("0px");
     const onLoad = () => {
@@ -794,7 +791,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
 
         const coordinates = interactiontext.split("=").pop()?.split(",") || ["", ""];
 
-        return isLoaded ? (
+        return (
             <div
                 title={convertLocalDate(createdate).toLocaleString()}
                 className={clsx(classes.interactionText, {
@@ -802,18 +799,10 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 })}
             >
                 <div style={{ width: "300px" }} className="interaction-gmap">
-                    <GoogleMap
-                        mapContainerStyle={{
-                            width: '100%',
-                            height: "200px"
-                        }}
-                        center={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
-                        zoom={10}
-                    >
-                        <Marker
-                            position={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
-                        />
-                    </GoogleMap>
+                    <MapLeaflet
+                        marker={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
+                        height={300}
+                    />
                 </div>
                 <div style={{ display: "none" }} className="interaction-gmap-text">
                     {interactiontext}
@@ -821,7 +810,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
-        ) : null
+        )
     }
     return (
         <div className={clsx(classes.interactionText, {

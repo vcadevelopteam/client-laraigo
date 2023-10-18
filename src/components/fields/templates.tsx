@@ -385,7 +385,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                 variant={variant}
                 error={!!error}
                 helperText={error || null}
-                rows={rows}
+                minRows={rows}
                 size={size}
                 onChange={(e) => {
                     if (maxLength === 0 || e.target.value.length <= maxLength) {
@@ -1609,7 +1609,7 @@ export const FieldEditArray: React.FC<InputProps> = ({ label, style = {}, classN
                 variant={variant}
                 error={!!error}
                 helperText={error || null}
-                rows={rows}
+                minRows={rows}
                 onChange={(e) => {
                     onChange && onChange(e.target.value);
                 }}
