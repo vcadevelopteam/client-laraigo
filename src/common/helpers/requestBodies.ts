@@ -4505,3 +4505,11 @@ export const insOrderInventory = ({ inventoryorderid, inventoryid, isneworder, r
         inventoryorderid, inventoryid, isneworder, replenishmentpoint, deliverytimedays, securitystock, economicorderquantity, unitbuyid, distributorid, manufacturerid, catalognumber, model, status, type, operation
     }
 });
+
+export const getAllInventoryBalance = (inventoryid:number): IRequestBody => ({
+    method: "UFN_ALL_INVENTORY_INVENTORYBALANCE_SEL",
+    key: "UFN_ALL_INVENTORY_INVENTORYBALANCE_SEL",
+    parameters: {
+        inventoryid
+    }
+});

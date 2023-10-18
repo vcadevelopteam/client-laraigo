@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insProductAttribute } from "common/helpers";
+import { insProductAttribute, insarrayInventoryBalance } from "common/helpers";
 import { execute, resetMainAux } from "store/main/actions";
 import { FieldCheckbox } from 'components';
 import { useDispatch } from "react-redux";
@@ -25,7 +25,8 @@ const ReconcileBalanceDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
-}> = ({ openModal, setOpenModal, row }) => {
+  data: any;
+}> = ({ openModal, setOpenModal, row, data }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -44,6 +45,7 @@ const ReconcileBalanceDialog: React.FC<{
         operation: "INSERT"
     }
   });
+  console.log(data)
 
   useEffect(() => {
     if (waitSave) {
@@ -67,10 +69,15 @@ React.useEffect(() => {
   register('value', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
 }, [register]);
   
-const submitData = handleMainSubmit((data) => {
+const submitData = handleMainSubmit(() => {
   const callback = () => {
+      const newData = data.map((item: any) => ({
+        ...item,
+        isreconciled: true
+      }));
+
       dispatch(showBackdrop(true));
-      //dispatch(execute(insProductAttribute(data)));
+      dispatch(execute(insarrayInventoryBalance(newData)));
       setWaitSave(true);
   }
   dispatch(manageConfirmation({
@@ -82,7 +89,6 @@ const submitData = handleMainSubmit((data) => {
 
   return (
     <DialogZyx open={openModal} title={t(langKeys.reconcilebalancesheets)} maxWidth="sm">
-      <form onSubmit={submitData}>
       <div className="row-zyx">
           <Typography />{t(langKeys.reconcilebalancetext)}
       </div>
@@ -112,7 +118,6 @@ const submitData = handleMainSubmit((data) => {
           {t(langKeys.save)}
         </Button>
       </div>
-      </form>
     </DialogZyx>
   );
 };
