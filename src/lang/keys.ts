@@ -683,6 +683,7 @@ export const langKeys = {
   errorneedvalues: "errorneedvalues",
   district: "district",
   postalcode: "postalcode",
+  departmentnumber: "departmentnumber",
   searchyourlocation: "searchyourlocation",
   zone: "zone",
   tos1: "tos1",

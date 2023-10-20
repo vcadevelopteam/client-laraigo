@@ -529,6 +529,7 @@ const translation: LangKeys = {
   propertytiempobalanceollamada: "El valor es de 0 a 30 segundos",
   district: "Distrito",
   postalcode: "Código postal",
+  departmentnumber: "No. departamento, piso inferior",
   searchyourlocation: "Busca tu ubicación",
   calendarview: "Vista del calendario",
   zone: "Zona",
