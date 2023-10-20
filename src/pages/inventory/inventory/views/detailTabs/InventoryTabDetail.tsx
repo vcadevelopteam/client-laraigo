@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { Dictionary, IFile } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { Button } from "@material-ui/core";
-import { Search as SearchIcon } from "@material-ui/icons";
 import Box from '@material-ui/core/Box';
 import { ItemFile, UploaderIcon } from '../../components/components';
 import { useTranslation } from 'react-i18next';
@@ -97,7 +95,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code ?? "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);

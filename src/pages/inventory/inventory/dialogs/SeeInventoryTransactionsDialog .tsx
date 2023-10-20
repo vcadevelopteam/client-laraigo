@@ -1,19 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, TextField, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit, FieldSelect, AntTab, AntTabPanel } from "components";
+import { Button, makeStyles, Tabs } from "@material-ui/core";
+import { DialogZyx, AntTab, AntTabPanel } from "components";
 import { langKeys } from "lang/keys";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import SaveIcon from "@material-ui/icons/Save";
-import { getInventoryMovement, insProductAttribute } from "common/helpers";
-import { execute, getCollectionAux2, resetMainAux } from "store/main/actions";
-import { FieldCheckbox } from 'components';
+import { getInventoryMovement } from "common/helpers";
+import { getCollectionAux2 } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { useForm } from "react-hook-form";
-import React from "react";
-import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { Tabs } from '@material-ui/core';
+import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { Trans, useTranslation } from 'react-i18next';
 import TableZyx from "components/fields/table-simple";
 
@@ -52,7 +47,7 @@ const SeeInventoryTransactionsDialog  : React.FC<{
             dispatch(showBackdrop(false));
             setOpenModal(false);
         } else if (executeRes.error) {
-            const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+            const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
             setWaitSave(false);
             dispatch(showBackdrop(false));

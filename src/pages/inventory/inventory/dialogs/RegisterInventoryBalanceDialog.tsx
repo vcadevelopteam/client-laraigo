@@ -11,7 +11,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
 import { insInventoryBalance } from "common/helpers";
-import { execute, resetMainAux } from "store/main/actions";
+import { execute } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
@@ -61,7 +61,7 @@ const RegisterInventoryBalanceDialog: React.FC<{
             reset()
             setOpenModal(false);
         } else if (executeRes.error) {
-            const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.inventorybalance).toLocaleLowerCase() })
+            const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.inventorybalance).toLocaleLowerCase() })
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
             setWaitSave(false);
             dispatch(showBackdrop(false));

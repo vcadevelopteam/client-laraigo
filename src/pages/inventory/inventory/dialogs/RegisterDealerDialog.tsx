@@ -2,7 +2,7 @@
 import { Button, IconButton, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldCheckbox, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
@@ -10,7 +10,6 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import React from "react";
 import { Add } from '@material-ui/icons';
 import { execute } from "store/main/actions";
 import { insProductDealer } from "common/helpers";
@@ -117,7 +116,7 @@ const RegisterDealerDialog: React.FC<{
         fetchData()
         closeModal()
       } else if (executeRes.error) {
-        const errormessage = t(executeRes.code || "error_unexpected_error", {module: t(langKeys.domain).toLocaleLowerCase(),});
+        const errormessage = t(executeRes.code ?? "error_unexpected_error", {module: t(langKeys.domain).toLocaleLowerCase(),});
         dispatch(
           showSnackbar({ show: true, severity: "error", message: errormessage })
         );

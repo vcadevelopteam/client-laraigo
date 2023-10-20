@@ -6,17 +6,15 @@ import {
   FieldSelect,
 } from "components";
 import { langKeys } from "lang/keys";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insInventoryBooking, insProductAttribute } from "common/helpers";
-import { execute, resetMainAux } from "store/main/actions";
-import { FieldCheckbox } from 'components';
+import { insInventoryBooking } from "common/helpers";
+import { execute } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { FieldErrors, useForm } from "react-hook-form";
-import React from "react";
+import { useForm } from "react-hook-form";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 
 const useStyles = makeStyles((theme) => ({
@@ -64,7 +62,7 @@ const AddReservationDialog: React.FC<{
             reset()
             setOpenModal(false);
         } else if (executeRes.error) {
-            const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+            const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
             setWaitSave(false);
             dispatch(showBackdrop(false));

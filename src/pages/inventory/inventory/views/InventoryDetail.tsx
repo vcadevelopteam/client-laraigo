@@ -7,12 +7,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getInventoryBalance, getProductManufacturer, insOrderInventory } from 'common/helpers';
+import { getAllInventoryBalance, getProductManufacturer, insOrderInventory } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { execute, getCollectionAux, getCollectionAux2, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
 import InventoryTabDetail from './detailTabs/InventoryTabDetail';
@@ -79,6 +79,7 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const dataBalances = useSelector(state => state.main.mainAux2)
     const [openModalAdjust, setOpenModalAdjust] = useState(false);
     const [openModalPhysicalCount, setOpenModalPhysicalCount] = useState(false);
     const [openModalStandardCost, setOpenModalStandardCost] = useState(false);
@@ -122,7 +123,8 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
 
     const fetchInventoryBalance = () => {
         dispatch(
-          getCollectionAux(getInventoryBalance(row?.inventoryid))
+          //getCollectionAux(getInventoryBalance(row?.inventoryid))
+          getCollectionAux2(getAllInventoryBalance(row?.inventoryid))
         );
     }
 
@@ -311,8 +313,10 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                 />
                 <ReconcileBalanceDialog
                     openModal={openModalReconcileBalance}
+                    fetchData={fetchInventoryBalance}
                     setOpenModal={setOpenModalReconcileBalance}
                     row={row}
+                    data={dataBalances}
                 />
                 <SeeProductAvailabilityDialog
                     openModal={openModalSeeProductAvailability}
