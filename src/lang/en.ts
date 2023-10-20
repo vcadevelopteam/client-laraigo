@@ -5569,6 +5569,11 @@ const translation: LangKeys = {
   billingreport_channeltotal: 'Additional Channels',
   billingreport_contactwhatsapp: 'WhatsApp Channels Contacts',
   billingreport_contactother: 'Other Channels Contacts',
+
+  inventoryconsumptionlines: 'Inventory Consumption Lines',
+  line: 'Line',
+  dispatchto: 'Dispatch to',
+  complete: 'Complete',
 };
 
 const enResource: ResourceLanguage = {
