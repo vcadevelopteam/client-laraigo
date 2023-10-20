@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: "rgb(235, 0, 43)",
 		paddingTop: "5px",
 		paddingBottom: "5px",
-		['@media (min-width:600px)']: { // eslint-disable-line no-useless-computed-key
+		['@media (min-width:600px)']: {
 			fontSize: "18px",
 			paddingTop: "8px",
 			paddingBottom: "8px",
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
 		width: "100%",
 		paddingRight: "15px",
 		paddingLeft: "15px",
-		['@media (min-width:760px)']: { // eslint-disable-line no-useless-computed-key
+		['@media (min-width:760px)']: {
 			flex: "0 0 50%",
 			maxWidth: "50%",
 		}
@@ -92,6 +92,9 @@ const libraries: Libraries = ["places"];
 export default function Map() {
 
 	const { token }: any = useParams();
+	console.log(`token`, token.split("-")[4] ?? "t")
+	const haveReference = React.useRef(token.split("-")[4] ?? "t");
+
 	const { isLoaded, loadError } = useLoadScript({
 		googleMapsApiKey: apiUrls.APIKEY_GMAPS + "",
 		libraries,
@@ -121,7 +124,6 @@ export default function Map() {
 
 	useEffect(() => {
 		getLocation();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	function getLocation() {
 		if (navigator.geolocation) {
@@ -207,15 +209,6 @@ export default function Map() {
 		});
 	}
 
-	// const mapRef = React.useRef();
-	// const onMapLoad = React.useCallback((map) => {
-	// 	mapRef.current = map;
-	// }, []);
-	// const panTo = React.useCallback(({ lat, lng }) => {
-	// 	mapRef.current.panTo({ lat, lng });
-	// 	mapRef.current.setZoom(14);
-	// }, []);
-
 	if (loadError) return <div>"Error"</div>;
 	if (!isLoaded) return <div>Loading...</div>;
 
@@ -226,12 +219,12 @@ export default function Map() {
 				height={400}
 				onClick={onMapClick}
 			/>
-			<Search setMarker={setMarker} directionData={directionData} setDirectionData={setDirectionData} cleanDataAddres={cleanDataAddres} marker={marker} />
+			<Search haveReference={haveReference.current} setMarker={setMarker} directionData={directionData} setDirectionData={setDirectionData} cleanDataAddres={cleanDataAddres} marker={marker} />
 		</div>
 	);
 }
 
-function Search({ setMarker, directionData, setDirectionData, cleanDataAddres, marker } : any) {
+function Search({ setMarker, directionData, setDirectionData, cleanDataAddres, marker, haveReference }: any) {
 	const classes = useStyles();
 	const { t } = useTranslation();
 	const getlocationdata = useSelector(state => state.getlocations);
@@ -280,7 +273,6 @@ function Search({ setMarker, directionData, setDirectionData, cleanDataAddres, m
 			}))
 			setValue(directionData.searchLocation)
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [directionData.movedmarker]);
 	const handleSelect = async (address: any) => {
 		setValue(address, false);
@@ -337,23 +329,83 @@ function Search({ setMarker, directionData, setDirectionData, cleanDataAddres, m
 					<div className={classes.textlabel}>{t(langKeys.secondDataLocation)}</div>
 
 					<div className="row-zyx" style={{ marginBottom: "0px" }}>
-						<TextField label={t(langKeys.department)} variant="outlined" size="small" className="col-6" value={directionData.department} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, department: e.target.value })) }} />
-						<TextField label={t(langKeys.province)} variant="outlined" size="small" className="col-6" value={directionData.province} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, province: e.target.value })) }} />
+						<TextField
+							label={t(langKeys.department)}
+							variant="outlined" size="small"
+							className="col-6"
+							value={directionData.department}
+							onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, department: e.target.value })) }}
+						/>
+						<TextField
+							label={t(langKeys.province)}
+							variant="outlined"
+							size="small"
+							className="col-6"
+							value={directionData.province}
+							onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, province: e.target.value })) }}
+						/>
 					</div>
 					<div className="row-zyx" style={{ marginBottom: "0px" }}>
-						<TextField label={t(langKeys.district)} variant="outlined" size="small" className="col-6" value={directionData.district} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, district: e.target.value })) }} />
-						<TextField label={t(langKeys.zone)} variant="outlined" size="small" className="col-6" value={directionData.zone} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, zone: e.target.value })) }} />
+						<TextField
+							label={t(langKeys.district)}
+							variant="outlined"
+							size="small"
+							className="col-6"
+							value={directionData.district}
+							onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, district: e.target.value })) }}
+						/>
+						<TextField
+							label={t(langKeys.zone)}
+							variant="outlined"
+							size="small"
+							className="col-6"
+							value={directionData.zone}
+							onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, zone: e.target.value })) }}
+						/>
 					</div>
 					<div className="row-zyx" style={{ marginBottom: "0px" }}>
-						<TextField label={t(langKeys.street)} variant="outlined" size="small" className="col-6" value={directionData.street} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, street: e.target.value })) }} />
-						<TextField label={`N° ${t(langKeys.street)}`} variant="outlined" size="small" className="col-6" value={directionData.streetNumber} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, streetNumber: e.target.value })) }} />
+						<TextField
+							label={t(langKeys.street)}
+							variant="outlined"
+							size="small"
+							className="col-6"
+							value={directionData.street}
+							onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, street: e.target.value })) }}
+						/>
+						<TextField
+							label={`N° ${t(langKeys.street)}`}
+							variant="outlined"
+							size="small"
+							className="col-6"
+							value={directionData.streetNumber}
+							onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, streetNumber: e.target.value })) }}
+						/>
 					</div>
 					<div className="row-zyx" style={{ marginBottom: "0px" }}>
-						<TextField label={t(langKeys.postalcode)} variant="outlined" size="small" className="col-6" value={directionData.zipcode} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, zipcode: e.target.value })) }} />
+						<TextField
+							label={t(langKeys.postalcode)}
+							variant="outlined"
+							size="small"
+							className="col-6"
+							value={directionData.zipcode}
+							onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, zipcode: e.target.value })) }}
+						/>
+						{(haveReference === "t") && (
+							<TextField
+								label={t(langKeys.departmentnumber)}
+								variant="outlined"
+								size="small"
+								className="col-6"
+								value={directionData.departmentnumber}
+								onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, departmentnumber: e.target.value })) }}
+							/>
+						)}
 					</div>
-					<div className="row-zyx" style={{ marginBottom: "0px" }}>
-						<TextField label={t(langKeys.extraInformation)} multiline variant="outlined" size="small" style={{ width: "100%" }} maxRows={4} value={directionData.reference} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, reference: e.target.value })) }} />
-					</div>
+					{haveReference === "t" && (
+						<div className="row-zyx" style={{ marginBottom: "0px" }}>
+							<TextField label={t(langKeys.transactionreference)} multiline variant="outlined" size="small" style={{ width: "100%" }} maxRows={4} value={directionData.reference} onChange={(e) => { setDirectionData((prev: any) => ({ ...prev, reference: e.target.value })) }} />
+						</div>
+					)}
 					<div style={{ marginLeft: "auto", paddingTop: "10px", marginRight: "auto", display: "block", width: "10%" }}>
 						<Button
 							variant="contained"
