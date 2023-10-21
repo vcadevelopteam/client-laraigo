@@ -226,8 +226,6 @@ const RouterApp: FC = () => {
 		removeAuthorizationToken()
 	}, [dispatch]));
 
-	console.log(import.meta.env.DEV)
-	console.log(import.meta.env.BASE_URL)
 	return (
 		<Router basename={ import.meta.env.BASE_URL}>
 			<React.Suspense fallback={(
