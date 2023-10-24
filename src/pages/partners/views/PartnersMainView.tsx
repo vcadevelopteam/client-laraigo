@@ -193,6 +193,11 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
       },
       {
         Header: t(langKeys.monthlyplancost),
+        accessor: "plancost",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.contactsincludedinplan),
         accessor: "currentbalance",
         width: "auto",
       },

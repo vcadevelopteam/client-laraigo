@@ -5493,6 +5493,7 @@ const translation: LangKeys = {
   applicablediscountamount: "Applicable discount amount",
   amountwithmembershipdiscount: "Amount with membership discount",
   amountnotapplicabletodiscount: "Amount not applicable to discount",
+  contactsincludedinplan: "Number of contacts included in the plan",
 };
 
 const enResource: ResourceLanguage = {

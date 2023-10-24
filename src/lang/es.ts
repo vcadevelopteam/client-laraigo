@@ -5420,6 +5420,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   applicablediscountamount: "Monto aplicable a descuento",
   amountwithmembershipdiscount: "Monto con descuento de socio",
   amountnotapplicabletodiscount: "Monto no aplicable a descuento",
+  contactsincludedinplan: "Cantidad de contactos incluidos en el plan",
 };
 
 const esResource: ResourceLanguage = {

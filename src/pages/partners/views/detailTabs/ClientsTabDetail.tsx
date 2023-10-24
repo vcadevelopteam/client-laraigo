@@ -120,6 +120,11 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, r
         width: "auto",
       },
       {
+        Header: t(langKeys.monthlyplancost),
+        accessor: "plancost",
+        width: "auto",
+      },
+      {
         Header: t(langKeys.billingplan),
         accessor: "billingplan",
         width: "auto",

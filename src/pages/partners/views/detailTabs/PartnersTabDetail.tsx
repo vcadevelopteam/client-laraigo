@@ -255,6 +255,18 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 />
                 { isEnterprise && (
                     <>
+                        <FieldEdit
+                            label={t(langKeys.monthlyplancost)}
+                            type='number'
+                            className="col-6"
+                            error={errors?.numbercontactsbag?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.contactsincludedinplan)}
+                            type='number'
+                            className="col-6"
+                            error={errors?.numbercontactsbag?.message}
+                        />
                         <FieldSelect
                             label={t(langKeys.billingplan)}
                             valueDefault={getValues('billingplan')}

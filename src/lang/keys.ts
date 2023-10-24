@@ -5408,6 +5408,7 @@ export const langKeys = {
   applicablediscountamount: "applicablediscountamount",
   amountwithmembershipdiscount: "amountwithmembershipdiscount",
   amountnotapplicabletodiscount: "amountnotapplicabletodiscount",
+  contactsincludedinplan: "contactsincludedinplan",
 };
 
 export type LangKeys = typeof langKeys;
