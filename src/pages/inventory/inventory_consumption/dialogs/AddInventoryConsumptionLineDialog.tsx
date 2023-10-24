@@ -295,7 +295,7 @@ const columnsSelectionProduct = React.useMemo(
               />
             </div>
         </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: 'flex-end' }}>
           <Button
             variant="contained"
             type="button"

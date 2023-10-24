@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'; // we need this to make JSX compile
-import { IconButton } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { Add } from '@material-ui/icons';
@@ -14,6 +14,8 @@ import AddInventoryConsumptionLineDialog from '../../dialogs/AddInventoryConsump
 import TableSelectionDialog from '../../dialogs/TableSelectionDialog';
 import { execute } from 'store/main/actions';
 import { manageConfirmation, showBackdrop } from 'store/popus/actions';
+import SelectReservedProductsDialog from '../../dialogs/SelectReservedProductsDialog';
+import SelectProductsForReturnDialog from '../../dialogs/SelectProductsForReturnDialog';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -68,6 +70,8 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const user = useSelector(state => state.login.validateToken.user);
     const [openModal, setOpenModal] = useState(false);
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
+    const [openModalReservedProducts, setOpenModalReservedProducts] = useState(false);
+    const [openModalReturnProducts, setOpenModalReturnProducts] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
     const [waitSave, setWaitSave] = useState(false);
 
@@ -138,6 +142,14 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
 
     function handleRegister() {
         setOpenModal(true)
+    }
+
+    function handleOpenModalReservedProducts() {
+        setOpenModalReservedProducts(true)
+    }
+
+    function handleOpenModalReturnProducts() {
+        setOpenModalReturnProducts(true)
     }
 
     const columnsSelectionWarehouse = React.useMemo(
@@ -213,6 +225,26 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 </div>
                 <div className="row-zyx">
                     <TableZyx
+                        ButtonsElement={() => (
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                                <Button
+                                    color="primary"
+                                    style={{ backgroundColor: "#55BD84" }}
+                                    onClick={handleOpenModalReturnProducts}
+                                    variant="contained"
+                                >
+                                    {t(langKeys.selectproductsforreturn)}
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    style={{ backgroundColor: "#55BD84" }}
+                                    onClick={handleOpenModalReservedProducts}
+                                    variant="contained"
+                                >
+                                    {t(langKeys.selectreservedproducts)}
+                                </Button>
+                            </div>
+                        )}
                         columns={columns}
                         data={[]}
                         download={false}
@@ -234,6 +266,14 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 data={[]}
                 columns={columnsSelectionWarehouse}
                 title={t(langKeys.warehouse)}
+            />
+            <SelectReservedProductsDialog 
+                openModal={openModalReservedProducts}
+                setOpenModal={setOpenModalReservedProducts}
+            />
+            <SelectProductsForReturnDialog
+                openModal={openModalReturnProducts}
+                setOpenModal={setOpenModalReturnProducts}
             />
         </div>
     )

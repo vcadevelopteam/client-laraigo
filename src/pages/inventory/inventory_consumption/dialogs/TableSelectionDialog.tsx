@@ -30,7 +30,7 @@ const TableSelectionDialog: React.FC<{
           onClickRow={(e)=>{setRow(e);setOpenModal(false)}}
         />
       </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: 'flex-end' }}>
         <Button
           variant="contained"
           type="button"

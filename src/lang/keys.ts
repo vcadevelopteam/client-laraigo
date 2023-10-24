@@ -5490,6 +5490,14 @@ export const langKeys = {
   line: 'line',
   dispatchto: 'dispatchto',
   complete: 'complete',
+  selectreservedproducts: 'selectreservedproducts',
+  requestedby: 'requestedby',
+  selectproductsforreturn: 'selectproductsforreturn',
+  dispatchdate: 'dispatchdate',
+  generatelabel: 'generatelabel',
+  referralguide: 'referralguide',
+  seetransactions: 'seetransactions',
+  seestatushistory: 'seestatushistory',
 };
 
 export type LangKeys = typeof langKeys;

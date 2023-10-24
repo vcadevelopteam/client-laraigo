@@ -5574,6 +5574,14 @@ const translation: LangKeys = {
   line: 'Line',
   dispatchto: 'Dispatch to',
   complete: 'Complete',
+  selectreservedproducts: 'Select reserved products',
+  requestedby: 'Requested by',
+  selectproductsforreturn: 'Select products for return',
+  dispatchdate: 'Dispatch date',
+  generatelabel: 'Generate label',
+  referralguide: 'Referral guide',
+  seetransactions: 'See transactions',
+  seestatushistory: 'View status history',
 };
 
 const enResource: ResourceLanguage = {

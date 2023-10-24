@@ -203,7 +203,7 @@ const translation: LangKeys = {
   reconcilebalancetext: "La acción que desea realizar actualizará el balance del producto con el último valor del recuento físico. ¿Desea proceder con dicha actualización?",
   batches: "Lotes",
   reservations: "Reservas",
-  dispatchesandreturns: "Despachos y devoluciones ",
+  dispatchesandreturns: "Despachos y devoluciones",
   transfers: "Transferencias",
   ticketapplication: "Ticket / Solicitud",
   reservationtype: "Tipo de reserva",
@@ -5501,6 +5501,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   line: 'Línea',
   dispatchto: 'Despachar a',
   complete: 'Completar',
+  selectreservedproducts: 'Seleccionar productos reservados',
+  requestedby: 'Solicitado por',
+  selectproductsforreturn: 'Seleccionar productos para devolución',
+  dispatchdate: 'Fecha de despacho',
+  generatelabel: 'Generar etiqueta',
+  referralguide: 'Guía de remisión',
+  seetransactions: 'Ver transacciones',
+  seestatushistory: 'Ver historial de estado',
 };
 
 const esResource: ResourceLanguage = {

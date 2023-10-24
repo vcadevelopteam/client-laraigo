@@ -57,7 +57,6 @@ const CompleteInventoryConsumptionDialog: React.FC<{
         if (!executeRes.loading && !executeRes.error) {
             dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
             dispatch(showBackdrop(false));
-            fetchData()
             reset()
             setOpenModal(false);
         } else if (executeRes.error) {
@@ -114,7 +113,7 @@ const submitData = handleMainSubmit((data) => {
               onChange={(value) => {setValue('shelf', value)}}
             />
         </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: 'flex-end' }}>
           <Button
             variant="contained"
             type="button"

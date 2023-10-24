@@ -17,6 +17,9 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { Tabs } from '@material-ui/core';
 import InventoryConsumptionTabDetail from './detailTabs/InventoryConsumptionTabDetail';
 import CompleteInventoryConsumptionDialog from '../dialogs/CompleteInventoryConsumptionDialog';
+import { ExtrasMenu } from '../components/components';
+import SeeTransactionsDialog from '../dialogs/SeeTransactionsDialog';
+import StatusHistoryDialog from '../dialogs/StatusHistoryDialog';
 
 
 
@@ -71,6 +74,8 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [openModal, setOpenModal] = useState(false);
+    const [openModalSeeTransactions, setOpenModalSeeTransactions] = useState(false);
+    const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
     const classes = useStyles();
 
     const arrayBread = [
@@ -140,6 +145,15 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
             callback
         }))
     });
+
+    function handleOpenModalSeeTransactions () {
+        setOpenModalSeeTransactions(true)
+    }
+    
+    function handleOpenModalStatusHistory () {
+        setOpenModalStatusHistory(true)
+    }
+
     return (
         <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -188,6 +202,13 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                         >
                             {t(langKeys.save)}
                         </Button>
+
+                        <ExtrasMenu
+                            generatelabel={()=>{}}
+                            referralguide={()=>{}}
+                            transactions={handleOpenModalSeeTransactions}
+                            statushistory={handleOpenModalStatusHistory}
+                        />
                     </div>
 
                 </div>
@@ -201,6 +222,14 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                     openModal={openModal}
                     setOpenModal={setOpenModal}
                     row={row}
+                />
+                <SeeTransactionsDialog
+                    openModal={openModalSeeTransactions}
+                    setOpenModal={setOpenModalSeeTransactions}
+                />
+                <StatusHistoryDialog
+                    openModal={openModalStatusHistory}
+                    setOpenModal={setOpenModalStatusHistory}
                 />
             </form>
         </>
