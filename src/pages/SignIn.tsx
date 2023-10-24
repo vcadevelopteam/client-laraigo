@@ -19,7 +19,7 @@ import Popus from 'components/layout/Popus';
 import { useDispatch } from 'react-redux';
 import { login } from 'store/login/actions';
 import { getAccessToken } from 'common/helpers';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import FacebookLogin from 'react-facebook-login';
@@ -27,7 +27,6 @@ import FacebookIcon from '@material-ui/icons/Facebook';
 import GoogleLogin from 'react-google-login';
 import { connectAgentUI } from 'store/inbox/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { useLocation } from "react-router-dom";
 import { apiUrls } from 'common/constants';
 import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
@@ -196,20 +195,20 @@ const SignIn = () => {
     }
 
     const onAuthWithFacebook = (r: any) => {
-        if (r && r.id) {
+        if (r?.id) {
             dispatch(login(null, null, r.id));
         }
     }
 
     const onGoogleLoginSucess = (r: any) => {
-        if (r && r.googleId) {
+        if (r?.googleId) {
             dispatch(login(null, null, null, r.googleId));
         }
     }
 
     const onGoogleLoginFailure = (event: any) => {
         console.warn('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
-        if (event && event.error) {
+        if (event?.error) {
             switch (event.error) {
                 case 'idpiframe_initialization_failed':
                 case 'popup_closed_by_user':
@@ -231,18 +230,16 @@ const SignIn = () => {
             } else {
                 window.open("https://app.laraigo.com/sign-in", '_blank');
             }
+        } else if (window.location.hostname === 'claro.laraigo.com') {
+            window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
         } else {
-            if (window.location.hostname === 'claro.laraigo.com') {
-                window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
-            } else {
-                window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
-            }
+            window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
         }
     }
 
     useEffect(() => {
         const ff = location.state || {} as any;
-        if (!!ff?.showSnackbar) {
+        if (ff?.showSnackbar) {
             dispatch(showSnackbar({ show: true, severity: "success", message: ff?.message || "" }))
         }
     }, [location]);
@@ -265,22 +262,21 @@ const SignIn = () => {
 
     return (
         <>
-            <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
+            <meta name="google-signin-client_id" content={"" + apiUrls.GOOGLECLIENTID_LOGIN} />
             <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"></script>
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <Container component="main" maxWidth="xs" className={classes.containerLogin}>
                 <div className={classes.childContainer} style={{ height: '100%' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: "20%", marginTop: 20, marginBottom: 20 }}>
                         <LaraigoLogo height={90} />
                     </div>
                     <div className={classes.paper} style={{ flex: 1 }}>
-
                         {resLogin.error && (
                             <Alert className={classes.alertheader} variant="filled" severity="error">
-                                {t(resLogin.code || "error_unexpected_error")}
+                                {t(resLogin.code ?? "error_unexpected_error")}
                             </Alert>
                         )}
-                        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                        <div style={{ display: 'flex',  height: '100%' }}>
                             <form
                                 className={classes.form}
                                 onSubmit={onSubmitLogin}
@@ -340,7 +336,7 @@ const SignIn = () => {
                                             <Trans i18nKey={langKeys.logIn} />
                                         </Button>
                                         <FacebookLogin
-                                            appId={apiUrls.FACEBOOKAPP}
+                                            appId={"" + apiUrls.FACEBOOKAPP}
                                             callback={onAuthWithFacebook}
                                             buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
                                             textButton={t(langKeys.login_with_facebook)}
@@ -349,7 +345,7 @@ const SignIn = () => {
                                         />
                                         <div className={classes.buttonGoogle}>
                                             <GoogleLogin
-                                                clientId={apiUrls.GOOGLECLIENTID_LOGIN}
+                                                clientId={"" + apiUrls.GOOGLECLIENTID_LOGIN}
                                                 buttonText={t(langKeys.login_with_google)}
                                                 style={{ justifyContent: 'center', width: '100%' }}
                                                 onSuccess={onGoogleLoginSucess}
@@ -403,13 +399,9 @@ const SignIn = () => {
 
 const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-
     const recoverResult = useSelector(state => state.subscription.requestRecoverPassword);
-
     const [waitSave, setWaitSave] = useState(false);
-
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             username: ''
