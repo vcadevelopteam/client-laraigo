@@ -590,6 +590,7 @@ const translation: LangKeys = {
   type_domain_mastercatalog_transactable_items: "Transactable Items",
   type_domain_mastercatalog_vehicles: "Vehicles",
   apikeydoesntexist: "This apiKey is invalid or doesn't exist",
+  enableapi: "Enable API",
   natural_language_classifier: "Natural language classifier",
   natural_language_understanding: "Natural language understanding",
   tone_analyzer_customer: "Tone analyzer customer",

@@ -65,6 +65,7 @@ export const langKeys = {
   registrationdate: "registrationdate",
   complianceresolution: "complianceresolution",
   apikeydoesntexist: "apikeydoesntexist",
+  enableapi: "enableapi",
   applicant: "applicant",
   ordernumber: "ordernumber",
   userwhoreported: "userwhoreported",

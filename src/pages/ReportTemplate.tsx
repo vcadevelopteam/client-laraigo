@@ -388,11 +388,11 @@ const transformJsonFilter = (filters: Dictionary[], copy = false) => {
     })), null, '\t')
 }
 
-const DialogIntegration: React.FC<{ 
-    setOpenModal: (param: any) => void, 
-    name: string, 
-    apikey: string, 
-    openModal: boolean, 
+const DialogIntegration: React.FC<{
+    setOpenModal: (param: any) => void,
+    name: string,
+    apikey: string,
+    openModal: boolean,
     filters: Dictionary[],
     setNameApi: (param: any) => void
 }> = ({ setOpenModal, openModal, filters, apikey, name, setNameApi }) => {
@@ -501,6 +501,8 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     const mainAuxRes = useSelector(state => state.main.mainAux);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const executeRes = useSelector(state => state.main.execute);
+    const user = useSelector(state => state.login.validateToken.user);
+    const [manageAPI, setManageAPI] = useState(true);
     const [integrationEnable, setIntegrationEnable] = useState(!!row?.nameapi && !!row?.apikey);
     const [apikey, setapikey] = useState(row?.apikey || "")
     const dispatch = useDispatch();
@@ -510,7 +512,11 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     const dataTables = multiDataAux.data?.[1] && multiDataAux.data?.[1].success ? multiDataAux.data?.[1].data : [];
 
     useEffect(() => {
-        dispatch(setViewChange("create_custom_report"))
+        dispatch(setViewChange("create_custom_report"));
+        
+        if (user?.properties.environment === "CLARO" && !user?.roledesc.toUpperCase().split(",").find(x => ["SUPERVISOR CLIENTE", "ADMINISTRADOR", "SUPERADMIN"].includes(x))) {
+            setManageAPI(false)
+        }
         return () => {
             dispatch(cleanViewChange());
         }
@@ -661,9 +667,12 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             />
                         </div>
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-
-                            <div style={{ fontWeight: "bold" }}>Habilitar API</div>
-                            <IOSSwitch checked={integrationEnable} onChange={integrationChange} name="checkedB" />
+                            {manageAPI && (
+                                <>
+                                    <div style={{ fontWeight: "bold" }}>{t(langKeys.enableapi)}</div>
+                                    <IOSSwitch checked={integrationEnable} onChange={integrationChange} name="checkedB" />
+                                </>
+                            )}
                             {integrationEnable &&
                                 <Fab
                                     size='small'
