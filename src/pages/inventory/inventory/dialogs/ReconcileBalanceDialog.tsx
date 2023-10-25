@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insarrayInventoryBalance } from "common/helpers";
+import { insarrayInventoryBalance, updateInventoryBalances } from "common/helpers";
 import { execute } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -22,9 +22,8 @@ const ReconcileBalanceDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
-  data: any;
   fetchData: any
-}> = ({ openModal, setOpenModal, row, data, fetchData }) => {
+}> = ({ openModal, setOpenModal, row, fetchData }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -51,16 +50,12 @@ const ReconcileBalanceDialog: React.FC<{
         }
     }
 }, [executeRes, waitSave])
+console.log(row)
   
-const submitData = (() => {
+const updateBalances = () => {
   const callback = () => {
-      const newData = data.data.map((item: any) => ({
-        ...item,
-        isreconciled: true
-      }));
-
       dispatch(showBackdrop(true));
-      dispatch(execute(insarrayInventoryBalance(newData)));
+      dispatch(execute(updateInventoryBalances(row?.inventoryid)));
       setWaitSave(true);
   }
   dispatch(manageConfirmation({
@@ -68,7 +63,7 @@ const submitData = (() => {
       question: t(langKeys.confirmation_save),
       callback
   }))
-});
+};
 
   return (
     <DialogZyx open={openModal} title={t(langKeys.reconcilebalancesheets)} maxWidth="sm">
@@ -93,10 +88,9 @@ const submitData = (() => {
           variant="contained"
           color="primary"
           type="button"
-          disabled={data.loading}
           startIcon={<SaveIcon color="secondary" />}
           style={{ backgroundColor: "#55BD84" }}
-          onClick={submitData}
+          onClick={updateBalances}
         >
           {t(langKeys.save)}
         </Button>

@@ -15,8 +15,11 @@ import { useForm } from 'react-hook-form';
 import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
-import WarehouseTabDetail from './detailTabs/WarehouseTabDetail';
-import ProductTabDetail from './detailTabs/ProductTabDetail';
+import InventoryConsumptionTabDetail from './detailTabs/InventoryConsumptionTabDetail';
+import CompleteInventoryConsumptionDialog from '../dialogs/CompleteInventoryConsumptionDialog';
+import { ExtrasMenu } from '../components/components';
+import SeeTransactionsDialog from '../dialogs/SeeTransactionsDialog';
+import StatusHistoryDialog from '../dialogs/StatusHistoryDialog';
 
 
 
@@ -70,11 +73,14 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     const [tabIndex, setTabIndex] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
+    const [openModal, setOpenModal] = useState(false);
+    const [openModalSeeTransactions, setOpenModalSeeTransactions] = useState(false);
+    const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
     const classes = useStyles();
 
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.warehouse) },
-        { id: "detail-view", name: `${t(langKeys.warehouse)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: t(langKeys.inventory_consumption) },
+        { id: "detail-view", name: `${t(langKeys.inventory_consumption)} ${t(langKeys.detail)}` },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -139,6 +145,15 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
             callback
         }))
     });
+
+    function handleOpenModalSeeTransactions () {
+        setOpenModalSeeTransactions(true)
+    }
+    
+    function handleOpenModalStatusHistory () {
+        setOpenModalStatusHistory(true)
+    }
+
     return (
         <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -151,7 +166,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.warehouse)}`}
+                            title={row?.name || t(langKeys.inventory_consumption)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -164,59 +179,58 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                             onClick={() => {
                                 setViewSelected("main-view")
                             }}
-                        >{t(langKeys.back)}</Button>
+                        >
+                            {t(langKeys.back)}
+                        </Button>
                         <Button
-                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="button"
+                            style={{ backgroundColor: "#55BD84" }}
+                            onClick={() => {
+                                setOpenModal(true)
+                            }}
+                        >
+                            {`${t(langKeys.complete)} ${t(langKeys.inventory_consumption)}`}
+                        </Button>
+                        <Button
                             variant="contained"
                             color="primary"
                             type="submit"
                             startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}>
+                            style={{ backgroundColor: "#55BD84" }}
+                        >
                             {t(langKeys.save)}
                         </Button>
-                        
-                        {/*!edit && <ExtrasMenu
-                            changeStatus={()=>{setOpenModalChangeStatus(true)}}
-                            statusHistory={()=>setOpenModalStatusHistory(true)}
-                            addToWarehouse={()=>setOpenModalAddToWarehouse(true)}
-                        />*/}
+
+                        <ExtrasMenu
+                            generatelabel={()=>{}}
+                            referralguide={()=>{}}
+                            transactions={handleOpenModalSeeTransactions}
+                            statushistory={handleOpenModalStatusHistory}
+                        />
                     </div>
 
                 </div>
-                <Tabs
-                    value={tabIndex}
-                    onChange={(_:any, i:any) => setTabIndex(i)}
-                    className={classes.tabs}
-                    textColor="primary"
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                >
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.warehouses} />
-                            </div>
-                        )}
-                    />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product_plural}/>
-                            </div>
-                        )}
-                    />
-                </Tabs>
-                <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <WarehouseTabDetail
-                        row={row}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                    />
-                </AntTabPanel>
-                <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ProductTabDetail fetchdata={fetchWarehouseProducts}/>
-                </AntTabPanel>
+                <InventoryConsumptionTabDetail
+                    row={row}
+                    setValue={setValue}
+                    getValues={getValues}
+                    errors={errors}
+                />
+                <CompleteInventoryConsumptionDialog
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    row={row}
+                />
+                <SeeTransactionsDialog
+                    openModal={openModalSeeTransactions}
+                    setOpenModal={setOpenModalSeeTransactions}
+                />
+                <StatusHistoryDialog
+                    openModal={openModalStatusHistory}
+                    setOpenModal={setOpenModalStatusHistory}
+                />
             </form>
         </>
     );

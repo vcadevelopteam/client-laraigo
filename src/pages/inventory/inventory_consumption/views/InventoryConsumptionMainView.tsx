@@ -308,19 +308,6 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
         register={true}
-        importCSV={handleUpload}        
-        FiltersElement={(
-          <Button
-              variant="contained"
-              color="primary"
-              disabled={mainPaginated.loading}
-              startIcon={<ListAltIcon color="secondary" />}
-              onClick={handleTemplateWarehouse}
-              style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
-          >
-              <Trans i18nKey={langKeys.template} />
-          </Button>
-      )}
       />
     </div>
   );

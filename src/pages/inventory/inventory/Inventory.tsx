@@ -64,6 +64,7 @@ const Inventory: FC = () => {
         getWarehouses(),
         getManufacturer(0),
         getValuesFromDomain("TIPORESERVA"),
+        getValuesFromDomain("TIPOCOSTODESPACHO"),
       ])
     );
     return () => {
