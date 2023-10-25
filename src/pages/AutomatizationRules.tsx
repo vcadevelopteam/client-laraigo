@@ -115,9 +115,6 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             }
         }
     }, [executeRes, waitSave])
-    useEffect(() => {
-        console.log(errors)
-    }, [errors])
 
     React.useEffect(() => {
         register('id');

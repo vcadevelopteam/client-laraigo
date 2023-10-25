@@ -107,6 +107,15 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         // options: [paths.CORPORATIONS, paths.ORGANIZATIONS, paths.DOMAINS,  paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
         // paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
     },
+    {
+        id: 8,
+        key: "invoice",
+        description: <Trans i18nKey={langKeys.invoice} />,
+        // tooltip: <Trans i18nKey={langKeys.configuration} />,
+        icon: (className) => <InvoiceIcon style={{ width: 22, height: 22 }} className={className} />,
+        // options: [paths.CORPORATIONS, paths.ORGANIZATIONS, paths.DOMAINS,  paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
+        // paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
+    },
 ];
 
 export const routes: RouteConfig[] = [

@@ -854,7 +854,7 @@ const CRM: FC = () => {
         label={t(langKeys.agent)}
         className={classes.filterComponent}
         valueDefault={allParameters.asesorid}
-        onChange={(value) => { debugger; setAllParameters({ ...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }) }}
+        onChange={(value) => { setAllParameters({ ...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }) }}
         data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
         optionDesc={'fullname'}
         optionValue={'userid'}

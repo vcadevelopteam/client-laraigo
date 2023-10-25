@@ -923,10 +923,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }, [register, getValues("type")]);
 
     useEffect(() => {
-        console.log(errors);
-    }, [errors]);
-
-    useEffect(() => {
         import("@codemirror/lang-html").then((html) => {
             setHtmlLoad([html.html({ matchClosingTags: true })]);
         });
@@ -1016,7 +1012,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }, [waitUploadFile, uploadResult]);
 
     const onSubmit = handleSubmit((data) => {
-        debugger;
         if (data.type === "MAIL") {
             data.body = renderToString(toElement(bodyObject));
             if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {

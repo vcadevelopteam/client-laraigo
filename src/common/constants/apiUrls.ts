@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 const ENV = "LOCAL";
+=======
+const ENV = import.meta.env.VITE_ENV || 'DEVELOP';
+>>>>>>> develop
 
-const APIS_URL = {
+const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
         API: 'https://apix.laraigo.com/api',
         //WS: 'http://localhost:7070',
