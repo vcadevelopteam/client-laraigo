@@ -92,7 +92,6 @@ const libraries: Libraries = ["places"];
 export default function Map() {
 
 	const { token }: any = useParams();
-	console.log(`token`, token.split("-")[4] ?? "t")
 	const haveReference = React.useRef(token.split("-")[4] ?? "t");
 
 	const { isLoaded, loadError } = useLoadScript({
