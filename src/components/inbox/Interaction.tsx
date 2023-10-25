@@ -98,7 +98,6 @@ const useStylesInteraction = makeStyles((theme) => ({
     }
 }));
 
-
 const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, createdate: string, classes: any, userType: string }> = ({ interactiontext, createdate, classes, userType, onlyTime }) => {
     const [open, setOpen] = React.useState(false);
     const { t } = useTranslation();
@@ -434,6 +433,17 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
         )
 }
 
+const checkFile = (url: string) => {
+    let newUrl = new URL(url)?.pathname || '';
+    let newUrlSplit = newUrl.split('/') || [];
+    let newUrlSplitPop = newUrlSplit.pop() ?? '';
+    return newUrlSplitPop.indexOf('.') > 0;
+}
+
+const checkUrl = (url: string) => {
+    return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) != null);
+}
+
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
     const dispatch = useDispatch();
@@ -441,20 +451,10 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
 
     const [height, setHeight] = React.useState("0px");
+    
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
-
-    const checkUrl = (url: string) => {
-        return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) != null);
-    }
-
-    const checkFile = (url: string) => {
-        let newUrl = new URL(url)?.pathname || '';
-        let newUrlSplit = newUrl.split('/') || [];
-        let newUrlSplitPop = newUrlSplit.pop() ?? '';
-        return newUrlSplitPop.indexOf('.') > 0;
-    }
 
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
@@ -789,8 +789,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         )
     } else if (interactiontype === "location") {
 
-        const coordinates = interactiontext.split("=").pop()?.split(",") || ["", ""];
-
         return (
             <div
                 title={convertLocalDate(createdate).toLocaleString()}
@@ -800,7 +798,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             >
                 <div style={{ width: "300px" }} className="interaction-gmap">
                     <MapLeaflet
-                        marker={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
+                        coordinatedString={interactiontext}
                         height={300}
                     />
                 </div>
@@ -832,7 +830,7 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {interactions.map((item: IInteraction, index: number) => (
-                        <div key={index} id={`interaction-${item.interactionid}`} className={clsx({
+                        <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
                             [classes.interactionAgent]: usertype !== "client",
                             [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA"
                         })}>

@@ -19,7 +19,7 @@ import Popus from 'components/layout/Popus';
 import { useDispatch } from 'react-redux';
 import { login } from 'store/login/actions';
 import { getAccessToken } from 'common/helpers';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import FacebookLogin from 'react-facebook-login';
@@ -27,7 +27,6 @@ import FacebookIcon from '@material-ui/icons/Facebook';
 import GoogleLogin from 'react-google-login';
 import { connectAgentUI } from 'store/inbox/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { useLocation } from "react-router-dom";
 import { apiUrls } from 'common/constants';
 import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
@@ -166,8 +165,8 @@ const SignIn = () => {
     const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const recaptchaRef = useRef<ReCAPTCHA | null>(null);
-    
-    const handleCaptchaChange = (value:any) => {
+
+    const handleCaptchaChange = (value: any) => {
         console.log("validacion captcha")
     };
 
@@ -196,20 +195,20 @@ const SignIn = () => {
     }
 
     const onAuthWithFacebook = (r: any) => {
-        if (r && r.id) {
+        if (r?.id) {
             dispatch(login(null, null, r.id));
         }
     }
 
     const onGoogleLoginSucess = (r: any) => {
-        if (r && r.googleId) {
+        if (r?.googleId) {
             dispatch(login(null, null, null, r.googleId));
         }
     }
 
     const onGoogleLoginFailure = (event: any) => {
         console.warn('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
-        if (event && event.error) {
+        if (event?.error) {
             switch (event.error) {
                 case 'idpiframe_initialization_failed':
                 case 'popup_closed_by_user':
@@ -231,18 +230,16 @@ const SignIn = () => {
             } else {
                 window.open("https://app.laraigo.com/sign-in", '_blank');
             }
+        } else if (window.location.hostname === 'claro.laraigo.com') {
+            window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
         } else {
-            if (window.location.hostname === 'claro.laraigo.com') {
-                window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
-            } else {
-                window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
-            }
+            window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
         }
     }
 
     useEffect(() => {
         const ff = location.state || {} as any;
-        if (!!ff?.showSnackbar) {
+        if (ff?.showSnackbar) {
             dispatch(showSnackbar({ show: true, severity: "success", message: ff?.message || "" }))
         }
     }, [location]);
@@ -265,132 +262,136 @@ const SignIn = () => {
 
     return (
         <>
-            <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
+            <meta name="google-signin-client_id" content={"" + apiUrls.GOOGLECLIENTID_LOGIN} />
             <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"></script>
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <Container component="main" maxWidth="xs" className={classes.containerLogin}>
-                <div className={classes.childContainer}>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <LaraigoLogo style={{ height: 200 }} />
+                <div className={classes.childContainer} style={{ height: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: "20%", marginTop: 20, marginBottom: 20 }}>
+                        <LaraigoLogo height={90} />
                     </div>
-                    <div className={classes.paper}>
-                        <RecoverModal
-                            openModal={openModal}
-                            setOpenModal={setOpenModal}
-                            onTrigger={onModalSuccess}
-                        />
+                    <div className={classes.paper} style={{ flex: 1 }}>
                         {resLogin.error && (
                             <Alert className={classes.alertheader} variant="filled" severity="error">
-                                {t(resLogin.code || "error_unexpected_error")}
+                                {t(resLogin.code ?? "error_unexpected_error")}
                             </Alert>
                         )}
-                        <form
-                            className={classes.form}
-                            onSubmit={onSubmitLogin}
-                        >
-                            <ReCAPTCHA
-                                ref={recaptchaRef}
-                                sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
-                                onChange={handleCaptchaChange}
-                                size="invisible" // Set reCAPTCHA size to invisible
-                            />
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                fullWidth
-                                required
-                                value={dataAuth.username}
-                                onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
-                                label={t(langKeys.username)}
-                                name="usr"
-                            />
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                fullWidth
-                                required
-                                label={t(langKeys.password)}
-                                name="password"
-                                type={showPassword ? 'text' : 'password'}
-                                autoComplete="current-password"
-                                value={dataAuth.password}
-                                onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
-                                            >
-                                                {showPassword ? <Visibility /> : <VisibilityOff />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                            {!resLogin.loading ?
-                                <div style={{ alignItems: 'center' }}>
-                                    <Button
-                                        type="submit"
-                                        fullWidth
-                                        variant="contained"
-                                        color="primary"
-                                        className={classes.submit}>
-                                        <Trans i18nKey={langKeys.logIn} />
-                                    </Button>
-                                    <FacebookLogin
-                                        appId={apiUrls.FACEBOOKAPP}
-                                        callback={onAuthWithFacebook}
-                                        buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
-                                        textButton={t(langKeys.login_with_facebook)}
-                                        icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                                        disableMobileRedirect={true}
-                                    />
-                                    <div className={classes.buttonGoogle}>
-                                        <GoogleLogin
-                                            clientId={apiUrls.GOOGLECLIENTID_LOGIN}
-                                            buttonText={t(langKeys.login_with_google)}
-                                            style={{ justifyContent: 'center', width: '100%' }}
-                                            onSuccess={onGoogleLoginSucess}
-                                            onFailure={onGoogleLoginFailure}
-                                            cookiePolicy={'single_host_origin'}
-                                            accessType='online'
-                                            autoLoad={false}
-                                        />
-                                    </div>
-                                    <div className={classes.buttonGoogle} style={{ marginTop: 16 }}>
+                        <div style={{ display: 'flex',  height: '100%' }}>
+                            <form
+                                className={classes.form}
+                                onSubmit={onSubmitLogin}
+                                style={{ margin: 0 }}
+                            >
+                                <ReCAPTCHA
+                                    ref={recaptchaRef}
+                                    sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
+                                    onChange={handleCaptchaChange}
+                                    size="invisible" // Set reCAPTCHA size to invisible
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    fullWidth
+                                    style={{ margin: 0 }}
+                                    required
+                                    value={dataAuth.username}
+                                    onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
+                                    label={t(langKeys.username)}
+                                    name="usr"
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    fullWidth
+                                    required
+                                    label={t(langKeys.password)}
+                                    name="password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    autoComplete="current-password"
+                                    value={dataAuth.password}
+                                    onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                {!resLogin.loading ?
+                                    <div style={{ alignItems: 'center' }}>
                                         <Button
-                                            variant="outlined"
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
                                             color="primary"
-                                            onClick={consultHistoricalData}
-                                        >
-                                            {t(isIncremental ? langKeys.gotolaraigo : langKeys.consulthistoricaldata)}
+                                            className={classes.submit}>
+                                            <Trans i18nKey={langKeys.logIn} />
                                         </Button>
-                                    </div>
-                                </div> :
-                                <CircularProgress className={classes.progress} />
-                            }
-                            <Grid container>
-                                <Grid item>
-                                    <p>
-                                        <Trans i18nKey={langKeys.newRegisterMessage} />
-                                        <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
-                                    </p>
-                                    <p>
-                                        <Trans i18nKey={langKeys.recoverpassword1} />
-                                        <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
-                                    </p>
+                                        <FacebookLogin
+                                            appId={"" + apiUrls.FACEBOOKAPP}
+                                            callback={onAuthWithFacebook}
+                                            buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
+                                            textButton={t(langKeys.login_with_facebook)}
+                                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                                            disableMobileRedirect={true}
+                                        />
+                                        <div className={classes.buttonGoogle}>
+                                            <GoogleLogin
+                                                clientId={"" + apiUrls.GOOGLECLIENTID_LOGIN}
+                                                buttonText={t(langKeys.login_with_google)}
+                                                style={{ justifyContent: 'center', width: '100%' }}
+                                                onSuccess={onGoogleLoginSucess}
+                                                onFailure={onGoogleLoginFailure}
+                                                cookiePolicy={'single_host_origin'}
+                                                accessType='online'
+                                                autoLoad={false}
+                                            />
+                                        </div>
+                                        <div className={classes.buttonGoogle} style={{ marginTop: 16 }}>
+                                            <Button
+                                                variant="outlined"
+                                                color="primary"
+                                                onClick={consultHistoricalData}
+                                            >
+                                                {t(isIncremental ? langKeys.gotolaraigo : langKeys.consulthistoricaldata)}
+                                            </Button>
+                                        </div>
+                                    </div> :
+                                    <CircularProgress className={classes.progress} />
+                                }
+                                <Grid container>
+                                    <Grid item>
+                                        <p>
+                                            <Trans i18nKey={langKeys.newRegisterMessage} />
+                                            <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
+                                        </p>
+                                        <p>
+                                            <Trans i18nKey={langKeys.recoverpassword1} />
+                                            <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
+                                        </p>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </form>
+                            </form>
+                        </div>
                     </div>
-                    <Box mt={8}>
+                    <Box >
                         <Copyright />
                     </Box>
                 </div>
                 <Popus />
+                <RecoverModal
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    onTrigger={onModalSuccess}
+                />
             </Container>
         </>
     )
@@ -398,13 +399,9 @@ const SignIn = () => {
 
 const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-
     const recoverResult = useSelector(state => state.subscription.requestRecoverPassword);
-
     const [waitSave, setWaitSave] = useState(false);
-
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             username: ''

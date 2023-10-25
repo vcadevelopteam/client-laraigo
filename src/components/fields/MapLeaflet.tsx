@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "leaflet/dist/leaflet.css";
-import L, {icon} from "leaflet";
+import L, { icon } from "leaflet";
 import { uuidv4 } from 'common/helpers';
 
 const ICON = icon({
-  iconUrl: "/marker-icon.png",
-  iconSize: [25, 41],
+    iconUrl: "/marker-icon.png",
+    iconSize: [25, 41],
 })
 
 interface Marker {
@@ -16,8 +16,24 @@ interface MapProps {
     height: number;
     onClick?: (marker: Marker) => void;
     id?: string;
+    coordinatedString?: string;
 }
-const MapLeaflet: React.FC<MapProps> = ({ marker, height, onClick, id = uuidv4() }) => {
+
+const transformStringToMarker = (text: string) => {
+    const coordinates = text.split("=").pop()?.split(",") || ["", ""];
+    if (!coordinates[0]) {
+        return null;
+    }
+    return { lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) };
+}
+
+const MapLeaflet: React.FC<MapProps> = ({
+    marker,
+    height,
+    onClick,
+    id = uuidv4(),
+    coordinatedString = ""
+}) => {
     const [marker1, setMarker] = useState<L.Marker | null>(null);
     const map = useRef<L.Map | null>(null);
     const firstLoad = React.useRef(true);
@@ -31,7 +47,8 @@ const MapLeaflet: React.FC<MapProps> = ({ marker, height, onClick, id = uuidv4()
     }
 
     useEffect(() => {
-        map.current = L.map(`map${id}`).setView([marker?.lat ?? -12.065991, marker?.lng ?? -77.064289], 14);
+        const markerTmp = marker || transformStringToMarker(coordinatedString);
+        map.current = L.map(`map${id}`).setView([markerTmp?.lat ?? -12.065991, markerTmp?.lng ?? -77.064289], 14);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.current);
 
         if (onClick) {
@@ -39,8 +56,10 @@ const MapLeaflet: React.FC<MapProps> = ({ marker, height, onClick, id = uuidv4()
                 onClick(e.latlng)
             });
         }
-        if (marker)  initMarker(marker)
-        setTimeout(() => { 
+        if (markerTmp) {
+            initMarker(markerTmp)
+        }
+        setTimeout(() => {
             firstLoad.current = false;
         }, 100);
     }, []);
@@ -49,17 +68,18 @@ const MapLeaflet: React.FC<MapProps> = ({ marker, height, onClick, id = uuidv4()
         if (firstLoad.current) {
             return;
         }
-        if (marker && marker1) {
-            marker1.setLatLng([marker.lat, marker.lng]);
+        const markerTmp = marker || transformStringToMarker(coordinatedString);
+        if (markerTmp && marker1) {
+            marker1.setLatLng([markerTmp.lat, markerTmp.lng]);
             marker1.setIcon(ICON)
-        } else if (!marker1 && marker && map.current) {
-            initMarker(marker)
+        } else if (!marker1 && markerTmp && map.current) {
+            initMarker(markerTmp)
         }
-        if (marker && map.current) {
-            map.current.setView([marker?.lat, marker?.lng], 14);
+        if (markerTmp && map.current) {
+            map.current.setView([markerTmp?.lat, markerTmp?.lng], 14);
         }
-    }, [marker])
-    
+    }, [marker, coordinatedString])
+
 
     return (
         <div id={`map${id}`} style={{ height: height }}></div>

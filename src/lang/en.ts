@@ -391,6 +391,7 @@ const translation: LangKeys = {
   district: "District",
   street: "Street",
   postalcode: "Postal Code",
+  departmentnumber: "Apartment number, lower floor",
   searchyourlocation: "Search your location",
   zone: "Zone",
   detail_plural: 'Details',

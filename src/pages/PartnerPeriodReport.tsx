@@ -311,11 +311,15 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                                 setdataMain((prev) => ({ ...prev, reporttype: '' }))
                             }
                         }}
+                        valueDefault={dataMain.reporttype}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
                         orderbylabel={true}
                         variant="outlined"
-                        data={(multiResultAux?.data[1]?.data||[])}
+                        data={[
+                            { domainvalue: 'ENTERPRISE', domaindesc: 'ENTERPRISE' },
+                            { domainvalue: 'DEVELOPER', domaindesc: 'DEVELOPER/RESELLER' }
+                        ]}
                     />
                     <Button
                         color="primary"

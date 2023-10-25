@@ -149,136 +149,116 @@ const exitConfirmation = (() => {
 
   return (
     <form onSubmit={onMainSubmit}>
-    <DialogZyx open={openModal} title={`${t(langKeys.new)} ${t(langKeys.client )}`} maxWidth="md">
-      <div className="row-zyx">
-          <FieldSelect
-            label={t(langKeys.corporation)}
-            valueDefault={row2?.corpid || 0}
-            className="col-6"
-            data={(multiDataAux?.data?.[1]?.data||[])}
-            error={errors?.corpid?.message}
-            onChange={(value) => {
-              value ? setCorpId(value.corpid) : setCorpId(0)
-              setValue('corpid', value?.corpid || 0)
-            }}
-            optionValue="corpid"
-            optionDesc="description"
-          />
-          <FieldSelect
-            label={t(langKeys.organization)}
-            valueDefault={edit ? row2?.orgid : orgId}
-            className="col-6"
-            data={edit ? (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === row2?.corpid): (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === corpId)}
-            error={errors?.orgid?.message}
-            onChange={(value) => {
-              setOrgId(value?.orgid || 0)
-              setValue('orgid', value?.orgid || 0)
-              setStatus(value?.status || 0)
-              setValue('status', value?.status || 0)
-            }}
-            optionValue="orgid"
-            optionDesc="orgdesc"
-          />
-          <FieldSelect
-            label={t(langKeys.partnertype)}
-            className="col-6"
-            valueDefault={row2?.typepartner || ''}
-            data={(multiDataAux?.data?.[5]?.data||[])}
-            error={errors?.typepartner?.message}
-            onChange={(value) => {
-              setValue('typepartner', value?.domainvalue || '')
-              setComissionPercentage(value?.domainvalue || '')
-              setComissionPercentageValue(getValues('comissionpercentage'))
-            }}
-            optionValue="domainvalue"
-            optionDesc="domaindesc"
-          />
-          <FieldEdit
-            label={t(langKeys.status)}
-            valueDefault={edit ? row2?.status : status}
-            className="col-6"
-            inputProps={{ maxLength: 256 }}
-            disabled={true}
-          />
-          <FieldEdit
-            label={t(langKeys.billingplan)}
-            valueDefault={getValues('billingplan')}
-            className="col-6"
-            inputProps={{ maxLength: 256 }}
-            disabled={true}
-          />
-          <FieldEdit
-            label={t(langKeys.billingcurrency)}
-            valueDefault={row?.billingcurrency}
-            className="col-6"
-            inputProps={{ maxLength: 256 }}
-            disabled={true}
-          />
-          <FieldEdit
-            label={t(langKeys.creationuser)}
-            valueDefault={row2?.createby || ''}
-            className="col-6"
-            inputProps={{ maxLength: 256 }}
-            disabled={true}
-          />
-          <FieldEdit
-            label={t(langKeys.commissionpercentage)}
-            valueDefault={edit ? row2?.comissionpercentage : comissionPercentageValue}
-            className="col-6"
-            inputProps={{ maxLength: 256 }}
-            disabled={true}
-          />
-          <FieldEdit
-            label={t(langKeys.lastmodificationuser)}
-            valueDefault={row2?.changeby || ''}
-            className="col-6"
-            inputProps={{ maxLength: 256 }}
-            disabled={true}
-          />
-          <FieldEdit
-            label={t(langKeys.creationDate)}
-            valueDefault={row2?.createdate || ''}
-            className="col-6"
-            inputProps={{ maxLength: 256 }}
-            disabled={true}
-          />
-          <FieldEdit
-            label={t(langKeys.lastmodificationdate)}
-            valueDefault={row2?.changedate || ''}
-            className="col-6"
-            inputProps={{ maxLength: 256 }}
-            disabled={true}
-          />
-      </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-        <Button
-          variant="contained"
-          type="button"
-          color="primary"
-          startIcon={<ClearIcon color="secondary" />}
-          style={{ backgroundColor: "#FB5F5F" }}
-          onClick={() => {
-            exitConfirmation()
-          }}
-        >
-          {t(langKeys.back)}
-        </Button>
-        <Button
-          className={classes.button}
-          variant="contained"
-          color="primary"
-          type="button"
-          startIcon={<SaveIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84" }}
-          onClick={() => {
-            console.log(errors)
-            onMainSubmit()
-          }}
-        >
-          {t(langKeys.save)}
-        </Button>
-      </div>
-    </DialogZyx>
+      <DialogZyx
+        open={openModal}
+        title={`${t(langKeys.new)} ${t(langKeys.client )}`}
+        maxWidth="md"
+        buttonText1={t(langKeys.back)}
+        buttonText2={t(langKeys.save)}
+        handleClickButton1={exitConfirmation}
+        handleClickButton2={onMainSubmit}
+      >
+        <div className="row-zyx">
+            <FieldSelect
+              label={t(langKeys.corporation)}
+              valueDefault={row2?.corpid || 0}
+              className="col-6"
+              data={(multiDataAux?.data?.[1]?.data||[])}
+              error={errors?.corpid?.message}
+              onChange={(value) => {
+                value ? setCorpId(value.corpid) : setCorpId(0)
+                setValue('corpid', value?.corpid || 0)
+              }}
+              optionValue="corpid"
+              optionDesc="description"
+            />
+            <FieldSelect
+              label={t(langKeys.organization)}
+              valueDefault={edit ? row2?.orgid : orgId}
+              className="col-6"
+              data={edit ? (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === row2?.corpid): (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === corpId)}
+              error={errors?.orgid?.message}
+              onChange={(value) => {
+                setOrgId(value?.orgid || 0)
+                setValue('orgid', value?.orgid || 0)
+                setStatus(value?.status || 0)
+                setValue('status', value?.status || 0)
+              }}
+              optionValue="orgid"
+              optionDesc="orgdesc"
+            />
+            <FieldSelect
+              label={t(langKeys.partnertype)}
+              className="col-6"
+              valueDefault={row2?.typepartner || ''}
+              data={(multiDataAux?.data?.[5]?.data||[])}
+              error={errors?.typepartner?.message}
+              onChange={(value) => {
+                setValue('typepartner', value?.domainvalue || '')
+                setComissionPercentage(value?.domainvalue || '')
+                setComissionPercentageValue(getValues('comissionpercentage'))
+              }}
+              optionValue="domainvalue"
+              optionDesc="domaindesc"
+            />
+            <FieldEdit
+              label={t(langKeys.status)}
+              valueDefault={edit ? row2?.status : status}
+              className="col-6"
+              inputProps={{ maxLength: 256 }}
+              disabled={true}
+            />
+            <FieldEdit
+              label={t(langKeys.billingplan)}
+              valueDefault={getValues('billingplan')}
+              className="col-6"
+              inputProps={{ maxLength: 256 }}
+              disabled={true}
+            />
+            <FieldEdit
+              label={t(langKeys.billingcurrency)}
+              valueDefault={row?.billingcurrency}
+              className="col-6"
+              inputProps={{ maxLength: 256 }}
+              disabled={true}
+            />
+            <FieldEdit
+              label={t(langKeys.creationuser)}
+              valueDefault={row2?.createby || ''}
+              className="col-6"
+              inputProps={{ maxLength: 256 }}
+              disabled={true}
+            />
+            <FieldEdit
+              label={t(langKeys.commissionpercentage)}
+              valueDefault={edit ? row2?.comissionpercentage : comissionPercentageValue}
+              className="col-6"
+              inputProps={{ maxLength: 256 }}
+              disabled={true}
+            />
+            <FieldEdit
+              label={t(langKeys.lastmodificationuser)}
+              valueDefault={row2?.changeby || ''}
+              className="col-6"
+              inputProps={{ maxLength: 256 }}
+              disabled={true}
+            />
+            <FieldEdit
+              label={t(langKeys.creationDate)}
+              valueDefault={row2?.createdate || ''}
+              className="col-6"
+              inputProps={{ maxLength: 256 }}
+              disabled={true}
+            />
+            <FieldEdit
+              label={t(langKeys.lastmodificationdate)}
+              valueDefault={row2?.changedate || ''}
+              className="col-6"
+              inputProps={{ maxLength: 256 }}
+              disabled={true}
+            />
+        </div>
+      </DialogZyx>
     </form>
   );
 };
