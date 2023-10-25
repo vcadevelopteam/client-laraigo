@@ -7,12 +7,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
-import { getAllInventoryBalance, getInventoryBalance, getProductManufacturer, insOrderInventory } from 'common/helpers';
+import { getInventoryBalance, getProductManufacturer, insOrderInventory } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux, getCollectionAux2, resetMainAux } from 'store/main/actions';
+import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
 import InventoryTabDetail from './detailTabs/InventoryTabDetail';
@@ -125,10 +125,6 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
           getCollectionAux(getInventoryBalance(row?.inventoryid))
         );
     }
-
-    useEffect(() => {
-        fetchWarehouseProducts()
-    }, [])
 
     useEffect(() => {
         if (waitSave) {

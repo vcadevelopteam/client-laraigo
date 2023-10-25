@@ -7,7 +7,7 @@ import { ItemFile, UploaderIcon } from '../../components/components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons } from 'components';
+import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, FieldSelect } from 'components';
 import TableZyx from "components/fields/table-simple";
 import { useSelector } from 'hooks';
 import RegisterInventoryBalanceDialog from '../../dialogs/RegisterInventoryBalanceDialog';
@@ -77,6 +77,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
     const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
     const [openModal, setOpenModal] = useState(false);
     const dataBalance = useSelector(state => state.main.mainAux);
+    const multiData = useSelector(state => state.main.multiDataAux);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeResult = useSelector(state => state.main.execute);
@@ -211,6 +212,14 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
+                            label={t(langKeys.longdesc)}
+                            valueDefault={row?.productdescriptionlarge}
+                            className="col-12"
+                            disabled={true}
+                        />
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
                             label={t(langKeys.warehouse)}
                             valueDefault={row?.warehousename}
                             className="col-6"
@@ -220,6 +229,14 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             label={t(langKeys.description)}
                             valueDefault={row?.warehousedescription}
                             className="col-6"
+                            disabled={true}
+                        />
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldEdit
+                            label={t(langKeys.longdesc)}
+                            valueDefault={row?.warehousedescriptionlarge}
+                            className="col-12"
                             disabled={true}
                         />
                     </div>
@@ -236,7 +253,6 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             label={t(langKeys.default_shelf)}
                             valueDefault={getValues('rackdefault')}
                             className="col-6"
-                            error={errors?.rackdefault?.message}
                             onChange={(value) => setValue('rackdefault', value)}
                         />
                     </div>
@@ -244,12 +260,15 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 <div className='row-zyx col-6'>
                     <div className='col-6'>
                         <div className='row-zyx'>
-                            <FieldEdit
+                            <FieldSelect
                                 label={t(langKeys.typecostdispatch)}
                                 valueDefault={row?.unitdispatchdescription}
+                                data={multiData.data[6].data}
                                 className="col-6"
+                                optionDesc="domaindesc"
+                                optionValue="domainid"
                                 disabled={true}
-                            />  
+                            /> 
                         </div>
                         <div className='row-zyx'>
                             <FieldEdit
@@ -273,6 +292,16 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                                 valueDefault={row?.status}
                                 className="col-6"
                                 disabled={true}
+                            />
+                        </div>
+                        <div className='row-zyx'>
+                            <FieldSelect
+                                label={t(langKeys.dispatch_unit)}
+                                valueDefault={row?.unitdispatchdescription}
+                                data={multiData.data[1].data}
+                                className="col-6"
+                                optionDesc="domaindesc"
+                                optionValue="domaindesc"
                             /> 
                         </div>  
                     </div>
@@ -310,7 +339,6 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             label={t(langKeys.current_balance)}
                             valueDefault={row?.currentbalance}
                             className="col-6"
-                            error={errors?.address?.message}
                             onChange={(value) => setValue('address', value)}
                             disabled={true}
                         />  
@@ -349,6 +377,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.dateoflastshipment)}
+                            helperText={t(langKeys.dateoflastshipmenttooltip)}
                             type="datetime-local"
                             valueDefault={new Date(row?.lastdispatch || null).toISOString().substring(0, 16)}
                             className="col-6"
@@ -358,6 +387,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.accumulatedannual)}
+                            helperText={t(langKeys.accumulatedannualtooltip)}
                             valueDefault={row?.annualcumulative}
                             className="col-6"
                             disabled={true}
@@ -366,6 +396,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.lastyear)}
+                            helperText={t(langKeys.lastyeartooltip)}
                             valueDefault={row?.lastyear}
                             className="col-6"
                             disabled={true}
@@ -374,6 +405,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.lasttwoyears)}
+                            helperText={t(langKeys.lasttwoyearstooltip)}
                             valueDefault={row?.last2year}
                             className="col-6"
                             disabled={true}
@@ -405,7 +437,6 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         type="datetime-local"
                         valueDefault={new Date(row?.lastmodified || null).toISOString().substring(0, 16)}
                         className="col-4"
-                        error={errors?.address?.message}
                         onChange={(value) => setValue('address', value)}
                         disabled={true}
                     />  

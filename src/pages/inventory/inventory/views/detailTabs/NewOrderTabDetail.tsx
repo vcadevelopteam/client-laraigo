@@ -121,6 +121,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                   type="number"
                   valueDefault={getValues("replenishmentpoint")}
                   onChange={(value) => setValue("replenishmentpoint", value)}   
+                  error={errors?.replenishmentpoint?.message||""}
                   className="col-6"
                   inputProps={{ maxLength: 15 }}
               />  
@@ -130,6 +131,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                   label={t(langKeys.deliverytimedays)}
                   type="number"
                   valueDefault={getValues("deliverytimedays")}
+                  error={errors?.deliverytimedays?.message||""}
                   onChange={(value) => setValue("deliverytimedays", value)}   
                   className="col-6"
               />
@@ -140,6 +142,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                   className="col-6"
                   type="number"
                   valueDefault={getValues("securitystock")}
+                  error={errors?.securitystock?.message||""}
                   onChange={(value) => setValue("securitystock", value)}   
               />  
           </div>
@@ -149,6 +152,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                   type="number"
                   className="col-6"
                   valueDefault={getValues("economicorderquantity")}
+                  error={errors?.economicorderquantity?.message||""}
                   onChange={(value) => setValue("economicorderquantity", value)}   
               />
           </div>
@@ -160,6 +164,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                 optionValue="domainid"
                 optionDesc="domaindesc"
                 valueDefault={getValues("unitbuyid")}
+                error={errors?.unitbuyid?.message||""}
                 onChange={(value) => setValue("unitbuyid", value.domainid)}   
               />
           </div>
