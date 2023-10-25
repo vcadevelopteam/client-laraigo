@@ -4097,10 +4097,10 @@ export const partnerSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const partnerIns = ({ id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, status, type, operation }: Dictionary) => ({
+export const partnerIns = ({ id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation }: Dictionary) => ({
     method: "UFN_PARTNER_INS",
     key: "UFN_PARTNER_INS",
-    parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, status, type, operation },
+    parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation },
 });
 
 export const customerByPartnerSel = ( partnerid: number ) => ({

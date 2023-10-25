@@ -81,12 +81,15 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [docType, setDocType] = useState(row?.documenttype);
     const [priceBag, setPriceBag] = useState(row?.priceperbag || '');
+    const [puContacts, setPuContacts] = useState(row?.puadditionalcontacts || '');
     const [docNumber, setDocNumber] = useState(row?.documentnumber);
     const [sunatCountry, setSunatCountry] = useState(row?.country);
     const [additionalContactType, setAdditionAlcontactType] = useState(row?.typecalculation);
     const [isEnterprise, setIsEnterprise] = useState(row?.enterprisepartner);
     const [isAutomaticDrafts, setIsAutomaticDrafts] = useState(row?.automaticgenerationdrafts);
     const [isAutomaticPeriod, setIsAutomaticPeriod] = useState(row?.automaticperiodgeneration);
+    const [montlyplancost, setMontlyPlancost] = useState(row?.montlyplancost || 0);
+    const [contactsperplan, setContactsPerPlan] = useState(row?.numberplancontacts || 0);
 
     const signatureDateDefault = row?.signaturedate
     ? format(parse(row.signaturedate, 'dd/MM/yyyy HH:mm:ss', new Date()), 'yyyy-MM-dd')
@@ -258,14 +261,34 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                         <FieldEdit
                             label={t(langKeys.monthlyplancost)}
                             type='number'
+                            valueDefault={montlyplancost}
+                            onChange={(value) => {
+                                if(value < 0) {
+                                    setMontlyPlancost(value * -1)
+                                    setValue('montlyplancost', value * -1)
+                                } else {
+                                    setMontlyPlancost(value)
+                                    setValue('montlyplancost', value)
+                                }
+                            }}
                             className="col-6"
-                            error={errors?.numbercontactsbag?.message}
+                            error={errors?.montlyplancost?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.contactsincludedinplan)}
                             type='number'
+                            valueDefault={contactsperplan}
+                            onChange={(value) => {
+                                if(value < 0) {
+                                    setContactsPerPlan(value * -1)
+                                    setValue('numberplancontacts', value * -1)
+                                } else {
+                                    setContactsPerPlan(value)
+                                    setValue('numberplancontacts', value)
+                                }
+                            }}
                             className="col-6"
-                            error={errors?.numbercontactsbag?.message}
+                            error={errors?.numberplancontacts?.message}
                         />
                         <FieldSelect
                             label={t(langKeys.billingplan)}
@@ -325,9 +348,11 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                                 type='number'
                                 valueDefault={getValues('puadditionalcontacts')}
                                 className="col-6"
+                                maxLength={ puContacts.split('.').length > 1 ? puContacts.split('.')[0].length + 3 : undefined}
                                 error={errors?.puadditionalcontacts?.message}
                                 onChange={(value) => {;
                                     setValue('puadditionalcontacts', value)
+                                    setPuContacts(value)
                                 }}
                             />
                         )}

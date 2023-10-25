@@ -191,7 +191,7 @@ const exitConfirmation = (() => {
               label={t(langKeys.partnertype)}
               className="col-6"
               valueDefault={row2?.typepartner || ''}
-              data={(multiDataAux?.data?.[5]?.data||[])}
+              data={( row?.enterprisepartner ? multiDataAux?.data?.[5]?.data : multiDataAux?.data?.[5]?.data.filter(item => item.domainvalue !== 'ENTERPRISE'))}
               error={errors?.typepartner?.message}
               onChange={(value) => {
                 setValue('typepartner', value?.domainvalue || '')
@@ -209,8 +209,8 @@ const exitConfirmation = (() => {
               disabled={true}
             />
             <FieldEdit
-              label={t(langKeys.billingplan)}
-              valueDefault={getValues('billingplan')}
+              label={t(langKeys.creationuser)}
+              valueDefault={row2?.createby || ''}
               className="col-6"
               inputProps={{ maxLength: 256 }}
               disabled={true}
@@ -223,8 +223,8 @@ const exitConfirmation = (() => {
               disabled={true}
             />
             <FieldEdit
-              label={t(langKeys.creationuser)}
-              valueDefault={row2?.createby || ''}
+              label={t(langKeys.lastmodificationuser)}
+              valueDefault={row2?.changeby || ''}
               className="col-6"
               inputProps={{ maxLength: 256 }}
               disabled={true}
@@ -237,8 +237,8 @@ const exitConfirmation = (() => {
               disabled={true}
             />
             <FieldEdit
-              label={t(langKeys.lastmodificationuser)}
-              valueDefault={row2?.changeby || ''}
+              label={t(langKeys.lastmodificationdate)}
+              valueDefault={row2?.changedate || ''}
               className="col-6"
               inputProps={{ maxLength: 256 }}
               disabled={true}
@@ -246,13 +246,6 @@ const exitConfirmation = (() => {
             <FieldEdit
               label={t(langKeys.creationDate)}
               valueDefault={row2?.createdate || ''}
-              className="col-6"
-              inputProps={{ maxLength: 256 }}
-              disabled={true}
-            />
-            <FieldEdit
-              label={t(langKeys.lastmodificationdate)}
-              valueDefault={row2?.changedate || ''}
               className="col-6"
               inputProps={{ maxLength: 256 }}
               disabled={true}

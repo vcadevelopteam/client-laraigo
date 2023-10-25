@@ -102,10 +102,12 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
             billingplan: row?.billingplan || '',
             typecalculation: row?.typecalculation || '',            
             numbercontactsbag: row?.numbercontactsbag || 0,
-            puadditionalcontacts: row?.puadditionalcontacts || 0,
+            puadditionalcontacts: row?.puadditionalcontacts || '0',
             priceperbag: row?.priceperbag || '0',
             automaticgenerationdrafts: row?.automaticgenerationdrafts || false,
             automaticperiodgeneration: row?.automaticperiodgeneration || false,
+            montlyplancost: row?.montlyplancost || 0,
+            numberplancontacts: row?.numberplancontacts || 0,
             status: row?.status || 'ACTIVO',
             type: row?.type || '',
             operation: row ? "UPDATE" : "INSERT",
@@ -169,7 +171,12 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                         dispatch(execute(partnerIns(data)));
                     }
                 } else {
-                    dispatch(execute(partnerIns(data)));
+                    if(getValues('puadditionalcontacts').split('.').length === 1){
+                        dispatch(execute(partnerIns({...data, puadditionalcontacts: getValues('puadditionalcontacts')+'.00'})));
+                    }
+                    else {
+                        dispatch(execute(partnerIns(data)));
+                    }
                 }
             } else {
                 if(getValues('typecalculation') === 'Por bolsa') {
@@ -179,7 +186,12 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                         dispatch(execute(partnerIns(data)));
                     }
                 } else {
-                    dispatch(execute(partnerIns({...data, id: row?.partnerid})));
+                    if(getValues('puadditionalcontacts').split('.').length === 1) {
+                        dispatch(execute(partnerIns({...data, id: row?.partnerid, puadditionalcontacts: getValues('puadditionalcontacts')+'.00'})));
+                    }
+                    else {
+                        dispatch(execute(partnerIns({...data, id: row?.partnerid})));
+                    }
                 }
             }
             setWaitSave(true);
