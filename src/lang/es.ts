@@ -885,6 +885,7 @@ const translation: LangKeys = {
   corporation: 'Corporación',
   corporation_plural: 'Corporaciones',
   apikeydoesntexist: "La APIKEY es invalida o no existe",
+  enableapi: "Habilitar API",
   logo: 'Logo',
   logotype: 'Logotipo',
   insults: "Lisuras",

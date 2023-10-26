@@ -102,9 +102,9 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
                 {config.description}
             </Typography>
             <Box display="grid" gridTemplateColumns={gridTemplateColumns} bgcolor={'#F9F9FA'} paddingBottom={1} >
-                {navigationRoutes.map((navRoute: RouteConfig) =>
+                {navigationRoutes.map((navRoute: RouteConfig, index: number) =>
                     <ListViewItem
-                        key={navRoute?.key + '_lower'}
+                        key={(navRoute?.key ?? index) + '_lower'}
                         navRoute={navRoute}
                         history={history}
                         classes={classes}

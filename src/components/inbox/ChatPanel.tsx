@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
@@ -59,8 +58,6 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
     const [channelsList, setchannelsList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
-    // const [bodyCleaned, setBodyCleaned] = useState('');
-
 
     const { control, register, handleSubmit, setValue, getValues, reset, trigger, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -85,8 +82,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
                 setWaitClose(false);
             } else if (sendingRes.error) {
-
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code ?? "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -110,8 +106,8 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
-            register('communicationchanneltype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
-            register('platformtype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
+            register('communicationchanneltype', { validate: (value) => ((value?.length > 0) || t(langKeys.field_required)) });
+            register('platformtype', { validate: (value) => ((value?.length > 0) || t(langKeys.field_required)) });
             if (ticketSelected?.communicationchanneltype?.includes('WHA') || ticketSelected?.communicationchanneltype?.includes('VOXI')) {
                 let value = channelsList[0]
                 setValue('communicationchannelid', value?.communicationchannelid || 0);
@@ -123,16 +119,14 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     const onSelectTemplate = (value: Dictionary) => {
         if (ticketSelected?.communicationchanneltype?.includes('WHA')) {
-
-            setValue('communicationchannelid', ticketSelected?.communicationchannelid!!);
-            setValue('communicationchanneltype', ticketSelected?.communicationchanneltype!!);
-            setValue('platformtype', ticketSelected?.communicationchannelsite!!);
+            setValue('communicationchannelid', ticketSelected?.communicationchannelid);
+            setValue('communicationchanneltype', ticketSelected?.communicationchanneltype);
+            setValue('platformtype', ticketSelected?.communicationchannelsite);
         }
         if (value) {
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
             setValue('hsmtemplatename', value ? value.name : '');
-            // setBodyCleaned(value.body);
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
@@ -223,7 +217,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                             key={"var_" + item.id}
                             fregister={{
                                 ...register(`variables.${i}.variable`, {
-                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    validate: (value: any) => (value?.length) || t(langKeys.field_required)
                                 })
                             }}
                             label={item.name}
@@ -244,7 +238,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                                 key={"custom_" + item.id}
                                 fregister={{
                                     ...register(`variables.${i}.text`, {
-                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        validate: (value: any) => (value?.length) || t(langKeys.field_required)
                                     })
                                 }}
                                 valueDefault={item.value}
@@ -362,7 +356,7 @@ const DialogCloseticket: React.FC<{
                 motive: '',
                 observation: ''
             })
-            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('motive', { validate: (value) => ((value?.length) || t(langKeys.field_required)) });
             register('observation');
         }
     }, [openModal])
@@ -650,19 +644,19 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 products: '',
                 tags: ''
             })
-            register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
-            register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('description', { validate: (value) => ((value?.length) ? true : t(langKeys.field_required) + "") });
+            register('expected_revenue', { validate: (value) => ((value?.length) ? true : t(langKeys.field_required) + "") });
             register('priority', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
 
-            register('lastname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
-            register('firstname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('lastname', { validate: (value) => ((value?.length) ? true : t(langKeys.field_required) + "") });
+            register('firstname', { validate: (value) => ((value?.length) ? true : t(langKeys.field_required) + "") });
             register('email', {
                 validate: {
-                    hasvalue:  (value) => ((value && value.length) ? true : t(langKeys.field_required) + ""),
-                    isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
+                    hasvalue: (value) => ((value?.length) ? true : t(langKeys.field_required) + ""),
+                    isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
                 }
             });
-            register('phone', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('phone', { validate: (value) => ((value?.length) ? true : t(langKeys.field_required) + "") });
         }
     }, [openModal])
 
@@ -686,7 +680,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
         dispatch(showBackdrop(true));
-        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!,personSelected?.persontype || "")))
+        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!, personSelected?.persontype || "")))
         setWaitInsLead(true)
     });
 
@@ -732,7 +726,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                         fullWidth
                         defaultCountry={user!.countrycode.toLowerCase()}
                         className="flex-1"
-                        onChange={(v: any) => {setValue('phone', v);}}
+                        onChange={(v: any) => { setValue('phone', v); }}
                         error={errors?.phone?.message}
                     />
                 </div>
@@ -954,8 +948,10 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const person = useSelector(state => state.inbox.person);
     const [checkTipification, setCheckTipification] = useState(false);
     const [propertyAsesorSuspende, setpropertyAsesorSuspende] = useState(true);
+    const [propertyAsesorReassign, setPropertyAsesorReassign] = useState(true);
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const location = useLocation();
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
     const closeTicket = (newstatus: string) => {
@@ -980,20 +976,20 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     }
 
     useEffect(() => {
-        if(user?.roledesc?.includes("ASESOR")){
-            if(!!multiData){
-                let dataasesorsuspende = multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data
-                if(!user?.groups){
-                    setpropertyAsesorSuspende(true)
-                }else{
-                    let usergroups = user?.groups?.split(",") || [];
-                    setpropertyAsesorSuspende(usergroups.reduce((acc,x)=>acc*dataasesorsuspende?.filter(y=>y.group===x)?.[0]?.propertyvalue,1) === 1)
+        const dataasesorsuspende = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.data;
+        const reassignAsesor = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.data;
+        if (dataasesorsuspende && reassignAsesor && multiData) {
+            if (user?.roledesc?.includes("ASESOR")) {
+                if (user?.groups) {
+                    const usergroups = user?.groups?.split(",") || [];
+                    setpropertyAsesorSuspende(usergroups.reduce((acc, x) => acc * dataasesorsuspende?.find(y => y.group === x)?.propertyvalue, 1) === 1);
                 }
+                setPropertyAsesorReassign(reassignAsesor?.[0]?.propertyvalue === "1")
+            } else if (`,${user?.roledesc},`.includes(",SUPERVISOR,") && user?.properties.environment === "CLARO" && [2, 3].includes(agentSelected?.userid ?? 0)) { //2 y 3 son BOT y HOLDING
+                setPropertyAsesorReassign(false);
             }
-        }else{
-            setpropertyAsesorSuspende(true)
         }
-    }, [multiData,ticketSelected])
+    }, [multiData, agentSelected])
     useEffect(() => {
         if (checkTipification) {
             if (!mainAux2.loading) {
@@ -1070,7 +1066,11 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (user?.roledesc?.includes("ASESOR") ? multiData?.data?.filter(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue === "1" : true)) &&
+                {(
+                    ticketSelected?.status !== 'CERRADO' &&
+                    ticketSelected?.communicationchanneltype !== "VOXI" &&
+                    propertyAsesorReassign
+                ) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
                         setAnchorEl(null)
