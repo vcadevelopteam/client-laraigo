@@ -20,7 +20,7 @@ interface RowSelected {
 const RegisterClientDialog: React.FC<{
   openModal: boolean;
   setOpenModal: (dat: boolean) => void;
-  row: any;
+  row: Dictionary;
   fetchData: () => void;
   data: RowSelected
 }> = ({ openModal, setOpenModal, row, fetchData, data: {row2, edit} }) => {
@@ -154,7 +154,7 @@ const exitConfirmation = (() => {
               valueDefault={row2?.corpid || 0}
               className="col-6"
               data={(multiDataAux?.data?.[1]?.data||[])}
-              error={errors?.corpid?.message}
+              error={typeof errors?.corpid?.message === "string" ? errors?.corpid?.message : ''}
               onChange={(value) => {
                 value ? setCorpId(value.corpid) : setCorpId(0)
                 setValue('corpid', value?.corpid || 0)
@@ -167,7 +167,7 @@ const exitConfirmation = (() => {
               valueDefault={edit ? row2?.orgid : orgId}
               className="col-6"
               data={edit ? (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === row2?.corpid): (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === corpId)}
-              error={errors?.orgid?.message}
+              error={typeof errors?.orgid?.message === 'string' ? errors?.orgid?.message : ''}
               onChange={(value) => {
                 setOrgId(value?.orgid || 0)
                 setValue('orgid', value?.orgid || 0)
@@ -182,7 +182,7 @@ const exitConfirmation = (() => {
               className="col-6"
               valueDefault={row2?.typepartner || ''}
               data={( row?.enterprisepartner ? multiDataAux?.data?.[5]?.data : multiDataAux?.data?.[5]?.data.filter(item => item.domainvalue !== 'ENTERPRISE'))}
-              error={errors?.typepartner?.message}
+              error={typeof errors?.typepartner?.message === 'string' ? errors?.typepartner?.message : ''}
               onChange={(value) => {
                 setValue('typepartner', value?.domainvalue || '')
                 setComissionPercentage(value?.domainvalue || '')

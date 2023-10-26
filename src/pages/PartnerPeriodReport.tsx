@@ -10,6 +10,7 @@ import { billingPeriodPartnerEnterprise, formatNumber, formatNumberNoDecimals, g
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, makeStyles, withStyles } from "@material-ui/core";
 import { FieldSelect, FieldView } from "components";
 import { Search } from "@material-ui/icons";
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -129,14 +130,14 @@ const PartnerPeriodReport: React.FC = () => {
     });
 
     const [canSearch, setCanSearch] = useState(false);
-    const [dataReport, setDataReport] = useState<any>([]);
-    const [dataAux, setDataAux] = useState<any>([]);
+    const [dataReport, setDataReport] = useState<Dictionary>([]);
+    const [dataAux, setDataAux] = useState<Dictionary>([]);
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [waitPdf, setWaitPdf] = useState(false);
     const [waitSearch, setWaitSearch] = useState(false);
 
-    function handleDateChange(e: any) {
+    function handleDateChange(e: string) {
         if (e !== "") {
             const datetochange = new Date(e + "-02");
             const mes = datetochange?.getMonth() + 1;
@@ -186,8 +187,8 @@ const PartnerPeriodReport: React.FC = () => {
                 setDataReport(mainResult.mainData.data[0]);
                 setDataAux(mainResult.mainData.data);
             } else {
-                setDataReport(null);
-                setDataAux(null);
+                setDataReport({});
+                setDataAux({});
             }
             dispatch(showBackdrop(false));
         }
