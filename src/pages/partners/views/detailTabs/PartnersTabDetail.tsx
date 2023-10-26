@@ -1,26 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
-import { Dictionary, IFile } from "@types";
+import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, FormControlLabel, Switch } from "@material-ui/core";
-import { Search as SearchIcon } from "@material-ui/icons";
-import Box from '@material-ui/core/Box';
-import { ItemFile, UploaderIcon } from '../../components/components';
+import { FormControlLabel } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { FieldErrors, UseFormGetValues, UseFormSetValue, useForm } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, FieldSelect, IOSSwitch } from 'components';
-import TableZyx from "components/fields/table-simple";
+import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { FieldEdit, FieldSelect, IOSSwitch } from 'components';
 import { useSelector } from 'hooks';
 import { getCountryList } from 'store/signup/actions';
 import { useDispatch } from 'react-redux';
-import { resetMainAux } from 'store/main/actions';
 import { format, parse } from 'date-fns';
-
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
-}
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -75,7 +65,6 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const user = useSelector(state => state.login.validateToken.user);
     const countryList = useSelector(state => state.signup.countryList);
     const dispatch = useDispatch();
     const multiDataAux = useSelector(state => state.main.multiDataAux);

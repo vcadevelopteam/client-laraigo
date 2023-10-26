@@ -1,25 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit, FieldSelect, FieldCheckbox } from "components";
+import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import { useEffect, useState } from "react";
-import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
-import { execute, resetMainAux } from "store/main/actions";
+import { execute } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { customerByPartnerIns, getPropertySelByName } from "common/helpers";
+import { customerByPartnerIns } from "common/helpers";
 import { Dictionary } from "@types";
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    marginRight: theme.spacing(2),
-  },
-}));
 
 interface RowSelected {
   row2: Dictionary | null;
@@ -27,14 +18,13 @@ interface RowSelected {
 }
 
 const RegisterClientDialog: React.FC<{
-  openModal: any;
-  setOpenModal: (dat: any) => void;
+  openModal: boolean;
+  setOpenModal: (dat: boolean) => void;
   row: any;
-  fetchData: any;
+  fetchData: () => void;
   data: RowSelected
 }> = ({ openModal, setOpenModal, row, fetchData, data: {row2, edit} }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
@@ -102,10 +92,10 @@ function setComissionPercentage(value: string) {
 
 React.useEffect(() => {
   register('id')
-  register('corpid', { validate: (value) =>((value && value > 0) ? true : t(langKeys.field_required) + "") });
-  register('orgid', { validate: (value) =>((value && value > 0) ? true : t(langKeys.field_required) + "") });
+  register('corpid', { validate: (value) =>((value && value > 0) ? true : String(t(langKeys.field_required)) + "") });
+  register('orgid', { validate: (value) =>((value && value > 0) ? true : String(t(langKeys.field_required)) + "") });
   register('partnerid');
-  register('typepartner', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('typepartner', { validate: (value) =>((value && value.length>0) ? true : String(t(langKeys.field_required)) + "") });
   register('billingplan');
   register('comissionpercentage');
   register('status')

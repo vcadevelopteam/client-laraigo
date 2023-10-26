@@ -4,14 +4,12 @@ import { useSelector } from "hooks";
 import { Fragment, useEffect, useState } from "react";
 import { langKeys } from "lang/keys";
 import React from "react";
-import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { execute, exportData, getCollection, getMultiCollectionAux, resetAllMain } from "store/main/actions";
-import { billingPeriodPartnerEnterprise, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billingpersonreportsel, billinguserreportsel, customerByPartnerSel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getOrgSelList, getValuesFromDomain, partnerSel } from "common/helpers";
-import { reportPdf } from "network/service/culqi";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { getCollection, getMultiCollectionAux } from "store/main/actions";
+import { billingPeriodPartnerEnterprise, formatNumber, formatNumberNoDecimals, getValuesFromDomain, partnerSel } from "common/helpers";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, makeStyles, withStyles } from "@material-ui/core";
 import { FieldSelect, FieldView } from "components";
-import { Refresh, Search } from "@material-ui/icons";
-import { DownloadIcon } from "icons";
+import { Search } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -104,9 +102,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 const StyledTableRow = withStyles(() => ({}))(TableRow);
 
-const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
-    customSearch
-}) => {
+const PartnerPeriodReport: React.FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -117,7 +113,6 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
     const mainResult = useSelector((state) => state.main);
     const exportResult = useSelector((state) => state.main.exportData);
     const culqiReportResult = useSelector((state) => state.culqi.requestReportPdf);
-    const user = useSelector((state) => state.login.validateToken.user);
     const multiResultAux = useSelector((state) => state.main.multiDataAux);
 
     const [dataMain, setdataMain] = useState({
@@ -143,10 +138,10 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
 
     function handleDateChange(e: any) {
         if (e !== "") {
-            let datetochange = new Date(e + "-02");
-            let mes = datetochange?.getMonth() + 1;
-            let year = datetochange?.getFullYear();
-            let datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
+            const datetochange = new Date(e + "-02");
+            const mes = datetochange?.getMonth() + 1;
+            const year = datetochange?.getFullYear();
+            const datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
             setdataMain((prev) => ({...prev, datetoshow, month: mes, year: year}))
         }
     }
@@ -169,7 +164,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
 
     useEffect(() => {
         if (dataMain) {
-            if(dataMain.reporttype != '' && dataMain.partnerid != 0) {
+            if(dataMain.reporttype !== '' && dataMain.partnerid !== 0) {
                 setCanSearch(true)
             }
             else if(dataMain.reporttype === '' || dataMain.partnerid === 0) {
@@ -478,7 +473,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((item:any, index:number) => (
+                                                    {dataAux.map((index:number) => (
                                                         <div style={{ color: "transparent" }} key={index}>.</div>
                                                     ))}
                                                     <div style={{ color: "transparent" }}>.</div>
@@ -496,7 +491,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((item:any, index:number) => (
+                                                    {dataAux.map((index:number) => (
                                                         <div style={{ color: "transparent" }} key={index}>.</div>
                                                     ))}
                                                     <div style={{ color: "transparent" }}>.</div>
@@ -514,7 +509,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((item:any, index:number) => (
+                                                    {dataAux.map((index:number) => (
                                                         <div style={{ color: "transparent" }} key={index}>.</div>
                                                     ))}
                                                     <div style={{ color: "transparent" }}>.</div>
@@ -532,7 +527,7 @@ const PartnerPeriodReport: React.FC<{ customSearch: any; }> = ({
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((item:any, index:number) => (
+                                                    {dataAux.map((index:number) => (
                                                         <div style={{ color: "transparent" }} key={index}>.</div>
                                                     ))}
                                                     <div style={{ color: "transparent" }}>.</div>

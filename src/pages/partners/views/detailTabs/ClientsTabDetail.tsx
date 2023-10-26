@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { useSelector } from "hooks";
-import { FieldErrors } from "react-hook-form";
 import RegisterClientDialog from "../../dialogs/RegisterClientDialog";
 import { Dictionary } from "@types";
 import { TemplateIcons } from "components";
@@ -31,12 +30,11 @@ interface RowSelected {
 }
 
 interface ClientsTabDetailProps {
-  fetchdata: any
-  errors: FieldErrors<any>
+  fetchdata: () => void;
   row: any
 }
 
-const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, errors, row}) => {
+const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, row}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dataCustomers = useSelector(state => state.main.mainAux);

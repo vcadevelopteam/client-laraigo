@@ -1,30 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import {
-  TemplateIcons,
-  Title,
-} from "components";
+import { useTranslation } from "react-i18next";
+import { TemplateIcons } from "components";
 import { langKeys } from "lang/keys";
-import { Dictionary, IFetchData } from "@types";
+import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
-import { execute, exportData } from "store/main/actions";
+import { execute } from "store/main/actions";
 import TableZyx from "components/fields/table-simple";
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, partnerIns, templateMaker, uploadExcel } from "common/helpers";
+import { partnerIns } from "common/helpers";
 import { useSelector } from "hooks";
-import { main } from "network/service/common";
-
-const selectionKey = "warehouseid";
 
 interface PartnersMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
-  fetchData: any;
+  fetchData: () => void;
 }
 
 const PartnersMainView: FC<PartnersMainViewProps> = ({
@@ -37,11 +31,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
 
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-  const [cleanSelected, setCleanSelected] = useState(false);
   const main = useSelector((state) => state.main.mainData);
-  const [totalrow, settotalrow] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
   const [waitExport, setWaitExport] = useState(false);
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
@@ -56,10 +46,6 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
     setViewSelected("detail-view");
     setRowSelected({ row, edit: true });
   };
-  const handleDuplicate = (row: Dictionary) => {
-    setViewSelected("detail-view");
-    setRowSelected({ row, edit: false });
-  };
 
   useEffect(() => {
     if (waitUpload) {
@@ -73,7 +59,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         );
         dispatch(showBackdrop(false));
         setWaitUpload(false);
-        fetchData(fetchData);
+        fetchData();
       } else if (importRes.error) {
         dispatch(
           showSnackbar({
@@ -131,7 +117,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
             message: t(langKeys.successful_delete),
           })
         );
-        fetchData(fetchData);
+        fetchData();
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
@@ -224,58 +210,6 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
     ],
     []
   );
-
-  const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-    const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
-        key: x.accessor,
-        alias: x.Header
-    }))
-    /*dispatch(exportData(getWarehouseExport({
-        filters: {
-            ...filters,
-        },
-        sorts,
-        startdate: daterange.startDate!,
-        enddate: daterange.endDate!,
-    }), "", "excel", false, columnsExport));*/
-    dispatch(showBackdrop(true));
-    setWaitExport(true);
-  };
-
-  const handleUpload = async (files: any) => {
-    const file = files?.item(0);
-    if (file) {
-      const data: any = await uploadExcel(file, undefined);
-      if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          warehouseid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        //dispatch(execute(importWarehouse(dataToSend)));
-        setWaitUpload(true);
-      }
-    }
-  };
-
-  const handleTemplateWarehouse = () => {
-    const data = [{}, {}, {}, {}, {}, {}];
-    const header = [
-      "name",
-      "description",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
-    ];
-    exportExcel(
-      `${t(langKeys.template)} ${t(langKeys.product)}`,
-      templateMaker(data, header)
-    );
-  };
 
   return (
     <div
