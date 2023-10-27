@@ -60,10 +60,6 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
     setViewSelected("detail-view");
     setRowSelected({ row, edit: true });
   };
-  const handleDuplicate = (row: Dictionary) => {
-    setViewSelected("detail-view");
-    setRowSelected({ row, edit: false });
-  };
 
   useEffect(() => {
     if (waitUpload) {
@@ -165,7 +161,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "warehouseid",
+        accessor: "inventoryconsumptionid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -176,18 +172,13 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
             <TemplateIcons
               deleteFunction={() => handleDelete(row)}
               editFunction={() => handleEdit(row)}
-              extraFunction={() => handleDuplicate(row)}
-              ExtraICon={() => (
-                <DuplicateIcon width={28} style={{ fill: "#7721AD" }} />
-              )}
-              extraOption={t(langKeys.duplicate)}
             />
           );
         },
       },
       {
         Header: t(langKeys.inventory_consumption),
-        accessor: "inventory_consumption",
+        accessor: "globalid",
         width: "auto",
       },
       {
@@ -260,6 +251,8 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
       templateMaker(data, header)
     );
   };
+  
+  console.log(mainPaginated.data)
 
   return (
     <div

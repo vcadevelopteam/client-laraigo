@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTabPanel } from 'components';
-import { getWarehouseProducts, insWarehouse } from 'common/helpers';
+import { getWarehouseProducts, insInventoryConsumption, insWarehouse } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -87,7 +87,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
             inventoryconsumptionid: row?.inventoryconsumptionid || 0,
             description: row?.description || '',
             ordernumber: row?.ordernumber || '',
-            transactiontype: row?.transaction || '',
+            transactiontype: row?.transactiontype || '',
             warehouseid: row?.warehouseid || 0,
             status: row?.status || 'INGRESADO',
             type: row?.type || '',
@@ -135,7 +135,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insWarehouse(data)));
+            dispatch(execute(insInventoryConsumption(data)));
 
             setWaitSave(true);
         }

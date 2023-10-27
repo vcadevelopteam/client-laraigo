@@ -192,7 +192,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     data={[]}
                     optionValue="manufacturerid"
                     optionDesc="description"
-                    valueDefault={getValues("manufacturerid")}
+                    valueDefault={getValues("transactiontype")}
                     onChange={(value) => setValue("manufacturerid", value.manufacturerid)}  
                 />
                 <div className='row-zyx col-9'>
