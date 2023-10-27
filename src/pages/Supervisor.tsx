@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useState, useEffect, memo } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
@@ -9,16 +8,15 @@ import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Tooltip from '@material-ui/core/Tooltip';
-import { GetIcon } from 'components'
 import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket } from 'store/inbox/actions';
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
 import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { AntTab, BadgeGo, ListItemSkeleton } from 'components';
+import { AntTab, BadgeGo, ListItemSkeleton, GetIcon } from 'components';
 import { SearchIcon } from 'icons';
-import { IAgent } from "@types";
+import { Dictionary, IAgent } from "@types";
 import clsx from 'clsx';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -27,25 +25,31 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import memoize from 'memoize-one';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+
+interface Dimensions {
+    height: number;
+    width: number;
+}
 
 const filterAboutStatusName = (data: IAgent[], page: number, textToSearch: string, filterBy: string): IAgent[] => {
     if (page === 0 && textToSearch === "") {
         return data;
     }
     if (page === 0 && textToSearch !== "") {
-        return data.filter(item => (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
+        return data.filter(item => (filterBy === "user" ? item.name : (item.groups ?? "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
     if (page === 1 && textToSearch === "") {
         return data.filter(item => item.status === "ACTIVO");
     }
     if (page === 1 && textToSearch !== "") {
-        return data.filter(item => item.status === "ACTIVO" && (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
+        return data.filter(item => item.status === "ACTIVO" && (filterBy === "user" ? item.name : (item.groups ?? "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
     if (page === 2 && textToSearch === "") {
         return data.filter(item => item.status !== "ACTIVO");
     }
     if (page === 2 && textToSearch !== "") {
-        return data.filter(item => item.status !== "ACTIVO" && (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
+        return data.filter(item => item.status !== "ACTIVO" && (filterBy === "user" ? item.name : (item.groups ?? "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
     return data;
 }
@@ -140,7 +144,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
 )
 
 const RenderRow = memo(
-    ({ data, index, style }: any) => {
+    ({ data, index, style }: Dictionary) => {
         const { items } = data;
         const item = items[index]
 
@@ -152,6 +156,7 @@ const RenderRow = memo(
     },
     areEqual
 )
+RenderRow.displayName = "RenderRow";
 
 const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, motivetype, userid, image, isConnected, countPaused, countClosed, countNotAnswered, status, userstatustype, countAnswered, channels } }) => {
     const classes = useStyles();
@@ -165,15 +170,15 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
             <div className={classes.agentUp}>
                 <BadgeGo
                     overlap="circular"
-                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO" && !!motivetype) ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
+                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO" && motivetype) ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
                     }}
                     variant="dot"
                 >
-                    <Tooltip title={motivetype || ""}>
-                        <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    <Tooltip title={motivetype ?? ""}>
+                        <Avatar src={image ?? undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
                     </Tooltip>
                 </BadgeGo>
                 <div>
@@ -197,7 +202,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                 {(userid === 2 || userid === 3) &&
                     <CountTicket
                         label={t(langKeys.active) + "s"}
-                        count={countAnswered + (countNotAnswered || 0)}
+                        count={countAnswered + (countNotAnswered ?? 0)}
                         color="#55BD84"
                     />
                 }
@@ -210,7 +215,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                         />
                         <CountTicket
                             label={t(langKeys.pending)}
-                            count={countNotAnswered || 0}
+                            count={countNotAnswered ?? 0}
                             color="#FB5F5F"
                         />
                     </>
@@ -231,7 +236,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
 }
 
 const HeaderAgentPanel: FC<{
-    classes: any,
+    classes: ClassNameMap,
     onSearch: (pageSelected: number, search: string, filterBy: string) => void,
     countAll: number,
     countConnected: number,
@@ -246,7 +251,7 @@ const HeaderAgentPanel: FC<{
     const [filterBy, setFilterBy] = useState('user')
     const agentList = useSelector(state => state.inbox.agentList);
 
-    const onChangeSearchAgent = (e: any) => setSearch(e.target.value);
+    const onChangeSearchAgent = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setSearch(e.target.value);
 
     const handleClose = () => setAnchorEl(null);
 
@@ -345,7 +350,7 @@ const HeaderAgentPanel: FC<{
     )
 }
 
-const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
+const AgentPanel: FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const agentList = useSelector(state => state.inbox.agentList);
     const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
@@ -357,9 +362,9 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (!agentList.loading && !agentList.error) {
-            setDataAgents(agentList.data as IAgent[])
+            setDataAgents(agentList.data)
             if (firstLoad.current && agentList.data.length > 0) {
-                setAgentsToShow(agentList.data as IAgent[])
+                setAgentsToShow(agentList.data)
                 firstLoad.current = false
             } else {
                 setAgentsToShow(agentList.data.filter(y => agentsToShow.map(x => x.userid).includes(y.userid)))
@@ -379,7 +384,7 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
             {agentList.loading ? <ListItemSkeleton /> :
                 <div className="scroll-style-go" style={{ height: '100%' }}>
                     <AutoSizer>
-                        {({ height, width }: any) => (
+                        {({ height, width }: Dimensions) => (
                             <FixedSizeList
                                 width={width}
                                 height={height}
@@ -391,7 +396,6 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
                             </FixedSizeList>
                         )}
                     </AutoSizer>
-                    {/* {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))} */}
                 </div>
             }
         </div>
@@ -431,8 +435,8 @@ const Supervisor: FC = () => {
             getInappropriateWordsLst(),
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
-            getPropertySelByName("ASESORDELEGACION","ASESORDELEGACION"),
-            getPropertySelByName("ASESORSUSPENDE","ASESORSUSPENDE"),
+            getPropertySelByName("ASESORDELEGACION", "ASESORDELEGACION"),
+            getPropertySelByName("ASESORSUSPENDE", "ASESORSUSPENDE"),
         ]))
         return () => {
             dispatch(resetAllMain());

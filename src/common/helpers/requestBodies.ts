@@ -3706,6 +3706,20 @@ export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getreportleadgridtracking = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LEADGRID_TRACKING_SEL",
+    methodCount: "UFN_LEADGRID_TRACKING_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "leadgridtracking",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 export const getRequestSDExport = ({ filters, sorts, startdate, enddate, company }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_REQUESTSD_EXPORT",
     key: "UFN_REPORT_REQUESTSD_EXPORT",
@@ -3715,6 +3729,18 @@ export const getRequestSDExport = ({ filters, sorts, startdate, enddate, company
         startdate,
         enddate,
         company,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const getleadgridtrackingExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_LEADGRID_TRACKING_EXPORT",
+    key: "UFN_LEADGRID_TRACKING_EXPORT",
+    parameters: {
+        origin: "reportrequestsd",
+        filters,
+        startdate,
+        enddate,
         sorts,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
