@@ -2,7 +2,7 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getPaginatedWarehouse } from "common/helpers";
+import { getPaginatedInventoryConsumption } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, resetAllMain } from "store/main/actions";
 import InventoryConsumptionMainView from "./views/InventoryConsumptionMainView";
@@ -41,7 +41,7 @@ const InventoryConsumption: FC = () => {
     setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
     dispatch(
       getCollectionPaginated(
-        getPaginatedWarehouse({
+        getPaginatedInventoryConsumption({
           startdate: daterange?.startDate || null,
           enddate: daterange?.endDate || null,
           take: pageSize,

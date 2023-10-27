@@ -112,16 +112,18 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                   label={t(langKeys.neworder)}
                   className="col-6"
                   valueDefault={getValues("isneworder")}
-                  onChange={(value) => {setValue("isneworder", value); setdisableSave(!value)}}               
+                  onChange={(value) => {setValue("isneworder", value); setdisableSave(!value)}}    
+                  helperText={t(langKeys.newordertooltip)}        
               />
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.restockingpoint)}
+                  helperText={t(langKeys.restockingpointtooltip)}     
                   type="number"
                   valueDefault={getValues("replenishmentpoint")}
                   onChange={(value) => setValue("replenishmentpoint", value)}   
-                  error={errors?.replenishmentpoint?.message||""}
+                  error={(errors?.replenishmentpoint?.message as string) ?? ""}
                   className="col-6"
                   inputProps={{ maxLength: 15 }}
               />  
@@ -129,9 +131,10 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.deliverytimedays)}
+                  helperText={t(langKeys.deliverytimedaystooltip)}    
                   type="number"
                   valueDefault={getValues("deliverytimedays")}
-                  error={errors?.deliverytimedays?.message||""}
+                  error={(errors?.deliverytimedays?.message as string) ?? ""}
                   onChange={(value) => setValue("deliverytimedays", value)}   
                   className="col-6"
               />
@@ -139,32 +142,35 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.safetystock)}
+                  helperText={t(langKeys.safetystocktooltip)} 
                   className="col-6"
                   type="number"
                   valueDefault={getValues("securitystock")}
-                  error={errors?.securitystock?.message||""}
+                  error={(errors?.securitystock?.message as string) ?? ""}
                   onChange={(value) => setValue("securitystock", value)}   
               />  
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.economicquantityoforders)}
+                  helperText={t(langKeys.economicquantityoforderstooltip)} 
                   type="number"
                   className="col-6"
                   valueDefault={getValues("economicorderquantity")}
-                  error={errors?.economicorderquantity?.message||""}
+                  error={(errors?.economicorderquantity?.message as string) ?? ""}
                   onChange={(value) => setValue("economicorderquantity", value)}   
               />
           </div>
           <div className='row-zyx'>
               <FieldSelect
                 label={t(langKeys.purchase_unit)}
+                helperText={t(langKeys.purchase_unittooltip)} 
                 className="col-6"
                 data={multiDataAux?.data?.[0]?.data}
                 optionValue="domainid"
                 optionDesc="domaindesc"
                 valueDefault={getValues("unitbuyid")}
-                error={errors?.unitbuyid?.message||""}
+                error={(errors?.unitbuyid?.message as string) ?? ""}
                 onChange={(value) => setValue("unitbuyid", value.domainid)}   
               />
           </div>

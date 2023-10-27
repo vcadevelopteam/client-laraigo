@@ -304,10 +304,11 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
         onClickRow={handleEdit}
         handleRegister={handleRegister}
         filterGeneral={false}
+        FiltersElement={(<div></div>)}
         initialSelectedRows={selectedRows}
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
-        register={true}
+        register={false}
       />
     </div>
   );

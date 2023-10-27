@@ -1360,7 +1360,6 @@ const Users: FC = () => {
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             const datainit = array_trimmer(excel);
-            debugger
             const data = datainit.filter((f: any) => {
                 return (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))

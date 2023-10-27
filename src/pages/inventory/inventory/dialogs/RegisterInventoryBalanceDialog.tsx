@@ -40,7 +40,7 @@ const RegisterInventoryBalanceDialog: React.FC<{
         inventoryid: row?.inventoryid,
         shelf: "",
         lotecode: "",
-        currentbalance: 0,
+        currentbalance: row?.currentbalance,
         recountphysical: 0,
         recountphysicaldate: new Date().toISOString().split('T')[0],
         duedate: new Date().toISOString().split('T')[0],
@@ -80,6 +80,7 @@ React.useEffect(() => {
 }, [register, openModal]);
   
 const submitData = handleMainSubmit((data) => {
+  debugger
   const callback = () => {
       dispatch(showBackdrop(true));
       dispatch(execute(insInventoryBalance(data)));

@@ -226,6 +226,7 @@ const RouterApp: FC = () => {
 		removeAuthorizationToken()
 	}, [dispatch]));
 
+	
 	return (
 		<Router basename={ import.meta.env.BASE_URL}>
 			<React.Suspense fallback={(

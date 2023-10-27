@@ -159,10 +159,14 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
             Header: t(langKeys.dateofphysicalcount),
             accessor: "recountphysicaldate",
             width: "auto",
+            type: "date",
             sortType: 'datetime',
             Cell: (props: any) => {
                 const row = props.cell.row.original;
-                return convertLocalDate(row.recountphysicaldate).toLocaleString()
+                const originalDate = new Date(row.recountphysicaldate).toISOString().split('T')[0];
+                const [year, month, day] = originalDate.split('-');
+                const formattedDate = `${day}/${month}/${year}`;
+                return formattedDate
             }
           },
           {
@@ -260,15 +264,12 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 <div className='row-zyx col-6'>
                     <div className='col-6'>
                         <div className='row-zyx'>
-                            <FieldSelect
+                            <FieldEdit
                                 label={t(langKeys.typecostdispatch)}
-                                valueDefault={row?.unitdispatchdescription}
-                                data={multiData.data[6].data}
+                                valueDefault={row?.typecostdispatch}
                                 className="col-6"
-                                optionDesc="domaindesc"
-                                optionValue="domainid"
-                                disabled={true}
-                            /> 
+                                disabled
+                            />
                         </div>
                         <div className='row-zyx'>
                             <FieldEdit
