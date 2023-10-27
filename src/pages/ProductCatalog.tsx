@@ -86,7 +86,7 @@ const ProductCatalog: FC = () => {
     const resultManageProduct = useSelector(state => state.catalog.requestCatalogManageProduct);
     const resultSynchroProduct = useSelector(state => state.catalog.requestCatalogSynchroProduct);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
+    const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
     const isClaro = true;
 
     const [availabilityTemplate] = useState<Dictionary[]>([{ "key": t(langKeys.productcatalog_domain_availability_available_for_order), "value": "available for order" }, { "key": t(langKeys.productcatalog_domain_availability_discontinued), "value": "discontinued" }, { "key": t(langKeys.productcatalog_domain_availability_in_stock), "value": "in stock" }, { "key": t(langKeys.productcatalog_domain_availability_out_of_stock), "value": "out of stock" }, { "key": t(langKeys.productcatalog_domain_availability_pending), "value": "pending" }, { "key": t(langKeys.productcatalog_domain_availability_preorder), "value": "preorder" }]);

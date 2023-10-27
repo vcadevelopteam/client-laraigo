@@ -145,12 +145,12 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
     );
 }
 
-const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
+const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
-    const useradmin = ["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
-    const newrow = row===null
+    const useradmin = (user?.roledesc ?? "").split(",").some(v => ["ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
+    const newrow = row === null
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -160,7 +160,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     const [openDialogDomain, setOpenDialogDomain] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
+    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin ? multiData[1].data.filter(x => x.domainvalue === "BOT") : multiData[1].data) : [];
 
     const columns = React.useMemo(
         () => [
@@ -302,23 +302,23 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 
             setWaitSave(true);
         }
-        if(!!dataDomain.length){
+        if (!!dataDomain.length) {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
                 callback
             }))
-        }else{
+        } else {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorneedvalues) }))
         }
     });
     return (
-        <div style={{width: "100%"}}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.domain)} ${t(langKeys.detail)}` }]}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: `${t(langKeys.domain)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                     </div>
@@ -386,7 +386,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                         />}
                                 </div>
                                 <div className="row-zyx">
-                                    {(!useradmin||newrow) ?
+                                    {(!useradmin || newrow) ?
                                         <FieldSelect
                                             label={t(langKeys.type)}
                                             className="col-6"
@@ -477,12 +477,12 @@ const Domains: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = ["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
+    const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.domain_plural) },
     ];
-    function redirectFunc(view:string){
+    function redirectFunc(view: string) {
         setViewSelected(view)
     }
     const columns = React.useMemo(
@@ -619,7 +619,7 @@ const Domains: FC = () => {
                     loading={mainResult.mainData.loading}
                     register={superadmin}
                     handleRegister={handleRegister}
-            />
+                />
             </div>
         )
     }

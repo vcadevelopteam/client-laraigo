@@ -80,7 +80,7 @@ const Properties: FC = () => {
     const arrayBread = [
         { id: "view-1", name: t(langKeys.property_plural) },
     ];
-    function redirectFunc(view:string){
+    function redirectFunc(view: string) {
         setViewSelected(view)
     }
 
@@ -229,7 +229,7 @@ const Properties: FC = () => {
                     filterGeneral={false}
                     onClickRow={handleEdit}
                     loading={mainResult.loading}
-                    register={['SUPERADMIN'].includes(user?.roledesc || "")}
+                    register={(user?.roledesc ?? "").split(",").some(v => ['SUPERADMIN'].includes(v))}
                     handleRegister={handleRegister}
                     pageSizeDefault={IDPROPERTIES === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
                     initialPageIndex={IDPROPERTIES === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
@@ -258,7 +258,7 @@ interface DetailPropertyProps {
     fetchData: () => void;
     multiData: MultiData[];
     setViewSelected: (view: string) => void;
-    arrayBread:any;
+    arrayBread: any;
 }
 
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected, arrayBread }) => {
@@ -272,7 +272,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     const [orgList, setorgList] = useState<any>([]);
     const [channelList, setchannelList] = useState<any>([]);
     const [groupList, setgroupList] = useState<any>([]);
-    const allowEdition = !(['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P', 'SUPERVISOR'].includes(user?.roledesc || ""))
+    const allowEdition = !((user?.roledesc ?? "").split(",").some(v => ['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P', 'SUPERVISOR'].includes(v)))
     const isView = (!allowEdition && row !== null);
 
     const detailResult = useSelector(state => state.main.mainAux);
@@ -705,14 +705,14 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
     const dispatch = useDispatch();
 
     var valueInput = null;
-    
+
     if (row) {
         switch (row?.inputtype) {
             case 'BOOL':
                 if (edit) {
                     valueInput =
                         <TemplateSwitchArray
-                            tooltip={{true: row?.tooltipenable, false: row?.tooltipdisable}}
+                            tooltip={{ true: row?.tooltipenable, false: row?.tooltipdisable }}
                             className={classes.mb2}
                             error={errors?.table?.[index]?.propertyvalue?.message}
                             /*fregister={{

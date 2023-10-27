@@ -6231,6 +6231,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                 typecredit_60: "typecredit_60",
                 typecredit_90: "typecredit_90",
                 typecredit_7: "typecredit_7",
+                typecredit_180: "typecredit_180",
             },
         ];
 
@@ -8353,6 +8354,9 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 case "typecredit_7":
                     dueDate = new Date(dueDate.setDate(dueDate.getDate() + 7));
                     break;
+                case "typecredit_180":
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 180));
+                    break;
             }
 
             setValue("invoiceduedate", dueDate.toISOString().split("T")[0]);
@@ -8452,6 +8456,9 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                     break;
                 case "typecredit_7":
                     dueDate = new Date(dueDate.setDate(dueDate.getDate() + 7));
+                    break;
+                case "typecredit_180":
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 180));
                     break;
             }
 
@@ -11291,7 +11298,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            {user?.roledesc.includes("SUPERADMIN") && (
+            {user?.roledesc?.includes("SUPERADMIN") && (
                 <div>
                     <Tabs
                         indicatorColor="primary"

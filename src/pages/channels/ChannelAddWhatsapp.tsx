@@ -175,19 +175,19 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     useEffect(() => {
-        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "DIALOG") {
+        if (!(roledesc?.includes("SUPERADMIN")) && !edit && whatsAppData?.typeWhatsApp === "DIALOG") {
             setSetRegister360(true);
             setSetRegisterGupshup(false);
             setSetRegisterMeta(false);
             setSetRegisterSmooch(false);
 
             let partialField = fields;
-            partialField.type = "DIALOG";
+            partialField.type = "WHATSAPP";
 
             setFields(partialField);
         }
 
-        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "SMOOCH") {
+        if (!(roledesc?.includes("SUPERADMIN")) && !edit && whatsAppData?.typeWhatsApp === "SMOOCH") {
             setSetRegister360(false);
             setSetRegisterGupshup(false);
             setSetRegisterMeta(false);
@@ -199,7 +199,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             setFields(partialField);
         }
 
-        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "GUPSHUP") {
+        if (!(roledesc?.includes("SUPERADMIN")) && !edit && whatsAppData?.typeWhatsApp === "GUPSHUP") {
             setSetRegister360(false);
             setSetRegisterGupshup(true);
             setSetRegisterMeta(false);
@@ -211,7 +211,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             setFields(partialField);
         }
 
-        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "META") {
+        if (!(roledesc?.includes("SUPERADMIN")) && !edit && whatsAppData?.typeWhatsApp === "META") {
             setSetRegister360(false);
             setSetRegisterGupshup(false);
             setSetRegisterMeta(true);
@@ -819,7 +819,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                     </div>
                 </div>
             );
-        } else if (roledesc === "SUPERADMIN" && !edit) {
+        } else if (roledesc?.includes("SUPERADMIN") && !edit) {
             return (
                 <div style={{ width: "100%" }}>
                     <div style={{ width: "100%" }}>
@@ -1168,7 +1168,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <div className={"col-3"}></div>
                             </div>
                         </div>
-                        {roledesc === "SUPERADMIN" && edit ? (
+                        {roledesc?.includes("SUPERADMIN") && edit ? (
                             <div style={{ width: "100%", alignItems: "center", display: "flex" }}>
                                 <div style={{ flex: "1", margin: "0px 15px" }}>
                                     <Button
@@ -1537,7 +1537,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                             </Button>
                                         )}
                                     </div>
-                                    {roledesc === "SUPERADMIN" && edit ? (
+                                    {roledesc?.includes("SUPERADMIN") && edit ? (
                                         <Fragment>
                                             <div style={{ flex: "1", margin: "0px 15px" }}>
                                                 <Button

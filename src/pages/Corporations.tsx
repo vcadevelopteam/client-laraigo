@@ -192,7 +192,7 @@ const Corporations: FC = () => {
                     data={mainData}
                     download={true}
                     loading={mainResult.mainData.loading}
-                    register={['SUPERADMIN'].includes(user?.roledesc || "")}
+                    register={(user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN"].includes(v))}
                     handleRegister={handleRegister}
                 />
             </div>
@@ -400,7 +400,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     }, [dataDocType, getValues("sunatcountry")]);
 
     return (
-        <div style={{ width: '100%',  }}>
+        <div style={{ width: '100%', }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>

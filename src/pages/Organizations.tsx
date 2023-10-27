@@ -234,10 +234,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('automaticperiod');
         register('automaticinvoice');
         register('voximplantautomaticrecharge');
-        register('voximplantrechargerange', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
-        register('voximplantrechargepercentage', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
+        register('voximplantrechargerange', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
+        register('voximplantrechargepercentage', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
         register('voximplantrechargefixed', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('voximplantadditionalperchannel', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
+        register('voximplantadditionalperchannel', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
@@ -544,14 +544,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 >
                     <AntTab label={t(langKeys.informationorganization)} />
                     <AntTab label={t(langKeys.emailconfiguration)} />
-                    {roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
+                    {roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
                     {false && <AntTab label={t(langKeys.chatimages)} />}
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
                             (
-                                !row && ['SUPERADMIN'].includes(roledesc || "") ?
+                                !row && ((roledesc ?? "").split(",").some(v => ['SUPERADMIN'].includes(v))) ?
                                     <FieldSelect
                                         label={t(langKeys.corporation)}
                                         className="col-6"
@@ -564,7 +564,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                         triggerOnChangeOnFirst={true}
                                         error={errors?.corpid?.message}
                                         data={dataCorp}
-                                        disabled={!['SUPERADMIN'].includes(roledesc || "")}
+                                        disabled={!((roledesc ?? "").split(",").some(v => ['SUPERADMIN'].includes(v)))}
                                         optionDesc="description"
                                         optionValue="corpid"
                                     />
@@ -735,7 +735,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     error={errors?.contactemail?.message}
                                 />
                             </div>
-                            {roledesc === "SUPERADMIN" &&
+                            {roledesc?.includes("SUPERADMIN") &&
                                 <>
                                     <div className="row-zyx">
                                         <FieldSelect

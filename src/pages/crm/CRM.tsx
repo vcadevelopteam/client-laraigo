@@ -1,5 +1,7 @@
-import { convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, 
-  insLead2, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
+import {
+  convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns,
+  insLead2, updateColumnsLeads, updateColumnsOrder, uuidv4
+} from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -39,8 +41,8 @@ interface dataBackend {
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
-      marginTop: theme.spacing(3),
-      background: '#fff',
+    marginTop: theme.spacing(3),
+    background: '#fff',
   },
   tag: {
     backgroundColor: '#7721AD',
@@ -59,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between'
   },
   filterComponent: {
-      width: '220px'
+    width: '220px'
   },
   canvasFiltersHeader: {
     margin: theme.spacing(1),
@@ -93,39 +95,39 @@ interface IBoardFilter {
   persontype: string;
 }
 
-const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, hanldeDeleteColumn:(a:string)=>void, handleDelete:(lead: ICrmLead)=>void, handleCloseLead:(lead: ICrmLead)=>void, isIncremental:boolean}> = ({column, 
+const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean }> = ({ column,
   index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental }) => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   return (
-    <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid} isDragDisabled={isIncremental}>
-      { (provided) => (
+    <Draggable draggableId={column.column_uuid} index={index + 1} key={column.column_uuid} isDragDisabled={isIncremental}>
+      {(provided) => (
         <div
           {...provided.draggableProps}
           ref={provided.innerRef}
         >
-          <DraggableLeadColumn 
+          <DraggableLeadColumn
             title={t(column.description.toLowerCase())}
-            key={index+1} 
-            snapshot={null} 
-            provided={provided} 
+            key={index + 1}
+            snapshot={null}
+            provided={provided}
             // titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
-            columnid={column.column_uuid} 
+            columnid={column.column_uuid}
             deletable={deletable}
             onDelete={hanldeDeleteColumn}
             total_revenue={column.total_revenue!}
             total_cards={column.items.length}
-            // onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
+          // onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
           >
-              <Droppable droppableId={column.column_uuid} type="task">
-                {(provided, snapshot) => {
-                  return (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      style={{ overflow: 'hidden', width: '100%' }}
-                    >
-                      <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
-                      {column.items?.map((item:any, index:any) => {
+            <Droppable droppableId={column.column_uuid} type="task">
+              {(provided, snapshot) => {
+                return (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    style={{ overflow: 'hidden', width: '100%' }}
+                  >
+                    <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
+                      {column.items?.map((item: any, index: any) => {
                         return (
                           <Draggable
                             isDragDisabled={isIncremental}
@@ -134,17 +136,17 @@ const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, han
                             index={index}
                           >
                             {(provided, snapshot) => {
-                              return(
+                              return (
                                 <NaturalDragAnimation
                                   style={provided.draggableProps.style}
                                   snapshot={snapshot}
                                 >
-                                  {(style:any) => (
+                                  {(style: any) => (
                                     <div
                                       ref={provided.innerRef}
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
-                                      style={{width: '100%', ...style}}
+                                      style={{ width: '100%', ...style }}
                                     >
                                       <DraggableLeadCardContent
                                         lead={item}
@@ -160,16 +162,16 @@ const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, han
                           </Draggable>
                         );
                       })}
-                      </DroppableLeadColumnList>
-                      {provided.placeholder}
-                    </div>
-                  );
-                }}
-              </Droppable>
+                    </DroppableLeadColumnList>
+                    {provided.placeholder}
+                  </div>
+                );
+              }}
+            </Droppable>
           </DraggableLeadColumn>
         </div>
       )}
-  </Draggable>
+    </Draggable>
   )
 }
 
@@ -214,7 +216,7 @@ const CRM: FC = () => {
   const setBoardFilter = useCallback((prop: React.SetStateAction<typeof boardFilter>) => {
     if (!user) return;
 
-    if (user.roledesc === "ASESOR") {
+    if (user.roledesc?.includes("ASESOR")) {
       setBoardFilterPrivate({
         ...(typeof prop === "function" ? prop(boardFilter) : prop),
         asesorid: user.userid,
@@ -225,30 +227,30 @@ const CRM: FC = () => {
   }, [user, boardFilter]);
 
   useEffect(() => {
-      dispatch(getMultiCollection([
-          getColumnsSel(1),
-          getLeadsSel({
-            id: 0,
-            campaignid: boardFilter.campaign,
-            fullname: boardFilter.customer,
-            leadproduct: boardFilter.products,
-            persontype: boardFilter.persontype,
-            tags: boardFilter.tags,
-            userid: String(boardFilter.asesorid || ""),
-            supervisorid: user?.userid || 0,
-          }),
-          // adviserSel(),
-          getAdviserFilteredUserRol(),
-          getCommChannelLst(),
-          getCampaignLst(),
-          getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
-          getLeadTasgsSel(),
-          getValuesFromDomain('TIPOPERSONA'),
-      ]));
-      return () => {
-          dispatch(resetAllMain());
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    dispatch(getMultiCollection([
+      getColumnsSel(1),
+      getLeadsSel({
+        id: 0,
+        campaignid: boardFilter.campaign,
+        fullname: boardFilter.customer,
+        leadproduct: boardFilter.products,
+        persontype: boardFilter.persontype,
+        tags: boardFilter.tags,
+        userid: String(boardFilter.asesorid || ""),
+        supervisorid: user?.userid || 0,
+      }),
+      // adviserSel(),
+      getAdviserFilteredUserRol(),
+      getCommChannelLst(),
+      getCampaignLst(),
+      getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
+      getLeadTasgsSel(),
+      getValuesFromDomain('TIPOPERSONA'),
+    ]));
+    return () => {
+      dispatch(resetAllMain());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   useEffect(() => {
@@ -257,18 +259,18 @@ const CRM: FC = () => {
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
         let unordeneddatacolumns = columns.map((column) => {
-          column.items = leads.filter( x => x.column_uuid === column.column_uuid);
-          return {...column, total_revenue: (column.items.reduce((a,b) => a + parseFloat(b.expected_revenue), 0))}
+          column.items = leads.filter(x => x.column_uuid === column.column_uuid);
+          return { ...column, total_revenue: (column.items.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)) }
         })
-        let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.type==="NEW"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="QUALIFIED"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="PROPOSITION"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="WON"),
+        let ordereddata = [...unordeneddatacolumns.filter((x: any) => x.type === "NEW"),
+        ...unordeneddatacolumns.filter((x) => x.type === "QUALIFIED"),
+        ...unordeneddatacolumns.filter((x) => x.type === "PROPOSITION"),
+        ...unordeneddatacolumns.filter((x) => x.type === "WON"),
         ];
         setDataColumn(ordereddata)
       }
     }
-  },[mainMulti]);
+  }, [mainMulti]);
 
   const fetchBoardLeadsWithFilter = useCallback(() => {
     const newParams = new URLSearchParams(location.search);
@@ -289,7 +291,7 @@ const CRM: FC = () => {
         leadproduct: boardFilter.products,
         persontype: boardFilter.persontype,
         tags: boardFilter.tags,
-        userid: String(boardFilter.asesorid||""),
+        userid: String(boardFilter.asesorid || ""),
         supervisorid: user?.userid || 0,
       }),
       // adviserSel(),
@@ -303,21 +305,21 @@ const CRM: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardFilter, dispatch]);
 
-  const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
+  const onDragEnd = (result: DropResult, columns: dataBackend[], setDataColumn: any) => {
     if (!result.destination) return;
     const { source, destination, type } = result;
-  
+
     if (type === 'column') {
       const newColumnOrder = [...columns]
-      if(newColumnOrder[destination.index-1].type !== newColumnOrder[source.index-1].type) return;
-      const [removed] = newColumnOrder.splice((source.index-1),1)
-      newColumnOrder.splice(destination.index-1, 0, removed)
+      if (newColumnOrder[destination.index - 1].type !== newColumnOrder[source.index - 1].type) return;
+      const [removed] = newColumnOrder.splice((source.index - 1), 1)
+      newColumnOrder.splice(destination.index - 1, 0, removed)
       setDataColumn(newColumnOrder)
       const columns_uuid = newColumnOrder.slice(1).map(x => x.column_uuid).join(',')
-      dispatch(execute(updateColumnsOrder({columns_uuid})));
+      dispatch(execute(updateColumnsOrder({ columns_uuid })));
       return;
     }
-  
+
     if (source.droppableId === destination.droppableId) {
       const index = columns.findIndex(c => c.column_uuid === source.droppableId)
       if (index >= 0) {
@@ -325,11 +327,11 @@ const CRM: FC = () => {
         const copiedItems = [...column.items!!]
         const [removed] = copiedItems!.splice(source.index, 1);
         copiedItems!.splice(destination.index, 0, removed);
-        setDataColumn(Object.values({...columns, [index]: {...column, items: copiedItems}}));
-        
+        setDataColumn(Object.values({ ...columns, [index]: { ...column, items: copiedItems } }));
+
         const cards_startingcolumn = copiedItems!.map(x => x.leadid).join(',')
         const startingcolumn_uuid = column.column_uuid
-        dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn:'', startingcolumn_uuid, finalcolumn_uuid: startingcolumn_uuid})));
+        dispatch(execute(updateColumnsLeads({ cards_startingcolumn, cards_finalcolumn: '', startingcolumn_uuid, finalcolumn_uuid: startingcolumn_uuid })));
       }
     } else {
       const sourceIndex = columns.findIndex(c => c.column_uuid === source.droppableId)
@@ -342,16 +344,16 @@ const CRM: FC = () => {
         const [removed] = sourceItems!.splice(source.index, 1);
         removed.column_uuid = destination.droppableId
         destItems!.splice(destination.index, 0, removed);
-        const sourceTotalRevenue = sourceItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
-        const destTotalRevenue = destItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
-      
-        setDataColumn(Object.values({...columns, [sourceIndex]: {...sourceColumn, total_revenue: sourceTotalRevenue,items: sourceItems}, [destIndex]: {...destColumn, total_revenue: destTotalRevenue,items: destItems}}));
+        const sourceTotalRevenue = sourceItems!.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)
+        const destTotalRevenue = destItems!.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)
+
+        setDataColumn(Object.values({ ...columns, [sourceIndex]: { ...sourceColumn, total_revenue: sourceTotalRevenue, items: sourceItems }, [destIndex]: { ...destColumn, total_revenue: destTotalRevenue, items: destItems } }));
 
         const cards_startingcolumn = sourceItems!.map(x => x.leadid).join(',')
         const cards_finalcolumn = destItems!.map(x => x.leadid).join(',')
         const startingcolumn_uuid = sourceColumn.column_uuid
         const finalcolumn_uuid = destColumn.column_uuid
-        dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid, leadid: removed.leadid})));
+        dispatch(execute(updateColumnsLeads({ cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid, leadid: removed.leadid })));
       }
     }
   };
@@ -363,8 +365,8 @@ const CRM: FC = () => {
       const copiedItems = [...column.items!!]
       const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
       copiedItems!.splice(leadIndex, 1); //v
-      const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
-      const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
+      const totalRevenue = copiedItems!.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)
+      const newData = Object.values({ ...dataColumn, [index]: { ...column, total_revenue: totalRevenue, items: copiedItems } }) as dataBackend[]
       setDataColumn(newData);
       dispatch(execute(insArchiveLead(lead)))
     }
@@ -382,8 +384,8 @@ const CRM: FC = () => {
       const copiedItems = [...column.items!!]
       const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
       copiedItems!.splice(leadIndex, 1);
-      const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
-      const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
+      const totalRevenue = copiedItems!.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)
+      const newData = Object.values({ ...dataColumn, [index]: { ...column, total_revenue: totalRevenue, items: copiedItems } }) as dataBackend[]
       setDataColumn(newData);
       dispatch(execute(insLead2({ ...lead, status: 'ELIMINADO' }, "DELETE")));
     }
@@ -395,7 +397,7 @@ const CRM: FC = () => {
   }
 
   // No borrar
-  const handleInsert = (infa:any, columns:dataBackend[], setDataColumn:any) => {
+  const handleInsert = (infa: any, columns: dataBackend[], setDataColumn: any) => {
     const newIndex = columns.length
     const uuid = uuidv4() // from common/helpers
 
@@ -408,7 +410,7 @@ const CRM: FC = () => {
       index: newIndex,
       operation: 'INSERT',
     }
-    
+
     const newColumn = {
       columnid: null,
       column_uuid: uuid,
@@ -419,24 +421,24 @@ const CRM: FC = () => {
       index: newIndex,
       items: []
     }
-    let unordeneddatacolumns = Object.values({...columns, newColumn})
-    let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.type==="NEW"),
-      ...unordeneddatacolumns.filter((x:any)=>x.type==="QUALIFIED"),
-      ...unordeneddatacolumns.filter((x:any)=>x.type==="PROPOSITION"),
-      ...unordeneddatacolumns.filter((x:any)=>x.type==="WON"),
+    let unordeneddatacolumns = Object.values({ ...columns, newColumn })
+    let ordereddata = [...unordeneddatacolumns.filter((x: any) => x.type === "NEW"),
+    ...unordeneddatacolumns.filter((x: any) => x.type === "QUALIFIED"),
+    ...unordeneddatacolumns.filter((x: any) => x.type === "PROPOSITION"),
+    ...unordeneddatacolumns.filter((x: any) => x.type === "WON"),
     ];
     dispatch(execute(insColumns(data)))
     setDataColumn(Object.values(ordereddata));
   }
 
-  const hanldeDeleteColumn = (column_uuid : string, delete_all:boolean = true) => {
+  const hanldeDeleteColumn = (column_uuid: string, delete_all: boolean = true) => {
     if (column_uuid === '00000000-0000-0000-0000-000000000000') return;
 
     if (openDialog) {
       const columns = [...dataColumn]
       const sourceIndex = columns.findIndex(c => c.column_uuid === column_uuid)
       const sourceColumn = columns[sourceIndex];
-      let newColumn:dataBackend[] = [];
+      let newColumn: dataBackend[] = [];
       if (delete_all) {
         newColumn = columns
       } else {
@@ -445,11 +447,11 @@ const CRM: FC = () => {
         const removed = sourceItems!.splice(0)
         const newDestItems = [...destColumn.items!].concat(removed)
         newDestItems.map((item) => item.column_uuid = destColumn.column_uuid)
-        const destTotalRevenue = newDestItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
-        newColumn = Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, 0: {...destColumn, total_revenue: destTotalRevenue, items: newDestItems}}) as dataBackend[]
+        const destTotalRevenue = newDestItems!.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)
+        newColumn = Object.values({ ...columns, [sourceIndex]: { ...sourceColumn, items: sourceItems }, 0: { ...destColumn, total_revenue: destTotalRevenue, items: newDestItems } }) as dataBackend[]
       }
       setDataColumn(newColumn.filter(c => c.column_uuid !== column_uuid))
-      dispatch(execute(insColumns({...sourceColumn, status: 'ELIMINADO', delete_all, id: sourceColumn.column_uuid, operation: 'DELETE'})));
+      dispatch(execute(insColumns({ ...sourceColumn, status: 'ELIMINADO', delete_all, id: sourceColumn.column_uuid, operation: 'DELETE' })));
       setOpenDialog(false)
 
       return;
@@ -461,7 +463,7 @@ const CRM: FC = () => {
 
   const initialAsesorId = useMemo(() => {
     if (!user) return "";
-    if (user.roledesc === "ASESOR") return user.userid;
+    if (user.roledesc?.includes("ASESOR")) return user.userid;
     else return otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || "") : "";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otherParams, user]);
@@ -490,14 +492,14 @@ const CRM: FC = () => {
   const setAllParameters = useCallback((prop: typeof allParameters) => {
     if (!user) return;
 
-    if (user.roledesc === "ASESOR" && prop.asesorid !== String(user.userid||"")) {
-      setAllParametersPrivate({ ...prop, asesorid: String(user.userid||"") });
+    if (user.roledesc?.includes("ASESOR") && prop.asesorid !== String(user.userid || "")) {
+      setAllParametersPrivate({ ...prop, asesorid: String(user.userid || "") });
     } else {
       setAllParametersPrivate(prop);
     }
   }, [user]);
 
-  const CustomCellRender = ({column, row}: any) => {
+  const CustomCellRender = ({ column, row }: any) => {
     switch (column.id) {
       case 'status':
         return (
@@ -513,10 +515,10 @@ const CRM: FC = () => {
             <div>{t(langKeys.email)}: {row['email']}</div>
             <div>{t(langKeys.phone)}: {row['phone']}</div>
             <Rating
-                name="simple-controlled"
-                max={3}
-                value={row['priority'] === 'LOW' ? 1 : row['priority'] === 'MEDIUM' ? 2 : row['priority'] === 'HIGH' ? 3 : 1}
-                readOnly={true}
+              name="simple-controlled"
+              max={3}
+              value={row['priority'] === 'LOW' ? 1 : row['priority'] === 'MEDIUM' ? 2 : row['priority'] === 'HIGH' ? 3 : 1}
+              readOnly={true}
             />
             <div>{t(langKeys.assignedTo)}: {row['asesorname']}</div>
           </div>
@@ -553,21 +555,21 @@ const CRM: FC = () => {
           <div style={{ cursor: 'pointer' }}>
             {
               column.sortType === "datetime" && !!row[column.id]
-              ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "numeric",
-                minute: "numeric",
-                second: "numeric"
-              })
-              : row[column.id]
+                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "numeric",
+                  minute: "numeric",
+                  second: "numeric"
+                })
+                : row[column.id]
             }
           </div>
         )
     }
   }
-  
+
   const cell = (props: any) => {
     const column = props.cell.column;
     const row = props.cell.row.original;
@@ -578,7 +580,7 @@ const CRM: FC = () => {
 
   const onClickRow = (row: any) => {
     if (row.leadid) {
-      history.push({pathname: paths.CRM_EDIT_LEAD.resolve(row.leadid),});
+      history.push({ pathname: paths.CRM_EDIT_LEAD.resolve(row.leadid), });
     }
   }
 
@@ -633,81 +635,9 @@ const CRM: FC = () => {
           if (row.status === 'ACTIVO') {
             return (
               <>
-              {!isIncremental &&
-                <React.Fragment>
-                  <div style={{display: 'flex'}}>
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }})
-                      }}
-                    >
-                      <WhatsappIcon
-                        width={24}
-                        style={{ fill: 'rgba(0, 0, 0, 0.54)' }}
-                      />
-                    </IconButton>
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) 
-                      }}
-                    >
-                      <MailIcon color="action" />
-                    </IconButton>
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) 
-                      }}
-                    >
-                      <SmsIcon color="action" />
-                    </IconButton>
-                  </div>
-                  <div style={{display: 'flex'}}>
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) 
-                      }}
-                    >
-                      <AccessTimeIcon
-                        titleAccess={t(langKeys.activities)}
-                        color="action" 
-                      />
-                    </IconButton>
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) 
-                      }}
-                    >
-                      <NoteIcon
-                        titleAccess={t(langKeys.logNote)}
-                        color="action" 
-                      />
-                    </IconButton>
-                    {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && !!row.phone) &&
+                {!isIncremental &&
+                  <React.Fragment>
+                    <div style={{ display: 'flex' }}>
                       <IconButton
                         aria-label="more"
                         aria-controls="long-menu"
@@ -715,22 +645,94 @@ const CRM: FC = () => {
                         size="small"
                         onClick={(e) => {
                           e.stopPropagation();
-                          dispatch(setPhoneNumber(row.phone))
-                          dispatch(setModalCall(true))
+                          setGridModal({ name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' } })
                         }}
                       >
-                        <PhoneIcon color="action" titleAccess={t(langKeys.make_call)}/>
+                        <WhatsappIcon
+                          width={24}
+                          style={{ fill: 'rgba(0, 0, 0, 0.54)' }}
+                        />
                       </IconButton>
-                    }
-                  </div>
-                </React.Fragment>}
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setGridModal({ name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' } })
+                        }}
+                      >
+                        <MailIcon color="action" />
+                      </IconButton>
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setGridModal({ name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' } })
+                        }}
+                      >
+                        <SmsIcon color="action" />
+                      </IconButton>
+                    </div>
+                    <div style={{ display: 'flex' }}>
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setGridModal({ name: 'ACTIVITY', open: true, payload: { leadid: row['leadid'] } })
+                        }}
+                      >
+                        <AccessTimeIcon
+                          titleAccess={t(langKeys.activities)}
+                          color="action"
+                        />
+                      </IconButton>
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setGridModal({ name: 'NOTE', open: true, payload: { leadid: row['leadid'] } })
+                        }}
+                      >
+                        <NoteIcon
+                          titleAccess={t(langKeys.logNote)}
+                          color="action"
+                        />
+                      </IconButton>
+                      {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && !!row.phone) &&
+                        <IconButton
+                          aria-label="more"
+                          aria-controls="long-menu"
+                          aria-haspopup="true"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(setPhoneNumber(row.phone))
+                            dispatch(setModalCall(true))
+                          }}
+                        >
+                          <PhoneIcon color="action" titleAccess={t(langKeys.make_call)} />
+                        </IconButton>
+                      }
+                    </div>
+                  </React.Fragment>}
               </>
             )
           }
           else {
             return null
           }
-      }
+        }
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -738,26 +740,26 @@ const CRM: FC = () => {
   );
 
   const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-    setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
+    setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
     dispatch(getCollectionPaginated(getPaginatedLead(
-        {
-          startdate: daterange.startDate!,
-          enddate: daterange.endDate!,
-          sorts: sorts,
-          filters: filters,
-          take: pageSize,
-          skip: pageIndex * pageSize,
-          ...allParameters,
-        }
+      {
+        startdate: daterange.startDate!,
+        enddate: daterange.endDate!,
+        sorts: sorts,
+        filters: filters,
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        ...allParameters,
+      }
     )));
   };
 
   useEffect(() => {
     if (!mainPaginated.loading && !mainPaginated.error) {
-        setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
-        settotalrow(mainPaginated.count);
+      setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+      settotalrow(mainPaginated.count);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainPaginated]);
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
@@ -787,25 +789,25 @@ const CRM: FC = () => {
 
   useEffect(() => {
     if (waitExport) {
-        if (!resExportData.loading && !resExportData.error) {
-            dispatch(showBackdrop(false));
-            setWaitExport(false);
-            resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
-        } else if (resExportData.error) {
-            const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-            dispatch(showBackdrop(false));
-            setWaitExport(false);
-        }
+      if (!resExportData.loading && !resExportData.error) {
+        dispatch(showBackdrop(false));
+        setWaitExport(false);
+        resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+      } else if (resExportData.error) {
+        const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+        dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+        dispatch(showBackdrop(false));
+        setWaitExport(false);
+      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resExportData, waitExport]);
 
   useEffect(() => {
     if (!(Object.keys(selectedRows).length === 0 && personsSelected.length === 0)) {
-        setPersonsSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.leadid === parseInt(x)) || p.find(y => y.leadid === parseInt(x)) || {}))
+      setPersonsSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.leadid === parseInt(x)) || p.find(y => y.leadid === parseInt(x)) || {}))
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRows])
 
   useEffect(() => {
@@ -847,36 +849,36 @@ const CRM: FC = () => {
 
   const filtersElement = useMemo(() => (
     <>
-      {(user && user.roledesc !== "ASESOR") && <FieldMultiSelect
-          variant="outlined"
-          label={t(langKeys.agent)}
-          className={classes.filterComponent}
-          valueDefault={allParameters.asesorid}
-          onChange={(value) => {debugger;setAllParameters({...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',')})}}
-          data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-          optionDesc={'fullname'}
-          optionValue={'userid'}
-          disabled={!!user?.roledesc?.includes("ASESOR") || false}
+      {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
+        variant="outlined"
+        label={t(langKeys.agent)}
+        className={classes.filterComponent}
+        valueDefault={allParameters.asesorid}
+        onChange={(value) => { setAllParameters({ ...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }) }}
+        data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+        optionDesc={'fullname'}
+        optionValue={'userid'}
+        disabled={!!user?.roledesc?.includes("ASESOR") || false}
       />}
       <FieldMultiSelect
-          variant="outlined"
-          label={t(langKeys.channel)}
-          className={classes.filterComponent}
-          valueDefault={allParameters.channel}
-          onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-          data={channels}
-          optionDesc={'communicationchanneldesc'}
-          optionValue={'communicationchannelid'}
+        variant="outlined"
+        label={t(langKeys.channel)}
+        className={classes.filterComponent}
+        valueDefault={allParameters.channel}
+        onChange={(value) => setAllParameters({ ...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',') })}
+        data={channels}
+        optionDesc={'communicationchanneldesc'}
+        optionValue={'communicationchannelid'}
       />
       <FieldEdit
-          size="small"
-          variant="outlined"
-          label={t(langKeys.customer)}
-          className={classes.filterComponent}
-          valueDefault={allParameters.contact}
-          onChange={(value) => setAllParameters({...allParameters, contact: value})}
+        size="small"
+        variant="outlined"
+        label={t(langKeys.customer)}
+        className={classes.filterComponent}
+        valueDefault={allParameters.contact}
+        onChange={(value) => setAllParameters({ ...allParameters, contact: value })}
       />
-      
+
       <FieldMultiSelect
         variant="outlined"
         label={t(langKeys.personType, { count: 2 })}
@@ -895,44 +897,44 @@ const CRM: FC = () => {
   ), [user, allParameters, classes, mainMulti, t]);
 
   return (
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
-        <div style={{ marginBottom: '34px' }}>
-          <div style={{ position: 'fixed', right: '20px' }}>
-            <Tooltip title={t(langKeys.kanbanview) + ""} arrow placement="top">
-              <IconButton
-                color="default"
-                disabled={display === 'BOARD'}
-                onClick={() => setDisplay('BOARD')}
-                style={{ padding: '5px' }}
-              >
-                <ViewColumnIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t(langKeys.listview) + ""} arrow placement="top">
-              <IconButton
-                color="default"
-                disabled={display === 'GRID'}
-                onClick={() => setDisplay('GRID')}
-                style={{ padding: '5px' }}
-              >
-                <ViewListIcon />
-              </IconButton>
-            </Tooltip>
-          </div>
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ marginBottom: '34px' }}>
+        <div style={{ position: 'fixed', right: '20px' }}>
+          <Tooltip title={t(langKeys.kanbanview) + ""} arrow placement="top">
+            <IconButton
+              color="default"
+              disabled={display === 'BOARD'}
+              onClick={() => setDisplay('BOARD')}
+              style={{ padding: '5px' }}
+            >
+              <ViewColumnIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t(langKeys.listview) + ""} arrow placement="top">
+            <IconButton
+              color="default"
+              disabled={display === 'GRID'}
+              onClick={() => setDisplay('GRID')}
+              style={{ padding: '5px' }}
+            >
+              <ViewListIcon />
+            </IconButton>
+          </Tooltip>
         </div>
-        {display === 'BOARD' &&
+      </div>
+      {display === 'BOARD' &&
         <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
           <div className={classes.canvasFiltersHeader}>
-            {(user && user.roledesc !== "ASESOR") && <FieldMultiSelect
-                variant="outlined"
-                label={t(langKeys.agent)}
-                className={classes.filterComponent}
-                valueDefault={boardFilter.asesorid}
-                onChange={(value) => setBoardFilter(prev => ({...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',')}))}
-                data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-                optionDesc={'fullname'}
-                optionValue={'userid'}
-                disabled={!!user?.roledesc?.includes("ASESOR") || false}
+            {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
+              variant="outlined"
+              label={t(langKeys.agent)}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.asesorid}
+              onChange={(value) => setBoardFilter(prev => ({ ...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }))}
+              data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+              optionDesc={'fullname'}
+              optionValue={'userid'}
+              disabled={!!user?.roledesc?.includes("ASESOR") || false}
             />}
             <FieldSelect
               variant="outlined"
@@ -998,7 +1000,7 @@ const CRM: FC = () => {
             />
             <div style={{ flexGrow: 1 }} />
             {!isIncremental &&
-            <Button
+              <Button
                 variant="contained"
                 color="primary"
                 disabled={mainMulti.loading}
@@ -1007,27 +1009,33 @@ const CRM: FC = () => {
                 style={{ backgroundColor: "#55BD84" }}
               >
                 <Trans i18nKey={langKeys.register} />
-            </Button>}
+              </Button>}
             <Button
-                variant="contained"
-                color="primary"
-                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                style={{ backgroundColor: '#55BD84', width: 120 }}
-                onClick={fetchBoardLeadsWithFilter}
-                disabled={mainMulti.loading}
+              variant="contained"
+              color="primary"
+              startIcon={<SearchIcon style={{ color: 'white' }} />}
+              style={{ backgroundColor: '#55BD84', width: 120 }}
+              onClick={fetchBoardLeadsWithFilter}
+              disabled={mainMulti.loading}
             >
-                <Trans i18nKey={langKeys.search} />
+              <Trans i18nKey={langKeys.search} />
             </Button>
           </div>
-          {!isIncremental && <AddColumnTemplate onSubmit={(data) =>{ handleInsert(data,dataColumn, setDataColumn)}} /> }
-          <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.new)}</div>
-            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length + 10*(dataColumn.filter((x:any)=>x.type==="QUALIFIED").length-1), 
-                        maxWidth: 280*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length + 10*(dataColumn.filter((x:any)=>x.type==="QUALIFIED").length-1), backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.qualified)}</div>
-            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length + 10*(dataColumn.filter((x:any)=>x.type==="PROPOSITION").length-1), 
-                        maxWidth: 280*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length + 10*(dataColumn.filter((x:any)=>x.type==="PROPOSITION").length-1), backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.proposition)}</div>
-            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="WON").length + 10*(dataColumn.filter((x:any)=>x.type==="WON").length-1), 
-                        maxWidth: 280*dataColumn.filter((x:any)=>x.type==="WON").length + 10*(dataColumn.filter((x:any)=>x.type==="WON").length-1), backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.won)}</div>
+          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} />}
+          <div style={{ display: "flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold" }}>
+            <div style={{ minWidth: 280, maxWidth: 280, backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column", }}>{t(langKeys.new)}</div>
+            <div style={{
+              minWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1),
+              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1), backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+            }}>{t(langKeys.qualified)}</div>
+            <div style={{
+              minWidth: 280 * dataColumn.filter((x: any) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: any) => x.type === "PROPOSITION").length - 1),
+              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: any) => x.type === "PROPOSITION").length - 1), backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+            }}>{t(langKeys.proposition)}</div>
+            <div style={{
+              minWidth: 280 * dataColumn.filter((x: any) => x.type === "WON").length + 10 * (dataColumn.filter((x: any) => x.type === "WON").length - 1),
+              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "WON").length + 10 * (dataColumn.filter((x: any) => x.type === "WON").length - 1), backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+            }}>{t(langKeys.won)}</div>
           </div>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
@@ -1035,10 +1043,10 @@ const CRM: FC = () => {
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  style={{display:'flex'}}
+                  style={{ display: 'flex' }}
                 >
-                  {dataColumn.map((column, index) => 
-                       <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x:any)=>x.type===column.type).length >1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
+                  {dataColumn.map((column, index) =>
+                    <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x: any) => x.type === column.type).length > 1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead} />
                   )}
                 </div>
               )}
@@ -1054,82 +1062,82 @@ const CRM: FC = () => {
             handleClickButton2={() => hanldeDeleteColumn(deleteColumn, false)}
             handleClickButton3={() => hanldeDeleteColumn(deleteColumn, true)}
             maxWidth={'xs'}
-            >
+          >
             <div>{t(langKeys.question_delete_all_items)}</div>
             <div className="row-zyx">
             </div>
           </DialogZyx3Opt>
         </div>
-        }
-        {display === 'GRID' &&
+      }
+      {display === 'GRID' &&
         <div style={{ width: 'inherit' }}>
           <div className={classes.containerFilter}>
             <div style={{ display: 'flex', gap: 8 }}>
-              
+
             </div>
             {!isIncremental &&
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' }}) }
+                  variant="contained"
+                  color="primary"
+                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                  startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                  onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
                 >
-                    <Trans i18nKey={langKeys.send_hsm} />
+                  <Trans i18nKey={langKeys.send_hsm} />
                 </Button>
                 <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                    startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' }}) }
+                  variant="contained"
+                  color="primary"
+                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                  startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                  onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
                 >
-                    <Trans i18nKey={langKeys.send_mail} />
+                  <Trans i18nKey={langKeys.send_mail} />
                 </Button>
                 <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' }}) }
+                  variant="contained"
+                  color="primary"
+                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                  startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                  onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
                 >
-                    <Trans i18nKey={langKeys.send_sms} />
+                  <Trans i18nKey={langKeys.send_sms} />
                 </Button>
               </div>
             }
           </div>
-            <TablePaginated
-              columns={columns}
-              data={mainPaginated.data}
-              totalrow={totalrow}
-              loading={mainPaginated.loading}
-              pageCount={pageCount}
-              filterrange={true}
-              download={true}
-              fetchData={fetchGridData}
-              autotrigger={true}
-              autoRefresh={{value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
-              ButtonsElement={() => (<div></div>)}
-              exportPersonalized={triggerExportData}
-              useSelection={true}
-              selectionFilter={{ key: 'status', value: 'ACTIVO' }}
-              selectionKey={selectionKey}
-              setSelectedRows={setSelectedRows}
-              onClickRow={onClickRow}
-              FiltersElement={filtersElement}
-              onFilterChange={f => {
-                const params = buildQueryFilters(f, location.search);
-                params.set('asesorid', String(allParameters.asesorid));
-                params.set('channels', String(allParameters.channel));
-                params.set('contact', String(allParameters.contact));
-                history.push({ search: params.toString() });
-              }}
-              initialEndDate={params.endDate}
-              initialStartDate={params.startDate}
-              initialFilters={params.filters}
-              initialPageIndex={params.page}
-            />
+          <TablePaginated
+            columns={columns}
+            data={mainPaginated.data}
+            totalrow={totalrow}
+            loading={mainPaginated.loading}
+            pageCount={pageCount}
+            filterrange={true}
+            download={true}
+            fetchData={fetchGridData}
+            autotrigger={true}
+            autoRefresh={{ value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
+            ButtonsElement={() => (<div></div>)}
+            exportPersonalized={triggerExportData}
+            useSelection={true}
+            selectionFilter={{ key: 'status', value: 'ACTIVO' }}
+            selectionKey={selectionKey}
+            setSelectedRows={setSelectedRows}
+            onClickRow={onClickRow}
+            FiltersElement={filtersElement}
+            onFilterChange={f => {
+              const params = buildQueryFilters(f, location.search);
+              params.set('asesorid', String(allParameters.asesorid));
+              params.set('channels', String(allParameters.channel));
+              params.set('contact', String(allParameters.contact));
+              history.push({ search: params.toString() });
+            }}
+            initialEndDate={params.endDate}
+            initialStartDate={params.startDate}
+            initialFilters={params.filters}
+            initialPageIndex={params.page}
+          />
           {gridModal.name === 'ACTIVITY' && <NewActivityModal
             gridModalProps={gridModal}
             setGridModal={setGridModal}
@@ -1145,8 +1153,8 @@ const CRM: FC = () => {
             setGridModal={setGridModal}
           />}
         </div>
-        }
-      </div>
-    );
+      }
+    </div>
+  );
 };
 export default CRM;

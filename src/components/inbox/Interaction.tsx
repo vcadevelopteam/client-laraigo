@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/iframe-has-title */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,8 +20,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
-import { apiUrls } from 'common/constants';
+import MapLeaflet from 'components/fields/MapLeaflet';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -348,7 +347,7 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
                     src={carousel[pageSelected].mediaUrl}
                     className={classes.imageCardCarousel}
                     alt="logocarousel"
-                    // crossOrigin={carousel[pageSelected].mediaUrl.includes('cloud-object-storage') ? 'anonymous' : undefined}
+                // crossOrigin={carousel[pageSelected].mediaUrl.includes('cloud-object-storage') ? 'anonymous' : undefined}
                 />
             </div>
             <div style={{ padding: '12px', wordBreak: 'break-word' }}>
@@ -434,30 +433,28 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
         )
 }
 
+const checkFile = (url: string) => {
+    let newUrl = new URL(url)?.pathname || '';
+    let newUrlSplit = newUrl.split('/') || [];
+    let newUrlSplitPop = newUrlSplit.pop() ?? '';
+    return newUrlSplitPop.indexOf('.') > 0;
+}
+
+const checkUrl = (url: string) => {
+    return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) != null);
+}
+
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: apiUrls.APIKEY_GMAPS,
-    });
 
     const [height, setHeight] = React.useState("0px");
+    
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
-
-    const checkUrl = (url: string) => {
-        return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) != null);
-    }
-
-    const checkFile = (url: string) => {
-        let newUrl = new URL(url)?.pathname || '';
-        let newUrlSplit = newUrl.split('/') || [];
-        let newUrlSplitPop = newUrlSplit.pop() ?? '';
-        return newUrlSplitPop.indexOf('.') > 0;
-    }
 
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
@@ -556,7 +553,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     className={classes.imageCard}
                     src={interactiontext}
                     alt=""
-                    // crossOrigin={interactiontext.includes('cloud-object-storage') ? 'anonymous' : undefined}
+                    crossOrigin={interactiontext.includes('cloud-object-storage') ? 'anonymous' : undefined}
                     onClick={() => {
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
@@ -792,9 +789,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         )
     } else if (interactiontype === "location") {
 
-        const coordinates = interactiontext.split("=").pop()?.split(",") || ["", ""];
-
-        return isLoaded ? (
+        return (
             <div
                 title={convertLocalDate(createdate).toLocaleString()}
                 className={clsx(classes.interactionText, {
@@ -802,18 +797,10 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 })}
             >
                 <div style={{ width: "300px" }} className="interaction-gmap">
-                    <GoogleMap
-                        mapContainerStyle={{
-                            width: '100%',
-                            height: "200px"
-                        }}
-                        center={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
-                        zoom={10}
-                    >
-                        <Marker
-                            position={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
-                        />
-                    </GoogleMap>
+                    <MapLeaflet
+                        coordinatedString={interactiontext}
+                        height={300}
+                    />
                 </div>
                 <div style={{ display: "none" }} className="interaction-gmap-text">
                     {interactiontext}
@@ -821,7 +808,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
-        ) : null
+        )
     }
     return (
         <div className={clsx(classes.interactionText, {
@@ -843,7 +830,7 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {interactions.map((item: IInteraction, index: number) => (
-                        <div key={index} id={`interaction-${item.interactionid}`} className={clsx({
+                        <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
                             [classes.interactionAgent]: usertype !== "client",
                             [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA"
                         })}>
