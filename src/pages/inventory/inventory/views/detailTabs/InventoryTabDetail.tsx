@@ -189,6 +189,15 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
             Header: t(langKeys.dueDate),
             accessor: "duedate",
             width: "auto",
+            type: "date",
+            sortType: 'datetime',
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                const originalDate = new Date(row.duedate).toISOString().split('T')[0];
+                const [year, month, day] = originalDate.split('-');
+                const formattedDate = `${day}/${month}/${year}`;
+                return formattedDate
+            }
           },
         ],
         []
