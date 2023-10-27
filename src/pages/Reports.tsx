@@ -47,6 +47,7 @@ import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'components/report/ReportRequestSD';
+import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
 interface RowSelected {
     row: Dictionary | null,
@@ -1163,6 +1164,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'LEADGRIDTRACKING':
+                return (
+                    <Grid item key={"leadgridtracking"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("leadgridtracking")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
+                                    title={t(langKeys.report_leadgridtracking)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t(langKeys.report_leadgridtracking)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             case 'UNIQUECONTACTS':
                 if (user?.roledesc?.includes("SUPERADMIN")) {
                     return (
@@ -1621,6 +1643,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <ReportRequestSD />
+                </div>
+            </>
+        )
+    }else if (viewSelected === "leadgridtracking") {
+        return (
+            <>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_leadgridtracking'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <ReportLeadGridTracking />
                 </div>
             </>
         )
