@@ -142,6 +142,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.safetystock)}
+                  helperText={t(langKeys.safetystocktooltip)} 
                   className="col-6"
                   type="number"
                   valueDefault={getValues("securitystock")}
@@ -152,6 +153,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.economicquantityoforders)}
+                  helperText={t(langKeys.economicquantityoforderstooltip)} 
                   type="number"
                   className="col-6"
                   valueDefault={getValues("economicorderquantity")}
@@ -162,6 +164,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
           <div className='row-zyx'>
               <FieldSelect
                 label={t(langKeys.purchase_unit)}
+                helperText={t(langKeys.purchase_unittooltip)} 
                 className="col-6"
                 data={multiDataAux?.data?.[0]?.data}
                 optionValue="domainid"

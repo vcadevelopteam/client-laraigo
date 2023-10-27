@@ -146,7 +146,11 @@ const InventoryDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
         register("inventoryorderid");
         register("inventoryid");
         register("isneworder");
-        register("replenishmentpoint", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        register("replenishmentpoint", {validate:{
+            value: (value: any) => (value && value>0) || t(langKeys.field_required),
+            toohigh: (value: any) => (value + '').replace('.', '').length >= 15 || t(langKeys.lessthan15),
+        }})
+            //validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
         register("deliverytimedays", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
         register("securitystock", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
         register("unitbuyid", { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
