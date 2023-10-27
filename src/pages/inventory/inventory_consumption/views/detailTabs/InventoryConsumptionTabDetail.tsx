@@ -173,10 +173,10 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.inventory_consumption)}
-                    valueDefault={getValues('name')}
+                    valueDefault={getValues('inventoryconsumptionid')}
                     className="col-3"
                     error={errors?.name?.message}
-                    onChange={(value) => setValue('name', value)}
+                    disabled
                 />
                 <FieldEdit
                     label={t(langKeys.description)}

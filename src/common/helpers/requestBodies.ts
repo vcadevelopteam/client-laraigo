@@ -4513,3 +4513,19 @@ export const updateInventoryBalances = (inventoryid:number): IRequestBody => ({
         inventoryid
     }
 });
+
+export const getPaginatedInventoryConsumption = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_INVENTORYCONSUMPTION_PAG",
+    methodCount: "UFN_INVENTORYCONSUMPTION_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "inventoryconsumption",
+        inventoryconsumptionid: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})

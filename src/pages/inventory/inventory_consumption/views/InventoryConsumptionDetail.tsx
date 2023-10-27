@@ -6,15 +6,14 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, AntTabPanel } from 'components';
 import { getWarehouseProducts, insWarehouse } from 'common/helpers';
 import { Dictionary } from "@types";
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Tabs } from '@material-ui/core';
 import InventoryConsumptionTabDetail from './detailTabs/InventoryConsumptionTabDetail';
 import CompleteInventoryConsumptionDialog from '../dialogs/CompleteInventoryConsumptionDialog';
 import { ExtrasMenu } from '../components/components';
@@ -85,7 +84,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            warehouseid: row?.warehouseid || 0,
+            inventoryconsumptionid: row?.inventoryconsumptionid || 0,
             operation: edit ? "EDIT" : "INSERT",
             type: row?.type || '',
             name: row?.name || '',
@@ -121,7 +120,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register('warehouseid');
+        register('inventoryconsumptionid');
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
