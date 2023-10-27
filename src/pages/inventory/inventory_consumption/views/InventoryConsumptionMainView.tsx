@@ -308,7 +308,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
         initialSelectedRows={selectedRows}
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
-        register={false}
+        register={true}
       />
     </div>
   );

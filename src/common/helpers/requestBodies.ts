@@ -4529,3 +4529,11 @@ export const getPaginatedInventoryConsumption = ({ skip, take, filters, sorts, s
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const insInventoryConsumption = ({ inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, status, type, comment, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_INVENTORYCONSUMPTION_INS",
+    key: "UFN_INVENTORYCONSUMPTION_INS",
+    parameters: {
+        inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, status, type, comment, operation
+    }
+});

@@ -182,6 +182,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     label={t(langKeys.description)}
                     valueDefault={getValues('description')}
                     className="col-6"
+                    maxLength={256}
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />
@@ -211,8 +212,9 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 </div>
                 <FieldEdit
                     label={t(langKeys.status)}
-                    valueDefault={getValues('description')}
+                    valueDefault={getValues('status')}
                     className="col-3"
+                    disabled
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />       
