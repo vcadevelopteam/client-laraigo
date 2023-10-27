@@ -81,7 +81,7 @@ const ReportRequestSD: FC = () => {
                 accessor: 'estimatedimplementationdate',
                 Cell: (props: any) => {
                     const { estimatedimplementationdate } = props.cell.row.original;
-                    return new Date(estimatedimplementationdate).toLocaleString()
+                    return new Date(estimatedimplementationdate + " 00:00:00").toLocaleDateString()
                 }
             },
             {
@@ -89,7 +89,7 @@ const ReportRequestSD: FC = () => {
                 accessor: 'estimatedbillingdate',
                 Cell: (props: any) => {
                     const { estimatedbillingdate } = props.cell.row.original;
-                    return new Date(estimatedbillingdate).toLocaleString()
+                    return new Date(estimatedbillingdate + " 00:00:00").toLocaleDateString()
                 }
             },            
         ],
