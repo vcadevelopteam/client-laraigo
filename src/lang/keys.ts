@@ -1185,6 +1185,8 @@ export const langKeys = {
   dateactivity: "dateactivity",
   leadactivity: "leadactivity",
   datenote: "datenote",
+  estimatedimplementationdate: "estimatedimplementationdate",
+  estimatedbillingdate: "estimatedbillingdate",
   note: "note",
   no_people_to_send: "no_people_to_send",
 

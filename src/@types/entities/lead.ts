@@ -60,6 +60,8 @@ export interface ICrmLead {
     persontype: string;
     persontypedesc?: string;
     ticketnum?: string;
+    estimatedimplementationdate?: string;
+    estimatedbillingdate?: string;
 }
 export interface IServiceDeskLead2 {
     leadid: number;

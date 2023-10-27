@@ -873,6 +873,8 @@ const translation: LangKeys = {
   dashboardkpimonthly: "Dashboard KPI mensualizado",
   leadactivity: "Actividad",
   datenote: "Fecha nota",
+  estimatedimplementationdate: "Fecha de implementación estimada",
+  estimatedbillingdate: "Fecha de facturación estimada",
   note: "Nota",
   no_people_to_send: "Sin personas a enviar",
   username: 'Usuario',

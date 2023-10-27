@@ -365,7 +365,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                             key={"var_" + item.id}
                             fregister={{
                                 ...register(`variables.${i}.variable`, {
-                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    validate: (value: any) => (value?.length) || t(langKeys.field_required)
                                 })
                             }}
                             label={item.name}
@@ -386,7 +386,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                                 key={"custom_" + item.id}
                                 fregister={{
                                     ...register(`variables.${i}.text`, {
-                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        validate: (value: any) => (value?.length) || t(langKeys.field_required)
                                     })
                                 }}
                                 valueDefault={item.value}
@@ -458,6 +458,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             type: 'NINGUNO',
             expected_revenue: '',
             date_deadline: '',
+            estimatedimplementationdate: "",
+            estimatedbillingdate: "",
             tags: '',
             personcommunicationchannel: '',
             priority: 'LOW',
@@ -484,7 +486,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     });
 
     const registerFormFieldOptions = useCallback(() => {
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value?.length) || t(langKeys.field_required) });
         register('expected_revenue', {
             validate: (value): any => {
                 if (!value || value.length === 0) {
@@ -496,15 +498,17 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 return undefined;
             }
         });
-        register('date_deadline', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('date_deadline', { validate: (value) => (value?.length) || t(langKeys.field_required) });
+        register('estimatedimplementationdate');
+        register('estimatedbillingdate');
+        register('tags', { validate: (value) => (value?.length) || t(langKeys.field_required) });
         register('personcommunicationchannel');
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
         register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
-        register('leadproduct', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('leadproduct', { validate: (value) => (value?.length) || t(langKeys.field_required) });
         register('email', {
             validate: {
-                hasvalue:  (value) => ((value && value.length) ? true : t(langKeys.field_required) + ""),
+                hasvalue:  (value) => ((value?.length) ? true : t(langKeys.field_required) + ""),
                 isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
             }
         });
@@ -655,6 +659,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 type: 'NINGUNO',
                 expected_revenue: lead.value?.expected_revenue,
                 date_deadline: lead.value?.date_deadline,
+                estimatedimplementationdate: lead.value?.estimatedimplementationdate,
+                estimatedbillingdate: lead.value?.estimatedbillingdate,
                 tags: lead.value?.tags,
                 personcommunicationchannel: lead.value?.personcommunicationchannel,
                 priority: lead.value?.priority,
@@ -1348,6 +1354,36 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                     valueDefault={(getValues('date_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
                                     error={errors?.date_deadline?.message}
+                                    InputProps={{
+                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                    }}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.estimatedimplementationdate)}
+                                    className={classes.field}
+                                    type="date"
+                                    disabled={isIncremental}
+                                    onChange={(value) => {
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('estimatedimplementationdate', value);
+                                    }}
+                                    valueDefault={(getValues('estimatedimplementationdate') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    error={errors?.estimatedimplementationdate?.message}
+                                    InputProps={{
+                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                    }}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.estimatedbillingdate)}
+                                    className={classes.field}
+                                    type="date"
+                                    disabled={isIncremental}
+                                    onChange={(value) => {
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('estimatedbillingdate', value);
+                                    }}
+                                    valueDefault={(getValues('estimatedbillingdate') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    error={errors?.estimatedbillingdate?.message}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
@@ -2495,7 +2531,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                         key={"var_" + item.id}
                                                         fregister={{
                                                             ...register(`variables.${i}.variable`, {
-                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                validate: (value: any) => (value?.length) || t(langKeys.field_required)
                                                             })
                                                         }}
                                                         className={classes.field}
@@ -2517,7 +2553,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                             key={"custom_" + item.id}
                                                             fregister={{
                                                                 ...register(`variables.${i}.text`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                    validate: (value: any) => (value?.length) || t(langKeys.field_required)
                                                                 })
                                                             }}
                                                             className={classes.field}

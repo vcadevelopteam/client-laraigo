@@ -1764,6 +1764,8 @@ const translation: LangKeys = {
   dateactivity: "Activity date",
   leadactivity: "Activity",
   datenote: "Note date",
+  estimatedimplementationdate: "Estimated implementation date",
+  estimatedbillingdate: "Estimated billing date",
   note: "Note",
   no_people_to_send: "No people to send",
   dateRangeFilterTitle: "Filter by date range",
