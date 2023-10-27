@@ -1618,7 +1618,7 @@ const translation: LangKeys = {
   report_kpioperativo: "Operative KPI's",
   report_kpioperativo_year: "Year",
   report_kpioperativo_month: "Month",
-  report_leadgridtracking: "Opportunities report",
+  report_leadgridtracking: "Opportunity Tracking (Detail)",
   report_kpioperativo_day: "Day",
   report_kpioperativo_groups: "Group",
   statusdate: "Status date",

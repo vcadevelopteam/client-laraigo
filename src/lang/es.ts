@@ -2255,7 +2255,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_userproductivityhours_filter_hours: 'Hora',
 
   report_userproductivity: 'Productividad de asesores',
-  report_leadgridtracking: "Reporte de oportunidades",
+  report_leadgridtracking: "Seguimiento de oportunidades (Detalle)",
   report_ticketvsasesor: 'Tickets vs Asesor',
   report_campaign: 'Campañas',
   commercialagent: 'Asesor comercial',
