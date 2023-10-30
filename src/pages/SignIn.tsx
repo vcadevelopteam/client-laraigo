@@ -33,6 +33,7 @@ import { useForm } from 'react-hook-form';
 import { FieldEdit, DialogZyx } from 'components';
 import { recoverPassword } from 'store/subscription/actions';
 import ReCAPTCHA from 'react-google-recaptcha';
+import CloseIcon from '@material-ui/icons/Close';
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 
 export const useStyles = makeStyles((theme) => ({
@@ -46,16 +47,46 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.secondary.main,
     },
     containerLogin: {
-        height: '100vh',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        borderRadius: "3.75rem",
+        backgroundColor: "white",
+        paddingLeft: 36,
+        paddingRight: 36,
+        position: "relative",
+        [theme.breakpoints.down('xs')]: {
+            paddingLeft: 20,
+            paddingRight: 20,
+            marginLeft: 16,
+            marginRight: 16,
+        },
+    },
+    copyright: {
+        fontFamily: "Inter",
+        fontSize: "0.875rem",
+        color: "white",
+        fontStyle: "normal",
+        fontWeight: 400,
+        position: "absolute",
+        bottom: "calc(-1rem - 12px)",
+        width: "82%",
+        textAlign: "center",
+        [theme.breakpoints.down('xs')]: {
+            display: "none"
+        },
+    },
+    container: {
+        background: "linear-gradient(90deg, #0C0931 0%, #1D1856 50%, #C200DB 100%)", height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
     },
     form: {
         width: '100%', // Fix IE 11 issue.
         marginTop: theme.spacing(1),
     },
     submit: {
-        margin: theme.spacing(3, 0, 2),
+        // margin: theme.spacing(3, 0, 2),
     },
     progress: {
         margin: theme.spacing(2, 'auto', 3),
@@ -66,9 +97,11 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     alertheader: {
-        display: 'inline-flex',
-        width: '100%',
+        width: '70%',
         marginTop: theme.spacing(1),
+        position: "absolute",
+        top: 44,
+        left: 40
     },
     childContainer: {
         display: 'flex',
@@ -106,7 +139,42 @@ export const useStyles = makeStyles((theme) => ({
         color: "#fff",
         backgroundColor: "#fb5f5f",
     },
-
+    borderGoogle: {
+        border: '1px solid #757575!important',
+    },
+    button: {
+        borderRadius: '3px!important',
+        display: 'flex!important',
+        alignItems: 'center!important',
+        fontSize: '14px!important',
+        fontStyle: 'normal!important',
+        fontWeight: 600,
+        textTransform: 'none',
+        justifyContent: 'center!important',
+        width: '100%!important',
+        cursor: 'pointer!important',
+        boxShadow: "none",
+        height: '2.7rem!important',
+        background: '#FFF', color: "#6d6d6d",
+        '& span': {
+            fontWeight: 'bold!important',
+            color: "#6d6d6d"
+        },
+        '& div': {
+            background: "none!important"
+        },
+    },
+    image: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: "1.9rem",
+        marginBottom: "1.9rem",
+        [theme.breakpoints.down('xs')]: {
+            marginTop: "1rem",
+            marginBottom: "1rem",
+        },
+    }
 }));
 
 const opentermsofservice = () => {
@@ -115,35 +183,6 @@ const opentermsofservice = () => {
 
 const openprivacypolicies = () => {
     window.open("/privacy", '_blank');
-}
-
-export function Copyright() {
-    const { t } = useTranslation();
-    return (
-        <Fragment>
-            <Typography variant="body2" color="textPrimary" align="center">
-                {'Copyright © '} Laraigo {new Date().getFullYear()}
-            </Typography>
-            <Typography variant="body2" color="textPrimary" align="center">
-                <a
-                    rel="noopener noreferrer"
-                    style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
-                    onClick={opentermsofservice}
-                >
-                    {t(langKeys.termsofservicetitle)}
-                </a>
-            </Typography>
-            <Typography variant="body2" color="textPrimary" align="center">
-                <a
-                    rel="noopener noreferrer"
-                    style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
-                    onClick={openprivacypolicies}
-                >
-                    {t(langKeys.privacypoliciestitle)}
-                </a>
-            </Typography>
-        </Fragment>
-    );
 }
 
 type IAuth = {
@@ -160,7 +199,7 @@ const SignIn = () => {
     const history = useHistory();
     const location = useLocation();
     const resLogin = useSelector(state => state.login.login);
-
+    const [showError, setshowError] = useState(false);
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -191,17 +230,20 @@ const SignIn = () => {
     const onSubmitLogin = async (e: any) => {
         e.preventDefault();
         const token = await recaptchaRef?.current?.executeAsync();
+        setshowError(true);
         dispatch(login(dataAuth.username, dataAuth.password, "", "", token));
     }
 
     const onAuthWithFacebook = (r: any) => {
         if (r?.id) {
+            setshowError(true);
             dispatch(login(null, null, r.id));
         }
     }
 
     const onGoogleLoginSucess = (r: any) => {
         if (r?.googleId) {
+            setshowError(true);
             dispatch(login(null, null, null, r.googleId));
         }
     }
@@ -265,134 +307,162 @@ const SignIn = () => {
             <meta name="google-signin-client_id" content={"" + apiUrls.GOOGLECLIENTID_LOGIN} />
             <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"></script>
             <script src="https://apis.google.com/js/platform.js" async defer></script>
-            <Container component="main" maxWidth="xs" className={classes.containerLogin}>
-                <div className={classes.childContainer} style={{ height: '100%' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: "20%", marginTop: 20, marginBottom: 20 }}>
-                        <LaraigoLogo height={90} />
-                    </div>
-                    <div className={classes.paper} style={{ flex: 1 }}>
-                        {resLogin.error && (
-                            <Alert className={classes.alertheader} variant="filled" severity="error">
-                                {t(resLogin.code ?? "error_unexpected_error")}
-                            </Alert>
-                        )}
-                        <div style={{ display: 'flex',  height: '100%' }}>
-                            <form
-                                className={classes.form}
-                                onSubmit={onSubmitLogin}
-                                style={{ margin: 0 }}
-                            >
-                                <ReCAPTCHA
-                                    ref={recaptchaRef}
-                                    sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
-                                    onChange={handleCaptchaChange}
-                                    size="invisible" // Set reCAPTCHA size to invisible
-                                />
-                                <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    fullWidth
-                                    style={{ margin: 0 }}
-                                    required
-                                    value={dataAuth.username}
-                                    onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
-                                    label={t(langKeys.username)}
-                                    name="usr"
-                                />
-                                <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    fullWidth
-                                    required
-                                    label={t(langKeys.password)}
-                                    name="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    autoComplete="current-password"
-                                    value={dataAuth.password}
-                                    onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                                {!resLogin.loading ?
-                                    <div style={{ alignItems: 'center' }}>
-                                        <Button
-                                            type="submit"
-                                            fullWidth
-                                            variant="contained"
-                                            color="primary"
-                                            className={classes.submit}>
-                                            <Trans i18nKey={langKeys.logIn} />
-                                        </Button>
-                                        <FacebookLogin
-                                            appId={"" + apiUrls.FACEBOOKAPP}
-                                            callback={onAuthWithFacebook}
-                                            buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
-                                            textButton={t(langKeys.login_with_facebook)}
-                                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                                            disableMobileRedirect={true}
+            <div className={classes.container}>
+                <Container component="main" maxWidth="xs" className={classes.containerLogin}>
+                    <div className={classes.childContainer} style={{ height: '100%' }}>
+                        <div className={classes.image}>
+                            <LaraigoLogo height={50} />
+                        </div>
+                        <div className={classes.paper} style={{ flex: 1 }}>
+                            {(resLogin.error && showError) && (
+                                <Alert className={classes.alertheader} variant="filled" severity="error" >
+                                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                                        {t(resLogin.code || "error_unexpected_error")}
+                                        <CloseIcon
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => setshowError(false)}
                                         />
-                                        <div className={classes.buttonGoogle}>
+                                    </div>
+                                </Alert>
+                            )}
+                            <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <form
+                                    className={classes.form}
+                                    onSubmit={onSubmitLogin}
+                                    style={{ margin: 0, maxWidth: "24.6rem" }}
+                                >
+                                    <ReCAPTCHA
+                                        ref={recaptchaRef}
+                                        sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
+                                        onChange={handleCaptchaChange}
+                                        size="invisible" // Set reCAPTCHA size to invisible
+                                    />
+                                    <TextField
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        style={{ margin: 0 }}
+                                        required
+                                        value={dataAuth.username}
+                                        onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
+                                        label={t(langKeys.username)}
+                                        name="usr"
+                                    />
+                                    <TextField
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        required
+                                        style={{ marginBottom: "1.12rem" }}
+                                        label={t(langKeys.password)}
+                                        name="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        autoComplete="current-password"
+                                        value={dataAuth.password}
+                                        onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                    {!resLogin.loading ?
+                                        <div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1rem", width: "100%", marginBottom: "1.69rem" }}>
+                                            <Button
+                                                type="submit"
+                                                fullWidth
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ height: '2.7rem', }}
+                                            >
+                                                <Trans i18nKey={langKeys.logIn} />
+                                            </Button>
+                                            <FacebookLogin
+                                                appId={apiUrls.FACEBOOKAPP + ""}
+                                                callback={onAuthWithFacebook}
+                                                cssClass={classes.button}
+                                                buttonStyle={{ border: '1px solid #4D6BB7' }}
+                                                containerStyle={{ width: "100%" }}
+                                                textButton={t(langKeys.login_with_facebook)}
+                                                icon={<FacebookIcon style={{ color: 'blue', marginRight: '8px' }} />}
+                                                disableMobileRedirect={true}
+                                            />
                                             <GoogleLogin
-                                                clientId={"" + apiUrls.GOOGLECLIENTID_LOGIN}
+                                                clientId={apiUrls.GOOGLECLIENTID_LOGIN + ""}
                                                 buttonText={t(langKeys.login_with_google)}
-                                                style={{ justifyContent: 'center', width: '100%' }}
+                                                className={`${classes.button} ${classes.borderGoogle}`}
                                                 onSuccess={onGoogleLoginSucess}
                                                 onFailure={onGoogleLoginFailure}
                                                 cookiePolicy={'single_host_origin'}
                                                 accessType='online'
                                                 autoLoad={false}
                                             />
-                                        </div>
-                                        <div className={classes.buttonGoogle} style={{ marginTop: 16 }}>
                                             <Button
                                                 variant="outlined"
+                                                fullWidth
+                                                style={{ height: '2.7rem', }}
                                                 color="primary"
                                                 onClick={consultHistoricalData}
                                             >
                                                 {t(isIncremental ? langKeys.gotolaraigo : langKeys.consulthistoricaldata)}
                                             </Button>
-                                        </div>
-                                    </div> :
-                                    <CircularProgress className={classes.progress} />
-                                }
-                                <Grid container>
-                                    <Grid item>
-                                        <p>
-                                            <Trans i18nKey={langKeys.newRegisterMessage} />
-                                            <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
-                                        </p>
-                                        <p>
-                                            <Trans i18nKey={langKeys.recoverpassword1} />
-                                            <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
-                                        </p>
+                                        </div> :
+                                        <CircularProgress className={classes.progress} />
+                                    }
+                                    <Grid container>
+                                        <Grid item>
+                                            <p style={{ marginTop: 0, marginBottom: 12 }}>
+                                                <Trans i18nKey={langKeys.newRegisterMessage} />
+                                                <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
+                                            </p>
+                                            <p style={{ marginTop: 12 }}>
+                                                <Trans i18nKey={langKeys.recoverpassword1} />
+                                                <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
+                                            </p>
+                                            <Typography variant="body2" color="textPrimary">
+                                                <a
+                                                    rel="noopener noreferrer"
+                                                    style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer", textDecoration: "underline" }}
+                                                    onClick={opentermsofservice}
+                                                >
+                                                    {t(langKeys.termsofservicetitle)}
+                                                </a>
+                                            </Typography>
+                                            <Typography variant="body2" color="textPrimary" style={{ marginTop: 8, marginBottom: 16 }}>
+                                                <a
+                                                    rel="noopener noreferrer"
+                                                    style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer", textDecoration: "underline" }}
+                                                    onClick={openprivacypolicies}
+                                                >
+                                                    {t(langKeys.privacypoliciestitle)}
+                                                </a>
+                                            </Typography>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                    <Box >
-                        <Copyright />
-                    </Box>
-                </div>
-                <Popus />
-                <RecoverModal
-                    openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    onTrigger={onModalSuccess}
-                />
-            </Container>
+                    <div className={classes.copyright}>
+                        {'Copyright © '} Laraigo {new Date().getFullYear()}
+                    </div>
+                </Container>
+            </div>
+            <Popus />
+            <RecoverModal
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                onTrigger={onModalSuccess}
+            />
         </>
     )
 }
