@@ -85,6 +85,12 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%', // Fix IE 11 issue.
         marginTop: theme.spacing(1),
     },
+    // submit: {
+    //     // margin: theme.spacing(3, 0, 2),
+    // },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    },
     progress: {
         margin: theme.spacing(2, 'auto', 3),
         display: 'block'
@@ -181,6 +187,36 @@ const opentermsofservice = () => {
 const openprivacypolicies = () => {
     window.open("/privacy", '_blank');
 }
+
+export function Copyright() {
+    const { t } = useTranslation();
+    return (
+        <Fragment>
+            <Typography variant="body2" color="textPrimary" align="center">
+                {'Copyright © '} Laraigo {new Date().getFullYear()}
+            </Typography>
+            <Typography variant="body2" color="textPrimary" align="center">
+                <a
+                    rel="noopener noreferrer"
+                    style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                    onClick={opentermsofservice}
+                >
+                    {t(langKeys.termsofservicetitle)}
+                </a>
+            </Typography>
+            <Typography variant="body2" color="textPrimary" align="center">
+                <a
+                    rel="noopener noreferrer"
+                    style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                    onClick={openprivacypolicies}
+                >
+                    {t(langKeys.privacypoliciestitle)}
+                </a>
+            </Typography>
+        </Fragment>
+    );
+}
+
 
 type IAuth = {
     username: string,
