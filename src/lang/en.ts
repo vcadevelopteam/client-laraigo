@@ -5648,6 +5648,7 @@ const translation: LangKeys = {
   referralguide: 'Referral guide',
   seetransactions: 'See transactions',
   seestatushistory: 'View status history',
+  contactsincludedinplan: "Number of contacts included in the plan",
 };
 
 const enResource: ResourceLanguage = {

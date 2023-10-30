@@ -1,26 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
-import { Dictionary, IFile } from "@types";
+import React, { useEffect, useMemo, useState, ChangeEvent } from 'react'; // we need this to make JSX compile
+import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, FormControlLabel, Switch } from "@material-ui/core";
-import { Search as SearchIcon } from "@material-ui/icons";
-import Box from '@material-ui/core/Box';
-import { ItemFile, UploaderIcon } from '../../components/components';
+import { FormControlLabel } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { FieldErrors, UseFormGetValues, UseFormSetValue, useForm } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, FieldSelect, IOSSwitch } from 'components';
-import TableZyx from "components/fields/table-simple";
+import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { FieldEdit, FieldSelect, IOSSwitch } from 'components';
 import { useSelector } from 'hooks';
 import { getCountryList } from 'store/signup/actions';
 import { useDispatch } from 'react-redux';
-import { resetMainAux } from 'store/main/actions';
 import { format, parse } from 'date-fns';
-
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
-}
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -64,7 +54,7 @@ interface PartnersTabDetailProps {
     row: Dictionary | null;
     setValue: UseFormSetValue<any>;
     getValues: UseFormGetValues<any>;
-    errors: FieldErrors<any>;
+    errors: FieldErrors;
 }
 
 const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
@@ -75,18 +65,20 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const user = useSelector(state => state.login.validateToken.user);
     const countryList = useSelector(state => state.signup.countryList);
     const dispatch = useDispatch();
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [docType, setDocType] = useState(row?.documenttype);
     const [priceBag, setPriceBag] = useState(row?.priceperbag || '');
+    const [puContacts, setPuContacts] = useState(row?.puadditionalcontacts || '');
     const [docNumber, setDocNumber] = useState(row?.documentnumber);
     const [sunatCountry, setSunatCountry] = useState(row?.country);
     const [additionalContactType, setAdditionAlcontactType] = useState(row?.typecalculation);
     const [isEnterprise, setIsEnterprise] = useState(row?.enterprisepartner);
     const [isAutomaticDrafts, setIsAutomaticDrafts] = useState(row?.automaticgenerationdrafts);
     const [isAutomaticPeriod, setIsAutomaticPeriod] = useState(row?.automaticperiodgeneration);
+    const [montlyplancost, setMontlyPlancost] = useState(row?.montlyplancost || 0);
+    const [contactsperplan, setContactsPerPlan] = useState(row?.numberplancontacts || 0);
 
     const signatureDateDefault = row?.signaturedate
     ? format(parse(row.signaturedate, 'dd/MM/yyyy HH:mm:ss', new Date()), 'yyyy-MM-dd')
@@ -132,7 +124,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     }}
                     className="col-6"
                     data={countries}
-                    error={errors?.country?.message}
+                    error={typeof errors?.country?.message === 'string' ? errors?.country?.message : ''}
                     optionValue="code"
                     optionDesc="description"
                 />
@@ -142,7 +134,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     onChange={(value) => setValue('billingcurrency', value.code)}
                     className="col-6"
                     data={(multiDataAux?.data?.[2]?.data||[])}
-                    error={errors?.billingcurrency?.message}
+                    error={typeof errors?.billingcurrency?.message === 'string' ? errors?.billingcurrency?.message : ''}
                     optionValue="code"
                     optionDesc="description"
                 />
@@ -150,7 +142,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     label={t(langKeys.documenttype)}
                     valueDefault={docType}
                     className="col-6"
-                    error={errors?.documenttype?.message}
+                    error={typeof errors?.documenttype?.message === 'string' ? errors?.documenttype?.message : ''}
                     disabled={sunatCountry !== ''}
                 />
                 <FieldEdit
@@ -158,16 +150,8 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     type='number'
                     valueDefault={docNumber}
                     className="col-6"
-                    error={errors?.documentnumber?.message}
+                    error={typeof errors?.documentnumber?.message === 'string' ? errors?.documentnumber?.message : ''}
                     maxLength={docType === 'RUC' ? 11 : undefined}
-                    onInput={(event:any) => {
-                        const value = event.target.value;
-                        if (docType === 'RUC' && value.length > 11) {
-                          event.target.value = value.slice(0, 11);
-                        }
-                        setDocNumber(event.target.value)
-                        setValue('documentnumber', event.target.value);
-                      }}
                     onChange={(value) => {
                         setValue('documentnumber', value)
                         setDocNumber(value)
@@ -177,28 +161,28 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     label={t(langKeys.businessname)}
                     valueDefault={getValues('company')}
                     className="col-6"
-                    error={errors?.company?.message}
+                    error={typeof errors?.company?.message === 'string' ? errors?.company?.message : ''}
                     onChange={(value) => setValue('company', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.fiscaladdress)}
                     valueDefault={getValues('address')}
                     className="col-6"
-                    error={errors?.address?.message}
+                    error={typeof errors?.address?.message === 'string' ? errors?.address?.message : ''}
                     onChange={(value) => setValue('address', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.billingcontact)}
                     valueDefault={getValues('billingcontact')}
                     className="col-6"
-                    error={errors?.billingcontact?.message}
+                    error={typeof errors?.billingcontact?.message === 'string' ? errors?.billingcontact?.message : ''}
                     onChange={(value) => setValue('billingcontact', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.billingcontactmail)}
                     valueDefault={getValues('email')}
                     className="col-6"
-                    error={errors?.email?.message}
+                    error={typeof errors?.email?.message === 'string' ? errors?.email?.message : ''}
                     onChange={(value) => setValue('email', value)}
                 />
                 <div className='row-zyx'>
@@ -207,7 +191,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                         type='date'
                         valueDefault={signatureDateDefault}
                         className="col-6"
-                        error={errors?.signaturedate?.message}
+                        error={typeof errors?.signaturedate?.message === 'string' ? errors?.signaturedate?.message : ''}
                         onChange={(value) => setValue('signaturedate', value + ' 19:00:00')}
                     />
                 </div>
@@ -255,13 +239,45 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 />
                 { isEnterprise && (
                     <>
+                        <FieldEdit
+                            label={t(langKeys.monthlyplancost)}
+                            type='number'
+                            valueDefault={montlyplancost}
+                            onChange={(value) => {
+                                if(value < 0) {
+                                    setMontlyPlancost(value * -1)
+                                    setValue('montlyplancost', value * -1)
+                                } else {
+                                    setMontlyPlancost(value)
+                                    setValue('montlyplancost', value)
+                                }
+                            }}
+                            className="col-6"
+                            error={typeof errors?.montlyplancost?.message === 'string' ? errors?.montlyplancost?.message : ''}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.contactsincludedinplan)}
+                            type='number'
+                            valueDefault={contactsperplan}
+                            onChange={(value) => {
+                                if(value < 0) {
+                                    setContactsPerPlan(value * -1)
+                                    setValue('numberplancontacts', value * -1)
+                                } else {
+                                    setContactsPerPlan(value)
+                                    setValue('numberplancontacts', value)
+                                }
+                            }}
+                            className="col-6"
+                            error={typeof errors?.numberplancontacts?.message === 'string' ? errors?.numberplancontacts?.message : ''}
+                        />
                         <FieldSelect
                             label={t(langKeys.billingplan)}
                             valueDefault={getValues('billingplan')}
                             onChange={(value) => setValue('billingplan', value.domainvalue)}
                             className="col-6"
                             data={(multiDataAux?.data?.[3]?.data||[])}
-                            error={errors?.billingplan?.message}
+                            error={typeof errors?.billingplan?.message === 'string' ? errors?.billingplan?.message : ''}
                             optionValue="domainvalue"
                             optionDesc="domaindesc"
                         />
@@ -277,7 +293,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                             }}
                             className="col-6"
                             data={(multiDataAux?.data?.[4]?.data||[])}
-                            error={errors?.typecalculation?.message}
+                            error={typeof errors?.typecalculation?.message === 'string' ? errors?.typecalculation?.message : ''}
                             optionValue="domainvalue"
                             optionDesc="domaindesc"
                         />
@@ -288,7 +304,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                                     type='number'
                                     valueDefault={getValues('numbercontactsbag')}
                                     className="col-6"
-                                    error={errors?.numbercontactsbag?.message}
+                                    error={typeof errors?.numbercontactsbag?.message === 'string' ? errors?.numbercontactsbag.message : ''}
                                     onChange={(value) => {
                                         setValue('numbercontactsbag', value)
                                     }}
@@ -299,7 +315,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                                     valueDefault={getValues('priceperbag')}
                                     className="col-6"
                                     maxLength={ priceBag.split('.').length > 1 ? priceBag.split('.')[0].length + 3 : undefined}
-                                    error={errors?.priceperbag?.message}
+                                    error={typeof errors?.priceperbag?.message === 'string' ? errors?.priceperbag?.message : ''}
                                     onChange={(value) => {
                                         setValue('priceperbag', value);
                                         setPriceBag(value)
@@ -313,9 +329,11 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                                 type='number'
                                 valueDefault={getValues('puadditionalcontacts')}
                                 className="col-6"
-                                error={errors?.puadditionalcontacts?.message}
+                                maxLength={ puContacts.split('.').length > 1 ? puContacts.split('.')[0].length + 3 : undefined}
+                                error={typeof errors?.puadditionalcontacts?.message === 'string' ? errors?.puadditionalcontacts?.message : ''}
                                 onChange={(value) => {;
                                     setValue('puadditionalcontacts', value)
+                                    setPuContacts(value)
                                 }}
                             />
                         )}

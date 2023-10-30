@@ -5564,6 +5564,7 @@ export const langKeys = {
   referralguide: 'referralguide',
   seetransactions: 'seetransactions',
   seestatushistory: 'seestatushistory',
+  contactsincludedinplan: "contactsincludedinplan",
 };
 
 export type LangKeys = typeof langKeys;

@@ -4524,10 +4524,10 @@ export const partnerSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const partnerIns = ({ id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, status, type, operation }: Dictionary) => ({
+export const partnerIns = ({ id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation }: Dictionary) => ({
     method: "UFN_PARTNER_INS",
     key: "UFN_PARTNER_INS",
-    parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, status, type, operation },
+    parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation },
 });
 
 export const customerByPartnerSel = ( partnerid: number ) => ({
@@ -4591,3 +4591,9 @@ export const getPaginatedInventoryConsumption = ({ skip, take, filters, sorts, s
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid, year, month, username }: Dictionary) => ({
+    method: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
+    key: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
+    parameters: { partnerid, corpid, orgid, year, month, username },
+});
