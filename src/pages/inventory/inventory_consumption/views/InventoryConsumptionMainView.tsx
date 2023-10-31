@@ -17,7 +17,6 @@ import {
 } from "store/popus/actions";
 import { exportExcel, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
-import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 
 const selectionKey = "warehouseid";
