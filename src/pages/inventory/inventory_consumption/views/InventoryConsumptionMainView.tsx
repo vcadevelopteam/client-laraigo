@@ -28,6 +28,8 @@ interface WarehouseMainViewProps {
   fetchDataAux: any;
 }
 
+//comentario
+
 const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
   setViewSelected,
   setRowSelected,
