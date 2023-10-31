@@ -462,7 +462,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
-    const [showReply, setShowReply] = useState(true);
+    const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
     const [refresh, setrefresh] = useState(1)
@@ -477,7 +477,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setShowReply(false);
         }
         else if (`,${user?.roledesc},`.includes(",SUPERVISOR,") && user?.properties.environment === "CLARO" && [2, 3].includes(agentSelected?.userid ?? 0)) { //2 y 3 son BOT y HOLDING
-            setShowReply(false);
+            setShowReply(null);
         } else if (channelsWhatsapp.includes(ticketSelected.communicationchanneltype)) {
             if (!ticketSelected?.personlastreplydate) {
                 setShowReply(false);
@@ -912,7 +912,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         </div >)
     } else return (
         <>
-            {showReply ?
+            {showReply && (
                 <DragDropFile setFiles={setFiles} setfileimage={setfileimage}>
                     <div className={classes.containerResponse}>
                         {files.length > 0 &&
@@ -988,14 +988,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         <BottomGoToUnder />
                     </div>
                 </DragDropFile>
-                :
+            )}
+            {!showReply && (
                 <div className={classes.containerResponse}>
                     <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
-                        {t(langKeys.no_reply_use_hsm)}
+                        {showReply == null ? t(langKeys.no_reply_use_hsm) : t(langKeys.no_reply_claro)}
                     </div>
                     <BottomGoToUnder />
                 </div>
-            }
+            )}
         </ >
     )
 }
