@@ -44,7 +44,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [nextbutton2, setNextbutton2] = useState(true);
 
     useEffect(() => {
-        const cb = async () => {
+        /*const cb = async () => {
             const v1 = await trigger('channels.teams.account');
             const v2 = await trigger('channels.teams.url');
             setSubmitError(!v1 || !v2);
@@ -53,7 +53,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        }*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             }
         }
 
-        register('channels.teams.description', { validate: strRequired, value: '' });
+        /*register('channels.teams.description', { validate: strRequired, value: '' });
         register('channels.teams.account', { validate: strRequired, value: '' });
         register('channels.teams.url', { validate: strRequired, value: '' });
         register('channels.teams.build', {
@@ -95,7 +95,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
 
         return () => {
             unregister('channels.teams');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -136,7 +136,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                         {'<< '}<Trans i18nKey={langKeys.previoustext} />
                     </Link>
                 </Breadcrumbs>
-                <div>
+                {/*<div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_teamstitle)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_genericalert)}</div>
                     <div className="row-zyx">
@@ -188,7 +188,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
 
                     </div>
 
-                </div>
+                </div>*/}
             </div>
         )
     }
@@ -226,7 +226,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.teams.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.teams.description')}
                 label={t(langKeys.givechannelname)}
@@ -240,7 +240,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

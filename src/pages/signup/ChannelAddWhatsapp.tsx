@@ -86,7 +86,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     const classes = useChannelAddStyles();
 
     useEffect(() => {
-        const cb = async () => {
+        /*const cb = async () => {
             const v1 = await trigger('channels.whatsapp.description');
             const v2 = await trigger('channels.whatsapp.accesstoken');
             const v3 = await trigger('channels.whatsapp.brandName');
@@ -104,7 +104,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        }*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -128,7 +128,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             }
         }
 
-        register('channels.whatsapp.description', { validate: strRequired, value: '' });
+        /*register('channels.whatsapp.description', { validate: strRequired, value: '' });
         register('channels.whatsapp.accesstoken', { value: '' });
         register('channels.whatsapp.brandName', { value: '' });
         register('channels.whatsapp.brandAddress', { value: '' });
@@ -177,7 +177,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
 
         return () => {
             unregister('channels.whatsapp')
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -213,7 +213,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 </Breadcrumbs>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.brandpointcontact)}</div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 16, color: "grey" }}>{t(langKeys.brandpointcontact2)}</div>
-                <div style={{ textAlign: "center", marginBottom: 16, marginTop: 16, fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex", flexWrap: 'wrap', gap: 16, width: '100%' }}>
+                {/*<div style={{ textAlign: "center", marginBottom: 16, marginTop: 16, fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex", flexWrap: 'wrap', gap: 16, width: '100%' }}>
                     <TextField
                         className={classes.fieldG}
                         variant="outlined"
@@ -270,11 +270,11 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         defaultCountry={'pe'}
                         onChange={(e: string) => setValue('channels.whatsapp.phone', e)}
                     />
-                </div>
+                </div>*/}
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "15px" }}>{t(langKeys.emailcondition)}</div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.whatsappinformation)}</div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
-                    <TextField
+                    {/*<TextField
                         className={classes.fields3}
                         variant="outlined"
                         margin="normal"
@@ -286,7 +286,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         error={!!errors.channels?.whatsapp?.phonenumberwhatsappbusiness}
                         helperText={errors.channels?.whatsapp?.phonenumberwhatsappbusiness?.message}
                         onChange={e => setValue('channels.whatsapp.phonenumberwhatsappbusiness', e.target.value)}
-                    />
+                    />*/}
                 </div>
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "15px" }}>
                     {t(langKeys.whatsappinformation3) + " "}
@@ -295,7 +295,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     </Link>
                 </div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
-                    <TextField
+                    {/*<TextField
                         className={classes.fields3}
                         variant="outlined"
                         margin="normal"
@@ -307,12 +307,12 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         error={!!errors.channels?.whatsapp?.nameassociatednumber}
                         helperText={errors.channels?.whatsapp?.nameassociatednumber?.message}
                         onChange={e => setValue('channels.whatsapp.nameassociatednumber', e.target.value)}
-                    />
+                    />*/}
                 </div>
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "20px" }}>{t(langKeys.whatsappinformation4)}</div>
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "15px" }}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
                 <div style={{ width: "100%", margin: "0px 15px", marginLeft: 0 }}>
-                    <Button
+                    {/*<Button
                         onClick={async () => {
                             const v1 = await trigger('channels.whatsapp.description');
                             const v2 = await trigger('channels.whatsapp.accesstoken');
@@ -335,7 +335,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         color="primary"
                     >
                         <Trans i18nKey={langKeys.next} />
-                    </Button>
+                    </Button>*/}
                 </div>
             </div>
         );
@@ -374,7 +374,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.whatsapp.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.whatsapp.description')}
                 label={t(langKeys.givechannelname)}
@@ -388,7 +388,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

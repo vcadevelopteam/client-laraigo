@@ -5,11 +5,11 @@ import RightSideMenu from './RightSideMenu';
 import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
-import { LaraigoLogo } from 'icons';
-import { LeftSide } from './LeftSideMenu';
+import { LogoSuscription } from 'icons';
 import { SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
 import Popus from 'components/layout/Popus';
 import { useFormContext } from 'react-hook-form';
+import ThirdStep from './ThirdStep';
 
 const useSignUpStyles = makeStyles(theme => ({
     root: {
@@ -202,14 +202,14 @@ const SignUpFunc: FC = () => {
                     <div className={step === 1 ? classes.purplecircle : classes.notthisstep}> 1 </div>
                     <div className={classes.separator}> </div>
                     <div className={step === 2 ? classes.purplecircle : classes.notthisstep}> 2 </div>
-                    <div className={classes.separator}> </div>
+                    {/*<div className={classes.separator}> </div>
                     <div className={step === 2.5 ? classes.purplecircle : classes.notthisstep}> 3 </div>
                     <div className={classes.separator}> </div>
                     <div className={step === 2.6 ? classes.purplecircle : classes.notthisstep}> 4 </div>
                     <div className={classes.separator}> </div>
                     <div className={step === 3 ? classes.purplecircle : classes.notthisstep}> 5 </div>
                     <div className={classes.separator}> </div>
-                    <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 6 </div>
+                    <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 6 </div>*/}
                 </div>
             </div>
             <div style={{
@@ -220,21 +220,25 @@ const SignUpFunc: FC = () => {
                 overflow: 'overlay',
                 flexWrap: 'wrap'
             }}>
-                {step !== 3 && (
-                    <div className={classes.containerLogo}>
-                        {/* containerlogo tiene flex 1, para q se divida con el texto */}
-                        <LaraigoLogo style={{ width: '50%' }} />
+                {step === 1 && (
+                    <div className={classes.containerLeft}>
+                        {!planDataLoading &&
+                            <ThirdStep />
+                        }
                     </div>
                 )}
-                <div className={classes.containerLeft}>
+                {step !== 1 && (
+                    <div className={classes.containerLogo}>
+                        {/* containerlogo tiene flex 1, para q se divida con el texto */}
+                        <LogoSuscription style={{ width: '50%' }} />
+                    </div>
+                )}
+                <div className={classes.containerLeft} style={{backgroundColor: "white"}}>
                     {!planDataLoading
                         ? <RightSideMenu setOpenWarning={setOpenWarning} />
                         : <CircularProgress />
                     }
                 </div>
-                {step === 3 && (
-                    <LeftSide setOpenWarning={setOpenWarning} />
-                )}
             </div>
         </div>
     );

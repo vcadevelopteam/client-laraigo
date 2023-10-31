@@ -39,7 +39,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
             }
         }
 
-        register('channels.messenger.description', { validate: strRequired, value: '' });
+        /*register('channels.messenger.description', { validate: strRequired, value: '' });
         register('channels.messenger.accesstoken', { validate: strRequired, value: '' });
         register('channels.messenger.communicationchannelowner', { validate: strRequired, value: '' });
         register('channels.messenger.communicationchannelsite', { validate: strRequired, value: '' });
@@ -75,7 +75,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         return () => {
             unregister('channels.messenger');
             dispatch(resetGetMessengerPages());
-        }
+        }*/
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [register, unregister, dispatch]);
 
@@ -97,10 +97,10 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
     }
 
     function setValueField(value: any) {
-        setValue('channels.messenger.communicationchannelsite', value?.id || "");
+        /*setValue('channels.messenger.communicationchannelsite', value?.id || "");
         setValue('channels.messenger.communicationchannelowner', value?.name || "");
         setValue('channels.messenger.siteid', value?.id || "");
-        setValue('channels.messenger.accesstoken', value?.access_token || "");
+        setValue('channels.messenger.accesstoken', value?.access_token || "");*/
     }
 
     return (
@@ -136,7 +136,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => setValue('channels.messenger.description', value)}
                 valueDefault={getValues('channels.messenger.description')}
                 label={t(langKeys.givechannelname)}
@@ -162,8 +162,8 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                 size="small"
                 disabled={mainResult.loading || mainResult.data.length === 0}
                 error={errors.channels?.messenger?.siteid?.message}
-            />
-            {((getValues('channels.messenger.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) && (
+            />*/}
+            {/*((getValues('channels.messenger.siteid')?.length || 0) === 0) && */(mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}

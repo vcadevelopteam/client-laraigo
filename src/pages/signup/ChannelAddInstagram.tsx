@@ -41,7 +41,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
             }
         }
 
-        register('channels.instagram.description', { validate: strRequired, value: '' });
+        /*register('channels.instagram.description', { validate: strRequired, value: '' });
         register('channels.instagram.accesstoken', { validate: strRequired, value: '' });
         register('channels.instagram.communicationchannelowner', { validate: strRequired, value: '' });
         register('channels.instagram.communicationchannelsite', { validate: strRequired, value: '' });
@@ -77,7 +77,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         return () => {
             unregister('channels.instagram');
             dispatch(resetGetInstagramPages());
-        }
+        }*/
     }, [register, unregister, dispatch]);
 
     useEffect(() => {
@@ -97,10 +97,10 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
     }
 
     function setValueField(value: any) {
-        setValue('channels.instagram.communicationchannelsite', value?.id || "");
+        /*setValue('channels.instagram.communicationchannelsite', value?.id || "");
         setValue('channels.instagram.communicationchannelowner', value?.name || "");
         setValue('channels.instagram.siteid', value?.id || "");
-        setValue('channels.instagram.accesstoken', value?.access_token || "");
+        setValue('channels.instagram.accesstoken', value?.access_token || "");*/
     }
 
     const openviewsteps = () => {
@@ -143,7 +143,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => setValue('channels.instagram.description', value)}
                 valueDefault={getValues('channels.instagram.description')}
                 label={t(langKeys.givechannelname)}
@@ -157,8 +157,8 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                         </InputAdornment>
                     )
                 }}
-            />
-            <FieldSelect
+            />*/}
+            {/*<FieldSelect
                 onChange={(value) => setValueField(value)}
                 valueDefault={getValues('channels.instagram.siteid')}
                 label={t(langKeys.selectpagelink)}
@@ -169,8 +169,8 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                 size="small"
                 disabled={mainResult.loading || mainResult.data.length === 0}
                 error={errors.channels?.instagram?.siteid?.message}
-            />
-            {((getValues('channels.instagram.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) && (
+            />*/}
+            {/*((getValues('channels.instagram.siteid')?.length || 0) === 0) && */(mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}
                     autoLoad={false}

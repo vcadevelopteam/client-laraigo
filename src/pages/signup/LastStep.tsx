@@ -54,7 +54,7 @@ const Step2Six: FC<LastStepProps> = ({ setOpenWarning }) => {
     const [roleList, setroleList] = useState<any>([]);
     const multiResult = useSelector(state => state.main.multiData.data);
     const executeResult = useSelector(state => state.signup.insertChannel);
-    
+
     useEffect(() => {
         dispatch(getMultiCollectionPublic(["SignUpIndustry", "SignUpCompanySize", "SignUpRoles"]));
     }, []);
@@ -86,7 +86,7 @@ const Step2Six: FC<LastStepProps> = ({ setOpenWarning }) => {
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.laststepsignup2)}</div>
             </div>
 
-            <div style={{ padding: "20px" }}>
+            {/*<div style={{ padding: "20px" }}>
                 <Controller
                     name="industry"
                     control={control}
@@ -185,7 +185,7 @@ const Step2Six: FC<LastStepProps> = ({ setOpenWarning }) => {
                     </Button>
                 </div>
 
-            </div>
+            </div>*/}
         </div>
     )
 }

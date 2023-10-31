@@ -94,7 +94,6 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         listchannels,
         selectedChannels,
         finishreg,
-        valchannels,
         commonClasses
     } = useContext(SubscriptionContext);
     const executeResult = useSelector(state => state.signup.insertChannel);
@@ -189,8 +188,8 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                         <Button
                             onClick={(e) => {
                                 e.preventDefault();
-                                setWaitSave(true)
-                                valchannels();
+                                setWaitSave(true);
+                                /*valchannels();*/
                             }}
                             className={commonClasses.button}
                             style={{ marginTop: '3em' }}
@@ -204,7 +203,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                 )}
                 <div />
             </div>
-            <div hidden={currentView !== "view-2"}>
+            {/*<div hidden={currentView !== "view-2"}>
                 <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: '1em' }}>
                     <Link color="textSecondary" href="/" onClick={(e) => { e.preventDefault(); setCurrentView("view-1"); }}>
                         {'<< '}<Trans i18nKey={langKeys.previoustext} />
@@ -503,7 +502,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                 >
                     <Trans i18nKey={langKeys.finishreg} />
                 </Button>
-            </div>
+            </div>*/}
         </div>
     );
 }
@@ -515,7 +514,7 @@ interface GetComponentProps {
 }
 
 const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWarning }) => {
-    switch (key as keyof ListChannels) {
+    /*switch (key as keyof ListChannels) {
         case 'facebook':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
@@ -678,5 +677,6 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
             );
 
         default: return <div />;
-    }
+    }*/
+    return <div />;
 }

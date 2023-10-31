@@ -59,7 +59,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
     }
 
     useEffect(() => {
-        const cb = async () => {
+        /*const cb = async () => {
             const v1 = await trigger('channels.blogger.accesstoken');
             const v2 = await trigger('channels.blogger.refreshtoken');
             const v3 = await trigger('channels.blogger.scope');
@@ -72,7 +72,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        }*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -82,7 +82,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
             }
         }
 
-        register('channels.blogger.description', { validate: strRequired, value: '' });
+        /*register('channels.blogger.description', { validate: strRequired, value: '' });
         register('channels.blogger.accesstoken', { validate: strRequired, value: '' });
         register('channels.blogger.refreshtoken', { validate: strRequired, value: '' });
         register('channels.blogger.scope', { validate: strRequired, value: '' });
@@ -122,7 +122,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
 
         return () => {
             unregister('channels.blogger');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -149,8 +149,8 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
     }
 
     function setchannelField(value: any) {
-        setNextbutton(value === null);
-        setValue('channels.blogger.channel', value?.id || "");
+        /*setNextbutton(value === null);
+        setValue('channels.blogger.channel', value?.id || "");*/
     }
 
     useEffect(() => {
@@ -159,11 +159,11 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                 if (!exchangeCodeResult.error) {
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (exchangeCodeResult.data) {
-                        setValue('channels.blogger.accesstoken', exchangeCodeResult.data.access_token);
+                        /*setValue('channels.blogger.accesstoken', exchangeCodeResult.data.access_token);
                         setValue('channels.blogger.idtoken', exchangeCodeResult.data.id_token);
                         setValue('channels.blogger.refreshtoken', exchangeCodeResult.data.refresh_token);
                         setValue('channels.blogger.scope', exchangeCodeResult.data.scope);
-                        setValue('channels.blogger.tokentype', exchangeCodeResult.data.token_type);
+                        setValue('channels.blogger.tokentype', exchangeCodeResult.data.token_type);*/
 
                         setShowList(true);
                         setChannellist([]);
@@ -246,7 +246,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                             {'<< '}<Trans i18nKey={langKeys.previoustext} />
                         </Link>
                     </Breadcrumbs>
-                    <div>
+                    {/*<div>
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_bloggertitle)}</div>
                         <div className="row-zyx">
                             <div className="col-3"></div>
@@ -282,7 +282,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                                 <Trans i18nKey={langKeys.next} />
                             </Button>
                         </div>
-                    </div>
+                    </div>*/}
                 </>}
             </div>
         )
@@ -321,7 +321,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.blogger.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.blogger.description')}
                 label={t(langKeys.givechannelname)}
@@ -335,7 +335,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

@@ -163,8 +163,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <FormControlLabel
                                 checked={recaptcha}
-                                control={<Checkbox 
-                                    onChange={(e) => {setrecaptcha(e.target.checked);setValue('extra.recaptcha', e.target.checked)}}
+                                control={<Checkbox
+                                    onChange={(e) => { setrecaptcha(e.target.checked); setValue('extra.recaptcha', e.target.checked) }}
                                     color="primary" />}
                                 //onChange={(e) => {setValue('extra.recaptcha', e.target.value === "true")}}
                                 label={t(langKeys.recaptchaCheckbox)}
@@ -322,7 +322,7 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>            
+            </Grid>
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -476,8 +476,8 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
                                                     {...register(`form.${index}.label`, {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                        })
+                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                    })
                                                     }
                                                     placeholder={t(langKeys.label)}
                                                     variant="outlined"
@@ -1142,7 +1142,7 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
             }
         }
 
-        register('channels.chatWeb.description', { validate: strRequired, value: '' });
+        /*register('channels.chatWeb.description', { validate: strRequired, value: '' });
         register('channels.chatWeb.build', {
             value: values => {
                 return getInsertChatwebChannel(
@@ -1156,7 +1156,7 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
 
         return () => {
             unregister('channels.chatWeb');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -1166,8 +1166,8 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
             }
         }
 
-        nestedForm.register('extra.titleform',{ validate: strRequired, value: '' });
-        nestedForm.register('extra.textButtonSend',{ validate: strRequired, value: '' });
+        nestedForm.register('extra.titleform', { validate: strRequired, value: '' });
+        nestedForm.register('extra.textButtonSend', { validate: strRequired, value: '' });
 
         const cb = async () => {
             const valid = await nestedForm.trigger();
@@ -1196,11 +1196,11 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
                 hasFinished={hasFinished}
                 loading={insertChannel.loading}
                 integrationId={insertChannel.value?.integrationid}
-                onNext={() => {setView("view2")}}
+                onNext={() => { setView("view2") }}
                 submitError={submitError}
             />
         );
-    }else{
+    } else {
         return (
             <div className={classes.root}>
                 <Breadcrumbs aria-label="breadcrumb">
@@ -1241,13 +1241,13 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
                         variant="contained"
                         color="primary"
                         onClick={async () => {
-                            if(!!nestedForm.getValues("form").length){
+                            if (!!nestedForm.getValues("form").length) {
                                 const valid = await nestedForm.trigger();
                                 if (valid) {
                                     setView("view1");
                                     setHasFinished(true);
                                 }
-                            }else{
+                            } else {
                                 dispatch(showSnackbar({
                                     message: t(langKeys.emptyformerror),
                                     show: true,
@@ -1318,7 +1318,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={v => { setValue('channels.chatWeb.description', v); setNextbutton2(!v); }}
                 valueDefault={getValues('channels.chatWeb.description')}
                 label={t(langKeys.givechannelname)}
@@ -1333,7 +1333,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={onNext}

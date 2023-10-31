@@ -41,7 +41,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
     const mainResult = useSelector((state) => state.channel.channelList);
 
     useEffect(() => {
-        const cb = async () => {
+        /*const cb = async () => {
             const v1 = await trigger("channels.tiktok.accesstoken");
             setSubmitError(!v1);
         };
@@ -49,7 +49,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        };
+        };*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -59,7 +59,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
             }
         };
 
-        register("channels.tiktok.description", { validate: strRequired, value: "" });
+        /*register("channels.tiktok.description", { validate: strRequired, value: "" });
         register("channels.tiktok.accesstoken", { validate: strRequired, value: "" });
         register("channels.tiktok.build", {
             value: (values) => ({
@@ -89,7 +89,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
 
         return () => {
             unregister("channels.tiktok");
-        };
+        };*/
     }, [register, unregister, t]);
 
     useEffect(() => {
@@ -132,7 +132,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                         <Trans i18nKey={langKeys.previoustext} />
                     </Link>
                 </Breadcrumbs>
-                <div>
+                {/*<div>
                     <div
                         style={{
                             textAlign: "center",
@@ -177,7 +177,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                             <Trans i18nKey={langKeys.next} />
                         </Button>
                     </div>
-                </div>
+                </div>*/}
             </div>
         );
     }
@@ -213,7 +213,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => {
                     setValue("channels.tiktok.description", value);
                     setNextbutton2(!value);
@@ -230,7 +230,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                         </InputAdornment>
                     ),
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

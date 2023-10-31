@@ -25,7 +25,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
             }
         }
 
-        register('channels.apple.description', { validate: strRequired, value: '' });
+        /*register('channels.apple.description', { validate: strRequired, value: '' });
         register('channels.apple.build', {
             value: values => ({
                 "method": "UFN_COMMUNICATIONCHANNEL_INS",
@@ -51,7 +51,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
 
         return () => {
             unregister('channels.apple')
-        }
+        }*/
     }, [register, unregister]);
 
     return (
@@ -87,7 +87,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(val: string) => {
                     setValue('channels.apple.description', val);
                     if (val.length > 0 && !hasFinished) {
@@ -108,7 +108,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
         </div>
     )
 }
