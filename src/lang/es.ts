@@ -5577,6 +5577,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   referralguide: 'Guía de remisión',
   seetransactions: 'Ver transacciones',
   seestatushistory: 'Ver historial de estado',
+  contactsincludedinplan: "Cantidad de contactos incluidos en el plan",
 };
 
 const esResource: ResourceLanguage = {

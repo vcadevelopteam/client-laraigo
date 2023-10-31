@@ -1,25 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit, FieldSelect, FieldCheckbox } from "components";
+import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import { useEffect, useState } from "react";
-import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
-import { execute, resetMainAux } from "store/main/actions";
+import { execute } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { customerByPartnerIns, getPropertySelByName } from "common/helpers";
+import { customerByPartnerIns } from "common/helpers";
 import { Dictionary } from "@types";
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    marginRight: theme.spacing(2),
-  },
-}));
 
 interface RowSelected {
   row2: Dictionary | null;
@@ -27,14 +18,13 @@ interface RowSelected {
 }
 
 const RegisterClientDialog: React.FC<{
-  openModal: any;
-  setOpenModal: (dat: any) => void;
-  row: any;
-  fetchData: any;
+  openModal: boolean;
+  setOpenModal: (dat: boolean) => void;
+  row: Dictionary;
+  fetchData: () => void;
   data: RowSelected
 }> = ({ openModal, setOpenModal, row, fetchData, data: {row2, edit} }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
@@ -102,10 +92,10 @@ function setComissionPercentage(value: string) {
 
 React.useEffect(() => {
   register('id')
-  register('corpid', { validate: (value) =>((value && value > 0) ? true : t(langKeys.field_required) + "") });
-  register('orgid', { validate: (value) =>((value && value > 0) ? true : t(langKeys.field_required) + "") });
+  register('corpid', { validate: (value) =>((value && value > 0) ? true : String(t(langKeys.field_required)) + "") });
+  register('orgid', { validate: (value) =>((value && value > 0) ? true : String(t(langKeys.field_required)) + "") });
   register('partnerid');
-  register('typepartner', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('typepartner', { validate: (value) =>((value && value.length>0) ? true : String(t(langKeys.field_required)) + "") });
   register('billingplan');
   register('comissionpercentage');
   register('status')
@@ -164,7 +154,7 @@ const exitConfirmation = (() => {
               valueDefault={row2?.corpid || 0}
               className="col-6"
               data={(multiDataAux?.data?.[1]?.data||[])}
-              error={errors?.corpid?.message}
+              error={typeof errors?.corpid?.message === "string" ? errors?.corpid?.message : ''}
               onChange={(value) => {
                 value ? setCorpId(value.corpid) : setCorpId(0)
                 setValue('corpid', value?.corpid || 0)
@@ -177,7 +167,7 @@ const exitConfirmation = (() => {
               valueDefault={edit ? row2?.orgid : orgId}
               className="col-6"
               data={edit ? (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === row2?.corpid): (multiDataAux?.data?.[0]?.data||[]).filter(x => x.corpid === corpId)}
-              error={errors?.orgid?.message}
+              error={typeof errors?.orgid?.message === 'string' ? errors?.orgid?.message : ''}
               onChange={(value) => {
                 setOrgId(value?.orgid || 0)
                 setValue('orgid', value?.orgid || 0)
@@ -191,8 +181,8 @@ const exitConfirmation = (() => {
               label={t(langKeys.partnertype)}
               className="col-6"
               valueDefault={row2?.typepartner || ''}
-              data={(multiDataAux?.data?.[5]?.data||[])}
-              error={errors?.typepartner?.message}
+              data={( row?.enterprisepartner ? multiDataAux?.data?.[5]?.data : multiDataAux?.data?.[5]?.data.filter(item => item.domainvalue !== 'ENTERPRISE'))}
+              error={typeof errors?.typepartner?.message === 'string' ? errors?.typepartner?.message : ''}
               onChange={(value) => {
                 setValue('typepartner', value?.domainvalue || '')
                 setComissionPercentage(value?.domainvalue || '')
@@ -209,8 +199,8 @@ const exitConfirmation = (() => {
               disabled={true}
             />
             <FieldEdit
-              label={t(langKeys.billingplan)}
-              valueDefault={getValues('billingplan')}
+              label={t(langKeys.creationuser)}
+              valueDefault={row2?.createby || ''}
               className="col-6"
               inputProps={{ maxLength: 256 }}
               disabled={true}
@@ -223,8 +213,8 @@ const exitConfirmation = (() => {
               disabled={true}
             />
             <FieldEdit
-              label={t(langKeys.creationuser)}
-              valueDefault={row2?.createby || ''}
+              label={t(langKeys.lastmodificationuser)}
+              valueDefault={row2?.changeby || ''}
               className="col-6"
               inputProps={{ maxLength: 256 }}
               disabled={true}
@@ -237,8 +227,8 @@ const exitConfirmation = (() => {
               disabled={true}
             />
             <FieldEdit
-              label={t(langKeys.lastmodificationuser)}
-              valueDefault={row2?.changeby || ''}
+              label={t(langKeys.lastmodificationdate)}
+              valueDefault={row2?.changedate || ''}
               className="col-6"
               inputProps={{ maxLength: 256 }}
               disabled={true}
@@ -246,13 +236,6 @@ const exitConfirmation = (() => {
             <FieldEdit
               label={t(langKeys.creationDate)}
               valueDefault={row2?.createdate || ''}
-              className="col-6"
-              inputProps={{ maxLength: 256 }}
-              disabled={true}
-            />
-            <FieldEdit
-              label={t(langKeys.lastmodificationdate)}
-              valueDefault={row2?.changedate || ''}
               className="col-6"
               inputProps={{ maxLength: 256 }}
               disabled={true}

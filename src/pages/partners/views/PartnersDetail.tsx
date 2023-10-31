@@ -6,12 +6,12 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, AntTab, AntTabPanel } from 'components';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
 import PartnersTabDetail from './detailTabs/PartnersTabDetail';
@@ -28,7 +28,7 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData: any;
+    fetchData: () => void;
 }
 
 
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
+const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected, fetchData }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -84,7 +84,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
         }
     }
     
-    const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row ? row.partnerid : 0,
             country: row?.country || '',
@@ -102,10 +102,12 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
             billingplan: row?.billingplan || '',
             typecalculation: row?.typecalculation || '',            
             numbercontactsbag: row?.numbercontactsbag || 0,
-            puadditionalcontacts: row?.puadditionalcontacts || 0,
+            puadditionalcontacts: row?.puadditionalcontacts || '0',
             priceperbag: row?.priceperbag || '0',
             automaticgenerationdrafts: row?.automaticgenerationdrafts || false,
             automaticperiodgeneration: row?.automaticperiodgeneration || false,
+            montlyplancost: row?.montlyplancost || 0,
+            numberplancontacts: row?.numberplancontacts || 0,
             status: row?.status || 'ACTIVO',
             type: row?.type || '',
             operation: row ? "UPDATE" : "INSERT",
@@ -169,7 +171,12 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                         dispatch(execute(partnerIns(data)));
                     }
                 } else {
-                    dispatch(execute(partnerIns(data)));
+                    if(getValues('puadditionalcontacts').split('.').length === 1){
+                        dispatch(execute(partnerIns({...data, puadditionalcontacts: getValues('puadditionalcontacts')+'.00'})));
+                    }
+                    else {
+                        dispatch(execute(partnerIns(data)));
+                    }
                 }
             } else {
                 if(getValues('typecalculation') === 'Por bolsa') {
@@ -179,7 +186,12 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                         dispatch(execute(partnerIns(data)));
                     }
                 } else {
-                    dispatch(execute(partnerIns({...data, id: row?.partnerid})));
+                    if(getValues('puadditionalcontacts').split('.').length === 1) {
+                        dispatch(execute(partnerIns({...data, id: row?.partnerid, puadditionalcontacts: getValues('puadditionalcontacts')+'.00'})));
+                    }
+                    else {
+                        dispatch(execute(partnerIns({...data, id: row?.partnerid})));
+                    }
                 }
             }
             setWaitSave(true);
@@ -258,7 +270,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSel
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ClientsTabDetail fetchdata={fetchCustomerByPartner} errors={errors} row={row}/>
+                    <ClientsTabDetail fetchdata={fetchCustomerByPartner} row={row}/>
                 </AntTabPanel>
             </form>
         </>

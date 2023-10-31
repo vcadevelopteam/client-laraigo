@@ -1,14 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React from 'react';
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { Dictionary, IFetchData } from "@types";
-import { getCollection, getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
+import { Dictionary } from "@types";
+import { getCollection, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import PartnersMainView from "./views/PartnersMainView";
 import PartnersDetail from "./views/PartnersDetail";
-import { customerByPartnerSel, getCorpSel, getCurrencyList, getOrgSel, getOrgSelList, getPropertySelByName, getValuesFromDomain, partnerSel } from "common/helpers";
+import { getCorpSel, getCurrencyList, getOrgSelList, getPropertySelByName, getValuesFromDomain, partnerSel } from "common/helpers";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
+import { useTranslation } from "react-i18next";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -16,6 +18,7 @@ interface RowSelected {
 }
 
 const Partners: FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const mainResult = useSelector((state) => state.main);
   const [viewSelected, setViewSelected] = useState("main-view");
