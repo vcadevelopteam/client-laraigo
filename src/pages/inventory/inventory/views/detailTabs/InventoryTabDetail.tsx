@@ -11,7 +11,7 @@ import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, FieldSelect } fro
 import TableZyx from "components/fields/table-simple";
 import { useSelector } from 'hooks';
 import RegisterInventoryBalanceDialog from '../../dialogs/RegisterInventoryBalanceDialog';
-import { convertLocalDate, insInventoryBalance } from 'common/helpers';
+import { insInventoryBalance } from 'common/helpers';
 import { useDispatch } from 'react-redux';
 import { execute } from 'store/main/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -76,6 +76,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
     const initialValueAttachments = getValues('attachments');
     const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
     const [openModal, setOpenModal] = useState(false);
+    const [dataTable, setdataTable] = useState<any>([]);
     const dataBalance = useSelector(state => state.main.mainAux);
     const multiData = useSelector(state => state.main.multiDataAux);
     const dispatch = useDispatch();
@@ -103,6 +104,11 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
             }
         }
     }, [executeResult, waitSave])
+    useEffect(() => {
+        if(!dataBalance.loading && !dataBalance.error){
+            if(dataBalance.key==="UFN_INVENTORYBALANCE_SEL") setdataTable(dataBalance?.data||[])
+        }        
+    }, [dataBalance])
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
@@ -461,7 +467,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 <div className='row-zyx'>
                     <TableZyx
                         columns={columns}
-                        data={dataBalance?.data||[]}
+                        data={dataTable||[]}
                         download={false}
                         filterGeneral={false}
                         register={true}

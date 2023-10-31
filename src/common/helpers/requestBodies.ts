@@ -4307,6 +4307,19 @@ export const getWarehouseExport = ({ filters, sorts, startdate, enddate }: Dicti
     }
 });
 
+export const getInventoryConsumptionExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_INVENTORYCONSUMPTION_EXPORT",
+    key: "UFN_INVENTORYCONSUMPTION_EXPORT",
+    parameters: {
+        origin: "inventoryconsumption",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const getWarehouses = (): IRequestBody => ({
     method: "UFN_WAREHOUSE_SEL",
     key: "UFN_WAREHOUSE_SEL",
