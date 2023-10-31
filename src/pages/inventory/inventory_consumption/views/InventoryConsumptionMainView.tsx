@@ -6,19 +6,16 @@ import {
   Title,
 } from "components";
 import { langKeys } from "lang/keys";
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import { DuplicateIcon } from "icons";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
-import { execute, exportData } from "store/main/actions";
+import { execute, exportData, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, getWarehouseExport, importWarehouse, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
+import { getInventoryConsumptionExport, getValuesFromDomain, insWarehouse } from "common/helpers";
 import { useSelector } from "hooks";
-import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 
 const selectionKey = "warehouseid";
@@ -51,11 +48,6 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
   const [waitUpload, setWaitUpload] = useState(false);  
   const importRes = useSelector((state) => state.main.execute);
 
-  const handleRegister = () => {
-    setViewSelected("detail-view");
-    setRowSelected({ row: null, edit: false });
-  };
-
   const handleEdit = (row: Dictionary) => {
     setViewSelected("detail-view");
     setRowSelected({ row, edit: true });
@@ -79,7 +71,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
           showSnackbar({
             show: true,
             severity: "error",
-            message: t(importRes.code || "error_unexpected_error"),
+            message: t(importRes.code ?? "error_unexpected_error"),
           })
         );
         dispatch(showBackdrop(false));
@@ -113,7 +105,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
             setWaitExport(false);
             resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
         } else if (resExportData.error) {
-            const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+            const errormessage = t(resExportData.code ?? "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
             dispatch(showBackdrop(false));
             setWaitExport(false);
@@ -133,6 +125,17 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
   }, [mainPaginated]);
 
   useEffect(() => {
+    dispatch(
+      getMultiCollectionAux([
+        getValuesFromDomain("TIPOTRANSACCIONINV"),
+      ])
+    );
+    return () => {
+      dispatch(resetAllMain());
+    };
+  }, []);
+  
+  useEffect(() => {
     if (waitSave) {
       if (!executeResult.loading && !executeResult.error) {
         dispatch(
@@ -146,7 +149,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
-        const errormessage = t(executeResult.code || "error_unexpected_error", {
+        const errormessage = t(executeResult.code ?? "error_unexpected_error", {
           module: t(langKeys.domain).toLocaleLowerCase(),
         });
         dispatch(
@@ -161,7 +164,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "inventoryconsumptionid",
+        accessor: "globalid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -178,8 +181,10 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
       },
       {
         Header: t(langKeys.inventory_consumption),
-        accessor: "globalid",
+        accessor: "inventoryconsumptionid",
         width: "auto",
+        type: "number",
+        sortType: 'number',
       },
       {
         Header: t(langKeys.description),
@@ -205,7 +210,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
         key: x.accessor,
         alias: x.Header
     }))
-    dispatch(exportData(getWarehouseExport({
+    dispatch(exportData(getInventoryConsumptionExport({
         filters: {
             ...filters,
         },
@@ -216,43 +221,6 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
     dispatch(showBackdrop(true));
     setWaitExport(true);
   };
-
-  const handleUpload = async (files: any) => {
-    const file = files?.item(0);
-    if (file) {
-      const data: any = await uploadExcel(file, undefined);
-      if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          warehouseid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        dispatch(execute(importWarehouse(dataToSend)));
-        setWaitUpload(true);
-      }
-    }
-  };
-
-  const handleTemplateWarehouse = () => {
-    const data = [{}, {}, {}, {}, {}, {}];
-    const header = [
-      "name",
-      "description",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
-    ];
-    exportExcel(
-      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
-      templateMaker(data, header)
-    );
-  };
-  
-  console.log(mainPaginated.data)
 
   return (
     <div
@@ -295,13 +263,12 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
         setSelectedRows={setSelectedRows}
         filterRangeDate="today"
         onClickRow={handleEdit}
-        handleRegister={handleRegister}
         filterGeneral={false}
         FiltersElement={(<div></div>)}
         initialSelectedRows={selectedRows}
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
-        register={true}
+        register={false}
       />
     </div>
   );
