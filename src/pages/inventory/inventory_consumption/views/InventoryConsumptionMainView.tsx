@@ -6,7 +6,6 @@ import {
   Title,
 } from "components";
 import { langKeys } from "lang/keys";
-import ListAltIcon from '@material-ui/icons/ListAlt';
 import { DuplicateIcon } from "icons";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
