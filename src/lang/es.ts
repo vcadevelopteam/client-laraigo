@@ -1020,6 +1020,7 @@ const translation: LangKeys = {
 
   status_activo: 'activo',
   no_reply_use_hsm: 'Esta conversación se encuentra bloqueada hasta que el cliente responda el HSM enviado para iniciar la conversación con su consentimiento.',
+  no_reply_claro: 'Por permisos de perfil no se encuentra habilitado las opciones de reasignación de conversación o contacto con el cliente, estando en Holding o Bot.',
   status_inactivo: 'inactivo',
   status_bloqueado: 'bloqueado',
   status_ejecutando: 'ejecutando',
