@@ -18,7 +18,7 @@ import { getInventoryConsumptionExport, getValuesFromDomain, insWarehouse } from
 import { useSelector } from "hooks";
 import TablePaginated from "components/fields/table-paginated";
 
-const selectionKey = "warehouseid";
+const selectionKey = "globalid";
 
 interface WarehouseMainViewProps {
   setViewSelected: (view: string) => void;
