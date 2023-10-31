@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTabPanel } from 'components';
-import { getWarehouseProducts, insWarehouse } from 'common/helpers';
+import { getWarehouseProducts, insInventoryConsumption, insWarehouse } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -85,15 +85,14 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             inventoryconsumptionid: row?.inventoryconsumptionid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || '',
-            name: row?.name || '',
             description: row?.description || '',
-            address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            status: row?.status || 'ACTIVO'
+            ordernumber: row?.ordernumber || '',
+            transactiontype: row?.transactiontype || '',
+            warehouseid: row?.warehouseid || 0,
+            status: row?.status || 'INGRESADO',
+            type: row?.type || '',
+            comment: row?.comment || '',
+            operation: edit ? "EDIT" : "INSERT"
         }
     });
 
@@ -121,12 +120,14 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
 
     React.useEffect(() => {
         register('inventoryconsumptionid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
+        register('ordernumber', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('transactiontype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('warehouseid');
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type');
+        register('comment');
+        register('operation');
 
         dispatch(resetMainAux());
     }, [register]);
@@ -134,7 +135,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insWarehouse(data)));
+            dispatch(execute(insInventoryConsumption(data)));
 
             setWaitSave(true);
         }

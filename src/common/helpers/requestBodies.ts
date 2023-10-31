@@ -4597,3 +4597,10 @@ export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid
     key: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
     parameters: { partnerid, corpid, orgid, year, month, username },
 });
+export const insInventoryConsumption = ({ inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, status, type, comment, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_INVENTORYCONSUMPTION_INS",
+    key: "UFN_INVENTORYCONSUMPTION_INS",
+    parameters: {
+        inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, status, type, comment, operation
+    }
+});
