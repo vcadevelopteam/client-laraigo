@@ -65,6 +65,7 @@ export const langKeys = {
   registrationdate: "registrationdate",
   complianceresolution: "complianceresolution",
   apikeydoesntexist: "apikeydoesntexist",
+  enableapi: "enableapi",
   applicant: "applicant",
   ordernumber: "ordernumber",
   userwhoreported: "userwhoreported",
@@ -1419,6 +1420,7 @@ export const langKeys = {
   calendar_connections_subtitle: 'calendar_connections_subtitle',
 
   no_reply_use_hsm: 'no_reply_use_hsm',
+  no_reply_claro: 'no_reply_claro',
 
   active: 'active',
   inactive: 'inactive',
