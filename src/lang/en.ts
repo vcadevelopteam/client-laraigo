@@ -1618,6 +1618,8 @@ const translation: LangKeys = {
   selectpagelink: "Select the page to link",
   abandonosxAsesor: "Number of Dropouts heat map",
   tasaAbandonosxAsesor: "Percentage of Dropouts heat map",
+  modeltooltip: 'Main distributor model number for this product.',
+  catalog_nrotooltip:"Main distributor catalog code for this product.",
   oportunidadesxAsesor: "Opportunity quantity heat map",
   report_productivity_closetype_help: `- Closing completed: Ticket closed satisfactorily.
 - Closing Irrelevant: Ticket closed satisfactorily, without value.
