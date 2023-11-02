@@ -149,56 +149,36 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     }
 
     return (
-        <>
-            {
-                (userRole?.split(",")?.includes('ADMINISTRADOR') || userRole?.split(",")?.includes('SUPERVISOR')) && config.key === 'invoice'
-                    ?
-                    <ListItem
-                        button
-                        key={config.key}
-                        className={clsx(linkListStyle)}
-                        component="a"
-                        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => onClick(e, config.options[0])}
-                        style={{ position: 'relative' }}
-                        onMouseEnter={() => { setlinkListStyle(open ? classes.drawerItemActive : classes.drawerCloseItemActive) }}
-                        onMouseLeave={() => { setlinkListStyle(open ? classes.drawerItemInactive : classes.drawerCloseItemInactive) }}
-                    >
-                        <ListItemIcon>{config.icon?.(linkListStyle)}</ListItemIcon>
-                        <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
-                    </ListItem>
-                    :
-                    <div {...bindHover(popupState)} >
-                        <ListItem
-                            button
-                            key={config.key}
-                            className={clsx(className)}
-                            style={{ position: 'relative' }}
-                        >
-                            <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
-                            <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
-                            <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
-                        </ListItem>
-                        <HoverPopover
-                            {...bindPopover(popupState)}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            transitionDuration={0.0}
+        <div {...bindHover(popupState)} >
+            <ListItem
+                button
+                key={config.key}
+                className={clsx(className)}
+                style={{ position: 'relative' }}
+            >
+                <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
+                <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
+                <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
+            </ListItem>
+            <HoverPopover
+                {...bindPopover(popupState)}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                transitionDuration={0.0}
 
-                        >
-                            <PopperContent
-                                classes={classes}
-                                history={history}
-                                config={config} />
-                        </HoverPopover>
-                    </div>
-            }
-        </ >
+            >
+                <PopperContent
+                    classes={classes}
+                    history={history}
+                    config={config} />
+            </HoverPopover>
+        </div>
     );
 };
 
@@ -223,15 +203,17 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             .map(entry => entry.route);
         if (subroutes.length > 0) {
             if (subroutes.includes('/invoice')) {
-                if (userData?.roledesc?.split(",")?.includes('SUPERADMIN') || userData?.roledesc?.split(",")?.includes("SUPERADMINISTRADOR SOCIOS")) {
+                debugger
+                const roles = userData?.roledesc?.split(",");
+                if (roles?.includes('SUPERADMIN') || roles?.includes("SUPERADMINISTRADOR SOCIOS") || roles?.includes('ADMINISTRADOR')) {
                     const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
                     acc.push({ ...view, options: filteredSubroutes });
 
-                } else if (userData?.roledesc?.split(",")?.includes('ADMINISTRADOR') || userData?.roledesc?.split(",")?.includes('SUPERVISOR')) {
+                } else if (roles?.includes('ADMINISTRADOR') || roles?.includes('SUPERVISOR')) {
                     const filteredSubroutes = ['/invoice']
                     acc.push({ ...view, options: filteredSubroutes });
                 }
-            }else{
+            } else {
                 acc.push({ ...view, options: subroutes });
             }
         }
