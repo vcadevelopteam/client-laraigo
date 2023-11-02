@@ -47,6 +47,12 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.secondary.main,
     },
     containerLogin: {
+        [theme.breakpoints.down('xs')]: {
+            paddingLeft: 20,
+            paddingRight: 20,
+            marginLeft: 16,
+            marginRight: 16,
+        },
         display: 'flex',
         alignItems: 'center',
         borderRadius: "3.75rem",
@@ -54,12 +60,9 @@ export const useStyles = makeStyles((theme) => ({
         paddingLeft: 36,
         paddingRight: 36,
         position: "relative",
-        [theme.breakpoints.down('xs')]: {
-            paddingLeft: 20,
-            paddingRight: 20,
-            marginLeft: 16,
-            marginRight: 16,
-        },
+        maxHeight: '94vh',
+        height: 704,
+        maxWidth: 490
     },
     copyright: {
         fontFamily: "Inter",
@@ -85,9 +88,6 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%', // Fix IE 11 issue.
         marginTop: theme.spacing(1),
     },
-    // submit: {
-    //     // margin: theme.spacing(3, 0, 2),
-    // },
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
@@ -157,7 +157,7 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%!important',
         cursor: 'pointer!important',
         boxShadow: "none",
-        height: '2.7rem!important',
+        height: '2.88rem!important',
         background: '#FFF', color: "#6d6d6d",
         '& span': {
             fontWeight: 'bold!important',
@@ -171,8 +171,8 @@ export const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: "1.9rem",
-        marginBottom: "1.9rem",
+        marginTop: "2.6rem",
+        marginBottom: "2.6rem",
         [theme.breakpoints.down('xs')]: {
             marginTop: "1rem",
             marginBottom: "1rem",
@@ -341,10 +341,10 @@ const SignIn = () => {
             <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"></script>
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <div className={classes.container}>
-                <Container component="main" maxWidth="xs" className={classes.containerLogin}>
+                <Container component="main"  className={classes.containerLogin}>
                     <div className={classes.childContainer} style={{ height: '100%' }}>
                         <div className={classes.image}>
-                            <LaraigoLogo height={50} />
+                            <LaraigoLogo height={49} />
                         </div>
                         <div className={classes.paper} style={{ flex: 1 }}>
                             {(resLogin.error && showError) && (
@@ -415,7 +415,7 @@ const SignIn = () => {
                                                 fullWidth
                                                 variant="contained"
                                                 color="primary"
-                                                style={{ height: '2.7rem', }}
+                                                style={{ height: '2.88rem', }}
                                             >
                                                 <Trans i18nKey={langKeys.logIn} />
                                             </Button>
@@ -442,7 +442,7 @@ const SignIn = () => {
                                             <Button
                                                 variant="outlined"
                                                 fullWidth
-                                                style={{ height: '2.7rem', }}
+                                                style={{ height: '2.88rem', }}
                                                 color="primary"
                                                 onClick={consultHistoricalData}
                                             >
