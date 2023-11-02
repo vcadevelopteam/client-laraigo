@@ -905,7 +905,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 </div>
                 :
                 <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
-                    {showReply == null ? t(langKeys.no_reply_use_hsm) : t(langKeys.no_reply_claro)}
+                    {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                 </div>
             }
             <BottomGoToUnder />
@@ -992,7 +992,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             {!showReply && (
                 <div className={classes.containerResponse}>
                     <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
-                        {showReply == null ? t(langKeys.no_reply_use_hsm) : t(langKeys.no_reply_claro)}
+                        {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                     </div>
                     <BottomGoToUnder />
                 </div>
