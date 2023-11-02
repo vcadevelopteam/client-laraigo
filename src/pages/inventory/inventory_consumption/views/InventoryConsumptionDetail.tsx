@@ -7,12 +7,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail, AntTabPanel } from 'components';
-import { getWarehouseProducts, insInventoryConsumption, insWarehouse } from 'common/helpers';
+import { getInventoryConsumptionDetail, getWarehouseProducts, insInventoryConsumption, insWarehouse } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { execute, getCollectionAux, getMultiCollectionAux2, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import InventoryConsumptionTabDetail from './detailTabs/InventoryConsumptionTabDetail';
 import CompleteInventoryConsumptionDialog from '../dialogs/CompleteInventoryConsumptionDialog';
@@ -32,6 +32,7 @@ interface DetailProps {
     setViewSelected: (view: string) => void;
     fetchData?: any;
     fetchDataAux?: any;
+    viewSelected: String;
 }
 
 
@@ -66,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux, viewSelected }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -96,11 +97,15 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
         }
     });
 
-    const fetchWarehouseProducts = () => {
-        dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
-        );
-    }
+    useEffect(() => {
+        if (viewSelected=="detail-view") {
+            dispatch(
+                getMultiCollectionAux2([
+                  getInventoryConsumptionDetail(row?.inventoryconsumptionid || 0),
+                ])
+              );
+        }       
+    }, [viewSelected]);
 
     useEffect(() => {
         if (waitSave) {
@@ -215,7 +220,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                 <InventoryConsumptionTabDetail
                     row={row}
                     setValue={setValue}
-                    getValues={getValues}
+                    getValues={getValues}                   
                     errors={errors}
                 />
                 <CompleteInventoryConsumptionDialog

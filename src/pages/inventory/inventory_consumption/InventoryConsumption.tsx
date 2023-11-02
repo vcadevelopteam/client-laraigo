@@ -81,6 +81,7 @@ const InventoryConsumption: FC = () => {
         setViewSelected={redirectFunc}
         fetchData={fetchData}
         fetchDataAux={fetchDataAux}
+        viewSelected={viewSelected}
       />
     );
 };

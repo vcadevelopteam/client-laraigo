@@ -4212,11 +4212,20 @@ export const getProducts = (): IRequestBody => ({
     }
 });
 
+
 export const getProductsWarehouse = (productid: number): IRequestBody => ({
     method: "UFN_ALL_WAREHOUSE_PRODUCT_SEL",
     key: "UFN_ALL_WAREHOUSE_PRODUCT_SEL",
     parameters: {
         productid: productid
+    }
+});
+
+export const getInventoryConsumptionDetail = (inventoryconsumptionid: number): IRequestBody => ({
+    method: "UFN_INVENTORYCONSUMPTION_DETAILSELECT",
+    key: "UFN_INVENTORYCONSUMPTION_DETAILSELECT",
+    parameters: {        
+        inventoryconsumptionid
     }
 });
 

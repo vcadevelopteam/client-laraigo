@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { Button, IconButton } from "@material-ui/core";
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,10 +12,11 @@ import { useSelector } from 'hooks';
 import TableZyx from 'components/fields/table-simple';
 import AddInventoryConsumptionLineDialog from '../../dialogs/AddInventoryConsumptionLineDialog';
 import TableSelectionDialog from '../../dialogs/TableSelectionDialog';
-import { execute } from 'store/main/actions';
+import { execute, getMultiCollectionAux2 } from 'store/main/actions';
 import { manageConfirmation, showBackdrop } from 'store/popus/actions';
 import SelectReservedProductsDialog from '../../dialogs/SelectReservedProductsDialog';
 import SelectProductsForReturnDialog from '../../dialogs/SelectProductsForReturnDialog';
+import { getInventoryConsumptionDetail } from 'common/helpers';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -68,6 +69,9 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const { t } = useTranslation();
     const classes = useStyles();
     const user = useSelector(state => state.login.validateToken.user);
+    const multidata = useSelector(state => state.main.multiDataAux);
+    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
+    console.log(multidata);
     const [openModal, setOpenModal] = useState(false);
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
     const [openModalReservedProducts, setOpenModalReservedProducts] = useState(false);
@@ -89,10 +93,12 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         }))
     }
 
+
+
     const columns = React.useMemo(
         () => [
         {
-            accessor: 'productalternativeid',
+            accessor: 'inventoryconsumptiondetailid',
             NoFilter: true,
             isComponent: true,
             minWidth: 60,
@@ -108,32 +114,32 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         },
           {
             Header: t(langKeys.line),
-            accessor: "distributordescription",
+            accessor: "line",
             width: "auto",
           },
           {
             Header: t(langKeys.product),
-            accessor: "manufacturerdescription",
+            accessor: "productid",
             width: "auto",
           },
           {
             Header: t(langKeys.description),
-            accessor: "model",
+            accessor: "description",
             width: "auto",
           },
           {
             Header: t(langKeys.quantity),
-            accessor: "catalognumber",
+            accessor: "quantity",
             width: "auto",
           },
           {
             Header: t(langKeys.unitcost),
-            accessor: "unitbuydescription",
+            accessor: "unitcost",
             width: "auto",
           },
           {
             Header: t(langKeys.linecost),
-            accessor: "lastprice",
+            accessor: "onlinecost",
             width: "auto",
           },
         ],
@@ -186,38 +192,31 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />
-                <FieldSelect
-                    label={t(langKeys.transactiontype)}
-                    className="col-3"
-                    data={[]}
-                    optionValue="manufacturerid"
-                    optionDesc="description"
-                    valueDefault={getValues("transactiontype")}
-                    onChange={(value) => setValue("manufacturerid", value.manufacturerid)}  
-                />
+                 <FieldEdit
+                        label={t(langKeys.transactiontype)}
+                        className="col-3"
+                        disabled
+                        valueDefault={row?.transactiontype}                       
+                    />
+               
                 <div className='row-zyx col-9'>
                     <FieldEdit
                         label={t(langKeys.warehouse)}
                         className="col-3"
                         disabled
-                        valueDefault={""}
-                        InputProps={{
-                            endAdornment: (
-                                <IconButton onClick={()=>{setOpenModalWarehouse(true)}}>
-                                    <Add />
-                                </IconButton>
-                            )
-                        }}
+                        valueDefault={""}                       
                     />
                 </div>
-                <FieldEdit
+                <FieldSelect
+                disabled
                     label={t(langKeys.status)}
-                    valueDefault={getValues('status')}
                     className="col-3"
-                    disabled
-                    error={errors?.description?.message}
-                    onChange={(value) => setValue('description', value)}
-                />       
+                    data={row?.status == "INGRESADO"?(multidata.data[0]?.data||[]):(multidata.data[0]?.data||[]).filter(x=>x.domainvalue!="CANCELADO")} 
+                    optionValue="domainvalue"
+                    optionDesc="domaindesc"
+                    valueDefault={getValues("status")}
+                    onChange={(value) => setValue("status", value.domainvalue)}  
+                />
             </div>
             <div className="row-zyx">
                 <div className='row-zyx'>
@@ -248,7 +247,8 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                             </div>
                         )}
                         columns={columns}
-                        data={[]}
+                        data={multiDataAux2?.data?.[0]?.data || []}
+                        loading={multiDataAux2.loading}
                         download={false}
                         filterGeneral={false}
                         register={true}
