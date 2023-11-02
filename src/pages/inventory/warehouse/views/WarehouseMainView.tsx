@@ -328,7 +328,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.warehouse} />
+            <Trans i18nKey={langKeys.warehouses} />
           </Title>
         </div>
       </div>

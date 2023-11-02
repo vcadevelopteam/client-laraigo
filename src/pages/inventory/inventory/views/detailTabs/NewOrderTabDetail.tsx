@@ -35,6 +35,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
   const classes = useStyles();
   const dataProducts = useSelector(state => state.main.mainAux);
   const [openModal, setOpenModal] = useState(false);
+  const [disableType, setDisableType] = useState('');
   const multiDataAux = useSelector(state => state.main.multiDataAux);
 
   useEffect(() => {
@@ -189,23 +190,32 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
                 optionValue="distributorid"
                 optionDesc="description"
                 valueDefault={getValues("distributorid")}
-                onChange={(value) => setValue("distributorid", value.manufacturerid)}  
+                disabled={disableType==="distributor"}
+                onChange={(value) => {  
+                  setDisableType(value?.manufacturerid?"manufacturer":"")              
+                  setValue("distributorid", value?.manufacturerid||0)
+                }}  
               />
           </div>
           <div className='row-zyx'>
               <FieldSelect
                 label={t(langKeys.manufacturer)}
+                disabled={disableType==="manufacturer"}
                 className="col-6"
                 data={(multiDataAux?.data?.[4]?.data||[]).filter(x=>x.typemanufacter_desc ==="F")}
                 optionValue="manufacturerid"
                 optionDesc="description"
                 valueDefault={getValues("manufacturerid")}
-                onChange={(value) => setValue("manufacturerid", value.manufacturerid)}  
+                onChange={(value) => {
+                  setDisableType(value?.manufacturerid?"distributor":"")
+                  setValue("manufacturerid", value?.manufacturerid||0)
+                }}  
               />
           </div>
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.model)}
+                  helperText={t(langKeys.modeltooltip)}
                   className="col-6"
                   valueDefault={getValues("model")}
                   onChange={(value) => setValue("model", value)}  
@@ -214,6 +224,7 @@ const NewOrderTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors,
           <div className='row-zyx'>
               <FieldEdit
                   label={t(langKeys.catalog_nro)}
+                  helperText={t(langKeys.catalog_nrotooltip)}
                   className="col-6"
                   valueDefault={getValues("catalognumber")}
                   onChange={(value) => setValue("catalognumber", value)}  

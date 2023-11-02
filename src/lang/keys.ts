@@ -78,6 +78,7 @@ export const langKeys = {
   dealer:"dealer",
   manufacturer:"manufacturer",
   catalog_nro:"catalog_nro",
+  catalog_nrotooltip:"catalog_nrotooltip",
   last_price:"last_price",
   last_order_date:"last_order_date",
   delivered: "delivered",
@@ -1456,6 +1457,7 @@ export const langKeys = {
   type_service_plural: 'type_service_plural',
 
   model: 'model',
+  modeltooltip: 'modeltooltip',
   model_plural: 'model_plural',
 
   analysis_type: 'analysis_type',
