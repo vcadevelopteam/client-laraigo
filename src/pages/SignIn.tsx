@@ -61,7 +61,7 @@ export const useStyles = makeStyles((theme) => ({
         paddingLeft: 36,
         paddingRight: 36,
         position: "relative",
-        maxHeight: '95vh',
+        maxHeight: '94vh',
         height: 704,
         maxWidth: 490
     },
