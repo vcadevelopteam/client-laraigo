@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useCallback, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -17,20 +17,26 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetAllMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute, getMultiCollectionAux, uploadFile } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import ClearIcon from '@material-ui/icons/Clear';
 import { TreeItem, TreeView } from '@material-ui/lab';
-import { IconButton, Input, InputAdornment, InputLabel, Menu, MenuItem } from '@material-ui/core';
+import { Box, CircularProgress, IconButton, Input, InputAdornment, InputLabel, Menu, MenuItem, Paper } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import { DetailTipification } from './Tipifications';
+import AttachFileIcon from "@material-ui/icons/AttachFile";
 import {
+    Close,
+    FileCopy,
+    GetApp,
     MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
 import { emojis } from "common/constants/emojis";
 import { emitEvent } from 'store/inbox/actions';
+import { RichText, renderToString, toElement } from 'components/fields/RichText';
+import { Descendant } from 'slate';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -74,7 +80,11 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         maxWidth: 400,
     },
-    treelabels: {display:"flex",justifyContent:"space-between"}
+    treelabels: {display:"flex",justifyContent:"space-between"},
+    headerText: {
+        flexBasis: "200px",
+        flexGrow: 1,
+    },
 }));
 
 const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary,setAnchorEl: (param: any) => void, setonclickdelete:(param: any) => void}> = ({ dataClassTotal,setAnchorEl,setonclickdelete }) => {
@@ -300,6 +310,104 @@ class VariableHandler {
     }
 }
 
+interface FilePreviewProps {
+    onClose?: (f: string) => void;
+    src: File | string;
+}
+
+const useFilePreviewStyles = makeStyles((theme) => ({
+    btnContainer: {
+        color: "lightgrey",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+    },
+    infoContainer: {
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+    },
+    root: {
+        alignItems: "center",
+        backgroundColor: "white",
+        borderRadius: 4,
+        display: "flex",
+        flexDirection: "row",
+        margin: theme.spacing(1),
+        maxHeight: 80,
+        maxWidth: 300,
+        overflow: "hidden",
+        padding: theme.spacing(1),
+        width: "fit-content",
+    },
+}));
+
+const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
+    const classes = useFilePreviewStyles();
+
+    const isUrl = useCallback(() => typeof src === "string" && src.includes("http"), [src]);
+
+    const getFileName = useCallback(() => {
+        if (isUrl()) {
+            const m = RegExp(/.*\/(.+?)\./).exec(src as string);
+            return m && m.length > 1 ? m[1] : "";
+        }
+        return (src as File).name;
+    }, [isUrl, src]);
+
+    const getFileExt = useCallback(() => {
+        if (isUrl()) {
+            return (src as string).split(".").pop()?.toUpperCase() ?? "-";
+        }
+        return (src as File).name?.split(".").pop()?.toUpperCase() ?? "-";
+    }, [isUrl, src]);
+
+    return (
+        <Paper className={classes.root} elevation={2}>
+            <FileCopy />
+            <div style={{ width: "0.5em" }} />
+            <div className={classes.infoContainer}>
+                <div>
+                    <div
+                        style={{
+                            fontWeight: "bold",
+                            maxWidth: 190,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        {getFileName()}
+                    </div>
+                    {getFileExt()}
+                </div>
+            </div>
+            <div style={{ width: "0.5em" }} />
+            {!isUrl() && !onClose && <CircularProgress color="primary" />}
+            <div className={classes.btnContainer}>
+                {onClose && (
+                    <IconButton size="small" onClick={() => onClose(src as string)}>
+                        <Close />
+                    </IconButton>
+                )}
+                {isUrl() && <div style={{ height: "10%" }} />}
+                {isUrl() && (
+                    <a
+                        download={`${getFileName()}.${getFileExt()}`}
+                        href={src as string}
+                        rel="noreferrer"
+                        target="_blank"
+                    >
+                        <IconButton size="small">
+                            <GetApp />
+                        </IconButton>
+                    </a>
+                )}
+            </div>
+        </Paper>
+    );
+};
+
 const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, fetchMultiData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -312,6 +420,15 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const [onclickdelete, setonclickdelete] = useState<any>(null);
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
     const [dataUPD, setDataUPD] = useState<any>(null)
+    const [bodyAlert, setBodyAlert] = useState("");
+    const [disableInput, setDisableInput] = useState(false);
+    const [bodyObject, setBodyObject] = useState<Descendant[]>(
+        row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
+    );
+    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const uploadResult = useSelector((state) => state.main.uploadFile);
+
     const open = Boolean(anchorEl);
     const handleCloseMenu = () => {
         setAnchorEl(null);
@@ -326,6 +443,8 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataClassTotal = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataQuickreplyTypes = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataPriority = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const extravariables = [
         {variablename: "numticket"},
         {variablename: "client_name"},
@@ -335,7 +454,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const dataVariables = multiData[2] && multiData[2].success ? [...multiData[2].data,...extravariables] : [];
 
     
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, trigger, watch, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             communicationchannelid: row?.communicationchannelid || 0,
@@ -345,9 +464,14 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             description: row?.description || '',
             favorite: row?.favorite || false,
             status: row?.status || 'ACTIVO',
+            quickreply_type: row?.quickreply_type || 'REDES SOCIALES',
+            quickreply_priority: row?.quickreply_priority || 'BAJA',
+            attachment: row?.attachment || "",
             operation: row ? "EDIT" : "INSERT"
         }
     });
+
+    const [quickreply_type, attachment] = watch(["quickreply_type", 'attachment']);
 
     React.useEffect(() => {
         setValue('quickreply', quickreply)
@@ -358,10 +482,17 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         register('id');
         register('favorite');
         register('classificationid');//, { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('quickreply', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-    }, [edit, register]);
+        register('quickreply_type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('quickreply_priority', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('quickreply', {
+            validate: (value) => {
+                if (quickreply_type === 'REDES SOCIALES') return (value && value.length) || t(langKeys.field_required);
+                return true;
+            }
+        });
+    }, [edit, register, quickreply_type]);
 
     useEffect(() => {
         if (waitSave) {
@@ -393,11 +524,35 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         }
     }, [executeRes, waitSave])
 
+    useEffect(() => {
+        if (waitUploadFile) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                setValue(
+                    "attachment",
+                    (getValues("attachment")
+                        ? [getValues("attachment"), uploadResult?.url ?? ""]
+                        : [uploadResult?.url ?? ""]
+                    ).join(",")
+                );
+                setWaitUploadFile(false);
+            } else if (uploadResult.error) {
+                setWaitUploadFile(false);
+            }
+        }
+    }, [waitUploadFile, uploadResult]);
+
     
     const onSubmit = handleSubmit((data) => {
-        //data.communicationchannelid = selected.key
+        data.body = renderToString(toElement(bodyObject));
+        if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
+            setBodyAlert(t(langKeys.field_required));
+            return;
+        } else {
+            setBodyAlert("");
+        }
+        // return
         const callback = () => {
-            dispatch(execute(insQuickreplies(data))); //executeRes
+            dispatch(execute(insQuickreplies({...data, bodyobject: bodyObject}))); //executeRes
             setDataUPD(data)
             dispatch(showBackdrop(true));
             setWaitSave(true)
@@ -408,6 +563,42 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             callback
         }))
     });
+
+    const onChangeAttachment = useCallback((files: any) => {
+        const file = files?.item(0);
+
+        if (file) {
+            setFileAttachment(file);
+            const fd = new FormData();
+            fd.append("file", file, file.name);
+            dispatch(uploadFile(fd));
+            setWaitUploadFile(true);
+        }
+    }, []);
+
+    const onClickAttachment = useCallback(() => {
+        const input = document.getElementById("attachmentInput");
+        input!.click();
+    }, []);
+
+    const handleCleanMediaInput = async (f: string) => {
+        const input = document.getElementById("attachmentInput") as HTMLInputElement;
+
+        if (input) {
+            input.value = "";
+        }
+
+        setFileAttachment(null);
+        setValue(
+            "attachment",
+            getValues("attachment")
+                .split(",")
+                .filter((a: string) => a !== f)
+                .join(",")
+        );
+
+        trigger("attachment");
+    };
 
     const handleClassificationModal = () => {
         dispatch(getMultiCollectionAux([
@@ -524,36 +715,51 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                    {edit ?
-                        <div>
-                            <InputLabel htmlFor="outlined-adornment-password" className={classes.inputlabelclass}>{t(langKeys.classification)}</InputLabel>
-                            <Input
-                                disabled
-                                style={{ width: "100%" }}
-                                value={selectedlabel}
-                                type={'text'}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton onClick={() => setOpenDialog(true)}>
-                                            <ZoomInIcon />
-                                        </IconButton>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.quickreply_type)}
+                            className="col-6"
+                            valueDefault={getValues('quickreply_type')}
+                            onChange={(value) => setValue('quickreply_type', value ? value.domainvalue : '')}
+                            error={errors?.quickreply_type?.message}
+                            data={dataQuickreplyTypes}
+                            uset={true}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        <div className="col-6">
+                            {edit ?
+                                <div>
+                                    <InputLabel htmlFor="outlined-adornment-password" className={classes.inputlabelclass}>{t(langKeys.classification)}</InputLabel>
+                                    <Input
+                                        disabled
+                                        style={{ width: "100%" }}
+                                        value={selectedlabel}
+                                        type={'text'}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton onClick={() => setOpenDialog(true)}>
+                                                    <ZoomInIcon />
+                                                </IconButton>
 
-                                    </InputAdornment>
-                                }
-                            />
+                                            </InputAdornment>
+                                        }
+                                    />
+                                </div>
+                                :
+                                <div className="row-zyx">
+                                    <FieldView
+                                        label={t(langKeys.classification)}
+                                        value={row ? (row.classificationdesc || "") : ""}
+                                        className="col-12"
+                                    />
+                                </div>
+                            }
                         </div>
-                        :
-                        <div className="row-zyx">
-                            <FieldView
-                                label={t(langKeys.classification)}
-                                value={row ? (row.classificationdesc || "") : ""}
-                                className="col-12"
-                            />
-                        </div>}
+                    </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <Typography style={{ fontSize: 22, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.quickreply)}</Typography>
-
                     <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.favorite)}
@@ -562,44 +768,127 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             onChange={(value) => setValue('favorite', value)}
                         /> 
                     </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.summarize)}
-                            className="col-12"
-                            valueDefault={row?.description || ""}
-                            onChange={(value) => setValue('description', value)}
-                            error={errors?.description?.message}
-                        /> 
-                    </div>
-                    <div className="row-zyx" style={{ position: 'relative' }}>
-                        <>
-                                
-                            <FieldEditWithSelect
-                                label={t(langKeys.detail)}
-                                className="col-12"
-                                maxLength={1024}
-                                valueDefault={quickreply}
-                                onChange={(value) => setQuickreply(value)}
-                                inputProps={{
-                                    onClick: (e: any) => toggleVariableSelect(e, quickreply, 'variablename', setQuickreply),
-                                    onInput: (e: any) => toggleVariableSelect(e, quickreply, 'variablename', setQuickreply),
-                                }}
-                                show={variableHandler.show}
-                                data={datatoshow}
-                                datakey="variablename"
-                                top={variableHandler.top}
-                                left={variableHandler.left}
-                                onClickSelection={(e, value) => selectionVariableSelect(e, value)}
-                                onClickAway={(variableHandler) => setVariableHandler({ ...variableHandler, show: false })}
-                                error={errors?.quickreply?.message}
-                            />
-                            <EmojiPickerZyx
-                                emojisIndexed={EMOJISINDEXED} 
-                                style={{ position: "absolute", bottom: "40px", display: 'flex', justifyContent: 'end', right: 16 }}
-                                onSelect={e => setQuickreply(quickreply + e.native)} />
-
-                        </>
-                    </div>
+                    {quickreply_type === 'CORREO ELECTRONICO' ? (
+                        <Fragment>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.summarize)}
+                                    className="col-6"
+                                    valueDefault={row?.description || ""}
+                                    onChange={(value) => setValue('description', value)}
+                                    error={errors?.description?.message}
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.priority)}
+                                    className="col-6"
+                                    valueDefault={getValues('quickreply_priority')}
+                                    onChange={(value) => setValue('quickreply_priority', value ? value.domainvalue : '')}
+                                    error={errors?.quickreply_priority?.message}
+                                    data={dataPriority}
+                                    uset={true}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                                <Fragment>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                        {t(langKeys.body)}
+                                    </Box>
+                                    <RichText
+                                        spellCheck
+                                        value={bodyObject}
+                                        onChange={(value) => setBodyObject(value)}
+                                        style={{
+                                            borderColor: "#762AA9",
+                                            borderRadius: "4px",
+                                            borderStyle: "solid",
+                                            borderWidth: "1px",
+                                            padding: "10px",
+                                        }}
+                                    />
+                                    <FieldEdit
+                                        className={classes.headerText}
+                                        disabled={true}
+                                        error={bodyAlert}
+                                        label={""}
+                                    />
+                                </Fragment>
+                            </div>
+                            <div className="row-zyx">
+                                <FieldView label={t(langKeys.messagetemplate_attachment)} />
+                                <Fragment>
+                                    <input
+                                        accept="file/*"
+                                        disabled={disableInput}
+                                        id="attachmentInput"
+                                        onChange={(e) => onChangeAttachment(e.target.files)}
+                                        style={{ display: "none" }}
+                                        type="file"
+                                    />
+                                    {
+                                        <IconButton
+                                            disabled={waitUploadFile || disableInput}
+                                            onClick={onClickAttachment}
+                                            style={{ borderRadius: "0px" }}
+                                        >
+                                            <AttachFileIcon color="primary" />
+                                        </IconButton>
+                                    }
+                                    {Boolean(attachment) &&
+                                        attachment
+                                            .split(",")
+                                            .map((f: string, i: number) => (
+                                                <FilePreview
+                                                    key={`attachment-${i}`}
+                                                    src={f}
+                                                    onClose={(f) => handleCleanMediaInput(f)}
+                                                />
+                                            ))}
+                                    {waitUploadFile && fileAttachment && (
+                                        <FilePreview key={`attachment-x`} src={fileAttachment} />
+                                    )}
+                                </Fragment>
+                            </div>
+                        </Fragment>
+                    ) : (
+                        <Fragment>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.summarize)}
+                                    className="col-12"
+                                    valueDefault={row?.description || ""}
+                                    onChange={(value) => setValue('description', value)}
+                                    error={errors?.description?.message}
+                                />
+                            </div>
+                            <div className="row-zyx" style={{ position: 'relative' }}>
+                                <>
+                                    <FieldEditWithSelect
+                                        label={t(langKeys.detail)}
+                                        className="col-12"
+                                        maxLength={1024}
+                                        valueDefault={quickreply}
+                                        onChange={(value) => setQuickreply(value)}
+                                        inputProps={{
+                                            onClick: (e: any) => toggleVariableSelect(e, quickreply, 'variablename', setQuickreply),
+                                            onInput: (e: any) => toggleVariableSelect(e, quickreply, 'variablename', setQuickreply),
+                                        }}
+                                        show={variableHandler.show}
+                                        data={datatoshow}
+                                        datakey="variablename"
+                                        top={variableHandler.top}
+                                        left={variableHandler.left}
+                                        onClickSelection={(e, value) => selectionVariableSelect(e, value)}
+                                        onClickAway={(variableHandler) => setVariableHandler({ ...variableHandler, show: false })}
+                                        error={errors?.quickreply?.message}
+                                    />
+                                    <EmojiPickerZyx
+                                        emojisIndexed={EMOJISINDEXED} 
+                                        style={{ position: "absolute", bottom: "40px", display: 'flex', justifyContent: 'end', right: 16 }}
+                                        onSelect={e => setQuickreply(quickreply + e.native)} />
+                                </>
+                            </div>
+                        </Fragment>
+                    )}
                     <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.status)}
@@ -614,7 +903,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             optionValue="domainvalue"
                         />
                     </div>
-
                 </div>
             </form>
             <DialogZyx
@@ -751,9 +1039,23 @@ const Quickreplies: FC = () => {
                 NoFilter: true
             },
             {
+                Header: t(langKeys.quickreply_type),
+                accessor: 'quickreply_type',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { quickreply_type } = props.cell.row.original;
+                    return (quickreply_type || "REDES SOCIALES").toUpperCase()
+                }
+            },
+            {
                 Header: t(langKeys.quickresponse),
                 accessor: 'quickreply',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const {quickreply, quickreply_type, body} = props.cell.row.original;
+                    const parsed_body = new DOMParser().parseFromString(body, 'text/html')
+                    return (((quickreply_type || 'REDES SOCIALES') === 'REDES SOCIALES') ? quickreply : parsed_body.body.innerText.slice(0, 1024) + '...')
+                }
             },
             {
                 Header: t(langKeys.classification),
@@ -781,6 +1083,8 @@ const Quickreplies: FC = () => {
         getValuesFromDomain("ESTADOGENERICO"),
         getValuesForTree(),
         getChatflowVariableSel(),
+        getValuesFromDomain("TIPORESPUESTARAPIDA"),
+        getValuesFromDomain("PRIORIDAD"),
     ]));
 
     useEffect(() => {
@@ -871,6 +1175,11 @@ const Quickreplies: FC = () => {
                         operation: "INSERT",
                         type: 'NINGUNO',
                         id: 0,
+                        body: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.detail : '',
+                        bodyobject: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.bodyobject || [{ type: "paragraph", children: [{text: x.detail || ''}]}] : {},
+                        quickreply_type: x.quickanswertype || 'CORREO ELECTRONICO',
+                        quickreply_priority: '',
+                        attachment: ''
                     }))
                 }, true));
                 setWaitSave(true)
@@ -885,10 +1194,11 @@ const Quickreplies: FC = () => {
             mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {}),
             {false: false,true: true},
             {},
+            {'REDES SOCIALES': 'REDES SOCIALES', 'CORREO ELECTRONICO': 'CORREO ELECTRONICO'},
             {},
             mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {}),
         ];
-        const header = ['classificationid', 'favorite', 'summarize', 'detail', 'status', ];
+        const header = ['classificationid', 'favorite', 'summarize', 'quickanswertype', 'detail', 'status', ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 

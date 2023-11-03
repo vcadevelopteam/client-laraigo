@@ -424,6 +424,7 @@ const translation: LangKeys = {
   validationtext: 'Validación de textos',
   quickreply: 'Respuesta rápida',
   quickreply_plural: 'Respuestas rápidas',
+  quickreply_type: 'Tipo de respuesta rápida',
   review: 'Resumen',
   domain: 'Dominio',
   domain_plural: 'Dominios',

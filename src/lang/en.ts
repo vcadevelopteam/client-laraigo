@@ -321,6 +321,7 @@ const translation: LangKeys = {
   bydefault: 'Default Value',
   quickreply: 'Quickreply',
   quickreply_plural: 'Quickreplies',
+  quickreply_type: 'Quickreply type',
   review: 'Review',
   domain: 'Domain',
   classification: 'Classification',

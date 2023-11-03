@@ -43,6 +43,7 @@ import Tab, { TabProps } from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import { FieldError } from 'react-hook-form';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -325,7 +326,7 @@ interface InputProps {
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
     style?: any;
-    error?: string;
+    error?: string | FieldError | Merge<FieldError, FieldErrorsImpl<unknown>>;
     type?: string;
     rows?: number;
     maxLength?: number;

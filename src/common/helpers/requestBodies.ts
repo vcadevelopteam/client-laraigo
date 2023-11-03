@@ -733,10 +733,10 @@ export const insOrg = ({ corpid, description, status, type, id, operation, curre
     parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel }
 });
 
-export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
+export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite, body, bodyobject, quickreply_type, quickreply_priority, attachment }: Dictionary): IRequestBody => ({
     method: "UFN_QUICKREPLY_INS",
     key: "UFN_QUICKREPLY_INS",
-    parameters: { id, classificationid, description, quickreply, status, type, operation, favorite }
+    parameters: { id, classificationid, description, quickreply, status, type, operation, favorite, body, bodyobject: JSON.stringify(bodyobject), quickreply_type, quickreply_priority, attachment }
 });
 
 export const getTimeZoneSel = () => ({
