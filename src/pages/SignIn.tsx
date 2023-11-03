@@ -372,8 +372,9 @@ const SignIn = () => {
                                         variant="outlined"
                                         margin="normal"
                                         fullWidth
-                                        style={{ margin: 0, ...((showError && resLogin.error) ? { border: "red 1px solid" } : {}) }}
+                                        style={{ margin: 0 }}
                                         required
+                                        error={true}
                                         value={dataAuth.username}
                                         onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
                                         label={t(langKeys.username)}
