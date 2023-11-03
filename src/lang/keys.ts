@@ -1962,6 +1962,7 @@ export const langKeys = {
   quickreplies: 'quickreplies',
   quickreply: 'quickreply',
   quickreply_plural: 'quickreply_plural',
+  quickreply_type: 'quickreply_type',
   twofactorauthentication: 'twofactorauthentication',
   twofactorauthentication_tooltip: 'twofactorauthentication_tooltip',
   company_tooltip: "company_tooltip",
