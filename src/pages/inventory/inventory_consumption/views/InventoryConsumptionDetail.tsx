@@ -70,13 +70,11 @@ const useStyles = makeStyles((theme) => ({
 const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux, viewSelected }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [tabIndex, setTabIndex] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [openModal, setOpenModal] = useState(false);
     const [openModalSeeTransactions, setOpenModalSeeTransactions] = useState(false);
     const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
-    const classes = useStyles();
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.inventory_consumption) },
