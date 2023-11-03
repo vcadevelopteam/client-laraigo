@@ -49,6 +49,10 @@ const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
 const Corporations = lazy(() => import('pages/Corporations'));
 const DeliveryConfiguration = lazy(() => import('pages/delivery/deliveryconfiguration/DeliveryConfiguration'))
+const OrderList = lazy(() => import('pages/delivery/orderlist/OrderList'))
+const AttentionOrders = lazy(() => import('pages/delivery/attentionorders/AttentionOrders'))
+const StoreCoverage = lazy(() => import('pages/delivery/storecoverage/StoreCoverage'))
+const StoreOrders = lazy(() => import('pages/delivery/storeorders/StoreOrders'))
 const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
@@ -285,6 +289,10 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />
 					<ProtectRoute exact path={paths.CONFIGURATIONDELIVERY} component={() => (<Layout mainClasses={classes.main}><DeliveryConfiguration /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERINSTORE} component={() => (<Layout mainClasses={classes.main}><StoreOrders /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERSINATTENTION} component={() => (<Layout mainClasses={classes.main}><AttentionOrders /></Layout>)} />
+					<ProtectRoute exact path={paths.STORECOVERAGE} component={() => (<Layout mainClasses={classes.main}><StoreCoverage /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERLIST} component={() => (<Layout mainClasses={classes.main}><OrderList /></Layout>)} />
 					<ProtectRoute exact path={paths.SUPERVISOR} component={() => (<Layout ><Supervisor /></Layout>)} />
 					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
 					<ProtectRoute exact path={paths.TIMESHEET} component={() => (<Layout mainClasses={classes.main}><TimeSheet /></Layout>)} />

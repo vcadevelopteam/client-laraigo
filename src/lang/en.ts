@@ -5477,6 +5477,9 @@ const translation: LangKeys = {
   billingreport_contactwhatsapp: 'WhatsApp Channels Contacts',
   billingreport_contactother: 'Other Channels Contacts',
   delivery: 'Delivery',
+  storeorders: 'Store Orders',
+  attentionorders: 'Attention Orders',
+  storecoveragearea: 'Store - Coverage Area',
 };
 
 const enResource: ResourceLanguage = {

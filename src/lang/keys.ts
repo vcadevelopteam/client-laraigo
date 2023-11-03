@@ -5392,6 +5392,10 @@ export const langKeys = {
   billingreport_contactwhatsapp: 'billingreport_contactwhatsapp',
   billingreport_contactother: 'billingreport_contactother',
   delivery: 'delivery',
+  storeorders: 'storeorders',
+  attentionorders: 'attentionorders',
+  storecoveragearea: 'storecoveragearea',
+  
 };
 
 export type LangKeys = typeof langKeys;

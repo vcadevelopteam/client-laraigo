@@ -5404,6 +5404,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingreport_contactwhatsapp: 'Contactos en Canales WhatsApp',
   billingreport_contactother: 'Contactos en Canales No WhatsApp',
   delivery: 'Delivery',
+  storeorders: 'Pedidos en Tienda',
+  attentionorders: 'Pedidos en Atención',
+  storecoveragearea: 'Tienda - Zona de Cobertura',
 };
 
 const esResource: ResourceLanguage = {
