@@ -635,6 +635,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             interactiontext: textCleaned,
                             validateUserOnTicket: userType === "AGENT",
                             isAnswered: !ticketSelected!!.isAnswered,
+                            emailcocopy: "",
+                            emailcopy: ""
                         }));
                         setText("");
                         setrefresh(refresh * -1)

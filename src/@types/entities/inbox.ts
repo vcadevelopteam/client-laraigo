@@ -51,6 +51,8 @@ export interface ISendHSM {
 
 export interface IReplyTicketParams extends ITicket {
     interactiontype: string;
+    emailcocopy?: string;
+    emailcopy?: string;
     interactiontext: string;
     validateUserOnTicket: boolean;
     ticketWasAnswered?: boolean
