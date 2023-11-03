@@ -37,7 +37,7 @@ import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/popus/actions';
 import { ArrowDropDownIcon, QuickresponseIcon, SearchIcon } from 'icons';
 import { Picker } from 'emoji-mart';
-import { Dictionary } from '@types';
+import { Dictionary, IFile } from '@types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -123,6 +123,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     emojiFavorite?: any;
     emoji?: Boolean;
     quickReplies?: any[];
+    setFiles?: (param: any) => void;
 }
 
 interface RenderElementProps {
@@ -201,9 +202,10 @@ const QuickResponseStyles = makeStyles((theme) => ({
 interface QuickReplyProps {
     quickReplies: any[];
     editor: BaseEditor & ReactEditor;
+    setFiles?: (param: any) => void
 }
 
-export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor}) => {
+export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor, setFiles}) => {
     const classes = QuickResponseStyles();
     const [open, setOpen] = React.useState(false);
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
@@ -225,12 +227,20 @@ export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor}) =
     }, [search, quickReplies])
 
     const handlerClickItem = (item: Dictionary) => {
+        if (item.quickreply_type === 'CORREO ELECTRONICO') {
+            editor.insertFragment(item.bodyobject)
+        } else {
+            editor.insertText(item.quickreply
+                .replace("{{numticket}}", ticketSelected?.ticketnum)
+                .replace("{{client_name}}", ticketSelected?.displayname)
+                .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
+            );
+        }
+        if (item.attachment && setFiles) {
+            const idd = new Date().toISOString()
+            setFiles((x: IFile[]) => [...x, { id: idd, url: item.attachment, type: 'file' }]);
+        }
         setOpen(false);
-        editor.insertText(item.quickreply
-            .replace("{{numticket}}", ticketSelected?.ticketnum)
-            .replace("{{client_name}}", ticketSelected?.displayname)
-            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
-        );
     }
 
     return (
@@ -364,7 +374,7 @@ const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
 export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
-    , endinput, emojiNoShow, emojiFavorite, emoji = false,quickReplies=[], ...boxProps }) => {
+    , endinput, emojiNoShow, emojiFavorite, emoji = false,quickReplies=[], setFiles, ...boxProps }) => {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -405,7 +415,7 @@ export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, plac
                         <FontFamily tooltip='font'></FontFamily>
                         <FormatSizeMenu tooltip='size'></FormatSizeMenu>
                         {quickReplies.length > 0 && (
-                            <QuickReply quickReplies={quickReplies} editor={editor}></QuickReply>
+                            <QuickReply quickReplies={quickReplies} editor={editor} setFiles={setFiles}></QuickReply>
                         )}
                         {emoji && <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
                         <MarkButton format="bold" tooltip='bold'>
