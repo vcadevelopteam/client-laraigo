@@ -5484,6 +5484,7 @@ const translation: LangKeys = {
   telephonenumber: 'Telephone Number',
   coveragearea: 'Coverage Area',
   warehouse: 'Warehouse',
+  instorewarehouse: 'In-Store Warehouse',
 };
 
 const enResource: ResourceLanguage = {

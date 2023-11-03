@@ -5399,6 +5399,7 @@ export const langKeys = {
   telephonenumber: 'telephonenumber',
   coveragearea: 'coveragearea',
   warehouse: 'warehouse',
+  instorewarehouse: 'instorewarehouse',
 };
 
 export type LangKeys = typeof langKeys;

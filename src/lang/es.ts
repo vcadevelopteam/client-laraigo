@@ -5411,6 +5411,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   telephonenumber: 'Número de Teléfono',
   coveragearea: 'Zona de Cobertura',
   warehouse: 'Almacén',
+  instorewarehouse: 'Almacén en Tienda',
 };
 
 const esResource: ResourceLanguage = {

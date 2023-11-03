@@ -3,9 +3,10 @@ import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { Dictionary, IFetchData } from "@types";
-import { getCollectionPaginated, resetAllMain } from "store/main/actions";
+import { getCollectionPaginated, getMultiCollection, resetAllMain } from "store/main/actions";
 import StoreCoverageMainView from "./views/StoreCoverageMainView";
 import StoreCoverageDetail from "./views/StoreCoverageDetail";
+import { getWarehouseSel } from "common/helpers";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -59,7 +60,14 @@ const StoreCoverage: FC = () => {
       dispatch(resetAllMain());
     };
   }, []);
-  
+
+  useEffect(() => {
+      dispatch(
+        getMultiCollection([
+            getWarehouseSel(0)
+        ])
+    );
+  }, []);  
 
   if (viewSelected === "main-view") {
     if (mainResult.mainData.error) {

@@ -4090,3 +4090,11 @@ export const rasaModelSel = () => ({
     key: "UFN_RASA_MODEL_SEL",
     parameters: {},
 });
+
+export const getWarehouseSel = (warehouseid: number) => ({
+    method: "UFN_WAREHOUSE_SEL",
+    key: "UFN_WAREHOUSE_SEL",
+    parameters: {
+        warehouseid
+    }
+});

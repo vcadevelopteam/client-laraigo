@@ -74,24 +74,17 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            warehouseid: row?.warehouseid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || '',
-            name: row?.name || '',
-            description: row?.description || '',
+            storename: row?.storename || '',
+            phonenumber: row?.phonenumber || '',
             address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            status: row?.status || 'ACTIVO'
+            coveragearea: row?.coveragearea || '',
+            status: row?.status || 'ACTIVO',
+            isInStore: row?.isInStore || false,
+            warehouseid: row?.warehouseid || 0,
+            type: row?.type || '',
+            operation: edit ? 'UPDATE' : 'INSERT'
         }
     });
-
-    const fetchWarehouseProducts = () => {
-        /*dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
-        );*/
-    }
 
     useEffect(() => {
         if (waitSave) {
@@ -111,15 +104,23 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
 
     React.useEffect(() => {
         register('warehouseid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('isInStore');
+        register('storename', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('phonenumber', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
+        register('coveragearea', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status');
+        register('type');
+        register('operation');
 
         dispatch(resetMainAux());
     }, [register]);
+
+    const fetchWarehouseProducts = () => {
+        /*dispatch(
+          getCollectionAux(getWarehouseProducts(row?.warehouseid))
+        );*/
+    }
 
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
@@ -173,7 +174,7 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                     </div>
 
                 </div>
-                <NewStoreCoverageTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row}/>
+                <NewStoreCoverageTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row} getValues={getValues} setValue={setValue}/>
             </form>
         </>
     );
