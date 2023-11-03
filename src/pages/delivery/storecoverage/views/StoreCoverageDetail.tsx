@@ -6,15 +6,13 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, TitleDetail } from 'components';
 import { Dictionary } from "@types";
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Tabs } from '@material-ui/core';
-import InventoryTabDetail from './detailTabs/InventoryTabDetail';
-import NewOrderTabDetail from './detailTabs/NewOrderTabDetail';
+import NewStoreCoverageTabDetail from './detailTabs/NewStoreCoverageTabDetail';
 import { resetMainAux } from 'store/main/actions';
 
 
@@ -62,18 +60,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [tabIndex, setTabIndex] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
-    const [openModalAdjust, setOpenModalAdjust] = useState(false);
 
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.product) },
-        { id: "detail-view", name: `${t(langKeys.product)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: t(langKeys.delivery) },
+        { id: "detail-view", name: `${t(langKeys.storecoveragearea)} ${t(langKeys.detail)}` },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -151,7 +147,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.product)}`}
+                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.storecoveragearea)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -177,44 +173,11 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     </div>
 
                 </div>
-                <Tabs
-                    value={tabIndex}
-                    onChange={(_:any, i:any) => setTabIndex(i)}
-                    className={classes.tabs}
-                    textColor="primary"
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                >
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product} />
-                            </div>
-                        )}
-                    />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product}/>
-                            </div>
-                        )}
-                    />
-                </Tabs>
-                <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <InventoryTabDetail
-                        row={row}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                    />
-                </AntTabPanel>
-                <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row}/>
-                </AntTabPanel>
+                <NewStoreCoverageTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row}/>
             </form>
         </>
     );
 }
 
 
-export default DeliveryConfigurationDetail;
+export default StoreCoverageDetail;

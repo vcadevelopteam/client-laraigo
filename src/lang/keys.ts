@@ -5395,7 +5395,10 @@ export const langKeys = {
   storeorders: 'storeorders',
   attentionorders: 'attentionorders',
   storecoveragearea: 'storecoveragearea',
-  
+  storezonename: 'storezonename',
+  telephonenumber: 'telephonenumber',
+  coveragearea: 'coveragearea',
+  warehouse: 'warehouse',
 };
 
 export type LangKeys = typeof langKeys;

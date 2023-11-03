@@ -5480,6 +5480,10 @@ const translation: LangKeys = {
   storeorders: 'Store Orders',
   attentionorders: 'Attention Orders',
   storecoveragearea: 'Store - Coverage Area',
+  storezonename: 'Store/Area Name',
+  telephonenumber: 'Telephone Number',
+  coveragearea: 'Coverage Area',
+  warehouse: 'Warehouse',
 };
 
 const enResource: ResourceLanguage = {

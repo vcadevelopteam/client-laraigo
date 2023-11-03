@@ -5407,6 +5407,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   storeorders: 'Pedidos en Tienda',
   attentionorders: 'Pedidos en Atención',
   storecoveragearea: 'Tienda - Zona de Cobertura',
+  storezonename: 'Nombre de Tienda o Zona',
+  telephonenumber: 'Número de Teléfono',
+  coveragearea: 'Zona de Cobertura',
+  warehouse: 'Almacén',
 };
 
 const esResource: ResourceLanguage = {

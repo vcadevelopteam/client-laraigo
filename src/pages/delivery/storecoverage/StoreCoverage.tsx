@@ -4,8 +4,8 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, resetAllMain } from "store/main/actions";
-import DeliveryConfigurationMainView from "./views/DeliveryConfigurationMainView";
-import DeliveryConfigurationDetail from "./views/DeliveryConfigurationDetail";
+import StoreCoverageMainView from "./views/StoreCoverageMainView";
+import StoreCoverageDetail from "./views/StoreCoverageDetail";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -66,7 +66,7 @@ const StoreCoverage: FC = () => {
       return <h1>ERROR</h1>;
     }
     return (
-      <DeliveryConfigurationMainView
+      <StoreCoverageMainView
         setViewSelected={setViewSelected}
         setRowSelected={setRowSelected}
         fetchData={fetchData}
@@ -75,7 +75,7 @@ const StoreCoverage: FC = () => {
     );
   } else
     return (
-      <DeliveryConfigurationDetail
+      <StoreCoverageDetail
         data={rowSelected}
         setViewSelected={redirectFunc}
         fetchData={fetchData}

@@ -30,7 +30,7 @@ interface InventoryMainViewProps {
   fetchDataAux: any;
 }
 
-const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
+const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
@@ -41,8 +41,6 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
 
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-  const [cleanSelected, setCleanSelected] = useState(false);
   const mainPaginated = useSelector((state) => state.main.mainPaginated);
   const [totalrow, settotalrow] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -59,10 +57,6 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
   const handleEdit = (row: Dictionary) => {
     setViewSelected("detail-view");
     setRowSelected({ row, edit: true });
-  };
-  const handleDuplicate = (row: Dictionary) => {
-    setViewSelected("detail-view");
-    setRowSelected({ row, edit: false });
   };
 
   useEffect(() => {
@@ -165,7 +159,7 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "inventoryid",
+        accessor: "storeid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -176,53 +170,38 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
             <TemplateIcons
               deleteFunction={() => handleDelete(row)}
               editFunction={() => handleEdit(row)}
-              extraFunction={() => handleDuplicate(row)}
-              ExtraICon={() => (
-                <DuplicateIcon width={28} style={{ fill: "#7721AD" }} />
-              )}
-              extraOption={t(langKeys.duplicate)}
             />
           );
         },
       },
       {
-        Header: t(langKeys.product),
-        accessor: "productid",
+        Header: t(langKeys.organization),
+        accessor: "organization",
         width: "auto",
       },
       {
-        Header: t(langKeys.description),
-        accessor: "description",
+        Header: t(langKeys.storezonename),
+        accessor: "storezonename",
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "warehouseid",
+        Header: t(langKeys.telephonenumber),
+        accessor: "telephonenumber",
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "rackdefault",
+        Header: t(langKeys.address),
+        accessor: "address",
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "currentbalance",
+        Header: t(langKeys.warehouse),
+        accessor: "warehouse",
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "family",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.product),
-        accessor: "subfamily",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.product),
-        accessor: "dispatchunit",
+        Header: t(langKeys.coveragearea),
+        accessor: "coveragearea",
         width: "auto",
       },
       {
@@ -233,58 +212,6 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
     ],
     []
   );
-
-  const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-    const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
-        key: x.accessor,
-        alias: x.Header
-    }))
-    /*dispatch(exportData(getWarehouseExport({
-        filters: {
-            ...filters,
-        },
-        sorts,
-        startdate: daterange.startDate!,
-        enddate: daterange.endDate!,
-    }), "", "excel", false, columnsExport));*/
-    dispatch(showBackdrop(true));
-    setWaitExport(true);
-  };
-
-  const handleUpload = async (files: any) => {
-    const file = files?.item(0);
-    if (file) {
-      const data: any = await uploadExcel(file, undefined);
-      if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          warehouseid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        /*dispatch(execute(importWarehouse(dataToSend)));*/
-        setWaitUpload(true);
-      }
-    }
-  };
-
-  const handleTemplateWarehouse = () => {
-    const data = [{}, {}, {}, {}, {}, {}];
-    const header = [
-      "name",
-      "description",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
-    ];
-    exportExcel(
-      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
-      templateMaker(data, header)
-    );
-  };
 
   return (
     <div
@@ -306,7 +233,7 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.inventory} />
+            <Trans i18nKey={langKeys.storecoveragearea} />
           </Title>
         </div>
       </div>
@@ -316,39 +243,13 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
         totalrow={totalrow}
         loading={mainPaginated.loading}
         pageCount={pageCount}
-        filterrange={true}
-        download={true}
-        initialStartDate={new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime()}
-        initialEndDate={new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getTime()}
         fetchData={fetchData}
-        exportPersonalized={triggerExportData}
-        useSelection={true}
-        selectionKey={selectionKey}
-        setSelectedRows={setSelectedRows}
-        filterRangeDate="today"
         onClickRow={handleEdit}
         handleRegister={handleRegister}
-        filterGeneral={false}
-        initialSelectedRows={selectedRows}
-        cleanSelection={cleanSelected}
-        setCleanSelection={setCleanSelected}
         register={true}
-        importCSV={handleUpload}
-        ButtonsElement={() => (
-          <Button
-              variant="contained"
-              color="primary"
-              disabled={mainPaginated.loading}
-              startIcon={<ListAltIcon color="secondary" />}
-              onClick={handleTemplateWarehouse}
-              style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
-          >
-              <Trans i18nKey={langKeys.template} />
-          </Button>
-      )}
       />
     </div>
   );
 };
 
-export default DeliveryConfigurationMainView;
+export default StoreCoverageMainView;
