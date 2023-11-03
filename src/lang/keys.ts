@@ -5391,6 +5391,7 @@ export const langKeys = {
   billingreport_channeltotal: 'billingreport_channeltotal',
   billingreport_contactwhatsapp: 'billingreport_contactwhatsapp',
   billingreport_contactother: 'billingreport_contactother',
+  delivery: 'delivery',
 };
 
 export type LangKeys = typeof langKeys;

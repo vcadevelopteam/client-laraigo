@@ -5403,6 +5403,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingreport_channeltotal: 'Canales Adicionales',
   billingreport_contactwhatsapp: 'Contactos en Canales WhatsApp',
   billingreport_contactother: 'Contactos en Canales No WhatsApp',
+  delivery: 'Delivery',
 };
 
 const esResource: ResourceLanguage = {

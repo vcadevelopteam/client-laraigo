@@ -196,14 +196,16 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const userData = useSelector(state => state.login.validateToken.user);
     //Conseguir todas las subrutas y asignarlas a los modulos padres
     const showableViews = viewsClassifications.reduce((acc: any[], view) => {
+        
         const subroutes = Object.entries(applications as Object)
-            .filter(([_, values]) => values[4] === view.id) //  
+            .filter(([_, values]) => values[5] === view.key.toUpperCase()) //  
             .map(([route, values]) => ({ route, menuorder: values[6] }))
             .sort((a, b) => a.menuorder - b.menuorder)
             .map(entry => entry.route);
+
+        
         if (subroutes.length > 0) {
             if (subroutes.includes('/invoice')) {
-                debugger
                 const roles = userData?.roledesc?.split(",");
                 if (roles?.includes('SUPERADMIN') || roles?.includes("SUPERADMINISTRADOR SOCIOS") || roles?.includes('ADMINISTRADOR')) {
                     const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];

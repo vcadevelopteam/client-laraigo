@@ -83,6 +83,14 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
     },
     {
         id: 5,
+        key: "delivery",
+        description: <Trans i18nKey={langKeys.delivery} />,
+        // tooltip: <Trans i18nKey={langKeys.reason_sales} />,
+        icon: (className) => <SalesRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        // options: [paths.CONFIGURATIONDELIVERY,paths.ORDERLIST]
+    },
+    {
+        id: 6,
         key: "servicedesk",
         description: <span>Service Desk</span>, 
         // description: <Trans i18nKey={langKeys.servicedesk} />,
@@ -91,7 +99,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         // options: [paths.SERVICE_DESK, paths.SLA]
     },
     {
-        id: 6,
+        id: 7,
         key: "ia",
         description: <Trans i18nKey={langKeys.ia} />, // prop:count for plural purposes
         // tooltip: <Trans i18nKey={langKeys.ia} />,
@@ -99,7 +107,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         // options: [paths.IACONECTORS, paths.IACONFIGURATION,  paths.IATRAINING]
     },
     {
-        id: 7,
+        id: 8,
         key: "configuration",
         description: <Trans i18nKey={langKeys.configuration} />,
         // tooltip: <Trans i18nKey={langKeys.configuration} />,
@@ -108,8 +116,8 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         // paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
     },
     {
-        id: 8,
-        key: "invoice",
+        id: 9,
+        key: "billing",
         description: <Trans i18nKey={langKeys.invoice} />,
         // tooltip: <Trans i18nKey={langKeys.configuration} />,
         icon: (className) => <InvoiceIcon style={{ width: 22, height: 22 }} className={className} />,
@@ -301,6 +309,24 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.ORGANIZATIONS,
         initialSubroute: paths.ORGANIZATIONS,
+        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.CONFIGURATIONDELIVERY,
+        description: <Trans i18nKey={langKeys.configuration} />,
+        tooltip: <Trans i18nKey={langKeys.configuration} />,
+        subroute: true,
+        path: paths.CONFIGURATIONDELIVERY,
+        initialSubroute: paths.CONFIGURATIONDELIVERY,
+        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.ORDERLIST,
+        description: <Trans i18nKey={langKeys.orderlist} />,
+        tooltip: <Trans i18nKey={langKeys.orderlist} />,
+        subroute: true,
+        path: paths.ORDERLIST,
+        initialSubroute: paths.ORDERLIST,
         icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {

@@ -48,6 +48,7 @@ const NotFound = lazy(() => import('pages/NotFound'));
 const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
 const Corporations = lazy(() => import('pages/Corporations'));
+const DeliveryConfiguration = lazy(() => import('pages/delivery/deliveryconfiguration/DeliveryConfiguration'))
 const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
@@ -283,6 +284,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />
+					<ProtectRoute exact path={paths.CONFIGURATIONDELIVERY} component={() => (<Layout mainClasses={classes.main}><DeliveryConfiguration /></Layout>)} />
 					<ProtectRoute exact path={paths.SUPERVISOR} component={() => (<Layout ><Supervisor /></Layout>)} />
 					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
 					<ProtectRoute exact path={paths.TIMESHEET} component={() => (<Layout mainClasses={classes.main}><TimeSheet /></Layout>)} />
