@@ -1039,9 +1039,23 @@ const Quickreplies: FC = () => {
                 NoFilter: true
             },
             {
+                Header: t(langKeys.quickreply_type),
+                accessor: 'quickreply_type',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { quickreply_type } = props.cell.row.original;
+                    return (quickreply_type || "REDES SOCIALES").toUpperCase()
+                }
+            },
+            {
                 Header: t(langKeys.quickresponse),
                 accessor: 'quickreply',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const {quickreply, quickreply_type, body} = props.cell.row.original;
+                    const parsed_body = new DOMParser().parseFromString(body, 'text/html')
+                    return (((quickreply_type || 'REDES SOCIALES') === 'REDES SOCIALES') ? quickreply : parsed_body.body.innerText.slice(0, 1024) + '...')
+                }
             },
             {
                 Header: t(langKeys.classification),
@@ -1161,6 +1175,11 @@ const Quickreplies: FC = () => {
                         operation: "INSERT",
                         type: 'NINGUNO',
                         id: 0,
+                        body: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.detail : '',
+                        bodyobject: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.bodyobject || [{ type: "paragraph", children: [{text: x.detail || ''}]}] : {},
+                        quickreply_type: x.quickanswertype || 'CORREO ELECTRONICO',
+                        quickreply_priority: '',
+                        attachment: ''
                     }))
                 }, true));
                 setWaitSave(true)
@@ -1175,10 +1194,11 @@ const Quickreplies: FC = () => {
             mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {}),
             {false: false,true: true},
             {},
+            {'REDES SOCIALES': 'REDES SOCIALES', 'CORREO ELECTRONICO': 'CORREO ELECTRONICO'},
             {},
             mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {}),
         ];
-        const header = ['classificationid', 'favorite', 'summarize', 'detail', 'status', ];
+        const header = ['classificationid', 'favorite', 'summarize', 'quickanswertype', 'detail', 'status', ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
