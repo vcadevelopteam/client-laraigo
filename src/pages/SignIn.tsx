@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useState, useEffect, Fragment, useRef } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -329,7 +327,7 @@ const SignIn = () => {
 
     useEffect(() => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
-            dispatch(connectAgentUI(resLogin.user.automaticConnection!!))
+            dispatch(connectAgentUI(resLogin.user.automaticConnection ?? false))
             localStorage.setItem("firstLoad", "1") //para saber si lanzar el automatic connection cuando el get user haya terminado
             window.open(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor", "_self");
         }
@@ -337,11 +335,11 @@ const SignIn = () => {
 
     return (
         <>
-            <meta name="google-signin-client_id" content={"" + apiUrls.GOOGLECLIENTID_LOGIN} />
+            <meta name="google-signin-client_id" content={`${apiUrls.GOOGLECLIENTID_LOGIN}`} />
             <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"></script>
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <div className={classes.container}>
-                <Container component="main"  className={classes.containerLogin}>
+                <Container component="main" className={classes.containerLogin}>
                     <div className={classes.childContainer} style={{ height: '100%' }}>
                         <div className={classes.image}>
                             <LaraigoLogo height={49} />
@@ -374,7 +372,7 @@ const SignIn = () => {
                                         variant="outlined"
                                         margin="normal"
                                         fullWidth
-                                        style={{ margin: 0 }}
+                                        style={{ margin: 0, ...((showError && resLogin.error) ? { border: "red 1px solid" } : {}) }}
                                         required
                                         value={dataAuth.username}
                                         onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
@@ -386,7 +384,7 @@ const SignIn = () => {
                                         margin="normal"
                                         fullWidth
                                         required
-                                        style={{ marginBottom: "1.12rem" }}
+                                        style={{ marginBottom: "1.12rem", ...((showError && resLogin.error) ? { border: "red 1px solid" } : {}) }}
                                         label={t(langKeys.password)}
                                         name="password"
                                         type={showPassword ? 'text' : 'password'}
@@ -409,7 +407,7 @@ const SignIn = () => {
                                         }}
                                     />
                                     {!resLogin.loading ?
-                                        <div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1rem", width: "100%", marginBottom: "1.69rem" }}>
+                                        <div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1.12rem", width: "100%", marginBottom: "1.69rem" }}>
                                             <Button
                                                 type="submit"
                                                 fullWidth
@@ -420,7 +418,7 @@ const SignIn = () => {
                                                 <Trans i18nKey={langKeys.logIn} />
                                             </Button>
                                             <FacebookLogin
-                                                appId={apiUrls.FACEBOOKAPP + ""}
+                                                appId={`${apiUrls.FACEBOOKAPP}`}
                                                 callback={onAuthWithFacebook}
                                                 cssClass={classes.button}
                                                 buttonStyle={{ border: '1px solid #4D6BB7' }}
@@ -430,7 +428,7 @@ const SignIn = () => {
                                                 disableMobileRedirect={true}
                                             />
                                             <GoogleLogin
-                                                clientId={apiUrls.GOOGLECLIENTID_LOGIN + ""}
+                                                clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
                                                 buttonText={t(langKeys.login_with_google)}
                                                 className={`${classes.button} ${classes.borderGoogle}`}
                                                 onSuccess={onGoogleLoginSucess}
@@ -512,7 +510,7 @@ const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void,
     });
 
     React.useEffect(() => {
-        register('username', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('username', { validate: (value) => (value && value.length > 0) || t(langKeys.field_required) });
     }, [register]);
 
 
