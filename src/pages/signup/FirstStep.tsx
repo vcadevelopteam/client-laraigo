@@ -1,73 +1,72 @@
-import { apiUrls } from 'common/constants';
+import { apiUrls } from "common/constants";
+import { Button, InputAdornment, IconButton, makeStyles, TextField } from "@material-ui/core";
 import { Controller, useFormContext } from "react-hook-form";
-import { CSSProperties, FC, useContext, useEffect, useState } from "react";
 import { executeCheckNewUser } from "store/signup/actions";
+import { Facebook, Visibility, VisibilityOff } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { MainData, SubscriptionContext } from "./context";
-import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import { showSnackbar } from "store/popus/actions";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { useSelector } from 'hooks';
-import { Visibility, VisibilityOff, Facebook as FacebookIcon } from "@material-ui/icons";
+import { useSelector } from "hooks";
 
-import FacebookLogin from 'react-facebook-login';
-import GoogleLogin from 'react-google-login';
+import FacebookLogin from "react-facebook-login";
+import GoogleLogin, { GoogleLoginResponse, GoogleLoginResponseOffline } from "react-google-login";
+import React, { CSSProperties, FC, MouseEvent, useContext, useEffect, useState } from "react";
 
 function validatePassword(password: string) {
-    let strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?=.{8,})/;
 
     if (password) {
         return strongRegex.exec(password);
-    }
-    else {
+    } else {
         return null;
     }
 }
 
-const useChannelAddStyles = makeStyles(theme => ({
+const useChannelAddStyles = makeStyles((theme) => ({
     button: {
         display: "block",
-        fontSize: '40px',
+        fontSize: "40px",
         fontWeight: "bold",
-        margin: 'auto',
+        margin: "auto",
         padding: 12,
         width: "280px",
     },
     buttonfacebook: {
-        alignItems: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        alignItems: "center",
+        display: "flex",
+        justifyContent: "center",
+        marginLeft: "auto",
+        marginRight: "auto",
         width: 400,
-        '& span': {
-            width: '100%'
+        "& span": {
+            width: "100%",
         },
-        [theme.breakpoints.down('xs')]: {
-            width: '100%',
-            '& span': {
-                width: '100%'
-            }
+        [theme.breakpoints.down("xs")]: {
+            width: "100%",
+            "& span": {
+                width: "100%",
+            },
         },
     },
     buttonGoogle: {
-        alignItems: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        alignItems: "center",
+        display: "flex",
+        justifyContent: "center",
+        marginLeft: "auto",
+        marginRight: "auto",
         width: 400,
-        '& button': {
-            alignItems: 'center',
-            color: '#FFF',
-            fontSize: '20px!important',
+        "& button": {
+            alignItems: "center",
+            color: "#FFF",
+            fontSize: "20px!important",
             height: 50,
-            justifyContent: 'center',
-            width: '100%',
+            justifyContent: "center",
+            width: "100%",
         },
-        [theme.breakpoints.down('xs')]: {
-            width: '100%'
+        [theme.breakpoints.down("xs")]: {
+            width: "100%",
         },
     },
     separator: {
@@ -78,175 +77,189 @@ const useChannelAddStyles = makeStyles(theme => ({
         width: 82,
     },
     orSeparator: {
-        alignItems: 'center',
+        alignItems: "center",
         display: "flex",
-        justifyContent: 'center',
+        justifyContent: "center",
         marginBottom: 18,
         marginTop: 28,
     },
 }));
 
-const FBButtonStyle2: CSSProperties = {
-    alignItems: 'center',
-    borderRadius: '3px',
-    display: 'flex',
+const FacebookCustomButtonStyle: CSSProperties = {
+    alignItems: "center",
+    borderRadius: "3px",
+    display: "flex",
     fontSize: 20,
-    fontStyle: 'normal',
+    fontStyle: "normal",
     fontWeight: 400,
     height: 50,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: 16,
-    textTransform: 'none',
+    textTransform: "none",
     width: "100%",
-}
+};
 
 const FirstStep: FC = () => {
-    const { control, setValue, getValues, trigger } = useFormContext<MainData>();
+    const { control, getValues, setValue, trigger } = useFormContext<MainData>();
     const { selectedChannels, setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
 
     const [disableButton, setDisableButton] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
-    const [waitSave, setwaitSave] = useState(false);
+    const [waitSave, setWaitSave] = useState(false);
 
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
-    const rescheckuser = useSelector(state => state.signup);
+    const signUpState = useSelector((state) => state.signup);
 
     useEffect(() => {
         if (waitSave) {
-            if (!rescheckuser.loading) {
-                if (rescheckuser.isvalid) {
+            if (!signUpState.loading) {
+                if (signUpState.isvalid) {
                     setStep(2);
-                    setwaitSave(false);
+                    setWaitSave(false);
                 } else {
-                    dispatch(showSnackbar({ message: t(langKeys.useralreadyregistered), severity: "error", show: true }))
-                    setwaitSave(false);
+                    dispatch(
+                        showSnackbar({ message: t(langKeys.useralreadyregistered), severity: "error", show: true })
+                    );
+                    setWaitSave(false);
                 }
             }
         }
-    }, [rescheckuser])
+    }, [signUpState]);
 
     useEffect(() => {
-        setDisableButton(selectedChannels < 1);
-    }, [selectedChannels])
+        setDisableButton(selectedChannels < 0);
+    }, [selectedChannels]);
 
-    const opentermsofservice = () => {
-        window.open("/termsofservice", '_blank');
-    }
+    const openTermsOfService = () => {
+        window.open("/termsofservice", "_blank");
+    };
 
-    const openprivacypolicies = () => {
-        window.open("/privacy", '_blank');
-    }
+    const openPrivacyPolicy = () => {
+        window.open("/privacy", "_blank");
+    };
 
-    const onGoogleLoginSucess = (r: any) => {
-        if (r && r.googleId) {
+    const onGoogleLoginSucess = (r: GoogleLoginResponse | GoogleLoginResponseOffline) => {
+        if ((r as GoogleLoginResponse)?.googleId) {
             if (disableButton) {
-                dispatch(showSnackbar({ message: t(langKeys.subscription_noselectedchannel), severity: "error", show: true }));
-            }
-            else {
+                dispatch(
+                    showSnackbar({ message: t(langKeys.subscription_noselectedchannel), severity: "error", show: true })
+                );
+            } else {
                 const content = {
-                    "method": "UFN_USERIDBYUSER",
-                    "parameters": {
-                        "facebookid": null,
-                        "googleid": String(r.googleId),
-                        "usr": null,
-                    }
-                }
-                setwaitSave(true);
-                setValue('loginfacebookid', '');
-                setValue('logingoogleid', r.googleId);
-                setValue('loginpassword', '');
-                setValue('loginpasswordrepeat', '');
-                setValue('loginusername', '');
+                    method: "UFN_USERIDBYUSER",
+                    parameters: {
+                        facebookid: null,
+                        googleid: String((r as GoogleLoginResponse).googleId),
+                        usr: null,
+                    },
+                };
+                setWaitSave(true);
+                setValue("loginfacebookid", "");
+                setValue("logingoogleid", (r as GoogleLoginResponse).googleId);
+                setValue("loginpassword", "");
+                setValue("loginpasswordrepeat", "");
+                setValue("loginusername", "");
                 dispatch(executeCheckNewUser(content));
             }
         }
-    }
+    };
 
-    const onGoogleLoginFailure = (event: any) => {
-        console.log('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
-        if (event && event.error) {
+    const onGoogleLoginFailure = (event: Record<string, unknown>) => {
+        if (event?.error) {
             switch (event.error) {
-                case 'idpiframe_initialization_failed':
-                case 'popup_closed_by_user':
+                case "idpiframe_initialization_failed":
+                case "popup_closed_by_user":
                     break;
                 default:
                     alert(event.error);
                     break;
             }
         }
-    }
+    };
 
-    const onAuthWithFacebook = (r: any) => {
-        if (r && r.id) {
+    const onAuthWithFacebook = (r: Record<string, unknown>) => {
+        if (r?.id) {
             if (disableButton) {
-                dispatch(showSnackbar({ message: t(langKeys.subscription_noselectedchannel), severity: "error", show: true }));
-            }
-            else {
+                dispatch(
+                    showSnackbar({ message: t(langKeys.subscription_noselectedchannel), severity: "error", show: true })
+                );
+            } else {
                 const content = {
-                    "method": "UFN_USERIDBYUSER",
-                    "parameters": {
-                        "facebookid": String(r.id),
-                        "googleid": null,
-                        "usr": r.email,
-                    }
-                }
-                setwaitSave(true);
-                setValue('loginfacebookid', r.id);
-                setValue('logingoogleid', '');
-                setValue('loginpassword', '');
-                setValue('loginpasswordrepeat', '');
-                setValue('loginusername', '');
+                    method: "UFN_USERIDBYUSER",
+                    parameters: {
+                        facebookid: String(r.id),
+                        googleid: null,
+                        usr: r.email,
+                    },
+                };
+                setWaitSave(true);
+                setValue("loginfacebookid", String(r.id));
+                setValue("logingoogleid", "");
+                setValue("loginpassword", "");
+                setValue("loginpasswordrepeat", "");
+                setValue("loginusername", "");
                 dispatch(executeCheckNewUser(content));
             }
         }
-    }
+    };
 
-    function handlesubmit() {
+    function handleSubmit() {
         const content = {
-            "method": "UFN_USERIDBYUSER",
-            "parameters": {
-                "facebookid": null,
-                "googleid": null,
-                "usr": getValues('loginusername'),
-            }
-        }
-        setwaitSave(true)
-        dispatch(executeCheckNewUser(content))
+            method: "UFN_USERIDBYUSER",
+            parameters: {
+                facebookid: null,
+                googleid: null,
+                usr: getValues("loginusername"),
+            },
+        };
+        setWaitSave(true);
+        dispatch(executeCheckNewUser(content));
     }
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
-    const handleMouseDownPassword = (event: any) => event.preventDefault();
+    const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => event.preventDefault();
 
     return (
         <>
-            <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
+            <meta name="google-signin-client_id" content={`${apiUrls.GOOGLECLIENTID_LOGIN}`} />
             <script src="https://apis.google.com/js/platform.js" async defer></script>
-            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32, marginTop: 15 }}>{t(langKeys.signupstep1title)}</div>
+            <div
+                style={{
+                    textAlign: "center",
+                    color: "#7721ad",
+                    fontSize: 32,
+                    fontWeight: 500,
+                    marginBottom: 32,
+                    marginTop: 15,
+                }}
+            >
+                {t(langKeys.signupstep1title)}
+            </div>
             <div className={classes.buttonfacebook}>
                 <FacebookLogin
-                    appId={apiUrls.FACEBOOKAPP}
-                    buttonStyle={FBButtonStyle2}
+                    appId={`${apiUrls.FACEBOOKAPP}`}
+                    buttonStyle={FacebookCustomButtonStyle}
                     callback={onAuthWithFacebook}
                     disableMobileRedirect={true}
                     fields="name,email,picture"
-                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                    icon={<Facebook style={{ color: "white", marginRight: "8px" }} />}
                     isDisabled={false}
                     textButton={t(langKeys.signup_with_facebook)}
                 />
             </div>
             <div className={classes.buttonGoogle}>
                 <GoogleLogin
-                    accessType='online'
+                    accessType="online"
                     autoLoad={false}
                     buttonText={t(langKeys.signupgooglebutton)}
-                    clientId={apiUrls.GOOGLECLIENTID_LOGIN}
-                    cookiePolicy={'single_host_origin'}
+                    clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
+                    cookiePolicy={"single_host_origin"}
                     onFailure={onGoogleLoginFailure}
                     onSuccess={onGoogleLoginSucess}
-                    style={{ borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ borderRadius: "3px", display: "flex", alignItems: "center", justifyContent: "center" }}
                 />
             </div>
             <div className={classes.orSeparator}>
@@ -256,23 +269,14 @@ const FirstStep: FC = () => {
                 </div>
                 <div className={classes.separator} />
             </div>
-            <div style={{ paddingLeft: '20px', paddingRight: '20px' }}>
+            <div style={{ paddingLeft: "20px", paddingRight: "20px" }}>
                 <Controller
                     control={control}
                     name="loginusername"
-                    rules={{
-                        validate: (value) => {
-                            if (value.length === 0) {
-                                return t(langKeys.field_required) as string;
-                            } else if (!/\S+@\S+\.\S+/.test(value)) {
-                                return t(langKeys.emailverification) as string;
-                            }
-                        }
-                    }}
                     render={({ field, formState: { errors } }) => (
                         <TextField
                             {...field}
-                            error={!!errors.loginusername}
+                            error={Boolean(errors.loginusername)}
                             fullWidth
                             helperText={errors.loginusername?.message}
                             label={t(langKeys.email)}
@@ -282,10 +286,47 @@ const FirstStep: FC = () => {
                             variant="outlined"
                         />
                     )}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return `${t(langKeys.field_required)}`;
+                            } else if (!/\S+@\S+\.\S+/.test(value)) {
+                                return `${t(langKeys.emailverification)}`;
+                            }
+                        },
+                    }}
                 />
                 <Controller
                     control={control}
                     name="loginpassword"
+                    render={({ field, formState: { errors } }) => (
+                        <TextField
+                            {...field}
+                            autoComplete="current-password"
+                            error={Boolean(errors.loginpassword)}
+                            fullWidth
+                            helperText={errors.loginpassword?.message}
+                            label={t(langKeys.password)}
+                            margin="normal"
+                            size="small"
+                            type={showPassword ? "text" : "password"}
+                            variant="outlined"
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            edge="end"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                        >
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    )}
                     rules={{
                         validate: (value) => {
                             if (value.length === 0) {
@@ -294,64 +335,27 @@ const FirstStep: FC = () => {
                                 if (validatePassword(value) === null) {
                                     return `${t(langKeys.password_strongvalidation)}`;
                                 }
-                                if (value !== getValues('loginpasswordrepeat')) {
+                                if (value !== getValues("loginpasswordrepeat")) {
                                     return `${t(langKeys.passwordsmustbeequal)}`;
                                 }
                             }
-                        }
+                        },
                     }}
-                    render={({ field, formState: { errors } }) => (
-                        <TextField
-                            {...field}
-                            autoComplete="current-password"
-                            error={!!errors.loginpassword}
-                            fullWidth
-                            helperText={errors.loginpassword?.message}
-                            label={t(langKeys.password)}
-                            margin="normal"
-                            size="small"
-                            type={showPassword ? 'text' : 'password'}
-                            variant="outlined"
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            edge="end"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                        >
-                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    )}
                 />
                 <Controller
                     control={control}
                     name="loginpasswordrepeat"
-                    rules={{
-                        validate: (value) => {
-                            if (value.length === 0) {
-                                return `${t(langKeys.field_required)}`;
-                            } else if (value !== getValues('loginpassword')) {
-                                return `${t(langKeys.passwordsmustbeequal)}`;
-                            }
-                        }
-                    }}
                     render={({ field, formState: { errors } }) => (
                         <TextField
                             {...field}
                             autoComplete="current-password"
-                            error={!!errors.loginpasswordrepeat}
+                            error={Boolean(errors.loginpasswordrepeat)}
                             fullWidth
                             helperText={errors.loginpasswordrepeat?.message}
                             label={t(langKeys.confirmpassword)}
                             margin="normal"
                             size="small"
-                            type={showPassword ? 'text' : 'password'}
+                            type={showPassword ? "text" : "password"}
                             variant="outlined"
                             InputProps={{
                                 endAdornment: (
@@ -369,9 +373,45 @@ const FirstStep: FC = () => {
                             }}
                         />
                     )}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return `${t(langKeys.field_required)}`;
+                            } else if (value !== getValues("loginpassword")) {
+                                return `${t(langKeys.passwordsmustbeequal)}`;
+                            }
+                        },
+                    }}
                 />
-                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos1)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={opentermsofservice} rel="noopener noreferrer">{t(langKeys.termsofservicetitle)}</a>{t(langKeys.tos2)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
-                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tossub1)} <a href="#" style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'default', textDecorationLine: 'none' }} rel="noopener noreferrer">{`${t(langKeys.creditcard)}`.toUpperCase()}</a> {t(langKeys.tossub2)}</div>
+                <div style={{ textAlign: "center", padding: "20px" }}>
+                    {t(langKeys.tos1)}
+                    <a
+                        style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                        onMouseDown={openTermsOfService}
+                        rel="noopener noreferrer"
+                    >
+                        {t(langKeys.termsofservicetitle)}
+                    </a>
+                    {t(langKeys.tos2)}
+                    <a
+                        style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                        onMouseDown={openPrivacyPolicy}
+                        rel="noopener noreferrer"
+                    >
+                        {t(langKeys.privacypoliciestitle)}
+                    </a>
+                </div>
+                <div style={{ textAlign: "center", padding: "20px" }}>
+                    {t(langKeys.tossub1)}{" "}
+                    <a
+                        href="#"
+                        rel="noopener noreferrer"
+                        style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "default", textDecorationLine: "none" }}
+                    >
+                        {`${t(langKeys.creditcard)}`.toUpperCase()}
+                    </a>{" "}
+                    {t(langKeys.tossub2)}
+                </div>
                 <Button
                     className={classes.button}
                     color="primary"
@@ -380,7 +420,7 @@ const FirstStep: FC = () => {
                     onClick={async () => {
                         const valid = await trigger();
                         if (valid) {
-                            handlesubmit();
+                            handleSubmit();
                         }
                     }}
                 >
@@ -388,7 +428,7 @@ const FirstStep: FC = () => {
                 </Button>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default FirstStep
+export default FirstStep;

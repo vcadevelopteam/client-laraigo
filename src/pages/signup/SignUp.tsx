@@ -1,98 +1,96 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import RightSideMenu from './RightSideMenu';
-import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
-import { langKeys } from 'lang/keys';
-import { Trans } from 'react-i18next';
-import { LogoSuscription } from 'icons';
-import { SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
-import Popus from 'components/layout/Popus';
-import { useFormContext } from 'react-hook-form';
-import ThirdStep from './ThirdStep';
+import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
+import { langKeys } from "lang/keys";
+import { LogoSuscription } from "icons";
+import { makeStyles } from "@material-ui/core/styles";
+import { SubscriptionContext, SubscriptionProvider, usePlanData } from "./context";
+import { Trans } from "react-i18next";
+import { useFormContext } from "react-hook-form";
 
-const useSignUpStyles = makeStyles(theme => ({
+import Popus from "components/layout/Popus";
+import React, { FC, useContext, useState } from "react";
+import RightSideMenu from "./RightSideMenu";
+import ThirdStep from "./ThirdStep";
+
+const useSignUpStyles = makeStyles((theme) => ({
     root: {
-        backgroundColor: '#F7F7F7',
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
+        backgroundColor: "#F7F7F7",
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
     },
     purplecircle: {
+        alignItems: "center",
         background: "#7721ad",
         borderRadius: "50%",
-        width: 35,
-        minWidth: 35,
-        height: 35,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
         color: "white",
+        display: "flex",
         fontSize: 20,
-        fontWeight: 700
+        fontWeight: 700,
+        height: 35,
+        justifyContent: "center",
+        minWidth: 35,
+        textAlign: "center",
+        width: 35,
     },
     containerHead: {
+        backgroundColor: "#FFF",
+        border: "1px solid #D1CBCB",
         display: "flex",
-        border: '1px solid #D1CBCB',
-        flex: '0 0 1',
-        paddingTop: 16,
+        flex: "0 0 1",
         paddingBottom: 16,
-        // marginBottom: 4,
-        backgroundColor: '#FFF',
-
+        paddingTop: 16,
     },
     containerLogo: {
-        flex: 1,
-        backgroundColor: 'white',
-        display: "flex",
         alignItems: "center",
+        backgroundColor: "white",
+        display: "flex",
+        flex: 1,
         justifyContent: "center",
         [theme.breakpoints.down("sm")]: {
-            display: "none"
+            display: "none",
         },
     },
     notthisstep: {
+        alignItems: "center",
         background: "#e5e5e5",
         borderRadius: "50%",
-        width: 35,
-        minWidth: 35,
-        height: 35,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
         color: "#a59f9f",
+        display: "flex",
         fontSize: 20,
-        fontWeight: 700
+        fontWeight: 700,
+        height: 35,
+        justifyContent: "center",
+        minWidth: 35,
+        textAlign: "center",
+        width: 35,
     },
     separator: {
         borderBottom: "1px solid #D1CBCB",
-        width: "15%",
         height: 0,
         marginLeft: 4,
-        marginRight: 4
+        marginRight: 4,
+        width: "15%",
     },
     cookieAlert: {
         "& svg": {
-            color: 'white'
-        }
+            color: "white",
+        },
     },
     emptyspacenumber: {
         flex: 1,
         [theme.breakpoints.down("sm")]: {
-            display: "none"
+            display: "none",
         },
     },
     containerLeft: {
         flex: 1,
+        overflowY: "auto",
         padding: 24,
-        overflowY: 'auto',
-        [theme.breakpoints.down('xs')]: {
-            minWidth: '100vw',
-            height: '100vh',
+        [theme.breakpoints.down("xs")]: {
+            height: "100vh",
+            minWidth: "100vw",
         },
-    }
+    },
 }));
 
 export const SignUp: FC = () => {
@@ -102,142 +100,137 @@ export const SignUp: FC = () => {
             <Popus />
         </SubscriptionProvider>
     );
-}
+};
 
 const SignUpFunc: FC = () => {
-    const { step, setStep } = useContext(SubscriptionContext);
     const { getValues, reset } = useFormContext();
     const { loading: planDataLoading } = usePlanData();
+    const { step, setStep } = useContext(SubscriptionContext);
+
     const [openWarning, setOpenWarning] = useState(false);
+
+    const classes = useSignUpStyles();
 
     function setDefaultMainData() {
         reset({
             ...getValues(),
-            email: "",
-            password: "",
-            confirmpassword: "",
-            firstandlastname: "",
+            autosendinvoice: true,
+            billingcontact: "",
+            billingcontactmail: "",
+            businessname: "",
             companybusinessname: "",
-            mobilephone: "",
+            confirmpassword: "",
+            country: "",
+            creditcard: "",
+            docnumber: "",
+            doctype: 0,
+            email: "",
             facebookid: "",
+            firstandlastname: "",
+            firstnamecard: "",
+            fiscaladdress: "",
             googleid: "",
             join_reason: "",
-            country: "",
-            doctype: 0,
-            docnumber: "",
-            businessname: "",
-            fiscaladdress: "",
-            billingcontact: "",
-            billingcontactmail: "",
-            autosendinvoice: true,
+            lastnamecard: "",
+            mm: 0,
+            mobilephone: "",
+            password: "",
             pmemail: "",
             pmphone: "",
-            firstnamecard: "",
-            lastnamecard: "",
-            creditcard: "",
-            mm: 0,
-            yyyy: "",
             securitycode: "",
+            yyyy: "",
         });
     }
-    function setDefaultMainData2() {
+
+    function setDefaultMainDataAlternate() {
         reset({
             ...getValues(),
-            doctype: 0,
-            docnumber: "",
-            businessname: "",
-            fiscaladdress: "",
             billingcontact: "",
             billingcontactmail: "",
-        })
+            businessname: "",
+            docnumber: "",
+            doctype: 0,
+            fiscaladdress: "",
+        });
     }
 
     const handleClose = () => {
         setOpenWarning(false);
     };
-    const handleClose2 = () => {
-        if (step === 2) {
-            setDefaultMainData()
-            setStep(step - 1)
-        } else if (step === 4) {
-            setStep(step - 1)
+
+    const handleStepClose = () => {
+        if (step === 4) {
+            setStep(step - 1);
         } else if (step === 3) {
-            setStep(2.5)
+            setStep(2.5);
         } else if (step === 2.5) {
-            setDefaultMainData2()
-            setStep(2)
+            setDefaultMainDataAlternate();
+            setStep(2);
         } else if (step === 2.6) {
             setStep(2.5);
+        } else if (step === 2) {
+            setDefaultMainData();
+            setStep(step - 1);
         } else {
-            setStep(step - 1)
+            setStep(step - 1);
         }
         setOpenWarning(false);
     };
 
-    const classes = useSignUpStyles();
-
     return (
         <div className={classes.root}>
             <Dialog
-                open={openWarning}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                aria-labelledby="alert-dialog-title"
+                onClose={handleClose}
+                open={openWarning}
             >
                 <DialogTitle id="alert-dialog-title">
                     <Trans i18nKey={langKeys.goback} />
                 </DialogTitle>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
-                        No
+                        <Trans i18nKey={langKeys.no} />
                     </Button>
-                    <Button onClick={handleClose2} color="primary" autoFocus>
+                    <Button onClick={handleStepClose} color="primary" autoFocus>
                         <Trans i18nKey={langKeys.yes} />
                     </Button>
                 </DialogActions>
             </Dialog>
             <div className={classes.containerHead}>
                 <div className={classes.emptyspacenumber}></div>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 10, marginLeft: 10 }}>
+                <div
+                    style={{
+                        alignItems: "center",
+                        display: "flex",
+                        flex: 1,
+                        justifyContent: "center",
+                        marginLeft: 10,
+                        marginRight: 10,
+                    }}
+                >
                     <div className={step === 1 ? classes.purplecircle : classes.notthisstep}> 1 </div>
                     <div className={classes.separator}> </div>
                     <div className={step === 2 ? classes.purplecircle : classes.notthisstep}> 2 </div>
-                    {/*<div className={classes.separator}> </div>
-                    <div className={step === 2.5 ? classes.purplecircle : classes.notthisstep}> 3 </div>
-                    <div className={classes.separator}> </div>
-                    <div className={step === 2.6 ? classes.purplecircle : classes.notthisstep}> 4 </div>
-                    <div className={classes.separator}> </div>
-                    <div className={step === 3 ? classes.purplecircle : classes.notthisstep}> 5 </div>
-                    <div className={classes.separator}> </div>
-                    <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 6 </div>*/}
                 </div>
             </div>
-            <div style={{
-                display: "flex",
-                flexDirection: 'row',
-                height: '100%',
-                // flexGrow: 1,
-                overflow: 'overlay',
-                flexWrap: 'wrap'
-            }}>
-                {step === 1 && (
-                    <div className={classes.containerLeft}>
-                        {!planDataLoading &&
-                            <ThirdStep />
-                        }
-                    </div>
-                )}
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    height: "100%",
+                    overflow: "overlay",
+                }}
+            >
+                {step === 1 && <div className={classes.containerLeft}>{!planDataLoading && <ThirdStep />}</div>}
                 {step !== 1 && (
                     <div className={classes.containerLogo}>
-                        {/* containerlogo tiene flex 1, para q se divida con el texto */}
-                        <LogoSuscription style={{ width: '50%' }} />
+                        <LogoSuscription style={{ width: "50%" }} />
                     </div>
                 )}
-                <div className={classes.containerLeft} style={{backgroundColor: "white"}}>
-                    {!planDataLoading
-                        ? <RightSideMenu setOpenWarning={setOpenWarning} />
-                        : <CircularProgress />
-                    }
+                <div className={classes.containerLeft} style={{ backgroundColor: "white" }}>
+                    {!planDataLoading ? <RightSideMenu setOpenWarning={setOpenWarning} /> : <CircularProgress />}
                 </div>
             </div>
         </div>
