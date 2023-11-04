@@ -42,6 +42,7 @@ interface CopiesSpanProps {
 
 const CopiesSpan: React.FC<CopiesSpanProps> = ({ copySelected, setCopySelected }) => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     const handleClick = (key: string) => {
         setCopySelected((x: Dictionary) => ({ ...x, [key]: true }));
@@ -50,14 +51,14 @@ const CopiesSpan: React.FC<CopiesSpanProps> = ({ copySelected, setCopySelected }
     return (
         <div>
             {!copySelected.cc && (
-                <Tooltip title={"Añadir destinatarios a CC"}>
+                <Tooltip title={`${t(langKeys.add_cc_email)}`}>
                     <span className={classes.cspan} onClick={() => handleClick("cc")}>
                         Cc
                     </span>
                 </Tooltip>
             )}
             {!copySelected.cco && (
-                <Tooltip title={"Añadir destinatarios a CCO"}>
+                <Tooltip title={`${t(langKeys.add_cco_email)}`}>
                     <span className={classes.cspan} onClick={() => handleClick("cco")}>
                         CCO
                     </span>
