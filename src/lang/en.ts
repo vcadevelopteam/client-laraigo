@@ -1122,6 +1122,7 @@ const translation: LangKeys = {
   typify_ticket: 'Classify ticket',
   validnumber: "Please insert a valid number",
   emailverification: 'The email entered does not have the values ​​of an email: @ and .',
+  is_an_invalid_email: 'is an invalid email',
   signup_with_facebook: "Sign up with Facebook",
   managerial: "Managerial",
   operationalpush: "Operational Push",
