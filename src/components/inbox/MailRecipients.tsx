@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, makeSty
 import { Dictionary } from "@types";
 import { FieldMultiSelectFreeSolo } from "components/fields/templates";
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
 const useStyles = makeStyles(() => ({
     table: {
@@ -31,30 +31,6 @@ const useStyles = makeStyles(() => ({
         },
     },
 }));
-
-interface ClickOutsideHandlerProps {
-    onClickOutside: () => void;
-}
-
-const ClickOutsideHandler: React.FC<ClickOutsideHandlerProps> = ({ children, onClickOutside }) => {
-    const wrapperRef = useRef<HTMLDivElement | null>(null);
-
-    const handleClickOutside = (event: MouseEvent) => {
-        if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-            onClickOutside();
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
-
-    return <div ref={(node) => (wrapperRef.current = node)}>{children}</div>;
-};
 
 interface CopiesSpanProps {
     copySelected: Dictionary;
@@ -96,27 +72,9 @@ const MailRecipients: React.FC<unknown> = () => {
     const [emailCopy, setEmailCopy] = React.useState("");
     const [emailCoCopy, setEmailCoCopy] = React.useState("");
 
-    const shouldShowCopiesSpan = copySelected.cc === false && copySelected.cco === false;
-    const shouldShowCCSpan = copySelected.cc === true && copySelected.cco === false;
-    const shouldShowCCOSpan = copySelected.cc === false && copySelected.cco === true;
-
-    const test = useCallback(() => {
-        console.log("desde probar " + emailCopy);
-        console.log("desde probar " + emailCoCopy);
-
-        console.log({ emailCopy: emailCopy !== "", cco: emailCoCopy !== "" });
-
-        setCopySelected({ cc: emailCopy !== "", cco: emailCoCopy !== "" });
-    }, [emailCopy, emailCoCopy]);
-    console.log("xasqq", emailCopy)
-    // const resetCopySelected = () => test()
     const resetCopySelected = () => {
-        console.log({emailCopy})
-    }
-
-    // useEffect(() => {
-    //     resetCopySelected();
-    // }, [resetCopySelected]);
+        setCopySelected({ cc: emailCopy !== "", cco: emailCoCopy !== "" });
+    };
 
     return (
         <ClickAwayListener onClickAway={resetCopySelected}>
