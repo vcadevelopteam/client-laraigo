@@ -1,11 +1,22 @@
-import { Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, makeStyles } from "@material-ui/core";
+import {
+    Avatar,
+    Chip,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableRow,
+    TextField,
+    Tooltip,
+    makeStyles,
+    ClickAwayListener,
+} from "@material-ui/core";
 import { Dictionary } from "@types";
-import { FieldMultiSelectFreeSolo } from "components/fields/templates";
-import React, { useEffect } from "react";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
+import { Autocomplete } from "@material-ui/lab";
 
 const useStyles = makeStyles(() => ({
     table: {
@@ -19,7 +30,6 @@ const useStyles = makeStyles(() => ({
     },
     rl: {},
     rv: {
-        //row value
         width: "100%",
     },
     tr: {
@@ -33,7 +43,146 @@ const useStyles = makeStyles(() => ({
             cursor: "pointer",
         },
     },
+    avatar: {
+        color: "white !important",
+        backgroundColor: "#7721AD",
+    },
+    error: {
+        color: "red",
+    },
+    errorContainer: {
+        display: "flex",
+        alignItems: "center",
+        color: "#ff7171",
+    },
 }));
+
+interface CustomAutocompleteProps {
+    value: string[];
+    setValue: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({ value, setValue }) => {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const [error, setError] = useState<string>("");
+    const [inputValue, setInputValue] = useState<string>("");
+
+    const emailRegex = /[\w\d.-]+@[\w\d.-]+\.[\w\d.-]+/;
+
+    const isInList = (email: string) => {
+        return value.includes(email);
+    };
+
+    const isEmail = (email: string) => {
+        const validate = emailRegex.test(email);
+        return validate;
+    };
+
+    const isValid = (email: string) => {
+        let error = null;
+        if (!isEmail(email)) {
+            error = `${email} no es valido`;
+            error = `${email} ${t(langKeys.is_an_invalid_email)}`;
+        }
+        if (isInList(email)) {
+            error = `${email} ya esta agregado`;
+        }
+        if (email === "") {
+            setError("");
+            return false;
+        }
+        if (error) {
+            setError(error);
+            return false;
+        }
+        setError("");
+        return true;
+    };
+
+    const handleChange = (value: string[]) => {
+        setValue(value);
+    };
+
+    const handleInput = (evt: React.ChangeEvent<HTMLInputElement>) => {
+        const value = evt.target.value;
+        if (evt.key === "Enter") {
+            evt.stopPropagation();
+            if (isValid(value)) {
+                setValue((prevValue) => [...prevValue, value]);
+            }
+        }
+    };
+
+    const handleOnBlur = (evt) => {
+        const value = evt.target.value;
+        if (isValid(value)) {
+            setValue((prevValue) => [...prevValue, value]);
+        } else {
+            setError("");
+            setInputValue("");
+        }
+    };
+
+    const handleInputChange = (event, newInputValue) => {
+        setInputValue(newInputValue);
+    };
+
+    const handlePaste = (evt: React.ClipboardEvent) => {
+        evt.preventDefault();
+
+        const paste = evt.clipboardData.getData("text");
+        const emails = paste.match(emailRegex);
+
+        if (emails) {
+            const toBeAdded = emails.filter((email) => !isInList(email));
+            setValue((prevValue) => {
+                if (Array.isArray(prevValue)) {
+                    return [...prevValue, ...toBeAdded];
+                } else {
+                    return [prevValue, ...toBeAdded];
+                }
+            });
+        }
+    };
+
+    return (
+        <div>
+            <Autocomplete
+                multiple
+                freeSolo
+                value={value}
+                onChange={(_, newValue: string[]) => handleChange(newValue)}
+                onPaste={handlePaste}
+                options={[]}
+                inputValue={inputValue}
+                onInputChange={handleInputChange}
+                renderTags={(value: string[], getTagProps) =>
+                    value.map((option: string, index: number) => (
+                        <Chip
+                            key={index}
+                            variant="outlined"
+                            label={option}
+                            {...getTagProps({ index })}
+                            avatar={<Avatar className={classes.avatar}>{option.charAt(0).toUpperCase()}</Avatar>}
+                        />
+                    ))
+                }
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        variant="standard"
+                        onBlur={handleOnBlur}
+                        onKeyDown={(e) => {
+                            handleInput(e);
+                        }}
+                    />
+                )}
+            />
+            {error !== "" && <div className={classes.errorContainer}>{error}</div>}
+        </div>
+    );
+};
 
 interface CopiesSpanProps {
     copySelected: Dictionary;
@@ -68,69 +217,23 @@ const CopiesSpan: React.FC<CopiesSpanProps> = ({ copySelected, setCopySelected }
     );
 };
 
-const dd: Dictionary[] = [];
-
 interface MailRecipientsProps {
     setCopyEmails: React.Dispatch<React.SetStateAction<Dictionary>>;
 }
 
 const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
     const classes = useStyles();
-    const { t } = useTranslation();
-    const [emailCopy, setEmailCopy] = React.useState("");
-    const [emailCoCopy, setEmailCoCopy] = React.useState("");
+    const [emailCopy, setEmailCopy] = React.useState<string[]>([]);
+    const [emailCoCopy, setEmailCoCopy] = React.useState<string[]>([]);
     const person = useSelector((state) => state.inbox.person.data);
-    const [error, setError] = React.useState<Dictionary>({ cc: "", cco: "" });
     const [copySelected, setCopySelected] = React.useState<Dictionary>({ cc: false, cco: false });
 
     const resetCopySelected = () => {
-        setCopySelected({ cc: emailCopy !== "", cco: emailCoCopy !== "" });
-    };
-
-    const validateEmail = () => {
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        let hasError = false;
-        if (emailCopy === "") {
-            setError((prevError) => ({ ...prevError, cc: "" }));
-        } else {
-            let invalidEmail = false;
-            emailCopy.split(",").forEach((email) => {
-                if (!emailRegex.test(email)) {
-                    invalidEmail = true;
-                    hasError = true;
-                }
-            });
-
-            if (invalidEmail) {
-                setError((prevError) => ({ ...prevError, cc: `${t(langKeys.emailverification)}` }));
-            } else {
-                setError((prevError) => ({ ...prevError, cc: "" }));
-            }
-        }
-
-        if (emailCoCopy === "") {
-            setError((prevError) => ({ ...prevError, cco: "" }));
-        } else {
-            let invalidEmail = false;
-            emailCoCopy.split(",").forEach((email) => {
-                if (!emailRegex.test(email)) {
-                    invalidEmail = true;
-                    hasError = true;
-                }
-            });
-
-            if (invalidEmail) {
-                setError((prevError) => ({ ...prevError, cco: `${t(langKeys.emailverification)}` }));
-            } else {
-                setError((prevError) => ({ ...prevError, cco: "" }));
-            }
-        }
-
-        setCopyEmails((x) => ({ ...x, ["error"]: hasError }));
+        setCopySelected({ cc: Boolean(emailCopy.length), cco: Boolean(emailCoCopy.length) });
     };
 
     useEffect(() => {
-        validateEmail();
+        setCopyEmails({ cc: emailCopy, cco: emailCoCopy });
     }, [emailCopy, emailCoCopy]);
 
     return (
@@ -144,7 +247,7 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
                                     <span style={{ marginRight: "10px" }}>Para</span>
                                 </TableCell>
                                 <TableCell className={classes.rv}>
-                                    <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                    <div style={{ display: "flex", flexWrap: "nowrap" }}>
                                         <div style={{ flex: "1 1 auto" }}>{person?.email}</div>
                                         <div>
                                             {copySelected.cc === false && copySelected.cco === false && (
@@ -165,19 +268,7 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
                                     <TableCell className={classes.rv}>
                                         <div style={{ display: "flex", flexWrap: "wrap" }}>
                                             <div style={{ flex: "1 1 auto" }}>
-                                                <FieldMultiSelectFreeSolo
-                                                    label={""}
-                                                    style={{ margin: 0 }}
-                                                    valueDefault={""}
-                                                    onChange={(value) => {
-                                                        setEmailCopy(value.join(","));
-                                                        setCopyEmails((x) => ({ ...x, ["cc"]: value.join(";") }));
-                                                    }}
-                                                    data={dd}
-                                                    optionDesc=""
-                                                    optionValue=""
-                                                    error={error.cc || ""}
-                                                />
+                                                <CustomAutocomplete value={emailCopy} setValue={setEmailCopy} />
                                             </div>
                                             <div>
                                                 {copySelected.cc === true && copySelected.cco === false && (
@@ -199,19 +290,7 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
                                     <TableCell className={classes.rv}>
                                         <div style={{ display: "flex", flexWrap: "wrap" }}>
                                             <div style={{ flex: "1 1 auto" }}>
-                                                <FieldMultiSelectFreeSolo
-                                                    label={""}
-                                                    style={{ margin: 0 }}
-                                                    valueDefault={""}
-                                                    onChange={(value) => {
-                                                        setEmailCoCopy(value.join(","));
-                                                        setCopyEmails((x) => ({ ...x, ["cco"]: value.join(";") }));
-                                                    }}
-                                                    data={dd}
-                                                    optionDesc=""
-                                                    optionValue=""
-                                                    error={error.cco}
-                                                />
+                                                <CustomAutocomplete value={emailCoCopy} setValue={setEmailCoCopy} />
                                             </div>
                                             <div>
                                                 {copySelected.cc === false && copySelected.cco === true && (

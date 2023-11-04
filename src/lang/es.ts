@@ -386,6 +386,7 @@ const translation: LangKeys = {
   organization_permissions: 'Permisos de la organización',
   generate_password: 'Generar contraseña',
   send_password_by_email: 'Enviar contraseña por correo',
+  is_an_invalid_email: 'es un email inválido',
   change_password_on_login: 'Cambiar contraseña al entrar',
   accountsettings: "Configuración de la cuenta",
   accountinformation: "Información de la cuenta",

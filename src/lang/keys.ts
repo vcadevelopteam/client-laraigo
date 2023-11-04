@@ -352,6 +352,7 @@ export const langKeys = {
   "asignado": "asignado",
   "en espera de atención": "en espera de atención",
   invitation_email: "invitation_email",
+  is_an_invalid_email: 'is_an_invalid_email',
   bubbleTooltip: "bubbleTooltip",
   bubbleTooltipText: "bubbleTooltipText",
   bubbleTooltipImage: "bubbleTooltipImage",
