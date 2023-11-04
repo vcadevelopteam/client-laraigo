@@ -101,7 +101,6 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({ value, setValue
     };
 
     const handleChange = (value: string[]) => {
-        console.log("handleChange");
         setValue(value);
     };
 
@@ -234,7 +233,6 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
     };
 
     useEffect(() => {
-        console.log({ emailCopy, emailCoCopy });
         setCopyEmails({ cc: emailCopy, cco: emailCoCopy });
     }, [emailCopy, emailCoCopy]);
 
