@@ -5422,6 +5422,8 @@ export const langKeys = {
   openpay_message07: 'openpay_message07',
   openpay_message08: 'openpay_message08',
   dialog_iscloud: 'dialog_iscloud',
+  add_cc_email: 'add_cc_email',
+  add_cco_email: 'add_cco_email',
   billingconfiguration_plancurrency: 'billingconfiguration_plancurrency',
   billingconfiguration_vcacomission: 'billingconfiguration_vcacomission',
   billingconfiguration_basicanualfee: 'billingconfiguration_basicanualfee',

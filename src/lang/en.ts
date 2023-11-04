@@ -415,6 +415,8 @@ const translation: LangKeys = {
   send_file: 'Send file',
   send_gif: 'Send gif',
   send_emoji: 'Send emoji',
+  add_cc_email: 'Add recipients to CC',
+  add_cco_email: 'Add recipients to CCO',
 
   newdomain: "New domain",
   newgroupconfig: "New group configuration",

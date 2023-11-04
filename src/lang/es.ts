@@ -287,6 +287,8 @@ const translation: LangKeys = {
   send_file: 'Enviar un archivo',
   send_gif: 'Enviar gif',
   send_emoji: 'Enviar emoji',
+  add_cc_email: 'Añadir destinatarios a CC',
+  add_cco_email: 'Añadir destinatarios a CCO',
 
   addressReference: 'Ref. dirección',
   birthday: 'Cumpleaños',

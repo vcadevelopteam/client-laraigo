@@ -451,7 +451,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
 
     const [height, setHeight] = React.useState("0px");
-    
+
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
@@ -499,9 +499,13 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         try {
             const [subject, body, files] = interactiontext.split("&%MAIL%&")
             return (
-                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
-                    [classes.interactionTextAgent]: userType !== 'client',
-                })} style={{width: '100%', maxWidth: '100%'}} >
+                <div
+                    title={convertLocalDate(createdate).toLocaleString()}
+                    className={clsx(classes.interactionText, {
+                        [classes.interactionTextAgent]: userType !== 'client',
+                    })}
+                    style={{ width: '100%', maxWidth: '100%' }}
+                >
                     <div>RE-LARAIGO: {subject}</div>
                     <iframe
                         ref={ref}

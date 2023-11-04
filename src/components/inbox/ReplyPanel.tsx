@@ -36,6 +36,7 @@ import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
 import { emojis } from "common/constants/emojis";
 import DragDropFile from 'components/fields/DragDropFile';
+import MailRecipients from './MailRecipients';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -440,6 +441,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const { t } = useTranslation();
 
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const [copyEmails, setCopyEmails] = useState<Dictionary>({ cc: false, cco: false, error: false });
 
     const resReplyTicket = useSelector(state => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
@@ -560,6 +562,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [dispatch, ticketSelected, agentSelected])
 
     const triggerReplyMessage = () => {
+        if (copyEmails.error) return
         const callback = () => {
             let wasSend = false;
             if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
@@ -637,6 +640,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             interactiontext: textCleaned,
                             validateUserOnTicket: userType === "AGENT",
                             isAnswered: !ticketSelected!!.isAnswered,
+                            emailcocopy: copyEmails.cco || "",
+                            emailcopy: copyEmails.cc || ""
                         }));
                         setText("");
                         setrefresh(refresh * -1)
@@ -805,6 +810,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     <div style={{ alignItems: "center" }}>
                         <ClickAwayListener onClickAway={handleClickAway}>
                             <div>
+                                <MailRecipients setCopyEmails={setCopyEmails}/>
                                 <RichText
                                     style={{ width: "100%" }}
                                     value={bodyobject}
