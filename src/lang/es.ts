@@ -5412,6 +5412,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   coveragearea: 'Zona de Cobertura',
   warehouse: 'Almacén',
   instorewarehouse: 'Almacén en Tienda',
+  associatedvehicles: 'Vehículos Asociados',
+  vehicletype: 'Tipo Vehículo',
+  platenum: 'Nº Placa',
+  capacity: 'Capacidad (KG)',
+  averagespeed: 'Velocidad Prom. (KM/H)',
+  insuredamount: 'Monto Asegurado',
+  carriername: 'Nombre Transportista',
+  licensenum: 'Nº Licencia',
 };
 
 const esResource: ResourceLanguage = {

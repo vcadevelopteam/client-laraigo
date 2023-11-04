@@ -1,16 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'; // we need this to make JSX compile
-import { Dictionary, IFile } from "@types";
+import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { Button } from "@material-ui/core";
-import { Search as SearchIcon } from "@material-ui/icons";
 import Box from '@material-ui/core/Box';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons } from 'components';
 import TableZyx from "components/fields/table-simple";
-import { useSelector } from 'hooks';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -57,7 +54,7 @@ interface InventoryTabDetailProps {
     errors: FieldErrors<any>;
 }
 
-const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
+const DeliveryConfigurationTabDetail: React.FC<InventoryTabDetailProps> = ({
     row,
     setValue,
     getValues,
@@ -65,8 +62,6 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const initialValueAttachments = getValues('attachments');
-    const [files, setFiles] = useState<IFile[]>(initialValueAttachments? initialValueAttachments.split(',').map((url:string) => ({ url })):[]);
 
     const columns = React.useMemo(
         () => [
@@ -80,48 +75,60 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 const row = props.cell.row.original;
                 return (
                     <TemplateIcons
+                        //deleteFunction={() => handleDelete(row)}
+                        //editFunction={() => handleEdit(row)}
                     />
                 )
             }
           },
           {
-            Header: t(langKeys.product),
+            Header: t(langKeys.organization),
             accessor: "productdescription",
             width: "auto",
           },
           {
-            Header: t(langKeys.product),
+            Header: t(langKeys.vehicletype),
             accessor: "productdescriptionlarge",
             width: "auto",
           },
           {
-            Header: t(langKeys.product),
+            Header: t(langKeys.brand),
             accessor: "familydescription",
             width: "auto",
           },
           {
-            Header: t(langKeys.product),
+            Header: t(langKeys.model),
             accessor: "subfamilydescription",
             width: "auto",
           },
           {
-            Header: t(langKeys.product),
+            Header: t(langKeys.platenum),
             accessor: "dateofphysicalcount",
             width: "auto",
           },
           {
-            Header: t(langKeys.product),
+            Header: t(langKeys.capacity),
             accessor: "isconciliated",
             width: "auto",
           },
           {
-            Header: t(langKeys.product),
+            Header: t(langKeys.averagespeed),
             accessor: "shelflifeindays",
             width: "auto",
           },
           {
-            Header: t(langKeys.dueDate),
+            Header: t(langKeys.insuredamount),
             accessor: "dueDate",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.carriername),
+            accessor: "carriername",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.licensenum),
+            accessor: "licensenum",
             width: "auto",
           },
         ],
@@ -237,130 +244,10 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     </div>
                 </div>
             </div>
-            <div className="row-zyx">
-                <div className='col-6'>
-                    <div className='row-zyx'>
-                        <TitleDetail
-                            title={t(langKeys.product)}
-                        />
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('address')}
-                            className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
-                        />  
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('latitude')}
-                            className="col-6"
-                            error={errors?.latitude?.message}
-                            onChange={(value) => setValue('latitude', value)}
-                        />
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('address')}
-                            className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
-                        />  
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('latitude')}
-                            className="col-6"
-                            error={errors?.latitude?.message}
-                            onChange={(value) => setValue('latitude', value)}
-                        />
-                    </div>
-                </div>
-                <div className='col-6'>
-                    <div className='row-zyx'>
-                        <TitleDetail
-                            title={t(langKeys.product)}
-                        />
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            type="date"
-                            valueDefault={getValues('address')}
-                            className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
-                        />  
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('latitude')}
-                            className="col-6"
-                            error={errors?.latitude?.message}
-                            onChange={(value) => setValue('latitude', value)}
-                        />
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('address')}
-                            className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
-                        />  
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('latitude')}
-                            className="col-6"
-                            error={errors?.latitude?.message}
-                            onChange={(value) => setValue('latitude', value)}
-                        />
-                    </div>
-                </div>
-            </div>
-            <div className="row-zyx">
-                <div className='row-zyx'>
-                    <TitleDetail
-                        title={t(langKeys.product)}
-                    />
-                </div>
-                <div className='row-zyx'>
-                    <FieldEdit
-                        label={t(langKeys.product)}
-                        valueDefault={getValues('address')}
-                        className="col-4"
-                        error={errors?.address?.message}
-                        onChange={(value) => setValue('address', value)}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.product)}
-                        valueDefault={getValues('address')}
-                        className="col-4"
-                        error={errors?.address?.message}
-                        onChange={(value) => setValue('address', value)}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.product)}
-                        type="date"
-                        valueDefault={getValues('address')}
-                        className="col-4"
-                        error={errors?.address?.message}
-                        onChange={(value) => setValue('address', value)}
-                    />  
-                </div>
-            </div>
             <div className='row-zyx'>
                 <div className='row-zyx'>
                     <TitleDetail
-                        title={t(langKeys.product)}
+                        title={t(langKeys.associatedvehicles)}
                     />
                 </div>
                 <div className='row-zyx'>
@@ -377,4 +264,4 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
     )
 }
 
-export default InventoryTabDetail;
+export default DeliveryConfigurationTabDetail;

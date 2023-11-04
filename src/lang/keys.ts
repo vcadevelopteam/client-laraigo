@@ -5400,6 +5400,14 @@ export const langKeys = {
   coveragearea: 'coveragearea',
   warehouse: 'warehouse',
   instorewarehouse: 'instorewarehouse',
+  associatedvehicles: 'associatedvehicles',
+  vehicletype: 'vehicletype',
+  platenum: 'platenum',
+  capacity: 'capacity',
+  averagespeed: 'averagespeed',
+  insuredamount: 'insuredamount',
+  carriername: 'carriername',
+  licensenum: 'licensenum',
 };
 
 export type LangKeys = typeof langKeys;

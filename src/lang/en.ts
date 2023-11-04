@@ -5485,6 +5485,14 @@ const translation: LangKeys = {
   coveragearea: 'Coverage Area',
   warehouse: 'Warehouse',
   instorewarehouse: 'In-Store Warehouse',
+  associatedvehicles: 'Associated Vehicles',
+  vehicletype: 'Vehicle Type',
+  platenum: 'Plate No.',
+  capacity: 'Capacity (KG)',
+  averagespeed: 'Average Speed (KM/H)',
+  insuredamount: 'Insured Amount',
+  carriername: 'Carrier Name',
+  licensenum: 'License No.',
 };
 
 const enResource: ResourceLanguage = {
