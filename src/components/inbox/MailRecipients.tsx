@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, makeSty
 import { Dictionary } from "@types";
 import { FieldMultiSelectFreeSolo } from "components/fields/templates";
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 const useStyles = makeStyles(() => ({
     table: {
@@ -107,7 +108,7 @@ const MailRecipients: React.FC<unknown> = () => {
 
         setCopySelected({ cc: emailCopy !== "", cco: emailCoCopy !== "" });
     }, [emailCopy, emailCoCopy]);
-
+    console.log("xasqq", emailCopy)
     // const resetCopySelected = () => test()
     const resetCopySelected = () => {
         console.log({emailCopy})
@@ -118,7 +119,7 @@ const MailRecipients: React.FC<unknown> = () => {
     // }, [resetCopySelected]);
 
     return (
-        <ClickOutsideHandler onClickOutside={resetCopySelected}>
+        <ClickAwayListener onClickAway={resetCopySelected}>
             <div>
                 <TableContainer>
                     <Table className={classes.table}>
@@ -215,7 +216,7 @@ const MailRecipients: React.FC<unknown> = () => {
                     </Table>
                 </TableContainer>
             </div>
-        </ClickOutsideHandler>
+        </ClickAwayListener>
     );
 };
 
