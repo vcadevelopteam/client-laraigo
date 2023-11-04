@@ -37,6 +37,7 @@ import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
 import { emojis } from "common/constants/emojis";
 import DragDropFile from 'components/fields/DragDropFile';
+import MailRecipients from './MailRecipients';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -805,6 +806,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     <div style={{ alignItems: "center" }}>
                         <ClickAwayListener onClickAway={handleClickAway}>
                             <div>
+                                <MailRecipients/>
                                 <RichText
                                     style={{ width: "100%" }}
                                     value={bodyobject}
