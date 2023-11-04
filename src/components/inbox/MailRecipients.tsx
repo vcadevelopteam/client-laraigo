@@ -1,8 +1,11 @@
 import { Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, makeStyles } from "@material-ui/core";
 import { Dictionary } from "@types";
 import { FieldMultiSelectFreeSolo } from "components/fields/templates";
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useEffect } from "react";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
+import { langKeys } from "lang/keys";
 
 const useStyles = makeStyles(() => ({
     table: {
@@ -66,15 +69,68 @@ const CopiesSpan: React.FC<CopiesSpanProps> = ({ copySelected, setCopySelected }
 
 const dd: Dictionary[] = [];
 
-const MailRecipients: React.FC<unknown> = () => {
+interface MailRecipientsProps {
+    setCopyEmails: React.Dispatch<React.SetStateAction<Dictionary>>;
+}
+
+const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
     const classes = useStyles();
-    const [copySelected, setCopySelected] = React.useState<Dictionary>({ cc: false, cco: false });
+    const { t } = useTranslation();
     const [emailCopy, setEmailCopy] = React.useState("");
     const [emailCoCopy, setEmailCoCopy] = React.useState("");
+    const person = useSelector((state) => state.inbox.person.data);
+    const [error, setError] = React.useState<Dictionary>({ cc: "", cco: "" });
+    const [copySelected, setCopySelected] = React.useState<Dictionary>({ cc: false, cco: false });
 
     const resetCopySelected = () => {
         setCopySelected({ cc: emailCopy !== "", cco: emailCoCopy !== "" });
     };
+
+    const validateEmail = () => {
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        let hasError = false;
+        if (emailCopy === "") {
+            setError((prevError) => ({ ...prevError, cc: "" }));
+        } else {
+            let invalidEmail = false;
+            emailCopy.split(",").forEach((email) => {
+                if (!emailRegex.test(email)) {
+                    invalidEmail = true;
+                    hasError = true;
+                }
+            });
+
+            if (invalidEmail) {
+                setError((prevError) => ({ ...prevError, cc: `${t(langKeys.emailverification)}` }));
+            } else {
+                setError((prevError) => ({ ...prevError, cc: "" }));
+            }
+        }
+
+        if (emailCoCopy === "") {
+            setError((prevError) => ({ ...prevError, cco: "" }));
+        } else {
+            let invalidEmail = false;
+            emailCoCopy.split(",").forEach((email) => {
+                if (!emailRegex.test(email)) {
+                    invalidEmail = true;
+                    hasError = true;
+                }
+            });
+
+            if (invalidEmail) {
+                setError((prevError) => ({ ...prevError, cco: `${t(langKeys.emailverification)}` }));
+            } else {
+                setError((prevError) => ({ ...prevError, cco: "" }));
+            }
+        }
+
+        setCopyEmails((x) => ({ ...x, ["error"]: hasError }));
+    };
+
+    useEffect(() => {
+        validateEmail();
+    }, [emailCopy, emailCoCopy]);
 
     return (
         <ClickAwayListener onClickAway={resetCopySelected}>
@@ -88,7 +144,7 @@ const MailRecipients: React.FC<unknown> = () => {
                                 </TableCell>
                                 <TableCell className={classes.rv}>
                                     <div style={{ display: "flex", flexWrap: "wrap" }}>
-                                        <div style={{ flex: "1 1 auto" }}>{emailCopy}</div>
+                                        <div style={{ flex: "1 1 auto" }}>{person?.email}</div>
                                         <div>
                                             {copySelected.cc === false && copySelected.cco === false && (
                                                 <CopiesSpan
@@ -102,10 +158,7 @@ const MailRecipients: React.FC<unknown> = () => {
                             </TableRow>
                             {copySelected.cc === true && (
                                 <TableRow className={classes.tr}>
-                                    <TableCell
-                                        className={classes.rl}
-                                        style={{ display: "flex", alignItems: "flex-end" }}
-                                    >
+                                    <TableCell className={classes.rl} style={{ display: "flex", alignItems: "center" }}>
                                         <span style={{ marginRight: "10px" }}>Cc</span>
                                     </TableCell>
                                     <TableCell className={classes.rv}>
@@ -117,10 +170,12 @@ const MailRecipients: React.FC<unknown> = () => {
                                                     valueDefault={""}
                                                     onChange={(value) => {
                                                         setEmailCopy(value.join(","));
+                                                        setCopyEmails((x) => ({ ...x, ["cc"]: value.join(";") }));
                                                     }}
                                                     data={dd}
                                                     optionDesc=""
                                                     optionValue=""
+                                                    error={error.cc || ""}
                                                 />
                                             </div>
                                             <div>
@@ -137,10 +192,7 @@ const MailRecipients: React.FC<unknown> = () => {
                             )}
                             {copySelected.cco === true && (
                                 <TableRow className={classes.tr}>
-                                    <TableCell
-                                        className={classes.rl}
-                                        style={{ display: "flex", alignItems: "flex-end" }}
-                                    >
+                                    <TableCell className={classes.rl} style={{ display: "flex", alignItems: "center" }}>
                                         <span style={{ marginRight: "10px" }}>CCO</span>
                                     </TableCell>
                                     <TableCell className={classes.rv}>
@@ -152,10 +204,12 @@ const MailRecipients: React.FC<unknown> = () => {
                                                     valueDefault={""}
                                                     onChange={(value) => {
                                                         setEmailCoCopy(value.join(","));
+                                                        setCopyEmails((x) => ({ ...x, ["cco"]: value.join(";") }));
                                                     }}
                                                     data={dd}
                                                     optionDesc=""
                                                     optionValue=""
+                                                    error={error.cco}
                                                 />
                                             </div>
                                             <div>
