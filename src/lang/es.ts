@@ -5420,6 +5420,17 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   insuredamount: 'Monto Asegurado',
   carriername: 'Nombre Transportista',
   licensenum: 'Nº Licencia',
+   /*New es for Order List*/
+   deliverynumber: 'Nº Delivery',
+   uniqueroutingcode: 'Cod. Uni. de Ruteo',
+   deliverytype: 'Tipo de Entrega',
+   appointmenttype: 'Tipo de Agendamiento',
+   orderdate: 'Fecha de Pedido',
+   scheduleddate: 'Fecha Programada',
+   scheduledshift: 'Turno Programado',
+   deliverydate: 'Fecha de Entrega',
+   ordertime: 'Tiempo de Pedido',
+
 };
 
 const esResource: ResourceLanguage = {

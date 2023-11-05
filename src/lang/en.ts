@@ -5493,6 +5493,16 @@ const translation: LangKeys = {
   insuredamount: 'Insured Amount',
   carriername: 'Carrier Name',
   licensenum: 'License No.',
+  /*New en for Order List*/
+  deliverynumber: 'Delivery Number',
+  uniqueroutingcode: 'Unique Routing Code',
+  deliverytype: 'Delivery Type',
+  appointmenttype: 'Appointment Type',
+  orderdate: 'Order Date',
+  scheduleddate: 'Scheduled Date',
+  scheduledshift: 'Scheduled Shift',
+  deliverydate: 'Delivery Date',
+  ordertime: 'Order Time',
 };
 
 const enResource: ResourceLanguage = {

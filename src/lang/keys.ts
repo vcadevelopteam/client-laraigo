@@ -5408,6 +5408,19 @@ export const langKeys = {
   insuredamount: 'insuredamount',
   carriername: 'carriername',
   licensenum: 'licensenum',
+  /*New keys for Order List*/
+  deliverynumber: 'deliverynumber',
+  uniqueroutingcode: 'uniqueroutingcode',
+  deliverytype: 'deliverytype',
+  appointmenttype: 'appointmenttype',
+  orderdate: 'orderdate',
+  scheduleddate: 'scheduleddate',
+  scheduledshift: 'scheduledshift',
+  deliverydate: 'deliverydate',
+  ordertime: 'ordertime',
+  
+
+
 };
 
 export type LangKeys = typeof langKeys;

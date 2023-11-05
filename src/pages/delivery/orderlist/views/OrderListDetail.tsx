@@ -6,15 +6,13 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, TitleDetail } from 'components';
 import { Dictionary } from "@types";
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Tabs } from '@material-ui/core';
-import InventoryTabDetail from './detailTabs/InventoryTabDetail';
-import NewOrderTabDetail from './detailTabs/NewOrderTabDetail';
+import OrderListTabDetail from './detailTabs/OrderListTabDetail';
 import { resetMainAux } from 'store/main/actions';
 
 
@@ -25,7 +23,6 @@ interface RowSelected {
 
 interface DetailProps {
     data: RowSelected;
-    setViewSelected: (view: string) => void;
     fetchData?: any;
     fetchDataAux?: any;
 }
@@ -62,18 +59,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [tabIndex, setTabIndex] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
-    const [openModalAdjust, setOpenModalAdjust] = useState(false);
 
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.product) },
-        { id: "detail-view", name: `${t(langKeys.product)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: t(langKeys.delivery) },
+        { id: "detail-view", name: t(langKeys.orderlist) },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -103,7 +98,6 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
-                setViewSelected("main-view");
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -146,12 +140,9 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
-                            handleClick={(view) => {
-                                setViewSelected(view);
-                            }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.product)}`}
+                            title={row?.name || `${t(langKeys.orderlist)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -161,9 +152,6 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => {
-                                setViewSelected("main-view")
-                            }}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
@@ -174,47 +162,36 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             style={{ backgroundColor: "#55BD84" }}>
                             {t(langKeys.save)}
                         </Button>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                        >{t(langKeys.printingformat)}</Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}>
+                            {t(langKeys.billbyorg)}
+                        </Button>
+                        
                     </div>
 
                 </div>
-                <Tabs
-                    value={tabIndex}
-                    onChange={(_:any, i:any) => setTabIndex(i)}
-                    className={classes.tabs}
-                    textColor="primary"
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                >
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product} />
-                            </div>
-                        )}
-                    />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product}/>
-                            </div>
-                        )}
-                    />
-                </Tabs>
-                <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <InventoryTabDetail
-                        row={row}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                    />
-                </AntTabPanel>
-                <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <NewOrderTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row}/>
-                </AntTabPanel>
+                <OrderListTabDetail
+                    row={row}
+                    setValue={setValue}
+                    getValues={getValues}
+                    errors={errors}
+                />
             </form>
         </>
     );
 }
 
 
-export default DeliveryConfigurationDetail;
+export default OrderListDetail;
