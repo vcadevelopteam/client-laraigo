@@ -233,7 +233,7 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
     };
 
     useEffect(() => {
-        setCopyEmails({ cc: emailCopy, cco: emailCoCopy });
+        setCopyEmails({ cc: emailCopy.join(";"), cco: emailCoCopy.join(";") });
     }, [emailCopy, emailCoCopy]);
 
     return (
