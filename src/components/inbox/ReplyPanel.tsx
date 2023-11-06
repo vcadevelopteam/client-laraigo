@@ -99,11 +99,15 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
                 onChange={(e) => onSelectImage(e.target.files)}
             />
             <label htmlFor={`laraigo-upload-${type}`}>
-                <Tooltip title={t(type === "image" ? langKeys.send_image : langKeys.send_file) + ""} arrow placement="top">
-                    {type === "image" ?
-                        <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} /> :
-                        <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
-                    }
+                <Tooltip title={String(t(type === "image" ? langKeys.send_image : langKeys.send_file))} arrow placement="top">
+                    <IconButton>
+                        { type === 'image' &&
+                            <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+                        }
+                        { type !== 'image' &&
+                            <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+                        }
+                    </IconButton>
                 </Tooltip>
             </label>
         </>
@@ -843,7 +847,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                 setundotext(undotext.slice(0, undotext.length - 1))
                                             }}>
 
-                                                <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
+                                                <Tooltip title={String(t(langKeys.undo))} arrow placement="top">
                                                     <UndoIcon />
                                                 </Tooltip>
                                             </IconButton>
@@ -853,7 +857,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                 setrefresh(refresh * -1)
                                                 setredotext(redotext.slice(0, redotext.length - 1))
                                             }}>
-                                                <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
+                                                <Tooltip title={String(t(langKeys.redo))} arrow placement="top">
                                                     <RedoIcon />
                                                 </Tooltip>
                                             </IconButton>

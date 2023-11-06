@@ -104,8 +104,8 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({ value, setValue
         setValue(value);
     };
 
-    const handleInput = (evt: React.ChangeEvent<HTMLInputElement>) => {
-        const value = evt.target.value;
+    const handleInput = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+        const value = (evt.target as HTMLInputElement).value;
         if (evt.key === "Enter") {
             evt.stopPropagation();
             if (isValid(value)) {
@@ -174,7 +174,7 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({ value, setValue
                         variant="standard"
                         onBlur={handleOnBlur}
                         onKeyDown={(e) => {
-                            handleInput(e);
+                            handleInput(e as React.KeyboardEvent<HTMLInputElement>);
                         }}
                     />
                 )}
@@ -232,7 +232,7 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
         setCopySelected({ cc: Boolean(emailCopy.length), cco: Boolean(emailCoCopy.length) });
     };
 
-    useEffect(() => {
+    useEffect(() => {1
         setCopyEmails({ cc: emailCopy.join(";"), cco: emailCoCopy.join(";") });
     }, [emailCopy, emailCoCopy]);
 
