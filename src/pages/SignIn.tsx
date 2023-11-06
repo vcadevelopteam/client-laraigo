@@ -58,9 +58,9 @@ export const useStyles = makeStyles((theme) => ({
         paddingLeft: 36,
         paddingRight: 36,
         position: "relative",
-        maxHeight: '94vh',
-        height: 704,
-        maxWidth: 490
+        // maxHeight: '94vh',
+        height: 603,
+        maxWidth: 420
     },
     copyright: {
         fontFamily: "Inter",
@@ -69,12 +69,9 @@ export const useStyles = makeStyles((theme) => ({
         fontStyle: "normal",
         fontWeight: 400,
         position: "absolute",
-        bottom: "calc(-1rem - 12px)",
+        bottom: "calc(-1.62rem - 12px)",
         width: "82%",
         textAlign: "center",
-        [theme.breakpoints.down('xs')]: {
-            display: "none"
-        },
     },
     container: {
         background: "linear-gradient(90deg, #0C0931 0%, #1D1856 50%, #C200DB 100%)", height: "100vh",
@@ -155,7 +152,7 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%!important',
         cursor: 'pointer!important',
         boxShadow: "none",
-        height: '2.88rem!important',
+        height: '2.5rem!important',
         background: '#FFF', color: "#6d6d6d",
         '& span': {
             fontWeight: 'bold!important',
@@ -169,12 +166,8 @@ export const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: "2.6rem",
-        marginBottom: "2.6rem",
-        [theme.breakpoints.down('xs')]: {
-            marginTop: "1rem",
-            marginBottom: "1rem",
-        },
+        marginTop: "1.8rem",
+        marginBottom: "1.8rem",
     }
 }));
 
@@ -342,7 +335,7 @@ const SignIn = () => {
                 <Container component="main" className={classes.containerLogin}>
                     <div className={classes.childContainer} style={{ height: '100%' }}>
                         <div className={classes.image}>
-                            <LaraigoLogo height={49} />
+                            <LaraigoLogo height={42} />
                         </div>
                         <div className={classes.paper} style={{ flex: 1 }}>
                             {(resLogin.error && showError) && (
@@ -356,11 +349,11 @@ const SignIn = () => {
                                     </div>
                                 </Alert>
                             )}
-                            <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                            <div >
                                 <form
                                     className={classes.form}
                                     onSubmit={onSubmitLogin}
-                                    style={{ margin: 0, maxWidth: "24.6rem" }}
+                                    style={{ margin: 0, maxWidth: "21.125rem" }}
                                 >
                                     <ReCAPTCHA
                                         ref={recaptchaRef}
@@ -409,13 +402,13 @@ const SignIn = () => {
                                         }}
                                     />
                                     {!resLogin.loading ?
-                                        <div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1.12rem", width: "100%", marginBottom: "1.69rem" }}>
+                                        <div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1rem", width: "100%", marginBottom: "1.02rem" }}>
                                             <Button
                                                 type="submit"
                                                 fullWidth
                                                 variant="contained"
                                                 color="primary"
-                                                style={{ height: '2.88rem', }}
+                                                style={{ height: '2.5rem', }}
                                             >
                                                 <Trans i18nKey={langKeys.logIn} />
                                             </Button>
@@ -442,7 +435,7 @@ const SignIn = () => {
                                             <Button
                                                 variant="outlined"
                                                 fullWidth
-                                                style={{ height: '2.88rem', }}
+                                                style={{ height: '2.5rem', }}
                                                 color="primary"
                                                 onClick={consultHistoricalData}
                                             >
@@ -457,7 +450,7 @@ const SignIn = () => {
                                                 <Trans i18nKey={langKeys.newRegisterMessage} />
                                                 <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
                                             </p>
-                                            <p style={{ marginTop: 12 }}>
+                                            <p style={{ marginTop: 12, marginBottom: "0.44rem" }}>
                                                 <Trans i18nKey={langKeys.recoverpassword1} />
                                                 <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
                                             </p>
