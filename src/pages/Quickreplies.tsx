@@ -544,7 +544,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     
     const onSubmit = handleSubmit((data) => {
         data.body = renderToString(toElement(bodyObject));
-        if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
+        if (data.type === 'CORREO ELECTRONICO' && data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
             setBodyAlert(t(langKeys.field_required));
             return;
         } else {
