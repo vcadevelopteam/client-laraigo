@@ -458,8 +458,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             type: 'NINGUNO',
             expected_revenue: '',
             date_deadline: '',
-            estimatedimplementationdate: "",
-            estimatedbillingdate: "",
+            estimatedimplementationdate: null,
+            estimatedbillingdate: null,
             tags: '',
             personcommunicationchannel: '',
             priority: 'LOW',
@@ -540,7 +540,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         for (let i = 0; i < notes.length; i++) {
                             // subir los archivos de la nota que se va a agregar
                             if (notes[i].media && Array.isArray(notes[i].media)) {
-                                const urls: String[] = [];
+                                const urls: string[] = [];
                                 for (const fileToUpload of notes[i].media as File[]) {
                                     const url = await uploader(fileToUpload);
                                     urls.push(url);
@@ -560,7 +560,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 }
             };
             
-            if (edit || !!values?.displayname){
+            if (edit || values?.displayname){
                 dispatch(manageConfirmation({
                     visible: true,
                     question: t(langKeys.confirmation_save),
@@ -1350,7 +1350,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     disabled={isIncremental}
                                     onChange={(value) => {
                                         // datetime formaT: yyyy-MM-ddTHH:mm
-                                        setValue('date_deadline', value);
+                                        setValue('date_deadline', value ? `${value}:00` : '');
                                     }}
                                     valueDefault={(getValues('date_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
                                     error={errors?.date_deadline?.message}
