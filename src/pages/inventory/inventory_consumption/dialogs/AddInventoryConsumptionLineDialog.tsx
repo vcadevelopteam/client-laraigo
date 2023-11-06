@@ -3,16 +3,14 @@ import { Button, IconButton, makeStyles } from "@material-ui/core";
 import {
   DialogZyx,
   FieldEdit,
-  FieldCheckbox,
-  FieldSelect
+  FieldSelect,
+  FieldView
 } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { insInventoryBalance } from "common/helpers";
-import { execute } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { useForm } from "react-hook-form";
@@ -30,7 +28,8 @@ const AddInventoryConsumptionLineDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   row: any;
-}> = ({ openModal, setOpenModal, row }) => {
+  rowSelected: any;
+}> = ({ openModal, setOpenModal, row, rowSelected }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -44,13 +43,24 @@ const AddInventoryConsumptionLineDialog: React.FC<{
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset, formState: { errors }} = useForm({
     defaultValues: {
         inventorybalanceid: 0,
+        productid: rowSelected?.productid||"",
+        description: rowSelected?.description||"",
+        originshelf: rowSelected?.originshelf||"",
+        originbatch: rowSelected?.originbatch||"",
+        ticket: rowSelected?.ticket||"",
+        quantity: rowSelected?.quantity||0,
+        line: rowSelected?.line||0,
+        unitcost: rowSelected?.unitcost||0,
+        dispatchto: rowSelected?.dispatchto||"",
         inventoryid: row?.inventoryid,
+        createby: row?.createby,
         shelf: "",
         lotecode: "",
+        comment: rowSelected?.comment||"",
         currentbalance: 0,
         recountphysical: 0,
         recountphysicaldate: new Date().toISOString().split('T')[0],
-        duedate: new Date().toISOString().split('T')[0],
+        realdate: rowSelected?.realdate||null,
         shelflifedays: 0,
         isreconciled: false,
         status: 'ACTIVO',
@@ -76,13 +86,15 @@ const AddInventoryConsumptionLineDialog: React.FC<{
 }, [executeRes, waitSave])
 
 React.useEffect(() => {
+  register('dispatchto');
+  register('comment');
   register('shelflifedays', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
   register('currentbalance', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
   register('recountphysical', { validate: (value) =>((value>=0) ? true : t(langKeys.field_required) + "") });
   register('shelf', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
   register('lotecode', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
   register('recountphysicaldate', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('duedate', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('realdate');
 }, [register, openModal]);
   
 const submitData = handleMainSubmit((data) => {
@@ -155,42 +167,31 @@ const columnsSelectionProduct = React.useMemo(
     <DialogZyx open={openModal} title={t(langKeys.inventoryconsumptionlines )} maxWidth="lg">
         <div className="row-zyx">
             <div className="row-zyx col-4">
-              <FieldEdit
-                label={t(langKeys.line)}
-                valueDefault={getValues('shelf')}
-                className="col-6"
-                disabled
-                error={errors?.shelf?.message}
-                onChange={(value) => {setValue('shelf', value)}}
+              <FieldView
+                  label={t(langKeys.line)}
+                  className="col-6"
+                  value={rowSelected?.line||0}
               />
             </div>
             <div className="row-zyx col-4">
-              <FieldSelect
-                label={t(langKeys.originshelf)}
-                className="col-6"
-                data={[]}
-                optionValue="manufacturerid"
-                optionDesc="description"
-                valueDefault={getValues("shelf")}
-                onChange={(value) => setValue("shelf", value.manufacturerid)}  
+              <FieldView
+                  label={t(langKeys.originshelf)}
+                  className="col-6"
+                  value={rowSelected?.originshelf||""}
               />
             </div>
-            <FieldEdit
-              label={t(langKeys.quantity)}
-              type={'number'}
-              valueDefault={getValues('lotecode')}
-              className="col-2"
-              error={errors?.lotecode?.message}
-              onChange={(value) => {setValue('lotecode', value)}}
+            <FieldView
+                label={t(langKeys.quantity)}
+                className="col-2"
+                value={rowSelected?.quantity||0}
             />
             <FieldEdit
               label={t(langKeys.dispatchto)}
               type="text"
-              valueDefault={getValues('lotecode')}
+              valueDefault={getValues('dispatchto')}
               className="col-2"
               maxLength={50}
-              error={errors?.lotecode?.message}
-              onChange={(value) => {setValue('lotecode', value)}}
+              onChange={(value) => {setValue('dispatchto', value)}}
             />
             <div className="row-zyx col-4">
               <FieldSelect
@@ -204,84 +205,51 @@ const columnsSelectionProduct = React.useMemo(
               />
             </div>
             <div className="row-zyx col-4">
-              <FieldSelect
-                label={t(langKeys.originbatch)}
-                className="col-6"
-                data={[]}
-                optionValue="manufacturerid"
-                optionDesc="description"
-                valueDefault={getValues("shelf")}
-                onChange={(value) => setValue("shelf", value.manufacturerid)}  
+              <FieldView
+                  label={t(langKeys.originbatch)}
+                  className="col-6"
+                  value={rowSelected?.originbatch||""}
               />
             </div>
-            <FieldEdit
-              label={t(langKeys.unitcost)}
-              type={'number'}
-              error={errors?.currentbalance?.message}
-              valueDefault={getValues('currentbalance')}
-              className="col-2"
-              disabled
-              onChange={(value) => {setValue('currentbalance', value)}}
+            
+            <FieldView
+                label={t(langKeys.unitcost)}
+                className="col-2"
+                value={parseFloat(rowSelected?.unitcost)||0}
             />
-            <FieldEdit
-              label={t(langKeys.createdBy)}
-              className="col-2"
-              disabled
-              valueDefault={""}
-              InputProps={{
-                endAdornment: (
-                    <IconButton onClick={()=>{setOpenModalUser(true)}}>
-                        <Add />
-                    </IconButton>
-                )
-              }}
+            <FieldView
+                label={t(langKeys.createdBy)}
+                className="col-2"
+                value={rowSelected?.createby||""}
             />
-            <FieldEdit
-              label={t(langKeys.product)}
-              className="col-2"
-              disabled
-              valueDefault={""}
-              InputProps={{
-                endAdornment: (
-                    <IconButton onClick={()=>{setOpenModalProduct(true)}}>
-                        <Add />
-                    </IconButton>
-                )
-              }} 
+            <FieldView
+                label={t(langKeys.product)}
+                className="col-2"
+                value={rowSelected?.productid||""}
             />
-            <FieldEdit
-              label={t(langKeys.description)}
-              valueDefault={getValues('recountphysical')}
-              className="col-2"
-              disabled
-              error={errors?.recountphysical?.message}
-              onChange={(value) => {setValue('recountphysical', value)}}
+            <FieldView
+                label={t(langKeys.description)}
+                className="col-2"
+                value={rowSelected?.description||""}
             />
             <div className="row-zyx col-4">
-              <FieldEdit
-                label={t(langKeys.ticketapplication)}
-                valueDefault={getValues('recountphysical')}
-                className="col-6"
-                error={errors?.recountphysical?.message}
-                onChange={(value) => {setValue('recountphysical', value)}}
+              <FieldView
+                  label={t(langKeys.ticketapplication)}
+                  className="col-2"
+                  value={rowSelected?.ticket||""}
               />
             </div>
-            <FieldEdit
-              label={t(langKeys.linecost)}
-              type={'number'}
-              valueDefault={getValues('recountphysical')}
-              className="col-2"
-              disabled
-              error={errors?.recountphysical?.message}
-              onChange={(value) => {setValue('recountphysical', value)}}
+            <FieldView
+                label={t(langKeys.linecost)}
+                className="col-2"
+                value={parseFloat(rowSelected?.unitcost||"0") * (rowSelected?.quantity||0)}
             />
             <FieldEdit
               label={t(langKeys.realdate)}
               type="date"
-              valueDefault={getValues('duedate')}
-              error={errors?.duedate?.message}
+              valueDefault={getValues('realdate')}
               className="col-2"
-              onChange={(value) => {setValue('duedate', value)}}
+              onChange={(value) => {setValue('realdate', value)}}
             />
             <div className="row-zyx col-6"></div>
             <div className="row-zyx col-6">
@@ -289,9 +257,8 @@ const columnsSelectionProduct = React.useMemo(
                 label={t(langKeys.ticket_comment)}
                 type="text"
                 maxLength={256}
-                valueDefault={getValues('shelf')}
-                error={errors?.duedate?.message}
-                onChange={(value) => {setValue('duedate', value)}}
+                valueDefault={getValues('comment')}
+                onChange={(value) => {setValue('comment', value)}}
               />
             </div>
         </div>

@@ -68,13 +68,12 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const user = useSelector(state => state.login.validateToken.user);
     const multidata = useSelector(state => state.main.multiDataAux);
     const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
-    console.log(multidata);
     const [openModal, setOpenModal] = useState(false);
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
     const [openModalReservedProducts, setOpenModalReservedProducts] = useState(false);
+    const [rowSelected, setRowSelected] = useState<Dictionary|null>(null);
     const [openModalReturnProducts, setOpenModalReturnProducts] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
     const [waitSave, setWaitSave] = useState(false);
@@ -145,10 +144,12 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         ],
         []
     );
+    
+    const handleEdit = (row: Dictionary) => {
+      setOpenModal(true)
+      setRowSelected(row);
+    };
 
-    function handleRegister() {
-        setOpenModal(true)
-    }
 
     function handleOpenModalReservedProducts() {
         setOpenModalReservedProducts(true)
@@ -181,7 +182,6 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     label={t(langKeys.inventory_consumption)}
                     valueDefault={getValues('inventoryconsumptionid')}
                     className="col-3"
-                    error={errors?.name?.message}
                     disabled
                 />
                 <FieldEdit
@@ -189,7 +189,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     valueDefault={getValues('description')}
                     className="col-6"
                     maxLength={256}
-                    error={errors?.description?.message}
+                    error={(errors?.description?.message as string) ?? ""}
                     onChange={(value) => setValue('description', value)}
                 />
                  <FieldEdit
@@ -207,7 +207,13 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                         valueDefault={""}                       
                     />
                 </div>
-                <FieldSelect
+                    <FieldEdit
+                        label={t(langKeys.status)}
+                        className="col-3"
+                        disabled
+                        valueDefault={getValues("status")}                  
+                    />
+                {/*<FieldSelect
                 disabled
                     label={t(langKeys.status)}
                     className="col-3"
@@ -216,7 +222,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     optionDesc="domaindesc"
                     valueDefault={getValues("status")}
                     onChange={(value) => setValue("status", value.domainvalue)}  
-                />
+                />*/}
             </div>
             <div className="row-zyx">
                 <div className='row-zyx'>
@@ -251,14 +257,15 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                         loading={multiDataAux2.loading}
                         download={false}
                         filterGeneral={false}
-                        register={true}
-                        handleRegister={handleRegister}
+                        register={false}
+                        onClickRow={handleEdit}
                     />
                 </div>
             </div>
             <AddInventoryConsumptionLineDialog
                 openModal={openModal}
                 setOpenModal={setOpenModal}
+                rowSelected={rowSelected}
                 row={row}
             />
             <TableSelectionDialog
