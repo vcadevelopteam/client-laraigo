@@ -7,20 +7,16 @@ import {
 } from "components";
 import { langKeys } from "lang/keys";
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import { DuplicateIcon } from "icons";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
-import { execute, exportData } from "store/main/actions";
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
-import { Button } from "@material-ui/core";
+import { Button, Menu, MenuItem } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
-import { ExtrasMenu } from "../components/components";
 
 const selectionKey = "warehouseid";
 
@@ -51,7 +47,7 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({
   const importRes = useSelector((state) => state.main.execute);
   const [openModalDelivered, setOpenModalDelivered] = useState(false);
   const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
- 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
  
   const handleEdit = (row: Dictionary) => {    
     setRowSelected({ row, edit: true });
@@ -249,6 +245,11 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({
     setOpenModalUndelivered(true);
   };
 
+  const handleClose = (e: any) => {
+    e.stopPropagation();
+    setAnchorEl(null);
+  }
+
   return (
     <div
       style={{
@@ -294,18 +295,43 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({
               disabled={mainPaginated.loading}
               startIcon={<ListAltIcon color="secondary" />}             
               style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
+              onClick={(e) => {
+                setAnchorEl(e.currentTarget);
+                e.stopPropagation();
+              }}
           >
               <Trans i18nKey={langKeys.typing} />
           </Button>
         )}     
       />
-      <ExtrasMenu
-        delivered={handleOpenDeliveredModal}
-        undelivered={handleOpenUndeliveredModal}
-      />
-
-
-
+      <Menu
+          id="menu-appbar"
+          anchorEl={null}
+          getContentAnchorEl={null}
+          anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+          }}
+          transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+          }}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+      >
+        <MenuItem onClick={(e) => {
+            e.stopPropagation();
+            setAnchorEl(null);
+        }}>
+            <Trans i18nKey={langKeys.delivered} />
+        </MenuItem>
+        <MenuItem onClick={(e) => {
+            e.stopPropagation();
+            setAnchorEl(null);
+        }}>
+            <Trans i18nKey={langKeys.undelivered} />
+        </MenuItem>            
+      </Menu>
     </div>
   );
 };
