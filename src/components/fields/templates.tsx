@@ -1463,8 +1463,10 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style || undefined}>
-                <Tooltip title={t(langKeys.send_gif) + ""} arrow placement="top">
-                    <GifIcon className={classes.root} onClick={handleClick} />
+                <Tooltip title={String(t(langKeys.send_gif))} arrow placement="top">
+                    <IconButton onClick={handleClick}>
+                        <GifIcon className={classes.root} />
+                    </IconButton>
                 </Tooltip>
                 {open && (
                     <div style={{
