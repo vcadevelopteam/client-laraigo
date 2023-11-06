@@ -1000,6 +1000,7 @@ const Quickreplies: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const [dataUPD, setDataUPD] = useState<any>(null)
     const [insertexcel, setinsertexcel] = useState(false);
+    const [mainData, setMainData] = useState<Dictionary[]>([])
     const arrayBread = [
         { id: "view-1", name: t(langKeys.quickreply_plural) },
     ];
@@ -1042,19 +1043,14 @@ const Quickreplies: FC = () => {
                 Header: t(langKeys.quickreply_type),
                 accessor: 'quickreply_type',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const { quickreply_type } = props.cell.row.original;
-                    return (quickreply_type || "REDES SOCIALES").toUpperCase()
-                }
             },
             {
                 Header: t(langKeys.quickresponse),
-                accessor: 'quickreply',
+                accessor: 'bodyText',
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const {quickreply, quickreply_type, body} = props.cell.row.original;
-                    const parsed_body = new DOMParser().parseFromString(body, 'text/html')
-                    return (((quickreply_type || 'REDES SOCIALES') === 'REDES SOCIALES') ? quickreply : parsed_body.body.innerText.slice(0, 1024) + '...')
+                    const { bodyText } = props.cell.row.original;
+                    return (bodyText.length > 100) ? bodyText.slice(0,100) + '...' : bodyText;
                 }
             },
             {
@@ -1094,6 +1090,22 @@ const Quickreplies: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+
+    useEffect(() => {
+        if (!mainResult.mainData.error && !mainResult.mainData.loading)
+        {
+            setMainData(mainResult.mainData.data.map(item => {
+                const {quickreply, quickreply_type, body} = item;
+                const parsed_body = new DOMParser().parseFromString(body, 'text/html')
+                const bodyText = (quickreply_type || 'REDES SOCIALES') === 'REDES SOCIALES' ? quickreply : parsed_body.body.innerText
+                return {
+                    ...item,
+                    bodyText,
+                    quickreply_type: quickreply_type || 'REDES SOCIALES'
+                }
+            }))
+        }
+    }, [mainResult])
 
     useEffect(() => {
         if (waitSave) {
@@ -1246,7 +1258,7 @@ const Quickreplies: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.quickreplies, { count: 2 })}
-                        data={mainResult.mainData.data}
+                        data={mainData}
                         download={true}
                         loading={mainResult.mainData.loading}
                         register={true}
