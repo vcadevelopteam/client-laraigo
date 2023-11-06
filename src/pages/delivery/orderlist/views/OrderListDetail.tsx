@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail } from 'components';
+import { TemplateBreadcrumbs, TitleDetail,TemplateSwitch } from 'components';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -138,56 +138,26 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
+                        
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
                         />
                         <TitleDetail
                             title={row?.name || `${t(langKeys.orderlist)}`}
                         />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                        >{t(langKeys.back)}</Button>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}>
-                            {t(langKeys.save)}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                        >{t(langKeys.printingformat)}</Button>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}>
-                            {t(langKeys.billbyorg)}
-                        </Button>
                         
-                    </div>
+                    </div>                  
 
                 </div>
+                
                 <OrderListTabDetail
+                
                     row={row}
                     setValue={setValue}
                     getValues={getValues}
                     errors={errors}
                 />
+                
             </form>
         </>
     );

@@ -5418,7 +5418,10 @@ export const langKeys = {
   scheduledshift: 'scheduledshift',
   deliverydate: 'deliverydate',
   ordertime: 'ordertime',
-  
+  typing:'typing',
+  validated: 'validated',
+  deliveryshift: 'deliveryshift',
+  undelivered: 'undelivered',
 
 
 };

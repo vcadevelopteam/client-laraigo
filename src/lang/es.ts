@@ -5430,6 +5430,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
    scheduledshift: 'Turno Programado',
    deliverydate: 'Fecha de Entrega',
    ordertime: 'Tiempo de Pedido',
+   typing: 'Tipificar',
+   validated: 'Validado',
+   deliveryshift: 'Turno de Entrega',
+   undelivered: 'No entregado',
 
 };
 

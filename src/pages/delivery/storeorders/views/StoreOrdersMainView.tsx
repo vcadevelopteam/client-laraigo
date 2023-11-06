@@ -20,18 +20,17 @@ import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
+import { ExtrasMenu } from "../components/components";
 
 const selectionKey = "warehouseid";
 
 interface InventoryMainViewProps {
-  setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
   fetchDataAux: any;
 }
 
-const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
-  setViewSelected,
+const StoreOrdersMainView: FC<InventoryMainViewProps> = ({
   setRowSelected,
   fetchData,
   fetchDataAux,
@@ -50,21 +49,14 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
   const importRes = useSelector((state) => state.main.execute);
-
-  const handleRegister = () => {
-    setViewSelected("detail-view");
-    setRowSelected({ row: null, edit: false });
-  };
-
-  const handleEdit = (row: Dictionary) => {
-    setViewSelected("detail-view");
+  const [openModalDelivered, setOpenModalDelivered] = useState(false);
+  const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
+ 
+ 
+  const handleEdit = (row: Dictionary) => {    
     setRowSelected({ row, edit: true });
   };
-  const handleDuplicate = (row: Dictionary) => {
-    setViewSelected("detail-view");
-    setRowSelected({ row, edit: false });
-  };
-
+ 
   useEffect(() => {
     if (waitUpload) {
       if (!importRes.loading && !importRes.error) {
@@ -175,39 +167,34 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
           return (
             <TemplateIcons
               deleteFunction={() => handleDelete(row)}
-              editFunction={() => handleEdit(row)}
-              extraFunction={() => handleDuplicate(row)}
-              ExtraICon={() => (
-                <DuplicateIcon width={28} style={{ fill: "#7721AD" }} />
-              )}
-              extraOption={t(langKeys.duplicate)}
+              editFunction={() => handleEdit(row)}                       
             />
           );
         },
       },
       {
-        Header: t(langKeys.product),
-        accessor: "productid",
+        Header: t(langKeys.ordernumber),
+        accessor: "ordernumber",
         width: "auto",
       },
       {
-        Header: t(langKeys.description),
-        accessor: "description",
+        Header: t(langKeys.report_voicecall_ticketnum),
+        accessor: "report_voicecall_ticketnum",
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "warehouseid",
+        Header: t(langKeys.clientname),
+        accessor: "clientname",
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "rackdefault",
+        Header: t(langKeys.phone),
+        accessor: "phone",
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "currentbalance",
+        Header: t(langKeys.ticket_dni),
+        accessor: "ticket_dni",
         width: "auto",
       },
       {
@@ -216,74 +203,50 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "subfamily",
+        Header: t(langKeys.quantity),
+        accessor: "quantity",
         width: "auto",
       },
       {
-        Header: t(langKeys.product),
-        accessor: "dispatchunit",
+        Header: t(langKeys.validated),
+        accessor: "validated",
         width: "auto",
       },
       {
-        Header: t(langKeys.status),
-        accessor: "status",
+        Header: t(langKeys.orderstatus),
+        accessor: "orderstatus",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.deliverytype),
+        accessor: "deliverytype",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.orderdate),
+        accessor: "orderdate",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.deliverydate),
+        accessor: "deliverydate",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.deliveryshift),
+        accessor: "deliveryshift",
         width: "auto",
       },
     ],
     []
   );
 
-  const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-    const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
-        key: x.accessor,
-        alias: x.Header
-    }))
-    /*dispatch(exportData(getWarehouseExport({
-        filters: {
-            ...filters,
-        },
-        sorts,
-        startdate: daterange.startDate!,
-        enddate: daterange.endDate!,
-    }), "", "excel", false, columnsExport));*/
-    dispatch(showBackdrop(true));
-    setWaitExport(true);
+  function handleOpenDeliveredModal () {
+    setOpenModalDelivered(true);
   };
 
-  const handleUpload = async (files: any) => {
-    const file = files?.item(0);
-    if (file) {
-      const data: any = await uploadExcel(file, undefined);
-      if (data.length > 0) {
-        let dataToSend = data.map((x: any) => ({
-          ...x,
-          warehouseid: 0,
-          operation: "INSERT",
-          type: "NINGUNO",
-          status: "ACTIVO",
-        }));
-        dispatch(showBackdrop(true));
-        /*dispatch(execute(importWarehouse(dataToSend)));*/
-        setWaitUpload(true);
-      }
-    }
-  };
-
-  const handleTemplateWarehouse = () => {
-    const data = [{}, {}, {}, {}, {}, {}];
-    const header = [
-      "name",
-      "description",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
-    ];
-    exportExcel(
-      `${t(langKeys.template)} ${t(langKeys.specifications)}`,
-      templateMaker(data, header)
-    );
+  function handleOpenUndeliveredModal () {
+    setOpenModalUndelivered(true);
   };
 
   return (
@@ -306,49 +269,45 @@ const DeliveryConfigurationMainView: FC<InventoryMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.inventory} />
+            <Trans i18nKey={langKeys.storeorders} />
           </Title>
         </div>
       </div>
       <TablePaginated
         columns={columns}
-        data={mainPaginated.data}
+        data={[]}
         totalrow={totalrow}
         loading={mainPaginated.loading}
-        pageCount={pageCount}
-        filterrange={true}
-        download={true}
-        initialStartDate={new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime()}
-        initialEndDate={new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getTime()}
-        fetchData={fetchData}
-        exportPersonalized={triggerExportData}
+        pageCount={pageCount}                
+        fetchData={fetchData}       
         useSelection={true}
         selectionKey={selectionKey}
-        setSelectedRows={setSelectedRows}
-        filterRangeDate="today"
-        onClickRow={handleEdit}
-        handleRegister={handleRegister}
-        filterGeneral={false}
+        setSelectedRows={setSelectedRows}       
+        onClickRow={handleEdit}         
         initialSelectedRows={selectedRows}
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
-        register={true}
-        importCSV={handleUpload}
         ButtonsElement={() => (
           <Button
               variant="contained"
               color="primary"
               disabled={mainPaginated.loading}
-              startIcon={<ListAltIcon color="secondary" />}
-              onClick={handleTemplateWarehouse}
+              startIcon={<ListAltIcon color="secondary" />}             
               style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
           >
-              <Trans i18nKey={langKeys.template} />
+              <Trans i18nKey={langKeys.typing} />
           </Button>
-      )}
+        )}     
       />
+      <ExtrasMenu
+        delivered={handleOpenDeliveredModal}
+        undelivered={handleOpenUndeliveredModal}
+      />
+
+
+
     </div>
   );
 };
 
-export default DeliveryConfigurationMainView;
+export default StoreOrdersMainView;

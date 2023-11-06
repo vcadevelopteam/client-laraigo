@@ -6,7 +6,7 @@ import Box from '@material-ui/core/Box';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons } from 'components';
+import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch } from 'components';
 import TableZyx from "components/fields/table-simple";
 
 const useStyles = makeStyles((theme) => ({
@@ -157,14 +157,26 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
 
     return (
         <div className={classes.containerDetail}>
-           
-            <div className='row-zyx'>                            
+              <TemplateSwitch
+                label={t(langKeys.attentionorders)}
+                  className="col-6"
+                  valueDefault={getValues('attentionorders')}
+                  onChange={(value) => {
+                  setValue('attentionorders', value)
+                  setallowsconsecutivenumbers(value)                        
+                }}
+                />  
+
+            <div className='row-zyx'>       
+                                 
                 <TableZyx
                     columns={columns}
                     data={[]}
-                    download={false}
-                    filterGeneral={false}
-                    register={true}
+                    download={true}                    
+                    importData={true}
+                    deleteData={true}  
+                    filterGeneral={true}      
+                    useSelection={true}            
                 />
                
             </div>

@@ -4,8 +4,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, resetAllMain } from "store/main/actions";
-import DeliveryConfigurationMainView from "./views/DeliveryConfigurationMainView";
-import DeliveryConfigurationDetail from "./views/DeliveryConfigurationDetail";
+import StoreOrdersMainView from "./views/StoreOrdersMainView";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -14,8 +13,6 @@ interface RowSelected {
 
 const StoreOrders: FC = () => {
   const dispatch = useDispatch();
-  const mainResult = useSelector((state) => state.main);
-  const [viewSelected, setViewSelected] = useState("main-view");
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
     pageSize: 0,
     pageIndex: 0,
@@ -27,9 +24,7 @@ const StoreOrders: FC = () => {
     row: null,
     edit: false,
   });
-  function redirectFunc(view: string) {
-    setViewSelected(view);
-  }
+
   const fetchData = ({
     pageSize,
     pageIndex,
@@ -61,27 +56,14 @@ const StoreOrders: FC = () => {
   }, []);
   
 
-  if (viewSelected === "main-view") {
-    if (mainResult.mainData.error) {
-      return <h1>ERROR</h1>;
-    }
     return (
-      <DeliveryConfigurationMainView
-        setViewSelected={setViewSelected}
+      <StoreOrdersMainView       
         setRowSelected={setRowSelected}
         fetchData={fetchData}
         fetchDataAux={fetchDataAux}
       />
     );
-  } else
-    return (
-      <DeliveryConfigurationDetail
-        data={rowSelected}
-        setViewSelected={redirectFunc}
-        fetchData={fetchData}
-        fetchDataAux={fetchDataAux}
-      />
-    );
+
 };
 
 export default StoreOrders;

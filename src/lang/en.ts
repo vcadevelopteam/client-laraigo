@@ -5503,6 +5503,11 @@ const translation: LangKeys = {
   scheduledshift: 'Scheduled Shift',
   deliverydate: 'Delivery Date',
   ordertime: 'Order Time',
+  typing: 'Type',
+  validated: 'Validated',
+  deliveryshift: 'Delivery Shift',
+  undelivered: 'Undelivered',
+
 };
 
 const enResource: ResourceLanguage = {
