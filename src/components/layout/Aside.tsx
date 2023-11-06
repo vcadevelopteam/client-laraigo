@@ -1,5 +1,5 @@
+import React, { FC, useState, useEffect } from 'react';
 import clsx from 'clsx';
-import { FC, useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
