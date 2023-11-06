@@ -27,4 +27,6 @@ export interface IGroupInteraction {
     interactiontext?: string;
     interactiontype?: string;
     listImage?: string[];
+    emailcopy?: string;
+    emailcocopy?: string;
 }

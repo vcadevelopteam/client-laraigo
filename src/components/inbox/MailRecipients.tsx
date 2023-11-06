@@ -227,14 +227,23 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
     const [emailCoCopy, setEmailCoCopy] = React.useState<string[]>([]);
     const person = useSelector((state) => state.inbox.person.data);
     const [copySelected, setCopySelected] = React.useState<Dictionary>({ cc: false, cco: false });
+    const interactionList = useSelector((state) => state.inbox.interactionList);
 
     const resetCopySelected = () => {
         setCopySelected({ cc: Boolean(emailCopy.length), cco: Boolean(emailCoCopy.length) });
     };
 
-    useEffect(() => {1
+    useEffect(() => {
         setCopyEmails({ cc: emailCopy.join(";"), cco: emailCoCopy.join(";") });
     }, [emailCopy, emailCoCopy]);
+
+    useEffect(() => {
+        if (interactionList?.data[0]?.emailcopy) {
+            const copyEmails = interactionList.data[0].emailcopy.split(';')
+            setEmailCopy(preV => [...preV, ...copyEmails])
+            setCopySelected(preV => ({...preV, cc: true}))
+        }
+    }, [interactionList]);
 
     return (
         <ClickAwayListener onClickAway={resetCopySelected}>
@@ -266,7 +275,7 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
                                         <span style={{ marginRight: "10px" }}>Cc</span>
                                     </TableCell>
                                     <TableCell className={classes.rv}>
-                                        <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                        <div style={{ display: "flex", flexWrap: "nowrap" }}>
                                             <div style={{ flex: "1 1 auto" }}>
                                                 <CustomAutocomplete value={emailCopy} setValue={setEmailCopy} />
                                             </div>
@@ -288,7 +297,7 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
                                         <span style={{ marginRight: "10px" }}>CCO</span>
                                     </TableCell>
                                     <TableCell className={classes.rv}>
-                                        <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                        <div style={{ display: "flex", flexWrap: "nowrap" }}>
                                             <div style={{ flex: "1 1 auto" }}>
                                                 <CustomAutocomplete value={emailCoCopy} setValue={setEmailCoCopy} />
                                             </div>
