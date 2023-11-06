@@ -5484,6 +5484,16 @@ const translation: LangKeys = {
   subscription_email: 'Electronic mail',
   subscription_creditcardnumber: 'Card number',
   subscription_noselectedchannel: 'You must select at least one channel',
+  subscription_signup_rating_01: 'How would you rate your subscription experience?',
+  subscription_signup_rating_02: 'Did not like it',
+  subscription_signup_rating_03: 'Could be better',
+  subscription_signup_rating_04: 'Loved it',
+  subscription_signup_rating_05: 'How can we improve?',
+  subscription_signup_plandescription_01: 'dollars per month',
+  subscription_signup_plandescription_02: 'contacts per month',
+  subscription_signup_plandescription_03: 'users/agents',
+  subscription_signup_plandescription_04: 'Access to the main features of Laraigo',
+  subscription_signup_plandescription_05: 'Contact data export options',
 };
 
 const enResource: ResourceLanguage = {

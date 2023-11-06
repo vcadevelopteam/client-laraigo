@@ -5410,6 +5410,16 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   subscription_email: 'Correo electrónico',
   subscription_creditcardnumber: 'Número de tarjeta',
   subscription_noselectedchannel: 'Debes seleccionar al menos un canal',
+  subscription_signup_rating_01: '¿Cómo calificaría su experiencia al suscribirse?',
+  subscription_signup_rating_02: 'No me gusto',
+  subscription_signup_rating_03: 'Puede mejorar',
+  subscription_signup_rating_04: 'Me encanto',
+  subscription_signup_rating_05: '¿Cómo podemos mejorar?',
+  subscription_signup_plandescription_01: 'dólares por mes',
+  subscription_signup_plandescription_02: 'contactos por mes',
+  subscription_signup_plandescription_03: 'usuarios/agentes',
+  subscription_signup_plandescription_04: 'Acceso a las características principales de Laraigo',
+  subscription_signup_plandescription_05: 'Exportación de datos de contacto',
 };
 
 const esResource: ResourceLanguage = {

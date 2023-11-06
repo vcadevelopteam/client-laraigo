@@ -412,13 +412,13 @@ const Option: FC<OptionProps> = ({ option, selected }) => {
     return (
         <Paper
             elevation={selected ? 4 : 0}
+            onClick={() => withOpacity || option.onClick()}
             className={clsx(classes.optionContainer, {
                 [classes.optionContainerActive]: !withOpacity,
                 [classes.optionContainerDisabled]: withOpacity,
                 [classes.optionContainerHover]: !withOpacity,
                 [classes.optionContainerSelected]: selected,
             })}
-            onClick={() => withOpacity || option.onClick()}
         >
             <div
                 className={clsx(classes.optionPlusDecorator, {

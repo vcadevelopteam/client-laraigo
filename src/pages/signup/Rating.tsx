@@ -2,7 +2,7 @@ import { Button, Collapse, IconButton, makeStyles, TextField } from "@material-u
 import { Face, InsertEmoticon, MoodBad } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { SubscriptionContext } from "./context";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import paths from "common/constants/paths";
 import React, { FC, useContext, useState } from "react";
@@ -36,6 +36,7 @@ const useRateStyles = makeStyles((theme) => ({
 
 const RateExperience: FC = () => {
     const { commonClasses } = useContext(SubscriptionContext);
+    const { t } = useTranslation();
 
     const [comment, setComment] = useState("");
     const [rating, setRating] = useState<0 | 1 | 2 | 3>(0);
@@ -44,7 +45,7 @@ const RateExperience: FC = () => {
 
     return (
         <div className={classes.root}>
-            <h1 className={classes.title}>¿Cómo calificaría su experiencia al suscribirse?</h1>
+            <h1 className={classes.title}>{t(langKeys.subscription_signup_rating_01)}</h1>
             <div className={classes.ratingOptionsRow}>
                 <div className={classes.ratingOption}>
                     <IconButton
@@ -53,7 +54,7 @@ const RateExperience: FC = () => {
                     >
                         <MoodBad style={{ height: 74, width: 74 }} />
                     </IconButton>
-                    <span>No me gusto</span>
+                    <span>{t(langKeys.subscription_signup_rating_02)}</span>
                 </div>
                 <div className={classes.ratingOption}>
                     <IconButton
@@ -62,7 +63,7 @@ const RateExperience: FC = () => {
                     >
                         <Face style={{ height: 74, width: 74 }} />
                     </IconButton>
-                    <span>Puede mejorar</span>
+                    <span>{t(langKeys.subscription_signup_rating_03)}</span>
                 </div>
                 <div className={classes.ratingOption}>
                     <IconButton
@@ -71,13 +72,13 @@ const RateExperience: FC = () => {
                     >
                         <InsertEmoticon style={{ height: 74, width: 74 }} />
                     </IconButton>
-                    <span>Me encanto</span>
+                    <span>{t(langKeys.subscription_signup_rating_04)}</span>
                 </div>
             </div>
             <Collapse in={rating !== 0}>
                 <TextField
                     fullWidth
-                    label="¿Cómo podemos mejorar?"
+                    label={t(langKeys.subscription_signup_rating_05)}
                     maxRows={6}
                     minRows={6}
                     multiline

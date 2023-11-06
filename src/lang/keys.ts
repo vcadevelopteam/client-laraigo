@@ -5398,6 +5398,16 @@ export const langKeys = {
   subscription_email: 'subscription_email',
   subscription_creditcardnumber: 'subscription_creditcardnumber',
   subscription_noselectedchannel: 'subscription_noselectedchannel',
+  subscription_signup_rating_01: 'subscription_signup_rating_01',
+  subscription_signup_rating_02: 'subscription_signup_rating_02',
+  subscription_signup_rating_03: 'subscription_signup_rating_03',
+  subscription_signup_rating_04: 'subscription_signup_rating_04',
+  subscription_signup_rating_05: 'subscription_signup_rating_05',
+  subscription_signup_plandescription_01: 'subscription_plandescription_rating_01',
+  subscription_signup_plandescription_02: 'subscription_plandescription_rating_02',
+  subscription_signup_plandescription_03: 'subscription_plandescription_rating_03',
+  subscription_signup_plandescription_04: 'subscription_plandescription_rating_04',
+  subscription_signup_plandescription_05: 'subscription_plandescription_rating_05',
 };
 
 export type LangKeys = typeof langKeys;

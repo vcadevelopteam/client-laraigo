@@ -600,6 +600,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         const { ...mainData } = data;
 
         const submitInformation = {
+            channel: listChannels,
             key: "UFN_CREATEZYXMEACCOUNT_INS",
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             card: {
@@ -699,8 +700,11 @@ interface PlanData {
     loading: boolean;
     plan: {
         limitChannels: number;
-        phonetax: number;
+        limitContact: number;
+        numberAgentsHired: number;
+        phoneTax: number;
         plan: string;
+        planCost: number;
         provider: string;
     } | null;
 }
@@ -721,8 +725,11 @@ export function usePlanData(): PlanData {
             loading: false,
             plan: {
                 limitChannels: planData.data[0]?.channelscontracted || 0,
-                phonetax: planData.data[0]?.phonetax || "",
+                limitContact: planData.data[0]?.limitcontact || 0,
+                numberAgentsHired: planData.data[0]?.numberagentshired || 0,
+                phoneTax: planData.data[0]?.phonetax || "",
                 plan: match.params.token,
+                planCost: planData.data[0]?.plancost || 0,
                 provider: planData.data[0]?.providerwhatsapp || "",
             },
         };

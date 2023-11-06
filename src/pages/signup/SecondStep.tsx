@@ -5,7 +5,7 @@ import { getCollectionPublic, resetMain } from "store/main/actions";
 import { getCountryList } from "store/signup/actions";
 import { getValuesFromDomain } from "common/helpers/requestBodies";
 import { langKeys } from "lang/keys";
-import { MainData, SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext, usePlanData } from "./context";
 import { styled } from "@material-ui/core/styles";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -82,6 +82,7 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
     const dispatch = useDispatch();
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     const insertResult = useSelector((state) => state.signup.insertChannel);
+    const planData = usePlanData();
 
     const validateDocumentType = (documentNumber: string, documentType: number) => {
         if (!documentNumber) {
@@ -596,26 +597,29 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                                     textAlign: "center",
                                 }}
                             >
-                                {t(langKeys.suscription)} PRO
+                                {t(langKeys.suscription)} {planData?.plan?.plan}
                             </h3>
                             <h3>
                                 {" "}
-                                <b>$249</b> dólares mensuales
+                                <b>
+                                    {planData?.plan?.planCost} {t(langKeys.subscription_signup_plandescription_01)}
+                                </b>
                             </h3>
                             <p>
-                                <b>2000 Contactos/mes</b>
+                                <b>
+                                    {planData?.plan?.limitContact} {t(langKeys.subscription_signup_plandescription_02)}
+                                </b>
                             </p>
                             <p>
-                                <b>5 Usuarios/Agentes</b>
+                                <b>
+                                    {planData?.plan?.numberAgentsHired}{" "}
+                                    {t(langKeys.subscription_signup_plandescription_03)}
+                                </b>
                             </p>
                             <p>
                                 <ul>
-                                    <li>Acceso a las características principales de Laraigo.</li>
-                                    <li>Exportación de datos de contacto.</li>
-                                    <li>
-                                        Inteligencia Artificial Hasta 1000 conversaciones (Costo por conversación
-                                        adicional US$0.10).
-                                    </li>
+                                    <li>{t(langKeys.subscription_signup_plandescription_04)}</li>
+                                    <li>{t(langKeys.subscription_signup_plandescription_05)}</li>
                                 </ul>
                             </p>
                         </div>
