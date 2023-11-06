@@ -5494,6 +5494,7 @@ const translation: LangKeys = {
   subscription_signup_plandescription_03: 'users/agents',
   subscription_signup_plandescription_04: 'Access to the main features of Laraigo',
   subscription_signup_plandescription_05: 'Contact data export options',
+  channel_metalead: 'Meta Leads',
 };
 
 const enResource: ResourceLanguage = {

@@ -81,6 +81,7 @@ export interface ListChannels {
     instagramDM: boolean;
     linkedin: boolean;
     messenger: boolean;
+    metalead: boolean;
     playstore: boolean;
     sms: boolean;
     teams: boolean;
@@ -91,6 +92,8 @@ export interface ListChannels {
     voximplantphone: boolean;
     webForm: boolean;
     whatsapp: boolean;
+    workplace: boolean;
+    workplaceDM: boolean;
     youtube: boolean;
 }
 
@@ -277,6 +280,16 @@ export interface PhoneChannel {
     build: (v: Omit<PhoneChannel, "build">) => IRequestBody;
 }
 
+export interface MetaLeadChannel {
+    description: string;
+    build: (v: Omit<MetaLeadChannel, "build">) => IRequestBody;
+}
+
+export interface WorkplaceChannel {
+    description: string;
+    build: (v: Omit<WorkplaceChannel, "build">) => IRequestBody;
+}
+
 export interface Channels {
     android: MobileChannel;
     apple: MobileChannel;
@@ -290,6 +303,7 @@ export interface Channels {
     instagramDM: FacebookChannel;
     linkedin: LinkedInChannel;
     messenger: FacebookChannel;
+    metalead: MetaLeadChannel;
     phone: PhoneChannel;
     playstore: PlayStoreChannel;
     sms: SmsChannel;
@@ -300,6 +314,8 @@ export interface Channels {
     twitterDM: TwitterChannel;
     voximplantphone: VoxImplantPhoneChannel;
     whatsapp: WhatsAppChannel;
+    workplace: WorkplaceChannel;
+    workplaceDM: WorkplaceChannel;
     youtube: YouTubeChannel;
 }
 
@@ -338,6 +354,7 @@ const defaultListChannels: ListChannels = {
     instagramDM: false,
     linkedin: false,
     messenger: false,
+    metalead: false,
     playstore: false,
     sms: false,
     teams: false,
@@ -348,6 +365,8 @@ const defaultListChannels: ListChannels = {
     voximplantphone: false,
     webForm: false,
     whatsapp: false,
+    workplace: false,
+    workplaceDM: false,
     youtube: false,
 };
 

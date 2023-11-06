@@ -17,6 +17,7 @@ import {
     LinkedInColor,
     LogoSuscription,
     MailColor,
+    MetaColor,
     MyBusinessColor,
     PlayStoreColor,
     SmsColor,
@@ -26,6 +27,8 @@ import {
     TwitterColor,
     VoiceColor,
     WhatsAppColor,
+    WorkplaceColor,
+    WorkplaceWallColor,
     YouTubeColor,
 } from "icons";
 
@@ -217,6 +220,13 @@ const ThirdStep: FC = () => {
 
     const businessChannelOptions: ChannelOption[] = [
         {
+            icon: <MetaColor className={classes.icon} />,
+            key: "metalead",
+            label: t(langKeys.channel_metalead),
+            onClick: () => toggleChannel("metalead"),
+            selected: listchannels.metalead,
+        },
+        {
             icon: <ChatWebColor className={classes.icon} />,
             key: "chatWeb",
             label: t(langKeys.channel_chatweb),
@@ -278,6 +288,20 @@ const ThirdStep: FC = () => {
             label: t(langKeys.channel_blogger),
             onClick: () => toggleChannel("blogger"),
             selected: listchannels.blogger,
+        },
+        {
+            icon: <WorkplaceWallColor className={classes.icon} />,
+            key: "workplace",
+            label: t(langKeys.channel_workplace),
+            onClick: () => toggleChannel("workplace"),
+            selected: listchannels.workplace,
+        },
+        {
+            icon: <WorkplaceColor className={classes.icon} />,
+            key: "workplaceDM",
+            label: t(langKeys.channel_workplacedm),
+            onClick: () => toggleChannel("workplaceDM"),
+            selected: listchannels.workplaceDM,
         },
     ];
 
