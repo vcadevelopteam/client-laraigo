@@ -788,6 +788,7 @@ const translation: LangKeys = {
   minute_plural: 'Minutos',
   day: 'Día',
   format: 'Formato',
+  format_options: 'Opciones de formato',
   format_transform_date_date: 'Fecha',
   format_transform_date_time: 'Tiempo',
   format_transform_date_time_date: 'Fecha + Tiempo',

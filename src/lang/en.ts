@@ -229,6 +229,7 @@ const translation: LangKeys = {
   minute_plural: 'Minutes',
   day: 'Day',
   format: 'Format',
+  format_options: 'Format options',
   format_transform_date_time_date: 'Date + Time',
   format_transform_date_date: 'Date',
   format_transform_date_time: 'Time',

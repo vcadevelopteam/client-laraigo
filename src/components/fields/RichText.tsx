@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider, Popover, Typography } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -20,6 +20,7 @@ import {
     FormatAlignCenter as FormatAlignCenterIcon,
     EmojiEmotions as EmojiEmotionsIcon,
     FormatAlignLeft as FormatAlignLeftIcon,
+    FormatColorText,
 } from '@material-ui/icons';
 import { emojis } from "common/constants/emojis";
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
@@ -124,6 +125,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     emoji?: Boolean;
     quickReplies?: any[];
     setFiles?: (param: any) => void;
+    collapsed?: boolean
 }
 
 interface RenderElementProps {
@@ -257,58 +259,60 @@ export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor, se
                     </IconButton>
                 </Tooltip>
                 {open && (
-                    <div style={{
-                        position: 'absolute',
-                        bottom: 60
-                    }}>
-                        <div className={classes.containerQuickReply}>
-                            <div>
-                                {!showSearch ?
-                                    <div className={classes.headerQuickReply}>
-                                        <div >User Quick Response</div>
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => setShowSearch(true)} edge="end"
-                                        >
-                                            <SearchIcon />
-                                        </IconButton>
+                    <div style={{position: 'fixed'}}>
+                        <div style={{
+                            position: 'absolute',
+                            bottom: 60
+                        }}>
+                            <div className={classes.containerQuickReply}>
+                                <div>
+                                    {!showSearch ?
+                                        <div className={classes.headerQuickReply}>
+                                            <div >User Quick Response</div>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => setShowSearch(true)} edge="end"
+                                            >
+                                                <SearchIcon />
+                                            </IconButton>
 
-                                    </div>
-                                    :
-                                    <TextField
-                                        color="primary"
-                                        fullWidth
-                                        autoFocus
-                                        placeholder="Search quickreplies"
-                                        style={{ padding: '6px 6px 6px 12px' }}
-                                        onBlur={() => !search && setShowSearch(false)}
-                                        onChange={e => setSearch(e.target.value)}
-                                        InputProps={{
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <IconButton size="small">
-                                                        <SearchIcon />
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            )
-                                        }}
-                                    />
-                                }
+                                        </div>
+                                        :
+                                        <TextField
+                                            color="primary"
+                                            fullWidth
+                                            autoFocus
+                                            placeholder="Search quickreplies"
+                                            style={{ padding: '6px 6px 6px 12px' }}
+                                            onBlur={() => !search && setShowSearch(false)}
+                                            onChange={e => setSearch(e.target.value)}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton size="small">
+                                                            <SearchIcon />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                )
+                                            }}
+                                        />
+                                    }
+                                </div>
+                                <Divider />
+                                <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
+                                    {quickRepliesToShow.map((item) => (
+                                        <ListItem
+                                            button
+                                            key={item.quickreplyid}
+                                            onClick={() => handlerClickItem(item)}
+                                        >
+                                            <Tooltip title={item.quickreply} arrow placement="top">
+                                                <ListItemText primary={item.description} />
+                                            </Tooltip>
+                                        </ListItem>
+                                    ))}
+                                </List>
                             </div>
-                            <Divider />
-                            <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
-                                {quickRepliesToShow.map((item) => (
-                                    <ListItem
-                                        button
-                                        key={item.quickreplyid}
-                                        onClick={() => handlerClickItem(item)}
-                                    >
-                                        <Tooltip title={item.quickreply} arrow placement="top">
-                                            <ListItemText primary={item.description} />
-                                        </Tooltip>
-                                    </ListItem>
-                                ))}
-                            </List>
                         </div>
                     </div>
                 )}
@@ -337,32 +341,34 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                     </Tooltip>
                 )}
                 {open && (
-                    <div style={{
-                        position: 'absolute',
-                        bottom: 100
-                    }}>
-                        <Picker
-                            onSelect={(e) => { setOpen(false); onSelect(e) }}
-                            native={true}
-                            sheetSize={32}
-                            i18n={{
-                                search: t(langKeys.search),
-                                categories: {
-                                    search: t(langKeys.search_result),
-                                    recent: t(langKeys.favorites),
-                                    people: t(langKeys.emoticons),
-                                    nature: t(langKeys.animals),
-                                    foods: t(langKeys.food),
-                                    activity: t(langKeys.activities),
-                                    places: t(langKeys.travel),
-                                    objects: t(langKeys.objects),
-                                    symbols: t(langKeys.symbols),
-                                    flags: t(langKeys.flags),
-                                }
-                            }}
-                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
-                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
-                        />
+                    <div style={{position: 'fixed'}}>
+                        <div style={{
+                            position: 'absolute',
+                            bottom: 100
+                        }}>
+                            <Picker
+                                onSelect={(e) => { setOpen(false); onSelect(e) }}
+                                native={true}
+                                sheetSize={32}
+                                i18n={{
+                                    search: t(langKeys.search),
+                                    categories: {
+                                        search: t(langKeys.search_result),
+                                        recent: t(langKeys.favorites),
+                                        people: t(langKeys.emoticons),
+                                        nature: t(langKeys.animals),
+                                        foods: t(langKeys.food),
+                                        activity: t(langKeys.activities),
+                                        places: t(langKeys.travel),
+                                        objects: t(langKeys.objects),
+                                        symbols: t(langKeys.symbols),
+                                        flags: t(langKeys.flags),
+                                    }
+                                }}
+                                recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
+                                emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
+                            />
+                        </div>
                     </div>
                 )}
             </span>
@@ -374,12 +380,26 @@ const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
 export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
-    , endinput, emojiNoShow, emojiFavorite, emoji = false,quickReplies=[], setFiles, ...boxProps }) => {
+    , endinput, emojiNoShow, emojiFavorite, emoji = false,quickReplies=[], setFiles, collapsed = false, ...boxProps }) => {
     const classes = useRichTextStyles();
+    const { t } = useTranslation();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
-    const upload = useSelector(state => state.main.uploadFile);
+    // const upload = useSelector(state => state.main.uploadFile);
     // const [valueg, setvalueg] = useState(value)
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+      };
+    
+      const handleClose = () => {
+        setAnchorEl(null);
+      };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
 
     useEffect(() => {
         //evitar q en cada cmbio re-renderice, solo en casos q el componente q llama lo requiera (ejemplo replypanel)
@@ -412,59 +432,60 @@ export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, plac
                         <div style={{ display: "inline-block" }}>
                             {children}
                         </div>
-                        <FontFamily tooltip='font'></FontFamily>
-                        <FormatSizeMenu tooltip='size'></FormatSizeMenu>
-                        {quickReplies.length > 0 && (
-                            <QuickReply quickReplies={quickReplies} editor={editor} setFiles={setFiles}></QuickReply>
+                        {collapsed && (
+                            <>
+                                <Tooltip title={String(t(langKeys.format_options))} arrow placement="top">
+                                    <IconButton aria-describedby={id} onClick={handleClick} style={{paddingTop: 0}}>
+                                        <FormatColorText />
+                                    </IconButton>
+                                </Tooltip>
+
+                                <Popover
+                                    id={id}
+                                    open={open}
+                                    anchorEl={anchorEl}
+                                    onClose={handleClose}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'center',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    }}
+                                >
+                                    <div style={{padding: collapsed ? '20px' : '0px' , display: 'flex', alignItems: 'center'}}>
+                                        <ToolBarOptions 
+                                            value={value}
+                                            onChange={onChange}
+                                            emoji={emoji}
+                                            quickReplies={quickReplies}
+                                            setFiles={setFiles}
+                                            editor={editor}
+                                            image={image}
+                                            onlyurl={onlyurl}
+                                            emojiNoShow={emojiNoShow}
+                                            emojiFavorite={emojiFavorite}
+                                            collapsed={collapsed}
+                                        />
+                                    </div>
+                                </Popover>
+                            </>
                         )}
-                        {emoji && <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
-                        <MarkButton format="bold" tooltip='bold'>
-                            <FormatBoldIcon />
-                        </MarkButton>
-                        <MarkButton format="italic" tooltip='italic'>
-                            <FormatItalicIcon />
-                        </MarkButton>
-                        <MarkButton format="underline" tooltip='underline'>
-                            <FormatUnderlinedIcon />
-                        </MarkButton>
-
-                        <TextColor tooltip='size'></TextColor>
-                        <Alignment tooltip='alignment'></Alignment>
-
-                        <BlockButton format="numbered-list" tooltip='numbered_list'>
-                            <FormatListNumberedIcon />
-                        </BlockButton>
-                        <BlockButton format="bulleted-list" tooltip='bulleted_list'>
-                            <FormatListBulletedIcon />
-                        </BlockButton>
-
-                        <MarkButton format="code" tooltip='code'>
-                            <FormatCodeIcon />
-                        </MarkButton>
-                        <BlockButton format="heading-one" tooltip='heading_one'>
-                            <FormatLooksOneIcon />
-                        </BlockButton>
-                        <BlockButton format="heading-two" tooltip='heading_two'>
-                            <FormatLooksTwoIcon />
-                        </BlockButton>
-                        <BlockButton format="block-quote" tooltip='block_quote'>
-                            <FormatQuoteIcon />
-                        </BlockButton>
-                        {(image && onlyurl) &&
-                                <OnlyURLInsertImageButton>
-                                    <InsertPhotoIcon />
-                                </OnlyURLInsertImageButton>
-                        }
-                        {
-                            /*<InsertImageButton>
-                            <InsertPhotoIcon />
-                        </InsertImageButton> */
-                        }
-                        {upload.loading && (
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                <CircularProgress size={24} />
-                                <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
-                            </div>
+                        {!collapsed && (
+                            <ToolBarOptions 
+                                value={value}
+                                onChange={onChange}
+                                emoji={emoji}
+                                quickReplies={quickReplies}
+                                setFiles={setFiles}
+                                editor={editor}
+                                image={image}
+                                onlyurl={onlyurl}
+                                emojiNoShow={emojiNoShow}
+                                emojiFavorite={emojiFavorite}
+                                collapsed={collapsed}
+                            />
                         )}
                     </div>
                     <div style={{ marginLeft: "auto", marginRight: 0 }}>
@@ -485,6 +506,62 @@ export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, plac
         </Box >
     );
 }
+
+const ToolBarOptions: React.FC<RichTextProps & {editor: any, collapsed: boolean}> = ({emoji, quickReplies, setFiles, editor, image, onlyurl, emojiNoShow, emojiFavorite, collapsed = false}) => {
+    const upload = useSelector(state => state.main.uploadFile);
+
+    return (
+        <>
+            <FontFamily tooltip='font'></FontFamily>
+            <FormatSizeMenu tooltip='size'></FormatSizeMenu>
+            {quickReplies.length > 0 && (
+                <QuickReply quickReplies={quickReplies} editor={editor} setFiles={setFiles}></QuickReply>
+            )}
+            {emoji && <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
+            <MarkButton format="bold" tooltip='bold'>
+                <FormatBoldIcon />
+            </MarkButton>
+            <MarkButton format="italic" tooltip='italic'>
+                <FormatItalicIcon />
+            </MarkButton>
+            <MarkButton format="underline" tooltip='underline'>
+                <FormatUnderlinedIcon />
+            </MarkButton>
+            <TextColor tooltip='size'></TextColor>
+            <Alignment tooltip='alignment'></Alignment>
+            <BlockButton format="numbered-list" tooltip='numbered_list'>
+                <FormatListNumberedIcon />
+            </BlockButton>
+            <BlockButton format="bulleted-list" tooltip='bulleted_list'>
+                <FormatListBulletedIcon />
+            </BlockButton>
+            <MarkButton format="code" tooltip='code'>
+                <FormatCodeIcon />
+            </MarkButton>
+            <BlockButton format="heading-one" tooltip='heading_one'>
+                <FormatLooksOneIcon />
+            </BlockButton>
+            <BlockButton format="heading-two" tooltip='heading_two'>
+                <FormatLooksTwoIcon />
+            </BlockButton>
+            <BlockButton format="block-quote" tooltip='block_quote'>
+                <FormatQuoteIcon />
+            </BlockButton>
+            {(image && onlyurl) &&
+                <OnlyURLInsertImageButton>
+                    <InsertPhotoIcon />
+                </OnlyURLInsertImageButton>
+            }
+            {upload.loading && (
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <CircularProgress size={24} />
+                    <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
+                </div>
+            )}
+        </>
+    )
+}
+
 
 /**Renderiza el texto seleccionado con cierto estilo */
 const renderElement: RenderElement = ({ attributes = {}, children, element, isStatic = false }) => {
