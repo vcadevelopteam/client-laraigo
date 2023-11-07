@@ -3525,8 +3525,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   regulatepayment: 'Regularizar Pago',
   notedescription: 'Descripción de la nota',
   activitydescription: 'Descripción de la actividad',
-  costnotificaton: "Lista de precios vigente hasta enero de 2022",
-
+  costnotificaton: "Lista de precios vigente hasta enero de 2022", 
   sendToHistory: 'Enviar al historial',
   ticketserial: 'Serie de Boleta',
   ticketcorrelative: 'Último Correlativo de Boleta',
@@ -5455,6 +5454,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   deliveryphotoorder: 'Foto de Entrega Pedido',
   deliveryvalidationdistance: 'Distancia de Validación de Entrega',
   send_invoice: 'Envío de Comprobante',
+  print: 'Imprimir',
+  electronic_ticket_and_invoice: 'Boleta y Factura Electrónica',
+  prepare: 'Preparar',
+  requestedquantity: 'Cantidad Solicitada',
 
 };
 

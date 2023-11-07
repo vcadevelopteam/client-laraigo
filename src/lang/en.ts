@@ -5528,6 +5528,12 @@ const translation: LangKeys = {
   deliveryphotoorder: 'Delivery Photo Order',
   deliveryvalidationdistance: 'Delivery Validation Distance',
   send_invoice: 'Send Invoice',
+  print: 'Print',
+  electronic_ticket_and_invoice: 'Electronic Ticket and Invoice',
+  prepare: 'Prepare',
+  requestedquantity: 'Requested Quantity',
+
+
 
 };
 

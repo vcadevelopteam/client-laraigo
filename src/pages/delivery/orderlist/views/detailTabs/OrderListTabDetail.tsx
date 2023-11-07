@@ -1,14 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'; // we need this to make JSX compile
-import { Dictionary } from "@types";
+import React, { useState, useEffect } from 'react'; // we need this to make JSX compile
+import { Dictionary, IFetchData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch, IOSSwitch } from 'components';
 import TableZyx from "components/fields/table-simple";
-import { FormControlLabel } from '@material-ui/core';
+import { Button, FormControlLabel, Menu, MenuItem } from '@material-ui/core';
+import { useSelector } from "hooks";
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import PrintIcon from '@material-ui/icons/Print';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import ReceiptIcon from '@material-ui/icons/Receipt';
+
+
+
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -53,7 +61,12 @@ interface InventoryTabDetailProps {
     setValue: UseFormSetValue<any>;
     getValues: UseFormGetValues<any>;
     errors: FieldErrors<any>;
+    fetchData: any;
+    fetchDataAux: any;
 }
+
+
+
 
 const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
     row,
@@ -64,6 +77,17 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
     const { t } = useTranslation();
     const classes = useStyles();
     const [attentionOrders,setAttentionOrders] = useState(false);
+    const executeResult = useSelector((state) => state.main.execute);
+    const mainPaginated = useSelector((state) => state.main.mainPaginated);
+    const [pageCount, setPageCount] = useState(0);
+    const [totalrow, settotalrow] = useState(0);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [openModalDelivered, setOpenModalDelivered] = useState(false);
+    const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
+
+    
+    
+
 
     const columns = React.useMemo(
         () => [
@@ -157,6 +181,20 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
         []
     );
 
+    function handleOpenDeliveredModal () {
+      setOpenModalDelivered(true);
+    };
+  
+    function handleOpenUndeliveredModal () {
+      setOpenModalUndelivered(true);
+    };
+
+    const handleClose = (e: any) => {
+      e.stopPropagation();
+      setAnchorEl(null);
+    }
+
+
     return (
         <div className={classes.containerDetail}>
               <FormControlLabel 
@@ -178,9 +216,67 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
                   columns={columns}
                   data={[]}                 
                   filterGeneral={true}      
-                  useSelection={true}   
-                           
-              />
+                  useSelection={true}  
+                  ButtonsElement={() => (
+                    <div style={{textAlign:"right"}}>                      
+                      <Button      
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<LocationOnIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84", marginLeft: "10px"}}
+                        onClick={(e) => {
+                          setAnchorEl(e.currentTarget);
+                          e.stopPropagation();
+                        }}
+                      >
+                       <Trans i18nKey={langKeys.routinglogic} />
+                      </Button>
+                      <Button     
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<ListAltIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84", marginLeft: "10px"}}
+                        onClick={(e) => {
+                          setAnchorEl(e.currentTarget);
+                          e.stopPropagation();
+                        }}
+                      >
+                       <Trans i18nKey={langKeys.typing} />
+                      </Button>
+                      <Button                        
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<PrintIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84", marginLeft: "10px"}}
+                        onClick={(e) => {
+                          setAnchorEl(e.currentTarget);
+                          e.stopPropagation();
+                        }}
+                      >
+                       <Trans i18nKey={langKeys.print} />
+                      </Button>
+                      <Button                        
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<ReceiptIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84", marginLeft: "10px"}}
+                        onClick={(e) => {
+                          setAnchorEl(e.currentTarget);
+                          e.stopPropagation();
+                        }}
+                      >
+                       <Trans i18nKey={langKeys.electronic_ticket_and_invoice} />
+                      </Button>
+                    </div>
+                    
+                    )}                   
+                  loading={mainPaginated.loading}
+                      
+              />              
             </div>
         </div>
     )

@@ -5443,8 +5443,10 @@ export const langKeys = {
   deliveryphotoorder: 'deliveryphotoorder',
   deliveryvalidationdistance: 'deliveryvalidationdistance',
   send_invoice: 'send_invoice',
-
-
+  print: 'print',
+  electronic_ticket_and_invoice: 'electronic_ticket_and_invoice',
+  prepare: 'prepare',
+  requestedquantity: 'requestedquantity',
 
 };
 
