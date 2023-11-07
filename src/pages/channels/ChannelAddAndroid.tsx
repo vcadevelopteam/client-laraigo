@@ -1932,7 +1932,7 @@ const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loadi
 
 
 
-export const ChannelAddAndroid: FC = () => {
+export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const [showScript, setShowScript] = useState(false);
     const [integrationId, setIntegrationId] = useState<string | undefined>(undefined);
     const [view, setView] = useState('view-1');

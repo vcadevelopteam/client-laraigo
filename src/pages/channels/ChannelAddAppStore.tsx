@@ -29,7 +29,7 @@ const useChannelAddStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ChannelAddAppStore: FC = () => {
+export const ChannelAddAppStore: FC<{ edit: boolean }> = ({ edit }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();

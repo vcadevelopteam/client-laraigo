@@ -32,7 +32,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddMessenger: FC = () => {
+export const ChannelAddMessenger: FC<{ edit: boolean }> = ({ edit }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();

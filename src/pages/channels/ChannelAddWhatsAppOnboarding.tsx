@@ -31,7 +31,7 @@ interface whatsAppData {
     typeWhatsApp?: string;
 }
 
-export const ChannelAddWhatsAppOnboarding: FC = () => {
+export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();

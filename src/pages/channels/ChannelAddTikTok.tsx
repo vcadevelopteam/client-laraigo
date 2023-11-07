@@ -36,7 +36,7 @@ const useChannelAddStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ChannelAddTikTok: FC = () => {
+export const ChannelAddTikTok: FC<{ edit: boolean }> = ({ edit }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();

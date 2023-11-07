@@ -33,7 +33,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddInstagram: FC = () => {
+export const ChannelAddInstagram: FC<{ edit: boolean }> = ({ edit }) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);

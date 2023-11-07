@@ -29,7 +29,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddIos: FC = () => {
+export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);
     const [channelreg, setChannelreg] = useState(true);

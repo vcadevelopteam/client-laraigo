@@ -74,7 +74,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddPhone: FC = () => {
+export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();

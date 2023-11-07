@@ -29,7 +29,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTwitterDM: FC = () => {
+export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);

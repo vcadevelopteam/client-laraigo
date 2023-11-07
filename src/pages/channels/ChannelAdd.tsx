@@ -257,12 +257,12 @@ export const ChannelAdd: FC = () => {
         {
             icon: (c) => <ChatWebColor className={c} />,
             label: t(langKeys.channel_chatweb),
-            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
+            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB.path),
         },
         {
             icon: (c) => <FormColor className={c} />,
             label: t(langKeys.web_form),
-            onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM),
+            onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM.path),
         },
         {
             icon: (c) => <MailColor className={c} />,

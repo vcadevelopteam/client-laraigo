@@ -34,7 +34,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTelegram: FC = () => {
+export const ChannelAddTelegram: FC<{ edit: boolean }> = ({ edit }) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);

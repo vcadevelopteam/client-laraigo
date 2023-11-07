@@ -29,7 +29,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddFacebookWorkplace: FC = () => {
+export const ChannelAddFacebookWorkplace: FC<{ edit: boolean }> = ({ edit }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
