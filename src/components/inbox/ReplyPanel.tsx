@@ -827,6 +827,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     emoji={true}
                                     emojiFavorite={emojiFavorite}
                                     setFiles={setFiles}
+                                    collapsed={true}
                                     endinput={
                                         <div style={{ display: 'block' }}>
                                             <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>

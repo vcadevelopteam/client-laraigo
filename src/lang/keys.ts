@@ -2050,6 +2050,7 @@ export const langKeys = {
   minute_plural: 'minute_plural',
   day: 'day',
   format: 'format',
+  format_options: 'format_options',
   format_transform_date_date: 'format_transform_date_date',
   format_transform_date_time: 'format_transform_date_time',
   format_transform_date_time_date: 'format_transform_date_time_date',
