@@ -69,7 +69,7 @@ export const useStyles = makeStyles((theme) => ({
         fontStyle: "normal",
         fontWeight: 400,
         position: "absolute",
-        bottom: "calc(-1.62rem - 12px)",
+        bottom: "calc(-1.62rem - 16px)",
         width: "82%",
         textAlign: "center",
     },
@@ -330,7 +330,7 @@ const SignIn = () => {
                 <Container component="main" className={classes.containerLogin}>
                     <div className={classes.childContainer} style={{ height: '100%' }}>
                         <div className={classes.image}>
-                            <LaraigoLogo height={42} />
+                            <LaraigoLogo height={42.8} />
                         </div>
                         <div className={classes.paper} style={{ flex: 1 }}>
                             {(resLogin.error && showError) && (
