@@ -2,13 +2,13 @@ import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getreportleadgridtracking, getleadgridtrackingExport } from 'common/helpers';
-import { IFetchData } from "@types";
+import { Dictionary, IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { cleanViewChange, exportData, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
-
+import { CellProps } from 'react-table';
 
 const ReportRequestSD: FC = () => {
     const dispatch = useDispatch();
@@ -33,7 +33,7 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.registrationdate),
                 accessor: 'createdate',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { createdate } = props.cell.row.original;
                     return new Date(createdate).toLocaleString()
                 }
@@ -49,7 +49,7 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.statusdate),
                 accessor: 'changedate',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { changedate } = props.cell.row.original;
                     return new Date(changedate).toLocaleString()
                 }
@@ -61,6 +61,11 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.currentphase),
                 accessor: 'phase',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { phase } = props.cell.row.original;
+                    //capitalize la primer aletra
+                    return t(`${phase}`.toLocaleLowerCase()).replace(/^[a-z]/, (match) => match.toUpperCase());
+                }
             },
             {
                 Header: t(langKeys.expectedRevenue),
@@ -77,7 +82,7 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.estimatedimplementationdate),
                 accessor: 'estimatedimplementationdate',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { estimatedimplementationdate } = props.cell.row.original;
                     if (!estimatedimplementationdate)
                         return null;
@@ -87,7 +92,7 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.estimatedbillingdate),
                 accessor: 'estimatedbillingdate',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { estimatedbillingdate } = props.cell.row.original;
                     if (!estimatedbillingdate)
                         return null;
@@ -112,8 +117,8 @@ const ReportRequestSD: FC = () => {
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
         dispatch(getCollectionPaginated(getreportleadgridtracking({
-            startdate: daterange.startDate!,
-            enddate: daterange.endDate!,
+            startdate: daterange.startDate,
+            enddate: daterange.endDate,
             take: pageSize,
             skip: pageIndex * pageSize,
             sorts: sorts,
@@ -153,8 +158,8 @@ const ReportRequestSD: FC = () => {
         }));
         dispatch(exportData(getleadgridtrackingExport(
             {
-                startdate: daterange.startDate!,
-                enddate: daterange.endDate!,
+                startdate: daterange.startDate,
+                enddate: daterange.endDate,
                 sorts,
                 filters: filters,
             }), "", "excel", false, columnsExport));
