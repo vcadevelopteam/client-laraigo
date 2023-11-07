@@ -5447,7 +5447,8 @@ export const langKeys = {
   electronic_ticket_and_invoice: 'electronic_ticket_and_invoice',
   prepare: 'prepare',
   requestedquantity: 'requestedquantity',
-
+  send_invoice_helper_text: 'send_invoice_helper_text',
+  sendnotification_helper_text: 'sendnotification_helper_text',
 };
 
 export type LangKeys = typeof langKeys;

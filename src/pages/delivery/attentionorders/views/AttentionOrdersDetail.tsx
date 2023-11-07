@@ -6,19 +6,14 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail } from 'components';
+import { TemplateBreadcrumbs, Title, TitleDetail } from 'components';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
+import NewAttentionOrdersTabDetail from './detailTabs/NewAttentionOrdersTabDetail';
 import { resetMainAux } from 'store/main/actions';
-import CoincidenceMetersDialog from '../dialogs/CoincidenceMetersDialog';
-import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
-import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
-import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
-import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
 
 
 interface RowSelected {
@@ -28,6 +23,7 @@ interface RowSelected {
 
 interface DetailProps {
     data: RowSelected;
+    setViewSelected: (view: string) => void;
     fetchData?: any;
     fetchDataAux?: any;
 }
@@ -64,43 +60,31 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, fetchDataAux }) => {
+const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
-    const [openModalCoincidenceMeters, setOpenModalCoincidenceMeters] = useState(false)
-    const [openModalNonWorkingDays, setOpenModalNonWorkingDays] = useState(false)
-    const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
-    const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
-    const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
 
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.delivery) },
-        { id: "detail-view", name: t(langKeys.configuration) },
+        { id: "main-view", name: t(langKeys.attentionorders) },
+        { id: "detail-view", name: ` ${t(langKeys.detail)} ${t(langKeys.ordernumber)}` },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            warehouseid: row?.warehouseid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || '',
-            name: row?.name || '',
-            description: row?.description || '',
+            storename: row?.storename || '',
+            phonenumber: row?.phonenumber || '',
             address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            status: row?.status || 'ACTIVO'
+            coveragearea: row?.coveragearea || '',
+            status: row?.status || 'ACTIVO',
+            isInStore: row?.isInStore || false,
+            warehouseid: row?.warehouseid || 0,
+            type: row?.type || '',
+            operation: edit ? 'UPDATE' : 'INSERT'
         }
     });
-
-    const fetchWarehouseProducts = () => {
-        /*dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
-        );*/
-    }
 
     useEffect(() => {
         if (waitSave) {
@@ -108,6 +92,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
+                setViewSelected("main-view");
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -119,15 +104,23 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
 
     React.useEffect(() => {
         register('warehouseid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('isInStore');
+        register('storename', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('phonenumber', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
+        register('coveragearea', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status');
+        register('type');
+        register('operation');
 
         dispatch(resetMainAux());
     }, [register]);
+
+    const fetchWarehouseProducts = () => {
+        /*dispatch(
+          getCollectionAux(getWarehouseProducts(row?.warehouseid))
+        );*/
+    }
 
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
@@ -150,10 +143,15 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
+                            handleClick={(view) => {
+                                setViewSelected(view);
+                            }}
                         />
-                        <TitleDetail
-                            title={row?.name || `${t(langKeys.name)} ${t(langKeys.corporation)}`}
-                        />
+                        <div style={{paddingTop:"2rem", paddingLeft:"0.9rem"}}>            
+                            <TitleDetail
+                                title={row?.name || `${t(langKeys.client_detail)}`}
+                            />                    
+                        </div>                                               
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
@@ -162,7 +160,9 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => {setOpenModalDeliverySchedules(true)}}
+                            onClick={() => {
+                                setViewSelected("main-view")
+                            }}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
@@ -176,38 +176,11 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     </div>
 
                 </div>
-                
-                <DeliveryConfigurationTabDetail
-                    row={row}
-                    setValue={setValue}
-                    getValues={getValues}
-                    errors={errors}
-                />
-
-                <CoincidenceMetersDialog
-                    openModal={openModalCoincidenceMeters}
-                    setOpenModal={setOpenModalCoincidenceMeters}
-                />
-                <VehicleTypeDialog
-                    openModal={openModalVehicleType}
-                    setOpenModal={setOpenModalVehicleType}
-                />
-                <NonWorkingDaysDialog
-                    openModal={openModalNonWorkingDays}
-                    setOpenModal={setOpenModalNonWorkingDays}
-                />
-                <DeliverySchedulesDialog
-                    openModal={openModalDeliverySchedules}
-                    setOpenModal={setOpenModalDeliverySchedules}
-                />
-                <DeliveryPhotoDialog
-                    openModal={openModalDeliverPhoto}
-                    setOpenModal={setOpenModalDeliverPhoto}
-                />
+                <NewAttentionOrdersTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row} getValues={getValues} setValue={setValue}/>
             </form>
         </>
     );
 }
 
 
-export default DeliveryConfigurationDetail;
+export default AttentionOrdersDetail;

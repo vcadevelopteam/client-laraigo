@@ -2,8 +2,10 @@
 import React, { FC, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
+  TemplateBreadcrumbs,
   TemplateIcons,
   Title,
+  TitleDetail,
 } from "components";
 import { langKeys } from "lang/keys";
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -51,9 +53,17 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({
   const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
  
+  const arrayBread = [
+    { id: "main-view", name: t(langKeys.delivery) },
+    { id: "detail-view", name: t(langKeys.storeorders) },
+  ];
+
   const handleEdit = (row: Dictionary) => {    
     setRowSelected({ row, edit: true });
   };
+
+ 
+
  
   useEffect(() => {
     if (waitUpload) {
@@ -271,9 +281,12 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({
         }}
       >
         <div style={{ flexGrow: 1 }}>
-          <Title>
-            <Trans i18nKey={langKeys.storeorders} />
-          </Title>
+          <TemplateBreadcrumbs
+            breadcrumbs={arrayBread}
+          />
+          <TitleDetail
+            title={ t(langKeys.storeorders)}
+          />
         </div>
       </div>
       <TablePaginated

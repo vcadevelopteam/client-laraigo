@@ -5532,8 +5532,8 @@ const translation: LangKeys = {
   electronic_ticket_and_invoice: 'Electronic Ticket and Invoice',
   prepare: 'Prepare',
   requestedquantity: 'Requested Quantity',
-
-
+  send_invoice_helper_text: 'Please note that there is an additional cost for sending the voucher',
+  sendnotification_helper_text: 'Please note that there is an additional cost for sending the notification',
 
 };
 

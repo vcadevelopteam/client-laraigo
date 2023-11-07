@@ -200,7 +200,7 @@ const DeliveryConfigurationTabDetail: React.FC<InventoryTabDetailProps> = ({
                     valueDefault={getValues('name')}
                     className="col-4"
                     onChange={(value) => setValue('name', value)}
-                    helperText='Tener en cuenta que el envío de comprobante tiene un costo adicional'                 
+                    helperText={t(langKeys.send_invoice_helper_text)}
 
                 />
                 <FieldEdit
@@ -208,7 +208,7 @@ const DeliveryConfigurationTabDetail: React.FC<InventoryTabDetailProps> = ({
                     valueDefault={getValues('name')}
                     className="col-4"
                     onChange={(value) => setValue('name', value)}
-                    helperText='Tener en cuenta que el envío de notificaciones tiene un costo adicional'                 
+                    helperText={t(langKeys.sendnotification_helper_text)}
 
                 />
                 <FieldEdit

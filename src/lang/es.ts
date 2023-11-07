@@ -5458,7 +5458,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   electronic_ticket_and_invoice: 'Boleta y Factura Electrónica',
   prepare: 'Preparar',
   requestedquantity: 'Cantidad Solicitada',
-
+  send_invoice_helper_text: 'Tener en cuenta que el envío de comprobante tiene un costo adicional',
+  sendnotification_helper_text: 'Tener en cuenta que el envío de notificación tiene un costo adicional',
 };
 
 const esResource: ResourceLanguage = {

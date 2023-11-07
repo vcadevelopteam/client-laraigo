@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { format } from "date-fns";
+import TableZyx from "components/fields/table-simple";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -43,6 +44,28 @@ const DeliverySchedulesDialog: React.FC<{
         }
     }
 }, [executeRes, waitSave])
+
+
+const columns = React.useMemo(
+  () => [   
+    {
+      Header: t(langKeys.shifts),
+      accessor: "shifts",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.from),
+      accessor: "from",
+      width: "auto",
+    },
+    {
+      Header: t(langKeys.until),
+      accessor: "until",
+      width: "auto",
+    },   
+  ],
+  []
+);
   
   return (
     <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="sm">
@@ -67,6 +90,16 @@ const DeliverySchedulesDialog: React.FC<{
           valueDefault={signatureDateDefault}
           className="col-3"
         />
+        <div className="row-zyx">
+          <TableZyx
+            columns={columns}            
+            data={[]}           
+            filterGeneral={false}
+            toolsFooter={false}            
+          />
+        </div>
+
+
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
         <Button

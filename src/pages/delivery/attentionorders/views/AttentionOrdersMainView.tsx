@@ -2,33 +2,39 @@
 import React, { FC, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
+  TemplateBreadcrumbs,
   TemplateIcons,
   Title,
+  TitleDetail,
 } from "components";
 import { langKeys } from "lang/keys";
 import ListAltIcon from '@material-ui/icons/ListAlt';
+import { DuplicateIcon } from "icons";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
+import { execute, exportData } from "store/main/actions";
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
+import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
-import { Button, Menu, MenuItem } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-
 
 const selectionKey = "warehouseid";
 
 interface InventoryMainViewProps {
+  setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
   fetchDataAux: any;
 }
 
 const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
+  setViewSelected,
   setRowSelected,
   fetchData,
   fetchDataAux,
@@ -38,8 +44,6 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
 
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-  const [cleanSelected, setCleanSelected] = useState(false);
   const mainPaginated = useSelector((state) => state.main.mainPaginated);
   const [totalrow, settotalrow] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -47,14 +51,23 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
   const importRes = useSelector((state) => state.main.execute);
-  const [openModalDelivered, setOpenModalDelivered] = useState(false);
-  const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
- 
-  const handleEdit = (row: Dictionary) => {    
+
+  const arrayBread = [
+    { id: "main-view", name: t(langKeys.delivery) },
+    { id: "detail-view", name: t(langKeys.attentionorders) },
+];
+
+  const handleRegister = () => {
+    setViewSelected("detail-view");
+    setRowSelected({ row: null, edit: false });
+  };
+
+  const handleEdit = (row: Dictionary) => {
+    setViewSelected("detail-view");
     setRowSelected({ row, edit: true });
   };
- 
+
   useEffect(() => {
     if (waitUpload) {
       if (!importRes.loading && !importRes.error) {
@@ -155,7 +168,7 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "inventoryid",
+        accessor: "storeid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -165,7 +178,7 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
           return (
             <TemplateIcons
               deleteFunction={() => handleDelete(row)}
-              editFunction={() => handleEdit(row)}                       
+              editFunction={() => handleEdit(row)}
             />
           );
         },
@@ -220,23 +233,9 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
         accessor: "orderdate",
         width: "auto",
       },     
-      
     ],
     []
   );
-
-  function handleOpenDeliveredModal () {
-    setOpenModalDelivered(true);
-  };
-
-  function handleOpenUndeliveredModal () {
-    setOpenModalUndelivered(true);
-  };
-
-  const handleClose = (e: any) => {
-    e.stopPropagation();
-    setAnchorEl(null);
-  }
 
   return (
     <div
@@ -257,42 +256,41 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
         }}
       >
         <div style={{ flexGrow: 1 }}>
-          <Title>
-            <Trans i18nKey={langKeys.attentionorders} />
-          </Title>
+         <TemplateBreadcrumbs
+            breadcrumbs={arrayBread}
+          />
+          <TitleDetail
+            title={ t(langKeys.attentionorders)}
+          />
         </div>
       </div>
       <TablePaginated
         columns={columns}
-        data={[]}
+        data={mainPaginated.data}
         totalrow={totalrow}
         loading={mainPaginated.loading}
-        pageCount={pageCount}                
-        fetchData={fetchData}       
+        pageCount={pageCount}
+        fetchData={fetchData}
+        onClickRow={handleEdit}
         useSelection={true}
-        selectionKey={selectionKey}
-        setSelectedRows={setSelectedRows}       
-        onClickRow={handleEdit}         
-        initialSelectedRows={selectedRows}
-        cleanSelection={cleanSelected}
-        setCleanSelection={setCleanSelected}
-        ButtonsElement={() => (
+        handleRegister={handleRegister}
+        register={true}
+        ButtonsElement={()=> (
           <Button
-              variant="contained"
-              color="primary"
-              disabled={mainPaginated.loading}
-              startIcon={<CheckCircleIcon color="secondary" />}             
-              style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
-              onClick={(e) => {
-                setAnchorEl(e.currentTarget);
-                e.stopPropagation();
-              }}
-          >
-              <Trans i18nKey={langKeys.prepare} />
+            variant="contained"
+            color="primary"
+            disabled={mainPaginated.loading}
+            startIcon={<CheckCircleIcon color="secondary" />}             
+            style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
+            onClick={(e) => {
+              setAnchorEl(e.currentTarget);
+              e.stopPropagation();
+            }}
+            >
+            <Trans i18nKey={langKeys.prepare} />
           </Button>
-        )}     
+        )}
       />
-     
     </div>
   );
 };

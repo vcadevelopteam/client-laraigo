@@ -2,8 +2,10 @@
 import React, { FC, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
+  TemplateBreadcrumbs,
   TemplateIcons,
   Title,
+  TitleDetail,
 } from "components";
 import { langKeys } from "lang/keys";
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -48,6 +50,11 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
   const importRes = useSelector((state) => state.main.execute);
+
+  const arrayBread = [
+    { id: "main-view", name: t(langKeys.delivery) },
+    { id: "detail-view", name: t(langKeys.storecoveragearea) },
+  ];
 
   const handleRegister = () => {
     setViewSelected("detail-view");
@@ -232,9 +239,12 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
         }}
       >
         <div style={{ flexGrow: 1 }}>
-          <Title>
-            <Trans i18nKey={langKeys.storecoveragearea} />
-          </Title>
+         <TemplateBreadcrumbs
+            breadcrumbs={arrayBread}
+          />
+          <TitleDetail
+            title={ t(langKeys.storecoveragearea)}
+          />
         </div>
       </div>
       <TablePaginated
