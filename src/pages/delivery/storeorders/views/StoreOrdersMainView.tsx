@@ -17,6 +17,8 @@ import {
 import { useSelector } from "hooks";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
+import DeliveredDialog from "../dialogs/DeliveredDialog";
+import UndeliveredDialog from "../dialogs/UndeliveredDialog";
 
 const selectionKey = "warehouseid";
 
@@ -322,16 +324,27 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({
         <MenuItem onClick={(e) => {
             e.stopPropagation();
             setAnchorEl(null);
+            handleOpenDeliveredModal();
         }}>
             <Trans i18nKey={langKeys.delivered} />
         </MenuItem>
         <MenuItem onClick={(e) => {
             e.stopPropagation();
             setAnchorEl(null);
+            handleOpenUndeliveredModal();
         }}>
             <Trans i18nKey={langKeys.undelivered} />
         </MenuItem>            
       </Menu>
+      
+      <DeliveredDialog 
+        openModal={openModalDelivered}
+        setOpenModal={setOpenModalDelivered}
+      />
+      <UndeliveredDialog
+        openModal={openModalUndelivered}
+        setOpenModal={setOpenModalUndelivered}
+      />
     </div>
   );
 };

@@ -5422,8 +5422,20 @@ export const langKeys = {
   validated: 'validated',
   deliveryshift: 'deliveryshift',
   undelivered: 'undelivered',
-
-
+  chargeamount: 'chargeamount',
+  chargeorder: 'chargeorder',
+  nondeliveryreason: 'nondeliveryreason',
+  nondeliverysubreason: 'nondeliverysubreason',
+  coincidencemeters: 'coincidencemeters',
+  vehicle: 'vehicle',
+  nonworkingdaysregister: 'nonworkingdaysregister',
+  choosenonworkingdate: 'choosenonworkingdate',
+  nonworkingdays: 'nonworkingdays',
+  deliveryshifts: 'deliveryshifts',
+  shifts: 'shifts',
+  from: 'from',
+  until: 'until',
+  photo: 'photo',
 };
 
 export type LangKeys = typeof langKeys;

@@ -14,6 +14,11 @@ import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
 import { resetMainAux } from 'store/main/actions';
+import CoincidenceMetersDialog from '../dialogs/CoincidenceMetersDialog';
+import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
+import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
+import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
+import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
 
 
 interface RowSelected {
@@ -65,6 +70,11 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const [openModalCoincidenceMeters, setOpenModalCoincidenceMeters] = useState(false)
+    const [openModalNonWorkingDays, setOpenModalNonWorkingDays] = useState(false)
+    const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
+    const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
+    const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
@@ -152,6 +162,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => {setOpenModalDeliverPhoto(true)}}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
@@ -170,6 +181,27 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     setValue={setValue}
                     getValues={getValues}
                     errors={errors}
+                />
+
+                <CoincidenceMetersDialog
+                    openModal={openModalCoincidenceMeters}
+                    setOpenModal={setOpenModalCoincidenceMeters}
+                />
+                <VehicleTypeDialog
+                    openModal={openModalVehicleType}
+                    setOpenModal={setOpenModalVehicleType}
+                />
+                <NonWorkingDaysDialog
+                    openModal={openModalNonWorkingDays}
+                    setOpenModal={setOpenModalNonWorkingDays}
+                />
+                <DeliverySchedulesDialog
+                    openModal={openModalDeliverySchedules}
+                    setOpenModal={setOpenModalDeliverySchedules}
+                />
+                <DeliveryPhotoDialog
+                    openModal={openModalDeliverPhoto}
+                    setOpenModal={setOpenModalDeliverPhoto}
                 />
             </form>
         </>

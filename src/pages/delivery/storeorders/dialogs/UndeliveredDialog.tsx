@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx } from "components";
+import { DialogZyx, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -16,23 +16,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ReconcileBalanceDialog: React.FC<{
-  openModal: any;
-  setOpenModal: (dat: any) => void;
-  row: any;
-  fetchData: any
-}> = ({ openModal, setOpenModal, row, fetchData }) => {
+const UndeliveredDialog: React.FC<{
+  openModal: boolean;
+  setOpenModal: (dat: boolean) => void;
+}> = ({ openModal, setOpenModal }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
-
-  useEffect(() => {
-    if(openModal){
-      fetchData()
-    }
-}, [openModal])
 
   useEffect(() => {
     if (waitSave) {
@@ -48,15 +40,26 @@ const ReconcileBalanceDialog: React.FC<{
         }
     }
 }, [executeRes, waitSave])
-console.log(row)
   
-
   return (
-    <DialogZyx open={openModal} title={t(langKeys.reconcilebalancesheets)} maxWidth="sm">
-      <div className="row-zyx">
-          <Typography />{t(langKeys.reconcilebalancetext)}
+    <DialogZyx open={openModal} title={t(langKeys.undelivered)} maxWidth="sm">
+      <div className="row-zyx" style={{justifyContent: "center"}}>
+        <FieldSelect
+          label={t(langKeys.nondeliveryreason)}
+          className="col-12"
+          data={[]}
+          optionValue="warehouseid"
+          optionDesc="name"
+        />
+        <FieldSelect
+          label={t(langKeys.nondeliverysubreason)}
+          className="col-12"
+          data={[]}
+          optionValue="warehouseid"
+          optionDesc="name"
+        />
       </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
         <Button
           variant="contained"
           type="button"
@@ -84,4 +87,4 @@ console.log(row)
   );
 };
 
-export default ReconcileBalanceDialog;
+export default UndeliveredDialog;

@@ -167,18 +167,16 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
                 }}
                 />  
 
-            <div className='row-zyx'>       
-                                 
-                <TableZyx
-                    columns={columns}
-                    data={[]}
-                    download={true}                    
-                    importData={true}
-                    deleteData={true}  
-                    filterGeneral={true}      
-                    useSelection={true}            
-                />
-               
+            <div className='row-zyx'>
+              <TableZyx
+                  columns={columns}
+                  data={[]}
+                  download={true}                    
+                  importData={true}
+                  deleteData={true}  
+                  filterGeneral={true}      
+                  useSelection={true}            
+              />
             </div>
         </div>
     )

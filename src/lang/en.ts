@@ -5507,7 +5507,20 @@ const translation: LangKeys = {
   validated: 'Validated',
   deliveryshift: 'Delivery Shift',
   undelivered: 'Undelivered',
-
+  chargeamount: 'Charge amount: ',
+  chargeorder: 'Charge Order',
+  nondeliveryreason: 'Indicate reason for non-delivery',
+  nondeliverysubreason: 'Indicate sub reason for non-delivery',
+  coincidencemeters: 'Coincidence Meters',
+  vehicle: 'Vehicle',
+  nonworkingdaysregister: 'Non-Working Day Registration',
+  choosenonworkingdate: 'Choose non-working date',
+  nonworkingdays: 'Non-Working Days',
+  deliveryshifts: 'Delivery Shifts',
+  shifts: 'Shifts:',
+  from: 'From:',
+  until: 'Until:',
+  photo: 'Photo',
 };
 
 const enResource: ResourceLanguage = {

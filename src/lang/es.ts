@@ -5434,7 +5434,20 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
    validated: 'Validado',
    deliveryshift: 'Turno de Entrega',
    undelivered: 'No entregado',
-
+  chargeamount: 'Monto a Cobrar: ',
+  chargeorder: 'Realizar Cobro del Pedido',
+  nondeliveryreason: 'Indicar motivo de no entregado',
+  nondeliverysubreason: 'Indicar sub motivo de no entregado',
+  coincidencemeters: 'Metros de Coincidencia',
+  vehicle: 'Vehículo',
+  nonworkingdaysregister: 'Registro de Días No Laborables',
+  choosenonworkingdate: 'Elegir fecha no laborable',
+  nonworkingdays: 'Días no laborables',
+  deliveryshifts: 'Turnos de Entrega',
+  shifts: 'Turnos:',
+  from: 'De:',
+  until: 'Hasta:',
+  photo: 'Foto',
 };
 
 const esResource: ResourceLanguage = {
