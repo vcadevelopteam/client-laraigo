@@ -1196,7 +1196,7 @@ const Quickreplies: FC = () => {
                         quickreply: x.detail, 
                         status: x.status || 'ACTIVO', 
                         favorite: x.favorite || false,
-                        classificationid: parseInt(x.classificationid.toString().trim().split('-')[0].split(' ')[0]),
+                        classificationid: (x.classificationid) ? parseInt(x.classificationid.toString().trim().split('-')[0].split(' ')[0]) : null,
                         operation: "INSERT",
                         type: 'NINGUNO',
                         id: 0,
