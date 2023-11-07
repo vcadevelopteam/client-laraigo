@@ -45,22 +45,27 @@ const DeliveryPhotoDialog: React.FC<{
 }, [executeRes, waitSave])
   
   return (
-    <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="sm">
-      <div className="row-zyx">
+    <DialogZyx open={openModal} title={t(langKeys.deliveryphotoorder)} maxWidth="sm">
+      <div className="row-zyx" style={{ gap:"1rem"}}>
         <FieldEdit
-          label={t(langKeys.photo) + '1'}
+          label={t(langKeys.photo) + ' 1'}
           type="text"
           className="col-12"
+          helperText="DNI Anverso"
         />
         <FieldEdit
-          label={t(langKeys.photo) + '2'}
+          label={t(langKeys.photo) + ' 2'}
           type="text"
           className="col-12"
+          helperText="DNI Reverso"
+
         />
         <FieldEdit
-          label={t(langKeys.photo) + '3'}
+          label={t(langKeys.photo) + ' 3'}
           type="text"
           className="col-12"
+          helperText="Voucher Pago"
+
         />
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>

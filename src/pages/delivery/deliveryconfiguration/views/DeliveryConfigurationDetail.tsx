@@ -162,7 +162,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => {setOpenModalDeliverPhoto(true)}}
+                            onClick={() => {setOpenModalVehicleType(true)}}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
@@ -176,6 +176,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     </div>
 
                 </div>
+                
                 <DeliveryConfigurationTabDetail
                     row={row}
                     setValue={setValue}

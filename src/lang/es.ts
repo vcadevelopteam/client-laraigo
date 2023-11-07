@@ -5413,7 +5413,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   warehouse: 'Almacén',
   instorewarehouse: 'Almacén en Tienda',
   associatedvehicles: 'Vehículos Asociados',
-  vehicletype: 'Tipo Vehículo',
+  vehicletype: 'Tipo de Vehículo',
   platenum: 'Nº Placa',
   capacity: 'Capacidad (KG)',
   averagespeed: 'Velocidad Prom. (KM/H)',
@@ -5448,6 +5448,16 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   from: 'De:',
   until: 'Hasta:',
   photo: 'Foto',
+
+  documentsissuance: 'Emisión de Documentos',
+  sendnotification: 'Enviar Notificación ',
+  routinglogic: 'Lógica de Ruteo',
+  workingdays: 'Días Laborales',
+  nonWorkingdays: 'Días No Laborales',
+  deliveryphotoorder: 'Foto de Entrega Pedido',
+  deliveryvalidationdistance: 'Distancia de Validación de Entrega',
+  send_invoice: 'Envío de Comprobante',
+
 };
 
 const esResource: ResourceLanguage = {

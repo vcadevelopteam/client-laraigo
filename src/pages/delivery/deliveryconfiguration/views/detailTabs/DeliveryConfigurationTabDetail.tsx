@@ -8,6 +8,11 @@ import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons } from 'components';
 import TableZyx from "components/fields/table-simple";
+import { Button } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import AssociatedVehicleDialog from '../../dialogs/AssociatedVehicleDialog';
+
+
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -62,6 +67,8 @@ const DeliveryConfigurationTabDetail: React.FC<InventoryTabDetailProps> = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const [openModalAssociatedVehicleDialog, setOpenModalAssociatedVehicleDialog] = useState(false)
+
 
     const columns = React.useMemo(
         () => [
@@ -138,125 +145,125 @@ const DeliveryConfigurationTabDetail: React.FC<InventoryTabDetailProps> = ({
     return (
         <div className={classes.containerDetail}>
             <div className="row-zyx">
-                <div className='col-6'>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('name')}
-                            className="col-6"
-                            error={errors?.name?.message}
-                            onChange={(value) => setValue('name', value)}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.description)}
-                            valueDefault={getValues('description')}
-                            className="col-6"
-                            error={errors?.description?.message}
-                            onChange={(value) => setValue('description', value)}
-                        />
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('name')}
-                            className="col-6"
-                            error={errors?.name?.message}
-                            onChange={(value) => setValue('name', value)}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.description)}
-                            valueDefault={getValues('description')}
-                            className="col-6"
-                            error={errors?.description?.message}
-                            onChange={(value) => setValue('description', value)}
-                        />
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldCheckbox
-                            label={`${t(langKeys.product)} ${t(langKeys.default)}`}
-                            className="col-6"
-                            valueDefault={getValues("ispredeterminate")}
-                            onChange={(value) => setValue("ispredeterminate", value)}
-                        />
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldEdit
-                            label={t(langKeys.product)}
-                            valueDefault={getValues('address')}
-                            className="col-6"
-                            error={errors?.address?.message}
-                            onChange={(value) => setValue('address', value)}
-                        />
-                    </div>
-                </div>
-                <div className='row-zyx col-6'>
-                    <div className='col-6'>
-                        <div className='row-zyx'>
-                            <FieldEdit
-                                label={t(langKeys.product)}
-                                valueDefault={getValues('address')}
-                                className="col-6"
-                                error={errors?.address?.message}
-                                onChange={(value) => setValue('address', value)}
-                            />  
-                        </div>
-                        <div className='row-zyx'>
-                            <FieldEdit
-                                label={t(langKeys.product)}
-                                valueDefault={getValues('latitude')}
-                                className="col-6"
-                                error={errors?.latitude?.message}
-                                onChange={(value) => setValue('latitude', value)}
-                            />
-                        </div>
-                        <div className='row-zyx'>
-                            <FieldEdit
-                                label={t(langKeys.product)}
-                                valueDefault={getValues('longitude')}
-                                className="col-6"
-                                error={errors?.longitude?.message}
-                                onChange={(value) => setValue('longitude', value)}
-                            /> 
-                        </div>
-                        <div className='row-zyx'>
-                            <FieldEdit
-                                label={t(langKeys.status)}
-                                valueDefault={getValues('longitude')}
-                                className="col-6"
-                                error={errors?.longitude?.message}
-                                onChange={(value) => setValue('longitude', value)}
-                            /> 
-                        </div>  
-                    </div>
-                    <div className='row-zyx col-6'>
-                        <div className="col-12">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.files)}</Box>
-                        </div>
-                        <div className='col-12'>
-                            <FieldEdit
-                                label={t(langKeys.product)}
-                                valueDefault={getValues('longitude')}
-                                className="col-6"
-                                error={errors?.longitude?.message}
-                                onChange={(value) => setValue('longitude', value)}
-                            /> 
-                        </div>
-                    </div>
-                </div>
+                <FieldCheckbox
+                    label={t(langKeys.appointmenttype)}
+                    className="col-4"
+                    valueDefault={getValues("ispredeterminate")}
+                    onChange={(value) => setValue("ispredeterminate", value)}
+                />
+                <FieldCheckbox
+                    label={t(langKeys.documentsissuance)}
+                    className="col-4"
+                    valueDefault={getValues("ispredeterminate")}
+                    onChange={(value) => setValue("ispredeterminate", value)}
+                />
+                <FieldCheckbox
+                    label={t(langKeys.send_invoice)}
+                    className="col-4"
+                    valueDefault={getValues("ispredeterminate")}
+                    onChange={(value) => setValue("ispredeterminate", value)}
+                    /*helpertexto*/
+                />
+                <FieldCheckbox
+                    label={t(langKeys.sendnotification)}
+                    className="col-4"
+                    valueDefault={getValues("ispredeterminate")}
+                    onChange={(value) => setValue("ispredeterminate", value)}
+                   /*helpertexto*/
+                />
+                <FieldCheckbox
+                    label={t(langKeys.notificationtype)}
+                    className="col-4"
+                    valueDefault={getValues("ispredeterminate")}
+                    onChange={(value) => setValue("ispredeterminate", value)}
+                />
+                <FieldCheckbox
+                    label={t(langKeys.routinglogic)}
+                    className="col-4"
+                    valueDefault={getValues("ispredeterminate")}
+                    onChange={(value) => setValue("ispredeterminate", value)}
+                />
+                <FieldCheckbox                    
+                    label={t(langKeys.workingdays)}
+                    className="col-4"
+                    valueDefault={getValues("ispredeterminate")}
+                    onChange={(value) => setValue("ispredeterminate", value)}
+                />                    
+                <FieldEdit
+                    label={t(langKeys.nonWorkingdays)}
+                    valueDefault={getValues('nonWorkingdays')}
+                    className="col-4"
+                    onChange={(value) => setValue('name', value)}   
+                />
+                <FieldEdit
+                    label={t(langKeys.deliveryshifts)}
+                    valueDefault={getValues('name')}
+                    className="col-4"
+                    onChange={(value) => setValue('name', value)}
+                    helperText='Tener en cuenta que el envío de comprobante tiene un costo adicional'                 
+
+                />
+                <FieldEdit
+                    label={t(langKeys.vehicletype)}
+                    valueDefault={getValues('name')}
+                    className="col-4"
+                    onChange={(value) => setValue('name', value)}
+                    helperText='Tener en cuenta que el envío de notificaciones tiene un costo adicional'                 
+
+                />
+                <FieldEdit
+                    label={t(langKeys.deliveryphotoorder)}
+                    valueDefault={getValues('name')}
+                    className="col-4"
+                    onChange={(value) => setValue('name', value)}
+                />
+                <FieldEdit
+                    label={t(langKeys.deliveryvalidationdistance)}
+                    valueDefault={getValues('name')}
+                    className="col-4"
+                    onChange={(value) => setValue('name', value)}
+                />
+
             </div>
+
+
             <div className='row-zyx'>
                 <div className='row-zyx'>
-                    <TitleDetail
-                        title={t(langKeys.associatedvehicles)}
-                    />
+                   
                 </div>
-                <div className='row-zyx'>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between'  }}>
+                    <div>
+                    <TitleDetail
+                            title={t(langKeys.associatedvehicles)}
+                    />
+                    </div>                   
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>                       
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<AddIcon color="secondary" />}
+                            onClick={() => {setOpenModalAssociatedVehicleDialog(true)}}
+                            style={{ backgroundColor: "#55BD84" }}>
+                            {t(langKeys.register)}
+                        </Button>
+                    </div>
+
+                    <AssociatedVehicleDialog
+                        openModal={openModalAssociatedVehicleDialog}
+                        setOpenModal={setOpenModalAssociatedVehicleDialog}
+                    />
+                        
+                    </div>
+                
+                <div className='row-zyx'>                
                     <TableZyx
                         columns={columns}
                         data={[]}
                         download={false}
                         filterGeneral={false}
-                        register={true}
+                        register={false}
                     />
                 </div>
             </div>

@@ -45,7 +45,7 @@ const DeliverySchedulesDialog: React.FC<{
 }, [executeRes, waitSave])
   
   return (
-    <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="md">
+    <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="sm">
       <div className="row-zyx">
         <FieldSelect
           label={t(langKeys.shifts)}

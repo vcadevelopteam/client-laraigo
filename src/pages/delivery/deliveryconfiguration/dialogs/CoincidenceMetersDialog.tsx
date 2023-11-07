@@ -43,7 +43,7 @@ const CoincidenceMetersDialog: React.FC<{
   
   return (
     <DialogZyx open={openModal} title={t(langKeys.coincidencemeters)} maxWidth="sm">
-      <div className="row-zyx" style={{justifyContent: "center"}}>
+      <div className="row-zyx" style={{justifyContent: "center", paddingBottom:"1rem", paddingTop:"1rem"}}>
         <FieldEdit
             label={t(langKeys.enter) + ' ' + t(langKeys.coincidencemeters)}
             valueDefault={''}

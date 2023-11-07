@@ -9,7 +9,6 @@ import SaveIcon from "@material-ui/icons/Save";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import AssociatedVehicleDialog from "./AssociatedVehicleDialog";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -17,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const VehicleTypeDialog: React.FC<{
+const AssociatedVehicleDialog: React.FC<{
   openModal: boolean;
   setOpenModal: (dat: boolean) => void;
 }> = ({ openModal, setOpenModal }) => {
@@ -43,14 +42,36 @@ const VehicleTypeDialog: React.FC<{
 }, [executeRes, waitSave])
   
   return (
-    <DialogZyx open={openModal} title={t(langKeys.vehicletype)} maxWidth="md">
+    <DialogZyx open={openModal} title={t(langKeys.associatedvehicles)} maxWidth="lg">
       <div className="row-zyx">
         <FieldEdit
-          label={t(langKeys.vehicle)}
+          label={t(langKeys.organization)}
+          type="text"
           className="col-6"
         />
         <FieldEdit
-          label={t(langKeys.insuredamount)}
+          label={t(langKeys.vehicletype)}
+          type="text"
+          className="col-6"
+        />
+        <FieldEdit
+          label={t(langKeys.brand)}
+          type="text"
+          className="col-6"
+        />
+        <FieldEdit
+          label={t(langKeys.model)}
+          type="text"
+          className="col-6"
+        />
+          <FieldEdit
+          label={t(langKeys.platenum)}
+          type="number"
+          className="col-6"
+        />
+        <FieldEdit
+          label={t(langKeys.capacity)}
+          type="number"
           className="col-6"
         />
         <FieldEdit
@@ -59,11 +80,21 @@ const VehicleTypeDialog: React.FC<{
           className="col-6"
         />
         <FieldEdit
-          label={t(langKeys.capacity)}
+          label={t(langKeys.insuredamount)}
           type="number"
-          className="col-6"          
-        />    
-
+          className="col-6"
+        />
+        <FieldEdit
+          label={t(langKeys.carriername)}
+          type="text"
+          className="col-6"
+        />
+        <FieldEdit
+          label={t(langKeys.licensenum)}
+          type="number"
+          className="col-6"
+        />
+        
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
         <Button
@@ -89,12 +120,9 @@ const VehicleTypeDialog: React.FC<{
           {t(langKeys.save)}
         </Button>
       </div>
-
+      
     </DialogZyx>
- 
-
-    
   );
 };
 
-export default VehicleTypeDialog;
+export default AssociatedVehicleDialog;

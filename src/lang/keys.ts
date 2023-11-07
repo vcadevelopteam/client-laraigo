@@ -5436,6 +5436,17 @@ export const langKeys = {
   from: 'from',
   until: 'until',
   photo: 'photo',
+  documentsissuance: 'documentsissuance',
+  sendnotification: 'sendnotification',
+  routinglogic: 'routinglogic',
+  workingdays: 'workingdays',
+  nonWorkingdays: 'nonWorkingdays',
+  deliveryphotoorder: 'deliveryphotoorder',
+  deliveryvalidationdistance: 'deliveryvalidationdistance',
+  send_invoice: 'send_invoice',
+
+
+
 };
 
 export type LangKeys = typeof langKeys;

@@ -5521,6 +5521,15 @@ const translation: LangKeys = {
   from: 'From:',
   until: 'Until:',
   photo: 'Photo',
+  documentsissuance: 'Issuance of Documents',
+  sendnotification: 'Send Notification',
+  routinglogic: 'Routing Logic',
+  workingdays: 'Working Days',
+  nonWorkingdays: 'Non-Working Days',
+  deliveryphotoorder: 'Delivery Photo Order',
+  deliveryvalidationdistance: 'Delivery Validation Distance',
+  send_invoice: 'Send Invoice',
+
 };
 
 const enResource: ResourceLanguage = {
