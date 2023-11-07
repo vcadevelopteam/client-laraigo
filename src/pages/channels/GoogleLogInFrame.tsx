@@ -1,19 +1,20 @@
-import { FC } from "react";
-import { Button, makeStyles } from '@material-ui/core';
-import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
+import { Button, makeStyles } from "@material-ui/core";
+import { CodeResponse, useGoogleLogin } from "@react-oauth/google";
 import { exchangeCode } from "store/google/actions";
-import { showBackdrop } from 'store/popus/actions';
-import { useGoogleLogin } from '@react-oauth/google';
+import { langKeys } from "lang/keys";
+import { showBackdrop } from "store/popus/actions";
+import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
+import React, { FC } from "react";
+
+const useStyles = makeStyles(() => ({
     button: {
-        padding: 12,
+        fontSize: "14px",
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
+        padding: 12,
+        textTransform: "initial",
+        width: "180px",
     },
 }));
 
@@ -23,23 +24,23 @@ interface GoogleLogInFrameProps {
 
 export const GoogleLogInFrame: FC<GoogleLogInFrameProps> = ({ setWaitExchange }) => {
     const { t } = useTranslation();
-    const dispatch = useDispatch();
+
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const login = useGoogleLogin({
-        onSuccess: tokenResponse => onGoogleLoginSucess(tokenResponse),
-        onError: error => onGoogleLoginFailure(error),
-        flow: 'auth-code',
-        // eslint-disable-next-line no-multi-str
-        scope: 'https://www.googleapis.com/auth/blogger \
+        flow: "auth-code",
+        onError: (error) => onGoogleLoginFailure(error),
+        onSuccess: (tokenResponse) => onGoogleLoginSucess(tokenResponse),
+        scope: "https://www.googleapis.com/auth/blogger \
             https://www.googleapis.com/auth/business.manage \
-            https://www.googleapis.com/auth/gmail.send \
             https://www.googleapis.com/auth/gmail.readonly \
+            https://www.googleapis.com/auth/gmail.send \
             https://www.googleapis.com/auth/youtube.force-ssl \
-            https://www.googleapis.com/auth/youtube.readonly',
+            https://www.googleapis.com/auth/youtube.readonly",
     });
 
-    const onGoogleLoginSucess = (event: any) => {
+    const onGoogleLoginSucess = (event: Omit<CodeResponse, "error" | "error_description" | "error_uri">) => {
         if (event) {
             if (event.code) {
                 dispatch(exchangeCode({ googlecode: event.code }));
@@ -47,20 +48,24 @@ export const GoogleLogInFrame: FC<GoogleLogInFrameProps> = ({ setWaitExchange })
                 setWaitExchange(true);
             }
         }
-    }
+    };
 
-    const onGoogleLoginFailure = (event: any) => {
-        console.log('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
-    }
+    const onGoogleLoginFailure = (event: Pick<CodeResponse, "error" | "error_description" | "error_uri">) => {
+        console.log("GOOGLE LOGIN FAILURE: " + JSON.stringify(event));
+    };
 
-    return <Button
-        onClick={() => { login() }}
-        className={classes.button}
-        variant="contained"
-        color="primary"
-    >
-        {t(langKeys.login_with_google)}
-    </Button>
+    return (
+        <Button
+            className={classes.button}
+            color="primary"
+            variant="contained"
+            onClick={() => {
+                login();
+            }}
+        >
+            {t(langKeys.login_with_google)}
+        </Button>
+    );
 };
 
-export default GoogleLogInFrame
+export default GoogleLogInFrame;

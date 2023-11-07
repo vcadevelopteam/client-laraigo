@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelTikTok } from "icons";
-import { FC, useEffect, useState } from "react";
 import { FieldEdit, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
@@ -10,16 +8,18 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { IChannel } from "@types";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import React, { FC, useEffect, useState } from "react";
 
-interface whatsAppData {
+interface WhatsAppData {
+    row?: unknown;
     typeWhatsApp?: string;
-    row?: any;
 }
 
-const useChannelAddStyles = makeStyles((theme) => ({
+const useChannelAddStyles = makeStyles(() => ({
     button: {
         fontSize: "14px",
         fontWeight: 500,
@@ -36,21 +36,30 @@ const useChannelAddStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ChannelAddTikTok: FC = () => {
-    const dispatch = useDispatch();
-
+export const ChannelAddTikTok: FC<{ edit: boolean }> = ({ edit }) => {
     const { t } = useTranslation();
 
     const [channelreg, setChannelreg] = useState(true);
     const [checkedAyrshare, setCheckedAyrshare] = useState(true);
-    const [coloricon, setcoloricon] = useState("#000000");
+    const [coloricon, setColoricon] = useState("#000000");
     const [nextbutton, setNextbutton] = useState(true);
-    const [setins, setsetins] = useState(false);
+    const [setins, setSetins] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
 
+    const dispatch = useDispatch();
+    const classes = useChannelAddStyles();
+    const executeResult = useSelector((state) => state.channel.successinsert);
+    const history = useHistory();
+    const location = useLocation<WhatsAppData>();
+    const mainResult = useSelector((state) => state.channel.channelList);
+    const whatsAppData = location.state as WhatsAppData | null;
+
+    const channel = whatsAppData?.row as IChannel | null;
+
     const [fields, setFields] = useState({
         method: "UFN_COMMUNICATIONCHANNEL_INS",
+        type: "AYRSHARE-TIKTOK",
         parameters: {
             apikey: "",
             chatflowenabled: true,
@@ -61,7 +70,7 @@ export const ChannelAddTikTok: FC = () => {
             description: "",
             form: "",
             icons: "",
-            id: 0,
+            id: edit && channel ? channel.communicationchannelid : 0,
             integrationid: "",
             other: "",
             type: "",
@@ -72,18 +81,10 @@ export const ChannelAddTikTok: FC = () => {
             apikey: "",
             accountkey: "",
         },
-        type: "AYRSHARE-TIKTOK",
     });
 
-    const classes = useChannelAddStyles();
-    const executeResult = useSelector((state) => state.channel.successinsert);
-    const history = useHistory();
-    const location = useLocation<whatsAppData>();
-    const mainResult = useSelector((state) => state.channel.channelList);
-    const whatsAppData = location.state as whatsAppData | null;
-
     async function finishreg() {
-        setsetins(true);
+        setSetins(true);
         dispatch(insertChannel(fields));
         setWaitSave(true);
         setViewSelected("main");
@@ -92,13 +93,13 @@ export const ChannelAddTikTok: FC = () => {
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false);
+                setSetins(false);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 history.push(paths.CHANNELS);
             } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", {
+                const errormessage = t(mainResult.code ?? "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
@@ -115,11 +116,15 @@ export const ChannelAddTikTok: FC = () => {
         }
     }, [mainResult]);
 
-    function setnameField(value: any) {
+    function setnameField(value: string) {
         setChannelreg(value === "");
-        let partialf = fields;
+        const partialf = fields;
         partialf.parameters.description = value;
         setFields(partialf);
+    }
+
+    if (edit && !channel) {
+        return <div />;
     }
 
     if (viewSelected === "view1") {
@@ -132,7 +137,9 @@ export const ChannelAddTikTok: FC = () => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            history.push(paths.CHANNELS_ADD, whatsAppData);
+                            channel?.status === "INACTIVO"
+                                ? history.push(paths.CHANNELS, whatsAppData)
+                                : history.push(paths.CHANNELS_ADD, whatsAppData);
                         }}
                     >
                         {t(langKeys.previoustext)}
@@ -159,7 +166,7 @@ export const ChannelAddTikTok: FC = () => {
                                 <Button
                                     onClick={() => {
                                         setCheckedAyrshare(true);
-                                        let partialField = fields;
+                                        const partialField = fields;
                                         partialField.type = "AYRSHARE-TIKTOK";
                                         partialField.service.accesstoken = "";
                                         partialField.service.apikey = "";
@@ -179,7 +186,7 @@ export const ChannelAddTikTok: FC = () => {
                                 <Button
                                     onClick={() => {
                                         setCheckedAyrshare(false);
-                                        let partialField = fields;
+                                        const partialField = fields;
                                         partialField.type = "TIKAPI-TIKTOK";
                                         partialField.service.accesstoken = "";
                                         partialField.service.apikey = "";
@@ -203,7 +210,7 @@ export const ChannelAddTikTok: FC = () => {
                             <FieldEdit
                                 onChange={(value) => {
                                     setNextbutton(value === "");
-                                    let partialf = fields;
+                                    const partialf = fields;
                                     partialf.service.accesstoken = value;
                                     setFields(partialf);
                                 }}
@@ -219,7 +226,7 @@ export const ChannelAddTikTok: FC = () => {
                             <FieldEdit
                                 onChange={(value) => {
                                     setNextbutton(value === "" || fields.service.accountkey === "");
-                                    let partialf = fields;
+                                    const partialf = fields;
                                     partialf.service.apikey = value;
                                     setFields(partialf);
                                 }}
@@ -235,7 +242,7 @@ export const ChannelAddTikTok: FC = () => {
                             <FieldEdit
                                 onChange={(value) => {
                                     setNextbutton(value === "" || fields.service.apikey === "");
-                                    let partialf = fields;
+                                    const partialf = fields;
                                     partialf.service.accountkey = value;
                                     setFields(partialf);
                                 }}
@@ -306,7 +313,14 @@ export const ChannelAddTikTok: FC = () => {
                             <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                            <div
+                                style={{
+                                    alignItems: "center",
+                                    display: "flex",
+                                    justifyContent: "space-around",
+                                    marginTop: "20px",
+                                }}
+                            >
                                 <ChannelTikTok style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
@@ -315,7 +329,7 @@ export const ChannelAddTikTok: FC = () => {
                                             ...prev,
                                             parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
                                         }));
-                                        setcoloricon(e.hex);
+                                        setColoricon(e.hex);
                                     }}
                                 />
                             </div>

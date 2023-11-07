@@ -1,4 +1,5 @@
 import { Resource } from 'i18next';
+
 import en from './en';
 import es from './es';
 

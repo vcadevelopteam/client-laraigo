@@ -959,7 +959,7 @@ export const insMessageTemplate = (
             body,
             bodyobject: JSON.stringify(bodyobject),
             footerenabled,
-            footer: footer||"",
+            footer: footer || "",
             buttonsenabled,
             buttons: JSON.stringify(buttons),
             priority,
@@ -1240,10 +1240,10 @@ export const insarrayInventoryCost = (table: Dictionary[]): IRequestBody => ({
     }
 });
 
-export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string): IRequestBody<IChatWebAdd> => ({
+export const getInsertChatwebChannel = (id: number, name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
-        id: 0,
+        id: id || 0,
         description: name,
         type: "",
         communicationchannelsite: "id del canal",
@@ -1280,10 +1280,10 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
-        voximplantwelcometone: welcometoneurl || "",
-        voximplantholdtone: holdingtoneurl || "",
+        voximplantwelcometone: welcometoneurl ?? "",
+        voximplantholdtone: holdingtoneurl ?? "",
         voximplantcallsupervision: voximplantcallsupervision || false,
-        voximplantrecording: voximplantrecording || '',
+        voximplantrecording: voximplantrecording ?? '',
     },
 });
 
@@ -1307,7 +1307,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
         voximplantrecording: '',
         voximplantholdtone: "",
     },
-    type: typechannel || "CHATWEB",
+    type: typechannel ?? "CHATWEB",
     service,
 });
 
