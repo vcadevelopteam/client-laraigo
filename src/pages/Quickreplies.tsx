@@ -1163,21 +1163,34 @@ const Quickreplies: FC = () => {
             callback
         }))
     }
+
+    interface importCsvProps {
+        classificationid: string,
+        favorite: boolean,
+        summarize: string,
+        quickanswertype: string,
+        detail: string,
+        status: string
+        bodyobject?: string
+    }
+
     const importCSV = async (files: any[]) => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
-            let classificationids = Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {}))
-            let data: any = (await uploadExcel(file, undefined) as any[])
-                .filter((d: any) => !['', null, undefined].includes(d.summarize)
-                    && !['', null, undefined].includes(d.detail)
-                    && classificationids.includes(d.classificationid.toString().trim().split('-')[0].split(' ')[0])
-                );
+            const classificationids = Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {}))
+
+            const excelData: importCsvProps[] =  (await uploadExcel(file, undefined) as importCsvProps[])
+            const data = excelData.filter((d: importCsvProps) => 
+                !['', null, undefined].includes(d.summarize) &&
+                !['', null, undefined].includes(d.detail) &&
+                ((d.classificationid) ? classificationids.includes(d.classificationid.toString().trim().split('-')[0].split(' ')[0]) : true)
+            )
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
                     header: null,
-                    detail: data.map((x: any) => insQuickreplies({
+                    detail: data.map((x: importCsvProps) => insQuickreplies({
                         ...x,
                         description: x.summarize, 
                         quickreply: x.detail, 
@@ -1195,7 +1208,7 @@ const Quickreplies: FC = () => {
                     }))
                 }, true));
                 setWaitSave(true)
-            }else{
+            } else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_invaliddata) }))
             }
         }
