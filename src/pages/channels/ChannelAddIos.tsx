@@ -1,87 +1,92 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelIos } from "icons";
-import { ColorInput, FieldEdit, } from "components";
-import { FC, useEffect, useState } from "react";
+import { ColorInput, FieldEdit } from "components";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { IChannel } from "@types";
 
-import Link from '@material-ui/core/Link';
+import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import React, { FC, useEffect, useState } from "react";
 
-interface whatsAppData {
+interface WhatsAppData {
+    row?: unknown;
     typeWhatsApp?: string;
-    row?: any;
 }
 
-const useChannelAddStyles = makeStyles(theme => ({
+const useChannelAddStyles = makeStyles(() => ({
     button: {
         padding: 12,
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
+        fontSize: "14px",
+        textTransform: "initial",
+        width: "180px",
     },
 }));
 
 export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
+    const { t } = useTranslation();
+
     const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
+    const [setins, setSetins] = useState(false);
     const [channelreg, setChannelreg] = useState(true);
     const [showRegister, setShowRegister] = useState(true);
     const [showClose, setShowClose] = useState(false);
     const [showScript, setShowScript] = useState(false);
-    const [integrationId, setIntegrationId] = useState('');
-    const mainResult = useSelector(state => state.channel.channelList);
-    const executeResult = useSelector(state => state.channel.successinsert);
-    const history = useHistory();
+    const [integrationId, setIntegrationId] = useState("");
+    const [coloricon, setColoricon] = useState("#000000");
+
     const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const [coloricon, setcoloricon] = useState("#000000");
+    const mainResult = useSelector((state) => state.channel.channelList);
+    const executeResult = useSelector((state) => state.channel.successinsert);
+    const history = useHistory();
     const classes = useChannelAddStyles();
+    const location = useLocation<WhatsAppData>();
+    const whatsAppData = location.state as WhatsAppData | null;
+
+    const channel = whatsAppData?.row as IChannel | null;
+
     const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#000000",
-            "voximplantcallsupervision": false
+        method: "UFN_COMMUNICATIONCHANNEL_INS",
+        type: "SMOOCHIOS",
+        parameters: {
+            id: edit && channel ? channel.communicationchannelid : 0,
+            description: "",
+            type: "",
+            communicationchannelsite: "",
+            communicationchannelowner: "",
+            chatflowenabled: true,
+            integrationid: "",
+            color: "",
+            icons: "",
+            other: "",
+            form: "",
+            apikey: "",
+            coloricon: "#000000",
+            voximplantcallsupervision: false,
         },
-        "type": "SMOOCHIOS",
-    })
-
-    const location = useLocation<whatsAppData>();
-
-    const whatsAppData = location.state as whatsAppData | null;
+    });
 
     async function finishreg() {
-        setsetins(true)
-        dispatch(insertChannel(fields))
+        setSetins(true);
+        dispatch(insertChannel(fields));
         setWaitSave(true);
     }
+
     async function goback() {
         history.push(paths.CHANNELS);
     }
+
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+                setSetins(false);
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 setShowRegister(false);
@@ -89,35 +94,66 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
                 setShowScript(true);
                 setIntegrationId(mainResult.data[0].integrationId);
             } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                const errormessage = t(mainResult.code ?? "error_unexpected_error", {
+                    module: t(langKeys.property).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [mainResult])
+    }, [mainResult]);
+
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
-    }, [mainResult])
+    }, [mainResult]);
 
-    function setnameField(value: any) {
+    function setnameField(value: string) {
         setChannelreg(value === "");
-        let partialf = fields;
+        const partialf = fields;
         partialf.parameters.description = value;
         setFields(partialf);
     }
+
+    if (edit && !channel) {
+        return <div />;
+    }
+
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
+                <Link
+                    color="textSecondary"
+                    key={"mainview"}
+                    href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        channel?.status === "INACTIVO"
+                            ? history.push(paths.CHANNELS, whatsAppData)
+                            : history.push(paths.CHANNELS_ADD, whatsAppData);
+                    }}
+                >
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>
-                <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
+                <div
+                    style={{
+                        textAlign: "center",
+                        fontWeight: "bold",
+                        fontSize: "2em",
+                        color: "#7721ad",
+                        padding: "20px",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        maxWidth: "800px",
+                    }}
+                >
+                    {t(langKeys.commchannelfinishreg)}
+                </div>
                 <div className="row-zyx">
                     <div className="col-3"></div>
                     <FieldEdit
@@ -132,67 +168,153 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
                         <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                             {t(langKeys.givechannelcolor)}
                         </Box>
-                        <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                        <div
+                            style={{
+                                alignItems: "center",
+                                display: "flex",
+                                justifyContent: "space-around",
+                                marginTop: "20px",
+                            }}
+                        >
                             <ChannelIos style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                             <ColorInput
                                 hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
+                                onChange={(e) => {
+                                    setFields((prev) => ({
                                         ...prev,
                                         parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
                                     }));
-                                    setcoloricon(e.hex)
+                                    setColoricon(e.hex);
                                 }}
                             />
                         </div>
                     </div>
                 </div>
                 <div style={{ paddingLeft: "80%" }}>
-                    {showRegister ?
+                    {showRegister ? (
                         <Button
-                            onClick={() => { finishreg() }}
+                            onClick={() => {
+                                finishreg();
+                            }}
                             className={classes.button}
                             disabled={channelreg || mainResult.loading}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.finishreg)}
+                        >
+                            {t(langKeys.finishreg)}
                         </Button>
-                        : null
-                    }
-                    {showClose ?
+                    ) : null}
+                    {showClose ? (
                         <Button
-                            onClick={() => { goback() }}
+                            onClick={() => {
+                                goback();
+                            }}
                             className={classes.button}
                             disabled={channelreg}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.close)}
+                        >
+                            {t(langKeys.close)}
                         </Button>
-                        : null
-                    }
+                    ) : null}
                 </div>
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+            <div style={{ display: showScript ? "flex" : "none", height: 10 }} />
+            <div
+                style={{
+                    display: showScript ? "flex" : "none",
+                    flexDirection: "column",
+                    marginLeft: 120,
+                    marginRight: 120,
+                }}
+            >
                 {t(langKeys.iosstep1)}
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}><code>
-                {`[Smooch initWithSettings:[SKTSettings settingsWithIntegrationId:@"${integrationId}"] completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}];`}
-            </code></pre><div style={{ height: 10 }} />
+            <div
+                style={{
+                    display: showScript ? "flex" : "none",
+                    flexDirection: "column",
+                    marginLeft: 120,
+                    marginRight: 120,
+                }}
+            >
+                <pre
+                    style={{
+                        background: "#f4f4f4",
+                        border: "1px solid #ddd",
+                        color: "#666",
+                        pageBreakInside: "avoid",
+                        fontFamily: "monospace",
+                        lineHeight: 1.6,
+                        maxWidth: "100%",
+                        overflow: "auto",
+                        padding: "1em 1.5em",
+                        display: "block",
+                        wordWrap: "break-word",
+                        width: "100%",
+                        whiteSpace: "break-spaces",
+                    }}
+                >
+                    <code>
+                        {`[Smooch initWithSettings:[SKTSettings settingsWithIntegrationId:@"${integrationId}"] completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}];`}
+                    </code>
+                </pre>
+                <div style={{ height: 10 }} />
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+            <div
+                style={{
+                    display: showScript ? "flex" : "none",
+                    flexDirection: "column",
+                    marginLeft: 120,
+                    marginRight: 120,
+                }}
+            >
                 {t(langKeys.iosstep2)}
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}><code>
-                {`Smooch.initWith(SKTSettings(integrationId: "${integrationId}")) { (error: Error?, userInfo: [AnyHashable : Any]?) in\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}`}
-            </code></pre><div style={{ height: 10 }} />
+            <div
+                style={{
+                    display: showScript ? "flex" : "none",
+                    flexDirection: "column",
+                    marginLeft: 120,
+                    marginRight: 120,
+                }}
+            >
+                <pre
+                    style={{
+                        background: "#f4f4f4",
+                        border: "1px solid #ddd",
+                        color: "#666",
+                        pageBreakInside: "avoid",
+                        fontFamily: "monospace",
+                        lineHeight: 1.6,
+                        maxWidth: "100%",
+                        overflow: "auto",
+                        padding: "1em 1.5em",
+                        display: "block",
+                        wordWrap: "break-word",
+                        width: "100%",
+                        whiteSpace: "break-spaces",
+                    }}
+                >
+                    <code>
+                        {`Smooch.initWith(SKTSettings(integrationId: "${integrationId}")) { (error: Error?, userInfo: [AnyHashable : Any]?) in\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}`}
+                    </code>
+                </pre>
+                <div style={{ height: 10 }} />
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+            <div
+                style={{
+                    display: showScript ? "flex" : "none",
+                    flexDirection: "column",
+                    marginLeft: 120,
+                    marginRight: 120,
+                }}
+            >
                 {t(langKeys.iosstep3)}
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', height: 20 }} />
+            <div style={{ display: showScript ? "flex" : "none", height: 20 }} />
         </div>
-    )
-}
+    );
+};
 
-export default ChannelAddIos
+export default ChannelAddIos;

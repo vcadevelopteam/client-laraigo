@@ -250,19 +250,6 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.SIGNUP.path} render={() => <SignUp />} />
 					<Route exact path={paths.TERMSOFSERVICE} render={() => <TermsOfService />} />
 
-					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
-						<ChangePwdFirstLogin />
-					</Route>
-					<Route exact path="/403">
-						<Forbidden />
-					</Route>
-					<Route exact path="/500">
-						<InternalServererror />
-					</Route>
-					<Route>
-						<NotFound />
-					</Route>
-
 					<ProtectRoute exact path={paths.ASSISTANT} component={() => <Layout mainClasses={classes.main}><Assistant /></Layout>} />
 					<ProtectRoute exact path={paths.AUTOMATIZATIONRULES} component={() => <Layout mainClasses={classes.main}><AutomatizationRules /></Layout>} />
 					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
@@ -377,6 +364,19 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.WHITELIST} component={() => <Layout mainClasses={classes.main}><Whitelist /></Layout>} />
 
 					<Popus />
+
+					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
+						<ChangePwdFirstLogin />
+					</Route>
+					<Route exact path="/403">
+						<Forbidden />
+					</Route>
+					<Route exact path="/500">
+						<InternalServererror />
+					</Route>
+					<Route>
+						<NotFound />
+					</Route>
 				</Switch >
 			</React.Suspense>
 		</BrowserRouter >

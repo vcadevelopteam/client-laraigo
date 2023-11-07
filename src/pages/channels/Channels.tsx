@@ -86,6 +86,110 @@ export const Channels: FC = () => {
         if (row.status === "INACTIVO") {
             let pathname;
 
+            if (row.type === "ANDR") {
+                pathname = paths.CHANNELS_EDIT_ANDROID.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "APPL") {
+                pathname = paths.CHANNELS_EDIT_IOS.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "APPS") {
+                pathname = paths.CHANNELS_EDIT_APPSTORE.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "BLOG") {
+                pathname = paths.CHANNELS_EDIT_BLOGGER.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "GOBU") {
+                pathname = paths.CHANNELS_EDIT_BUSINESS.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "CHAZ") {
+                pathname = paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "MAIL") {
+                pathname = paths.CHANNELS_EDIT_EMAIL.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "FBWA") {
+                pathname = paths.CHANNELS_EDIT_FACEBOOK.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "INST") {
+                pathname = paths.CHANNELS_EDIT_INSTAGRAM.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "INDM") {
+                pathname = paths.CHANNELS_EDIT_INSTAGRAMDM.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "LNKD") {
+                pathname = paths.CHANNELS_EDIT_LINKEDIN.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "FBDM") {
+                pathname = paths.CHANNELS_EDIT_MESSENGER.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "FBLD") {
+                pathname = paths.CHANNELS_EDIT_FACEBOOK_LEAD.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "PLAY") {
+                pathname = paths.CHANNELS_EDIT_PLAYSTORE.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "SMSI") {
+                pathname = paths.CHANNELS_EDIT_SMS.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "TEAM") {
+                pathname = paths.CHANNELS_EDIT_TEAMS.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "TELE") {
+                pathname = paths.CHANNELS_EDIT_TELEGRAM.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "TKTT") {
+                pathname = paths.CHANNELS_EDIT_TIKTOK.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "TWIT") {
+                pathname = paths.CHANNELS_EDIT_TWITTER.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "TWDM") {
+                pathname = paths.CHANNELS_EDIT_TWITTERDM.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "VOXI") {
+                pathname = paths.CHANNELS_EDIT_PHONE.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "FORM") {
+                pathname = paths.CHANNELS_EDIT_WEBFORM.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "WHAT") {
+                pathname = paths.CHANNELS_EDIT_WHATSAPP.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "WHAD") {
+                pathname = paths.CHANNELS_EDIT_WHATSAPPONBOARDING.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "FBWM") {
+                pathname = paths.CHANNELS_EDIT_FACEBOOKWORKPLACE.resolve(row.communicationchannelid);
+            }
+
+            if (row.type === "FBWP") {
+                pathname = paths.CHANNELS_EDIT_FACEBOOKDM.resolve(row.communicationchannelid);
+            }
+
             if (row.type === "YOUT") {
                 pathname = paths.CHANNELS_EDIT_YOUTUBE.resolve(row.communicationchannelid);
             }
@@ -93,7 +197,9 @@ export const Channels: FC = () => {
             if (pathname) {
                 history.push({
                     pathname,
-                    state: row,
+                    state: {
+                        row,
+                    },
                 });
             }
         } else {

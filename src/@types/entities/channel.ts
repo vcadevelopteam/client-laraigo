@@ -3,7 +3,6 @@ export interface IChannel {
     appintegrationid: number;
     botconfigurationid: string | number | null;
     botenabled: boolean | null;
-    /**RAW JSON */
     channelparameters: string;
     chatflowenabled: boolean;
     color: string | null;
@@ -25,18 +24,17 @@ export interface IChannel {
     orgdesc: string;
     orgid: number;
     other: string;
-    resolvelithium: any;
-    schedule: any;
-    /**RAW JSON - service payload */
+    phone: string;
+    resolvelithium: boolean;
+    schedule: string;
     servicecredentials: string;
     status: string;
     statusdesc: string;
     type: string;
     typedesc: string;
     updintegration: string;
-    phone: string;
-    voximplantholdtone: string;
-    voximplantwelcometone: string;
     voximplantcallsupervision?: boolean;
+    voximplantholdtone?: string;
     voximplantrecording?: string;
+    voximplantwelcometone?: string;
 }

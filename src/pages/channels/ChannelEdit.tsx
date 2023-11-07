@@ -90,9 +90,9 @@ const ChannelEdit: FC = () => {
 
             if (channel.servicecredentials) {
                 setCheckedCallSupervision(Boolean(channel?.voximplantcallsupervision) || false);
-                setHoldingtoneurl(channel?.voximplantholdtone || "");
+                setHoldingtoneurl(channel?.voximplantholdtone ?? "");
                 setServiceCredentials(JSON.parse(channel.servicecredentials));
-                setWelcometoneurl(channel?.voximplantwelcometone || "");
+                setWelcometoneurl(channel?.voximplantwelcometone ?? "");
 
                 let voximplantrecording = null;
 

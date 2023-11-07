@@ -3,6 +3,7 @@ import { Box, Breadcrumbs, Button, makeStyles } from "@material-ui/core";
 import { ChannelYouTube } from "icons";
 import { ColorInput, FieldEdit, FieldSelect } from "components";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { IChannel } from "@types";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { listYouTube } from "store/google/actions";
@@ -51,6 +52,18 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
     const [waitList, setWaitList] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
+    const classes = useChannelAddStyles();
+    const dispatch = useDispatch();
+    const exchangeCodeResult = useSelector((state) => state.google.requestExchangeCode);
+    const executeResult = useSelector((state) => state.channel.successinsert);
+    const history = useHistory();
+    const listYouTubeResult = useSelector((state) => state.google.requestListYouTube);
+    const location = useLocation<WhatsAppData>();
+    const mainResult = useSelector((state) => state.channel.channelList);
+    const whatsAppData = location.state as WhatsAppData | null;
+
+    const channel = whatsAppData?.row as IChannel | null;
+
     const [fields, setFields] = useState({
         method: "UFN_COMMUNICATIONCHANNEL_INS",
         type: "YOUTUBE",
@@ -64,7 +77,7 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
             description: "",
             form: "",
             icons: "",
-            id: 0,
+            id: edit && channel ? channel.communicationchannelid : 0,
             integrationid: "",
             other: "",
             type: "",
@@ -79,16 +92,6 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
             tokentype: "",
         },
     });
-
-    const classes = useChannelAddStyles();
-    const dispatch = useDispatch();
-    const exchangeCodeResult = useSelector((state) => state.google.requestExchangeCode);
-    const executeResult = useSelector((state) => state.channel.successinsert);
-    const history = useHistory();
-    const listYouTubeResult = useSelector((state) => state.google.requestListYouTube);
-    const location = useLocation<WhatsAppData>();
-    const mainResult = useSelector((state) => state.channel.channelList);
-    const whatsAppData = location.state as WhatsAppData | null;
 
     const openprivacypolicies = () => {
         window.open("/privacy", "_blank");
@@ -225,6 +228,10 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
         }
     }, [mainResult]);
 
+    if (edit && !channel) {
+        return <div />;
+    }
+
     if (viewSelected === "view1") {
         return (
             <>
@@ -238,7 +245,9 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                             key={"mainview"}
                             onClick={(e) => {
                                 e.preventDefault();
-                                history.push(paths.CHANNELS_ADD, whatsAppData);
+                                channel?.status === "INACTIVO"
+                                    ? history.push(paths.CHANNELS, whatsAppData)
+                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
                             }}
                         >
                             {t(langKeys.previoustext)}
