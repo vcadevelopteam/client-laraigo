@@ -6,8 +6,9 @@ import Box from '@material-ui/core/Box';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch } from 'components';
+import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch, IOSSwitch } from 'components';
 import TableZyx from "components/fields/table-simple";
+import { FormControlLabel } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -62,6 +63,7 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const [attentionOrders,setAttentionOrders] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -157,25 +159,27 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
 
     return (
         <div className={classes.containerDetail}>
-              <TemplateSwitch
-                label={t(langKeys.attentionorders)}
-                  className="col-6"
-                  valueDefault={getValues('attentionorders')}
-                  onChange={(value) => {
-                  setValue('attentionorders', value)
-                  setallowsconsecutivenumbers(value)                        
-                }}
-                />  
+              <FormControlLabel 
+                style={{paddingLeft:"10px"}}
+                control={
+                <IOSSwitch
+                    checked={attentionOrders}
+                    onChange={(event) => {
+                        setAttentionOrders(event.target.checked)
+                    }}
+                    color='primary'
+          />}
+          label={t(langKeys.attentionorders)}
+          className="col-5"
+        />       
 
             <div className='row-zyx'>
               <TableZyx
                   columns={columns}
-                  data={[]}
-                  download={true}                    
-                  importData={true}
-                  deleteData={true}  
+                  data={[]}                 
                   filterGeneral={true}      
-                  useSelection={true}            
+                  useSelection={true}   
+                           
               />
             </div>
         </div>

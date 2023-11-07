@@ -5408,7 +5408,6 @@ export const langKeys = {
   insuredamount: 'insuredamount',
   carriername: 'carriername',
   licensenum: 'licensenum',
-  /*New keys for Order List*/
   deliverynumber: 'deliverynumber',
   uniqueroutingcode: 'uniqueroutingcode',
   deliverytype: 'deliverytype',

@@ -84,19 +84,6 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata,
           optionValue="domainvalue"
           optionDesc="domaindesc"
         />
-        <FormControlLabel
-            control={
-            <IOSSwitch
-                checked={inStore}
-                onChange={(event) => {
-                    setValue('isInStore', event.target.checked)
-                    setInStore(event.target.checked)
-                }}
-                color='primary'
-            />}
-            label={t(langKeys.instorewarehouse)}
-            className="col-5"
-        />
         <FieldSelect
           label={t(langKeys.warehouse)}
           className="col-6"
@@ -107,6 +94,20 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata,
           optionValue="warehouseid"
           optionDesc="name"
         />
+        <FormControlLabel 
+          style={{paddingLeft:"10px"}}
+          control={
+          <IOSSwitch
+              checked={inStore}
+              onChange={(event) => {
+                  setValue('isInStore', event.target.checked)
+                  setInStore(event.target.checked)
+              }}
+              color='primary'
+          />}
+          label={t(langKeys.instorewarehouse)}
+          className="col-5"
+        />       
       </div>
     </div>
   );

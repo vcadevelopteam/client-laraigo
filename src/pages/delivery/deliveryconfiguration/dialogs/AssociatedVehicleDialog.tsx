@@ -91,7 +91,7 @@ const AssociatedVehicleDialog: React.FC<{
         />
         <FieldEdit
           label={t(langKeys.licensenum)}
-          type="number"
+          type="text"
           className="col-6"
         />
         

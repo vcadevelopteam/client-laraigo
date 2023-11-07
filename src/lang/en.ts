@@ -5493,7 +5493,6 @@ const translation: LangKeys = {
   insuredamount: 'Insured Amount',
   carriername: 'Carrier Name',
   licensenum: 'License No.',
-  /*New en for Order List*/
   deliverynumber: 'Delivery Number',
   uniqueroutingcode: 'Unique Routing Code',
   deliverytype: 'Delivery Type',
