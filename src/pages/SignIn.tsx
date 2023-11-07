@@ -265,10 +265,10 @@ const SignIn = () => {
         }
     }
 
-    const onGoogleLoginSucess = (r: AuthResponse) => {
-        if (r?.googleId) {
+    const onGoogleLoginSucess = (r: AuthResponse | GoogleLoginResponse | GoogleLoginResponseOffline) => {
+        if ((r as AuthResponse)?.googleId) {
             setshowError(true);
-            dispatch(login(null, null, null, r.googleId));
+            dispatch(login(null, null, null, (r as AuthResponse).googleId));
         }
     }
 
