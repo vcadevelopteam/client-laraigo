@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import Table from '@material-ui/core/Table';
 import Button from '@material-ui/core/Button';
@@ -43,7 +42,10 @@ import {
     useGlobalFilter,
     useSortBy,
     usePagination,
-    useRowSelect
+    useRowSelect,
+    Row,
+    FilterProps,
+    CellProps
 } from 'react-table'
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -589,14 +591,14 @@ const TableZyx = React.memo(({
                         case 'isnotempty':
                             return cellvalue !== '';
                         case 'isnull':
-                            return cellvalue == null;
+                            return cellvalue === null;
                         case 'isnotnull':
-                            return cellvalue != null;
+                            return cellvalue !== null;
                         case 'notcontains':
-                            return !(cellvalue + "").toLowerCase().includes(value.toLowerCase());
+                            return !(`${cellvalue}`).toLowerCase().includes(value.toLowerCase());
                         case 'contains':
                         default:
-                            return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
+                            return (`${cellvalue}`).toLowerCase().includes(value.toLowerCase());
                     }
             }
         });
@@ -605,10 +607,9 @@ const TableZyx = React.memo(({
     const defaultColumn = React.useMemo(
         () => ({
             // Let's set up our default Filter UI
-            Filter: (props: any) => DefaultColumnFilter({ ...props, data }),
+            Filter: (props: FilterProps<Dictionary>) => DefaultColumnFilter({ ...props, data }),
             filter: filterCellValue,
         }),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );
 
@@ -636,7 +637,7 @@ const TableZyx = React.memo(({
         data,
         initialState: { pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
         defaultColumn,
-        getRowId: (row, relativeIndex: any, parent: any) => selectionKey
+        getRowId: (row, relativeIndex: number, parent?: Row<Dictionary>) => selectionKey
             ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
             : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex),
     },
@@ -659,7 +660,7 @@ const TableZyx = React.memo(({
                             />
                         </div>
                     ),
-                    Cell: ({ row }: any) => (
+                    Cell: ({ row }: CellProps<Dictionary>) => (
 
                         <div>
                             {checkHistoryCenter === true ? <Checkbox
@@ -702,15 +703,13 @@ const TableZyx = React.memo(({
     }, [data])
 
     useEffect(() => {
-        let next = true;
-        if (fetchData && next) {
+        if (fetchData) {
             fetchData();
         }
     }, [fetchData])
 
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds]);
 
     useEffect(() => {
@@ -718,7 +717,6 @@ const TableZyx = React.memo(({
             toggleAllRowsSelected(true);
             setAllRowsSelected && setAllRowsSelected(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allRowsSelected])
 
     const RenderRow = React.useCallback(
@@ -1135,7 +1133,7 @@ const TableZyx = React.memo(({
         </Box>
     )
 });
-
+TableZyx.displayName = "TableZyx";
 export default TableZyx;
 
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
