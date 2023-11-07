@@ -2,7 +2,6 @@ import React, { FC, useState, useEffect, Fragment, useRef } from 'react'; // we 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,12 +19,11 @@ import { getAccessToken } from 'common/helpers';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin, { ReactFacebookFailureResponse } from 'react-facebook-login';
 import FacebookIcon from '@material-ui/icons/Facebook';
-import GoogleLogin from 'react-google-login';
+import GoogleLogin, { GoogleLoginResponse, GoogleLoginResponseOffline } from 'react-google-login';
 import { connectAgentUI } from 'store/inbox/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { useLocation } from "react-router-dom";
 import { apiUrls } from 'common/constants';
 import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
@@ -33,6 +31,7 @@ import { FieldEdit, DialogZyx } from 'components';
 import { recoverPassword } from 'store/subscription/actions';
 import ReCAPTCHA from 'react-google-recaptcha';
 import CloseIcon from '@material-ui/icons/Close';
+import ReactFacebookLogin from 'react-facebook-login';
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 
 export const useStyles = makeStyles((theme) => ({
@@ -214,6 +213,12 @@ type IAuth = {
     username: string,
     password: string
 }
+interface AuthResponse extends ReactFacebookLogin, ReactFacebookFailureResponse, GoogleLoginResponse, GoogleLoginResponseOffline {
+    code: string;
+    id: string;
+    error: string;
+}
+
 
 const SignIn = () => {
     const { t } = useTranslation();
@@ -222,18 +227,12 @@ const SignIn = () => {
 
     const classes = useStyles();
     const history = useHistory();
-    const location = useLocation();
     const resLogin = useSelector(state => state.login.login);
     const [showError, setshowError] = useState(false);
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const recaptchaRef = useRef<ReCAPTCHA | null>(null);
-
-    const handleCaptchaChange = (value: any) => {
-        console.log("validacion captcha")
-    };
-
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
@@ -250,30 +249,30 @@ const SignIn = () => {
         setOpenModal(true);
     }
 
-    const handleMouseDownPassword = (event: any) => event.preventDefault();
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault();
 
-    const onSubmitLogin = async (e: any) => {
+    const onSubmitLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const token = await recaptchaRef?.current?.executeAsync();
         setshowError(true);
         dispatch(login(dataAuth.username, dataAuth.password, "", "", token));
     }
 
-    const onAuthWithFacebook = (r: any) => {
+    const onAuthWithFacebook = (r: AuthResponse) => {
         if (r && r.id) {
             setshowError(true);
             dispatch(login(null, null, r.id));
         }
     }
 
-    const onGoogleLoginSucess = (r: any) => {
-        if (r && r.googleId) {
+    const onGoogleLoginSucess = (r: AuthResponse) => {
+        if (r?.googleId) {
             setshowError(true);
             dispatch(login(null, null, null, r.googleId));
         }
     }
 
-    const onGoogleLoginFailure = (event: any) => {
+    const onGoogleLoginFailure = (event: AuthResponse) => {
         console.warn('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
         if (event && event.error) {
             switch (event.error) {
@@ -305,13 +304,6 @@ const SignIn = () => {
             }
         }
     }
-
-    useEffect(() => {
-        const ff = location.state || {} as any;
-        if (ff?.showSnackbar) {
-            dispatch(showSnackbar({ show: true, severity: "success", message: ff?.message || "" }))
-        }
-    }, [location]);
 
     useEffect(() => {
         if (getAccessToken()) {
@@ -361,7 +353,6 @@ const SignIn = () => {
                                     <ReCAPTCHA
                                         ref={recaptchaRef}
                                         sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
-                                        onChange={handleCaptchaChange}
                                         size="invisible" // Set reCAPTCHA size to invisible
                                     />
                                     <TextField
@@ -496,7 +487,7 @@ const SignIn = () => {
     )
 }
 
-const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
+const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: boolean) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
