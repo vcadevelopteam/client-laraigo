@@ -406,23 +406,34 @@ const SignIn = () => {
                                             </Button>
                                             <FacebookLogin
                                                 appId={`${apiUrls.FACEBOOKAPP}`}
-                                                callback={onAuthWithFacebook}
-                                                cssClass={classes.button}
+                                                autoLoad={false}
                                                 buttonStyle={{ border: '1px solid #4D6BB7' }}
+                                                callback={onAuthWithFacebook}
                                                 containerStyle={{ width: "100%" }}
-                                                textButton={t(langKeys.login_with_facebook)}
-                                                icon={<FacebookIcon style={{ color: 'blue', marginRight: '8px' }} />}
+                                                cssClass={classes.button}
                                                 disableMobileRedirect={true}
+                                                fields="name,email,picture"
+                                                icon={<FacebookIcon style={{ color: 'blue', marginRight: '8px' }} />}
+                                                isDisabled={false}
+                                                textButton={t(langKeys.login_with_facebook)}
+                                                onClick={(e: any) => {
+                                                    e.view.window.FB.init({
+                                                        appId: apiUrls.FACEBOOKAPP,
+                                                        cookie: true,
+                                                        xfbml: true,
+                                                        version: apiUrls.FACEBOOKVERSION,
+                                                    });
+                                                }}
                                             />
                                             <GoogleLogin
-                                                clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
-                                                buttonText={t(langKeys.login_with_google)}
-                                                className={`${classes.button} ${classes.borderGoogle}`}
-                                                onSuccess={onGoogleLoginSucess}
-                                                onFailure={onGoogleLoginFailure}
-                                                cookiePolicy={'single_host_origin'}
                                                 accessType='online'
                                                 autoLoad={false}
+                                                buttonText={t(langKeys.login_with_google)}
+                                                className={`${classes.button} ${classes.borderGoogle}`}
+                                                clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
+                                                cookiePolicy={'single_host_origin'}
+                                                onFailure={onGoogleLoginFailure}
+                                                onSuccess={onGoogleLoginSucess}
                                             />
                                             <Button
                                                 variant="outlined"
