@@ -40,7 +40,7 @@ export interface TableConfig {
   filterGeneral?: boolean;
   hoverShadow?: boolean;
   loading?: boolean;
-  updateCell?(index: number, id: any, value: any): void;
+  updateCell?(index: number, id: string, value: string): void;
   updateColumn?(index: number[], id: any, value: any): void;
   skipAutoReset?: boolean;
   useSelection?: boolean;

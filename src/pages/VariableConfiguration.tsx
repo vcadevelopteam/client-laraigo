@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs } from 'components';
-import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insarrayVariableConfiguration } from 'common/helpers';
+import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, uploadCSV, insarrayVariableConfiguration, exportExcel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import TableZyxEditable from 'components/fields/table-editable';
@@ -14,6 +13,7 @@ import { getCollection, getMultiCollection, execute, getCollectionAux, resetMain
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { MoreVert as MoreVertIcon, GetApp as GetAppIcon, Publish as PublishIcon, Save as SaveIcon, Clear as ClearIcon } from '@material-ui/icons';
 import { chatblock_reset } from 'store/botdesigner/actions';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -59,58 +59,6 @@ const VariableConfiguration: FC = () => {
 
     const columns = React.useMemo(
         () => [
-            // {
-            //     accessor: 'chatblockid',
-            //     NoFilter: true,
-            //     isComponent: true,
-            //     Cell: (props: any) => {
-            //         const row = props.cell.row.original;
-            //         const id = props.cell.row.id;
-            //         return (
-            //             <React.Fragment>
-            //                 <IconButton
-            //                     aria-label="more"
-            //                     aria-controls="long-menu"
-            //                     aria-haspopup="true"    
-            //                     size="small"
-            //                     onClick={(e) => {
-            //                         e.stopPropagation();
-            //                         handleDownload(row);
-            //                     }}>
-            //                     <GetAppIcon
-            //                         titleAccess={t(langKeys.download)}
-            //                         style={{ color: '#B6B4BA' }} />
-            //                 </IconButton>
-            //                 <input
-            //                     id={`upload-file${id}`}
-            //                     name="file"
-            //                     type="file"
-            //                     accept="text/csv"
-            //                     value={valuefile}
-            //                     style={{ display: 'none' }}
-            //                     onChange={(e) => {
-            //                         handleUpload(row, e.target.files);
-            //                     }}
-            //                     onClick={(e) => {
-            //                         e.stopPropagation();
-            //                     }}
-            //                 />
-            //                 <label htmlFor={`upload-file${id}`}>
-            //                     <IconButton
-            //                         size="small"
-            //                         component="span"
-            //                         onClick={(e: any) => {
-            //                             e.stopPropagation();
-            //                         }}>
-            //                         <PublishIcon
-            //                             titleAccess={t(langKeys.import)}
-            //                             style={{ color: '#B6B4BA' }}/>
-            //                     </IconButton>
-            //                 </label> 
-            //             </React.Fragment>
-            //         )
-            //     }
-            // },
             {
                 accessor: 'chatblockid',
                 NoFilter: true,
@@ -118,7 +66,7 @@ const VariableConfiguration: FC = () => {
                 minWidth: 20,
                 maxWidth: 20,
                 width: 20,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     const id = props.cell.row.id;
                     return (
@@ -208,16 +156,23 @@ const VariableConfiguration: FC = () => {
 
     const downloadData = (data: Dictionary[]) => {
         if (data.length > 0) {
-            let mapdata = data.map(({ variable, description, fontcolor, fontbold, priority, visible }) => {
-                    return { variable, description, fontcolor, fontbold, priority, visible }
-            });
-            let filename = `variableconfiguration_${rowSelected.row?.title}.csv`;
-            downloadCSV(filename, mapdata);
+            const mapdata = data.map(({ variable, description, fontcolor, fontbold, priority, visible }) => ({ variable, description, fontcolor, fontbold, priority, visible }));
+            console.log("rowSelected.row", rowSelected)
+            const filename = `variableconfiguration_${rowSelected.row?.title}.csv`;
+            const columns = [
+                { accessor: "variable", Header: t(langKeys.variable) },
+                { accessor: "description", Header: t(langKeys.description) },
+                { accessor: "fontcolor", Header: t(langKeys.fontcolor) },
+                { accessor: "fontbold", Header: t(langKeys.fontbold) },
+                { accessor: "priority", Header: t(langKeys.priority) },
+                { accessor: "visible", Header: t(langKeys.visible) },
+            ]
+            exportExcel(filename, mapdata, columns)
         }
     }
 
-    const handleUpload = async (row: Dictionary, files: any) => {
-        const file = files[0];
+    const handleUpload = async (row: Dictionary, files: HTMLInputElement["files"]) => {
+        const file = files?.[0];
         const owner = (({ corpid, orgid, chatblockid }) => ({ corpid, orgid, chatblockid }))(row);
         const data = await uploadCSV(file, owner);
         setvaluefile('')
@@ -226,7 +181,7 @@ const VariableConfiguration: FC = () => {
         }
     }
 
-    const uploadData = (data: any) => {
+    const uploadData = (data: Dictionary[]) => {
         dispatch(showBackdrop(true));
         dispatch(execute(insarrayVariableConfiguration(data)));
         setWaitSave(true)
@@ -261,16 +216,16 @@ const VariableConfiguration: FC = () => {
         )
 }
 
-const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const detailResult = useSelector(state => state.main.mainAux);
     const executeRes = useSelector(state => state.main.execute);
-    
+
     const [waitSave, setWaitSave] = useState(false);
-    
-    const [dataTable, setDataTable] = useState<any[]>([]);
+
+    const [dataTable, setDataTable] = useState<Dictionary[]>([]);
     const [skipAutoReset, setSkipAutoReset] = useState(false)
 
     const fetchDetailData = (id: string) => dispatch(getCollectionAux(getVariableConfigurationSel(id)));
@@ -382,36 +337,36 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
     )
 
     const [updatingDataTable, setUpdatingDataTable] = useState(false);
-    const updateCell = (rowIndex: number, columnId: any, value: any) => {
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
         // We also turn on the flag to not reset the page
         setSkipAutoReset(true);
-        setDataTable((old: any) =>
-        old.map((row: any, index: number) => {
-            if (index === rowIndex) {
-                return {
-                    ...old[rowIndex],
-                    [columnId]: value,
+        setDataTable((old: Dictionary) =>
+            old.map((row: Dictionary, index: number) => {
+                if (index === rowIndex) {
+                    return {
+                        ...old[rowIndex],
+                        [columnId]: value,
+                    }
                 }
-            }
-            return row
-        })
+                return row
+            })
         )
         setUpdatingDataTable(!updatingDataTable);
     }
 
-    const updateColumn = (rowIndexs: number[], columnId: any, value: any) => {
+    const updateColumn = (rowIndexs: number[], columnId: string, value: string) => {
         // We also turn on the flag to not reset the page
         setSkipAutoReset(true);
-        setDataTable((old: any) =>
-        old.map((row: any, index: number) => {
-            if (rowIndexs.includes(index)) {
-                return {
-                    ...old[index],
-                    [columnId]: value,
+        setDataTable((old: Dictionary) =>
+            old.map((row: Dictionary, index: number) => {
+                if (rowIndexs.includes(index)) {
+                    return {
+                        ...old[index],
+                        [columnId]: value,
+                    }
                 }
-            }
-            return row
-        })
+                return row
+            })
         )
         setUpdatingDataTable(!updatingDataTable);
     }
@@ -485,7 +440,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ layoutKey, valuefi
         e.stopPropagation();
         setAnchorEl(null);
     };
-    
+
     return (
         <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
             <IconButton
