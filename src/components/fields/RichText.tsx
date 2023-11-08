@@ -253,8 +253,11 @@ export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor, se
             );
         }
         if (item.attachment && setFiles) {
-            const idd = new Date().toISOString()
-            setFiles((x: IFile[]) => [...x, { id: idd, url: item.attachment, type: 'file' }]);
+            const attachments = item.attachment.split(',')
+            attachments.forEach((element: string, index: number) => {
+                const uid = new Date().toISOString() + '_' + index;
+                setFiles((x: IFile[]) => [...x, { id: uid, url: element, type: 'file' }]);
+            });
         }
         setOpen(false);
     }
