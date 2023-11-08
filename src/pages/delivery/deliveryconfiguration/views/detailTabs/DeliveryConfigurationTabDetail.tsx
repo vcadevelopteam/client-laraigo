@@ -6,12 +6,13 @@ import Box from '@material-ui/core/Box';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, IOSSwitch } from 'components';
+import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, IOSSwitch, FieldSelect } from 'components';
 import TableZyx from "components/fields/table-simple";
 import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, Tooltip, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AssociatedVehicleDialog from '../../dialogs/AssociatedVehicleDialog';
 import { InfoRoundedIcon } from 'icons';
+import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
 
 
 
@@ -179,37 +180,53 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
 
     return (
         <div className={classes.containerDetail}>
-            <div className='row-zyx'>
-                <div className='col-2'>
+         
+
+            <div className='row-zyx'>     
+
+                <div className='col-2'>                                  
                     <FormControl component="fieldset" >
-                        <Typography />{t(langKeys.appointmenttype)}
+                        <TableZyx
+                            titlemodule={t(langKeys.appointmenttype)}     
+                            columns={[]}            
+                            data={[]}           
+                            filterGeneral={false}
+                            toolsFooter={false}                             
+                        />
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={automaticAppointment} onChange={(e) => setAutomaticAppointment(e.target.checked)} name="sun" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={automaticAppointment} onChange={(e) => setAutomaticAppointment(e.target.checked)} name="auto" />}
                                 label={t(langKeys.automatic)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={manualAppointment} onChange={(e) => setManualAppointment(e.target.checked)} name="mon" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={manualAppointment} onChange={(e) => setManualAppointment(e.target.checked)} name="man" />}
                                 label={t(langKeys.manual)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={defaultAppointment} onChange={(e) => setDefaultAppointment(e.target.checked)} name="tue" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={defaultAppointment} onChange={(e) => setDefaultAppointment(e.target.checked)} name="predef" />}
                                 label={t(langKeys.default2)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={immediateAppointment} onChange={(e) => setImmediateAppointment(e.target.checked)} name="wed" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={immediateAppointment} onChange={(e) => setImmediateAppointment(e.target.checked)} name="inme" />}
                                 label={t(langKeys.immediate)}
                             />
-                        </FormGroup>
+                        </FormGroup><></>
                     </FormControl>
-                </div>
+                </div> 
+
                 <div className='col-2'>
                     <FormControl component="fieldset" >
-                        <Typography />{t(langKeys.documentsissuance)}
+                        <TableZyx
+                            titlemodule={t(langKeys.documentsissuance)}     
+                            columns={[]}            
+                            data={[]}           
+                            filterGeneral={false}
+                            toolsFooter={false}                             
+                        />
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -226,12 +243,19 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={referralGuide} onChange={(e) => setReferralGuide(e.target.checked)} name="tue" />}
                                 label={t(langKeys.referralguide)}
                             />
-                        </FormGroup>
+                        </FormGroup><></>
                     </FormControl>
                 </div>
                 <div className='col-2'>
                     <FormControl component="fieldset" >
-                        <Typography />{t(langKeys.send_invoice)}
+                        <TableZyx
+                            titlemodule={t(langKeys.send_invoice)}     
+                            helperText={t(langKeys.send_invoice_helper_text)}
+                            columns={[]}            
+                            data={[]}           
+                            filterGeneral={false}
+                            toolsFooter={false}                             
+                        />                        
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -243,12 +267,20 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={email1} onChange={(e) => setEmail1(e.target.checked)} name="mon" />}
                                 label={t(langKeys.emitteremail)}
                             />
-                        </FormGroup>
+                        </FormGroup><></>
                     </FormControl>
                 </div>
                 <div className='col-2'>
                     <FormControl component="fieldset" >
-                        <Typography />{t(langKeys.sendnotification)}
+                        <TableZyx
+                            titlemodule={t(langKeys.sendnotification)}     
+                            helperText={t(langKeys.send_invoice_helper_text)}
+                            columns={[]}            
+                            data={[]}           
+                            filterGeneral={false}
+                            toolsFooter={false}                             
+                        />        
+                       
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -260,12 +292,18 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sendShipment} onChange={(e) => setSendShipment(e.target.checked)} name="mon" />}
                                 label={t(langKeys.sendduringshipment)}
                             />
-                        </FormGroup>
+                        </FormGroup><></>
                     </FormControl>
                 </div>
                 <div className='col-2'>
                     <FormControl component="fieldset" >
-                        <Typography />{t(langKeys.notificationtype)}
+                        <TableZyx
+                            titlemodule={t(langKeys.notificationtype)}     
+                            columns={[]}            
+                            data={[]}           
+                            filterGeneral={false}
+                            toolsFooter={false}                             
+                        />        
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -282,14 +320,21 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={email2} onChange={(e) => setEmail2(e.target.checked)} name="tue" />}
                                 label={t(langKeys.emitteremail)}
                             />
-                        </FormGroup>
+                        </FormGroup><></>
                     </FormControl>
                 </div>
                 <div className='col-2'>
                     <FormControl component="fieldset" >
+                          
                         <div style={{display:'flex'}}>
-                            <Typography />{t(langKeys.routinglogic)}
-                            <div style={{ width: 6 }} />
+                            <TableZyx
+                                titlemodule={t(langKeys.routinglogic)}     
+                                columns={[]}            
+                                data={[]}           
+                                filterGeneral={false}
+                                toolsFooter={false}                             
+                            />                                
+                        <div style={{ width: 6 }} />
                             <IOSSwitch checked={routingLogic} onChange={(e) => setRoutingLogic(e.target.checked)} name="checkedB" />
                         </div>
                         <FormGroup>
@@ -305,7 +350,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 label={t(langKeys.CAPACITY)}
                                 disabled={!routingLogic}
                             />
-                        </FormGroup>
+                        </FormGroup><></>
                     </FormControl>
                 </div>
             </div>
@@ -313,7 +358,13 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
             <div className='row-zyx'>
                 <div className='col-2'>
                     <FormControl component="fieldset" >
-                        <Typography />{t(langKeys.workingdays)}
+                        <TableZyx
+                            titlemodule={t(langKeys.workingdays)}     
+                            columns={[]}            
+                            data={[]}           
+                            filterGeneral={false}
+                            toolsFooter={false}                             
+                        />
                         <FormGroup>
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
@@ -356,44 +407,77 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sunday} onChange={(e) => setSunday(e.target.checked)} name="mon" />}
                                 label={t(langKeys.thursday)}
                             />
-                        </FormGroup>
+                        </FormGroup><></>
                     </FormControl>
-                </div>
+                </div>                
                 <div className='col-2'>
-                    <Typography />{t(langKeys.nonWorkingdays)}
+                    <TableZyx
+                            titlemodule={t(langKeys.nonWorkingdays)}     
+                            columns={[]}            
+                            data={[]}           
+                            filterGeneral={false}
+                            toolsFooter={false}                             
+                    />
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => setOpenModalNonWorkingDays(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.nonworkingdays)}
-                    </span>
+                    </span><></>
                 </div>
                 <div className='col-2'>
-                    <Typography />{t(langKeys.deliveryshifts)}
+                    <TableZyx
+                        titlemodule={t(langKeys.deliveryshifts)}     
+                        columns={[]}            
+                        data={[]}           
+                        filterGeneral={false}
+                        toolsFooter={false}                             
+                    />
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => setOpenModalDeliveryShifts(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.deliveryshifts)}
-                    </span>
+                    </span><></>
                 </div>
                 <div className='col-2'>
-                    <Typography />{t(langKeys.vehicletype)}
+                    <TableZyx
+                        titlemodule={t(langKeys.vehicletype)}     
+                        columns={[]}            
+                        data={[]}           
+                        filterGeneral={false}
+                        toolsFooter={false}                             
+                    />
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => setOpenModalVehicleType(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.vehicletype)}
-                    </span>
+                    </span><></>
                 </div>
                 <div className='col-2'>
                     <div style={{display:'flex'}}>
-                        <Typography />{t(langKeys.deliveryphotoorder)}
-                        <div style={{ width: 6 }} />
-                        <IOSSwitch checked={deliveryOrderPhoto} onChange={(e) => {setDeliveryOrderPhoto(e.target.checked)}} name="checkedB" />
+                        <div style={{display:'flex'}}>
+                                <TableZyx
+                                    titlemodule={t(langKeys.deliveryphotoorder)}     
+                                    columns={[]}            
+                                    data={[]}           
+                                    filterGeneral={false}
+                                    toolsFooter={false}                             
+                                />                                
+                            <div style={{ width: 6 }} />
+                                <IOSSwitch checked={deliveryOrderPhoto} onChange={(e) => {setDeliveryOrderPhoto(e.target.checked)}} name="checkedB" />
+                        </div>
+                        <div style={{ width: 1 }} />
                     </div>
                     <span style={{color: deliveryOrderPhoto ? 'blue' : 'grey', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => {
                         if(deliveryOrderPhoto) setOpenModalDeliveryOrderPhoto(true)
                     }}>
                         {t(langKeys.edit) + ' ' + t(langKeys.deliveryphotoorder)}
-                    </span>
+                    </span><></>
                 </div>
                 <div className='col-2'>
-                    <Typography />{t(langKeys.deliveryvalidationdistance)}
+                    <TableZyx
+                        titlemodule={t(langKeys.deliveryvalidationdistance)}     
+                        columns={[]}            
+                        data={[]}           
+                        filterGeneral={false}
+                        toolsFooter={false}                             
+                    />                     
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => setOpenModalCoincidenseMeters(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.coincidencemeters)}
-                    </span>
+                    </span><></><></>
                 </div>
             </div>
 
