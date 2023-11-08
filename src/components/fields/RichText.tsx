@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider, Popover, Typography } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider, Popper, Fade } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -165,6 +165,18 @@ const useRichTextStyles = makeStyles(theme => ({
         marginRight: 1,
         width: 16,
         height: 16
+    },
+    paper: {
+        background: 'white',
+        backgroundColor: theme.palette.background.paper,
+        zIndex: 10,
+        '& .MuiIconButton-root': {
+            padding: '5px',
+            fontSize: '10px'
+        }
+     },
+    toolbarOptionsIcons: {
+        padding: '5px'
     }
 }));
 
@@ -261,60 +273,59 @@ export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor, se
                     </IconButton>
                 </Tooltip>
                 {open && (
-                    <div style={{position: 'fixed'}}>
-                        <div style={{
-                            position: 'absolute',
-                            bottom: 60
-                        }}>
-                            <div className={classes.containerQuickReply}>
-                                <div>
-                                    {!showSearch ?
-                                        <div className={classes.headerQuickReply}>
-                                            <div >User Quick Response</div>
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => setShowSearch(true)} edge="end"
-                                            >
-                                                <SearchIcon />
-                                            </IconButton>
-
-                                        </div>
-                                        :
-                                        <TextField
-                                            color="primary"
-                                            fullWidth
-                                            autoFocus
-                                            placeholder="Search quickreplies"
-                                            style={{ padding: '6px 6px 6px 12px' }}
-                                            onBlur={() => !search && setShowSearch(false)}
-                                            onChange={e => setSearch(e.target.value)}
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton size="small">
-                                                            <SearchIcon />
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                )
-                                            }}
-                                        />
-                                    }
-                                </div>
-                                <Divider />
-                                <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
-                                    {quickRepliesToShow.map((item) => (
-                                        <ListItem
-                                            button
-                                            key={item.quickreplyid}
-                                            onClick={() => handlerClickItem(item)}
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 60,
+                        zIndex: 1201
+                    }}>
+                        <div className={classes.containerQuickReply}>
+                            <div>
+                                {!showSearch ?
+                                    <div className={classes.headerQuickReply}>
+                                        <div >User Quick Response</div>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => setShowSearch(true)} edge="end"
                                         >
-                                            <Tooltip title={item.quickreply} arrow placement="top">
-                                                <ListItemText primary={item.description} />
-                                            </Tooltip>
-                                        </ListItem>
-                                    ))}
-                                </List>
+                                            <SearchIcon />
+                                        </IconButton>
+
+                                    </div>
+                                    :
+                                    <TextField
+                                        color="primary"
+                                        fullWidth
+                                        autoFocus
+                                        placeholder="Search quickreplies"
+                                        style={{ padding: '6px 6px 6px 12px' }}
+                                        onBlur={() => !search && setShowSearch(false)}
+                                        onChange={e => setSearch(e.target.value)}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton size="small">
+                                                        <SearchIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                    />
+                                }
                             </div>
+                            <Divider />
+                            <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
+                                {quickRepliesToShow.map((item) => (
+                                    <ListItem
+                                        button
+                                        key={item.quickreplyid}
+                                        onClick={() => handlerClickItem(item)}
+                                    >
+                                        <Tooltip title={item.quickreply} arrow placement="top">
+                                            <ListItemText primary={item.description} />
+                                        </Tooltip>
+                                    </ListItem>
+                                ))}
+                            </List>
                         </div>
                     </div>
                 )}
@@ -401,21 +412,17 @@ export const RichText: FC<RichTextProps> = ({
     ...boxProps
 }) => {
     const classes = useRichTextStyles();
-    const { t } = useTranslation();
     const editor: BaseEditor & ReactEditor = useMemo(
         () => withImages(withHistory(withReact(createEditor()))),
         []
     );
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    const id = open ? "simple-popover" : undefined;
+    const id = open ? 'transitions-popper' : undefined;
+    
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(anchorEl ? null : event.currentTarget);
     };
 
     useEffect(() => {
@@ -446,31 +453,18 @@ export const RichText: FC<RichTextProps> = ({
                     <div>
                         {collapsed && (
                             <>
-                                <Tooltip title={String(t(langKeys.format_options))} arrow placement="top">
-                                    <IconButton aria-describedby={id} onClick={handleClick}>
-                                        <FormatColorText />
-                                    </IconButton>
-                                </Tooltip>
-
-                                <Popover
-                                    id={id}
-                                    open={open}
-                                    anchorEl={anchorEl}
-                                    onClose={handleClose}
-                                    anchorOrigin={{
-                                        vertical: "top",
-                                        horizontal: "center",
-                                    }}
-                                    transformOrigin={{
-                                        vertical: "bottom",
-                                        horizontal: "left",
-                                    }}
-                                >
-                                    <div
+                                <IconButton onClick={handleClick}>
+                                    <FormatColorText />
+                                </IconButton>
+                                <Popper id={id} className={classes.paper} open={open} anchorEl={anchorEl} placement={'top-start'} transition>
+                                    {({ TransitionProps }) => (
+                                    <Fade {...TransitionProps} timeout={350}>
+                                        <div
                                         style={{
-                                            padding: collapsed ? "20px" : "0px",
+                                            padding: collapsed ? "8px 8px" : "0px",
                                             display: "flex",
                                             alignItems: "center",
+                                            boxShadow: '0px 4px 5px 0px rgba(0,0,0,.14),0px 1px 10px 0px rgba(0,0,0,.12),0px 2px 4px -1px rgba(0,0,0,.2)'
                                         }}
                                     >
                                         <ToolBarOptions
@@ -486,7 +480,9 @@ export const RichText: FC<RichTextProps> = ({
                                             collapsed={collapsed}
                                         />
                                     </div>
-                                </Popover>
+                                    </Fade>
+                                    )}
+                                </Popper>
                             </>
                         )}
                         <div style={{ display: "inline-block" }}>{children}</div>
@@ -536,8 +532,9 @@ export const RichText: FC<RichTextProps> = ({
 
 const ToolBarOptions: React.FC<
     RichTextProps & { editor: BaseEditor & ReactEditor & HistoryEditor; collapsed: boolean }
-> = ({ editor, image, onlyurl }) => {
+> = ({ image, onlyurl }) => {
     const upload = useSelector((state) => state.main.uploadFile);
+    const editor = useSlate()
     const { t } = useTranslation();
 
     const handleUndo = () => {
