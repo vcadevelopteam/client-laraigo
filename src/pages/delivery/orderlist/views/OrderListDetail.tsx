@@ -23,6 +23,7 @@ interface RowSelected {
 
 interface DetailProps {
     data: RowSelected;
+    setViewSelected: (view: string) => void;
     fetchData?: any;
     fetchDataAux?: any;
 }
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, fetchDataAux }) => {
+const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -68,7 +69,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
-        { id: "detail-view", name: t(langKeys.orderlist) },
+        { id: "detail-view", name: t(langKeys.orderdetail) },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -85,12 +86,6 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData
             status: row?.status || 'ACTIVO'
         }
     });
-
-    const fetchWarehouseProducts = () => {
-        /*dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
-        );*/
-    }
 
     useEffect(() => {
         if (waitSave) {
@@ -136,27 +131,49 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData
     return (
         <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
-                        
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
+                            handleClick={(view) => {
+                                setViewSelected(view);
+                            }}
                         />
-                        <TitleDetail
-                            title={row?.name || `${t(langKeys.orderlist)}`}
-                        />
-                        
-                    </div>                  
+                        <div>            
+                            <TitleDetail
+                                title={t(langKeys.ordernum)}
+                            />                    
+                        </div>                                               
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => {
+                                setViewSelected("main-view")
+                            }}
+                        >{t(langKeys.back)}</Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}>
+                            {t(langKeys.save)}
+                        </Button>
+                    </div>
 
                 </div>
-                
                 <OrderListTabDetail                
                     row={row}
                     setValue={setValue}
                     getValues={getValues}
                     errors={errors}
                 />
-                
             </form>
         </>
     );

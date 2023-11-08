@@ -5549,6 +5549,8 @@ const translation: LangKeys = {
   selectshift: 'Select Shift',
   shift: 'Shift',
   y_o: 'and/or',
+  orderdetail: 'Order Detail',
+  ordernum: 'Order No.',
 };
 
 const enResource: ResourceLanguage = {

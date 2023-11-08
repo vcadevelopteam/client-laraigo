@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, resetAllMain } from "store/main/actions";
 import OrderListDetail from "./views/OrderListDetail";
+import OrderListMainView from "./views/OrderListMainView";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -25,6 +26,7 @@ const OrderList: FC = () => {
     row: null,
     edit: false,
   });
+  const [viewSelected, setViewSelected] = useState("main-view");
 
   const fetchData = ({
     pageSize,
@@ -56,13 +58,24 @@ const OrderList: FC = () => {
     };
   }, []);
   
-  return (
-    <OrderListDetail
-      data={rowSelected}
-      fetchData={fetchData}
-      fetchDataAux={fetchDataAux}
-    />
-  );
+  if(viewSelected === "main-view") {
+    return (
+      <OrderListMainView
+        setViewSelected={setViewSelected}
+        setRowSelected={setRowSelected}
+        fetchData={fetchData}
+        fetchDataAux={fetchDataAux}
+      />
+    );
+  } else
+    return (
+      <OrderListDetail
+        setViewSelected={setViewSelected}
+        data={rowSelected}
+        fetchData={fetchData}
+        fetchDataAux={fetchDataAux}
+      />
+    );
 };
 
 export default OrderList;

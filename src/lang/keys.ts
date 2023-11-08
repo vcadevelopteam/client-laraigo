@@ -5468,9 +5468,8 @@ export const langKeys = {
   selectshift: 'selectshift',
   shift: 'shift',
   y_o: 'y_o',
-
-
-  
+  orderdetail: 'orderdetail',
+  ordernum: 'ordernum',
 };
 
 export type LangKeys = typeof langKeys;

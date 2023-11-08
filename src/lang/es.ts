@@ -5478,6 +5478,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   selectshift: 'Seleccionar Turno',
   shift: 'Turno',
   y_o: 'y/o',
+  orderdetail: 'Detalle de Pedido',
+  ordernum: 'Nº de pedido',
 };
 
 const esResource: ResourceLanguage = {
