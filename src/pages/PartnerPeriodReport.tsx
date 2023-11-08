@@ -426,15 +426,15 @@ const PartnerPeriodReport: React.FC = () => {
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell align="right">{`${dataReport.symbol
                                                     }${formatNumber(
-                                                        parseFloat(dataReport.othercost)
+                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0)
                                                     )}`}</StyledTableCell>
                                                 <StyledTableCell align="right">{`${dataReport.symbol
                                                     }${formatNumber(
-                                                        parseFloat(dataReport.othercost) * dataReport.tax
+                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax
                                                     )}`}</StyledTableCell>
                                                 <StyledTableCell align="right">{`${dataReport.symbol
                                                     }${formatNumber(
-                                                        parseFloat(dataReport.othercost) * dataReport.tax_costneto
+                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax_costneto
                                                     )}`}</StyledTableCell>
                                             </StyledTableRow>
                                             <StyledTableRow>
@@ -576,13 +576,13 @@ const PartnerPeriodReport: React.FC = () => {
                                                         dataReport.typecalculation === 'Por contacto' ?
                                                         formatNumber(
                                                             parseFloat(dataReport.billingplanfee) +
-                                                            parseFloat(dataReport.othercost) +
+                                                            dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) +
                                                             (Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
                                                             - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts)
                                                         ) : 
                                                         formatNumber(
                                                             parseFloat(dataReport.billingplanfee) +
-                                                            parseFloat(dataReport.othercost) +
+                                                            dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) +
                                                             (Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
                                                             - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag)
                                                         )
@@ -593,13 +593,13 @@ const PartnerPeriodReport: React.FC = () => {
                                                         dataReport.typecalculation === 'Por contacto' ?
                                                         formatNumber(
                                                             (parseFloat(dataReport.billingplanfee) * dataReport.tax) +
-                                                            (parseFloat(dataReport.othercost) * dataReport.tax) +
+                                                            (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax) +
                                                             ((Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
                                                             - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts) * dataReport.tax)
                                                         ) : 
                                                         formatNumber(
                                                             (parseFloat(dataReport.billingplanfee) * dataReport.tax) +
-                                                            (parseFloat(dataReport.othercost) * dataReport.tax) +
+                                                            (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax) +
                                                             ((Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
                                                             - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax)
                                                         )
@@ -610,13 +610,13 @@ const PartnerPeriodReport: React.FC = () => {
                                                         dataReport.typecalculation === 'Por contacto' ?
                                                         formatNumber(
                                                             (parseFloat(dataReport.billingplanfee) * dataReport.tax_costneto) +
-                                                            (parseFloat(dataReport.othercost) * dataReport.tax_costneto) +
+                                                            (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax_costneto) +
                                                             ((Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
                                                             - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts) * dataReport.tax_costneto)
                                                         ) : 
                                                         formatNumber(
                                                             (parseFloat(dataReport.billingplanfee) * dataReport.tax_costneto) +
-                                                            (parseFloat(dataReport.othercost) * dataReport.tax_costneto) +
+                                                            (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax_costneto) +
                                                             ((Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
                                                             - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax_costneto)
                                                         )
