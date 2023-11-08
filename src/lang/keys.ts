@@ -5459,6 +5459,15 @@ export const langKeys = {
   sendduringshipment: 'sendduringshipment',
   insuredlimit: 'insuredlimit',
   CAPACITY: 'CAPACITY',
+  manualscheduling: 'manualscheduling',
+  rescheduling: 'rescheduling',
+  selectcancellationreason: 'selectcancellationreason',
+  selectcarrier: 'selectcarrier',
+  assigncarrier: 'assigncarrier',
+  selectdate: 'selectdate',
+  selectshift: 'selectshift',
+  shift: 'shift',
+  y_o: 'y_o',
 };
 
 export type LangKeys = typeof langKeys;

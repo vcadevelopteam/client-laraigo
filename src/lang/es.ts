@@ -5469,6 +5469,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   sendduringshipment: 'Enviar durante despacho',
   insuredlimit: 'Límite Asegurado',
   CAPACITY: 'Capacidad',
+  manualscheduling: 'Agendamiento Manual',
+  rescheduling: 'Reagendamiento',
+  selectcancellationreason: 'Seleccionar motivo de cancelación',
+  selectcarrier: 'Seleccionar transportista',
+  assigncarrier: 'Asignar transportista',
+  selectdate: 'Seleccionar Fecha',
+  selectshift: 'Seleccionar Turno',
+  shift: 'Turno',
+  y_o: 'y/o',
 };
 
 const esResource: ResourceLanguage = {

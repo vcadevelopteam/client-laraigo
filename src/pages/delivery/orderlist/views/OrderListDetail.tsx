@@ -150,8 +150,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData
 
                 </div>
                 
-                <OrderListTabDetail
-                
+                <OrderListTabDetail                
                     row={row}
                     setValue={setValue}
                     getValues={getValues}

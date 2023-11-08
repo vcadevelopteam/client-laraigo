@@ -1,21 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import {
-  TemplateBreadcrumbs,
-  TemplateIcons,
-  Title,
-  TitleDetail,
-} from "components";
+import { TemplateBreadcrumbs, TemplateIcons, Title, TitleDetail,} from "components";
 import { langKeys } from "lang/keys";
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
-import {
-  showSnackbar,
-  showBackdrop,
-  manageConfirmation,
-} from "store/popus/actions";
+import { showSnackbar, showBackdrop, manageConfirmation} from "store/popus/actions";
 import { useSelector } from "hooks";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
@@ -37,7 +28,6 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});

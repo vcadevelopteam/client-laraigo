@@ -5543,6 +5543,12 @@ const translation: LangKeys = {
   sendduringshipment: 'Send during shipment',
   insuredlimit: 'Insured limit',
   CAPACITY: 'Capacity',
+  selectcarrier: 'Select Carrier',
+  assigncarrier: 'Assign carrier',
+  selectdate: 'Select Date',
+  selectshift: 'Select Shift',
+  shift: 'Shift',
+  y_o: 'and/or',
 };
 
 const enResource: ResourceLanguage = {
