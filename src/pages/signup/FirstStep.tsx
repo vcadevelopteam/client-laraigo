@@ -1,5 +1,5 @@
 import { apiUrls } from "common/constants";
-import { Button, InputAdornment, IconButton, makeStyles, TextField } from "@material-ui/core";
+import { Button, CircularProgress, InputAdornment, IconButton, makeStyles, TextField } from "@material-ui/core";
 import { Controller, useFormContext } from "react-hook-form";
 import { executeCheckNewUser } from "store/signup/actions";
 import { Facebook, Visibility, VisibilityOff } from "@material-ui/icons";
@@ -106,6 +106,7 @@ const FirstStep: FC = () => {
 
     const [disableButton, setDisableButton] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
     const classes = useChannelAddStyles();
@@ -127,6 +128,18 @@ const FirstStep: FC = () => {
             }
         }
     }, [signUpState]);
+
+    useEffect(() => {
+        if (!showLogin) {
+            const time = setTimeout(() => {
+                setShowLogin(true);
+            }, 1000);
+
+            return () => {
+                clearTimeout(time);
+            };
+        }
+    }, [showLogin]);
 
     useEffect(() => {
         setDisableButton(selectedChannels < 0);
@@ -242,39 +255,50 @@ const FirstStep: FC = () => {
                 >
                     {t(langKeys.signupstep1title)}
                 </div>
-                <div className={classes.buttonfacebook}>
-                    <FacebookLogin
-                        appId={`${apiUrls.FACEBOOKAPP}`}
-                        autoLoad={false}
-                        buttonStyle={FacebookCustomButtonStyle}
-                        callback={onAuthWithFacebook}
-                        disableMobileRedirect={true}
-                        fields="name,email,picture"
-                        icon={<Facebook style={{ color: "white", marginRight: "8px" }} />}
-                        isDisabled={false}
-                        textButton={t(langKeys.signup_with_facebook)}
-                        onClick={(e: any) => {
-                            e.view.window.FB.init({
-                                appId: apiUrls.FACEBOOKAPP,
-                                cookie: true,
-                                xfbml: true,
-                                version: apiUrls.FACEBOOKVERSION,
-                            });
-                        }}
-                    />
-                </div>
-                <div className={classes.buttonGoogle}>
-                    <GoogleLogin
-                        accessType="online"
-                        autoLoad={false}
-                        buttonText={t(langKeys.signupgooglebutton)}
-                        clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
-                        cookiePolicy={"single_host_origin"}
-                        onFailure={onGoogleLoginFailure}
-                        onSuccess={onGoogleLoginSucess}
-                        style={{ borderRadius: "3px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                    />
-                </div>
+                {showLogin ? (
+                    <div>
+                        <div className={classes.buttonfacebook}>
+                            <FacebookLogin
+                                appId={`${apiUrls.FACEBOOKAPP}`}
+                                autoLoad={false}
+                                buttonStyle={FacebookCustomButtonStyle}
+                                callback={onAuthWithFacebook}
+                                disableMobileRedirect={true}
+                                fields="name,email,picture"
+                                icon={<Facebook style={{ color: "white", marginRight: "8px" }} />}
+                                isDisabled={false}
+                                textButton={t(langKeys.signup_with_facebook)}
+                                onClick={(e: any) => {
+                                    e.view.window.FB.init({
+                                        appId: apiUrls.FACEBOOKAPP,
+                                        cookie: true,
+                                        xfbml: true,
+                                        version: apiUrls.FACEBOOKVERSION,
+                                    });
+                                }}
+                            />
+                        </div>
+                        <div className={classes.buttonGoogle}>
+                            <GoogleLogin
+                                accessType="online"
+                                autoLoad={false}
+                                buttonText={t(langKeys.signupgooglebutton)}
+                                clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
+                                cookiePolicy={"single_host_origin"}
+                                onFailure={onGoogleLoginFailure}
+                                onSuccess={onGoogleLoginSucess}
+                                style={{
+                                    borderRadius: "3px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            />
+                        </div>
+                    </div>
+                ) : (
+                    <CircularProgress />
+                )}
                 <div className={classes.orSeparator}>
                     <div className={classes.separator} />
                     <div style={{ fontSize: 24, fontWeight: 500, color: "#989898" }}>
