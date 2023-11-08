@@ -5449,6 +5449,16 @@ export const langKeys = {
   requestedquantity: 'requestedquantity',
   send_invoice_helper_text: 'send_invoice_helper_text',
   sendnotification_helper_text: 'sendnotification_helper_text',
+
+  automatic: 'automatic',
+  default2: 'default2',
+  immediate: 'immediate',
+  sharevoucher: 'sharevoucher',
+  referralguide: 'referralguide',
+  sendduringscheduling: 'sendduringscheduling',
+  sendduringshipment: 'sendduringshipment',
+  insuredlimit: 'insuredlimit',
+  CAPACITY: 'CAPACITY',
 };
 
 export type LangKeys = typeof langKeys;

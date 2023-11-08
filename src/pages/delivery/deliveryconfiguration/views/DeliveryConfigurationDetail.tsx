@@ -162,7 +162,6 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => {setOpenModalDeliverySchedules(true)}}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
@@ -182,6 +181,11 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     setValue={setValue}
                     getValues={getValues}
                     errors={errors}
+                    setOpenModalNonWorkingDays={setOpenModalNonWorkingDays}
+                    setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
+                    setOpenModalVehicleType={setOpenModalVehicleType}
+                    setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
+                    setOpenModalCoincidenseMeters={setOpenModalCoincidenceMeters}
                 />
 
                 <CoincidenceMetersDialog

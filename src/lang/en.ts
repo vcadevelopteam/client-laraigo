@@ -5534,7 +5534,15 @@ const translation: LangKeys = {
   requestedquantity: 'Requested Quantity',
   send_invoice_helper_text: 'Please note that there is an additional cost for sending the voucher',
   sendnotification_helper_text: 'Please note that there is an additional cost for sending the notification',
-
+  automatic: 'Automatic',
+  default2: 'Default',
+  immediate: 'Immediate',
+  sharevoucher: 'Share Voucher',
+  referralguide: 'Referral Guide',
+  sendduringscheduling: 'Send during scheduling',
+  sendduringshipment: 'Send during shipment',
+  insuredlimit: 'Insured limit',
+  CAPACITY: 'Capacity',
 };
 
 const enResource: ResourceLanguage = {
