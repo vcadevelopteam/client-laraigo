@@ -21,12 +21,14 @@ import {
     EmojiEmotions as EmojiEmotionsIcon,
     FormatAlignLeft as FormatAlignLeftIcon,
     FormatColorText,
+    Undo as UndoIcon,
+    Redo as RedoIcon,
 } from '@material-ui/icons';
 import { emojis } from "common/constants/emojis";
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSlate, useSlateStatic, useSelected, useFocused } from 'slate-react';
-import { withHistory } from 'slate-history';
+import { HistoryEditor, withHistory } from 'slate-history';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ReactDomServer from 'react-dom/server';
@@ -341,34 +343,33 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                     </Tooltip>
                 )}
                 {open && (
-                    <div style={{position: 'fixed'}}>
-                        <div style={{
-                            position: 'absolute',
-                            bottom: 100
-                        }}>
-                            <Picker
-                                onSelect={(e) => { setOpen(false); onSelect(e) }}
-                                native={true}
-                                sheetSize={32}
-                                i18n={{
-                                    search: t(langKeys.search),
-                                    categories: {
-                                        search: t(langKeys.search_result),
-                                        recent: t(langKeys.favorites),
-                                        people: t(langKeys.emoticons),
-                                        nature: t(langKeys.animals),
-                                        foods: t(langKeys.food),
-                                        activity: t(langKeys.activities),
-                                        places: t(langKeys.travel),
-                                        objects: t(langKeys.objects),
-                                        symbols: t(langKeys.symbols),
-                                        flags: t(langKeys.flags),
-                                    }
-                                }}
-                                recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
-                                emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
-                            />
-                        </div>
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 100,
+                        zIndex: 1200
+                    }}>
+                        <Picker
+                            onSelect={(e) => { setOpen(false); onSelect(e) }}
+                            native={true}
+                            sheetSize={32}
+                            i18n={{
+                                search: t(langKeys.search),
+                                categories: {
+                                    search: t(langKeys.search_result),
+                                    recent: t(langKeys.favorites),
+                                    people: t(langKeys.emoticons),
+                                    nature: t(langKeys.animals),
+                                    foods: t(langKeys.food),
+                                    activity: t(langKeys.activities),
+                                    places: t(langKeys.travel),
+                                    objects: t(langKeys.objects),
+                                    symbols: t(langKeys.symbols),
+                                    flags: t(langKeys.flags),
+                                }
+                            }}
+                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
+                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
+                        />
                     </div>
                 )}
             </span>
@@ -379,27 +380,43 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
-    , endinput, emojiNoShow, emojiFavorite, emoji = false,quickReplies=[], setFiles, collapsed = false, ...boxProps }) => {
+export const RichText: FC<RichTextProps> = ({
+    value,
+    refresh = 0,
+    onChange,
+    placeholder,
+    image = true,
+    spellCheck,
+    error,
+    positionEditable = "bottom",
+    children,
+    onlyurl = false,
+    endinput,
+    emojiNoShow,
+    emojiFavorite,
+    emoji = false,
+    quickReplies = [],
+    setFiles,
+    collapsed = false,
+    ...boxProps
+}) => {
     const classes = useRichTextStyles();
     const { t } = useTranslation();
-    // Create a Slate editor object that won't change across renders.
-    const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
-    // const upload = useSelector(state => state.main.uploadFile);
-    // const [valueg, setvalueg] = useState(value)
+    const editor: BaseEditor & ReactEditor = useMemo(
+        () => withImages(withHistory(withReact(createEditor()))),
+        []
+    );
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const id = open ? "simple-popover" : undefined;
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
-      };
-    
-      const handleClose = () => {
+    };
+
+    const handleClose = () => {
         setAnchorEl(null);
-      };
-
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
-
+    };
 
     useEffect(() => {
         //evitar q en cada cmbio re-renderice, solo en casos q el componente q llama lo requiera (ejemplo replypanel)
@@ -410,32 +427,27 @@ export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, plac
             };
             editor.children = value;
         }
-    }, [refresh])
+    }, [refresh]);
 
     return (
         <Box {...boxProps}>
-            <Slate editor={editor} value={value} onChange={onChange} >
-                {positionEditable === "top" &&
-                <div
-                className={classes.editable}>
-
-                    <Editable
-                        placeholder={placeholder}
-                        renderElement={renderElement}
-                        renderLeaf={renderLeaf}
-                        spellCheck={spellCheck}
-                    />
-                </div>
-                }
+            <Slate editor={editor} value={value} onChange={onChange}>
+                {positionEditable === "top" && (
+                    <div className={classes.editable}>
+                        <Editable
+                            placeholder={placeholder}
+                            renderElement={renderElement}
+                            renderLeaf={renderLeaf}
+                            spellCheck={spellCheck}
+                        />
+                    </div>
+                )}
                 <Toolbar className={classes.toolbar}>
                     <div>
-                        <div style={{ display: "inline-block" }}>
-                            {children}
-                        </div>
                         {collapsed && (
                             <>
                                 <Tooltip title={String(t(langKeys.format_options))} arrow placement="top">
-                                    <IconButton aria-describedby={id} onClick={handleClick} style={{paddingTop: 0}}>
+                                    <IconButton aria-describedby={id} onClick={handleClick}>
                                         <FormatColorText />
                                     </IconButton>
                                 </Tooltip>
@@ -446,22 +458,27 @@ export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, plac
                                     anchorEl={anchorEl}
                                     onClose={handleClose}
                                     anchorOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'center',
+                                        vertical: "top",
+                                        horizontal: "center",
                                     }}
                                     transformOrigin={{
-                                        vertical: 'bottom',
-                                        horizontal: 'left',
+                                        vertical: "bottom",
+                                        horizontal: "left",
                                     }}
                                 >
-                                    <div style={{padding: collapsed ? '20px' : '0px' , display: 'flex', alignItems: 'center'}}>
-                                        <ToolBarOptions 
+                                    <div
+                                        style={{
+                                            padding: collapsed ? "20px" : "0px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <ToolBarOptions
                                             value={value}
                                             onChange={onChange}
                                             emoji={emoji}
                                             quickReplies={quickReplies}
-                                            setFiles={setFiles}
-                                            editor={editor}
+                                            editor={editor as BaseEditor & ReactEditor & HistoryEditor}
                                             image={image}
                                             onlyurl={onlyurl}
                                             emojiNoShow={emojiNoShow}
@@ -472,14 +489,26 @@ export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, plac
                                 </Popover>
                             </>
                         )}
+                        <div style={{ display: "inline-block" }}>{children}</div>
+                        {quickReplies.length > 0 && (
+                            <QuickReply quickReplies={quickReplies} editor={editor} setFiles={setFiles}></QuickReply>
+                        )}
+                        {emoji && (
+                            <EmojiPickerZyx
+                                emojisIndexed={EMOJISINDEXED}
+                                onSelect={(e) => editor.insertText(e.native)}
+                                emojisNoShow={emojiNoShow}
+                                emojiFavorite={emojiFavorite}
+                            />
+                        )}
+
                         {!collapsed && (
-                            <ToolBarOptions 
+                            <ToolBarOptions
                                 value={value}
                                 onChange={onChange}
                                 emoji={emoji}
                                 quickReplies={quickReplies}
-                                setFiles={setFiles}
-                                editor={editor}
+                                editor={editor as BaseEditor & ReactEditor & HistoryEditor}
                                 image={image}
                                 onlyurl={onlyurl}
                                 emojiNoShow={emojiNoShow}
@@ -488,79 +517,105 @@ export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, plac
                             />
                         )}
                     </div>
-                    <div style={{ marginLeft: "auto", marginRight: 0 }}>
-                        {endinput}
-                    </div>
+                    <div style={{ marginLeft: "auto", marginRight: 0 }}>{endinput}</div>
                 </Toolbar>
-                {positionEditable !== "top" &&
+                {positionEditable !== "top" && (
                     <Editable
                         placeholder={placeholder}
                         renderElement={renderElement}
                         renderLeaf={renderLeaf}
                         spellCheck={spellCheck}
-                        style={{borderTop: "1.5px dotted #949494"}}
+                        style={{ borderTop: "1.5px dotted #949494" }}
                     />
-                }
+                )}
             </Slate>
-            {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
-        </Box >
+            {error && error !== "" && <FormHelperText error>{error}</FormHelperText>}
+        </Box>
     );
-}
+};
 
-const ToolBarOptions: React.FC<RichTextProps & {editor: any, collapsed: boolean}> = ({emoji, quickReplies, setFiles, editor, image, onlyurl, emojiNoShow, emojiFavorite, collapsed = false}) => {
-    const upload = useSelector(state => state.main.uploadFile);
+const ToolBarOptions: React.FC<
+    RichTextProps & { editor: BaseEditor & ReactEditor & HistoryEditor; collapsed: boolean }
+> = ({ editor, image, onlyurl }) => {
+    const upload = useSelector((state) => state.main.uploadFile);
+    const { t } = useTranslation();
+
+    const handleUndo = () => {
+        if (editor.history.undos.length > 0) {
+            editor.undo();
+            ReactEditor.focus(editor);
+        }
+    };
+
+    const handleRedo = () => {
+        if (editor.history.redos.length > 0) {
+            editor.redo();
+            ReactEditor.focus(editor);
+        }
+    };
 
     return (
         <>
-            <FontFamily tooltip='font'></FontFamily>
-            <FormatSizeMenu tooltip='size'></FormatSizeMenu>
-            {quickReplies.length > 0 && (
-                <QuickReply quickReplies={quickReplies} editor={editor} setFiles={setFiles}></QuickReply>
-            )}
-            {emoji && <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
-            <MarkButton format="bold" tooltip='bold'>
+            <IconButton onClick={handleUndo}>
+                <Tooltip title={String(t(langKeys.undo))} arrow placement="top">
+                    <UndoIcon />
+                </Tooltip>
+            </IconButton>
+            <IconButton onClick={handleRedo}>
+                <Tooltip title={String(t(langKeys.redo))} arrow placement="top">
+                    <RedoIcon />
+                </Tooltip>
+            </IconButton>
+            <FontFamily tooltip="font"></FontFamily>
+            <FormatSizeMenu tooltip="size"></FormatSizeMenu>
+            <MarkButton format="bold" tooltip="bold">
                 <FormatBoldIcon />
             </MarkButton>
-            <MarkButton format="italic" tooltip='italic'>
+            <MarkButton format="italic" tooltip="italic">
                 <FormatItalicIcon />
             </MarkButton>
-            <MarkButton format="underline" tooltip='underline'>
+            <MarkButton format="underline" tooltip="underline">
                 <FormatUnderlinedIcon />
             </MarkButton>
-            <TextColor tooltip='size'></TextColor>
-            <Alignment tooltip='alignment'></Alignment>
-            <BlockButton format="numbered-list" tooltip='numbered_list'>
+            <TextColor tooltip="size"></TextColor>
+            <Alignment tooltip="alignment"></Alignment>
+            <BlockButton format="numbered-list" tooltip="numbered_list">
                 <FormatListNumberedIcon />
             </BlockButton>
-            <BlockButton format="bulleted-list" tooltip='bulleted_list'>
+            <BlockButton format="bulleted-list" tooltip="bulleted_list">
                 <FormatListBulletedIcon />
             </BlockButton>
-            <MarkButton format="code" tooltip='code'>
+            <MarkButton format="code" tooltip="code">
                 <FormatCodeIcon />
             </MarkButton>
-            <BlockButton format="heading-one" tooltip='heading_one'>
+            <BlockButton format="heading-one" tooltip="heading_one">
                 <FormatLooksOneIcon />
             </BlockButton>
-            <BlockButton format="heading-two" tooltip='heading_two'>
+            <BlockButton format="heading-two" tooltip="heading_two">
                 <FormatLooksTwoIcon />
             </BlockButton>
-            <BlockButton format="block-quote" tooltip='block_quote'>
+            <BlockButton format="block-quote" tooltip="block_quote">
                 <FormatQuoteIcon />
             </BlockButton>
-            {(image && onlyurl) &&
+            {image && onlyurl && (
                 <OnlyURLInsertImageButton>
                     <InsertPhotoIcon />
                 </OnlyURLInsertImageButton>
-            }
+            )}
             {upload.loading && (
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 8 }}>
                     <CircularProgress size={24} />
-                    <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
+                    <span>
+                        <strong>
+                            <Trans i18nKey={langKeys.loadingImage} />
+                            ...
+                        </strong>
+                    </span>
                 </div>
             )}
         </>
-    )
-}
+    );
+};
 
 
 /**Renderiza el texto seleccionado con cierto estilo */
