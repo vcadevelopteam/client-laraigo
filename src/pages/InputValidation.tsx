@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -16,6 +15,7 @@ import { getCollection, resetAllMain, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { DuplicateIcon } from 'icons';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -25,7 +25,7 @@ interface DetailInputValidationProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     fetchData: () => void;
-    arrayBread:any;
+    arrayBread: Array<{ id: string, name: string }>;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { row, edit }, setViewSelected, fetchData,arrayBread }) => {
+const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { row, edit }, setViewSelected, fetchData, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -52,10 +52,10 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: edit?(row?.inputvalidationid || 0):0,
-            description: edit?(row?.description || ""):"",
+            id: edit ? (row?.inputvalidationid || 0) : 0,
+            description: edit ? (row?.description || "") : "",
             inputvalue: row?.inputvalue || '',
-            operation: edit?(row ? "EDIT" : "INSERT"):"INSERT",
+            operation: edit ? (row ? "EDIT" : "INSERT") : "INSERT",
             status: "ACTIVO",
         }
     });
@@ -81,7 +81,7 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
             }
         }
     }, [executeRes, waitSave])
-    
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(inputValidationins(data)));
@@ -97,7 +97,7 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
     });
 
     return (
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -106,10 +106,10 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={edit?(row ? `${row.description}` : t(langKeys.newinputvalidation)): t(langKeys.newinputvalidation)}
+                            title={edit ? (row ? `${row.description}` : t(langKeys.newinputvalidation)) : t(langKeys.newinputvalidation)}
                         />
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center'  }}>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
                             variant="contained"
                             type="button"
@@ -132,21 +132,21 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.description)} 
+                            label={t(langKeys.description)}
                             className="col-6"
                             onChange={(value) => setValue('description', value)}
-                            valueDefault={edit?(row?.description || "") : ""}
-                            error={errors?.description?.message}
+                            valueDefault={edit ? (row?.description || "") : ""}
+                            error={`${errors?.description?.message}`}
                         />
                         <FieldEdit
-                            label={t(langKeys.value)} 
+                            label={t(langKeys.value)}
                             className="col-6"
                             onChange={(value) => setValue('inputvalue', value)}
                             valueDefault={row?.inputvalue || ""}
-                            error={errors?.inputvalue?.message}
+                            error={`${errors?.inputvalue?.message}`}
                         />
                     </div>
-                    
+
                 </div>
             </form>
         </div>
@@ -165,7 +165,7 @@ const InputValidation: FC = () => {
     const arrayBread = [
         { id: "view-1", name: t(langKeys.inputvalidation) },
     ];
-    function redirectFunc(view:string){
+    function redirectFunc(view: string) {
         setViewSelected(view)
     }
 
@@ -174,10 +174,11 @@ const InputValidation: FC = () => {
             {
                 accessor: 'inputvalidationid',
                 NoFilter: true,
+                disableGlobalFilter: true,
                 isComponent: true,
-                minWidth:60,
+                minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -202,7 +203,7 @@ const InputValidation: FC = () => {
                 accessor: 'inputvalue',
                 NoFilter: true,
             },
-            
+
         ],
         [t]
     );
