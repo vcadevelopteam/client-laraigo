@@ -228,7 +228,8 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
     const person = useSelector((state) => state.inbox.person.data);
     const [copySelected, setCopySelected] = React.useState<Dictionary>({ cc: false, cco: false });
     const interactionList = useSelector((state) => state.inbox.interactionList);
-
+    const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
+    
     const resetCopySelected = () => {
         setCopySelected({ cc: Boolean(emailCopy.length), cco: Boolean(emailCoCopy.length) });
     };
@@ -240,10 +241,10 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
     useEffect(() => {
         if (interactionList?.data[0]?.emailcopy) {
             const copyEmails = interactionList.data[0].emailcopy.split(';')
-            setEmailCopy(preV => [...preV, ...copyEmails])
+            setEmailCopy(copyEmails)
             setCopySelected(preV => ({...preV, cc: true}))
         }
-    }, [interactionList]);
+    }, [ticketSelected]);
 
     return (
         <ClickAwayListener onClickAway={resetCopySelected}>
