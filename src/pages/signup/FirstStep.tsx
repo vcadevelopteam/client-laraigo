@@ -142,7 +142,7 @@ const FirstStep: FC = () => {
     }, [showLogin]);
 
     useEffect(() => {
-        setDisableButton(selectedChannels < 0);
+        setDisableButton(selectedChannels < 1);
     }, [selectedChannels]);
 
     const openTermsOfService = () => {
