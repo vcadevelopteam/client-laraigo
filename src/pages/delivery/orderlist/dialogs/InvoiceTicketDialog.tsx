@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PrintDialog: React.FC<{
+const InvoiceTicketDialog: React.FC<{
   openModal: boolean;
   setOpenModal: (dat: boolean) => void;
 }> = ({ openModal, setOpenModal }) => {
@@ -60,13 +60,22 @@ const PrintDialog: React.FC<{
       </div>
       <img style={{textAlign: "center"}} src="https://www.invoiceowl.com/wp-content/uploads/2023/02/freight-invoice-banner-template.svg" alt="Invoice"></img>
 
-      <div className="row-zyx" style={{justifyContent: "center", margin:"0rem 8rem 1rem 9rem"}}>
+      <div style={{display:"flex", justifyContent: "center", margin:"0rem 1rem"}}>
         <Button
           className={classes.button}
           variant="contained"
           color="primary"
           type="button"
-          style={{ backgroundColor: "#55BD84" }}        
+          style={{ backgroundColor: "#55BD84", padding:"0 2rem" }}        
+        >
+        {t(langKeys.download)}
+        </Button> 
+        <Button
+          className={classes.button}
+          variant="contained"
+          color="primary"
+          type="button"
+          style={{ backgroundColor: "#55BD84", padding:"0 2rem" }}        
         >
         {t(langKeys.print)}
         </Button> 
@@ -76,4 +85,4 @@ const PrintDialog: React.FC<{
   );
 };
 
-export default PrintDialog;
+export default InvoiceTicketDialog;

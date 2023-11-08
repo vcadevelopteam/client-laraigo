@@ -5468,6 +5468,9 @@ export const langKeys = {
   selectshift: 'selectshift',
   shift: 'shift',
   y_o: 'y_o',
+
+
+  
 };
 
 export type LangKeys = typeof langKeys;

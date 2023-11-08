@@ -5,10 +5,11 @@ import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
+import DoneIcon from "@material-ui/icons/Done";
+
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PrintDialog: React.FC<{
+const InvoiceShareDialog: React.FC<{
   openModal: boolean;
   setOpenModal: (dat: boolean) => void;
 }> = ({ openModal, setOpenModal }) => {
@@ -42,10 +43,21 @@ const PrintDialog: React.FC<{
 }, [executeRes, waitSave])
   
   return (
-    <DialogZyx open={openModal} title="" maxWidth="sm">
-          
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
+    <DialogZyx open={openModal} title={t(langKeys.postcreator_publish_facebookmockup_share) + " " + t(langKeys.receipt)} maxWidth="sm">
+      
+      <div className="row-zyx" style={{justifyContent: "center"}}>
+        <FieldSelect
+          label={t(langKeys.select) + " " + t(langKeys.email) + "/" + t(langKeys.sms)} 
+          className="col-12"
+          data={[]}
+          optionValue="warehouseid"
+          optionDesc="name"
+        />       
+      </div>    
+
+      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", justifyContent: "end" }}>
         <Button
+          className={classes.button}
           variant="contained"
           type="button"
           color="primary"
@@ -56,24 +68,24 @@ const PrintDialog: React.FC<{
           }}
         >
           {t(langKeys.back)}
-        </Button>       
-      </div>
-      <img style={{textAlign: "center"}} src="https://www.invoiceowl.com/wp-content/uploads/2023/02/freight-invoice-banner-template.svg" alt="Invoice"></img>
-
-      <div className="row-zyx" style={{justifyContent: "center", margin:"0rem 8rem 1rem 9rem"}}>
+        </Button>
         <Button
           className={classes.button}
           variant="contained"
           color="primary"
           type="button"
+          startIcon={<DoneIcon color="secondary" />}
           style={{ backgroundColor: "#55BD84" }}        
         >
-        {t(langKeys.print)}
+        {t(langKeys.send)}
         </Button> 
-      </div>
+
+      
+       
+      </div>     
 
     </DialogZyx>
   );
 };
 
-export default PrintDialog;
+export default InvoiceShareDialog;
