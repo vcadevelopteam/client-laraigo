@@ -129,7 +129,7 @@ const FirstStep: FC = () => {
     }, [signUpState]);
 
     useEffect(() => {
-        setDisableButton(selectedChannels < 0);
+        setDisableButton(selectedChannels < 1);
     }, [selectedChannels]);
 
     const openTermsOfService = () => {
