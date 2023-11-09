@@ -10,6 +10,8 @@ import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch, I
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
+import TableZyx from 'components/fields/table-simple';
+import { Typography } from '@material-ui/core';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -144,11 +146,52 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
       }
     }, [executeResult, waitSave]);
 
+
+    const columns = React.useMemo(
+      () => [   
+        {
+          Header: t(langKeys.product),
+          accessor: "product",
+          width: "auto",
+        },
+        {
+          Header: t(langKeys.unitaryprice),
+          accessor: "unitaryprice",
+          width: "auto",
+        },   
+        {
+          Header: t(langKeys.quantity),
+          accessor: "quantity",
+          width: "auto",
+        },
+        {
+          Header: t(langKeys.totalamount),
+          accessor: "totalamount",
+          width: "auto",
+        },  
+      ],
+      []
+    );
+
+
+    
+
     return (
       <div className={classes.containerDetail}>
         <div className='row-zyx'>
           <TitleDetail title={t(langKeys.orderlist)} />
         </div>
+        <div className="row-zyx">
+          <TableZyx
+            columns={columns}            
+            data={[]}           
+            filterGeneral={false}
+            toolsFooter={false}            
+          />          
+        </div>
+        <Typography style={{textAlign:"right", padding:"2rem 2rem 0 0", fontSize:"1rem"}}>
+              {t(langKeys.totallistprice) + ": 00.00"}
+        </Typography>         
       </div>
     )
 }

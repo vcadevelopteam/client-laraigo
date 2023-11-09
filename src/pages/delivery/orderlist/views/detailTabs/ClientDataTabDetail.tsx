@@ -150,7 +150,7 @@ const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({
             <TitleDetail title={t(langKeys.clientdata)}/>
           </div>
           <div className='col-4'>
-            <TitleDetail title={t(langKeys.deliveryaddress)}/>
+            <TitleDetail title={t(langKeys.receptionistdata)}/>
           </div>
         </div>
         <div className='row-zyx'>

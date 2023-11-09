@@ -5479,6 +5479,9 @@ export const langKeys = {
   vouchertype: 'vouchertype',
   data4voucher: 'data4voucher',
   rucnumber: 'rucnumber',
+  totallistprice: 'totallistprice',
+  geolocation: 'geolocation',
+  address_found_in_geolocator: 'address_found_in_geolocator',
 };
 
 export type LangKeys = typeof langKeys;

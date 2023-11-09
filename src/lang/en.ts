@@ -5560,6 +5560,11 @@ const translation: LangKeys = {
   vouchertype: 'Voucher type',
   data4voucher: 'Data for Voucher',
   rucnumber: 'Nº RUC',
+  totallistprice: 'Total List Price',
+  geolocation: 'Geolocation',
+  address_found_in_geolocator: 'Address found in the Geolocator',
+
+
 };
 
 const enResource: ResourceLanguage = {

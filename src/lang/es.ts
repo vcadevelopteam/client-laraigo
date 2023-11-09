@@ -5489,6 +5489,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   vouchertype: 'Tipo de comprobante',
   data4voucher: 'Datos para Comprobante',
   rucnumber: 'Nº RUC',
+  totallistprice: 'Precio Total de la Lista',
+  geolocation: 'Geolocalización',
+  address_found_in_geolocator: 'Dirección encontrada en el Geolocalizador',
 };
 
 const esResource: ResourceLanguage = {

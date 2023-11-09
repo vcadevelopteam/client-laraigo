@@ -10,6 +10,7 @@ import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch, I
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
+import { Typography } from '@material-ui/core';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -149,6 +150,33 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({
         <div className='row-zyx'>
           <TitleDetail title={t(langKeys.deliveryaddress)} />
         </div>
+
+         <Typography style={{textAlign:"left", padding:"2rem 2rem 2rem 0", fontSize:"1.3rem"}}>
+            {t(langKeys.geolocation)}
+        </Typography> 
+
+        <div className='row-zyx' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <img style={{ width: '60%' }} src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/191:100/w_1280,c_limit/GoogleMapTA.jpg" alt="Invoice" />
+          <Typography style={{ textAlign:"center", padding: '1rem 0rem 3rem 0', fontSize: '1rem', color: 'gray' }}>
+            {t(langKeys.address_found_in_geolocator)}
+          </Typography>
+        </div>      
+
+        <div className='row-zyx' style={{gap:"1rem"}}>
+          <FieldEdit
+            label={t(langKeys.latitude) + ": "}
+            disabled={true}
+            className="col-12"
+          />
+          <FieldEdit
+            label={t(langKeys.longitude)+ ": "}
+            disabled={true}
+            className="col-12"
+          />
+         
+        </div>
+       
+
       </div>
     )
 }
