@@ -1,21 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, CSSProperties } from 'react'; 
+import React, { useState } from 'react'; 
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, IOSSwitch, FieldSelect } from 'components';
+import { TitleDetail, TemplateIcons, IOSSwitch } from 'components';
 import TableZyx from "components/fields/table-simple";
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, Tooltip, Typography } from '@material-ui/core';
+import { Button, Checkbox, FormControl, FormControlLabel, FormGroup } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import AssociatedVehicleDialog from '../../dialogs/AssociatedVehicleDialog';
-import { InfoRoundedIcon } from 'icons';
-import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
-import { KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import { exportExcel, getLocaleDateString, localesLaraigo } from 'common/helpers';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -54,78 +50,37 @@ const useStyles = makeStyles((theme) => ({
     button: {
         marginRight: theme.spacing(2),
     },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    },
+    title: {
+        fontSize: '22px',
+        fontWeight: 'bold',
+        color: theme.palette.text.primary,
+    },
 }));
 
-
 interface CustomTitleHelperProps {
-    titlemodule: string;
-    columns?: any[];
-    data?: any[];
-    style?: CSSProperties;
-    filterGeneral?: boolean;
-    toolsFooter?: boolean;
-    titleStyles?: CSSProperties;
+    title: string;
     helperText?: string; 
 }
   
-const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ style, filterGeneral = false, toolsFooter = false, titlemodule, titleStyles, columns = [], data = [], helperText, ...restProps }) => {
+const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
+    const classes = useStyles();
 
     return (
-        <div style={{display:'flex'}}>
-            <TableZyx {...restProps} columns={columns} data={data} filterGeneral={filterGeneral} toolsFooter={toolsFooter}        
-            titlemodule={<div style={{ fontSize: '1rem', fontWeight:"bold" }}>{titlemodule}</div>}
-            helperText={helperText}             
-            />     
-
-        </div>
-
-
+        <span className={classes.title} style={{ fontSize: '1rem', fontWeight:"bold" }}>
+            {title}
+            {helperText ? (
+                <Tooltip title={helperText} arrow placement="top" >
+                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                </Tooltip>
+            ) : ""}
+        </span>
     );
 };
-
-
-
-{/*
- <div style={{ fontSize: '1rem'}}>{titlemodule}</div>
-  <div>{helperText}</div>
-
-return (
-    <div style={{display:'flex'}}>
-        <TableZyx {...restProps} columns={columns} data={data} filterGeneral={filterGeneral} toolsFooter={toolsFooter}        
-        //titlemodule={<div style={{ fontSize: '1rem' }}>{titlemodule}</div>}
-        //titlemodule={titlemodule}
-        helperText={helperText} 
-        />       
-
-    </div>
-
-    
-    );
-};
-
-
-*/}
-
-
-export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
-    
-    return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
-        <KeyboardTimePicker
-            ampm={false}
-            views={['hours', 'minutes', 'seconds']}
-            format="HH:mm:ss"
-            error={false}
-            helperText={''}
-            value={value === '' ? null : value}
-            onChange={(e: any) => handleClickItemMenu(e)}
-            style={{ minWidth: '150px' }}
-        />
-        </MuiPickersUtilsProvider>
-    );
-}
-    
-
 
 interface ConfigurationTabDetailProps {
     row: Dictionary | null;
@@ -178,11 +133,6 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const [friday, setFriday] = useState(false);
     const [saturday, setSaturday] = useState(false);
     const [sunday, setSunday] = useState(false);
-
-    
-  
-    
-      
 
     const columns = React.useMemo(
         () => [
@@ -256,23 +206,12 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
         []
     );
 
-    const tableContainerStyles = {
-        fontSize: '5px', 
-    };
-    
-
     return (
         <div className={classes.containerDetail}>
-         
-            {/*Inicio de lo que quiero -------------------------------------------------------------*/}
-           
-                <div className='row-zyx'>     
-
+            <div className='row-zyx'>
                 <div className='col-3'>                                  
                     <FormControl component="fieldset" >                                             
-                        <CustomTitleHelper
-                            titlemodule={t(langKeys.appointmenttype)} 
-                        />                                            
+                        <CustomTitleHelper title={t(langKeys.appointmenttype)}/>                                            
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -296,14 +235,10 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                             />
                         </FormGroup><></>
                     </FormControl>
-                </div> 
-
+                </div>
                 <div className='col-3'>                                  
                     <FormControl component="fieldset" >                       
-                        <CustomTitleHelper
-                            titlemodule={t(langKeys.documentsissuance)}                           
-                           
-                        />     
+                        <CustomTitleHelper title={t(langKeys.documentsissuance)}/>     
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -323,14 +258,12 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-
                 <div className='col-3'>                                  
-                    <FormControl component="fieldset" >                      
+                    <FormControl component="fieldset" >
                         <CustomTitleHelper
-                            titlemodule={t(langKeys.send_invoice)}                           
-                           
-                            helperText={t(langKeys.send_invoice_helper_text)}                           
-                        />                                                   
+                            title={t(langKeys.send_invoice) + ' '}
+                            helperText={t(langKeys.send_invoice_helper_text)}
+                        /> 
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -345,13 +278,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-
                 <div className='col-3'>                                  
-                    <FormControl component="fieldset" >                       
-                         <CustomTitleHelper
-                           titlemodule={t(langKeys.sendnotification)}     
+                    <FormControl component="fieldset">                       
+                        <CustomTitleHelper
+                           title={t(langKeys.sendnotification)}     
                            helperText={t(langKeys.send_invoice_helper_text)}                         
-                          
                         />     
                         <FormGroup>
                             <FormControlLabel
@@ -367,12 +298,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-
                 <div className='col-3'>                                  
                     <FormControl component="fieldset" >                        
-                        <CustomTitleHelper
-                            titlemodule={t(langKeys.notificationtype)}                           
-                        />        
+                        <CustomTitleHelper title={t(langKeys.notificationtype)}/>        
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -392,14 +320,10 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-
                 <div className='col-3'>                                  
                     <FormControl component="fieldset" >
-                          
                         <div style={{display:'flex'}}>
-                            <CustomTitleHelper
-                                titlemodule={t(langKeys.routinglogic)}                           
-                            />                                
+                            <CustomTitleHelper title={t(langKeys.routinglogic)}/>                                
                             <div style={{ width: 6 }} />
                             <IOSSwitch checked={routingLogic} onChange={(e) => setRoutingLogic(e.target.checked)} name="checkedB" />
                         </div>
@@ -419,31 +343,21 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-
                 <div className='col-3'>     
-                    <CustomTitleHelper
-                        titlemodule={t(langKeys.deliveryshifts)}                           
-                    />     
+                    <CustomTitleHelper title={t(langKeys.deliveryshifts)}/>     
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalDeliveryShifts(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.deliveryshifts)}
                     </span><></>
                 </div>
-
                 <div className='col-3'>   
-                    <CustomTitleHelper
-                        titlemodule={t(langKeys.vehicletype)}                           
-                    />                                
+                    <CustomTitleHelper title={t(langKeys.vehicletype)}/>                                
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalVehicleType(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.vehicletype)}
                     </span><></>
                 </div>
-                
-
                 <div className='col-3'>                                  
                     <FormControl component="fieldset" >
-                        <CustomTitleHelper
-                            titlemodule={t(langKeys.workingdays)}                           
-                        />                           
+                        <CustomTitleHelper title={t(langKeys.workingdays)}/>                           
                         <FormGroup>
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
@@ -489,22 +403,16 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup>
                     </FormControl>
                 </div>        
-
                 <div className='col-3'>    
-                    <CustomTitleHelper
-                        titlemodule={t(langKeys.nonWorkingdays)}                           
-                    />           
+                    <CustomTitleHelper title={t(langKeys.nonWorkingdays)}/>           
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalNonWorkingDays(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.nonworkingdays)}
                     </span>
                 </div>
-
                 <div className='col-3'>                                  
                     <div style={{display:'flex'}}>
                         <div style={{display:'flex'}}>
-                            <CustomTitleHelper
-                                titlemodule={t(langKeys.deliveryphotoorder)}                           
-                            />                                                             
+                            <CustomTitleHelper title={t(langKeys.deliveryphotoorder)}/>                                                             
                             <div style={{ width: 6 }} />
                                 <IOSSwitch 
                                     checked={deliveryOrderPhoto} 
@@ -522,28 +430,19 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 </div>
 
                 <div className='col-3'>   
-                     <CustomTitleHelper
-                        titlemodule={t(langKeys.deliveryvalidationdistance)}                           
-                    />            
+                     <CustomTitleHelper title={t(langKeys.deliveryvalidationdistance)}/>            
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalCoincidenseMeters(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.coincidencemeters)}
                     </span>
                 </div>
             </div>
 
-          
-
-
-        
             <div className='row-zyx'>
-                <div className='row-zyx'>
-                   
-                </div>
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between'  }}>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between' }}>
                     <div>
-                    <TitleDetail
+                        <TitleDetail
                             title={t(langKeys.associatedvehicles)}
-                    />
+                        />
                     </div>                   
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>                       
                         <Button
@@ -557,14 +456,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                             {t(langKeys.register)}
                         </Button>
                     </div>
-
                     <AssociatedVehicleDialog
                         openModal={openModalAssociatedVehicleDialog}
                         setOpenModal={setOpenModalAssociatedVehicleDialog}
                     />
-                        
-                    </div>
-                
+                </div>
                 <div className='row-zyx'>                
                     <TableZyx
                         columns={columns}
