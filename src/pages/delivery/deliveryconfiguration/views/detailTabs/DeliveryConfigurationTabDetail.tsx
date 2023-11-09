@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'; // we need this to make JSX compile
+import React, { useState, CSSProperties } from 'react'; 
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
@@ -13,7 +13,9 @@ import AddIcon from '@material-ui/icons/Add';
 import AssociatedVehicleDialog from '../../dialogs/AssociatedVehicleDialog';
 import { InfoRoundedIcon } from 'icons';
 import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
-
+import { KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import { exportExcel, getLocaleDateString, localesLaraigo } from 'common/helpers';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,6 +55,77 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
     },
 }));
+
+
+interface CustomTitleHelperProps {
+    titlemodule: string;
+    columns?: any[];
+    data?: any[];
+    style?: CSSProperties;
+    filterGeneral?: boolean;
+    toolsFooter?: boolean;
+    titleStyles?: CSSProperties;
+    helperText?: string; 
+}
+  
+const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ style, filterGeneral = false, toolsFooter = false, titlemodule, titleStyles, columns = [], data = [], helperText, ...restProps }) => {
+
+    return (
+        <div style={{display:'flex'}}>
+            <TableZyx {...restProps} columns={columns} data={data} filterGeneral={filterGeneral} toolsFooter={toolsFooter}        
+            titlemodule={<div style={{ fontSize: '1rem', fontWeight:"bold" }}>{titlemodule}</div>}
+            helperText={helperText}             
+            />     
+
+        </div>
+
+
+    );
+};
+
+
+
+{/*
+ <div style={{ fontSize: '1rem'}}>{titlemodule}</div>
+  <div>{helperText}</div>
+
+return (
+    <div style={{display:'flex'}}>
+        <TableZyx {...restProps} columns={columns} data={data} filterGeneral={filterGeneral} toolsFooter={toolsFooter}        
+        //titlemodule={<div style={{ fontSize: '1rem' }}>{titlemodule}</div>}
+        //titlemodule={titlemodule}
+        helperText={helperText} 
+        />       
+
+    </div>
+
+    
+    );
+};
+
+
+*/}
+
+
+export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+    
+    return (
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
+        <KeyboardTimePicker
+            ampm={false}
+            views={['hours', 'minutes', 'seconds']}
+            format="HH:mm:ss"
+            error={false}
+            helperText={''}
+            value={value === '' ? null : value}
+            onChange={(e: any) => handleClickItemMenu(e)}
+            style={{ minWidth: '150px' }}
+        />
+        </MuiPickersUtilsProvider>
+    );
+}
+    
+
 
 interface ConfigurationTabDetailProps {
     row: Dictionary | null;
@@ -105,6 +178,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const [friday, setFriday] = useState(false);
     const [saturday, setSaturday] = useState(false);
     const [sunday, setSunday] = useState(false);
+
+    
+  
+    
+      
 
     const columns = React.useMemo(
         () => [
@@ -178,21 +256,23 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
         []
     );
 
+    const tableContainerStyles = {
+        fontSize: '5px', 
+    };
+    
+
     return (
         <div className={classes.containerDetail}>
          
+            {/*Inicio de lo que quiero -------------------------------------------------------------*/}
+           
+                <div className='row-zyx'>     
 
-            <div className='row-zyx'>     
-
-                <div className='col-2'>                                  
-                    <FormControl component="fieldset" >
-                        <TableZyx
-                            titlemodule={t(langKeys.appointmenttype)}     
-                            columns={[]}            
-                            data={[]}           
-                            filterGeneral={false}
-                            toolsFooter={false}                             
-                        />
+                <div className='col-3'>                                  
+                    <FormControl component="fieldset" >                                             
+                        <CustomTitleHelper
+                            titlemodule={t(langKeys.appointmenttype)} 
+                        />                                            
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -218,15 +298,12 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                     </FormControl>
                 </div> 
 
-                <div className='col-2'>
-                    <FormControl component="fieldset" >
-                        <TableZyx
-                            titlemodule={t(langKeys.documentsissuance)}     
-                            columns={[]}            
-                            data={[]}           
-                            filterGeneral={false}
-                            toolsFooter={false}                             
-                        />
+                <div className='col-3'>                                  
+                    <FormControl component="fieldset" >                       
+                        <CustomTitleHelper
+                            titlemodule={t(langKeys.documentsissuance)}                           
+                           
+                        />     
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -246,16 +323,14 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-                <div className='col-2'>
-                    <FormControl component="fieldset" >
-                        <TableZyx
-                            titlemodule={t(langKeys.send_invoice)}     
-                            helperText={t(langKeys.send_invoice_helper_text)}
-                            columns={[]}            
-                            data={[]}           
-                            filterGeneral={false}
-                            toolsFooter={false}                             
-                        />                        
+
+                <div className='col-3'>                                  
+                    <FormControl component="fieldset" >                      
+                        <CustomTitleHelper
+                            titlemodule={t(langKeys.send_invoice)}                           
+                           
+                            helperText={t(langKeys.send_invoice_helper_text)}                           
+                        />                                                   
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -270,17 +345,14 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-                <div className='col-2'>
-                    <FormControl component="fieldset" >
-                        <TableZyx
-                            titlemodule={t(langKeys.sendnotification)}     
-                            helperText={t(langKeys.send_invoice_helper_text)}
-                            columns={[]}            
-                            data={[]}           
-                            filterGeneral={false}
-                            toolsFooter={false}                             
-                        />        
-                       
+
+                <div className='col-3'>                                  
+                    <FormControl component="fieldset" >                       
+                         <CustomTitleHelper
+                           titlemodule={t(langKeys.sendnotification)}     
+                           helperText={t(langKeys.send_invoice_helper_text)}                         
+                          
+                        />     
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
@@ -295,14 +367,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-                <div className='col-2'>
-                    <FormControl component="fieldset" >
-                        <TableZyx
-                            titlemodule={t(langKeys.notificationtype)}     
-                            columns={[]}            
-                            data={[]}           
-                            filterGeneral={false}
-                            toolsFooter={false}                             
+
+                <div className='col-3'>                                  
+                    <FormControl component="fieldset" >                        
+                        <CustomTitleHelper
+                            titlemodule={t(langKeys.notificationtype)}                           
                         />        
                         <FormGroup>
                             <FormControlLabel
@@ -323,18 +392,15 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-                <div className='col-2'>
+
+                <div className='col-3'>                                  
                     <FormControl component="fieldset" >
                           
                         <div style={{display:'flex'}}>
-                            <TableZyx
-                                titlemodule={t(langKeys.routinglogic)}     
-                                columns={[]}            
-                                data={[]}           
-                                filterGeneral={false}
-                                toolsFooter={false}                             
+                            <CustomTitleHelper
+                                titlemodule={t(langKeys.routinglogic)}                           
                             />                                
-                        <div style={{ width: 6 }} />
+                            <div style={{ width: 6 }} />
                             <IOSSwitch checked={routingLogic} onChange={(e) => setRoutingLogic(e.target.checked)} name="checkedB" />
                         </div>
                         <FormGroup>
@@ -353,18 +419,31 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </FormGroup><></>
                     </FormControl>
                 </div>
-            </div>
 
-            <div className='row-zyx'>
-                <div className='col-2'>
+                <div className='col-3'>     
+                    <CustomTitleHelper
+                        titlemodule={t(langKeys.deliveryshifts)}                           
+                    />     
+                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalDeliveryShifts(true)}>
+                        {t(langKeys.edit) + ' ' + t(langKeys.deliveryshifts)}
+                    </span><></>
+                </div>
+
+                <div className='col-3'>   
+                    <CustomTitleHelper
+                        titlemodule={t(langKeys.vehicletype)}                           
+                    />                                
+                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalVehicleType(true)}>
+                        {t(langKeys.edit) + ' ' + t(langKeys.vehicletype)}
+                    </span><></>
+                </div>
+                
+
+                <div className='col-3'>                                  
                     <FormControl component="fieldset" >
-                        <TableZyx
-                            titlemodule={t(langKeys.workingdays)}     
-                            columns={[]}            
-                            data={[]}           
-                            filterGeneral={false}
-                            toolsFooter={false}                             
-                        />
+                        <CustomTitleHelper
+                            titlemodule={t(langKeys.workingdays)}                           
+                        />                           
                         <FormGroup>
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
@@ -403,84 +482,59 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 />
                             </div>
                             <FormControlLabel
-                                style={{ pointerEvents: "none" }}
+                                style={{ pointerEvents: "none", paddingBottom:"20px" }}
                                 control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sunday} onChange={(e) => setSunday(e.target.checked)} name="mon" />}
                                 label={t(langKeys.thursday)}
                             />
-                        </FormGroup><></>
+                        </FormGroup>
                     </FormControl>
-                </div>                
-                <div className='col-2'>
-                    <TableZyx
-                            titlemodule={t(langKeys.nonWorkingdays)}     
-                            columns={[]}            
-                            data={[]}           
-                            filterGeneral={false}
-                            toolsFooter={false}                             
-                    />
-                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => setOpenModalNonWorkingDays(true)}>
+                </div>        
+
+                <div className='col-3'>    
+                    <CustomTitleHelper
+                        titlemodule={t(langKeys.nonWorkingdays)}                           
+                    />           
+                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalNonWorkingDays(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.nonworkingdays)}
-                    </span><></>
+                    </span>
                 </div>
-                <div className='col-2'>
-                    <TableZyx
-                        titlemodule={t(langKeys.deliveryshifts)}     
-                        columns={[]}            
-                        data={[]}           
-                        filterGeneral={false}
-                        toolsFooter={false}                             
-                    />
-                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => setOpenModalDeliveryShifts(true)}>
-                        {t(langKeys.edit) + ' ' + t(langKeys.deliveryshifts)}
-                    </span><></>
-                </div>
-                <div className='col-2'>
-                    <TableZyx
-                        titlemodule={t(langKeys.vehicletype)}     
-                        columns={[]}            
-                        data={[]}           
-                        filterGeneral={false}
-                        toolsFooter={false}                             
-                    />
-                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => setOpenModalVehicleType(true)}>
-                        {t(langKeys.edit) + ' ' + t(langKeys.vehicletype)}
-                    </span><></>
-                </div>
-                <div className='col-2'>
+
+                <div className='col-3'>                                  
                     <div style={{display:'flex'}}>
                         <div style={{display:'flex'}}>
-                                <TableZyx
-                                    titlemodule={t(langKeys.deliveryphotoorder)}     
-                                    columns={[]}            
-                                    data={[]}           
-                                    filterGeneral={false}
-                                    toolsFooter={false}                             
-                                />                                
+                            <CustomTitleHelper
+                                titlemodule={t(langKeys.deliveryphotoorder)}                           
+                            />                                                             
                             <div style={{ width: 6 }} />
-                                <IOSSwitch checked={deliveryOrderPhoto} onChange={(e) => {setDeliveryOrderPhoto(e.target.checked)}} name="checkedB" />
+                                <IOSSwitch 
+                                    checked={deliveryOrderPhoto} 
+                                    onChange={(e) => {setDeliveryOrderPhoto(e.target.checked)}} 
+                                    name="checkedB" 
+                                />
                         </div>
-                        <div style={{ width: 1 }} />
+                        <div style={{ width: 10 }} />
                     </div>
-                    <span style={{color: deliveryOrderPhoto ? 'blue' : 'grey', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => {
+                    <span style={{color: deliveryOrderPhoto ? 'blue' : 'grey', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }}onClick={() => {
                         if(deliveryOrderPhoto) setOpenModalDeliveryOrderPhoto(true)
                     }}>
                         {t(langKeys.edit) + ' ' + t(langKeys.deliveryphotoorder)}
-                    </span><></>
+                    </span>
                 </div>
-                <div className='col-2'>
-                    <TableZyx
-                        titlemodule={t(langKeys.deliveryvalidationdistance)}     
-                        columns={[]}            
-                        data={[]}           
-                        filterGeneral={false}
-                        toolsFooter={false}                             
-                    />                     
-                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block'}} onClick={() => setOpenModalCoincidenseMeters(true)}>
+
+                <div className='col-3'>   
+                     <CustomTitleHelper
+                        titlemodule={t(langKeys.deliveryvalidationdistance)}                           
+                    />            
+                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalCoincidenseMeters(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.coincidencemeters)}
-                    </span><></><></>
+                    </span>
                 </div>
             </div>
 
+          
+
+
+        
             <div className='row-zyx'>
                 <div className='row-zyx'>
                    
