@@ -193,20 +193,20 @@ const MessageTemplates: FC = () => {
             },
             ...(showId
                 ? [
-                    {
-                        accessor: "templateid",
-                        Header: t(langKeys.messagetemplateid),
-                        type: "number",
-                        Cell: (props: any) => {
-                            const row = props.cell.row.original;
-                            if (row.showid) {
-                                return row.id;
-                            } else {
-                                return null;
-                            }
-                        },
-                    },
-                ]
+                      {
+                          accessor: "templateid",
+                          Header: t(langKeys.messagetemplateid),
+                          type: "number",
+                          Cell: (props: any) => {
+                              const row = props.cell.row.original;
+                              if (row.showid) {
+                                  return row.id;
+                              } else {
+                                  return null;
+                              }
+                          },
+                      },
+                  ]
                 : []),
             {
                 accessor: "type",
@@ -416,8 +416,8 @@ const MessageTemplates: FC = () => {
                 callback,
                 question: channel
                     ? t(langKeys.messagetemplate_synchronize_alert01) +
-                    `${channel.communicationchanneldesc} (${channel.phone})` +
-                    t(langKeys.messagetemplate_synchronize_alert02)
+                      `${channel.communicationchanneldesc} (${channel.phone})` +
+                      t(langKeys.messagetemplate_synchronize_alert02)
                     : t(langKeys.messagetemplate_synchronize_alert03),
                 visible: true,
             })
