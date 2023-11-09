@@ -9,7 +9,7 @@ export interface IApplication {
     description: string;
 }
 
-interface ObjectApps {
+export interface ObjectApps {
     [key: string]: boolean[]
 }
 
@@ -41,6 +41,10 @@ interface Domains {
     reasons_disconnection: Dictionary[];
 }
 
+type ValueArray = [number, number, number, number, number, string, number];
+
+export type IApplicationsRecord = Record<string, ValueArray>;
+
 export interface IUser {
     email: string;
     firstname: string;
@@ -62,7 +66,7 @@ export interface IUser {
     userid: number;
     corpid: number;
     orgid: number;
-    menu: ObjectApps;
+    menu: IApplicationsRecord;
     image: string | null;
     domains: Domains;
     organizations: Organization[];

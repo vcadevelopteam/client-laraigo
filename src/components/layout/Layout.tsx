@@ -229,22 +229,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const dataRes = useSelector(state => state.login);
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const wsConnected = useSelector(state => state.inbox.wsConnected);
-    const ticketList = useSelector(state => state.inbox.ticketList);
     const { t } = useTranslation();
-
-    React.useEffect(() => {
-        const tickets = ticketList.data.filter(x => x.countnewmessages > 0);
-
-        if (tickets.length > 0) {
-            document.title = `(${tickets.length}) Laraigo`;
-        } else {
-            document.title = `Laraigo`;
-        }
-
-        return () => {
-            document.title = `Laraigo`;
-        }
-    }, [ticketList])
 
     return (
         <>
@@ -257,9 +242,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             drawerWidth={drawerWidth}
                         />
                         <Aside
-                            routes={routes}
                             classes={classes}
-                            theme={theme}
                             headerHeight={headerHeight}
                         />
                         {!wsConnected && 

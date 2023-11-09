@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { IconButton, Tooltip, Typography, Box } from '@material-ui/core';
@@ -13,33 +13,32 @@ import ListItemText from '@material-ui/core/ListItemText';
 import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import { usePopupState, bindHover, bindPopover } from 'material-ui-popup-state/hooks'
-import { RouteConfig, ViewsClassificationConfig } from '@types';
+import { IApplicationsRecord, RouteConfig, ViewsClassificationConfig } from '@types';
 import { setModalCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
-import { InvoiceIcon, WifiCalling } from 'icons';
+import { WifiCalling } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import { viewsClassifications, routes } from 'routes/routes';
 import { History } from 'history';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 type IProps = {
-    classes: any;
-    theme: any;
-    routes: RouteConfig[];
+    classes: ClassNameMap;
     headerHeight: number;
 }
 
-const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: History }> = ({ navRoute, classes, history }) => {
+const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: ClassNameMap, history: History }> = ({ navRoute, classes, history }) => {
     const [classname, setClassname] = useState<string>(classes.drawerItemInactive);
     const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
         if (!navRoute.subroute) {
-            history.push(navRoute.path!)
+            history.push(`${navRoute.path}`)
         } else {
             if (navRoute.initialSubroute) {
                 history.push(navRoute.initialSubroute);
             } else {
                 const message = `initialSubroute debe tener valor para la subruta key:${navRoute.key} path:${navRoute.path}`;
-                console.assert(navRoute.initialSubroute != null || navRoute.initialSubroute !== undefined, message);
+                console.assert(navRoute.initialSubroute !== null || navRoute.initialSubroute !== undefined, message);
             }
         }
     }
@@ -58,7 +57,7 @@ const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: His
     </ListItem>
 }
 
-const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig, history: History }> = ({ classes, config, history }) => {
+const PopperContent: React.FC<{ classes: ClassNameMap, config: ViewsClassificationConfig, history: History }> = ({ classes, config, history }) => {
     const navigationRoutes = config.options.map(
         (option: string) => {
             if (option === '/channels') return routes.find(route => route?.key === option);
@@ -115,7 +114,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
     );
 };
 
-const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: boolean, history: History }> = ({ config, classes, open, history }) => {
+const LinkList: FC<{ config: ViewsClassificationConfig, classes: ClassNameMap, open: boolean, history: History }> = ({ config, classes, open, history }) => {
     const [linkListStyle, setlinkListStyle] = useState<string>(classes.drawerItemInactive);
     const popupState = usePopupState({ variant: 'popover', popupId: 'demoPopper' });
     const userRole = useSelector(state => state.login?.validateToken?.user)?.roledesc;
@@ -132,13 +131,13 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
         e.preventDefault();
         const navRoute = routes.find(route => route?.path === invoiceRoute) as RouteConfig;
         if (!navRoute.subroute) {
-            history.push(navRoute.path!)
+            history.push(`${navRoute.path}`)
         } else {
             if (navRoute.initialSubroute) {
                 history.push(navRoute.initialSubroute);
             } else {
                 const message = `initialSubroute debe tener valor para la subruta key:${navRoute.key} path:${navRoute.path}`;
-                console.assert(navRoute.initialSubroute != null || navRoute.initialSubroute !== undefined, message);
+                console.assert(navRoute.initialSubroute !== null || navRoute.initialSubroute !== undefined, message);
             }
         }
     }
@@ -182,7 +181,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     );
 };
 
-const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
+const Aside = ({ classes, headerHeight }: IProps) => {
     const { t } = useTranslation();
     const location = useLocation();
     const dispatch = useDispatch();
@@ -193,31 +192,37 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const calls = useSelector(state => state.voximplant.calls);
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
-    const userData = useSelector(state => state.login?.validateToken?.user);
-    //Conseguir todas las subrutas y asignarlas a los modulos padres
-    const showableViews = viewsClassifications.reduce((acc: any[], view) => {
-        const subroutes = Object.entries(applications as Object)
-            .filter(([_, values]) => values[4] === view.id) //  
-            .map(([route, values]) => ({ route, menuorder: values[6] }))
-            .sort((a, b) => a.menuorder - b.menuorder)
-            .map(entry => entry.route);
-        if (subroutes.length > 0) {
-            if (subroutes.includes('/invoice')) {
-                const roles = userData?.roledesc?.split(",");
-                if (roles?.includes('SUPERADMIN') || roles?.includes("SUPERADMINISTRADOR SOCIOS") || roles?.includes('ADMINISTRADOR')) {
-                    const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
-                    acc.push({ ...view, options: filteredSubroutes });
+    const userData = useSelector(state => state.login.validateToken.user);
+    const [showViews, setShowViews] = useState<ViewsClassificationConfig[]>([])
 
-                } else if (roles?.includes('ADMINISTRADOR') || roles?.includes('SUPERVISOR')) {
-                    const filteredSubroutes = ['/invoice']
-                    acc.push({ ...view, options: filteredSubroutes });
+    useEffect(() => {
+        setShowViews(
+            viewsClassifications.reduce((acc: ViewsClassificationConfig[], view) => {
+                const subroutes = Object.entries(applications as IApplicationsRecord)
+                    .filter(([_, values]) => values[4] === view.id) 
+                    .map(([route, values]) => ({ route, menuorder: values[6] }))
+                    .sort((a, b) => a.menuorder - b.menuorder)
+                    .map(entry => entry.route);
+                const roles = userData?.roledesc?.split(",") ?? [];
+                if (subroutes.length > 0) {
+                    if (subroutes.includes('/invoice')) {
+                        if (roles.includes('SUPERADMIN') || roles.includes("SUPERADMINISTRADOR SOCIOS")) {
+                            const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
+                            acc.push({ ...view, options: filteredSubroutes });
+
+                        } else if (roles.includes('ADMINISTRADOR') || roles.includes('SUPERVISOR')) {
+                            const filteredSubroutes = ['/invoice']
+                            acc.push({ ...view, options: filteredSubroutes });
+                        }
+                    } else {
+                        acc.push({ ...view, options: subroutes });
+                    }
                 }
-            } else {
-                acc.push({ ...view, options: subroutes });
-            }
-        }
-        return acc;
-    }, []);
+                return acc;
+            }, [])
+        )
+    }, [])
+
     return (
         <Drawer
             className={clsx(classes.drawer, {
@@ -236,30 +241,27 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             }}
         >
             <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
-                {showableViews.map((route: any) =>
-                    (applications) ?
-                        <LinkList
-                            classes={classes}
-                            config={route}
-                            history={history}
-                            key={route.key + '_upper'}
-                            open={openDrawer}
-                        /> : null)}
+                {showViews.map((route: ViewsClassificationConfig) =>
+                    <LinkList
+                        classes={classes}
+                        config={route}
+                        history={history}
+                        key={route.key + '_upper'}
+                        open={openDrawer}
+                    />
+                )}
                 {(!voxiConnection.error && !voxiConnection.loading && !openDrawer && location.pathname === "/message_inbox" && userConnected) && (
                     <ListItem
                         button
                         key={"phone-agent"}
-                        onClick={() => {
-                            // abrir el modal
-                        }}
-                        className={clsx(true ? classes.drawerItemActive : classes.drawerItemInactive)}
+                        className={clsx(classes.drawerItemActive)}
                         component="div"
                     >
                         <Tooltip title={"Teléfono"}>
                             <ListItemIcon
                                 onClick={() => dispatch(setModalCall(true))}
                             >
-                                <PhoneInTalkIcon style={{ width: 22, height: 22, stroke: 'none' }} className={false ? classes.drawerCloseItemActive : classes.drawerCloseItemInactive} />
+                                <PhoneInTalkIcon style={{ width: 22, height: 22, stroke: 'none' }} className={classes.drawerCloseItemInactive} />
                             </ListItemIcon>
                         </Tooltip>
                     </ListItem>
