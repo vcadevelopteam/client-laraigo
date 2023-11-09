@@ -5551,6 +5551,15 @@ const translation: LangKeys = {
   y_o: 'and/or',
   orderdetail: 'Order Detail',
   ordernum: 'Order No.',
+  clientdata: 'Client Data',
+  receptionistdata: 'Receptionist Data',
+  deliveryaddress: 'Delivery Address',
+  contactnum: 'Contact No.',
+  clientfullname: 'Client Full Name',
+  willdeliveryhappen: 'willdeliveryhappen',
+  vouchertype: 'Voucher type',
+  data4voucher: 'Data for Voucher',
+  rucnumber: 'Nº RUC',
 };
 
 const enResource: ResourceLanguage = {

@@ -6,14 +6,17 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail,TemplateSwitch } from 'components';
+import { TemplateBreadcrumbs, TitleDetail,TemplateSwitch, AntTab, AntTabPanel } from 'components';
 import { Dictionary } from "@types";
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import OrderListTabDetail from './detailTabs/OrderListTabDetail';
+import ClientDataTabDetail from './detailTabs/ClientDataTabDetail';
 import { resetMainAux } from 'store/main/actions';
+import { Tabs } from '@material-ui/core';
+import OrderListTabDetail from './detailTabs/OrderListTabDetail';
+import DeliveryAddressTabDetail from './detailTabs/DeliveryAddressTabDetail';
 
 
 interface RowSelected {
@@ -66,6 +69,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const [tabIndex, setTabIndex] = useState(0);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
@@ -168,12 +172,60 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     </div>
 
                 </div>
-                <OrderListTabDetail                
-                    row={row}
-                    setValue={setValue}
-                    getValues={getValues}
-                    errors={errors}
-                />
+                <Tabs
+                    value={tabIndex}
+                    onChange={(_:any, i:any) => setTabIndex(i)}
+                    className={classes.tabs}
+                    textColor="primary"
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                >
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.clientdata} />
+                            </div>
+                        )}
+                    />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.orderlist}/>
+                            </div>
+                        )}
+                    />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.deliveryaddress}/>
+                            </div>
+                        )}
+                    />
+                </Tabs>
+                <AntTabPanel index={0} currentIndex={tabIndex}>
+                    <ClientDataTabDetail                
+                        row={row}
+                        setValue={setValue}
+                        getValues={getValues}
+                        errors={errors}
+                    />
+                </AntTabPanel>
+                <AntTabPanel index={1} currentIndex={tabIndex}>
+                    <OrderListTabDetail                
+                        row={row}
+                        setValue={setValue}
+                        getValues={getValues}
+                        errors={errors}
+                    />
+                </AntTabPanel>
+                <AntTabPanel index={2} currentIndex={tabIndex}>
+                    <DeliveryAddressTabDetail                
+                        row={row}
+                        setValue={setValue}
+                        getValues={getValues}
+                        errors={errors}
+                    />
+                </AntTabPanel>
             </form>
         </>
     );

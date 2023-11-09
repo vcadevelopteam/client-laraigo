@@ -11,7 +11,6 @@ import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 
-
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -57,7 +56,7 @@ interface InventoryTabDetailProps {
     errors: FieldErrors<any>;
 }
 
-const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
+const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({
     row,
     setValue,
     getValues,
@@ -147,10 +146,103 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
     return (
       <div className={classes.containerDetail}>
         <div className='row-zyx'>
-          <TitleDetail title={t(langKeys.orderlist)} />
+          <div className='col-8'>
+            <TitleDetail title={t(langKeys.clientdata)}/>
+          </div>
+          <div className='col-4'>
+            <TitleDetail title={t(langKeys.deliveryaddress)}/>
+          </div>
+        </div>
+        <div className='row-zyx'>
+          <FieldEdit
+            label={t(langKeys.documenttype)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.contactnum)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.documenttype)}
+            disabled={true}
+            className="col-4"
+          />
+        </div>
+        <div className='row-zyx'>
+          <FieldEdit
+            label={t(langKeys.documentnumber)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.email)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.documentnumber)}
+            disabled={true}
+            className="col-4"
+          />
+        </div>
+        <div className='row-zyx'>
+          <FieldEdit
+            label={t(langKeys.clientfullname)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.willdeliveryhappen)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.fullname) + ' (' + t(langKeys.optional)+ ')'}
+            disabled={true}
+            className="col-4"
+          />
+        </div>
+        <div className='row-zyx' style={{paddingTop:'20px'}}>
+          <FieldEdit
+            label={t(langKeys.paymentmethod)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.deliverytype)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.vouchertype)}
+            disabled={true}
+            className="col-4"
+          />
+        </div>
+        <div className='row-zyx'>
+          <TitleDetail title={t(langKeys.data4voucher)}/>
+        </div>
+        <div className='row-zyx'>
+          <FieldEdit
+            label={t(langKeys.rucnumber)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.businessname)}
+            disabled={true}
+            className="col-4"
+          />
+          <FieldEdit
+            label={t(langKeys.address)}
+            disabled={true}
+            className="col-4"
+          />
         </div>
       </div>
     )
 }
 
-export default OrderListTabDetail;
+export default ClientDataTabDetail;

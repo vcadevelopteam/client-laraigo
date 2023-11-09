@@ -57,7 +57,7 @@ interface InventoryTabDetailProps {
     errors: FieldErrors<any>;
 }
 
-const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
+const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({
     row,
     setValue,
     getValues,
@@ -147,10 +147,10 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
     return (
       <div className={classes.containerDetail}>
         <div className='row-zyx'>
-          <TitleDetail title={t(langKeys.orderlist)} />
+          <TitleDetail title={t(langKeys.deliveryaddress)} />
         </div>
       </div>
     )
 }
 
-export default OrderListTabDetail;
+export default DeliveryAddressTabDetail;

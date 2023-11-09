@@ -5470,6 +5470,15 @@ export const langKeys = {
   y_o: 'y_o',
   orderdetail: 'orderdetail',
   ordernum: 'ordernum',
+  clientdata: 'clientdata',
+  receptionistdata: 'receptionistdata',
+  deliveryaddress: 'deliveryaddress',
+  contactnum: 'contactnum',
+  clientfullname: 'clientfullname',
+  willdeliveryhappen: 'willdeliveryhappen',
+  vouchertype: 'vouchertype',
+  data4voucher: 'data4voucher',
+  rucnumber: 'rucnumber',
 };
 
 export type LangKeys = typeof langKeys;

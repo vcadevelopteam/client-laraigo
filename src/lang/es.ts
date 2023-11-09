@@ -5480,6 +5480,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   y_o: 'y/o',
   orderdetail: 'Detalle de Pedido',
   ordernum: 'Nº de pedido',
+  clientdata: 'Datos del Cliente',
+  receptionistdata: 'Datos del Recepcionista',
+  deliveryaddress: 'Dirección de Entrega',
+  contactnum: 'Número de Contacto',
+  clientfullname: 'Nombre Completo del Cliente',
+  willdeliveryhappen: '¿La entrega, se realizará?',
+  vouchertype: 'Tipo de comprobante',
+  data4voucher: 'Datos para Comprobante',
+  rucnumber: 'Nº RUC',
 };
 
 const esResource: ResourceLanguage = {
