@@ -277,7 +277,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        
+
     },
     containerQuickReply: {
         whiteSpace: 'break-spaces',
@@ -445,7 +445,17 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                 paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
                 all: ticketList.data.length
             })
+            const tickets = ticketList.data.filter((x) => x.countnewmessages > 0);
+
+            if (tickets.length > 0) {
+                document.title = `(${tickets.length}) Laraigo`;
+            } else {
+                document.title = `Laraigo`;
+            }
         }
+        return () => {
+            document.title = `Laraigo`;
+        };
     }, [ticketList])
 
     const onChangeSearchTicket = (e: any) => {
@@ -588,7 +598,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
-
+    
     return (
         <div className={classes.containerPanel}>
             <TicketsPanel
