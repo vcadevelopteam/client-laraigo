@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'hooks';
 import { selectTicket, setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent, resetSelectTicket } from 'store/inbox/actions';
@@ -22,7 +21,7 @@ const MessageInbox: React.FC = () => {
 
     useEffect(() => {
         if (aNewTicket !== null && !initial) {
-            if (!!user?.properties.alertTicketNew) {
+            if (user?.properties.alertTicketNew) {
                 audioNewTicket.current?.pause();
                 if (audioNewTicket.current) {
                     audioNewTicket.current.currentTime = 0;
@@ -40,7 +39,7 @@ const MessageInbox: React.FC = () => {
 
     useEffect(() => {
         if (aNewMessage !== null && !initial) {
-            if (!!user?.properties.alertMessageIn) {
+            if (user?.properties.alertMessageIn) {
                 audioNewMessage.current?.pause();
                 if (audioNewMessage.current) {
                     audioNewMessage.current.currentTime = 0;
@@ -60,7 +59,7 @@ const MessageInbox: React.FC = () => {
         dispatch(resetSelectTicket());
         dispatch(setUserType("AGENT"));
         dispatch(selectAgent({
-            userid: user?.userid!!,
+            userid: user?.userid ?? 0,
             name: '',
             countActive: 0,
             countPaused: 0,
@@ -113,8 +112,6 @@ const MessageInbox: React.FC = () => {
                     data: { usertype: 'AGENT' }
                 }));
             } else {
-                // dispatch(getAgents())
-                // dispatch(selectAgent(null))
                 dispatch(selectTicket(null))
             }
         }
