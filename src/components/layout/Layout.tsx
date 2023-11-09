@@ -140,11 +140,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'white',
         height: headerHeight,
         minHeight: headerHeight,
-        // necessary for content to be below app bar
-        // ...theme.mixins.toolbar,
     },
     toolbarClosed: {
-        // justifyContent: 'center',
         stroke: 'white',
         fill: 'white',
     },
@@ -153,18 +150,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         padding: theme.spacing(0, 1),
-        // necessary for content to be below app bar
     },
     content: {
         flexGrow: 1,
         overflow: 'overlay',
-        // padding: theme.spacing(3),
-        // transition: theme.transitions.create('margin', {
-        //     easing: theme.transitions.easing.sharp,
-        //     duration: theme.transitions.duration.leavingScreen,
-        // }),
-        // width: `calc(100vw - ${drawerWidth}px)`,
-        // marginLeft: -drawerWidth,
         backgroundColor: '#F9F9FA',
     },
     paddingbody: {
@@ -217,6 +206,27 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: 'calc(100vh - 54px)',
         // height: '100%'
     },
+    ASlistItem: {
+        position: 'relative',
+    },
+    ASlistItemTextOpen: {
+        visibility: 'visible',
+    },
+    ASlistItemTextClosed: {
+        visibility: 'hidden',
+    },
+    AStypographyOpen: {
+        position: 'absolute',
+        right: 25,
+        color: '',
+        fontWeight: 'normal',
+    },
+    AStypographyClosed: {
+        position: 'absolute',
+        right: 5,
+        color: 'white',
+        fontWeight: 'bold',
+    },
 }));
 
 interface LayoutProps {
@@ -245,7 +255,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             classes={classes}
                             headerHeight={headerHeight}
                         />
-                        {!wsConnected && 
+                        {!wsConnected &&
                             <div style={{ position: "absolute", left: "calc(50% - 150px)", opacity: .7, top: 0, padding: 10, backgroundColor: '#b41a1a', color: 'white', zIndex: 9999 }}>
                                 {t(langKeys.notred)}
                             </div>
