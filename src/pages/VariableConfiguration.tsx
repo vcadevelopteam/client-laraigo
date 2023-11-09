@@ -157,7 +157,6 @@ const VariableConfiguration: FC = () => {
     const downloadData = (data: Dictionary[]) => {
         if (data.length > 0) {
             const mapdata = data.map(({ variable, description, fontcolor, fontbold, priority, visible }) => ({ variable, description, fontcolor, fontbold, priority, visible }));
-            console.log("rowSelected.row", rowSelected)
             const filename = `variableconfiguration_${rowSelected.row?.title}.csv`;
             const columns = [
                 { accessor: "variable", Header: t(langKeys.variable) },
