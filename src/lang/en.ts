@@ -5563,6 +5563,10 @@ const translation: LangKeys = {
   totallistprice: 'Total List Price',
   geolocation: 'Geolocation',
   address_found_in_geolocator: 'Address found in the Geolocator',
+  viewcounter: 'View Counter',
+  paymentreceipt: 'Payment Receipt',
+  registeredaddress: 'Registered Address',
+  viewonlinepayment: 'View Online Payment', 
 
 
 };

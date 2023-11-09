@@ -5492,6 +5492,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   totallistprice: 'Precio Total de la Lista',
   geolocation: 'Geolocalización',
   address_found_in_geolocator: 'Dirección encontrada en el Geolocalizador',
+  viewcounter: 'Contador de Visitas',
+  paymentreceipt: 'Comprobante de Pago',
+  registeredaddress: 'Dirección Registrada',
+  viewonlinepayment: 'Ver Pago en Linea', 
+
+
+
 };
 
 const esResource: ResourceLanguage = {

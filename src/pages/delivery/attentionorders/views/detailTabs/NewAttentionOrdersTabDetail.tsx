@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { TitleDetail, FieldEdit, FieldCheckbox, FieldSelect, IOSSwitch, Title } from 'components';
 import { FieldErrors } from "react-hook-form";
-import { FormControlLabel } from "@material-ui/core";
+import { FormControlLabel, Typography } from "@material-ui/core";
 import { useSelector } from 'hooks';
 import TableZyx from "components/fields/table-simple";
 
@@ -38,7 +38,27 @@ const NewAttentionOrdersTabDetail: React.FC<NewAttentionOrdersTabDetailProps> = 
     fetchdata();
   }, [])
 
-  console.log(getValues('s'))
+  const columns = React.useMemo(
+    () => [   
+      {
+        Header: t(langKeys.product),
+        accessor: "product",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.quantity),
+        accessor: "quantity",
+        width: "auto",
+      },   
+      {
+        Header: t(langKeys.totalamount),
+        accessor: "totalamount",
+        width: "auto",
+      },    
+    ],
+    []
+  );
+
 
   return (
     <div className={classes.containerDetail}>
@@ -79,8 +99,22 @@ const NewAttentionOrdersTabDetail: React.FC<NewAttentionOrdersTabDetailProps> = 
             <TitleDetail
                 title={row?.name || `${t(langKeys.validated)}`}
             />                    
-        </div>           
-        {/*Tabla */}
+        </div> 
+
+        <div className="row-zyx">                
+          <TableZyx
+            columns={columns}            
+            data={[]}           
+            filterGeneral={false}
+            toolsFooter={false}            
+          />          
+        </div>
+        
+        <Typography style={{textAlign:"right", padding:"2rem 2rem 0 0", fontSize:"1rem"}}>
+              {t(langKeys.totallistprice) + ": S/00.00"}
+        </Typography>  
+          
+        
         
       </div>
     </div>

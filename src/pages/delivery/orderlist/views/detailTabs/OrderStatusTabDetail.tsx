@@ -10,6 +10,8 @@ import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch, I
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
+import TableZyx from 'components/fields/table-simple';
+import { Typography } from '@material-ui/core';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -144,12 +146,53 @@ const OrderStatusTabDetail: React.FC<OrderStatusTabDetailProps> = ({
       }
     }, [executeResult, waitSave]);
 
+    const columns = React.useMemo(
+      () => [   
+        {
+          Header: t(langKeys.ticket_number),
+          accessor: "ticket_number",
+          width: "auto",
+        },
+        {
+          Header: t(langKeys.status),
+          accessor: "status",
+          width: "auto",
+        },   
+        {
+          Header: t(langKeys.createdBy),
+          accessor: "createdBy",
+          width: "auto",
+        },
+        {
+          Header: t(langKeys.date),
+          accessor: "date",
+          width: "auto",
+          
+        }, 
+      ],
+      []
+    );
+
     return (
       <div className={classes.containerDetail}>
         <div className='row-zyx'>
           <TitleDetail title={t(langKeys.orderstatus)} />
         </div>
+
+        <div className="row-zyx">
+          <TableZyx
+            columns={columns}            
+            data={[]}           
+            filterGeneral={false}
+            toolsFooter={false}   
+                 
+          /> 
+        </div>
+        <Typography style={{textAlign:"right", padding:"2rem 2rem 0 0", fontSize:"1rem"}}>
+              {t(langKeys.viewcounter) + ": 03"}
+        </Typography>     
       </div>
+      
     )
 }
 

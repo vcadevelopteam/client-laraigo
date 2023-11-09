@@ -5482,6 +5482,11 @@ export const langKeys = {
   totallistprice: 'totallistprice',
   geolocation: 'geolocation',
   address_found_in_geolocator: 'address_found_in_geolocator',
+  viewcounter: 'viewcounter',
+  paymentreceipt: 'paymentreceipt',
+  registeredaddress: 'registeredaddress',
+  viewonlinepayment: 'viewonlinepayment', 
+
 };
 
 export type LangKeys = typeof langKeys;

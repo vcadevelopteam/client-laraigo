@@ -155,26 +155,35 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({
             {t(langKeys.geolocation)}
         </Typography> 
 
+        <div className='row-zyx' style={{paddingBottom:"1rem"}}>
+          <FieldEdit
+            label={t(langKeys.latitude) + ": "}
+            disabled={true}
+            className="col-6"
+          />
+          <FieldEdit
+            label={t(langKeys.longitude)+ ": "}
+            disabled={true}
+            className="col-6"
+          />
+         
+        </div>
+
         <div className='row-zyx' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <img style={{ width: '60%' }} src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/191:100/w_1280,c_limit/GoogleMapTA.jpg" alt="Invoice" />
+          <div>
+            <img 
+              style={{display:"flex", textAlign:"center", width:"100%", height:"25rem", objectFit:"cover"}} 
+              src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/191:100/w_1280,c_limit/GoogleMapTA.jpg" 
+              alt="Invoice">
+            </img>
+          </div>
+          
           <Typography style={{ textAlign:"center", padding: '1rem 0rem 3rem 0', fontSize: '1rem', color: 'gray' }}>
             {t(langKeys.address_found_in_geolocator)}
           </Typography>
         </div>      
 
-        <div className='row-zyx' style={{gap:"1rem"}}>
-          <FieldEdit
-            label={t(langKeys.latitude) + ": "}
-            disabled={true}
-            className="col-12"
-          />
-          <FieldEdit
-            label={t(langKeys.longitude)+ ": "}
-            disabled={true}
-            className="col-12"
-          />
-         
-        </div>
+        
        
 
       </div>
