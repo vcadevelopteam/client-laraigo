@@ -501,7 +501,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             return (
                 <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client',
-                })} >
+                })} style={{width: '100%', maxWidth: '100%'}} >
                     <div>RE-LARAIGO: {subject}</div>
                     <iframe
                         ref={ref}

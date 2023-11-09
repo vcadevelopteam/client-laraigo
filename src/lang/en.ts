@@ -434,6 +434,7 @@ const translation: LangKeys = {
   nextprogramedactivity: 'Next programed activity',
 
   no_reply_use_hsm: 'This conversation is blocked until the client sends a reply to the sent HSM to start a conversation with its consent.',
+  no_reply_claro: 'Due to profile permissions, the options for reassigning conversation or contact with the client are not enabled, being in Holding or Bot.',
   password_different: "Passwords do not match",
   password_not_allowed: "The password must contain at least 10 characters, a letter and a number",
   status: 'Status',
@@ -590,6 +591,7 @@ const translation: LangKeys = {
   type_domain_mastercatalog_transactable_items: "Transactable Items",
   type_domain_mastercatalog_vehicles: "Vehicles",
   apikeydoesntexist: "This apiKey is invalid or doesn't exist",
+  enableapi: "Enable API",
   natural_language_classifier: "Natural language classifier",
   natural_language_understanding: "Natural language understanding",
   tone_analyzer_customer: "Tone analyzer customer",

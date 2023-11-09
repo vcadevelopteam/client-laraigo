@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -455,7 +454,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [files, setFiles] = useState<IFile[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
-
     const [typeHotKey, setTypeHotKey] = useState("")
     const quickReplies = useSelector(state => state.inbox.quickreplies);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([])
@@ -464,7 +462,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
-    const [showReply, setShowReply] = useState(true);
+    const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
     const [refresh, setrefresh] = useState(1)
@@ -475,9 +473,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if ((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
-        if (ticketSelected?.status !== "ASIGNADO")
+        if (ticketSelected?.status !== "ASIGNADO") {
             setShowReply(false);
-        else if (channelsWhatsapp.includes(ticketSelected.communicationchanneltype)) {
+        }
+        else if (`,${user?.roledesc},`.includes(",SUPERVISOR,") && user?.properties.environment === "CLARO" && [2, 3].includes(agentSelected?.userid ?? 0)) { //2 y 3 son BOT y HOLDING
+            setShowReply(null);
+        } else if (channelsWhatsapp.includes(ticketSelected.communicationchanneltype)) {
             if (!ticketSelected?.personlastreplydate) {
                 setShowReply(false);
             } else {
@@ -488,8 +489,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     setShowReply(true);
                 }
             }
-        } else
+        } else {
             setShowReply(true)
+        }
     }, [ticketSelected])
 
     useEffect(() => {
@@ -903,14 +905,14 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 </div>
                 :
                 <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
-                    {t(langKeys.no_reply_use_hsm)}
+                    {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                 </div>
             }
             <BottomGoToUnder />
         </div >)
     } else return (
         <>
-            {showReply ?
+            {showReply && (
                 <DragDropFile setFiles={setFiles} setfileimage={setfileimage}>
                     <div className={classes.containerResponse}>
                         {files.length > 0 &&
@@ -986,14 +988,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         <BottomGoToUnder />
                     </div>
                 </DragDropFile>
-                :
+            )}
+            {!showReply && (
                 <div className={classes.containerResponse}>
                     <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
-                        {t(langKeys.no_reply_use_hsm)}
+                        {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                     </div>
                     <BottomGoToUnder />
                 </div>
-            }
+            )}
         </ >
     )
 }

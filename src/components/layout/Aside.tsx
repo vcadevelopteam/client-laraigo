@@ -101,9 +101,9 @@ const PopperContent: React.FC<{ classes: ClassNameMap, config: ViewsClassificati
                 {config.description}
             </Typography>
             <Box display="grid" gridTemplateColumns={gridTemplateColumns} bgcolor={'#F9F9FA'} paddingBottom={1} >
-                {navigationRoutes.map((navRoute: RouteConfig) =>
+                {navigationRoutes.map((navRoute: RouteConfig, index: number) =>
                     <ListViewItem
-                        key={navRoute?.key + '_lower'}
+                        key={(navRoute?.key ?? index) + '_lower'}
                         navRoute={navRoute}
                         history={history}
                         classes={classes}
@@ -148,56 +148,36 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: ClassNameMap, o
     }
 
     return (
-        <>
-            {
-                (userRole?.split(",")?.includes('ADMINISTRADOR') || userRole?.split(",")?.includes('SUPERVISOR')) && config.key === 'invoice'
-                    ?
-                    <ListItem
-                        button
-                        key={config.key}
-                        className={clsx(linkListStyle)}
-                        component="a"
-                        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => onClick(e, config.options[0])}
-                        style={{ position: 'relative' }}
-                        onMouseEnter={() => { setlinkListStyle(open ? classes.drawerItemActive : classes.drawerCloseItemActive) }}
-                        onMouseLeave={() => { setlinkListStyle(open ? classes.drawerItemInactive : classes.drawerCloseItemInactive) }}
-                    >
-                        <ListItemIcon>{config.icon?.(linkListStyle)}</ListItemIcon>
-                        <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
-                    </ListItem>
-                    :
-                    <div {...bindHover(popupState)} >
-                        <ListItem
-                            button
-                            key={config.key}
-                            className={clsx(className)}
-                            style={{ position: 'relative' }}
-                        >
-                            <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
-                            <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
-                            <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
-                        </ListItem>
-                        <HoverPopover
-                            {...bindPopover(popupState)}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            transitionDuration={0.0}
+        <div {...bindHover(popupState)} >
+            <ListItem
+                button
+                key={config.key}
+                className={clsx(className)}
+                style={{ position: 'relative' }}
+            >
+                <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
+                <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
+                <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
+            </ListItem>
+            <HoverPopover
+                {...bindPopover(popupState)}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                transitionDuration={0.0}
 
-                        >
-                            <PopperContent
-                                classes={classes}
-                                history={history}
-                                config={config} />
-                        </HoverPopover>
-                    </div>
-            }
-        </ >
+            >
+                <PopperContent
+                    classes={classes}
+                    history={history}
+                    config={config} />
+            </HoverPopover>
+        </div>
     );
 };
 
