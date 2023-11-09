@@ -374,59 +374,72 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 label={t(langKeys.attentionorders)}
             />
             <TableZyx
-                columns={columns}
-                data={[]}                 
-                filterGeneral={true}      
-                useSelection={true}
-                register={true}
-                handleRegister={handleRegister}
-                ButtonsElement={() => (
-                    <div style={{ textAlign: 'right'}}>            
-                        <Button      
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            startIcon={<LocationOnIcon color="secondary" />}             
-                            style={{ backgroundColor: "#55BD84"}}                       
-                        >
-                            <Trans i18nKey={langKeys.routinglogic} />
-                        </Button>  
-                        <Button     
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            startIcon={<ListAltIcon color="secondary" />}             
-                            style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}       
-                            onClick={(e) => {
-                                setAnchorEl(e.currentTarget);
-                                e.stopPropagation();
-                            }}
-                        >
-                        <Trans i18nKey={langKeys.typing} />
-                            </Button>
-                        <Button                        
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            startIcon={<PrintIcon color="secondary" />}             
-                            style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}                            
-                            onClick={() => {setOpenModalPrint(true)}}
-                        >
-                            <Trans i18nKey={langKeys.print} />
+              columns={columns}
+              data={[]}                 
+              filterGeneral={true}      
+              useSelection={true}
+              register={true}
+              handleRegister={handleRegister}
+              ButtonsElement={() => (
+                <div style={{ textAlign: 'right'}}>            
+                    <Button      
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<LocationOnIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84"}}                       
+                    >
+                        <Trans i18nKey={langKeys.routinglogic} />
+                    </Button>  
+                    <Button     
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<ListAltIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}       
+                        onClick={(e) => {
+                            setAnchorEl(e.currentTarget);
+                            e.stopPropagation();
+                        }}
+                    >
+                    <Trans i18nKey={langKeys.typing} />
                         </Button>
-                        <Button                        
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            startIcon={<ReceiptIcon color="secondary" />}             
-                            style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}       
-                            onClick={() => {setOpenModalElectronicTicketAndInvoice(true)}}
-                        >
-                            <Trans i18nKey={langKeys.electronic_ticket_and_invoice} />
-                        </Button>
-                    </div>
-                )}                   
-                loading={mainPaginated.loading}                     
+                    <Button                        
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<PrintIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}                            
+                        onClick={() => {setOpenModalPrint(true)}}
+                    >
+                        <Trans i18nKey={langKeys.print} />
+                    </Button>
+                    <Button                        
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<ReceiptIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}       
+                        onClick={() => {setOpenModalElectronicTicketAndInvoice(true)}}
+                    >
+                        <Trans i18nKey={langKeys.electronic_ticket_and_invoice} />
+                    </Button>
+                    <Button                        
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        startIcon={<ReceiptIcon color="secondary" />}             
+                        style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}       
+                        onClick={() => {
+                          setViewSelected("detail-view2");
+                          setRowSelected({ row: null, edit: false });
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.test} />
+                    </Button>
+                </div>
+              )}                   
+              loading={mainPaginated.loading}                     
             />    
             <Menu
                 id="menu-appbar"

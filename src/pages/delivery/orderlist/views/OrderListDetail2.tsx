@@ -17,6 +17,8 @@ import { resetMainAux } from 'store/main/actions';
 import { Tabs } from '@material-ui/core';
 import OrderListTabDetail from './detailTabs/OrderListTabDetail';
 import DeliveryAddressTabDetail from './detailTabs/DeliveryAddressTabDetail';
+import InformationTabDetail from './detailTabs/InformationTabDetail';
+import OrderStatusTabDetail from './detailTabs/OrderStatusTabDetail';
 
 
 interface RowSelected {
@@ -63,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const OrderListDetail2: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -183,27 +185,20 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.clientdata} />
+                                <Trans i18nKey={langKeys.information} />
                             </div>
                         )}
                     />
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.orderlist}/>
-                            </div>
-                        )}
-                    />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.deliveryaddress}/>
+                                <Trans i18nKey={langKeys.orderstatus}/>
                             </div>
                         )}
                     />
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <ClientDataTabDetail                
+                    <InformationTabDetail                
                         row={row}
                         setValue={setValue}
                         getValues={getValues}
@@ -211,15 +206,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <OrderListTabDetail                
-                        row={row}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                    />
-                </AntTabPanel>
-                <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <DeliveryAddressTabDetail                
+                    <OrderStatusTabDetail                
                         row={row}
                         setValue={setValue}
                         getValues={getValues}
@@ -232,4 +219,4 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
 }
 
 
-export default OrderListDetail;
+export default OrderListDetail2;

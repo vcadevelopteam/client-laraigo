@@ -6,6 +6,7 @@ import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, resetAllMain } from "store/main/actions";
 import OrderListDetail from "./views/OrderListDetail";
 import OrderListMainView from "./views/OrderListMainView";
+import OrderListDetail2 from "./views/OrderListDetail2";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -67,7 +68,7 @@ const OrderList: FC = () => {
         fetchDataAux={fetchDataAux}
       />
     );
-  } else
+  } else if(viewSelected === "detail-view") {
     return (
       <OrderListDetail
         setViewSelected={setViewSelected}
@@ -76,6 +77,16 @@ const OrderList: FC = () => {
         fetchDataAux={fetchDataAux}
       />
     );
+  } else {
+    return (
+      <OrderListDetail2
+        setViewSelected={setViewSelected}
+        data={rowSelected}
+        fetchData={fetchData}
+        fetchDataAux={fetchDataAux}
+      />
+    );
+  }
 };
 
 export default OrderList;
