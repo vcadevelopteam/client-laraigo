@@ -2,9 +2,9 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getPaginatedInventoryConsumption } from "common/helpers";
+import { getPaginatedInventoryConsumption, getProductCatalogSel, getProducts, getValuesFromDomain, getWarehouses } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
-import { getCollectionPaginated, resetAllMain } from "store/main/actions";
+import { getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import InventoryConsumptionMainView from "./views/InventoryConsumptionMainView";
 import InventoryConsumptionDetail from "./views/InventoryConsumptionDetail";
 
@@ -55,6 +55,20 @@ const InventoryConsumption: FC = () => {
     );
   };
 
+  useEffect(() => {
+    dispatch(
+      getMultiCollectionAux([
+        getValuesFromDomain("ESTADOCONSUMOINVENTARIO"),
+        getWarehouses(),
+        getValuesFromDomain("TIPOTRANSACCIONINV"),
+        getProducts()
+      ])
+    );
+    return () => {
+      dispatch(resetAllMain());
+    };
+  }, []);
+  
   useEffect(() => {
     return () => {
       dispatch(resetAllMain());

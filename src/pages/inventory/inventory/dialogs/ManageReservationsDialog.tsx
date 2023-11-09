@@ -77,7 +77,7 @@ const handleDelete = (row: Dictionary) => {
 const columns = React.useMemo(
   () => [
     {
-      accessor: 'inventorywarehouseid',
+      accessor: 'inventorybookingid',
       NoFilter: true,
       isComponent: true,
       minWidth: 60,

@@ -4506,11 +4506,11 @@ export const getInventoryBooking = (inventoryid:number): IRequestBody => ({
         inventoryid
     }
 });
-export const insInventoryBooking = ({ inventorywarehouseid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate  }: Dictionary): IRequestBody => ({
+export const insInventoryBooking = ({ inventorybookingid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate  }: Dictionary): IRequestBody => ({
     method: "UFN_INVENTORBOOKING_INS",
     key: "UFN_INVENTORBOOKING_INS",
     parameters: {
-        inventorywarehouseid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate
+        inventorybookingid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate
     }
 });
 export const getInventoryMovement = (inventoryid:number): IRequestBody => ({

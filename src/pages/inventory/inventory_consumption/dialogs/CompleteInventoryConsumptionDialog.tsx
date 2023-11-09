@@ -3,7 +3,6 @@ import { Button, makeStyles } from "@material-ui/core";
 import {
   DialogZyx,
   FieldEdit,
-  FieldCheckbox,
   FieldSelect
 } from "components";
 import { langKeys } from "lang/keys";
@@ -33,20 +32,15 @@ const CompleteInventoryConsumptionDialog: React.FC<{
   const classes = useStyles();
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
+  const multiData = useSelector(state => state.main.multiDataAux);
+  console.log(multiData)
   const executeRes = useSelector(state => state.main.execute);
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset, formState: { errors }} = useForm({
     defaultValues: {
         inventorybalanceid: 0,
         inventoryid: row?.inventoryid,
-        shelf: "",
-        lotecode: "",
-        currentbalance: 0,
-        recountphysical: 0,
-        recountphysicaldate: new Date().toISOString().split('T')[0],
-        duedate: new Date().toISOString().split('T')[0],
-        shelflifedays: 0,
-        isreconciled: false,
-        status: 'ACTIVO',
+        status: "COMPLETADO",
+        comment: "",
         type: 'NINGUNO',
         operation: "INSERT"
     }
@@ -55,7 +49,7 @@ const CompleteInventoryConsumptionDialog: React.FC<{
   useEffect(() => {
     if (waitSave) {
         if (!executeRes.loading && !executeRes.error) {
-            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_inventoryconsumption) }))
             dispatch(showBackdrop(false));
             reset()
             setOpenModal(false);
@@ -69,13 +63,8 @@ const CompleteInventoryConsumptionDialog: React.FC<{
 }, [executeRes, waitSave])
 
 React.useEffect(() => {
-  register('shelflifedays', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
-  register('currentbalance', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
-  register('recountphysical', { validate: (value) =>((value>=0) ? true : t(langKeys.field_required) + "") });
-  register('shelf', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('lotecode', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('recountphysicaldate', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('duedate', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('comment')
+  register('status', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
 }, [register, openModal]);
   
 const submitData = handleMainSubmit((data) => {
@@ -93,24 +82,24 @@ const submitData = handleMainSubmit((data) => {
 
   return (
     <form onSubmit={submitData}>
-    <DialogZyx open={openModal} title={`${t(langKeys.new)} ${t(langKeys.inventorybalance )}`} maxWidth="sm">
+    <DialogZyx open={openModal} title={`${t(langKeys.complete)} ${t(langKeys.inventory_consumption ).toLocaleLowerCase()}`} maxWidth="sm">
         <div className="row-zyx">
             <FieldSelect
                 label={`${t(langKeys.new)} ${t(langKeys.status)}`}
                 className="col-12"
-                data={[]}
-                optionValue="manufacturerid"
-                optionDesc="description"
-                valueDefault={getValues("shelf")}
-                onChange={(value) => setValue("shelf", value.manufacturerid)}  
+                data={multiData?.data?.[0]?.data||[]}
+                optionValue="domainvalue"
+                optionDesc="domaindesc"
+                valueDefault={getValues("status")}
+                error={errors?.status?.message}
+                onChange={(value) => setValue("status", value.manufacturerid)}  
             />
             <FieldEdit
               label={t(langKeys.ticket_comment)}
               type="text"
-              valueDefault={getValues('shelf')}
-              error={errors?.duedate?.message}
+              valueDefault={getValues('comment')}
               className="col-12"
-              onChange={(value) => {setValue('shelf', value)}}
+              onChange={(value) => {setValue('comment', value)}}
             />
         </div>
         <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: 'flex-end' }}>

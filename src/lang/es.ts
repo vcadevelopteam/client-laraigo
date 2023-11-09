@@ -186,6 +186,7 @@ const translation: LangKeys = {
   inventorybalance: "Balances de Inventario",
   maindealer: "Distribuidor Principal",
   neworder: "Nuevo pedido",
+  successful_inventoryconsumption: "El consumo de inventario ha sido ejecutado con éxito",
   newordertooltip: "Especifica si incluir producto en el proceso de reposición del inventario.",
   restockingpoint: "Punto de reposición",
   restockingpointtooltip: "Cantidad mínima necesaria de elementos de existencias en el inventario. Cuando el balance de existencias alcanza este número, los elementos del inventario deben volver a pedirse.",

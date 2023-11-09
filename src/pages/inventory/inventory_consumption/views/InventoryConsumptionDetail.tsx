@@ -32,7 +32,7 @@ interface DetailProps {
     setViewSelected: (view: string) => void;
     fetchData?: any;
     fetchDataAux?: any;
-    viewSelected: String;
+    viewSelected: string;
 }
 
 
@@ -86,7 +86,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
             inventoryconsumptionid: row?.inventoryconsumptionid || 0,
             description: row?.description || '',
             ordernumber: row?.ordernumber || '',
-            transactiontype: row?.transactiontype || '',
+            transactiontype: row?.transactiontype || 'DESPACHO',
             warehouseid: row?.warehouseid || 0,
             status: row?.status || 'INGRESADO',
             type: row?.type || '',
@@ -96,7 +96,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     });
 
     useEffect(() => {
-        if (viewSelected=="detail-view") {
+        if (viewSelected=="detail-view" && edit) {
             dispatch(
                 getMultiCollectionAux2([
                   getInventoryConsumptionDetail(row?.inventoryconsumptionid || 0),
@@ -113,7 +113,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -123,10 +123,9 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
 
     React.useEffect(() => {
         register('inventoryconsumptionid');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('ordernumber', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
         register('transactiontype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('warehouseid');
+        register('warehouseid', { validate: (value) => (value && value>0) || t(langKeys.field_required) } );
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
         register('comment');
@@ -136,6 +135,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     }, [register]);
 
     const onMainSubmit = handleMainSubmit((data) => {
+        debugger
         const callback = () => {
             dispatch(showBackdrop(true));
             dispatch(execute(insInventoryConsumption(data)));
@@ -158,7 +158,6 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     }
 
     return (
-        <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -217,9 +216,11 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                 </div>
                 <InventoryConsumptionTabDetail
                     row={row}
+                    edit={edit}
                     setValue={setValue}
                     getValues={getValues}                   
                     errors={errors}
+                    viewSelected={viewSelected}
                 />
                 <CompleteInventoryConsumptionDialog
                     openModal={openModal}
@@ -235,7 +236,6 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                     setOpenModal={setOpenModalStatusHistory}
                 />
             </form>
-        </>
     );
 }
 
