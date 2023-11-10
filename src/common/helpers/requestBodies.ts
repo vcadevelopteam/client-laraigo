@@ -224,7 +224,6 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
     parameters: { type, classificationid }
 });
 
-
 export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS" }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key,
@@ -236,6 +235,20 @@ export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, chann
     key: "UFN_ORGUSER_INS",
     parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
 });
+
+export const insStore = ({ id, description, phone, address, warehouseid, coveragearea , warehouseinstore, type , status, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_STORE_INS",
+    key: "UFN_STORE_INS",
+    parameters: { id, description, phone, address, warehouseid, coveragearea , warehouseinstore, type , status, operation }
+});
+
+export const selStore = (id: number, all: boolean): IRequestBody => ({
+    method: "UFN_STORE_SEL",
+    key: "UFN_STORE_SEL",
+    parameters: { id, all }
+});
+
+
 export const selOrgSimpleList = (): IRequestBody => ({
     method: "UFN_ORG_LST_SIMPLE",
     key: "UFN_ORG_LST_SIMPLE",
