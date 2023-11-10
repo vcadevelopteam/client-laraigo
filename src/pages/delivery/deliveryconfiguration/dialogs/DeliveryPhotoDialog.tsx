@@ -51,21 +51,17 @@ const DeliveryPhotoDialog: React.FC<{
           label={t(langKeys.photo) + ' 1 '}
           type="text"
           className="col-12"
-          helperText={t(langKeys.obverseid)}
         />
         <FieldEdit
           label={t(langKeys.photo) + ' 2 '}
           type="text"
           className="col-12"
-          helperText={t(langKeys.reverseid)}
 
         />
         <FieldEdit
           label={t(langKeys.photo) + ' 3 '}
           type="text"
           className="col-12"
-          helperText={t(langKeys.paymentvoucher)}
-
         />
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
