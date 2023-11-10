@@ -5499,8 +5499,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   obverseid: 'DNI Anverso', 
   reverseid: 'DNI Reverso', 
   paymentvoucher: 'Voucher de Pago', 
-
-
+  store: 'Tienda',
 };
 
 const esResource: ResourceLanguage = {

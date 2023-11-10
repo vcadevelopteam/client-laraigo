@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials } from 'common/helpers';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getWarehouseSel } from 'common/helpers';
 import { getDomainsByTypename } from 'store/person/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -274,7 +274,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             dispatch(getMultiCollectionAux([
                 getSupervisors(value.orgid, 0, index + 1),
                 getChannelsByOrg(value.orgid, index + 1),
-                getValuesFromDomain("GRUPOS", `_GRUPOS${index + 1}`, value.orgid)
+                getValuesFromDomain("GRUPOS", `_GRUPOS${index + 1}`, value.orgid),
+                getWarehouseSel()
             ]))
         } else {
             setDataSupervisors({ loading: false, data: [] });
@@ -348,6 +349,16 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 className={classes.mb2}
                                 valueDefault={getValues("type") === "ASESOR"}
                                 onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
+                            <FieldSelect
+                                label={t(langKeys.store)}
+                                className={classes.mb2}
+                                error={errors?.redirect?.message}
+                                data={[]}
+                                loading={dataApplications.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="path"
+                            />
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -407,6 +418,16 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataChannels.data}
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.warehouse)}
+                                className={classes.mb2}
+                                error={errors?.redirect?.message}
+                                data={resFromOrg?.data?.[3]?.data || []}
+                                loading={dataApplications.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="warehouseid"
                             />
                         </div>
                     </div>
