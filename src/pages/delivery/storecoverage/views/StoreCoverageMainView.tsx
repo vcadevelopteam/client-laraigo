@@ -12,7 +12,7 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 import { DuplicateIcon } from "icons";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
-import { execute, exportData } from "store/main/actions";
+import { execute, exportData, resetAllMain } from "store/main/actions";
 import {
   showSnackbar,
   showBackdrop,
@@ -22,6 +22,7 @@ import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
+import TableZyx from "components/fields/table-simple";
 
 const selectionKey = "warehouseid";
 
@@ -29,23 +30,19 @@ interface InventoryMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
-  fetchDataAux: any;
 }
 
 const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
-  fetchDataAux,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
-  const mainPaginated = useSelector((state) => state.main.mainPaginated);
-  const [totalrow, settotalrow] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
+  const mainCollection = useSelector((state) => state.main.mainData); 
   const [waitExport, setWaitExport] = useState(false);
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
@@ -67,6 +64,16 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
   };
 
   useEffect(() => {
+    fetchData()   
+    return () => {
+      dispatch(resetAllMain());
+    };
+  },[]);
+
+
+
+
+  useEffect(() => {
     if (waitUpload) {
       if (!importRes.loading && !importRes.error) {
         dispatch(
@@ -78,7 +85,7 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
         );
         dispatch(showBackdrop(false));
         setWaitUpload(false);
-        fetchData(fetchDataAux);
+        fetchData();
       } else if (importRes.error) {
         dispatch(
           showSnackbar({
@@ -126,16 +133,6 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
     }
 }, [resExportData, waitExport]);
 
-  useEffect(() => {
-    if (!mainPaginated.loading && !mainPaginated.error) {
-      setPageCount(
-        fetchDataAux.pageSize
-          ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize)
-          : 0
-      );
-      settotalrow(mainPaginated.count);
-    }
-  }, [mainPaginated]);
 
   useEffect(() => {
     if (waitSave) {
@@ -147,7 +144,7 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
             message: t(langKeys.successful_delete),
           })
         );
-        fetchData(fetchDataAux);
+        fetchData();
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
@@ -193,7 +190,7 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
       },
       {
         Header: t(langKeys.telephonenumber),
-        accessor: "telephonenumber",
+        accessor: "phone",
         width: "auto",
       },
       {
@@ -247,13 +244,11 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
           />
         </div>
       </div>
-      <TablePaginated
+    
+      <TableZyx
         columns={columns}
-        data={mainPaginated.data}
-        totalrow={totalrow}
-        loading={mainPaginated.loading}
-        pageCount={pageCount}
-        fetchData={fetchData}
+        data={mainCollection.data}     
+        loading={mainCollection.loading}      
         onClickRow={handleEdit}
         handleRegister={handleRegister}
         register={true}

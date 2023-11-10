@@ -25,7 +25,6 @@ interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     fetchData?: any;
-    fetchDataAux?: any;
 }
 
 
@@ -60,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -90,7 +89,7 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData(fetchDataAux);
+                fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {

@@ -242,10 +242,10 @@ export const insStore = ({ id, description, phone, address, warehouseid, coverag
     parameters: { id, description, phone, address, warehouseid, coveragearea , warehouseinstore, type , status, operation }
 });
 
-export const selStore = (id: number, all: boolean): IRequestBody => ({
+export const selStore = (id: number): IRequestBody => ({
     method: "UFN_STORE_SEL",
     key: "UFN_STORE_SEL",
-    parameters: { id, all }
+    parameters: { id, all: id === 0 }
 });
 
 
