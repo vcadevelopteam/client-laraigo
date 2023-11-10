@@ -7,6 +7,8 @@ export interface IInteraction {
     personid?: number | null;
     usertype?: string | null;
     avatar?: string | null;
+    emailcopy: string | null;
+    emailcocopy: string | null;
     likewall?: boolean | null;
     hiddenwall?: boolean | null;
     indexImage?: number | undefined;
@@ -25,4 +27,6 @@ export interface IGroupInteraction {
     interactiontext?: string;
     interactiontype?: string;
     listImage?: string[];
+    emailcopy?: string;
+    emailcocopy?: string;
 }

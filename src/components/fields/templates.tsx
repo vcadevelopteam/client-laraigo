@@ -38,11 +38,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import QuickReactions from "react-quick-reactions";
-import React, { CSSProperties, FC, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useEffect, useState } from 'react';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import { FieldError } from 'react-hook-form';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -325,7 +326,7 @@ interface InputProps {
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
     style?: any;
-    error?: string;
+    error?: string | FieldError | Merge<FieldError, FieldErrorsImpl<unknown>>;
     type?: string;
     rows?: number;
     maxLength?: number;
@@ -834,8 +835,11 @@ const useResetCacheMultiSelect = (data: any) => {
     }, [data]);
     return ref;
 }
+interface ListboxComponentProps {
+    children: ReactNode;
+}
 
-const ListboxComponentMultiSelect = React.forwardRef<HTMLDivElement>(function ListboxComponent(props, ref) {
+const ListboxComponentMultiSelect = React.forwardRef<HTMLDivElement, ListboxComponentProps>(function ListboxComponent(props, ref) {
     const { children, ...other } = props;
     const itemData = React.Children.toArray(children);
     const itemCount = itemData.length;
@@ -1383,8 +1387,10 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
-                {icon?.(handleClick) || <Tooltip title={t(langKeys.send_emoji) + ""} arrow placement="top">
-                    <EmojiICon className={classes.root} onClick={handleClick} />
+                {icon?.(handleClick) || <Tooltip title={String(t(langKeys.send_emoji))} arrow placement="top">
+                    <IconButton onClick={handleClick}>
+                        <EmojiICon className={classes.root}/>
+                    </IconButton>
                 </Tooltip>}
                 {open && (
                     <div style={{
@@ -1457,8 +1463,10 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style || undefined}>
-                <Tooltip title={t(langKeys.send_gif) + ""} arrow placement="top">
-                    <GifIcon className={classes.root} onClick={handleClick} />
+                <Tooltip title={String(t(langKeys.send_gif))} arrow placement="top">
+                    <IconButton onClick={handleClick}>
+                        <GifIcon className={classes.root} />
+                    </IconButton>
                 </Tooltip>
                 {open && (
                     <div style={{

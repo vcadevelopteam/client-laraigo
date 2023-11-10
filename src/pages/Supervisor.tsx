@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useState, useEffect, memo } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
@@ -18,7 +17,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { AntTab, BadgeGo, ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
-import { IAgent } from "@types";
+import { Dictionary, IAgent } from "@types";
 import clsx from 'clsx';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -27,6 +26,12 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import memoize from 'memoize-one';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+
+interface Dimensions {
+    height: number;
+    width: number;
+}
 
 const filterAboutStatusName = (data: IAgent[], page: number, textToSearch: string, filterBy: string): IAgent[] => {
     if (page === 0 && textToSearch === "") {
@@ -140,7 +145,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
 )
 
 const RenderRow = memo(
-    ({ data, index, style }: any) => {
+    ({ data, index, style }: Dictionary) => {
         const { items } = data;
         const item = items[index]
 
@@ -152,6 +157,7 @@ const RenderRow = memo(
     },
     areEqual
 )
+RenderRow.displayName = "RenderRow";
 
 const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, motivetype, userid, image, isConnected, countPaused, countClosed, countNotAnswered, status, userstatustype, countAnswered, channels } }) => {
     const classes = useStyles();
@@ -165,7 +171,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
             <div className={classes.agentUp}>
                 <BadgeGo
                     overlap="circular"
-                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO" && !!motivetype) ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
+                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO" && motivetype) ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
@@ -231,7 +237,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
 }
 
 const HeaderAgentPanel: FC<{
-    classes: any,
+    classes: ClassNameMap,
     onSearch: (pageSelected: number, search: string, filterBy: string) => void,
     countAll: number,
     countConnected: number,
@@ -246,7 +252,7 @@ const HeaderAgentPanel: FC<{
     const [filterBy, setFilterBy] = useState('user')
     const agentList = useSelector(state => state.inbox.agentList);
 
-    const onChangeSearchAgent = (e: any) => setSearch(e.target.value);
+    const onChangeSearchAgent = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setSearch(e.target.value);
 
     const handleClose = () => setAnchorEl(null);
 
@@ -345,7 +351,7 @@ const HeaderAgentPanel: FC<{
     )
 }
 
-const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
+const AgentPanel: FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const agentList = useSelector(state => state.inbox.agentList);
     const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
@@ -379,7 +385,7 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
             {agentList.loading ? <ListItemSkeleton /> :
                 <div className="scroll-style-go" style={{ height: '100%' }}>
                     <AutoSizer>
-                        {({ height, width }: any) => (
+                        {({ height, width }: Dimensions) => (
                             <FixedSizeList
                                 width={width}
                                 height={height}
@@ -431,8 +437,8 @@ const Supervisor: FC = () => {
             getInappropriateWordsLst(),
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
-            getPropertySelByName("ASESORDELEGACION","ASESORDELEGACION"),
-            getPropertySelByName("ASESORSUSPENDE","ASESORSUSPENDE"),
+            getPropertySelByName("ASESORDELEGACION", "ASESORDELEGACION"),
+            getPropertySelByName("ASESORSUSPENDE", "ASESORSUSPENDE"),
         ]))
         return () => {
             dispatch(resetAllMain());

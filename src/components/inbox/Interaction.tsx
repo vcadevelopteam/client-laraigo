@@ -444,14 +444,14 @@ const checkUrl = (url: string) => {
     return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) != null);
 }
 
-const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
+const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy}, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
 
     const [height, setHeight] = React.useState("0px");
-    
+
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
@@ -499,10 +499,15 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         try {
             const [subject, body, files] = interactiontext.split("&%MAIL%&")
             return (
-                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
-                    [classes.interactionTextAgent]: userType !== 'client',
-                })} >
+                <div
+                    title={convertLocalDate(createdate).toLocaleString()}
+                    className={clsx(classes.interactionText, {
+                        [classes.interactionTextAgent]: userType !== 'client',
+                    })}
+                    style={{ width: '100%', maxWidth: '100%' }}
+                >
                     <div>RE-LARAIGO: {subject}</div>
+                    {emailcopy && <div style={{borderBottom: '1px solid #dfdfdf'}}>Cc: {emailcopy}</div>}
                     <iframe
                         ref={ref}
                         srcDoc={body}

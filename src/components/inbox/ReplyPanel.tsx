@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -33,10 +32,9 @@ import TextField from '@material-ui/core/TextField';
 import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from 'common/helpers/functions'
 import { Descendant } from 'slate';
 import { RichText, renderToString, toElement } from 'components/fields/RichText';
-import UndoIcon from '@material-ui/icons/Undo';
-import RedoIcon from '@material-ui/icons/Redo';
 import { emojis } from "common/constants/emojis";
 import DragDropFile from 'components/fields/DragDropFile';
+import MailRecipients from './MailRecipients';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -95,19 +93,21 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
                 id={`laraigo-upload-${type}`}
                 type="file"
                 value={valuefile}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 onChange={(e) => onSelectImage(e.target.files)}
             />
             <label htmlFor={`laraigo-upload-${type}`}>
-                <Tooltip title={t(type === "image" ? langKeys.send_image : langKeys.send_file) + ""} arrow placement="top">
-                    {type === "image" ?
-                        <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} /> :
+                <IconButton color="primary" aria-label="upload picture" component="span">
+                    { type === 'image' &&
+                        <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+                    }
+                    { type !== 'image' &&
                         <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
                     }
-                </Tooltip>
+                </IconButton>
             </label>
         </>
-    )
+    );
 }
 
 const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ item, setFiles }) => (
@@ -441,6 +441,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const { t } = useTranslation();
 
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const [copyEmails, setCopyEmails] = useState<Dictionary>({ cc: false, cco: false, error: false });
 
     const resReplyTicket = useSelector(state => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
@@ -455,7 +456,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [files, setFiles] = useState<IFile[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
-
     const [typeHotKey, setTypeHotKey] = useState("")
     const quickReplies = useSelector(state => state.inbox.quickreplies);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([])
@@ -464,7 +464,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
-    const [showReply, setShowReply] = useState(true);
+    const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
     const [refresh, setrefresh] = useState(1)
@@ -475,9 +475,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if ((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
-        if (ticketSelected?.status !== "ASIGNADO")
+        if (ticketSelected?.status !== "ASIGNADO") {
             setShowReply(false);
-        else if (channelsWhatsapp.includes(ticketSelected.communicationchanneltype)) {
+        }
+        else if (`,${user?.roledesc},`.includes(",SUPERVISOR,") && user?.properties.environment === "CLARO" && [2, 3].includes(agentSelected?.userid ?? 0)) { //2 y 3 son BOT y HOLDING
+            setShowReply(null);
+        } else if (channelsWhatsapp.includes(ticketSelected.communicationchanneltype)) {
             if (!ticketSelected?.personlastreplydate) {
                 setShowReply(false);
             } else {
@@ -488,8 +491,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     setShowReply(true);
                 }
             }
-        } else
+        } else {
             setShowReply(true)
+        }
     }, [ticketSelected])
 
     useEffect(() => {
@@ -558,6 +562,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [dispatch, ticketSelected, agentSelected])
 
     const triggerReplyMessage = () => {
+        if (copyEmails.error) return
         const callback = () => {
             let wasSend = false;
             if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
@@ -635,6 +640,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             interactiontext: textCleaned,
                             validateUserOnTicket: userType === "AGENT",
                             isAnswered: !ticketSelected!!.isAnswered,
+                            emailcocopy: copyEmails.cco || "",
+                            emailcopy: copyEmails.cc || ""
                         }));
                         setText("");
                         setrefresh(refresh * -1)
@@ -803,6 +810,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     <div style={{ alignItems: "center" }}>
                         <ClickAwayListener onClickAway={handleClickAway}>
                             <div>
+                                <MailRecipients setCopyEmails={setCopyEmails}/>
                                 <RichText
                                     style={{ width: "100%" }}
                                     value={bodyobject}
@@ -816,6 +824,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     emojiNoShow={emojiNoShow}
                                     emoji={true}
                                     emojiFavorite={emojiFavorite}
+                                    setFiles={setFiles}
+                                    collapsed={true}
                                     endinput={
                                         <div style={{ display: 'block' }}>
                                             <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
@@ -823,40 +833,11 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                             </div>
                                         </div>
                                     }
-                                >
-                                    <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                                            <IconButton disabled={undotext.length < 2} size="small" onClick={() => {
-                                                setflagundo(true)
-                                                setredotext([...redotext, bodyobject])
-                                                setBodyobject(undotext[undotext.length - 2])
-                                                setrefresh(refresh * -1)
-                                                setundotext(undotext.slice(0, undotext.length - 1))
-                                            }}>
-
-                                                <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
-                                                    <UndoIcon />
-                                                </Tooltip>
-                                            </IconButton>
-                                            <IconButton disabled={redotext.length < 1} size="small" onClick={() => {
-                                                setflagredo(true)
-                                                setBodyobject(redotext[redotext.length - 1])
-                                                setrefresh(refresh * -1)
-                                                setredotext(redotext.slice(0, redotext.length - 1))
-                                            }}>
-                                                <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
-                                                    <RedoIcon />
-                                                </Tooltip>
-                                            </IconButton>
-                                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
-                                            <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                            {/*
-                                                    <TmpRichResponseIcon classes={classes} setText={setText} /> final
-                                                */}
-                                            <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
-                                        </div>
-                                    </div>
-
+                                    >
+                                        <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
+                                        <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                        <UploaderIcon type="file" classes={classes} setFiles={setFiles} 
+                                    />
                                 </RichText>
                                 {openDialogHotKey && (
                                     <div style={{
@@ -903,14 +884,14 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 </div>
                 :
                 <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
-                    {t(langKeys.no_reply_use_hsm)}
+                    {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                 </div>
             }
             <BottomGoToUnder />
         </div >)
     } else return (
         <>
-            {showReply ?
+            {showReply && (
                 <DragDropFile setFiles={setFiles} setfileimage={setfileimage}>
                     <div className={classes.containerResponse}>
                         {files.length > 0 &&
@@ -986,14 +967,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         <BottomGoToUnder />
                     </div>
                 </DragDropFile>
-                :
+            )}
+            {!showReply && (
                 <div className={classes.containerResponse}>
                     <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
-                        {t(langKeys.no_reply_use_hsm)}
+                        {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                     </div>
                     <BottomGoToUnder />
                 </div>
-            }
+            )}
         </ >
     )
 }
