@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider, Popper, Fade } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -20,12 +20,15 @@ import {
     FormatAlignCenter as FormatAlignCenterIcon,
     EmojiEmotions as EmojiEmotionsIcon,
     FormatAlignLeft as FormatAlignLeftIcon,
+    FormatColorText,
+    Undo as UndoIcon,
+    Redo as RedoIcon,
 } from '@material-ui/icons';
 import { emojis } from "common/constants/emojis";
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSlate, useSlateStatic, useSelected, useFocused } from 'slate-react';
-import { withHistory } from 'slate-history';
+import { HistoryEditor, withHistory } from 'slate-history';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ReactDomServer from 'react-dom/server';
@@ -37,7 +40,7 @@ import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/popus/actions';
 import { ArrowDropDownIcon, QuickresponseIcon, SearchIcon } from 'icons';
 import { Picker } from 'emoji-mart';
-import { Dictionary } from '@types';
+import { Dictionary, IFile } from '@types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -123,6 +126,8 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     emojiFavorite?: any;
     emoji?: Boolean;
     quickReplies?: any[];
+    setFiles?: (param: any) => void;
+    collapsed?: boolean
 }
 
 interface RenderElementProps {
@@ -160,6 +165,18 @@ const useRichTextStyles = makeStyles(theme => ({
         marginRight: 1,
         width: 16,
         height: 16
+    },
+    paper: {
+        background: 'white',
+        backgroundColor: theme.palette.background.paper,
+        zIndex: 10,
+        '& .MuiIconButton-root': {
+            padding: '5px',
+            fontSize: '10px'
+        }
+     },
+    toolbarOptionsIcons: {
+        padding: '5px'
     }
 }));
 
@@ -201,9 +218,10 @@ const QuickResponseStyles = makeStyles((theme) => ({
 interface QuickReplyProps {
     quickReplies: any[];
     editor: BaseEditor & ReactEditor;
+    setFiles?: (param: any) => void
 }
 
-export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor}) => {
+export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor, setFiles}) => {
     const classes = QuickResponseStyles();
     const [open, setOpen] = React.useState(false);
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
@@ -225,12 +243,23 @@ export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor}) =
     }, [search, quickReplies])
 
     const handlerClickItem = (item: Dictionary) => {
+        if (item.quickreply_type === 'CORREO ELECTRONICO') {
+            editor.insertFragment(item.bodyobject)
+        } else {
+            editor.insertText(item.quickreply
+                .replace("{{numticket}}", ticketSelected?.ticketnum)
+                .replace("{{client_name}}", ticketSelected?.displayname)
+                .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
+            );
+        }
+        if (item.attachment && setFiles) {
+            const attachments = item.attachment.split(',')
+            attachments.forEach((element: string, index: number) => {
+                const uid = new Date().toISOString() + '_' + index;
+                setFiles((x: IFile[]) => [...x, { id: uid, url: element, type: 'file' }]);
+            });
+        }
         setOpen(false);
-        editor.insertText(item.quickreply
-            .replace("{{numticket}}", ticketSelected?.ticketnum)
-            .replace("{{client_name}}", ticketSelected?.displayname)
-            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
-        );
     }
 
     return (
@@ -249,7 +278,8 @@ export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor}) =
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 60
+                        bottom: 60,
+                        zIndex: 1201
                     }}>
                         <div className={classes.containerQuickReply}>
                             <div>
@@ -329,7 +359,8 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 100
+                        bottom: 100,
+                        zIndex: 1200
                     }}>
                         <Picker
                             onSelect={(e) => { setOpen(false); onSelect(e) }}
@@ -363,13 +394,39 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
-    , endinput, emojiNoShow, emojiFavorite, emoji = false,quickReplies=[], ...boxProps }) => {
+export const RichText: FC<RichTextProps> = ({
+    value,
+    refresh = 0,
+    onChange,
+    placeholder,
+    image = true,
+    spellCheck,
+    error,
+    positionEditable = "bottom",
+    children,
+    onlyurl = false,
+    endinput,
+    emojiNoShow,
+    emojiFavorite,
+    emoji = false,
+    quickReplies = [],
+    setFiles,
+    collapsed = false,
+    ...boxProps
+}) => {
     const classes = useRichTextStyles();
-    // Create a Slate editor object that won't change across renders.
-    const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
-    const upload = useSelector(state => state.main.uploadFile);
-    // const [valueg, setvalueg] = useState(value)
+    const editor: BaseEditor & ReactEditor = useMemo(
+        () => withImages(withHistory(withReact(createEditor()))),
+        []
+    );
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const id = open ? 'transitions-popper' : undefined;
+    
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(anchorEl ? null : event.currentTarget);
+    };
 
     useEffect(() => {
         //evitar q en cada cmbio re-renderice, solo en casos q el componente q llama lo requiera (ejemplo replypanel)
@@ -380,101 +437,186 @@ export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, plac
             };
             editor.children = value;
         }
-    }, [refresh])
+    }, [refresh]);
 
     return (
         <Box {...boxProps}>
-            <Slate editor={editor} value={value} onChange={onChange} >
-                {positionEditable === "top" &&
-                <div
-                className={classes.editable}>
-
-                    <Editable
-                        placeholder={placeholder}
-                        renderElement={renderElement}
-                        renderLeaf={renderLeaf}
-                        spellCheck={spellCheck}
-                    />
-                </div>
-                }
+            <Slate editor={editor} value={value} onChange={onChange}>
+                {positionEditable === "top" && (
+                    <div className={classes.editable}>
+                        <Editable
+                            placeholder={placeholder}
+                            renderElement={renderElement}
+                            renderLeaf={renderLeaf}
+                            spellCheck={spellCheck}
+                        />
+                    </div>
+                )}
                 <Toolbar className={classes.toolbar}>
                     <div>
-                        <div style={{ display: "inline-block" }}>
-                            {children}
-                        </div>
-                        <FontFamily tooltip='font'></FontFamily>
-                        <FormatSizeMenu tooltip='size'></FormatSizeMenu>
+                        {collapsed && (
+                            <>
+                                <IconButton onClick={handleClick}>
+                                    <FormatColorText />
+                                </IconButton>
+                                <Popper id={id} className={classes.paper} open={open} anchorEl={anchorEl} placement={'top-start'} transition>
+                                    {({ TransitionProps }) => (
+                                    <Fade {...TransitionProps} timeout={350}>
+                                        <div
+                                        style={{
+                                            padding: collapsed ? "8px 8px" : "0px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            boxShadow: '0px 4px 5px 0px rgba(0,0,0,.14),0px 1px 10px 0px rgba(0,0,0,.12),0px 2px 4px -1px rgba(0,0,0,.2)'
+                                        }}
+                                    >
+                                        <ToolBarOptions
+                                            value={value}
+                                            onChange={onChange}
+                                            emoji={emoji}
+                                            quickReplies={quickReplies}
+                                            editor={editor as BaseEditor & ReactEditor & HistoryEditor}
+                                            image={image}
+                                            onlyurl={onlyurl}
+                                            emojiNoShow={emojiNoShow}
+                                            emojiFavorite={emojiFavorite}
+                                            collapsed={collapsed}
+                                        />
+                                    </div>
+                                    </Fade>
+                                    )}
+                                </Popper>
+                            </>
+                        )}
+                        <div style={{ display: "inline-block" }}>{children}</div>
                         {quickReplies.length > 0 && (
-                            <QuickReply quickReplies={quickReplies} editor={editor}></QuickReply>
+                            <QuickReply quickReplies={quickReplies} editor={editor} setFiles={setFiles}></QuickReply>
                         )}
-                        {emoji && <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
-                        <MarkButton format="bold" tooltip='bold'>
-                            <FormatBoldIcon />
-                        </MarkButton>
-                        <MarkButton format="italic" tooltip='italic'>
-                            <FormatItalicIcon />
-                        </MarkButton>
-                        <MarkButton format="underline" tooltip='underline'>
-                            <FormatUnderlinedIcon />
-                        </MarkButton>
+                        {emoji && (
+                            <EmojiPickerZyx
+                                emojisIndexed={EMOJISINDEXED}
+                                onSelect={(e) => editor.insertText(e.native)}
+                                emojisNoShow={emojiNoShow}
+                                emojiFavorite={emojiFavorite}
+                            />
+                        )}
 
-                        <TextColor tooltip='size'></TextColor>
-                        <Alignment tooltip='alignment'></Alignment>
-
-                        <BlockButton format="numbered-list" tooltip='numbered_list'>
-                            <FormatListNumberedIcon />
-                        </BlockButton>
-                        <BlockButton format="bulleted-list" tooltip='bulleted_list'>
-                            <FormatListBulletedIcon />
-                        </BlockButton>
-
-                        <MarkButton format="code" tooltip='code'>
-                            <FormatCodeIcon />
-                        </MarkButton>
-                        <BlockButton format="heading-one" tooltip='heading_one'>
-                            <FormatLooksOneIcon />
-                        </BlockButton>
-                        <BlockButton format="heading-two" tooltip='heading_two'>
-                            <FormatLooksTwoIcon />
-                        </BlockButton>
-                        <BlockButton format="block-quote" tooltip='block_quote'>
-                            <FormatQuoteIcon />
-                        </BlockButton>
-                        {(image && onlyurl) &&
-                                <OnlyURLInsertImageButton>
-                                    <InsertPhotoIcon />
-                                </OnlyURLInsertImageButton>
-                        }
-                        {
-                            /*<InsertImageButton>
-                            <InsertPhotoIcon />
-                        </InsertImageButton> */
-                        }
-                        {upload.loading && (
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                <CircularProgress size={24} />
-                                <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
-                            </div>
+                        {!collapsed && (
+                            <ToolBarOptions
+                                value={value}
+                                onChange={onChange}
+                                emoji={emoji}
+                                quickReplies={quickReplies}
+                                editor={editor as BaseEditor & ReactEditor & HistoryEditor}
+                                image={image}
+                                onlyurl={onlyurl}
+                                emojiNoShow={emojiNoShow}
+                                emojiFavorite={emojiFavorite}
+                                collapsed={collapsed}
+                            />
                         )}
                     </div>
-                    <div style={{ marginLeft: "auto", marginRight: 0 }}>
-                        {endinput}
-                    </div>
+                    <div style={{ marginLeft: "auto", marginRight: 0 }}>{endinput}</div>
                 </Toolbar>
-                {positionEditable !== "top" &&
+                {positionEditable !== "top" && (
                     <Editable
                         placeholder={placeholder}
                         renderElement={renderElement}
                         renderLeaf={renderLeaf}
                         spellCheck={spellCheck}
-                        style={{borderTop: "1.5px dotted #949494"}}
+                        style={{ borderTop: "1.5px dotted #949494" }}
                     />
-                }
+                )}
             </Slate>
-            {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
-        </Box >
+            {error && error !== "" && <FormHelperText error>{error}</FormHelperText>}
+        </Box>
     );
-}
+};
+
+const ToolBarOptions: React.FC<
+    RichTextProps & { editor: BaseEditor & ReactEditor & HistoryEditor; collapsed: boolean }
+> = ({ image, onlyurl }) => {
+    const upload = useSelector((state) => state.main.uploadFile);
+    const editor = useSlate()
+    const { t } = useTranslation();
+
+    const handleUndo = () => {
+        if (editor.history.undos.length > 0) {
+            editor.undo();
+            ReactEditor.focus(editor);
+        }
+    };
+
+    const handleRedo = () => {
+        if (editor.history.redos.length > 0) {
+            editor.redo();
+            ReactEditor.focus(editor);
+        }
+    };
+
+    return (
+        <>
+            <IconButton onClick={handleUndo}>
+                <Tooltip title={String(t(langKeys.undo))} arrow placement="top">
+                    <UndoIcon />
+                </Tooltip>
+            </IconButton>
+            <IconButton onClick={handleRedo}>
+                <Tooltip title={String(t(langKeys.redo))} arrow placement="top">
+                    <RedoIcon />
+                </Tooltip>
+            </IconButton>
+            <FontFamily tooltip="font"></FontFamily>
+            <FormatSizeMenu tooltip="size"></FormatSizeMenu>
+            <MarkButton format="bold" tooltip="bold">
+                <FormatBoldIcon />
+            </MarkButton>
+            <MarkButton format="italic" tooltip="italic">
+                <FormatItalicIcon />
+            </MarkButton>
+            <MarkButton format="underline" tooltip="underline">
+                <FormatUnderlinedIcon />
+            </MarkButton>
+            <TextColor tooltip="size"></TextColor>
+            <Alignment tooltip="alignment"></Alignment>
+            <BlockButton format="numbered-list" tooltip="numbered_list">
+                <FormatListNumberedIcon />
+            </BlockButton>
+            <BlockButton format="bulleted-list" tooltip="bulleted_list">
+                <FormatListBulletedIcon />
+            </BlockButton>
+            <MarkButton format="code" tooltip="code">
+                <FormatCodeIcon />
+            </MarkButton>
+            <BlockButton format="heading-one" tooltip="heading_one">
+                <FormatLooksOneIcon />
+            </BlockButton>
+            <BlockButton format="heading-two" tooltip="heading_two">
+                <FormatLooksTwoIcon />
+            </BlockButton>
+            <BlockButton format="block-quote" tooltip="block_quote">
+                <FormatQuoteIcon />
+            </BlockButton>
+            {image && onlyurl && (
+                <OnlyURLInsertImageButton>
+                    <InsertPhotoIcon />
+                </OnlyURLInsertImageButton>
+            )}
+            {upload.loading && (
+                <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <CircularProgress size={24} />
+                    <span>
+                        <strong>
+                            <Trans i18nKey={langKeys.loadingImage} />
+                            ...
+                        </strong>
+                    </span>
+                </div>
+            )}
+        </>
+    );
+};
+
 
 /**Renderiza el texto seleccionado con cierto estilo */
 const renderElement: RenderElement = ({ attributes = {}, children, element, isStatic = false }) => {

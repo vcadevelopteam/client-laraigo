@@ -73,7 +73,7 @@ export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], i
         })
         return APIManager.post(isList ? apiUrls.REPLY_LIST_TICKET : apiUrls.REPLY_TICKET, { data: { data } }, true);
     } else {
-        const { conversationid, validateUserOnTicket, personid, communicationchannelid, ticketnum, personcommunicationchannel, interactiontext, interactiontype, communicationchannelsite, communicationchanneltype, postexternalid, commentexternalid, replyexternalid, isAnswered }: IReplyTicketParams = params;
+        const { conversationid, validateUserOnTicket, personid, communicationchannelid, ticketnum, personcommunicationchannel, interactiontext, interactiontype, communicationchannelsite, communicationchanneltype, postexternalid, commentexternalid, replyexternalid, isAnswered, emailcocopy, emailcopy }: IReplyTicketParams = params;
         const data = {
             p_conversationid: conversationid,
             p_personid: personid,
@@ -89,6 +89,8 @@ export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], i
             ticketnum: ticketnum,
             validateUserOnTicket,
             newanswered: isAnswered,
+            p_emailcopy: emailcopy,
+            p_emailcocopy: emailcocopy,
         }
         return APIManager.post(isList ? apiUrls.REPLY_LIST_TICKET : apiUrls.REPLY_TICKET, { data: { data } }, true);
     }
