@@ -10786,7 +10786,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
         setValue,
     } = useForm({
         defaultValues: {
-            cardlimit: 16,
+            cardlimit: 22,
             cardnumber: row?.cardnumber || "",
             expirationmonth: row?.expirationmonth || "",
             expirationyear: row?.expirationyear || "",
@@ -10849,7 +10849,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                     setValue("cardlimit", 17);
                 } else {
                     setIcon(<></>);
-                    setValue("cardlimit", 10);
+                    setValue("cardlimit", 22);
                 }
             }
         }
@@ -11126,7 +11126,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                         } else {
                                             setIcon(<></>);
 
-                                            setValue("cardlimit", 10);
+                                            setValue("cardlimit", 22);
                                         }
                                     }}
                                     onPaste={(e) => {
