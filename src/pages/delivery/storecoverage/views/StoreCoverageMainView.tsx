@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
@@ -23,6 +22,7 @@ import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 import TableZyx from "components/fields/table-simple";
+import { CellProps } from "react-table";
 
 const selectionKey = "warehouseid";
 
@@ -165,10 +165,11 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
       {
         accessor: "storeid",
         NoFilter: true,
+        disableGlobalFilter: true,
         isComponent: true,
         minWidth: 60,
         width: "1%",
-        Cell: (props: any) => {
+        Cell: (props: CellProps<Dictionary>) => {
           const row = props.cell.row.original;
           return (
             <TemplateIcons
@@ -185,7 +186,7 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
       },
       {
         Header: t(langKeys.storezonename),
-        accessor: "storezonename",
+        accessor: "description",
         width: "auto",
       },
       {
