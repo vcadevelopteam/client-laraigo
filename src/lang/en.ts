@@ -5570,7 +5570,7 @@ const translation: LangKeys = {
   obverseid: 'Obverse ID', 
   reverseid: 'Reverse ID', 
   paymentvoucher: 'Payment Voucher', 
-
+  store: 'Store',
 };
 
 const enResource: ResourceLanguage = {

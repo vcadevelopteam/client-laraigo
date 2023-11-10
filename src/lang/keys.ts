@@ -5489,7 +5489,7 @@ export const langKeys = {
   obverseid: 'obverseid', 
   reverseid: 'reverseid', 
   paymentvoucher: 'paymentvoucher', 
-
+  store: 'store',
 };
 
 export type LangKeys = typeof langKeys;

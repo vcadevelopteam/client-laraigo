@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials } from 'common/helpers';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getWarehouseSel, selStore } from 'common/helpers';
 import { getDomainsByTypename } from 'store/person/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -39,6 +39,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { DuplicateIcon } from 'icons';
+import { validateNewUser } from 'network/service/channels';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -223,6 +224,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             labels: row?.labels || '',
             status: 'DESCONECTADO',
             bydefault: row?.bydefault || false,
+            warehouseid: row?.warehouseid || 0,
+            storeid: row?.storeid || 0,
         })
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
@@ -240,6 +243,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('labels');
         register('bydefault');
+        register('warehouseid');
+        register('storeid');
 
         setDataOrganizations({ loading: false, data: dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y?.orgid === x.orgid)) });
 
@@ -274,7 +279,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             dispatch(getMultiCollectionAux([
                 getSupervisors(value.orgid, 0, index + 1),
                 getChannelsByOrg(value.orgid, index + 1),
-                getValuesFromDomain("GRUPOS", `_GRUPOS${index + 1}`, value.orgid)
+                getValuesFromDomain("GRUPOS", `_GRUPOS${index + 1}`, value.orgid),
+                getWarehouseSel(),
+                selStore(0, true)
             ]))
         } else {
             setDataSupervisors({ loading: false, data: [] });
@@ -302,6 +309,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             setDataApplications({ loading: false, data: [] })
         }
     }
+
+    console.log(getValues('storeid') + '-' + getValues('warehouseid'))
+
     return (
         <Accordion defaultExpanded={row?.id === 0} style={{ marginBottom: '8px' }}>
 
@@ -348,6 +358,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 className={classes.mb2}
                                 valueDefault={getValues("type") === "ASESOR"}
                                 onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
+                            <FieldSelect
+                                label={t(langKeys.store)}
+                                className={classes.mb2}
+                                valueDefault={getValues('storeid')}
+                                error={errors?.storeid?.message}
+                                data={resFromOrg?.data?.[4]?.data || []}
+                                onChange={(value) => setValue('storeid', value.storeid)}
+                                loading={dataApplications.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="storeid"
+                            />
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -407,6 +429,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataChannels.data}
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.warehouse)}
+                                className={classes.mb2}
+                                valueDefault={getValues('warehouseid')}
+                                error={errors?.warehouseid?.message}
+                                data={resFromOrg?.data?.[3]?.data || []}
+                                onChange={(value) => setValue('warehouseid', value.warehouseid)}
+                                loading={dataApplications.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="warehouseid"
                             />
                         </div>
                     </div>
