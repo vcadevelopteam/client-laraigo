@@ -5486,6 +5486,9 @@ export const langKeys = {
   paymentreceipt: 'paymentreceipt',
   registeredaddress: 'registeredaddress',
   viewonlinepayment: 'viewonlinepayment', 
+  obverseid: 'obverseid', 
+  reverseid: 'reverseid', 
+  paymentvoucher: 'paymentvoucher', 
 
 };
 

@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
         poisition: 'relative',
         color: '#2E2C34',
         '&:hover': {
-            // color: theme.palette.primary.main,
             backgroundColor: '#EBEAED',
             borderRadius: 4
         }
@@ -113,10 +112,10 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const [automaticAppointment, setAutomaticAppointment] = useState(false);
     const [manualAppointment, setManualAppointment] = useState(false);
     const [defaultAppointment, setDefaultAppointment] = useState(false);
-    const [immediateAppointment, setImmediateAppointment] = useState(false);
-    const [invoiceElectronicTicket, setInvoiceElectronicTicket] = useState(false);
-    const [shareVoucher, setShareVoucher] = useState(false);
-    const [referralGuide, setReferralGuide] = useState(false);
+    const [immediateAppointment, setImmediateAppointment] = useState(true);
+    const [invoiceElectronicTicket, setInvoiceElectronicTicket] = useState(true);
+    const [shareVoucher, setShareVoucher] = useState(true);
+    const [referralGuide, setReferralGuide] = useState(true);
     const [whatsapp1, setWhatsapp1] = useState(false);
     const [email1, setEmail1] = useState(false);
     const [sendScheduling, setSendScheduling] = useState(false);
@@ -126,13 +125,13 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const [email2, setEmail2] = useState(false);
     const [insuredLimit, setInsuredLimit] = useState(false);
     const [capacity, setCapacity] = useState(false);
-    const [monday, setMonday] = useState(false);
-    const [tuesday, setTuesday] = useState(false);
-    const [wednesday, setWednesday] = useState(false);
+    const [monday, setMonday] = useState(true);
+    const [tuesday, setTuesday] = useState(true);
+    const [wednesday, setWednesday] = useState(true);
     const [thursday, setThursday] = useState(false);
-    const [friday, setFriday] = useState(false);
+    const [friday, setFriday] = useState(true);
     const [saturday, setSaturday] = useState(false);
-    const [sunday, setSunday] = useState(false);
+    const [sunday, setSunday] = useState(true);
 
     const columns = React.useMemo(
         () => [
@@ -211,26 +210,54 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
             <div className='row-zyx'>
                 <div className='col-3'>                                  
                     <FormControl component="fieldset" >                                             
-                        <CustomTitleHelper title={t(langKeys.appointmenttype)}/>                                            
+                        <CustomTitleHelper title={t(langKeys.appointmenttype)}/>                                           
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={automaticAppointment} onChange={(e) => setAutomaticAppointment(e.target.checked)} name="auto" />}
+                                control={
+                                <Checkbox 
+                                    color="primary" 
+                                    style={{ pointerEvents: "auto" }} 
+                                    checked={automaticAppointment} 
+                                    onChange={(e) => setAutomaticAppointment(e.target.checked)} 
+                                    name="auto" 
+                                />}
                                 label={t(langKeys.automatic)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={manualAppointment} onChange={(e) => setManualAppointment(e.target.checked)} name="man" />}
+                                control={
+                                <Checkbox 
+                                    color="primary" 
+                                    style={{ pointerEvents: "auto" }} 
+                                    checked={manualAppointment} 
+                                    onChange={(e) => setManualAppointment(e.target.checked)} 
+                                    name="man" 
+                                />}
                                 label={t(langKeys.manual)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={defaultAppointment} onChange={(e) => setDefaultAppointment(e.target.checked)} name="predef" />}
+                                control={
+                                    <Checkbox 
+                                        color="primary" 
+                                        style={{ pointerEvents: "auto" }} 
+                                        checked={defaultAppointment} 
+                                        onChange={(e) => setDefaultAppointment(e.target.checked)} 
+                                        name="predef" 
+                                    />}
                                 label={t(langKeys.default2)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={immediateAppointment} onChange={(e) => setImmediateAppointment(e.target.checked)} name="inme" />}
+                                control={
+                                <Checkbox 
+                                    color="primary" 
+                                    style={{ pointerEvents: "visible" }} 
+                                    checked={immediateAppointment} 
+                                    onChange={(e) => setImmediateAppointment(e.target.checked)} 
+                                    name="immediate" 
+                                />}
                                 label={t(langKeys.immediate)}
                             />
                         </FormGroup><></>
@@ -355,54 +382,61 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         {t(langKeys.edit) + ' ' + t(langKeys.vehicletype)}
                     </span><></>
                 </div>
+
                 <div className='col-3'>                                  
                     <FormControl component="fieldset" >
                         <CustomTitleHelper title={t(langKeys.workingdays)}/>                           
                         <FormGroup>
+
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={monday} onChange={(e) => setMonday(e.target.checked)} name="sun" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={monday} onChange={(e) => setMonday(e.target.checked)} name="monday" />}
                                     label={t(langKeys.monday)}
                                 />
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={tuesday} onChange={(e) => setTuesday(e.target.checked)} name="mon" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto", paddingLeft:"2rem" }} checked={tuesday} onChange={(e) => setTuesday(e.target.checked)} name="motuesdayn" />}
                                     label={t(langKeys.friday)}
                                 />
                             </div>
+
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={wednesday} onChange={(e) => setWednesday(e.target.checked)} name="mon" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={wednesday} onChange={(e) => setWednesday(e.target.checked)} name="wednesday" />}
                                     label={t(langKeys.tuesday)}
                                 />
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={thursday} onChange={(e) => setThursday(e.target.checked)} name="mon" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto", paddingLeft:"1.5rem"}} checked={thursday} onChange={(e) => setThursday(e.target.checked)} name="thursday" />}
                                     label={t(langKeys.saturday)}
                                 />
                             </div>
+
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={friday} onChange={(e) => setFriday(e.target.checked)} name="mon" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={friday} onChange={(e) => setFriday(e.target.checked)} name="friday" />}
                                     label={t(langKeys.wednesday)}
                                 />
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={saturday} onChange={(e) => setSaturday(e.target.checked)} name="mon" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={saturday} onChange={(e) => setSaturday(e.target.checked)} name="saturday" />}
                                     label={t(langKeys.sunday)}
                                 />
                             </div>
+
                             <FormControlLabel
                                 style={{ pointerEvents: "none", paddingBottom:"20px" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sunday} onChange={(e) => setSunday(e.target.checked)} name="mon" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sunday} onChange={(e) => setSunday(e.target.checked)} name="sunday" />}
                                 label={t(langKeys.thursday)}
                             />
+
                         </FormGroup>
                     </FormControl>
                 </div>        
+                
                 <div className='col-3'>    
                     <CustomTitleHelper title={t(langKeys.nonWorkingdays)}/>           
                     <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalNonWorkingDays(true)}>

@@ -48,23 +48,23 @@ const DeliveryPhotoDialog: React.FC<{
     <DialogZyx open={openModal} title={t(langKeys.deliveryphotoorder)} maxWidth="sm">
       <div className="row-zyx" style={{ gap:"1rem"}}>
         <FieldEdit
-          label={t(langKeys.photo) + ' 1'}
+          label={t(langKeys.photo) + ' 1 '}
           type="text"
           className="col-12"
-          helperText="DNI Anverso"
+          helperText={t(langKeys.obverseid)}
         />
         <FieldEdit
-          label={t(langKeys.photo) + ' 2'}
+          label={t(langKeys.photo) + ' 2 '}
           type="text"
           className="col-12"
-          helperText="DNI Reverso"
+          helperText={t(langKeys.reverseid)}
 
         />
         <FieldEdit
-          label={t(langKeys.photo) + ' 3'}
+          label={t(langKeys.photo) + ' 3 '}
           type="text"
           className="col-12"
-          helperText="Voucher Pago"
+          helperText={t(langKeys.paymentvoucher)}
 
         />
       </div>

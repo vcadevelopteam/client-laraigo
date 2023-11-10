@@ -5567,7 +5567,9 @@ const translation: LangKeys = {
   paymentreceipt: 'Payment Receipt',
   registeredaddress: 'Registered Address',
   viewonlinepayment: 'View Online Payment', 
-
+  obverseid: 'Obverse ID', 
+  reverseid: 'Reverse ID', 
+  paymentvoucher: 'Payment Voucher', 
 
 };
 

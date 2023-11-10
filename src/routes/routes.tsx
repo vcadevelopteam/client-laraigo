@@ -318,7 +318,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.CONFIGURATIONDELIVERY,
         initialSubroute: paths.CONFIGURATIONDELIVERY,
-        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ConfigPropertiesIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.ORDERLIST,
@@ -327,7 +327,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.ORDERLIST,
         initialSubroute: paths.ORDERLIST,
-        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.ORDERINSTORE,
@@ -336,7 +336,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.ORDERINSTORE,
         initialSubroute: paths.ORDERINSTORE,
-        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <WhitelistIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.ORDERSINATTENTION,
@@ -345,7 +345,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.ORDERSINATTENTION,
         initialSubroute: paths.ORDERSINATTENTION,
-        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ProductsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.STORECOVERAGE,

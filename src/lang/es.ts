@@ -5496,7 +5496,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   paymentreceipt: 'Comprobante de Pago',
   registeredaddress: 'Dirección Registrada',
   viewonlinepayment: 'Ver Pago en Linea', 
-
+  obverseid: 'DNI Anverso', 
+  reverseid: 'DNI Reverso', 
+  paymentvoucher: 'Voucher de Pago', 
 
 
 };

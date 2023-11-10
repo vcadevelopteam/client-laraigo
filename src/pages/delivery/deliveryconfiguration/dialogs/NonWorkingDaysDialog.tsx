@@ -48,7 +48,7 @@ const NonWorkingDaysDialog: React.FC<{
 const columns = React.useMemo(
   () => [
     {
-      Header: t(langKeys.nonworkingdays),
+      Header: t(langKeys.nonworkingdays) + " " + t(langKeys.selected_plural),
       accessor: "deliverynumber",
       width: "auto",
     },
@@ -59,31 +59,25 @@ const columns = React.useMemo(
   return (
     <DialogZyx open={openModal} title={t(langKeys.nonworkingdaysregister)} maxWidth="md">
       <div className="row-zyx">
-        <FieldEdit
-          label={t(langKeys.choosenonworkingdate)}
-          type="date"
-          valueDefault={signatureDateDefault}
-          className="col-6"
-        />
-        <Button
-          className="col-2"
-          variant="contained"
-          color="primary"
-          type="button"
-          startIcon={<SaveIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84" }}        
-        >
-          {t(langKeys.save)}
-        </Button>
+        <div className="col-6" style={{paddingTop:"0.8rem"}}>
+          <FieldEdit
+            label={t(langKeys.choosenonworkingdate)}
+            type="date"
+            valueDefault={signatureDateDefault}
+          />   
+        </div>
+        <div className="col-6">
+          <TableZyx
+            columns={columns}
+            data={[]} 
+            filterGeneral={false}
+            toolsFooter={false}   
+          /> 
+        </div>
+       
+     
       </div>
-      <div className='row-zyx'>              
-        <TableZyx
-          columns={columns}
-          data={[]} 
-          filterGeneral={false}
-          toolsFooter={false}       
-        />
-      </div>
+     
       <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
         <Button
           variant="contained"
