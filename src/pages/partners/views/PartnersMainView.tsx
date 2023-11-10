@@ -168,11 +168,6 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         }
       },
       {
-        Header: t(langKeys.billingplan),
-        accessor: "billingplan",
-        width: "auto",
-      },
-      {
         Header: t(langKeys.billingperiod_billingcurrency),
         accessor: "billingcurrency",
         width: "auto",

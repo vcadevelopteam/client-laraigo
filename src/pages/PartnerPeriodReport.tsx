@@ -6,8 +6,27 @@ import { langKeys } from "lang/keys";
 import React from "react";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { getCollection, getMultiCollectionAux } from "store/main/actions";
-import { billingPeriodPartnerDeveloperReseller, billingPeriodPartnerEnterprise, formatNumber, formatNumberNoDecimals, getValuesFromDomain, partnerSel } from "common/helpers";
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, makeStyles, withStyles } from "@material-ui/core";
+import {
+    billingPeriodPartnerDeveloperReseller,
+    billingPeriodPartnerEnterprise,
+    formatNumber,
+    formatNumberNoDecimals,
+    getValuesFromDomain,
+    partnerSel,
+} from "common/helpers";
+import {
+    Button,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    makeStyles,
+    withStyles,
+} from "@material-ui/core";
 import { FieldSelect, FieldView } from "components";
 import { Search } from "@material-ui/icons";
 import { Dictionary } from "@types";
@@ -122,7 +141,7 @@ const PartnerPeriodReport: React.FC = () => {
         partnerid: 0,
         month: new Date().getMonth() + 1 ?? 9,
         year: new Date().getFullYear() ?? 2023,
-        reporttype: '',
+        reporttype: "",
         username: 1,
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(
             new Date(new Date().setDate(1)).getMonth() + 1
@@ -144,26 +163,24 @@ const PartnerPeriodReport: React.FC = () => {
             const mes = datetochange?.getMonth() + 1;
             const year = datetochange?.getFullYear();
             const datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
-            setdataMain((prev) => ({...prev, datetoshow, month: mes, year: year}))
+            setdataMain((prev) => ({ ...prev, datetoshow, month: mes, year: year }));
         }
     }
 
     function search() {
-        if(isEnterprise) {
+        if (isEnterprise) {
             dispatch(showBackdrop(true));
             dispatch(getCollection(billingPeriodPartnerEnterprise(dataMain)));
-            setCanSearch(false)
+            setCanSearch(false);
         } else {
             dispatch(showBackdrop(true));
             dispatch(getCollection(billingPeriodPartnerDeveloperReseller(dataMain)));
-            setCanSearch(false)
+            setCanSearch(false);
         }
     }
 
     useEffect(() => {
-        dispatch(
-            getMultiCollectionAux([partnerSel({id: 0, all: true}), getValuesFromDomain('TIPOSSOCIOS')]),
-        );
+        dispatch(getMultiCollectionAux([partnerSel({ id: 0, all: true }), getValuesFromDomain("TIPOSSOCIOS")]));
     }, []);
 
     useEffect(() => {
@@ -172,11 +189,10 @@ const PartnerPeriodReport: React.FC = () => {
 
     useEffect(() => {
         if (dataMain) {
-            if(dataMain.reporttype !== '' && dataMain.partnerid !== 0) {
-                setCanSearch(true)
-            }
-            else if(dataMain.reporttype === '' || dataMain.partnerid === 0) {
-                setCanSearch(false)
+            if (dataMain.reporttype !== "" && dataMain.partnerid !== 0) {
+                setCanSearch(true);
+            } else if (dataMain.reporttype === "" || dataMain.partnerid === 0) {
+                setCanSearch(false);
             }
         }
     }, [dataMain]);
@@ -270,7 +286,7 @@ const PartnerPeriodReport: React.FC = () => {
         }
     }, [culqiReportResult, waitPdf]);
 
-    console.log(dataReport)
+    console.log(dataReport);
 
     return (
         <Fragment>
@@ -287,17 +303,17 @@ const PartnerPeriodReport: React.FC = () => {
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
-                        data={(multiResultAux?.data?.[0]?.data||[])}
+                        data={multiResultAux?.data?.[0]?.data || []}
                         label={t(langKeys.partner)}
                         onChange={(value) => {
-                            if(value) {
-                                setIsEnterprise(value.enterprisepartner)
-                                setdataMain((prev) => ({ ...prev, partnerid: value.partnerid}))
-                                if(!value.enterprisepartner) {
-                                    setdataMain((prev) => ({ ...prev, reporttype: 'DEVELOPER'}))
+                            if (value) {
+                                setIsEnterprise(value.enterprisepartner);
+                                setdataMain((prev) => ({ ...prev, partnerid: value.partnerid }));
+                                if (!value.enterprisepartner) {
+                                    setdataMain((prev) => ({ ...prev, reporttype: "DEVELOPER" }));
                                 }
                             } else {
-                                setdataMain((prev) => ({...prev, partnerid: 0}))
+                                setdataMain((prev) => ({ ...prev, partnerid: 0 }));
                             }
                         }}
                         valueDefault={dataMain.partnerid}
@@ -310,10 +326,10 @@ const PartnerPeriodReport: React.FC = () => {
                         className={classes.fieldsfilter}
                         label={t(langKeys.type)}
                         onChange={(value) => {
-                            if(value?.domainvalue) {
-                                setdataMain((prev) => ({ ...prev, reporttype: value.domainvalue }))
+                            if (value?.domainvalue) {
+                                setdataMain((prev) => ({ ...prev, reporttype: value.domainvalue }));
                             } else {
-                                setdataMain((prev) => ({ ...prev, reporttype: '' }))
+                                setdataMain((prev) => ({ ...prev, reporttype: "" }));
                             }
                         }}
                         valueDefault={dataMain.reporttype}
@@ -323,8 +339,8 @@ const PartnerPeriodReport: React.FC = () => {
                         variant="outlined"
                         disabled={!isEnterprise}
                         data={[
-                            { domainvalue: 'ENTERPRISE', domaindesc: 'ENTERPRISE' },
-                            { domainvalue: 'DEVELOPER', domaindesc: 'DEVELOPER/RESELLER' }
+                            { domainvalue: "ENTERPRISE", domaindesc: "ENTERPRISE" },
+                            { domainvalue: "DEVELOPER", domaindesc: "DEVELOPER/RESELLER" },
                         ]}
                     />
                     <Button
@@ -344,28 +360,19 @@ const PartnerPeriodReport: React.FC = () => {
                     {Object.keys(dataReport).length > 0 ? (
                         <div className={classes.containerDetail}>
                             <div className="row-zyx">
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.partner)}
-                                    value={dataReport.company}
-                                />
+                                <FieldView className="col-6" label={t(langKeys.partner)} value={dataReport.company} />
                             </div>
                             <div className="row-zyx">
                                 <FieldView
                                     className="col-6"
                                     label={t(langKeys.partnertype)}
-                                    value={dataReport.typepartner === 'DEVELOPER' || dataReport.typepartner === 'RESELLER' ? 'DEVELOPER / RESELLER' : 'ENTERPRISE'}
+                                    value={
+                                        dataReport.typepartner === "DEVELOPER" || dataReport.typepartner === "RESELLER"
+                                            ? "DEVELOPER / RESELLER"
+                                            : "ENTERPRISE"
+                                    }
                                 />
                             </div>
-                            {dataReport.typepartner === 'ENTERPRISE' && (
-                                <div className="row-zyx">
-                                    <FieldView 
-                                        className="col-6"
-                                        label={t(langKeys.billingplan)}
-                                        value={dataReport.billingplan}
-                                    />
-                                </div>
-                            )}
                             <div className="row-zyx">
                                 <FieldView
                                     className="col-6"
@@ -373,7 +380,7 @@ const PartnerPeriodReport: React.FC = () => {
                                     value={`${dataReport.year} - ${String(dataReport.month).padStart(2, "0")}`}
                                 />
                             </div>
-                            { dataReport.typepartner === 'ENTERPRISE' && (
+                            {dataReport.typepartner === "ENTERPRISE" && (
                                 <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                     <Table aria-label="customized table">
                                         <TableHead>
@@ -405,18 +412,15 @@ const PartnerPeriodReport: React.FC = () => {
                                                 </StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        parseFloat(dataReport.billingplanfee)
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        parseFloat(dataReport.billingplanfee) * dataReport.tax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        parseFloat(dataReport.billingplanfee) * dataReport.tax_costneto
-                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    parseFloat(dataReport.billingplanfee)
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    parseFloat(dataReport.billingplanfee) * dataReport.tax
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    parseFloat(dataReport.billingplanfee) * dataReport.tax_costneto
+                                                )}`}</StyledTableCell>
                                             </StyledTableRow>
                                             <StyledTableRow>
                                                 <StyledTableCell>
@@ -424,79 +428,115 @@ const PartnerPeriodReport: React.FC = () => {
                                                 </StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0)
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax_costneto
-                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: any) =>
+                                                            accumulator + parseFloat(item.othercost),
+                                                        0
+                                                    )
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: any) =>
+                                                            accumulator + parseFloat(item.othercost),
+                                                        0
+                                                    ) * dataReport.tax
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: any) =>
+                                                            accumulator + parseFloat(item.othercost),
+                                                        0
+                                                    ) * dataReport.tax_costneto
+                                                )}`}</StyledTableCell>
                                             </StyledTableRow>
                                             <StyledTableRow>
                                                 <StyledTableCell>
                                                     <div>
                                                         <b>{t(langKeys.contacts)}</b>
                                                     </div>
-                                                    {dataAux.map((item:any, index:number) => (
-                                                        <div key={index}>{t(langKeys.totalcontacts)} {item.orgdescription}</div>
+                                                    {dataAux.map((item: any, index: number) => (
+                                                        <div key={index}>
+                                                            {t(langKeys.totalcontacts)} {item.orgdescription}
+                                                        </div>
                                                     ))}
                                                     <div>
                                                         <b>{t(langKeys.totalcontacts)}</b>
                                                     </div>
                                                     <div>{t(langKeys.partnercontacts)}</div>
-                                                    { dataReport.typecalculation === 'Por contacto' &&(
+                                                    {dataReport.typecalculation === "Por contacto" && (
                                                         <div>
                                                             <b>{t(langKeys.additionalcontacts)}</b>
                                                         </div>
                                                     )}
-                                                    { dataReport.typecalculation === 'Por bolsa' && (
+                                                    {dataReport.typecalculation === "Por bolsa" && (
                                                         <div>
-                                                            <b>{t(langKeys.additionalcontactsperbag)} ({dataReport.numbercontactsbag})</b>
+                                                            <b>
+                                                                {t(langKeys.additionalcontactsperbag)} (
+                                                                {dataReport.numbercontactsbag})
+                                                            </b>
                                                         </div>
                                                     )}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((item:any, index:number) => (
-                                                        <div key={index}>{formatNumberNoDecimals(item.contactuniquequantity)}</div>
+                                                    {dataAux.map((item: any, index: number) => (
+                                                        <div key={index}>
+                                                            {formatNumberNoDecimals(item.contactuniquequantity)}
+                                                        </div>
                                                     ))}
                                                     <div>
-                                                        {formatNumberNoDecimals(dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))}
+                                                        {formatNumberNoDecimals(
+                                                            dataAux.reduce(
+                                                                (accumulator: number, item: any) =>
+                                                                    accumulator + item.contactuniquequantity,
+                                                                0
+                                                            )
+                                                        )}
                                                     </div>
-                                                    <div>
-                                                        {dataReport.contactuniquelimit}
-                                                    </div>
-                                                    { dataReport.typecalculation === 'Por contacto' &&(
+                                                    <div>{dataReport.contactuniquelimit}</div>
+                                                    {dataReport.typecalculation === "Por contacto" && (
                                                         <div>
-                                                            {Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit))}
+                                                            {Math.max(
+                                                                0,
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: any) =>
+                                                                        accumulator + item.contactuniquequantity,
+                                                                    0
+                                                                ) - parseFloat(dataReport.contactuniquelimit)
+                                                            )}
                                                         </div>
                                                     )}
-                                                    { dataReport.typecalculation === 'Por bolsa' && (
+                                                    {dataReport.typecalculation === "Por bolsa" && (
                                                         <div>
-                                                            {Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag)}
+                                                            {Math.ceil(
+                                                                Math.max(
+                                                                    0,
+                                                                    dataAux.reduce(
+                                                                        (accumulator: number, item: any) =>
+                                                                            accumulator + item.contactuniquequantity,
+                                                                        0
+                                                                    ) - parseFloat(dataReport.contactuniquelimit)
+                                                                ) / dataReport.numbercontactsbag
+                                                            )}
                                                         </div>
                                                     )}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((index:number) => (
-                                                        <div style={{ color: "transparent" }} key={index}>.</div>
+                                                    {dataAux.map((index: number) => (
+                                                        <div style={{ color: "transparent" }} key={index}>
+                                                            .
+                                                        </div>
                                                     ))}
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    { dataReport.typecalculation === 'Por contacto' &&(
+                                                    {dataReport.typecalculation === "Por contacto" && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
                                                             dataReport.puadditionalcontacts
                                                         )}`}</div>
                                                     )}
-                                                    { dataReport.typecalculation === 'Por bolsa' && (
+                                                    {dataReport.typecalculation === "Por bolsa" && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
                                                             dataReport.priceperbag
                                                         )}`}</div>
@@ -504,63 +544,117 @@ const PartnerPeriodReport: React.FC = () => {
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((index:number) => (
-                                                        <div style={{ color: "transparent" }} key={index}>.</div>
+                                                    {dataAux.map((index: number) => (
+                                                        <div style={{ color: "transparent" }} key={index}>
+                                                            .
+                                                        </div>
                                                     ))}
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    { dataReport.typecalculation === 'Por contacto' &&(
+                                                    {dataReport.typecalculation === "Por contacto" && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts
+                                                            Math.max(
+                                                                0,
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: any) =>
+                                                                        accumulator + item.contactuniquequantity,
+                                                                    0
+                                                                ) - parseFloat(dataReport.contactuniquelimit)
+                                                            ) * dataReport.puadditionalcontacts
                                                         )}`}</div>
                                                     )}
-                                                    { dataReport.typecalculation === 'Por bolsa' && (
+                                                    {dataReport.typecalculation === "Por bolsa" && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag
+                                                            Math.ceil(
+                                                                Math.max(
+                                                                    0,
+                                                                    dataAux.reduce(
+                                                                        (accumulator: number, item: any) =>
+                                                                            accumulator + item.contactuniquequantity,
+                                                                        0
+                                                                    ) - parseFloat(dataReport.contactuniquelimit)
+                                                                ) / dataReport.numbercontactsbag
+                                                            ) * dataReport.priceperbag
                                                         )}`}</div>
                                                     )}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((index:number) => (
-                                                        <div style={{ color: "transparent" }} key={index}>.</div>
+                                                    {dataAux.map((index: number) => (
+                                                        <div style={{ color: "transparent" }} key={index}>
+                                                            .
+                                                        </div>
                                                     ))}
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    { dataReport.typecalculation === 'Por contacto' &&(
+                                                    {dataReport.typecalculation === "Por contacto" && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            (Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts)
-                                                            * dataReport.tax
+                                                            Math.max(
+                                                                0,
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: any) =>
+                                                                        accumulator + item.contactuniquequantity,
+                                                                    0
+                                                                ) - parseFloat(dataReport.contactuniquelimit)
+                                                            ) *
+                                                                dataReport.puadditionalcontacts *
+                                                                dataReport.tax
                                                         )}`}</div>
                                                     )}
-                                                    { dataReport.typecalculation === 'Por bolsa' && (
+                                                    {dataReport.typecalculation === "Por bolsa" && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            (Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax
+                                                            Math.ceil(
+                                                                Math.max(
+                                                                    0,
+                                                                    dataAux.reduce(
+                                                                        (accumulator: number, item: any) =>
+                                                                            accumulator + item.contactuniquequantity,
+                                                                        0
+                                                                    ) - parseFloat(dataReport.contactuniquelimit)
+                                                                ) / dataReport.numbercontactsbag
+                                                            ) *
+                                                                dataReport.priceperbag *
+                                                                dataReport.tax
                                                         )}`}</div>
                                                     )}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    {dataAux.map((index:number) => (
-                                                        <div style={{ color: "transparent" }} key={index}>.</div>
+                                                    {dataAux.map((index: number) => (
+                                                        <div style={{ color: "transparent" }} key={index}>
+                                                            .
+                                                        </div>
                                                     ))}
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    { dataReport.typecalculation === 'Por contacto' &&(
+                                                    {dataReport.typecalculation === "Por contacto" && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            (Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts)
-                                                            * dataReport.tax_costneto
+                                                            Math.max(
+                                                                0,
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: any) =>
+                                                                        accumulator + item.contactuniquequantity,
+                                                                    0
+                                                                ) - parseFloat(dataReport.contactuniquelimit)
+                                                            ) *
+                                                                dataReport.puadditionalcontacts *
+                                                                dataReport.tax_costneto
                                                         )}`}</div>
                                                     )}
-                                                    { dataReport.typecalculation === 'Por bolsa' && (
+                                                    {dataReport.typecalculation === "Por bolsa" && (
                                                         <div>{`${dataReport.symbol}${formatNumber(
-                                                            (Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax_costneto
+                                                            Math.ceil(
+                                                                Math.max(
+                                                                    0,
+                                                                    dataAux.reduce(
+                                                                        (accumulator: number, item: any) =>
+                                                                            accumulator + item.contactuniquequantity,
+                                                                        0
+                                                                    ) - parseFloat(dataReport.contactuniquelimit)
+                                                                ) / dataReport.numbercontactsbag
+                                                            ) *
+                                                                dataReport.priceperbag *
+                                                                dataReport.tax_costneto
                                                         )}`}</div>
                                                     )}
                                                 </StyledTableCell>
@@ -571,55 +665,154 @@ const PartnerPeriodReport: React.FC = () => {
                                                 </StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${
-                                                        dataReport.typecalculation === 'Por contacto' ?
-                                                        formatNumber(
-                                                            parseFloat(dataReport.billingplanfee) +
-                                                            dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) +
-                                                            (Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts)
-                                                        ) : 
-                                                        formatNumber(
-                                                            parseFloat(dataReport.billingplanfee) +
-                                                            dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) +
-                                                            (Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag)
-                                                        )
+                                                <StyledTableCell align="right">
+                                                    {`${dataReport.symbol}${
+                                                        dataReport.typecalculation === "Por contacto"
+                                                            ? formatNumber(
+                                                                  parseFloat(dataReport.billingplanfee) +
+                                                                      dataAux.reduce(
+                                                                          (accumulator: number, item: any) =>
+                                                                              accumulator + parseFloat(item.othercost),
+                                                                          0
+                                                                      ) +
+                                                                      Math.max(
+                                                                          0,
+                                                                          dataAux.reduce(
+                                                                              (accumulator: number, item: any) =>
+                                                                                  accumulator +
+                                                                                  item.contactuniquequantity,
+                                                                              0
+                                                                          ) - parseFloat(dataReport.contactuniquelimit)
+                                                                      ) *
+                                                                          dataReport.puadditionalcontacts
+                                                              )
+                                                            : formatNumber(
+                                                                  parseFloat(dataReport.billingplanfee) +
+                                                                      dataAux.reduce(
+                                                                          (accumulator: number, item: any) =>
+                                                                              accumulator + parseFloat(item.othercost),
+                                                                          0
+                                                                      ) +
+                                                                      Math.ceil(
+                                                                          Math.max(
+                                                                              0,
+                                                                              dataAux.reduce(
+                                                                                  (accumulator: number, item: any) =>
+                                                                                      accumulator +
+                                                                                      item.contactuniquequantity,
+                                                                                  0
+                                                                              ) -
+                                                                                  parseFloat(
+                                                                                      dataReport.contactuniquelimit
+                                                                                  )
+                                                                          ) / dataReport.numbercontactsbag
+                                                                      ) *
+                                                                          dataReport.priceperbag
+                                                              )
                                                     }`}
                                                 </StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${
-                                                        dataReport.typecalculation === 'Por contacto' ?
-                                                        formatNumber(
-                                                            (parseFloat(dataReport.billingplanfee) * dataReport.tax) +
-                                                            (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax) +
-                                                            ((Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts) * dataReport.tax)
-                                                        ) : 
-                                                        formatNumber(
-                                                            (parseFloat(dataReport.billingplanfee) * dataReport.tax) +
-                                                            (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax) +
-                                                            ((Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax)
-                                                        )
+                                                <StyledTableCell align="right">
+                                                    {`${dataReport.symbol}${
+                                                        dataReport.typecalculation === "Por contacto"
+                                                            ? formatNumber(
+                                                                  parseFloat(dataReport.billingplanfee) *
+                                                                      dataReport.tax +
+                                                                      dataAux.reduce(
+                                                                          (accumulator: number, item: any) =>
+                                                                              accumulator + parseFloat(item.othercost),
+                                                                          0
+                                                                      ) *
+                                                                          dataReport.tax +
+                                                                      Math.max(
+                                                                          0,
+                                                                          dataAux.reduce(
+                                                                              (accumulator: number, item: any) =>
+                                                                                  accumulator +
+                                                                                  item.contactuniquequantity,
+                                                                              0
+                                                                          ) - parseFloat(dataReport.contactuniquelimit)
+                                                                      ) *
+                                                                          dataReport.puadditionalcontacts *
+                                                                          dataReport.tax
+                                                              )
+                                                            : formatNumber(
+                                                                  parseFloat(dataReport.billingplanfee) *
+                                                                      dataReport.tax +
+                                                                      dataAux.reduce(
+                                                                          (accumulator: number, item: any) =>
+                                                                              accumulator + parseFloat(item.othercost),
+                                                                          0
+                                                                      ) *
+                                                                          dataReport.tax +
+                                                                      Math.ceil(
+                                                                          Math.max(
+                                                                              0,
+                                                                              dataAux.reduce(
+                                                                                  (accumulator: number, item: any) =>
+                                                                                      accumulator +
+                                                                                      item.contactuniquequantity,
+                                                                                  0
+                                                                              ) -
+                                                                                  parseFloat(
+                                                                                      dataReport.contactuniquelimit
+                                                                                  )
+                                                                          ) / dataReport.numbercontactsbag
+                                                                      ) *
+                                                                          dataReport.priceperbag *
+                                                                          dataReport.tax
+                                                              )
                                                     }`}
                                                 </StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${
-                                                        dataReport.typecalculation === 'Por contacto' ?
-                                                        formatNumber(
-                                                            (parseFloat(dataReport.billingplanfee) * dataReport.tax_costneto) +
-                                                            (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax_costneto) +
-                                                            ((Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) * dataReport.puadditionalcontacts) * dataReport.tax_costneto)
-                                                        ) : 
-                                                        formatNumber(
-                                                            (parseFloat(dataReport.billingplanfee) * dataReport.tax_costneto) +
-                                                            (dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0) * dataReport.tax_costneto) +
-                                                            ((Math.ceil(Math.max(0, (dataAux.reduce((accumulator:number, item:any) => accumulator + item.contactuniquequantity, 0))
-                                                            - parseFloat(dataReport.contactuniquelimit)) / dataReport.numbercontactsbag) * dataReport.priceperbag) * dataReport.tax_costneto)
-                                                        )
+                                                <StyledTableCell align="right">
+                                                    {`${dataReport.symbol}${
+                                                        dataReport.typecalculation === "Por contacto"
+                                                            ? formatNumber(
+                                                                  parseFloat(dataReport.billingplanfee) *
+                                                                      dataReport.tax_costneto +
+                                                                      dataAux.reduce(
+                                                                          (accumulator: number, item: any) =>
+                                                                              accumulator + parseFloat(item.othercost),
+                                                                          0
+                                                                      ) *
+                                                                          dataReport.tax_costneto +
+                                                                      Math.max(
+                                                                          0,
+                                                                          dataAux.reduce(
+                                                                              (accumulator: number, item: any) =>
+                                                                                  accumulator +
+                                                                                  item.contactuniquequantity,
+                                                                              0
+                                                                          ) - parseFloat(dataReport.contactuniquelimit)
+                                                                      ) *
+                                                                          dataReport.puadditionalcontacts *
+                                                                          dataReport.tax_costneto
+                                                              )
+                                                            : formatNumber(
+                                                                  parseFloat(dataReport.billingplanfee) *
+                                                                      dataReport.tax_costneto +
+                                                                      dataAux.reduce(
+                                                                          (accumulator: number, item: any) =>
+                                                                              accumulator + parseFloat(item.othercost),
+                                                                          0
+                                                                      ) *
+                                                                          dataReport.tax_costneto +
+                                                                      Math.ceil(
+                                                                          Math.max(
+                                                                              0,
+                                                                              dataAux.reduce(
+                                                                                  (accumulator: number, item: any) =>
+                                                                                      accumulator +
+                                                                                      item.contactuniquequantity,
+                                                                                  0
+                                                                              ) -
+                                                                                  parseFloat(
+                                                                                      dataReport.contactuniquelimit
+                                                                                  )
+                                                                          ) / dataReport.numbercontactsbag
+                                                                      ) *
+                                                                          dataReport.priceperbag *
+                                                                          dataReport.tax_costneto
+                                                              )
                                                     }`}
                                                 </StyledTableCell>
                                             </StyledTableRow>
@@ -627,13 +820,13 @@ const PartnerPeriodReport: React.FC = () => {
                                     </Table>
                                 </TableContainer>
                             )}
-                            { (dataReport.typepartner === 'RESELLER' || dataReport.typepartner === 'DEVELOPER') && (
+                            {(dataReport.typepartner === "RESELLER" || dataReport.typepartner === "DEVELOPER") && (
                                 <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                     <Table aria-label="customized table">
                                         <TableHead>
                                             <TableRow>
                                                 <StyledTableCell align="left">
-                                                    {t(langKeys.billingreportitem)}
+                                                    {t(langKeys.client).toUpperCase()}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
                                                     {t(langKeys.type).toUpperCase()}
@@ -656,7 +849,7 @@ const PartnerPeriodReport: React.FC = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {dataAux.map((item:any, index:number) => (
+                                            {dataAux.map((item: any, index: number) => (
                                                 <StyledTableRow key={index}>
                                                     <StyledTableCell>
                                                         <div>{item.orgdescription}</div>
@@ -672,23 +865,22 @@ const PartnerPeriodReport: React.FC = () => {
                                                         )}`}</div>
                                                     </StyledTableCell>
                                                     <StyledTableCell align="right">
-                                                        <div>{`${formatNumber(
-                                                            100 - item.comissionpercentage
-                                                        )}%`}</div>
+                                                        <div>{`${formatNumber(100 - item.comissionpercentage)}%`}</div>
                                                     </StyledTableCell>
                                                     <StyledTableCell align="right">
                                                         <div>{`${item.symbol}${formatNumber(
-                                                            item.billingplanfee * ((100 - item.comissionpercentage) / 100)
+                                                            item.billingplanfee *
+                                                                ((100 - item.comissionpercentage) / 100)
                                                         )}`}</div>
                                                     </StyledTableCell>
                                                     <StyledTableCell align="right">
-                                                        <div>{`${item.symbol}${formatNumber(
-                                                            item.othercost
-                                                        )}`}</div>
+                                                        <div>{`${item.symbol}${formatNumber(item.othercost)}`}</div>
                                                     </StyledTableCell>
                                                     <StyledTableCell align="right">
                                                         <div>{`${item.symbol}${formatNumber(
-                                                            (item.billingplanfee * ((100 - item.comissionpercentage) / 100)) + parseFloat(item.othercost)
+                                                            item.billingplanfee *
+                                                                ((100 - item.comissionpercentage) / 100) +
+                                                                parseFloat(item.othercost)
                                                         )}`}</div>
                                                     </StyledTableCell>
                                                 </StyledTableRow>
@@ -700,18 +892,32 @@ const PartnerPeriodReport: React.FC = () => {
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + (parseFloat(item.billingplanfee) * ((100 - item.comissionpercentage) / 100)), 0)
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + parseFloat(item.othercost), 0)
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol
-                                                    }${formatNumber(
-                                                        dataAux.reduce((accumulator:number, item:any) => accumulator + ((parseFloat(item.billingplanfee) * ((100 - item.comissionpercentage) / 100)) + parseFloat(item.othercost)), 0)
-                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: any) =>
+                                                            accumulator +
+                                                            parseFloat(item.billingplanfee) *
+                                                                ((100 - item.comissionpercentage) / 100),
+                                                        0
+                                                    )
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: any) =>
+                                                            accumulator + parseFloat(item.othercost),
+                                                        0
+                                                    )
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: any) =>
+                                                            accumulator +
+                                                            (parseFloat(item.billingplanfee) *
+                                                                ((100 - item.comissionpercentage) / 100) +
+                                                                parseFloat(item.othercost)),
+                                                        0
+                                                    )
+                                                )}`}</StyledTableCell>
                                             </StyledTableRow>
                                         </TableBody>
                                     </Table>
