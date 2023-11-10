@@ -64,14 +64,8 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
   };
 
   useEffect(() => {
-    fetchData()   
-    return () => {
-      dispatch(resetAllMain());
-    };
+    fetchData()
   },[]);
-
-
-
 
   useEffect(() => {
     if (waitUpload) {

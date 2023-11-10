@@ -310,8 +310,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         }
     }
 
-    console.log(getValues('storeid') + '-' + getValues('warehouseid'))
-
     return (
         <Accordion defaultExpanded={row?.id === 0} style={{ marginBottom: '8px' }}>
 

@@ -33,12 +33,6 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata,
   const [inStore, setInStore] = useState(false);
   const multiData = useSelector(state => state.main.multiData);
 
-  useEffect(() => {
-    fetchdata();
-  }, [])
-
-  console.log(multiData?.data?.[0]?.data)
-
   return (
     <div className={classes.containerDetail}>
       <div className='row-zyx'>

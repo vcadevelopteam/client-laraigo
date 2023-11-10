@@ -34,7 +34,8 @@ const StoreCoverage: FC = () => {
   }; 
  
   useEffect(() => {
-      dispatch(
+    fetchData()
+    dispatch(
         getMultiCollection([
             getWarehouseSel()
         ])
