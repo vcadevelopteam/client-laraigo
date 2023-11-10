@@ -20,18 +20,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface NewOrderTabDetailProps {
-  fetchdata: () => void
   errors: FieldErrors
   row: Dictionary
   getValues: any,
   setValue: any
 }
 
-const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata, errors, row, setValue, getValues}) => {
+const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, row, setValue, getValues}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [inStore, setInStore] = useState(false);
+  const [inStore, setInStore] = useState(row?.warehouseinstore || false);
   const multiData = useSelector(state => state.main.multiData);
+
+  function handleSwitchChange (event: React.ChangeEvent<HTMLInputElement>) {
+    setValue('warehouseinstore', event.target.checked)
+    setInStore(event.target.checked)
+  }
 
   return (
     <div className={classes.containerDetail}>
@@ -86,7 +90,7 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata,
           className="col-6"
           valueDefault={getValues('warehouseid')}
           data={multiData?.data?.[0]?.data || []}
-          onChange={(value) => setValue('warehouseid', value?.domainvalue)}
+          onChange={(value) => setValue('warehouseid', value?.warehouseid)}
           error={typeof errors?.warehouseid?.message === 'string' ? errors?.warehouseid?.message : ''}
           optionValue="warehouseid"
           optionDesc="name"
@@ -96,10 +100,7 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata,
           control={
           <IOSSwitch
               checked={inStore}
-              onChange={(event) => {
-                  setValue('isInStore', event.target.checked)
-                  setInStore(event.target.checked)
-              }}
+              onChange={(event) => handleSwitchChange(event)}
               color='primary'
           />}
           label={t(langKeys.instorewarehouse)}

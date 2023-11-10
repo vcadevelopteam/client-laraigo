@@ -1,35 +1,44 @@
 import React, { FC, useEffect, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import {
   TemplateBreadcrumbs,
   TemplateIcons,
-  Title,
   TitleDetail,
 } from "components";
 import { langKeys } from "lang/keys";
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import { DuplicateIcon } from "icons";
-import { Dictionary, IFetchData } from "@types";
+import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
-import { execute, exportData, resetAllMain } from "store/main/actions";
+import { execute } from "store/main/actions";
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
+import { insStore } from "common/helpers";
 import { useSelector } from "hooks";
-import { Button } from "@material-ui/core";
-import TablePaginated from "components/fields/table-paginated";
 import TableZyx from "components/fields/table-simple";
 import { CellProps } from "react-table";
+import { makeStyles } from "@material-ui/core";
 
-const selectionKey = "warehouseid";
-
+const useStyles = makeStyles(() => ({
+  mainPage: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
+  },
+  header: {
+    display: "flex",
+    gap: 8,
+    flexDirection: "row",
+    marginBottom: 12,
+    marginTop: 4,
+  }
+}));
 interface InventoryMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
-  fetchData: any;
+  fetchData: () => void;
 }
 
 const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
@@ -39,7 +48,7 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-
+  const classes = useStyles();
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
   const mainCollection = useSelector((state) => state.main.mainData); 
@@ -96,9 +105,9 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
 
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
-      /*dispatch(
-        execute(insWarehouse({ ...row, operation: "DELETE", status: "ELIMINADO" }))
-      );*/
+      dispatch(
+        execute(insStore({ ...row, id: row.storeid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
+      );
       dispatch(showBackdrop(true));
       setWaitSave(true);
     };
@@ -213,23 +222,8 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
   );
 
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          flexDirection: "row",
-          marginBottom: 12,
-          marginTop: 4,
-        }}
-      >
+    <div className={classes.mainPage}>
+      <div className={classes.header}>
         <div style={{ flexGrow: 1 }}>
          <TemplateBreadcrumbs
             breadcrumbs={arrayBread}

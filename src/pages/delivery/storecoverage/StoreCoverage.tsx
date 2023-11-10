@@ -45,8 +45,6 @@ const StoreCoverage: FC = () => {
     };
   }, []);  
 
- 
-
   if (viewSelected === "main-view") {
     if (mainResult.mainData.error) {
       return <h1>ERROR</h1>;

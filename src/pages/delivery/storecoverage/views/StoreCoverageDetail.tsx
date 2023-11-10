@@ -12,50 +12,33 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import NewStoreCoverageTabDetail from './detailTabs/NewStoreCoverageTabDetail';
-import { resetMainAux } from 'store/main/actions';
-
+import { execute, resetMainAux } from 'store/main/actions';
+import { insStore } from 'common/helpers';
 
 interface RowSelected {
-    row: Dictionary | null;
+    row: Dictionary;
     edit: boolean;
 }
 
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData?: any;
+    fetchData: () => void;
 }
 
-
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        // marginTop: theme.spacing(2),
-        // marginRight: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
-        width: '100%'
-    },
     button: {
         marginRight: theme.spacing(2),
     },
-    containerHeader: {
-        padding: theme.spacing(1),
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
-        borderRadius: 4,
-        color: 'rgb(143, 146, 161)'
-    },
-    tabs: {
-        color: '#989898',
-        backgroundColor: 'white',
+    form: {
         display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: 'inherit',
+        flexDirection: 'column',
+        width: '100%'
     },
+    header: {
+        display: 'flex',
+        justifyContent: 'space-between'
+    }
 }));
 
 const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
@@ -102,10 +85,11 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
+        register('id');
         register('warehouseid');
-        register('isInStore');
-        register('storename', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phonenumber', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('warehouseinstore');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('coveragearea', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status');
@@ -115,17 +99,10 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         dispatch(resetMainAux());
     }, [register]);
 
-    const fetchWarehouseProducts = () => {
-        /*dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
-        );*/
-    }
-
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            //dispatch(execute(insWarehouse(data)));
-
+            dispatch(execute(insStore(data)));
             setWaitSave(true);
         }
         dispatch(manageConfirmation({
@@ -137,8 +114,8 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
 
     return (
         <>
-            <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <form onSubmit={onMainSubmit} className={classes.form}>
+                <div className={classes.header}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -167,13 +144,15 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             color="primary"
                             type="submit"
                             startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}>
+                            style={{ backgroundColor: "#55BD84" }}
+                            onChange={onMainSubmit}    
+                        >
                             {t(langKeys.save)}
                         </Button>
                     </div>
 
                 </div>
-                <NewStoreCoverageTabDetail fetchdata={fetchWarehouseProducts} errors={errors} row={row} getValues={getValues} setValue={setValue}/>
+                <NewStoreCoverageTabDetail errors={errors} row={row} getValues={getValues} setValue={setValue}/>
             </form>
         </>
     );

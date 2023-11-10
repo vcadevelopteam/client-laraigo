@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Typography, makeStyles } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldEdit } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
@@ -52,16 +51,54 @@ const AssociatedVehicleDialog: React.FC<{
     return (
         <DialogZyx open={openModal} title={t(langKeys.associatedvehicles)} maxWidth="lg">
             <div className="row-zyx">
-                <FieldEdit label={t(langKeys.organization)} type="text" className="col-6" />
-                <FieldEdit label={t(langKeys.vehicletype)} type="text" className="col-6" />
-                <FieldEdit label={t(langKeys.brand)} type="text" className="col-6" />
-                <FieldEdit label={t(langKeys.model)} type="text" className="col-6" />
-                <FieldEdit label={t(langKeys.platenum)} type="number" className="col-6" />
-                <FieldEdit label={t(langKeys.capacity)} type="number" className="col-6" />
-                <FieldEdit label={t(langKeys.averagespeed)} type="number" className="col-6" />
-                <FieldEdit label={t(langKeys.insuredamount)} type="number" className="col-6" />
-                <FieldEdit label={t(langKeys.carriername)} type="text" className="col-6" />
-                <FieldEdit label={t(langKeys.licensenum)} type="text" className="col-6" />
+                <FieldEdit
+                    label={t(langKeys.organization)}
+                    type="text" className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.vehicletype)}
+                    type="text" className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.brand)}
+                    type="text"
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.model)}
+                    type="text"
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.platenum)}
+                    type="number"
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.capacity)}
+                    type="number"
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.averagespeed)}
+                    type="number"
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.insuredamount)}
+                    type="number"
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.carriername)}
+                    type="text"
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.licensenum)}
+                    type="text"
+                    className="col-6"
+                />
             </div>
             <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
                 <Button
