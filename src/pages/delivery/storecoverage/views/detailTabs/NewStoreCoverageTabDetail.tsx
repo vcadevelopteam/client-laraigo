@@ -1,12 +1,12 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { TitleDetail, FieldEdit, FieldCheckbox, FieldSelect, IOSSwitch } from 'components';
+import { FieldEdit, FieldSelect, IOSSwitch } from 'components';
 import { FieldErrors } from "react-hook-form";
 import { FormControlLabel } from "@material-ui/core";
 import { useSelector } from 'hooks';
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -20,9 +20,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface NewOrderTabDetailProps {
-  fetchdata: any
-  errors: FieldErrors<any>
-  row: any
+  fetchdata: () => void
+  errors: FieldErrors
+  row: Dictionary
   getValues: any,
   setValue: any
 }
@@ -37,27 +37,27 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata,
     fetchdata();
   }, [])
 
-  console.log(getValues('s'))
+  console.log(multiData?.data?.[0]?.data)
 
   return (
     <div className={classes.containerDetail}>
       <div className='row-zyx'>
         <FieldEdit
             label={t(langKeys.storezonename)}
-            valueDefault={getValues('storename')}
-            onChange={(value) => setValue('storename', value)}
+            valueDefault={getValues('description')}
+            onChange={(value) => setValue('description', value)}
             className="col-6"
             maxLength={100}
-            error={typeof errors?.storename?.message === 'string' ? errors?.storename?.message : ''}
+            error={typeof errors?.description?.message === 'string' ? errors?.description?.message : ''}
         />
         <FieldEdit
             label={t(langKeys.telephonenumber)}
             type="number"
             maxLength={15}
-            valueDefault={getValues('phonenumber')}
-            onChange={(value) => setValue('phonenumber', value)}
+            valueDefault={getValues('phone')}
+            onChange={(value) => setValue('phone', value)}
             className="col-6"
-            error={typeof errors?.phonenumber?.message === 'string' ? errors?.phonenumber?.message : ''}
+            error={typeof errors?.phone?.message === 'string' ? errors?.phone?.message : ''}
         />
         <FieldEdit
             label={t(langKeys.address)}
@@ -77,7 +77,10 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({fetchdata,
         <FieldSelect
           label={t(langKeys.status)}
           className="col-6"
-          data={[]}
+          data={[
+            { domainvalue: "ACTIVO", domaindesc: "ACTIVO" },
+            { domainvalue: "INACTIVO", domaindesc: "INACTIVO" },
+          ]}
           valueDefault={getValues('status')}
           onChange={(value) => setValue('status', value?.domainvalue)}
           error={typeof errors?.status?.message === 'string' ? errors?.status?.message : ''}

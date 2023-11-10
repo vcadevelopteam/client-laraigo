@@ -72,12 +72,13 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            storename: row?.storename || '',
-            phonenumber: row?.phonenumber || '',
+            id: row?.storeid || 0,
+            description: row?.description || '',
+            phone: row?.phone || '',
             address: row?.address || '',
             coveragearea: row?.coveragearea || '',
             status: row?.status || 'ACTIVO',
-            isInStore: row?.isInStore || false,
+            warehouseinstore: row?.warehouseinstore || false,
             warehouseid: row?.warehouseid || 0,
             type: row?.type || '',
             operation: edit ? 'UPDATE' : 'INSERT'
