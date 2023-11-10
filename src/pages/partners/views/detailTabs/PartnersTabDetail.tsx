@@ -272,16 +272,6 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                             error={typeof errors?.numberplancontacts?.message === 'string' ? errors?.numberplancontacts?.message : ''}
                         />
                         <FieldSelect
-                            label={t(langKeys.billingplan)}
-                            valueDefault={getValues('billingplan')}
-                            onChange={(value) => setValue('billingplan', value.domainvalue)}
-                            className="col-6"
-                            data={(multiDataAux?.data?.[3]?.data||[])}
-                            error={typeof errors?.billingplan?.message === 'string' ? errors?.billingplan?.message : ''}
-                            optionValue="domainvalue"
-                            optionDesc="domaindesc"
-                        />
-                        <FieldSelect
                             label={t(langKeys.additionalcontactcalculationtype)}
                             valueDefault={additionalContactType}
                             onChange={(value) => {
