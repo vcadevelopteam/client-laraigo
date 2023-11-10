@@ -386,7 +386,7 @@ const PartnerPeriodReport: React.FC = () => {
                                         <TableHead>
                                             <TableRow>
                                                 <StyledTableCell align="left">
-                                                    {t(langKeys.client)}
+                                                    {t(langKeys.billingreportitem)}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     {t(langKeys.billingreportquantity)}
