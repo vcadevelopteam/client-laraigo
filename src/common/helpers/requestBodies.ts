@@ -4143,11 +4143,11 @@ export const insWarehouse = ({ warehouseid,description,address,phone,latitude,lo
     parameters: {  warehouseid,description,address,phone,latitude,longitude,status,type,operation,name, descriptionlarge  },
 });
 
-export const getWarehouseProducts = (productid: number): IRequestBody => ({
+export const getWarehouseProducts = (warehouseid: number): IRequestBody => ({
     method: "UFN_ALL_PRODUCT_WAREHOUSE_SEL",
     key: "UFN_ALL_PRODUCT_WAREHOUSE_SEL",
     parameters: {
-        warehouseid: productid
+        warehouseid: warehouseid
     }
 });
 
@@ -4552,10 +4552,17 @@ export const getPaginatedInventoryConsumption = ({ skip, take, filters, sorts, s
     }
 })
 
-export const insInventoryConsumption = ({ inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, status, type, comment, operation }: Dictionary): IRequestBody => ({
+export const insInventoryConsumption = ({ inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid,inventorybookingid, status, type, comment, operation }: Dictionary): IRequestBody => ({
     method: "UFN_INVENTORYCONSUMPTION_INS",
     key: "UFN_INVENTORYCONSUMPTION_INS",
     parameters: {
-        inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, status, type, comment, operation
+        inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid,inventorybookingid, status, type, comment, operation
     }
+});
+
+
+export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation }: Dictionary) => ({
+    method: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
+    key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
+    parameters: { inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation },
 });

@@ -33,7 +33,6 @@ const CompleteInventoryConsumptionDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const multiData = useSelector(state => state.main.multiDataAux);
-  console.log(multiData)
   const executeRes = useSelector(state => state.main.execute);
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset, formState: { errors }} = useForm({
     defaultValues: {

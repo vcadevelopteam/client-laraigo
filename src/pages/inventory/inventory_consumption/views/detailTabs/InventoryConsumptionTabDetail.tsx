@@ -12,11 +12,12 @@ import { useSelector } from 'hooks';
 import TableZyx from 'components/fields/table-simple';
 import AddInventoryConsumptionLineDialog from '../../dialogs/AddInventoryConsumptionLineDialog';
 import TableSelectionDialog from '../../dialogs/TableSelectionDialog';
-import { execute, getMultiCollectionAux2 } from 'store/main/actions';
+import { execute, getCollection, getMultiCollectionAux2 } from 'store/main/actions';
 import { manageConfirmation, showBackdrop } from 'store/popus/actions';
 import SelectReservedProductsDialog from '../../dialogs/SelectReservedProductsDialog';
 import SelectProductsForReturnDialog from '../../dialogs/SelectProductsForReturnDialog';
-import { getInventoryConsumptionDetail } from 'common/helpers';
+import { getInventoryConsumptionDetail, getWarehouseProducts } from 'common/helpers';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -60,6 +61,9 @@ interface WarehouseTabDetailProps {
     getValues: UseFormGetValues<any>;
     errors: FieldErrors<any>;
     viewSelected: string;
+    dataDetail: any;
+    setDetailToDelete:(arg0: any)=>void;
+    setDataDetail:(arg0: any)=>void;
 }
 
 const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
@@ -67,11 +71,15 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     edit,
     setValue,
     getValues,
+    dataDetail,
+    setDetailToDelete,
+    setDataDetail,
     errors,
     viewSelected
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiDataAux);
     const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const [openModal, setOpenModal] = useState(false);
@@ -80,7 +88,8 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const [rowSelected, setRowSelected] = useState<Dictionary|null>(null);
     const [openModalReturnProducts, setOpenModalReturnProducts] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
-    const [waitSave, setWaitSave] = useState(false);
+    const [warehouseProducts, setWarehouseProducts] = useState<any>(null);
+    const mainData = useSelector(state => state.main.mainData);
 
     function setWarehouse(warehouseSelected:any){
         setSelectedWarehouse(warehouseSelected)
@@ -93,20 +102,41 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         }       
     }, [viewSelected]);
 
+    useEffect(() => {
+        if(!mainData?.loading && !mainData?.error){
+            if(mainData?.key === "UFN_ALL_PRODUCT_WAREHOUSE_SEL"){
+                setWarehouseProducts(mainData?.data||[])
+            }
+        }   
+    }, [mainData]);
+
+    useEffect(() => {
+        if(selectedWarehouse && !edit){
+            debugger
+            dispatch(getCollection(getWarehouseProducts(selectedWarehouse?.warehouseid||0)))
+        }
+    }, [selectedWarehouse]);
+
+
     const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            //dispatch(execute(insInventoryBalance({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
+        if (row && row.operation !== "INSERT") {
+            setDetailToDelete((p: any) => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
+        } else {
+            row.operation = 'DELETE';
         }
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
+        setDataDetail((p: any) => p.filter((x:any) => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.inventoryconsumptionid !== x.inventoryconsumptionid)));
     }
 
+    const handleEdit = (row: Dictionary) => {
+        setOpenModal(true)
+        setRowSelected({ row, edit: true })
+    }
+
+    const handleRegister = () => {
+        setOpenModal(true)
+        setRowSelected({ row: null, edit: false });
+    }
 
 
     const columns = React.useMemo(
@@ -159,15 +189,6 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         ],
         []
     );
-    
-    const handleEdit = (row: Dictionary) => {
-      setOpenModal(true)
-      setRowSelected(row);
-    };
-    const handleRegister = (row: Dictionary) => {
-      setOpenModal(true)
-      setRowSelected(null);
-    };
 
 
     function handleOpenModalReservedProducts() {
@@ -280,11 +301,11 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                         )}
                         handleRegister={handleRegister}
                         columns={columns}
-                        data={multiDataAux2?.data?.[0]?.data || []}
+                        data={dataDetail}
                         loading={multiDataAux2.loading}
                         download={false}
                         filterGeneral={false}
-                        register={!edit}
+                        register={!edit && !!selectedWarehouse}
                         onClickRow={handleEdit}
                     />
                 </div>
@@ -293,6 +314,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 rowSelected={rowSelected}
+                warehouseProducts={warehouseProducts}
                 row={row}
                 edit={edit}
             />
@@ -318,6 +340,3 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
 
 export default InventoryConsumptionTabDetail;
 
-function dispatch(arg0: any) {
-    throw new Error('Function not implemented.');
-}

@@ -6,13 +6,13 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail, AntTabPanel } from 'components';
-import { getInventoryConsumptionDetail, getWarehouseProducts, insInventoryConsumption, insWarehouse } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail } from 'components';
+import { getInventoryConsumptionDetail, insInventoryConsumption, inventoryConsumptionDetailIns } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux, getMultiCollectionAux2, resetMainAux } from 'store/main/actions';
+import { execute, getCollection, getMultiCollectionAux2, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import InventoryConsumptionTabDetail from './detailTabs/InventoryConsumptionTabDetail';
 import CompleteInventoryConsumptionDialog from '../dialogs/CompleteInventoryConsumptionDialog';
@@ -75,6 +75,10 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     const [openModal, setOpenModal] = useState(false);
     const [openModalSeeTransactions, setOpenModalSeeTransactions] = useState(false);
     const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
+    const [dataDetail, setDataDetail] = useState<Dictionary[]>([]);
+    const [detailToDelete, setDetailToDelete] = useState<Dictionary[]>([]);
+    const mainData = useSelector(state => state.main.mainData);
+
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.inventory_consumption) },
@@ -88,6 +92,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
             ordernumber: row?.ordernumber || '',
             transactiontype: row?.transactiontype || 'DESPACHO',
             warehouseid: row?.warehouseid || 0,
+            inventorybookingid: row?.inventorybookingid || 0,
             status: row?.status || 'INGRESADO',
             type: row?.type || '',
             comment: row?.comment || '',
@@ -98,12 +103,19 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     useEffect(() => {
         if (viewSelected=="detail-view" && edit) {
             dispatch(
-                getMultiCollectionAux2([
-                  getInventoryConsumptionDetail(row?.inventoryconsumptionid || 0),
-                ])
+                getCollection(getInventoryConsumptionDetail(row?.inventoryconsumptionid || 0))
               );
         }       
     }, [viewSelected]);
+
+    useEffect(() => {
+        if(!mainData?.loading && !mainData?.error){
+            if(mainData?.key === "UFN_INVENTORYCONSUMPTION_DETAILSELECT"){
+                debugger
+                setDataDetail(mainData?.data||[])
+            }
+        }   
+    }, [mainData]);
 
     useEffect(() => {
         if (waitSave) {
@@ -123,6 +135,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
 
     React.useEffect(() => {
         register('inventoryconsumptionid');
+        register('inventorybookingid');
         register('description');
         register('transactiontype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('warehouseid', { validate: (value) => (value && value>0) || t(langKeys.field_required) } );
@@ -135,10 +148,16 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     }, [register]);
 
     const onMainSubmit = handleMainSubmit((data) => {
-        debugger
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insInventoryConsumption(data)));
+            debugger
+            dispatch(execute({
+                header: insInventoryConsumption({ ...data }),
+                detail: [
+                    ...dataDetail.filter(x => !!x.operation).map(x => inventoryConsumptionDetailIns({ ...data, ...x, inventoryconsumptionid: x?.inventoryconsumptionid || 0 })),
+                    ...detailToDelete.map(x => inventoryConsumptionDetailIns({ ...x }))
+                ]
+            }, true));
 
             setWaitSave(true);
         }
@@ -220,7 +239,10 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                     setValue={setValue}
                     getValues={getValues}                   
                     errors={errors}
+                    setDetailToDelete={setDetailToDelete}
+                    setDataDetail={setDataDetail}
                     viewSelected={viewSelected}
+                    dataDetail={dataDetail}
                 />
                 <CompleteInventoryConsumptionDialog
                     openModal={openModal}

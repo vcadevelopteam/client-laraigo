@@ -14,7 +14,7 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { getInventoryConsumptionExport, getValuesFromDomain, insWarehouse } from "common/helpers";
+import { getInventoryConsumptionExport, insWarehouse } from "common/helpers";
 import { useSelector } from "hooks";
 import TablePaginated from "components/fields/table-paginated";
 
