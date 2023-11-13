@@ -12,12 +12,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
 import { execute, exportData } from "store/main/actions";
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { duplicateProduct, getProductsExport, insProduct } from "common/helpers";
+import { getProductsExport, insProduct } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -286,6 +287,18 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
         register={true}
+        ButtonsElement={() => (
+          <Button
+            variant="contained"
+            component="span"
+            color="primary"
+            onClick={() => setOpenModalImport(true)}
+            startIcon={<BackupIcon color="secondary" />}
+            style={{ backgroundColor: "#55BD84" }}
+          >
+            <Trans i18nKey={langKeys.import} />
+          </Button>
+        )}
         FiltersElement={(
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {/*<Button
@@ -301,16 +314,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
                 <Button
                   variant="contained"
                   component="span"
-                  color="primary"
-                  onClick={() => setOpenModalImport(true)}
-                  startIcon={<BackupIcon color="secondary" />}
-                  style={{ backgroundColor: "#55BD84" }}
-                >
-                  <Trans i18nKey={langKeys.import} />
-                </Button>
-                <Button
-                  variant="contained"
-                  component="span"
+                  startIcon={<ListAltIcon color="secondary" />}
                   color="primary"
                   onClick={() => setOpenModalTemplate(true)}
                   style={{ backgroundColor: "#55BD84" }}
