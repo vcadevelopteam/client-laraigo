@@ -365,7 +365,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
               onClick={handleTemplateWarehouse}
               style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
           >
-              <Trans i18nKey={langKeys.template} />
+            {t(langKeys.template) + " " + t(langKeys.import)}
           </Button>
       )}
       />
