@@ -16,6 +16,7 @@ export const langKeys = {
   reset_weekly_hours: "reset_weekly_hours",
   edit_date: "edit_date",
   edit_all: "edit_all",
+  successful_inventoryconsumption: "successful_inventoryconsumption",
   set_your_weekly: "set_your_weekly",
   orders: "orders",
   statusdate: "statusdate",

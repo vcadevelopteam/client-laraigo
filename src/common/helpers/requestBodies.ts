@@ -4169,11 +4169,11 @@ export const insWarehouse = ({ warehouseid,description,address,phone,latitude,lo
     parameters: {  warehouseid,description,address,phone,latitude,longitude,status,type,operation,name, descriptionlarge  },
 });
 
-export const getWarehouseProducts = (productid: number): IRequestBody => ({
+export const getWarehouseProducts = (warehouseid: number): IRequestBody => ({
     method: "UFN_ALL_PRODUCT_WAREHOUSE_SEL",
     key: "UFN_ALL_PRODUCT_WAREHOUSE_SEL",
     parameters: {
-        warehouseid: productid
+        warehouseid: warehouseid
     }
 });
 
@@ -4238,11 +4238,20 @@ export const getProducts = (): IRequestBody => ({
     }
 });
 
+
 export const getProductsWarehouse = (productid: number): IRequestBody => ({
     method: "UFN_ALL_WAREHOUSE_PRODUCT_SEL",
     key: "UFN_ALL_WAREHOUSE_PRODUCT_SEL",
     parameters: {
         productid: productid
+    }
+});
+
+export const getInventoryConsumptionDetail = (inventoryconsumptionid: number): IRequestBody => ({
+    method: "UFN_INVENTORYCONSUMPTION_DETAILSELECT",
+    key: "UFN_INVENTORYCONSUMPTION_DETAILSELECT",
+    parameters: {        
+        inventoryconsumptionid
     }
 });
 
@@ -4523,11 +4532,11 @@ export const getInventoryBooking = (inventoryid:number): IRequestBody => ({
         inventoryid
     }
 });
-export const insInventoryBooking = ({ inventorywarehouseid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate  }: Dictionary): IRequestBody => ({
+export const insInventoryBooking = ({ inventorybookingid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate  }: Dictionary): IRequestBody => ({
     method: "UFN_INVENTORBOOKING_INS",
     key: "UFN_INVENTORBOOKING_INS",
     parameters: {
-        inventorywarehouseid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate
+        inventorybookingid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate
     }
 });
 
@@ -4610,10 +4619,18 @@ export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid
     key: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
     parameters: { partnerid, corpid, orgid, year, month, username },
 });
-export const insInventoryConsumption = ({ inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, status, type, comment, operation }: Dictionary): IRequestBody => ({
+
+export const insInventoryConsumption = ({ inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid,inventorybookingid, status, type, comment, operation }: Dictionary): IRequestBody => ({
     method: "UFN_INVENTORYCONSUMPTION_INS",
     key: "UFN_INVENTORYCONSUMPTION_INS",
     parameters: {
-        inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, status, type, comment, operation
+        inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid,inventorybookingid, status, type, comment, operation
     }
+});
+
+
+export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation }: Dictionary) => ({
+    method: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
+    key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
+    parameters: { inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation },
 });

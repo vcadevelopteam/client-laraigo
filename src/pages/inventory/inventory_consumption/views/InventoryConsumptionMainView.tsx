@@ -8,13 +8,13 @@ import {
 import { langKeys } from "lang/keys";
 import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
-import { execute, exportData, getMultiCollectionAux, resetAllMain } from "store/main/actions";
+import { execute, exportData } from "store/main/actions";
 import {
   showSnackbar,
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { getInventoryConsumptionExport, getValuesFromDomain, insWarehouse } from "common/helpers";
+import { getInventoryConsumptionExport, insWarehouse } from "common/helpers";
 import { useSelector } from "hooks";
 import TablePaginated from "components/fields/table-paginated";
 
@@ -54,6 +54,11 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
     setViewSelected("detail-view");
     setRowSelected({ row, edit: true });
   };
+
+  const handleRegister = () => {
+    setViewSelected("detail-view");
+      setRowSelected({ row: null, edit: false });
+  }
 
   useEffect(() => {
     if (waitUpload) {
@@ -125,17 +130,6 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
       settotalrow(mainPaginated.count);
     }
   }, [mainPaginated]);
-
-  useEffect(() => {
-    dispatch(
-      getMultiCollectionAux([
-        getValuesFromDomain("TIPOTRANSACCIONINV"),
-      ])
-    );
-    return () => {
-      dispatch(resetAllMain());
-    };
-  }, []);
   
   useEffect(() => {
     if (waitSave) {
@@ -270,7 +264,8 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
         initialSelectedRows={selectedRows}
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
-        register={false}
+        register={true}
+        handleRegister={handleRegister}
       />
     </div>
   );

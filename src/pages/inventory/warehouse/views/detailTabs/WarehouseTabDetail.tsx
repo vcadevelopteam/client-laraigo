@@ -105,7 +105,7 @@ const WarehouseTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     className="col-12"
                     error={errors?.descriptionlarge?.message}
                     onChange={(value) => setValue('descriptionlarge', value)}
-                    inputProps={{ maxLength: 256 }}
+                    inputProps={{ maxLength: 10000 }}
                 />         
                 <FieldEdit
                     label={t(langKeys.physicaladdress)}

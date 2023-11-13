@@ -175,7 +175,7 @@ export const Title: React.FC = ({ children }) => {
     return <label style={style}>{children}</label>;
 }
 
-export const FieldView: React.FC<{ label: string, value?: string, className?: any, styles?: CSSProperties, tooltip?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick }) => (
+export const FieldView: React.FC<{ label: string, value?: string|number, className?: any, styles?: CSSProperties, tooltip?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick }) => (
     <div className={className}>
         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
             {label}

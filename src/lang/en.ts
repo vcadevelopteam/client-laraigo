@@ -1629,6 +1629,7 @@ const translation: LangKeys = {
   linkfacebookpage: "Link your Facebook page",
   linkinstagrampage: "Link your Instagram page",
   userAverageReplyTimexFecha: "Average advisor reply heat map",
+  successful_inventoryconsumption: "Inventory consumption has been executed successfully",
   selectpagelink: "Select the page to link",
   abandonosxAsesor: "Number of Dropouts heat map",
   tasaAbandonosxAsesor: "Percentage of Dropouts heat map",

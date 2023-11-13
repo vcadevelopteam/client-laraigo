@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { Button, IconButton } from "@material-ui/core";
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,10 +12,12 @@ import { useSelector } from 'hooks';
 import TableZyx from 'components/fields/table-simple';
 import AddInventoryConsumptionLineDialog from '../../dialogs/AddInventoryConsumptionLineDialog';
 import TableSelectionDialog from '../../dialogs/TableSelectionDialog';
-import { execute } from 'store/main/actions';
+import { execute, getCollection, getMultiCollectionAux2 } from 'store/main/actions';
 import { manageConfirmation, showBackdrop } from 'store/popus/actions';
 import SelectReservedProductsDialog from '../../dialogs/SelectReservedProductsDialog';
 import SelectProductsForReturnDialog from '../../dialogs/SelectProductsForReturnDialog';
+import { getInventoryConsumptionDetail, getWarehouseProducts } from 'common/helpers';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -54,45 +56,93 @@ const useStyles = makeStyles((theme) => ({
 
 interface WarehouseTabDetailProps {
     row: Dictionary | null;
+    edit: boolean;
     setValue: UseFormSetValue<any>;
     getValues: UseFormGetValues<any>;
     errors: FieldErrors<any>;
+    viewSelected: string;
+    dataDetail: any;
+    setDetailToDelete:(arg0: any)=>void;
+    setDataDetail:(arg0: any)=>void;
 }
 
 const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     row,
+    edit,
     setValue,
     getValues,
+    dataDetail,
+    setDetailToDelete,
+    setDataDetail,
     errors,
+    viewSelected
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const user = useSelector(state => state.login.validateToken.user);
+    const dispatch = useDispatch();
+    const multiData = useSelector(state => state.main.multiDataAux);
+    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const [openModal, setOpenModal] = useState(false);
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
     const [openModalReservedProducts, setOpenModalReservedProducts] = useState(false);
+    const [rowSelected, setRowSelected] = useState<Dictionary|null>(null);
     const [openModalReturnProducts, setOpenModalReturnProducts] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
-    const [waitSave, setWaitSave] = useState(false);
+    const [warehouseProducts, setWarehouseProducts] = useState<any>(null);
+    const mainData = useSelector(state => state.main.mainData);
+
+    function setWarehouse(warehouseSelected:any){
+        setSelectedWarehouse(warehouseSelected)
+        setValue('warehouseid', warehouseSelected.warehouseid)
+    }
+
+    useEffect(() => {
+        if (viewSelected=="detail-view") {
+            setSelectedWarehouse(null)
+        }       
+    }, [viewSelected]);
+
+    useEffect(() => {
+        if(!mainData?.loading && !mainData?.error){
+            if(mainData?.key === "UFN_ALL_PRODUCT_WAREHOUSE_SEL"){
+                setWarehouseProducts(mainData?.data||[])
+            }
+        }   
+    }, [mainData]);
+
+    useEffect(() => {
+        if(selectedWarehouse && !edit){
+            debugger
+            dispatch(getCollection(getWarehouseProducts(selectedWarehouse?.warehouseid||0)))
+        }
+    }, [selectedWarehouse]);
+
 
     const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            //dispatch(execute(insInventoryBalance({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
+        if (row && row.operation !== "INSERT") {
+            setDetailToDelete((p: any) => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
+        } else {
+            row.operation = 'DELETE';
         }
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
+        setDataDetail((p: any) => p.filter((x:any) => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.inventoryconsumptionid !== x.inventoryconsumptionid)));
     }
+
+    const handleEdit = (row: Dictionary) => {
+        setOpenModal(true)
+        setRowSelected({ row, edit: true })
+    }
+
+    const handleRegister = () => {
+        setOpenModal(true)
+        setRowSelected({ row: null, edit: false });
+    }
+
 
     const columns = React.useMemo(
         () => [
         {
-            accessor: 'productalternativeid',
+            accessor: 'inventoryconsumptiondetailid',
             NoFilter: true,
             isComponent: true,
             minWidth: 60,
@@ -108,41 +158,38 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         },
           {
             Header: t(langKeys.line),
-            accessor: "distributordescription",
+            accessor: "line",
             width: "auto",
           },
           {
             Header: t(langKeys.product),
-            accessor: "manufacturerdescription",
+            accessor: "productid",
             width: "auto",
           },
           {
             Header: t(langKeys.description),
-            accessor: "model",
+            accessor: "description",
             width: "auto",
           },
           {
             Header: t(langKeys.quantity),
-            accessor: "catalognumber",
+            accessor: "quantity",
             width: "auto",
           },
           {
             Header: t(langKeys.unitcost),
-            accessor: "unitbuydescription",
+            accessor: "unitcost",
             width: "auto",
           },
           {
             Header: t(langKeys.linecost),
-            accessor: "lastprice",
+            accessor: "onlinecost",
             width: "auto",
           },
         ],
         []
     );
 
-    function handleRegister() {
-        setOpenModal(true)
-    }
 
     function handleOpenModalReservedProducts() {
         setOpenModalReservedProducts(true)
@@ -156,7 +203,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         () => [
           {
             Header: t(langKeys.warehouse),
-            accessor: "manufacturercode",
+            accessor: "name",
             width: "auto",
           },
           {
@@ -172,10 +219,9 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         <div className={classes.containerDetail}>
             <div className="row-zyx">
                 <FieldEdit
-                    label={t(langKeys.inventory_consumption)}
+                    label={"N° " + t(langKeys.inventory_consumption)}
                     valueDefault={getValues('inventoryconsumptionid')}
                     className="col-3"
-                    error={errors?.name?.message}
                     disabled
                 />
                 <FieldEdit
@@ -183,41 +229,47 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     valueDefault={getValues('description')}
                     className="col-6"
                     maxLength={256}
-                    error={errors?.description?.message}
+                    error={(errors?.description?.message as string) ?? ""}
                     onChange={(value) => setValue('description', value)}
                 />
-                <FieldSelect
-                    label={t(langKeys.transactiontype)}
+               <FieldSelect
+                    label={t(langKeys.status)}
                     className="col-3"
-                    data={[]}
-                    optionValue="manufacturerid"
-                    optionDesc="description"
+                    disabled={edit}
+                    data={(multiData.data[2]?.data||[])} 
+                    optionValue="domainvalue"
+                    optionDesc="domaindesc"
                     valueDefault={getValues("transactiontype")}
-                    onChange={(value) => setValue("manufacturerid", value.manufacturerid)}  
+                    onChange={(value) => setValue("transactiontype", value.domainvalue)}  
                 />
                 <div className='row-zyx col-9'>
                     <FieldEdit
                         label={t(langKeys.warehouse)}
                         className="col-3"
                         disabled
-                        valueDefault={""}
-                        InputProps={{
-                            endAdornment: (
-                                <IconButton onClick={()=>{setOpenModalWarehouse(true)}}>
-                                    <Add />
-                                </IconButton>
-                            )
-                        }}
+                        valueDefault={edit? row?.warehousename: selectedWarehouse?.name}   
+                        error={(errors?.warehouseid?.message as string) ?? ""}
+                        InputProps={
+                            !edit? {
+                                    endAdornment: (
+                                        <IconButton onClick={() => { setOpenModalWarehouse(true) }}>
+                                            <Add />
+                                        </IconButton>
+                                    )
+                                }: {}
+                        }                   
                     />
                 </div>
-                <FieldEdit
+                <FieldSelect
+                    disabled={edit}
                     label={t(langKeys.status)}
-                    valueDefault={getValues('status')}
                     className="col-3"
-                    disabled
-                    error={errors?.description?.message}
-                    onChange={(value) => setValue('description', value)}
-                />       
+                    data={(multiData.data[0]?.data||[])} 
+                    optionValue="domainvalue"
+                    optionDesc="domaindesc"
+                    valueDefault={getValues("status")}
+                    onChange={(value) => setValue("status", value.domainvalue)}  
+                />
             </div>
             <div className="row-zyx">
                 <div className='row-zyx'>
@@ -247,25 +299,30 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                                 </Button>
                             </div>
                         )}
+                        handleRegister={handleRegister}
                         columns={columns}
-                        data={[]}
+                        data={dataDetail}
+                        loading={multiDataAux2.loading}
                         download={false}
                         filterGeneral={false}
-                        register={true}
-                        handleRegister={handleRegister}
+                        register={!edit && !!selectedWarehouse}
+                        onClickRow={handleEdit}
                     />
                 </div>
             </div>
             <AddInventoryConsumptionLineDialog
                 openModal={openModal}
                 setOpenModal={setOpenModal}
+                rowSelected={rowSelected}
+                warehouseProducts={warehouseProducts}
                 row={row}
+                edit={edit}
             />
             <TableSelectionDialog
                 openModal={openModalWarehouse}
                 setOpenModal={setOpenModalWarehouse}
-                setRow={setSelectedWarehouse}
-                data={[]}
+                setRow={setWarehouse}
+                data={multiData?.data?.[1]?.data||[]}
                 columns={columnsSelectionWarehouse}
                 title={t(langKeys.warehouse)}
             />
@@ -283,6 +340,3 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
 
 export default InventoryConsumptionTabDetail;
 
-function dispatch(arg0: any) {
-    throw new Error('Function not implemented.');
-}

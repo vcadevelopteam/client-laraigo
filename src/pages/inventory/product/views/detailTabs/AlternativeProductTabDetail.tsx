@@ -69,7 +69,7 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
             dispatch(showBackdrop(false));
             fetchData(row?.productid);
         } else if (executeRes.error) {
-            const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
+            const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.warehouse).toLocaleLowerCase() })
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
             setWaitSave(false);
             dispatch(showBackdrop(false));
@@ -154,6 +154,7 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
           download={false}
           filterGeneral={false}
           register={false}
+          loading={dataProduct.loading}
         />
       </div>
       <SearchProductDialog

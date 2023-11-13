@@ -91,7 +91,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
         if(selectedFile.size>5 * 1024 * 1024){
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.imagetoobig)}))
         }else{
-            var fd = new FormData();
+            let fd = new FormData();
             fd.append('file', selectedFile, selectedFile.name);
             dispatch(uploadFile(fd));
             setWaitUploadFile(true);
@@ -106,7 +106,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             label={t(langKeys.product)}
                             valueDefault={getValues('productcode')}
                             className="col-4"
-                            error={errors?.productcode?.message||""}
+                            error={(errors?.productcode?.message??"")  as string}
                             onChange={(value) => setValue('productcode', value)}
                             inputProps={{ maxLength: 20 }}
                         />
@@ -114,7 +114,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             label={t(langKeys.description)}
                             valueDefault={getValues('description')}
                             className="col-8"
-                            error={errors?.description?.message}
+                            error={(errors?.description?.message??"")  as string}
                             onChange={(value) => setValue('description', value)}
                             inputProps={{ maxLength: 256 }}
                         />
@@ -123,7 +123,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                         <FieldEdit
                             label={t(langKeys.longdesc)}
                             valueDefault={getValues('descriptionlarge')}
-                            error={errors?.descriptionlarge?.message}
+                            error={(errors?.descriptionlarge?.message??"")  as string}
                             onChange={(value) => setValue('descriptionlarge', value)}
                             inputProps={{ maxLength: 10000 }}
                         />
@@ -134,7 +134,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             className="col-6"
                             valueDefault={getValues('producttype')}
                             onChange={(value) => setValue('producttype', value?.domainvalue||"")}
-                            error={errors?.producttype?.message}
+                            error={(errors?.producttype?.message??"")  as string}
                             data={multiData.data[0].data}
                             optionValue="domainvalue"
                             optionDesc="domaindesc"
@@ -144,7 +144,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             className="col-6"
                             valueDefault={getValues('familyid')}
                             onChange={(value) => setValue('familyid', value?.domainid||0)}
-                            error={errors?.familyid?.message}
+                            error={(errors?.familyid?.message??"")  as string}
                             data={multiData.data[1].data}
                             optionValue="domainid"
                             optionDesc="domaindesc"
@@ -156,7 +156,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             className="col-6"
                             valueDefault={getValues('subfamilyid')}
                             onChange={(value) => setValue('subfamilyid', value?.domainid||0)}
-                            error={errors?.subfamilyid?.message}
+                            error={(errors?.subfamilyid?.message??"")  as string}
                             data={multiData.data[2].data}
                             optionDesc="domaindesc"
                             optionValue="domainid"
@@ -166,7 +166,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             className="col-6"
                             valueDefault={getValues('loteid')}
                             onChange={(value) => setValue('loteid', value?.domainid||0)}
-                            error={errors?.loteid?.message}
+                            error={(errors?.loteid?.message??"")  as string}
                             data={multiData.data[6].data}
                             optionDesc="domaindesc"
                             optionValue="domainid"
@@ -180,7 +180,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                                 label={t(langKeys.status)}
                                 valueDefault={getValues('status')}
                                 onChange={(value) => setValue('status', value?.domainvalue||"")}
-                                error={errors?.status?.message}
+                                error={(errors?.status?.message??"")  as string}
                                 data={multiData.data[5].data}
                                 disabled
                                 optionDesc="domainvalue"
@@ -192,7 +192,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                                 label={t(langKeys.purchase_unit)}
                                 valueDefault={getValues('unitbuyid')}
                                 onChange={(value) => setValue('unitbuyid', value?.domainid||0)}
-                                error={errors?.unitbuyid?.message}
+                                error={(errors?.unitbuyid?.message??"")  as string}
                                 data={multiData.data[3].data}
                                 optionDesc="domaindesc"
                                 optionValue="domainid"
@@ -203,7 +203,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                                 label={t(langKeys.dispatch_unit)}
                                 valueDefault={getValues('unitdispatchid')}
                                 onChange={(value) => setValue('unitdispatchid', value?.domainid||0)}
-                                error={errors?.unitdispatchid?.message}
+                                error={(errors?.unitdispatchid?.message??"")  as string}
                                 data={multiData.data[4].data}
                                 optionDesc="domaindesc"
                                 optionValue="domainid"

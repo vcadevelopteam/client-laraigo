@@ -4,9 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
-import Button from "@material-ui/core/Button";
-import SearchIcon from "@material-ui/icons/Search";
-import SearchDealerDialog from "../../dialogs/SearchDealerDialog";
 import RegisterDealerDialog from "../../dialogs/RegisterDealerDialog";
 import { useSelector } from "hooks";
 import { TemplateIcons } from "components";
@@ -57,7 +54,7 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
-        const errormessage = t(executeResult.code || "error_unexpected_error", {
+        const errormessage = t(executeResult.code ?? "error_unexpected_error", {
           module: t(langKeys.domain).toLocaleLowerCase(),
         });
         dispatch(
@@ -176,6 +173,7 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
           download={false}
           filterGeneral={false}
           register={true}
+          loading={dataDealer.loading}
           handleRegister={handleRegister}
         />
       </div>

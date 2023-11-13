@@ -38,7 +38,7 @@ const AddReservationDialog: React.FC<{
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset, formState:{errors}} = useForm({
     defaultValues: {
-        inventorywarehouseid:0,
+        inventorybookingid:0,
         inventoryid: row?.inventoryid || 0,
         productdescription: row?.productdescription || '',
         ticketid: "",

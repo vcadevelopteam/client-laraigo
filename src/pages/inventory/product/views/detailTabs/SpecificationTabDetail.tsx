@@ -118,6 +118,7 @@ const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchDat
           filterGeneral={false}
           register={true}
           handleRegister={handleRegister}
+          loading={dataAttributes.loading}
         />
       </div>
       <RegisterSpecificationDialog
