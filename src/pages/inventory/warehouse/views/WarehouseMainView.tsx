@@ -20,7 +20,6 @@ import { exportExcel, getWarehouseExport, importWarehouse, insWarehouse, templat
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
-import { type } from 'os';
 
 const selectionKey = "warehouseid";
 
@@ -356,17 +355,23 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         setCleanSelection={setCleanSelected}
         register={true}
         importCSV={handleUpload}
-        FiltersElement={(
+        ButtonsElement={() => (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <Button
-              variant="contained"
-              color="primary"
-              disabled={mainPaginated.loading}
-              startIcon={<ListAltIcon color="secondary" />}
-              onClick={handleTemplateWarehouse}
-              style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
-          >
-            {t(langKeys.template) + " " + t(langKeys.import)}
-          </Button>
+          variant="contained"
+          color="primary"
+          disabled={mainPaginated.loading}
+          startIcon={<ListAltIcon color="secondary" />}
+          onClick={handleTemplateWarehouse}
+          style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
+      >
+        {t(langKeys.template) + " " + t(langKeys.import)}
+      </Button>
+          </div>
+        )}
+        
+        FiltersElement={(
+          <div></div>
       )}
       />
     </div>
