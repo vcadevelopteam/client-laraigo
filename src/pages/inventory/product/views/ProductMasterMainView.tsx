@@ -288,6 +288,17 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         setCleanSelection={setCleanSelected}
         register={true}
         ButtonsElement={() => (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Button
+            variant="contained"
+            component="span"
+            startIcon={<ListAltIcon color="secondary" />}
+            color="primary"
+            onClick={() => setOpenModalTemplate(true)}
+            style={{ backgroundColor: "#55BD84" }}
+          >
+            {t(langKeys.template) + " " + t(langKeys.import)} 
+          </Button>
           <Button
             variant="contained"
             component="span"
@@ -298,29 +309,10 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
           >
             <Trans i18nKey={langKeys.import} />
           </Button>
+          </div>
         )}
         FiltersElement={(
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {/*<Button
-                  variant="contained"
-                  component="span"
-                  color="primary"
-                  disabled={!Object.keys(selectedRows).length}
-                  onClick={() => setOpenModalChangeStatus(true)}
-                  style={{ backgroundColor: "#55BD84" }}
-                >
-                  <Trans i18nKey={langKeys.change_status} />
-        </Button>*/}
-                <Button
-                  variant="contained"
-                  component="span"
-                  startIcon={<ListAltIcon color="secondary" />}
-                  color="primary"
-                  onClick={() => setOpenModalTemplate(true)}
-                  style={{ backgroundColor: "#55BD84" }}
-                >
-                  {t(langKeys.template) + " " + t(langKeys.import)} 
-                </Button>
           </div>
         )}
       />
