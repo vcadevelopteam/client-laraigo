@@ -5505,6 +5505,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   reverseid: 'DNI Reverso', 
   paymentvoucher: 'Voucher de Pago', 
   store: 'Tienda',
+  schedulesth: 'Agendar',
+  dispatch: 'Despachar',
+  reschedule: 'Reagendar',
+  deliver: 'Entregar',
+  entereddata: 'Datos Ingresados',
+
 };
 
 const esResource: ResourceLanguage = {

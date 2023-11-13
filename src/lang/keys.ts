@@ -5495,6 +5495,11 @@ export const langKeys = {
   reverseid: 'reverseid', 
   paymentvoucher: 'paymentvoucher', 
   store: 'store',
+  schedulesth: 'schedulesth',
+  dispatch: 'dispatch',
+  reschedule: 'reschedule',
+  deliver: 'deliver',
+  entereddata: 'entereddata',
 };
 
 export type LangKeys = typeof langKeys;

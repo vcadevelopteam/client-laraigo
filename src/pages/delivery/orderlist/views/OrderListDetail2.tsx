@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -6,17 +5,14 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail,TemplateSwitch, AntTab, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import ClientDataTabDetail from './detailTabs/ClientDataTabDetail';
 import { resetMainAux } from 'store/main/actions';
 import { Tabs } from '@material-ui/core';
-import OrderListTabDetail from './detailTabs/OrderListTabDetail';
-import DeliveryAddressTabDetail from './detailTabs/DeliveryAddressTabDetail';
 import InformationTabDetail from './detailTabs/InformationTabDetail';
 import OrderStatusTabDetail from './detailTabs/OrderStatusTabDetail';
 
@@ -36,10 +32,7 @@ interface DetailProps {
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        // marginTop: theme.spacing(2),
-        // marginRight: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
+      
         width: '100%'
     },
     button: {
@@ -123,7 +116,6 @@ const OrderListDetail2: React.FC<DetailProps> = ({ data: { row, edit }, setViewS
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            //dispatch(execute(insWarehouse(data)));
 
             setWaitSave(true);
         }

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
 import { Dictionary, IFetchData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';

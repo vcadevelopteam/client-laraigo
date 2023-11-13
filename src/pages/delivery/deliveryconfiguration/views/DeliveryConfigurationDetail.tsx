@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -14,7 +13,6 @@ import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
 import { resetMainAux } from 'store/main/actions';
-import CoincidenceMetersDialog from '../dialogs/CoincidenceMetersDialog';
 import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
@@ -28,32 +26,13 @@ interface RowSelected {
 
 interface DetailProps {
     data: RowSelected;
-    fetchData?: any;
-    fetchDataAux?: any;
 }
 
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        // marginTop: theme.spacing(2),
-        // marginRight: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
-        width: '100%'
-    },
+const useStyles = makeStyles((theme) => ({    
     button: {
         marginRight: theme.spacing(2),
-    },
-    containerHeader: {
-        padding: theme.spacing(1),
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
-        borderRadius: 4,
-        color: 'rgb(143, 146, 161)'
-    },
+    },     
     tabs: {
         color: '#989898',
         backgroundColor: 'white',
@@ -64,13 +43,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, fetchDataAux }) => {
+const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit } }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
-    const [openModalCoincidenceMeters, setOpenModalCoincidenceMeters] = useState(false)
     const [openModalNonWorkingDays, setOpenModalNonWorkingDays] = useState(false)
     const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
@@ -96,17 +74,10 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         }
     });
 
-    const fetchWarehouseProducts = () => {
-        /*dispatch(
-          getCollectionAux(getWarehouseProducts(row?.warehouseid))
-        );*/
-    }
-
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
@@ -133,7 +104,6 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         const callback = () => {
             dispatch(showBackdrop(true));
             //dispatch(execute(insWarehouse(data)));
-
             setWaitSave(true);
         }
         dispatch(manageConfirmation({
@@ -185,13 +155,9 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
                     setOpenModalVehicleType={setOpenModalVehicleType}
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
-                    setOpenModalCoincidenseMeters={setOpenModalCoincidenceMeters}
                 />
 
-                <CoincidenceMetersDialog
-                    openModal={openModalCoincidenceMeters}
-                    setOpenModal={setOpenModalCoincidenceMeters}
-                />
+              
                 <VehicleTypeDialog
                     openModal={openModalVehicleType}
                     setOpenModal={setOpenModalVehicleType}

@@ -1,14 +1,15 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit } from "components";
+import { Button, makeStyles } from "@material-ui/core";
+import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
+import AddIcon from "@material-ui/icons/Add";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { format } from "date-fns";
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -16,15 +17,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CoincidenceMetersDialog: React.FC<{
+const InsertDeliverySchedulesDialog: React.FC<{
   openModal: boolean;
   setOpenModal: (dat: boolean) => void;
-}> = ({ openModal, setOpenModal }) => {
+  row: Dictionary
+}> = ({ openModal, setOpenModal, row }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+
+  const signatureDateDefault = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
     if (waitSave) {
@@ -40,15 +44,34 @@ const CoincidenceMetersDialog: React.FC<{
         }
     }
 }, [executeRes, waitSave])
+
+
   
   return (
-    <DialogZyx open={openModal} title={t(langKeys.coincidencemeters)} maxWidth="sm">
-      <div className="row-zyx" style={{justifyContent: "center", paddingBottom:"1rem", paddingTop:"1rem"}}>
-        <FieldEdit
-            label={t(langKeys.enter) + ' ' + t(langKeys.coincidencemeters)}
-            valueDefault={''}
-            className="col-12"
+    <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="sm">
+      <div className="row-zyx">
+        <FieldSelect
+          label={t(langKeys.shifts)}
+          className="col-4"
+          data={[]}
+          optionValue="shifts"
+          optionDesc="name"
         />
+        <div className="col-2"></div>
+        <FieldEdit
+          label={t(langKeys.from)}
+          type="time"
+          valueDefault={signatureDateDefault}
+          className="col-3"
+          />
+        <FieldEdit
+          label={t(langKeys.until)}
+          type="time"
+          valueDefault={signatureDateDefault}
+          className="col-3"
+        />
+       
+
       </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
         <Button
@@ -64,18 +87,17 @@ const CoincidenceMetersDialog: React.FC<{
           {t(langKeys.back)}
         </Button>
         <Button
-          className={classes.button}
           variant="contained"
-          color="primary"
           type="button"
-          startIcon={<SaveIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84" }}        
+          color="primary"
+          startIcon={<AddIcon color="secondary" />}
+          style={{ backgroundColor: "#55BD84", margin:"1rem 0 " }}         
         >
-          {t(langKeys.save)}
+         {t(langKeys.add)}
         </Button>
       </div>
     </DialogZyx>
   );
 };
 
-export default CoincidenceMetersDialog;
+export default InsertDeliverySchedulesDialog;

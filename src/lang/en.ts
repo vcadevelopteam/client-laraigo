@@ -5576,6 +5576,12 @@ const translation: LangKeys = {
   reverseid: 'Reverse ID', 
   paymentvoucher: 'Payment Voucher', 
   store: 'Store',
+  schedulesth: 'Schedule',
+  dispatch: 'Dispatch',
+  reschedule: 'Reschedule',
+  deliver: 'Deliver',
+  entereddata: 'Entered Data',
+
 };
 
 const enResource: ResourceLanguage = {

@@ -1,13 +1,15 @@
 import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldSelect } from "components";
+import { DialogZyx, FieldEdit } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
+import AddIcon from "@material-ui/icons/Add";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
+import TableZyx from "components/fields/table-simple";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -15,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PrintDialog: React.FC<{
+const InsertVehicleTypeDialog: React.FC<{
   openModal: boolean;
   setOpenModal: (dat: boolean) => void;
 }> = ({ openModal, setOpenModal }) => {
@@ -39,10 +41,33 @@ const PrintDialog: React.FC<{
         }
     }
 }, [executeRes, waitSave])
+
+
   
   return (
-    <DialogZyx open={openModal} title="" maxWidth="sm">
-          
+    <DialogZyx open={openModal} title={t(langKeys.vehicletype)} maxWidth="md">
+      <div className="row-zyx">
+        <FieldEdit
+          label={t(langKeys.vehicle)}
+          className="col-6"
+        />
+        <FieldEdit
+          label={t(langKeys.insuredamount)}
+          className="col-6"
+        />
+        <FieldEdit
+          label={t(langKeys.averagespeed)}
+          type="number"
+          className="col-6"
+        />
+        <FieldEdit
+          label={t(langKeys.capacity)}
+          type="number"
+          className="col-6"          
+        />    
+       
+        
+      </div>
       <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
         <Button
           variant="contained"
@@ -55,24 +80,22 @@ const PrintDialog: React.FC<{
           }}
         >
           {t(langKeys.back)}
-        </Button>       
-      </div>
-      <img style={{textAlign: "center"}} src="https://www.invoiceowl.com/wp-content/uploads/2023/02/freight-invoice-banner-template.svg" alt="Invoice"></img>
-
-      <div className="row-zyx" style={{justifyContent: "center", margin:"0rem 8rem 1rem 9rem"}}>
+        </Button>
         <Button
-          className={classes.button}
           variant="contained"
-          color="primary"
           type="button"
-          style={{ backgroundColor: "#55BD84" }}        
+          color="primary"
+          startIcon={<AddIcon color="secondary" />}
+          style={{ backgroundColor: "#55BD84", margin:"1rem 0 " }}         
         >
-        {t(langKeys.print)}
-        </Button> 
+         {t(langKeys.add)}
+        </Button>
+      
       </div>
-
+      
     </DialogZyx>
+    
   );
 };
 
-export default PrintDialog;
+export default InsertVehicleTypeDialog;

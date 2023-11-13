@@ -1,17 +1,17 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'; 
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { TitleDetail, TemplateIcons, IOSSwitch } from 'components';
+import { TitleDetail, TemplateIcons, IOSSwitch, FieldEdit } from 'components';
 import TableZyx from "components/fields/table-simple";
 import { Button, Checkbox, FormControl, FormControlLabel, FormGroup } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import AssociatedVehicleDialog from '../../dialogs/AssociatedVehicleDialog';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import { CellProps } from 'react-table';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -85,12 +85,11 @@ interface ConfigurationTabDetailProps {
     row: Dictionary | null;
     setValue: UseFormSetValue<any>;
     getValues: UseFormGetValues<any>;
-    errors: FieldErrors<any>;
+    errors: FieldErrors;
     setOpenModalNonWorkingDays: (flag: boolean) => void;
     setOpenModalDeliveryShifts: (flag: boolean) => void;
     setOpenModalVehicleType: (flag: boolean) => void;
     setOpenModalDeliveryOrderPhoto: (flag: boolean) => void;
-    setOpenModalCoincidenseMeters: (flag: boolean) => void;
 }
 
 const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
@@ -101,8 +100,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     setOpenModalNonWorkingDays,
     setOpenModalDeliveryShifts,
     setOpenModalVehicleType,
-    setOpenModalDeliveryOrderPhoto,
-    setOpenModalCoincidenseMeters
+    setOpenModalDeliveryOrderPhoto    
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -138,10 +136,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
           {
             accessor: 'productalternativeid',
             NoFilter: true,
+            disableGlobalFilter: true,
             isComponent: true,
             minWidth: 60,
             width: '1%',
-            Cell: (props: any) => {
+            Cell: (props: CellProps<Dictionary>) => {
                 const row = props.cell.row.original;
                 return (
                     <TemplateIcons
@@ -464,10 +463,15 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 </div>
 
                 <div className='col-3'>   
-                     <CustomTitleHelper title={t(langKeys.deliveryvalidationdistance)}/>            
-                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalCoincidenseMeters(true)}>
-                        {t(langKeys.edit) + ' ' + t(langKeys.coincidencemeters)}
-                    </span>
+                        <CustomTitleHelper title={t(langKeys.deliveryvalidationdistance)}/>  
+                        <div style={{ width: 300 }}>
+                            <FieldEdit
+                                valueDefault={''}
+                                className="col-2"
+                                type='number'
+                            />
+                        </div>        
+                      
                 </div>
             </div>
 

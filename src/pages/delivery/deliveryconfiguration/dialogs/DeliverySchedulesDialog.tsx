@@ -1,16 +1,19 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit, FieldSelect } from "components";
+import { DialogZyx, FieldEdit, FieldSelect, TemplateIcons } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
+import AddIcon from "@material-ui/icons/Add";
+
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { format } from "date-fns";
 import TableZyx from "components/fields/table-simple";
+import InsertDeliverySchedulesDialog from "./InsertDeliverySchedulesDialog";
+import { CellProps } from "react-table";
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -27,8 +30,8 @@ const DeliverySchedulesDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const [openModalInsertDeliverySchedules, setOpenModalInsertDeliverySchedules] = useState(false);
 
-  const signatureDateDefault = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
     if (waitSave) {
@@ -49,6 +52,23 @@ const DeliverySchedulesDialog: React.FC<{
 const columns = React.useMemo(
   () => [   
     {
+      accessor: "storeid",
+      NoFilter: true,
+      disableGlobalFilter: true,
+      isComponent: true,
+      minWidth: 60,
+      width: "1%",
+      Cell: (props: CellProps<Dictionary>) => {
+        const row = props.cell.row.original;
+        return (
+          <TemplateIcons
+            //deleteFunction={() => handleDelete(row)}
+            //editFunction={() => handleEdit(row)}
+          />
+        );
+      },
+    },
+    {
       Header: t(langKeys.shifts),
       accessor: "shifts",
       width: "auto",
@@ -68,63 +88,41 @@ const columns = React.useMemo(
 );
   
   return (
-    <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="sm">
-      <div className="row-zyx">
-        <FieldSelect
-          label={t(langKeys.shifts)}
-          className="col-4"
-          data={[]}
-          optionValue="warehouseid"
-          optionDesc="name"
-        />
-        <div className="col-2"></div>
-        <FieldEdit
-          label={t(langKeys.from)}
-          type="time"
-          valueDefault={signatureDateDefault}
-          className="col-3"
-          />
-        <FieldEdit
-          label={t(langKeys.until)}
-          type="time"
-          valueDefault={signatureDateDefault}
-          className="col-3"
-        />
+    <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="md">
+      <div className="row-zyx">  
+      
         <div className="row-zyx">
           <TableZyx
             columns={columns}            
             data={[]}           
             filterGeneral={false}
-            toolsFooter={false}            
+            toolsFooter={false}    
+            register={true} 
+            handleRegister={setOpenModalInsertDeliverySchedules}  
+            ButtonsElement={() => (
+              <div style={{ textAlign: 'right'}}>            
+                  <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    onClick={() => {
+                      setOpenModal(false);
+                    }}
+                  >
+                    {t(langKeys.close)}
+                  </Button>      
+              </div>
+            )}                    
           />
-        </div>
-
-
-      </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
-        <Button
-          variant="contained"
-          type="button"
-          color="primary"
-          startIcon={<ClearIcon color="secondary" />}
-          style={{ backgroundColor: "#FB5F5F" }}
-          onClick={() => {
-            setOpenModal(false);
-          }}
-        >
-          {t(langKeys.back)}
-        </Button>
-        <Button
-          className={classes.button}
-          variant="contained"
-          color="primary"
-          type="button"
-          startIcon={<SaveIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84" }}        
-        >
-          {t(langKeys.save)}
-        </Button>
-      </div>
+        </div>      
+      </div>      
+      <InsertDeliverySchedulesDialog
+            openModal={openModalInsertDeliverySchedules}
+            setOpenModal={setOpenModalInsertDeliverySchedules}
+            row = {[]}
+      />
     </DialogZyx>
   );
 };

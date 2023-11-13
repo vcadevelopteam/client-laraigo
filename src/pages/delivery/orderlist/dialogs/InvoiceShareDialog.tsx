@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldSelect } from "components";
+import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, Typography, makeStyles } from "@material-ui/core";
+import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -27,6 +26,10 @@ const InvoiceShareDialog: React.FC<{
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
 
+  const [smsState, setSmsState] = useState(false);
+  const [emailState, setEmailState] = useState(false);
+
+
   useEffect(() => {
     if (waitSave) {
         if (!executeRes.loading && !executeRes.error) {
@@ -43,16 +46,23 @@ const InvoiceShareDialog: React.FC<{
 }, [executeRes, waitSave])
   
   return (
-    <DialogZyx open={openModal} title={t(langKeys.postcreator_publish_facebookmockup_share) + " " + t(langKeys.receipt)} maxWidth="sm">
+    <DialogZyx open={openModal} title={t(langKeys.postcreator_publish_facebookmockup_share) + " " + t(langKeys.electronic_ticket_and_invoice)} maxWidth="sm">
       
-      <div className="row-zyx" style={{justifyContent: "center"}}>
-        <FieldSelect
-          label={t(langKeys.select) + " " + t(langKeys.email) + "/" + t(langKeys.sms)} 
-          className="col-12"
-          data={[]}
-          optionValue="warehouseid"
-          optionDesc="name"
-        />       
+      <div className="row-zyx" style={{justifyContent: "center"}}>      
+         <FormControl component="fieldset" >              
+              <FormGroup>
+                  <FormControlLabel
+                      style={{ pointerEvents: "none" }}
+                      control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={smsState} onChange={(e) => setSmsState(e.target.checked)} name="sun" />}
+                      label={t(langKeys.sms)}
+                  />
+                  <FormControlLabel
+                      style={{ pointerEvents: "none" }}
+                      control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={emailState} onChange={(e) => setEmailState(e.target.checked)} name="mon" />}
+                      label={t(langKeys.email)}
+                  />
+              </FormGroup>
+          </FormControl>
       </div>    
 
       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", justifyContent: "end" }}>
