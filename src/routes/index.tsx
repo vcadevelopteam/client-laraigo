@@ -48,11 +48,11 @@ const NotFound = lazy(() => import('pages/NotFound'));
 const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
 const Corporations = lazy(() => import('pages/Corporations'));
-const DeliveryConfiguration = lazy(() => import('pages/delivery/deliveryconfiguration/DeliveryConfiguration'))
-const OrderList = lazy(() => import('pages/delivery/orderlist/OrderList'))
-const AttentionOrders = lazy(() => import('pages/delivery/attentionorders/AttentionOrders'))
-const StoreCoverage = lazy(() => import('pages/delivery/storecoverage/StoreCoverage'))
-const StoreOrders = lazy(() => import('pages/delivery/storeorders/StoreOrders'))
+const DeliveryConfiguration = lazy(() => import('pages/deliveryconfiguration/DeliveryConfiguration'))
+const OrderList = lazy(() => import('pages/orderlist/OrderList'))
+const AttentionOrders = lazy(() => import('pages/attentionorders/AttentionOrders'))
+const StoreCoverage = lazy(() => import('pages/storecoverage/StoreCoverage'))
+const StoreOrders = lazy(() => import('pages/storeorders/StoreOrders'))
 const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
