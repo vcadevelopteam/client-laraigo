@@ -2,6 +2,8 @@ import React from 'react'
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button, Menu, MenuItem, makeStyles } from '@material-ui/core';
+import LocalShippingIcon from '@material-ui/icons/LocalShipping';
+
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -31,6 +33,8 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ delivered, undelivere
                 variant='contained'
                 color='primary'
                 type='submit'
+                startIcon={<LocalShippingIcon color="secondary" />}           
+
                 style={{ backgroundColor: "#55BD84" }}
                 onClick={(e) => {
                     setAnchorEl(e.currentTarget);

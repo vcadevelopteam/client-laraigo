@@ -9,21 +9,19 @@ import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 
 const useStyles = makeStyles((theme) => ({
+ 
+  buttonspace: {
+    display: "flex", 
+    gap: "10px", 
+    alignItems: "center", 
+    justifyContent: "end"
+  },
   button: {
     marginRight: theme.spacing(2),
+    justifyContent: "center", 
+    margin:"0rem 8rem 1rem 9rem"
   },
-  div1: {
-
-  },
-  div2: {
-
-  },
-  div3: {
-
-  },
-  div4: {
-
-  },
+ 
 }));
 
 const PrintDialog: React.FC<{
@@ -54,7 +52,7 @@ const PrintDialog: React.FC<{
   return (
     <DialogZyx open={openModal} title="" maxWidth="sm">
           
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
+      <div className={classes.buttonspace} >
         <Button
           variant="contained"
           type="button"
@@ -70,7 +68,7 @@ const PrintDialog: React.FC<{
       </div>
       <img style={{textAlign: "center"}} src="https://www.invoiceowl.com/wp-content/uploads/2023/02/freight-invoice-banner-template.svg" alt="Invoice"></img>
 
-      <div className="row-zyx" style={{justifyContent: "center", margin:"0rem 8rem 1rem 9rem"}}>
+      <div className="row-zyx" >
         <Button
           className={classes.button}
           variant="contained"

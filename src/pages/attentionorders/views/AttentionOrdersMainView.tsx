@@ -23,13 +23,13 @@ const useStyles = makeStyles((theme) => ({
     paddingTop:"2rem", 
     paddingLeft:"0.9rem"
   },   
-  div1: {    
+  tittleandbuttons: {    
     width: "100%",
     display: "flex",
     flexDirection: "column",
     flex: 1, 
   },
-  div2: {  
+  titlespace: {  
     display: "flex",
     gap: 8,
     flexDirection: "row",
@@ -224,8 +224,8 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
   );
 
   return (
-    <div className={classes.div1}>
-      <div className={classes.div2}>
+    <div className={classes.tittleandbuttons}>
+      <div className={classes.titlespace}>
         <div style={{ flexGrow: 1 }}>
          <TemplateBreadcrumbs
             breadcrumbs={arrayBread}

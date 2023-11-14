@@ -18,23 +18,17 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: 4
     }   
   },
-  div1: {
+  buttonspace: {
     display: "flex", 
     gap: "10px", 
     alignItems: "center", 
     justifyContent: "end"
   },
-  div2: {
+  buttons: {
     display:"flex", 
     justifyContent: "center", 
     margin:"0rem 1rem"
-  },
-  div3: {
-
-  },
-  div4: {
-
-  },
+  }, 
 }));
 
 const InvoiceTicketDialog: React.FC<{
@@ -65,7 +59,7 @@ const InvoiceTicketDialog: React.FC<{
   return (
     <DialogZyx open={openModal} title="" maxWidth="sm">
           
-      <div className={classes.div1}>
+      <div className={classes.buttonspace}>
         <Button
           variant="contained"
           type="button"
@@ -81,7 +75,7 @@ const InvoiceTicketDialog: React.FC<{
       </div>
       <img style={{textAlign: "center"}} src="https://www.invoiceowl.com/wp-content/uploads/2023/02/freight-invoice-banner-template.svg" alt="Invoice"></img>
 
-      <div className={classes.div2}>
+      <div className={classes.buttons}>
         <Button
           className={classes.button}
           variant="contained"

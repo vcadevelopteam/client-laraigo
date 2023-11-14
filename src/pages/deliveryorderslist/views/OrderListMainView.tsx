@@ -22,6 +22,7 @@ import ReschedulingUndeliveredDialog from '../dialogs/ReschedulingUndeliveredDia
 import ElectronicTicketAndInvoiceDialog from '../dialogs/ElectronicTicketAndInvoiceDialog';
 import PrintDialog from '../dialogs/PrintDialog';
 import { CellProps } from 'react-table';
+import { ExtrasMenu } from '../components/components';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -62,8 +63,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const [attentionOrders,setAttentionOrders] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
     const mainPaginated = useSelector((state) => state.main.mainPaginated);
-    const [setPageCount] = useState(0);
-    const [settotalrow] = useState(0);
+    const [pageCount, setPageCount] = useState(0);
+    const [totalrow, settotalrow] = useState(0);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);    
     const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
     const [openModalCanceled, setOpenModalCanceled] = useState(false);
@@ -89,12 +90,6 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
   
     const handleEdit = (row: Dictionary) => {    
       setRowSelected({ row, edit: true });
-    };
-
-    const handleDelete = (row: Dictionary) => {
-      const callback = () => {       
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
     };
 
     useEffect(() => {
@@ -124,15 +119,32 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
       }
     }, [importRes, waitUpload]);
 
+    const handleDelete = (row: Dictionary) => {
+      const callback = () => {       
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
+      };
+      dispatch(
+        manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback,
+        })
+      );       
+    };
+
+
     useEffect(() => {
       if (waitExport) {
           if (!resExportData.loading && !resExportData.error) {
               dispatch(showBackdrop(false));
               setWaitExport(false);
-              resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+              resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
           } else if (resExportData.error) {
-              const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-              dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+              const errormessage = t(resExportData.code || "error_unexpected_error", {
+                  module: t(langKeys.person).toLocaleLowerCase(),
+              });
+              dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
               dispatch(showBackdrop(false));
               setWaitExport(false);
           }
@@ -140,50 +152,36 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     }, [resExportData, waitExport]);
 
     useEffect(() => {
-      if (!mainPaginated.loading && !mainPaginated.error) {
-        setPageCount(
-          fetchDataAux.pageSize
-            ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize)
-            : 0
-        );
-        settotalrow(mainPaginated.count);
-      }
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(fetchDataAux.pageSize ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize) : 0);
+            settotalrow(mainPaginated.count);
+        }
     }, [mainPaginated]);
 
     useEffect(() => {
       if (waitSave) {
-        if (!executeResult.loading && !executeResult.error) {
-          dispatch(
-            showSnackbar({
-              show: true,
-              severity: "success",
-              message: t(langKeys.successful_delete),
-            })
-          );
-          fetchData(fetchDataAux);
-          dispatch(showBackdrop(false));
-          setWaitSave(false);
-        } else if (executeResult.error) {
-          const errormessage = t(executeResult.code || "error_unexpected_error", {
-            module: t(langKeys.domain).toLocaleLowerCase(),
-          });
-          dispatch(
-            showSnackbar({ show: true, severity: "error", message: errormessage })
-          );
-          dispatch(showBackdrop(false));
-          setWaitSave(false);
-        }
+          if (!executeResult.loading && !executeResult.error) {
+              dispatch(
+                  showSnackbar({
+                      show: true,
+                      severity: "success",
+                      message: t(langKeys.successful_delete),
+                  })
+              );
+              fetchData(fetchDataAux);
+              dispatch(showBackdrop(false));
+              setWaitSave(false);
+          } else if (executeResult.error) {
+              const errormessage = t(executeResult.code || "error_unexpected_error", {
+                  module: t(langKeys.domain).toLocaleLowerCase(),
+              });
+              dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+              dispatch(showBackdrop(false));
+              setWaitSave(false);
+          }
       }
     }, [executeResult, waitSave]);
 
-    dispatch(
-      manageConfirmation({
-        visible: true,
-        question: t(langKeys.confirmation_delete),
-        callback,
-        })
-      );
-    };
 
     const columns = React.useMemo(
         () => [
@@ -276,7 +274,16 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
         ],
         []
     );
+
+    function handleOpenAssignCarrierModal () {
+        setOpenModalAssignCarrier(true);
+    };
+
+    function handleOpenManualSchedulingModal () {
+    setOpenModalManualScheduling(true);
+    };
   
+
     function handleOpenUndeliveredModal () {
       setOpenModalUndelivered(true);
     };
@@ -285,18 +292,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
       setOpenModalCanceled(true);
     };
 
-    function handleOpenAssignCarrierModal () {
-      setOpenModalAssignCarrier(true);
-    };
-
-    function handleOpenManualSchedulingModal () {
-      setOpenModalManualScheduling(true);
-    };
-
     function handleOpenReschedulingUndeliveredModal () {
       setOpenModalReschedulingUndelivered(true);
     };
-  
+
     const handleClose = (e: any) => {
       e.stopPropagation();
       setAnchorEl(null);
@@ -317,12 +316,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
         <div className={classes.container}>
             <div className={classes.titleandcrumbs}>
                 <div style={{ flexGrow: 1 }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                    />
-                    <TitleDetail
-                        title={t(langKeys.orderlist)}
-                    />
+                    <TemplateBreadcrumbs breadcrumbs={arrayBread}/>
+                    <TitleDetail title={t(langKeys.orderlist)} />
                 </div>
             </div>
             <FormControlLabel 
@@ -345,7 +340,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
               register={true}
               handleRegister={moveDetailView}
               ButtonsElement={() => (
-                <div style={{ textAlign: 'right'}}>            
+                <div style={{ justifyContent: 'right', display: 'flex'}}>                   
+                    
                     <Button      
                         variant="contained"
                         color="primary"
@@ -355,19 +351,19 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                     >
                         <Trans i18nKey={langKeys.routinglogic} />
                     </Button>  
-                    <Button     
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading}
-                        startIcon={<ListAltIcon color="secondary" />}    
-                        className={classes.button}       
-                        onClick={(e) => {
-                            setAnchorEl(e.currentTarget);
-                            e.stopPropagation();
-                        }}
-                    >
-                    <Trans i18nKey={langKeys.typing} />
-                        </Button>
+                    <div style={{ marginLeft: '0.6rem'}}>
+                    <ExtrasMenu
+                        schedulesth={() => setOpenModalManualScheduling(true)}
+                        prepare={() => setOpenModalAssignCarrier(true)}
+                        dispatch={() => setOpenModalCanceled(true)}
+                        reschedule={() => setOpenModalReschedulingUndelivered(true)}
+                        deliver={() => setOpenModalCanceled(true)}
+                        undelivered={() => setOpenModalReschedulingUndelivered(true)}
+                        cancel={() => setOpenModalCanceled(true)}
+                        cancelundelivered={() => setOpenModalCanceled(true)}
+                    />         
+                    </div>
+                    
                     <Button                        
                         variant="contained"
                         color="primary"
@@ -398,102 +394,11 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                     >
                         <Trans i18nKey={langKeys.test} />
                     </Button>
+                     
                 </div>
               )}                   
               loading={mainPaginated.loading}                     
-            />    
-            <Menu
-                id="menu-appbar"
-                anchorEl={null}
-                getContentAnchorEl={null}
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: "right",
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-            >
-              <MenuItem
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setAnchorEl(null);
-                        handleOpenManualSchedulingModal();
-                    }}
-                >
-                    <Trans i18nKey={langKeys.schedulesth} />
-              </MenuItem>
-              <MenuItem
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setAnchorEl(null);
-                        //handleOpenAssignCarrierModal();
-                    }}
-                >
-                    <Trans i18nKey={langKeys.prepare} />
-              </MenuItem>
-              <MenuItem
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setAnchorEl(null);
-                    handleOpenAssignCarrierModal();
-                }}
-              >
-                <Trans i18nKey={langKeys.dispatch} />
-              </MenuItem>
-              <MenuItem
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setAnchorEl(null);
-                    handleOpenReschedulingUndeliveredModal();
-                }}
-              >
-                  <Trans i18nKey={langKeys.reschedule} />
-              </MenuItem> 
-              <MenuItem
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setAnchorEl(null);
-                    //handleOpenAssignCarrierModal();
-                }}
-              >
-                    <Trans i18nKey={langKeys.deliver} />
-              </MenuItem>
-
-              <MenuItem
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setAnchorEl(null);
-                    handleOpenUndeliveredModal();
-                }}
-              >
-                    <Trans i18nKey={langKeys.undelivered} />
-              </MenuItem>
-
-              <MenuItem
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setAnchorEl(null);
-                    handleOpenCanceledModal();
-                }}
-              >
-                  <Trans i18nKey={langKeys.cancel} />
-              </MenuItem>    
-
-              <MenuItem
-                  onClick={(e) => {
-                      e.stopPropagation();
-                      setAnchorEl(null);
-                      handleOpenCanceledModal();
-                  }}
-                >
-                  <Trans i18nKey={t(langKeys.cancel) + " " + t(langKeys.undelivered)} />                 
-              </MenuItem>                   
-            </Menu>         
-
+            />                  
             <UndeliveredDialog
                 openModal={openModalUndelivered}
                 setOpenModal={setOpenModalUndelivered}

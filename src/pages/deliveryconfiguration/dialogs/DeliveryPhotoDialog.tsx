@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "flex-end",
   },
-  div1: {
+  titlespace: {
     display: "flex", 
     alignItems: "center", 
     justifyContent: "space-between", 
@@ -95,7 +95,7 @@ const DeliveryPhotoDialog = ({ openModal, setOpenModal }: { openModal: boolean, 
         {Array.from({ length: photoCount }).map((_, index) => (
 
           <div key={index} className="field-edit-container">            
-          <div className={classes.div1}>
+          <div className={classes.titlespace}>
             <div>
               <Typography>{t(langKeys.photo) + " " + (index + 1)}</Typography>
             </div>
