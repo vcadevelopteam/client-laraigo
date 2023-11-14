@@ -559,7 +559,7 @@ const CostPerPeriod: React.FC<{
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -5210,7 +5210,7 @@ const Payments: React.FC<{
             <div style={{ width: "100%" }}>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -6572,7 +6572,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                 />
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -9303,7 +9303,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
             <div style={{ width: "100%" }}>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 className={classes.fieldsfilter}
                                 data={dataCorp}

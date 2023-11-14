@@ -1432,7 +1432,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any; currencyList: any }> = (
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -2244,7 +2244,7 @@ const ConversationCost: React.FC<{ dataPlan: any; currencyList: any }> = ({ data
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -2878,7 +2878,7 @@ const ArtificialIntelligence: React.FC<{ providerData: any; planData: any }> = (
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -3497,7 +3497,7 @@ const SupportPlan: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPlan,
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -4043,7 +4043,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
