@@ -1,10 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { TemplateBreadcrumbs, TemplateIcons, Title, TitleDetail } from "components";
+import { TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
 import { langKeys } from "lang/keys";
+import { makeStyles } from '@material-ui/core/styles';
 import ListAltIcon from "@material-ui/icons/ListAlt";
-import { Dictionary, IFetchData } from "@types";
+import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { useSelector } from "hooks";
@@ -12,8 +12,17 @@ import { Button, Menu, MenuItem } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 import DeliveredDialog from "../dialogs/DeliveredDialog";
 import UndeliveredDialog from "../dialogs/UndeliveredDialog";
+import { CellProps } from "react-table";
 
 const selectionKey = "warehouseid";
+
+const useStyles = makeStyles(() => ({     
+    generalContainer: {       
+        width: "100%",      
+        flexDirection: "column",      
+    },  
+   
+}));
 
 interface InventoryMainViewProps {
     setRowSelected: (rowdata: any) => void;
@@ -34,6 +43,7 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
     const [waitExport, setWaitExport] = useState(false);
     const resExportData = useSelector((state) => state.main.exportData);
     const [waitUpload, setWaitUpload] = useState(false);
+    const classes = useStyles();
     const importRes = useSelector((state) => state.main.execute);
     const [openModalDelivered, setOpenModalDelivered] = useState(false);
     const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
@@ -77,9 +87,7 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            /*dispatch(
-        execute(insWarehouse({ ...row, operation: "DELETE", status: "ELIMINADO" }))
-      );*/
+       
             dispatch(showBackdrop(true));
             setWaitSave(true);
         };
@@ -149,7 +157,7 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
                 isComponent: true,
                 minWidth: 60,
                 width: "1%",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {                    
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
@@ -239,23 +247,8 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
     };
 
     return (
-        <div
-            style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                flex: 1,
-            }}
-        >
-            <div
-                style={{
-                    display: "flex",
-                    gap: 8,
-                    flexDirection: "row",
-                    marginBottom: 12,
-                    marginTop: 4,
-                }}
-            >
+        <div className={classes.generalContainer}>
+            <div>         
                 <div style={{ flexGrow: 1 }}>
                     <TemplateBreadcrumbs breadcrumbs={arrayBread} />
                     <TitleDetail title={t(langKeys.storeorders)} />
@@ -281,7 +274,7 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
                         color="primary"
                         disabled={mainPaginated.loading}
                         startIcon={<ListAltIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
+                        style={{ backgroundColor: "#55BD84"}}
                         onClick={(e) => {
                             setAnchorEl(e.currentTarget);
                             e.stopPropagation();

@@ -1,57 +1,71 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import {
-  TemplateBreadcrumbs,
-  TemplateIcons,
-  Title,
-  TitleDetail,
-} from "components";
+import { TemplateBreadcrumbs, TemplateIcons, TitleDetail} from "components";
 import { langKeys } from "lang/keys";
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import { DuplicateIcon } from "icons";
-import { Dictionary, IFetchData } from "@types";
+import { Dictionary } from "@types";
+import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from "react-redux";
-import { execute, exportData } from "store/main/actions";
-import {
-  showSnackbar,
-  showBackdrop,
-  manageConfirmation,
-} from "store/popus/actions";
-import { exportExcel, templateMaker, uploadExcel } from "common/helpers";
+import { showSnackbar, showBackdrop} from "store/popus/actions";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { CellProps } from "react-table";
 
-const selectionKey = "warehouseid";
+const useStyles = makeStyles((theme) => ({   
+  button: {
+    marginRight: theme.spacing(2),
+    display: 'flex', 
+    justifyContent: 'space-between',
+    gap: '1rem', alignItems: 'center' 
+  },       
+  clientdetailposition: {
+    paddingTop:"2rem", 
+    paddingLeft:"0.9rem"
+  },   
+  div1: {    
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    flex: 1, 
+  },
+  div2: {  
+    display: "flex",
+    gap: 8,
+    flexDirection: "row",
+    marginBottom: 12,
+    marginTop: 4,  
+  }
+
+
+}));
 
 interface InventoryMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
-  fetchData: any;
-  fetchDataAux: any;
+  fetchData: () => void;
+  fetchDataAux: () => void;
 }
 
 const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
-  fetchDataAux,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const classes = useStyles();
+
 
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
   const mainPaginated = useSelector((state) => state.main.mainPaginated);
-  const [totalrow, settotalrow] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
+  const [totalrow] = useState(0);
+  const [pageCount] = useState(0);
   const [waitExport, setWaitExport] = useState(false);
   const resExportData = useSelector(state => state.main.exportData);
   const [waitUpload, setWaitUpload] = useState(false);  
   const importRes = useSelector((state) => state.main.execute);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const arrayBread = [
     { id: "main-view", name: t(langKeys.delivery) },
@@ -80,7 +94,6 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
         );
         dispatch(showBackdrop(false));
         setWaitUpload(false);
-        fetchData(fetchDataAux);
       } else if (importRes.error) {
         dispatch(
           showSnackbar({
@@ -95,23 +108,7 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
     }
   }, [importRes, waitUpload]);
 
-  const handleDelete = (row: Dictionary) => {
-    const callback = () => {
-      /*dispatch(
-        execute(insWarehouse({ ...row, operation: "DELETE", status: "ELIMINADO" }))
-      );*/
-      dispatch(showBackdrop(true));
-      setWaitSave(true);
-    };
 
-    dispatch(
-      manageConfirmation({
-        visible: true,
-        question: t(langKeys.confirmation_delete),
-        callback,
-      })
-    );
-  };
 
   useEffect(() => {
     if (waitExport) {
@@ -128,16 +125,7 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
     }
 }, [resExportData, waitExport]);
 
-  useEffect(() => {
-    if (!mainPaginated.loading && !mainPaginated.error) {
-      setPageCount(
-        fetchDataAux.pageSize
-          ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize)
-          : 0
-      );
-      settotalrow(mainPaginated.count);
-    }
-  }, [mainPaginated]);
+
 
   useEffect(() => {
     if (waitSave) {
@@ -149,7 +137,6 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
             message: t(langKeys.successful_delete),
           })
         );
-        fetchData(fetchDataAux);
         dispatch(showBackdrop(false));
         setWaitSave(false);
       } else if (executeResult.error) {
@@ -173,11 +160,10 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
         isComponent: true,
         minWidth: 60,
         width: "1%",
-        Cell: (props: any) => {
+        Cell: (props: CellProps<Dictionary>) => {          
           const row = props.cell.row.original;
           return (
             <TemplateIcons
-              deleteFunction={() => handleDelete(row)}
               editFunction={() => handleEdit(row)}
             />
           );
@@ -238,23 +224,8 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
   );
 
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          flexDirection: "row",
-          marginBottom: 12,
-          marginTop: 4,
-        }}
-      >
+    <div className={classes.div1}>
+      <div className={classes.div2}>
         <div style={{ flexGrow: 1 }}>
          <TemplateBreadcrumbs
             breadcrumbs={arrayBread}
@@ -281,9 +252,8 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({
             color="primary"
             disabled={mainPaginated.loading}
             startIcon={<CheckCircleIcon color="secondary" />}             
-            style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
-            onClick={(e) => {
-              setAnchorEl(e.currentTarget);
+            style={{ backgroundColor: "#55BD84"}}
+            onClick={(e) => {             
               e.stopPropagation();
             }}
             >

@@ -1,27 +1,20 @@
 import { Button, makeStyles } from "@material-ui/core";
-import { DialogZyx, TemplateIcons } from "components";
+import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
-import AddIcon from "@material-ui/icons/Add";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import TableZyx from "components/fields/table-simple";
 import InsertVehicleTypeDialog from "./InsertVehicleTypeDialog";
-import { CellProps } from "react-table";
-import { Dictionary } from "@types";
-
 
 const useStyles = makeStyles((theme) => ({
   button: {
     marginRight: theme.spacing(2),
   },
 }));
-
-
 
 const VehicleTypeDialog: React.FC<{  
   openModal: boolean;
@@ -52,20 +45,7 @@ const VehicleTypeDialog: React.FC<{
 
 
 const columns = React.useMemo(
-  () => [   
-    {
-      accessor: "storeid",   
-      width: "1%",
-      Cell: (props: CellProps<Dictionary>) => {
-        const row = props.cell.row.original;
-        return (
-          <TemplateIcons
-            //deleteFunction={() => handleDelete(row)}
-            //editFunction={() => handleEdit(row)}
-          />
-        );
-      },
-    },
+  () => [      
     {
       Header: t(langKeys.vehicle),
       accessor: "vehicle",
@@ -119,20 +99,13 @@ const columns = React.useMemo(
               </div>
             )}            
           />          
-        </div>        
-
-      </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
-       
-  
-      </div>
+        </div>  
+      </div>  
       <InsertVehicleTypeDialog
         openModal={openModalInsertVehicleType}
         setOpenModal={setOpenModalInsertVehicleType}
-      />
-      
-    </DialogZyx>
-    
+      />      
+    </DialogZyx>    
   );
 };
 

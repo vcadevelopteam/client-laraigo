@@ -1,19 +1,21 @@
-import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit } from "components";
+import { Button, makeStyles } from "@material-ui/core";
+import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import TableZyx from "components/fields/table-simple";
-import { format } from "date-fns";
+import InsertNonWorkingDaysDialog from "./InsertNonWorkingDaysDialog";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     button: {
-        marginRight: theme.spacing(2),
+        display: "flex", 
+        gap: "10px", 
+        alignItems: "center", 
+        justifyContent: "end" 
     },
 }));
 
@@ -26,9 +28,8 @@ const NonWorkingDaysDialog: React.FC<{
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector((state) => state.main.execute);
+    const [openModalInsertNonWorkingDays, setOpenModalInsertNonWorkingDays] = useState(false);
 
-    const signatureDateDefault = format(new Date(), "yyyy-MM-dd");
-    const [selectedDate, setSelectedDate] = useState(signatureDateDefault);
 
     useEffect(() => {
         if (waitSave) {
@@ -54,7 +55,7 @@ const NonWorkingDaysDialog: React.FC<{
     }, [executeRes, waitSave]);
 
     const columns = React.useMemo(
-        () => [
+        () => [           
             {
                 Header: t(langKeys.nonworkingdays) + " " + t(langKeys.selected_plural),
                 accessor: "deliverynumber",
@@ -67,61 +68,38 @@ const NonWorkingDaysDialog: React.FC<{
     return (
         <DialogZyx open={openModal} title={t(langKeys.nonworkingdaysregister)} maxWidth="md">
             <div className="row-zyx">
-                <div className="col-6" style={{ padding: "0.8rem " }}>
-                    <FieldEdit
-                        label={t(langKeys.choosenonworkingdate)}
-                        type="date"
-                        valueDefault={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                    />
-                    <div  style={{ padding: "0.8rem 0 0 0", textAlign: "right" }}>
-                        <Button
-                            variant="contained"
-                            type="button"                       
-                            color="primary"                           
-                            >
-                            {t(langKeys.add)}
-                        </Button>
-                    </div>
-                   
-                </div>
-                <div className="col-6">
+                <div>
                     <TableZyx 
                         columns={columns} 
                         data={[]}                        
                         filterGeneral={false} 
                         toolsFooter={false} 
+                        register={true} 
+                        handleRegister={setOpenModalInsertNonWorkingDays}  
+                        ButtonsElement={() => (
+                            <div style={{ textAlign: 'right'}}>            
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => {
+                                        setOpenModal(false);
+                                    }}
+                                >
+                                    {t(langKeys.back)}
+                                </Button>
+                            </div>
+                          )}            
                     />
                 </div>
             </div>
 
-            <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
-                <Button
-                    variant="contained"
-                    type="button"
-                    color="primary"
-                    startIcon={<ClearIcon color="secondary" />}
-                    style={{ backgroundColor: "#FB5F5F" }}
-                    onClick={() => {
-                        setOpenModal(false);
-                    }}
-                >
-                    {t(langKeys.back)}
-                </Button>
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    type="button"
-                    startIcon={<SaveIcon color="secondary" />}
-                    style={{ backgroundColor: "#55BD84" }}
-                    onClick={() => {
-                        //setWaitSave(true);
-                    }}
-                >
-                    {t(langKeys.save)}
-                </Button>               
-            </div>
+            <InsertNonWorkingDaysDialog
+                openModal={openModalInsertNonWorkingDays}
+                setOpenModal={setOpenModalInsertNonWorkingDays}
+            />
         </DialogZyx>
     );
 };

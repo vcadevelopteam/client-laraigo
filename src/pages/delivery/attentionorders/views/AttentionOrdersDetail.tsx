@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -6,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, Title, TitleDetail } from 'components';
+import { TemplateBreadcrumbs, TitleDetail } from 'components';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -16,6 +15,20 @@ import NewAttentionOrdersTabDetail from './detailTabs/NewAttentionOrdersTabDetai
 import { resetMainAux } from 'store/main/actions';
 
 
+const useStyles = makeStyles((theme) => ({   
+    button: {
+        marginRight: theme.spacing(2),
+        display: 'flex', 
+        justifyContent: 'space-between',
+        gap: '1rem', alignItems: 'center' 
+    },       
+    clientdetailposition: {
+        paddingTop:"2rem", 
+        paddingLeft:"0.9rem"
+    },   
+   
+}));
+
 interface RowSelected {
     row: Dictionary | null;
     edit: boolean;
@@ -24,41 +37,11 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData?: any;
-    fetchDataAux?: any;
+    fetchData?: () => void;
+    fetchDataAux?: () => void;
 }
 
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        // marginTop: theme.spacing(2),
-        // marginRight: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
-        width: '100%'
-    },
-    button: {
-        marginRight: theme.spacing(2),
-    },
-    containerHeader: {
-        padding: theme.spacing(1),
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
-        borderRadius: 4,
-        color: 'rgb(143, 146, 161)'
-    },
-    tabs: {
-        color: '#989898',
-        backgroundColor: 'white',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: 'inherit',
-    },
-}));
 
 const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
     const { t } = useTranslation();
@@ -90,7 +73,7 @@ const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData(fetchDataAux);
+                //fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setViewSelected("main-view");
             } else if (executeRes.error) {
@@ -138,8 +121,8 @@ const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     return (
         <>
-            <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <form onSubmit={onMainSubmit}>
+                <div className={classes.button}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -147,13 +130,13 @@ const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 setViewSelected(view);
                             }}
                         />
-                        <div style={{paddingTop:"2rem", paddingLeft:"0.9rem"}}>            
+                        <div className={classes.clientdetailposition}>            
                             <TitleDetail
                                 title={row?.name || `${t(langKeys.client_detail)}`}
                             />                    
                         </div>                                               
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div className={classes.button}>
                         <Button
                             variant="contained"
                             type="button"
@@ -164,8 +147,7 @@ const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 setViewSelected("main-view")
                             }}
                         >{t(langKeys.back)}</Button>
-                        <Button
-                            className={classes.button}
+                        <Button                            
                             variant="contained"
                             color="primary"
                             type="submit"
@@ -181,6 +163,5 @@ const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         </>
     );
 }
-
 
 export default AttentionOrdersDetail;

@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TitleDetail,TemplateSwitch, AntTab, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -32,11 +32,7 @@ interface DetailProps {
 
 
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        // marginTop: theme.spacing(2),
-        // marginRight: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
+    containerDetail: {       
         width: '100%'
     },
     button: {

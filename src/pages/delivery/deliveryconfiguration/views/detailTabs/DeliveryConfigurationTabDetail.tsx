@@ -6,59 +6,44 @@ import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { TitleDetail, TemplateIcons, IOSSwitch, FieldEdit } from 'components';
 import TableZyx from "components/fields/table-simple";
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup } from '@material-ui/core';
+import { Checkbox, FormControl, FormControlLabel, FormGroup } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
-import AddIcon from '@material-ui/icons/Add';
 import AssociatedVehicleDialog from '../../dialogs/AssociatedVehicleDialog';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { CellProps } from 'react-table';
-
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
-    },
-    containerDescription: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingBottom: '10px',
-    },
-    containerDescriptionTitle: {
-        fontSize: 24
-    },
-    containerDescriptionSubtitle: {
-        fontSize: 14,
-        fontWeight: 500
-    },
-    iconResponse: {
-        cursor: 'pointer',
-        poisition: 'relative',
-        color: '#2E2C34',
-        '&:hover': {
-            backgroundColor: '#EBEAED',
-            borderRadius: 4
-        }
-    },
-    iconSendDisabled: {
-        backgroundColor: "#EBEAED",
-        cursor: 'not-allowed',
-    },
-    button: {
-        marginRight: theme.spacing(2),
-    },
+    },   
     iconHelpText: {
         width: 15,
         height: 15,
         cursor: 'pointer',
+    },    
+    span: {
+        color: 'blue', 
+        textDecoration:'underline solid', 
+        cursor: 'pointer', 
+        display: 'block',
+        paddingBottom:"20px",
     },
-    title: {
-        fontSize: '22px',
-        fontWeight: 'bold',
-        color: theme.palette.text.primary,
+    spandisabled: {
+        textDecoration:'underline solid', 
+        cursor: 'pointer', 
+        display: 'block', 
+        paddingBottom:"20px"
+    }, 
+    subtittles: {
+        fontSize: '1rem', 
+        fontWeight:"bold",
     },
+    thursdayseparation: {
+        pointerEvents: "none", 
+        paddingBottom:"10px",
+    }    
 }));
 
 interface CustomTitleHelperProps {
@@ -70,7 +55,7 @@ const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText
     const classes = useStyles();
 
     return (
-        <span className={classes.title} style={{ fontSize: '1rem', fontWeight:"bold" }}>
+        <span className={classes.subtittles}>
             {title}
             {helperText ? (
                 <Tooltip title={helperText} arrow placement="top" >
@@ -92,11 +77,7 @@ interface ConfigurationTabDetailProps {
     setOpenModalDeliveryOrderPhoto: (flag: boolean) => void;
 }
 
-const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
-    row,
-    setValue,
-    getValues,
-    errors,
+const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({  
     setOpenModalNonWorkingDays,
     setOpenModalDeliveryShifts,
     setOpenModalVehicleType,
@@ -371,13 +352,13 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 </div>
                 <div className='col-3'>     
                     <CustomTitleHelper title={t(langKeys.deliveryshifts)}/>     
-                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalDeliveryShifts(true)}>
+                    <span className={classes.span} onClick={() => setOpenModalDeliveryShifts(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.deliveryshifts)}
                     </span><></>
                 </div>
                 <div className='col-3'>   
                     <CustomTitleHelper title={t(langKeys.vehicletype)}/>                                
-                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalVehicleType(true)}>
+                    <span className={classes.span} onClick={() => setOpenModalVehicleType(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.vehicletype)}
                     </span><></>
                 </div>
@@ -427,7 +408,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                             </div>
 
                             <FormControlLabel
-                                style={{ pointerEvents: "none", paddingBottom:"20px" }}
+                                className={classes.thursdayseparation}                                
                                 control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sunday} onChange={(e) => setSunday(e.target.checked)} name="sunday" />}
                                 label={t(langKeys.thursday)}
                             />
@@ -438,7 +419,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 
                 <div className='col-3'>    
                     <CustomTitleHelper title={t(langKeys.nonWorkingdays)}/>           
-                    <span style={{color: 'blue', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }} onClick={() => setOpenModalNonWorkingDays(true)}>
+                    <span className={classes.span} onClick={() => setOpenModalNonWorkingDays(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.nonworkingdays)}
                     </span>
                 </div>
@@ -455,7 +436,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         </div>
                         <div style={{ width: 10 }} />
                     </div>
-                    <span style={{color: deliveryOrderPhoto ? 'blue' : 'grey', textDecoration:'underline solid', cursor: 'pointer', display: 'block', paddingBottom:"20px" }}onClick={() => {
+                    <span className={classes.spandisabled} style={{color: deliveryOrderPhoto ? 'blue' : 'grey'}} onClick={() => {
                         if(deliveryOrderPhoto) setOpenModalDeliveryOrderPhoto(true)
                     }}>
                         {t(langKeys.edit) + ' ' + t(langKeys.deliveryphotoorder)}
@@ -476,24 +457,12 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
             </div>
 
             <div className='row-zyx'>
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between' }}>
+                <div>
                     <div>
                         <TitleDetail
                             title={t(langKeys.associatedvehicles)}
                         />
-                    </div>                   
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>                       
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<AddIcon color="secondary" />}
-                            onClick={() => {setOpenModalAssociatedVehicleDialog(true)}}
-                            style={{ backgroundColor: "#55BD84" }}>
-                            {t(langKeys.register)}
-                        </Button>
-                    </div>
+                    </div>                  
                     <AssociatedVehicleDialog
                         openModal={openModalAssociatedVehicleDialog}
                         setOpenModal={setOpenModalAssociatedVehicleDialog}
@@ -505,7 +474,8 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         data={[]}
                         download={false}
                         filterGeneral={false}
-                        register={false}
+                        register={true}
+                        handleRegister={setOpenModalAssociatedVehicleDialog}
                     />
                 </div>
             </div>

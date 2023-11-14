@@ -15,6 +15,25 @@ import NewStoreCoverageTabDetail from './detailTabs/NewStoreCoverageTabDetail';
 import { execute, resetMainAux } from 'store/main/actions';
 import { insStore } from 'common/helpers';
 
+const useStyles = makeStyles((theme) => ({
+    button: {
+        marginRight: theme.spacing(2),
+        display: 'flex', 
+        gap: '10px', 
+        alignItems: 'center', 
+    },  
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',        
+    },
+    header: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginLeft: theme.spacing(2),
+    }
+}));
+
 interface RowSelected {
     row: Dictionary;
     edit: boolean;
@@ -26,20 +45,7 @@ interface DetailProps {
     fetchData: () => void;
 }
 
-const useStyles = makeStyles((theme) => ({
-    button: {
-        marginRight: theme.spacing(2),
-    },
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%'
-    },
-    header: {
-        display: 'flex',
-        justifyContent: 'space-between'
-    }
-}));
+
 
 const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const { t } = useTranslation();
@@ -127,7 +133,7 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             title={row?.name || `${t(langKeys.new)} ${t(langKeys.storecoveragearea)}`}
                         />
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div className={classes.button}>
                         <Button
                             variant="contained"
                             type="button"

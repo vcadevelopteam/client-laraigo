@@ -1,38 +1,27 @@
 import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  TemplateBreadcrumbs,
-  TemplateIcons,
-  TitleDetail,
-} from "components";
+import { TemplateBreadcrumbs,  TemplateIcons,  TitleDetail,} from "components";
 import { langKeys } from "lang/keys";
 import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
-import {
-  showSnackbar,
-  showBackdrop,
-  manageConfirmation,
-} from "store/popus/actions";
+import { showSnackbar,  showBackdrop,  manageConfirmation,} from "store/popus/actions";
 import { insStore } from "common/helpers";
 import { useSelector } from "hooks";
 import TableZyx from "components/fields/table-simple";
 import { CellProps } from "react-table";
 import { makeStyles } from "@material-ui/core";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   mainPage: {
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    flex: 1,
   },
-  header: {
-    display: "flex",
-    gap: 8,
-    flexDirection: "row",
-    marginBottom: 12,
+  header: {   
     marginTop: 4,
+    marginLeft: theme.spacing(2),
+
   }
 }));
 interface InventoryMainViewProps {

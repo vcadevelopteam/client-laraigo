@@ -1,12 +1,9 @@
-import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit, FieldSelect, TemplateIcons } from "components";
+import { Button, makeStyles } from "@material-ui/core";
+import { DialogZyx, TemplateIcons } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import AddIcon from "@material-ui/icons/Add";
-
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
@@ -15,9 +12,12 @@ import InsertDeliverySchedulesDialog from "./InsertDeliverySchedulesDialog";
 import { CellProps } from "react-table";
 import { Dictionary } from "@types";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   button: {
-    marginRight: theme.spacing(2),
+    display: "flex", 
+    gap: "10px", 
+    alignItems: "center", 
+    justifyContent: "end"
   },
 }));
 

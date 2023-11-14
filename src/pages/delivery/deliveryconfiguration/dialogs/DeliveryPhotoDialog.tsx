@@ -13,8 +13,20 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    marginRight: theme.spacing(2),
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
+  div1: {
+    display: "flex", 
+    alignItems: "center", 
+    justifyContent: "space-between", 
+  },
+  addbutton: {
+    backgroundColor: "#55BD84", 
+    margin: "1rem 0 ",
+  }, 
 }));
 
 const DeliveryPhotoDialog = ({ openModal, setOpenModal }: { openModal: boolean, setOpenModal: (value: boolean) => void }) => {
@@ -83,7 +95,7 @@ const DeliveryPhotoDialog = ({ openModal, setOpenModal }: { openModal: boolean, 
         {Array.from({ length: photoCount }).map((_, index) => (
 
           <div key={index} className="field-edit-container">            
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div className={classes.div1}>
             <div>
               <Typography>{t(langKeys.photo) + " " + (index + 1)}</Typography>
             </div>
@@ -105,11 +117,11 @@ const DeliveryPhotoDialog = ({ openModal, setOpenModal }: { openModal: boolean, 
         ))}
 
         <Button
+          className={classes.addbutton}          
           variant="contained"
           type="button"
           color="primary"
           startIcon={<AddIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84", margin: "1rem 0 " }}
           onClick={() => {
             setPhotoCount((prevCount) => prevCount + 1);
           }}
@@ -118,14 +130,7 @@ const DeliveryPhotoDialog = ({ openModal, setOpenModal }: { openModal: boolean, 
         </Button>      
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          alignItems: "center",
-          justifyContent: "flex-end",
-        }}
-      >
+      <div className={classes.button}>
         <Button
           variant="contained"
           type="button"

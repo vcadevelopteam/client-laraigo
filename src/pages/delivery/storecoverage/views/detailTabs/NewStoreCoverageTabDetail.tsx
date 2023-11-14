@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
@@ -13,10 +13,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     padding: theme.spacing(2),
     background: "#fff",
-  },
-  button: {
-    marginRight: theme.spacing(2),
-  },
+  }, 
 }));
 
 interface NewOrderTabDetailProps {

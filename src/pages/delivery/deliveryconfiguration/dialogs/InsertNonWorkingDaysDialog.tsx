@@ -8,6 +8,7 @@ import AddIcon from "@material-ui/icons/Add";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { format } from "date-fns";
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -18,7 +19,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const InsertVehicleTypeDialog: React.FC<{
+const InsertNonWorkingDaysDialog: React.FC<{
   openModal: boolean;
   setOpenModal: (dat: boolean) => void;
 }> = ({ openModal, setOpenModal }) => {
@@ -27,6 +28,9 @@ const InsertVehicleTypeDialog: React.FC<{
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const signatureDateDefault = format(new Date(), "yyyy-MM-dd");
+  const [selectedDate, setSelectedDate] = useState(signatureDateDefault);
+
 
   useEffect(() => {
     if (waitSave) {
@@ -46,26 +50,14 @@ const InsertVehicleTypeDialog: React.FC<{
 
   
   return (
-    <DialogZyx open={openModal} title={t(langKeys.vehicletype)} maxWidth="md">
+    <DialogZyx open={openModal} title={t(langKeys.nonWorkingdays)} maxWidth="sm">
       <div className="row-zyx">
-        <FieldEdit
-          label={t(langKeys.vehicle)}
-          className="col-6"
+      <FieldEdit
+            label={t(langKeys.choosenonworkingdate)}
+            type="date"
+            valueDefault={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
         />
-        <FieldEdit
-          label={t(langKeys.insuredamount)}
-          className="col-6"
-        />
-        <FieldEdit
-          label={t(langKeys.averagespeed)}
-          type="number"
-          className="col-6"
-        />
-        <FieldEdit
-          label={t(langKeys.capacity)}
-          type="number"
-          className="col-6"          
-        />    
        
         
       </div>
@@ -99,4 +91,4 @@ const InsertVehicleTypeDialog: React.FC<{
   );
 };
 
-export default InsertVehicleTypeDialog;
+export default InsertNonWorkingDaysDialog;

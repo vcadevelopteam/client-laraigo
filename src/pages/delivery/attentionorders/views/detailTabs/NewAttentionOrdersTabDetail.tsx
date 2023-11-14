@@ -1,13 +1,12 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { TitleDetail, FieldEdit, FieldCheckbox, FieldSelect, IOSSwitch, Title } from 'components';
+import { TitleDetail, FieldEdit } from 'components';
 import { FieldErrors } from "react-hook-form";
-import { FormControlLabel, Typography } from "@material-ui/core";
-import { useSelector } from 'hooks';
+import { Typography } from "@material-ui/core";
 import TableZyx from "components/fields/table-simple";
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -18,12 +17,17 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginRight: theme.spacing(2),
   },
+  listtotalprice: {
+    textAlign:"right", 
+    padding:"2rem 2rem 0 0", 
+    fontSize:"1rem",
+  }
 }));
 
 interface NewAttentionOrdersTabDetailProps {
-  fetchdata: any
+  fetchdata: () => void;
   errors: FieldErrors<any>
-  row: any
+  row: Dictionary,
   getValues: any,
   setValue: any
 }
@@ -31,8 +35,6 @@ interface NewAttentionOrdersTabDetailProps {
 const NewAttentionOrdersTabDetail: React.FC<NewAttentionOrdersTabDetailProps> = ({fetchdata, errors, row, setValue, getValues}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [inStore, setInStore] = useState(false);
-  const multiData = useSelector(state => state.main.multiData);
 
   useEffect(() => {
     fetchdata();
@@ -110,7 +112,7 @@ const NewAttentionOrdersTabDetail: React.FC<NewAttentionOrdersTabDetailProps> = 
           />          
         </div>
         
-        <Typography style={{textAlign:"right", padding:"2rem 2rem 0 0", fontSize:"1rem"}}>
+        <Typography className={classes.listtotalprice}>
               {t(langKeys.totallistprice) + ": S/00.00"}
         </Typography>  
           

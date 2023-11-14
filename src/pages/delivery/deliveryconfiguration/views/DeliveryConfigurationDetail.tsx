@@ -18,6 +18,15 @@ import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
 
+const useStyles = makeStyles(() => ({      
+    corporationNameAndButtons: {
+        display: 'flex', 
+        justifyContent: 'space-between',
+        gap: '10px', 
+        alignItems: 'center', 
+    },
+   
+}));
 
 interface RowSelected {
     row: Dictionary | null;
@@ -29,19 +38,7 @@ interface DetailProps {
 }
 
 
-const useStyles = makeStyles((theme) => ({    
-    button: {
-        marginRight: theme.spacing(2),
-    },     
-    tabs: {
-        color: '#989898',
-        backgroundColor: 'white',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: 'inherit',
-    },
-}));
+
 
 const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit } }) => {
     const { t } = useTranslation();
@@ -115,8 +112,8 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
 
     return (
         <>
-            <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <form onSubmit={onMainSubmit} style={{width: '100%'}}>
+                <div className={classes.corporationNameAndButtons}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -125,7 +122,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             title={row?.name || `${t(langKeys.name)} ${t(langKeys.corporation)}`}
                         />
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div  className={classes.corporationNameAndButtons}>
                         <Button
                             variant="contained"
                             type="button"
@@ -134,7 +131,6 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             style={{ backgroundColor: "#FB5F5F" }}
                         >{t(langKeys.back)}</Button>
                         <Button
-                            className={classes.button}
                             variant="contained"
                             color="primary"
                             type="submit"

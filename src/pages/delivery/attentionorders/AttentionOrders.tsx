@@ -1,12 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { Dictionary, IFetchData } from "@types";
-import { getCollectionPaginated, getMultiCollection, resetAllMain } from "store/main/actions";
+import { getMultiCollection, resetAllMain } from "store/main/actions";
 import AttentionOrdersMainView from "./views/AttentionOrdersMainView";
 import AttentionOrdersDetail from "./views/AttentionOrdersDetail";
-import { getWarehouseSel } from "common/helpers";
 
 interface RowSelected {
   row: Dictionary | null;
@@ -39,20 +37,6 @@ const AttentionOrders: FC = () => {
     daterange,
   }: IFetchData) => {
     setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
-    /*dispatch(
-      getCollectionPaginated(
-        getPaginatedInventory({
-          startdate: daterange?.startDate || null,
-          enddate: daterange?.endDate || null,
-          take: pageSize,
-          skip: pageIndex * pageSize,
-          sorts: sorts,
-          filters: {
-            ...filters,
-          },
-        })
-      )
-    );*/
   };
 
   useEffect(() => {
@@ -64,7 +48,6 @@ const AttentionOrders: FC = () => {
   useEffect(() => {
       dispatch(
         getMultiCollection([
-            getWarehouseSel(0)
         ])
     );
   }, []);  

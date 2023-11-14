@@ -11,9 +11,12 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { format } from "date-fns";
 import { Dictionary } from "@types";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   button: {
-    marginRight: theme.spacing(2),
+    display: "flex", 
+    gap: "10px", 
+    alignItems: "center", 
+    justifyContent: "end" 
   },
 }));
 
@@ -73,7 +76,7 @@ const InsertDeliverySchedulesDialog: React.FC<{
        
 
       </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
+      <div className={classes.button}>
         <Button
           variant="contained"
           type="button"
@@ -91,7 +94,7 @@ const InsertDeliverySchedulesDialog: React.FC<{
           type="button"
           color="primary"
           startIcon={<AddIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84", margin:"1rem 0 " }}         
+          style={{ backgroundColor: "#55BD84"}}         
         >
          {t(langKeys.add)}
         </Button>

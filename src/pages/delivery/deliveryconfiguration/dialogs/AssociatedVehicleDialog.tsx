@@ -9,9 +9,12 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     button: {
-        marginRight: theme.spacing(2),
+        display: "flex", 
+        gap: "10px", 
+        alignItems: "center", 
+        justifyContent: "end" 
     },
 }));
 
@@ -28,13 +31,14 @@ const AssociatedVehicleDialog: React.FC<{
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
+                /*
                 dispatch(
                     showSnackbar({
                         show: true,
                         severity: "success",
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
                     })
-                );
+                );*/
                 dispatch(showBackdrop(false));
                 setOpenModal(false);
             } else if (executeRes.error) {
@@ -100,7 +104,7 @@ const AssociatedVehicleDialog: React.FC<{
                     className="col-6"
                 />
             </div>
-            <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
+            <div className={classes.button} >
                 <Button
                     variant="contained"
                     type="button"
@@ -114,7 +118,6 @@ const AssociatedVehicleDialog: React.FC<{
                     {t(langKeys.back)}
                 </Button>
                 <Button
-                    className={classes.button}
                     variant="contained"
                     color="primary"
                     type="button"

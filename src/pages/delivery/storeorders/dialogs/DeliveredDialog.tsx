@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Typography, makeStyles } from "@material-ui/core";
 import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
@@ -7,12 +6,16 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
 import { useDispatch } from "react-redux";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     button: {
-        marginRight: theme.spacing(2),
+        display: "flex", 
+        gap: "10px", 
+        alignItems: "center", 
+        justifyContent: "end", 
     },
 }));
 
@@ -57,7 +60,7 @@ const DeliveredDialog: React.FC<{
                     className="col-6"
                     type="button"
                     color="primary"
-                    startIcon={<ClearIcon color="secondary" />}
+                    startIcon={<AttachMoneyIcon color="secondary" />}
                     style={{ backgroundColor: "#55BD84" }}
                 >
                     {t(langKeys.chargeorder)}
@@ -65,7 +68,7 @@ const DeliveredDialog: React.FC<{
                 <Typography />
                 {t(langKeys.chargeamount) + "0.00"}
             </div>
-            <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
+            <div className={classes.button}>
                 <Button
                     variant="contained"
                     type="button"
