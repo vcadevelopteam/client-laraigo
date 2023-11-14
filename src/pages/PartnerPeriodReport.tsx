@@ -361,7 +361,14 @@ const PartnerPeriodReport: React.FC = () => {
                                                 <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
                                                     dataAux.reduce(
                                                         (accumulator: number, item: Dictionary) =>
-                                                            accumulator + parseFloat(item.othercost),
+                                                            accumulator + (parseFloat(item.othercost) / item.tax_costneto),
+                                                        0
+                                                    )
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: Dictionary) =>
+                                                            accumulator + (parseFloat(item.othercost) / item.tax_costneto * item.tax),
                                                         0
                                                     )
                                                 )}`}</StyledTableCell>
@@ -370,14 +377,7 @@ const PartnerPeriodReport: React.FC = () => {
                                                         (accumulator: number, item: Dictionary) =>
                                                             accumulator + parseFloat(item.othercost),
                                                         0
-                                                    ) * dataReport.tax
-                                                )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
-                                                    dataAux.reduce(
-                                                        (accumulator: number, item: Dictionary) =>
-                                                            accumulator + parseFloat(item.othercost),
-                                                        0
-                                                    ) * dataReport.tax_costneto
+                                                    )
                                                 )}`}</StyledTableCell>
                                             </StyledTableRow>
                                             <StyledTableRow>
@@ -599,150 +599,132 @@ const PartnerPeriodReport: React.FC = () => {
                                                     {`${dataReport.symbol}${
                                                         dataReport.typecalculation === "Por contacto"
                                                             ? formatNumber(
-                                                                  parseFloat(dataReport.billingplanfee) +
-                                                                      dataAux.reduce(
-                                                                          (accumulator: number, item: Dictionary) =>
-                                                                              accumulator + parseFloat(item.othercost),
-                                                                          0
-                                                                      ) +
-                                                                      Math.max(
-                                                                          0,
-                                                                          dataAux.reduce(
-                                                                              (accumulator: number, item: Dictionary) =>
-                                                                                  accumulator +
-                                                                                  item.contactuniquequantity,
-                                                                              0
-                                                                          ) - parseFloat(dataReport.contactuniquelimit)
-                                                                      ) *
-                                                                          dataReport.puadditionalcontacts
-                                                              )
+                                                                parseFloat(dataReport.billingplanfee) +
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: Dictionary) =>
+                                                                        accumulator + (parseFloat(item.othercost) / item.tax_costneto),
+                                                                    0
+                                                                ) +
+                                                                Math.max(
+                                                                    0,
+                                                                    dataAux.reduce(
+                                                                        (accumulator: number, item: Dictionary) =>
+                                                                            accumulator +
+                                                                            item.contactuniquequantity,
+                                                                        0
+                                                                    ) - parseFloat(dataReport.contactuniquelimit)
+                                                                ) * dataReport.puadditionalcontacts
+                                                            )
                                                             : formatNumber(
-                                                                  parseFloat(dataReport.billingplanfee) +
-                                                                      dataAux.reduce(
-                                                                          (accumulator: number, item: Dictionary) =>
-                                                                              accumulator + parseFloat(item.othercost),
-                                                                          0
-                                                                      ) +
-                                                                      Math.ceil(
-                                                                          Math.max(
-                                                                              0,
-                                                                              dataAux.reduce(
-                                                                                  (accumulator: number, item: Dictionary) =>
-                                                                                      accumulator +
-                                                                                      item.contactuniquequantity,
-                                                                                  0
-                                                                              ) -
-                                                                                  parseFloat(
-                                                                                      dataReport.contactuniquelimit
-                                                                                  )
-                                                                          ) / dataReport.numbercontactsbag
-                                                                      ) *
-                                                                          dataReport.priceperbag
-                                                              )
+                                                                parseFloat(dataReport.billingplanfee) +
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: Dictionary) =>
+                                                                        accumulator + (parseFloat(item.othercost) / item.tax_costneto),
+                                                                    0
+                                                                ) +
+                                                                Math.ceil(
+                                                                    Math.max(
+                                                                        0,
+                                                                        dataAux.reduce(
+                                                                            (accumulator: number, item: Dictionary) =>
+                                                                                accumulator +
+                                                                                item.contactuniquequantity,
+                                                                            0
+                                                                        ) -
+                                                                            parseFloat(
+                                                                                dataReport.contactuniquelimit
+                                                                            )
+                                                                    ) / dataReport.numbercontactsbag
+                                                                ) * dataReport.priceperbag
+                                                            )
                                                     }`}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     {`${dataReport.symbol}${
                                                         dataReport.typecalculation === "Por contacto"
                                                             ? formatNumber(
-                                                                  parseFloat(dataReport.billingplanfee) *
-                                                                      dataReport.tax +
-                                                                      dataAux.reduce(
-                                                                          (accumulator: number, item: Dictionary) =>
-                                                                              accumulator + parseFloat(item.othercost),
-                                                                          0
-                                                                      ) *
-                                                                          dataReport.tax +
-                                                                      Math.max(
-                                                                          0,
-                                                                          dataAux.reduce(
-                                                                              (accumulator: number, item: Dictionary) =>
-                                                                                  accumulator +
-                                                                                  item.contactuniquequantity,
-                                                                              0
-                                                                          ) - parseFloat(dataReport.contactuniquelimit)
-                                                                      ) *
-                                                                          dataReport.puadditionalcontacts *
-                                                                          dataReport.tax
-                                                              )
+                                                                parseFloat(dataReport.billingplanfee) * dataReport.tax +
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: Dictionary) =>
+                                                                        accumulator + (parseFloat(item.othercost) / item.tax_costneto * item.tax),
+                                                                    0
+                                                                ) +
+                                                                Math.max(
+                                                                    0,
+                                                                    dataAux.reduce(
+                                                                        (accumulator: number, item: Dictionary) =>
+                                                                            accumulator +
+                                                                            item.contactuniquequantity,
+                                                                        0
+                                                                    ) - parseFloat(dataReport.contactuniquelimit)
+                                                                ) * dataReport.puadditionalcontacts * dataReport.tax
+                                                            )
                                                             : formatNumber(
-                                                                  parseFloat(dataReport.billingplanfee) *
-                                                                      dataReport.tax +
-                                                                      dataAux.reduce(
-                                                                          (accumulator: number, item: Dictionary) =>
-                                                                              accumulator + parseFloat(item.othercost),
-                                                                          0
-                                                                      ) *
-                                                                          dataReport.tax +
-                                                                      Math.ceil(
-                                                                          Math.max(
-                                                                              0,
-                                                                              dataAux.reduce(
-                                                                                  (accumulator: number, item: Dictionary) =>
-                                                                                      accumulator +
-                                                                                      item.contactuniquequantity,
-                                                                                  0
-                                                                              ) -
-                                                                                  parseFloat(
-                                                                                      dataReport.contactuniquelimit
-                                                                                  )
-                                                                          ) / dataReport.numbercontactsbag
-                                                                      ) *
-                                                                          dataReport.priceperbag *
-                                                                          dataReport.tax
-                                                              )
+                                                                parseFloat(dataReport.billingplanfee) * dataReport.tax +
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: Dictionary) =>
+                                                                        accumulator + (parseFloat(item.othercost) / item.tax_costneto * item.tax),
+                                                                    0
+                                                                ) +
+                                                                Math.ceil(
+                                                                    Math.max(
+                                                                        0,
+                                                                        dataAux.reduce(
+                                                                            (accumulator: number, item: Dictionary) =>
+                                                                                accumulator +
+                                                                                item.contactuniquequantity,
+                                                                            0
+                                                                        ) -
+                                                                            parseFloat(
+                                                                                dataReport.contactuniquelimit
+                                                                            )
+                                                                    ) / dataReport.numbercontactsbag
+                                                                ) * dataReport.priceperbag * dataReport.tax
+                                                            )
                                                     }`}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     {`${dataReport.symbol}${
                                                         dataReport.typecalculation === "Por contacto"
                                                             ? formatNumber(
-                                                                  parseFloat(dataReport.billingplanfee) *
-                                                                      dataReport.tax_costneto +
-                                                                      dataAux.reduce(
-                                                                          (accumulator: number, item: Dictionary) =>
-                                                                              accumulator + parseFloat(item.othercost),
-                                                                          0
-                                                                      ) *
-                                                                          dataReport.tax_costneto +
-                                                                      Math.max(
-                                                                          0,
-                                                                          dataAux.reduce(
-                                                                              (accumulator: number, item: Dictionary) =>
-                                                                                  accumulator +
-                                                                                  item.contactuniquequantity,
-                                                                              0
-                                                                          ) - parseFloat(dataReport.contactuniquelimit)
-                                                                      ) *
-                                                                          dataReport.puadditionalcontacts *
-                                                                          dataReport.tax_costneto
-                                                              )
+                                                                parseFloat(dataReport.billingplanfee) * dataReport.tax_costneto +
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: Dictionary) =>
+                                                                        accumulator + parseFloat(item.othercost),
+                                                                    0
+                                                                ) +
+                                                                Math.max(
+                                                                    0,
+                                                                    dataAux.reduce(
+                                                                        (accumulator: number, item: Dictionary) =>
+                                                                            accumulator +
+                                                                            item.contactuniquequantity,
+                                                                        0
+                                                                    ) - parseFloat(dataReport.contactuniquelimit)
+                                                                ) * dataReport.puadditionalcontacts * dataReport.tax_costneto
+                                                            )
                                                             : formatNumber(
-                                                                  parseFloat(dataReport.billingplanfee) *
-                                                                      dataReport.tax_costneto +
-                                                                      dataAux.reduce(
-                                                                          (accumulator: number, item: Dictionary) =>
-                                                                              accumulator + parseFloat(item.othercost),
-                                                                          0
-                                                                      ) *
-                                                                          dataReport.tax_costneto +
-                                                                      Math.ceil(
-                                                                          Math.max(
-                                                                              0,
-                                                                              dataAux.reduce(
-                                                                                  (accumulator: number, item: Dictionary) =>
-                                                                                      accumulator +
-                                                                                      item.contactuniquequantity,
-                                                                                  0
-                                                                              ) -
-                                                                                  parseFloat(
-                                                                                      dataReport.contactuniquelimit
-                                                                                  )
-                                                                          ) / dataReport.numbercontactsbag
-                                                                      ) *
-                                                                          dataReport.priceperbag *
-                                                                          dataReport.tax_costneto
-                                                              )
+                                                                parseFloat(dataReport.billingplanfee) * dataReport.tax_costneto +
+                                                                dataAux.reduce(
+                                                                    (accumulator: number, item: Dictionary) =>
+                                                                        accumulator + parseFloat(item.othercost),
+                                                                    0
+                                                                ) +
+                                                                Math.ceil(
+                                                                    Math.max(
+                                                                        0,
+                                                                        dataAux.reduce(
+                                                                            (accumulator: number, item: Dictionary) =>
+                                                                                accumulator +
+                                                                                item.contactuniquequantity,
+                                                                            0
+                                                                        ) -
+                                                                            parseFloat(
+                                                                                dataReport.contactuniquelimit
+                                                                            )
+                                                                    ) / dataReport.numbercontactsbag
+                                                                ) * dataReport.priceperbag * dataReport.tax_costneto
+                                                            )
                                                     }`}
                                                 </StyledTableCell>
                                             </StyledTableRow>
