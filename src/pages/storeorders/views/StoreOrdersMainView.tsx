@@ -13,6 +13,7 @@ import TablePaginated from "components/fields/table-paginated";
 import DeliveredDialog from "../dialogs/DeliveredDialog";
 import UndeliveredDialog from "../dialogs/UndeliveredDialog";
 import { CellProps } from "react-table";
+import { ExtrasMenu } from "../components/components";
 
 const selectionKey = "warehouseid";
 
@@ -269,55 +270,12 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
                 cleanSelection={cleanSelected}
                 setCleanSelection={setCleanSelected}
                 ButtonsElement={() => (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading}
-                        startIcon={<ListAltIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84"}}
-                        onClick={(e) => {
-                            setAnchorEl(e.currentTarget);
-                            e.stopPropagation();
-                        }}
-                    >
-                        <Trans i18nKey={langKeys.typing} />
-                    </Button>
+                    <ExtrasMenu
+                        delivered={() => setOpenModalDelivered(true)}
+                        undelivered={() => setOpenModalUndelivered(true)}
+                    />
                 )}
             />
-            <Menu
-                id="menu-appbar"
-                anchorEl={null}
-                getContentAnchorEl={null}
-                anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                }}
-                transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-            >
-                <MenuItem
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setAnchorEl(null);
-                        handleOpenDeliveredModal();
-                    }}
-                >
-                    <Trans i18nKey={langKeys.delivered} />
-                </MenuItem>
-                <MenuItem
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setAnchorEl(null);
-                        handleOpenUndeliveredModal();
-                    }}
-                >
-                    <Trans i18nKey={langKeys.undelivered} />
-                </MenuItem>
-            </Menu>
 
             <DeliveredDialog openModal={openModalDelivered} setOpenModal={setOpenModalDelivered} />
             <UndeliveredDialog openModal={openModalUndelivered} setOpenModal={setOpenModalUndelivered} />
