@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TemplateIcons } from "components";
@@ -14,10 +13,25 @@ import {
 } from "store/popus/actions";
 import { partnerIns } from "common/helpers";
 import { useSelector } from "hooks";
+import { CellProps } from "react-table";
+import { makeStyles } from "@material-ui/core";
 
+const useStyles = makeStyles(() => ({
+  main: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
+  }
+}));
+
+interface RowSelected {
+  row: Dictionary | null;
+  edit: boolean;
+}
 interface PartnersMainViewProps {
   setViewSelected: (view: string) => void;
-  setRowSelected: (rowdata: any) => void;
+  setRowSelected: (rowdata: RowSelected) => void;
   fetchData: () => void;
 }
 
@@ -28,7 +42,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-
+  const classes = useStyles();
   const executeResult = useSelector((state) => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
   const main = useSelector((state) => state.main.mainData);
@@ -141,7 +155,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         isComponent: true,
         minWidth: 60,
         width: "1%",
-        Cell: (props: any) => {
+        Cell: (props: CellProps<Dictionary>) => {
           const row = props.cell.row.original;
           return (
             <TemplateIcons
@@ -162,7 +176,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         width: "auto",
         type: 'boolean',
         sortType: 'basic',
-        Cell: (props: any) => {
+        Cell: (props: CellProps<Dictionary>) => {
             const { enterprisepartner } = props.cell.row.original;
             return enterprisepartner ? t(langKeys.yes) : "No"
         }
@@ -207,14 +221,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
   );
 
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-      }}
-    >
+    <div className={classes.main}>
       <TableZyx
         columns={columns}
         titlemodule={t(langKeys.partners, { count: 2 })}

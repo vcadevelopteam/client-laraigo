@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";

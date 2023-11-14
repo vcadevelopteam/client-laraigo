@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useMemo, useState, ChangeEvent } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { FormControlLabel } from "@material-ui/core";
@@ -17,37 +16,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
-    },
-    containerDescription: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingBottom: '10px',
-    },
-    containerDescriptionTitle: {
-        fontSize: 24
-    },
-    containerDescriptionSubtitle: {
-        fontSize: 14,
-        fontWeight: 500
-    },
-    iconResponse: {
-        cursor: 'pointer',
-        poisition: 'relative',
-        color: '#2E2C34',
-        '&:hover': {
-            // color: theme.palette.primary.main,
-            backgroundColor: '#EBEAED',
-            borderRadius: 4
-        }
-    },
-    iconSendDisabled: {
-        backgroundColor: "#EBEAED",
-        cursor: 'not-allowed',
-    },
-    button: {
-        marginRight: theme.spacing(2),
-    },
+    }
 }));
 
 interface PartnersTabDetailProps {
