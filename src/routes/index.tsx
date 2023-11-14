@@ -49,7 +49,7 @@ const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
 const Corporations = lazy(() => import('pages/Corporations'));
 const DeliveryConfiguration = lazy(() => import('pages/deliveryconfiguration/DeliveryConfiguration'))
-const OrderList = lazy(() => import('pages/orderlist/OrderList'))
+const OrderList = lazy(() => import('pages/deliveryorderslist/OrderList'))
 const AttentionOrders = lazy(() => import('pages/attentionorders/AttentionOrders'))
 const StoreCoverage = lazy(() => import('pages/storecoverage/StoreCoverage'))
 const StoreOrders = lazy(() => import('pages/storeorders/StoreOrders'))
