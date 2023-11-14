@@ -4561,8 +4561,8 @@ export const insInventoryConsumption = ({ inventoryconsumptionid, description, o
 });
 
 
-export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation }: Dictionary) => ({
+export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype }: Dictionary) => ({
     method: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
     key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
-    parameters: { inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation },
+    parameters: { inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype },
 });

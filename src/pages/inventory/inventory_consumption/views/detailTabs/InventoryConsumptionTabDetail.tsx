@@ -93,12 +93,14 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
 
     function setWarehouse(warehouseSelected:any){
         setSelectedWarehouse(warehouseSelected)
+        setDataDetail([]);
         setValue('warehouseid', warehouseSelected.warehouseid)
     }
 
     useEffect(() => {
         if (viewSelected=="detail-view") {
             setSelectedWarehouse(null)
+            setWarehouseProducts(null)
         }       
     }, [viewSelected]);
 
@@ -112,7 +114,6 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
 
     useEffect(() => {
         if(selectedWarehouse && !edit){
-            debugger
             dispatch(getCollection(getWarehouseProducts(selectedWarehouse?.warehouseid||0)))
         }
     }, [selectedWarehouse]);
@@ -128,9 +129,9 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         setDataDetail((p: any) => p.filter((x:any) => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.inventoryconsumptionid !== x.inventoryconsumptionid)));
     }
 
-    const handleEdit = (row: Dictionary) => {
+    const handleEdit = (rowSelected: Dictionary) => {
         setOpenModal(true)
-        setRowSelected({ row, edit: true })
+        setRowSelected({ row: rowSelected, edit: true })
     }
 
     const handleRegister = () => {
@@ -313,10 +314,12 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             <AddInventoryConsumptionLineDialog
                 openModal={openModal}
                 setOpenModal={setOpenModal}
+                updateRecords={setDataDetail}
                 rowSelected={rowSelected}
                 warehouseProducts={warehouseProducts}
                 row={row}
                 edit={edit}
+                editRow={!!row}
             />
             <TableSelectionDialog
                 openModal={openModalWarehouse}

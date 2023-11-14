@@ -102,16 +102,17 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
 
     useEffect(() => {
         if (viewSelected=="detail-view" && edit) {
-            dispatch(
-                getCollection(getInventoryConsumptionDetail(row?.inventoryconsumptionid || 0))
-              );
+            if(edit){
+                dispatch(
+                    getCollection(getInventoryConsumptionDetail(row?.inventoryconsumptionid || 0))
+                );
+            }
         }       
     }, [viewSelected]);
 
     useEffect(() => {
-        if(!mainData?.loading && !mainData?.error){
+        if(!mainData?.loading && !mainData?.error && edit){
             if(mainData?.key === "UFN_INVENTORYCONSUMPTION_DETAILSELECT"){
-                debugger
                 setDataDetail(mainData?.data||[])
             }
         }   
@@ -150,12 +151,10 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            debugger
             dispatch(execute({
                 header: insInventoryConsumption({ ...data }),
                 detail: [
-                    ...dataDetail.filter(x => !!x.operation).map(x => inventoryConsumptionDetailIns({ ...data, ...x, inventoryconsumptionid: x?.inventoryconsumptionid || 0 })),
-                    ...detailToDelete.map(x => inventoryConsumptionDetailIns({ ...x }))
+                    ...dataDetail.filter(x => !!x.operation).map(x => inventoryConsumptionDetailIns({ ...data, ...x, p_tableid: x?.inventoryconsumptionid || 0 }))
                 ]
             }, true));
 

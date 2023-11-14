@@ -18,6 +18,7 @@ import TableSelectionDialog from "./TableSelectionDialog";
 import { Add } from "@material-ui/icons";
 import { execute } from "store/main/actions";
 import { inventoryConsumptionDetailIns } from "common/helpers/requestBodies";
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -31,8 +32,10 @@ const AddInventoryConsumptionLineDialog: React.FC<{
   row: any;
   warehouseProducts: any;
   rowSelected: any;
+  updateRecords: any;
   edit: boolean;
-}> = ({ openModal, setOpenModal, row, rowSelected, edit, warehouseProducts }) => {
+  editRow: boolean;
+}> = ({ openModal, setOpenModal, row, rowSelected,updateRecords,editRow, edit, warehouseProducts }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -44,7 +47,8 @@ const AddInventoryConsumptionLineDialog: React.FC<{
   const [openModalProduct, setOpenModalProduct] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [openModalUser, setOpenModalUser] = useState(false);
-
+  console.log(rowSelected)
+  
   const {
     register,
     handleSubmit: handleMainSubmit,
@@ -54,26 +58,57 @@ const AddInventoryConsumptionLineDialog: React.FC<{
     formState: {errors}
   } = useForm({
     defaultValues: {
-      inventorybalanceid: 0,
-      description: rowSelected?.description || "",
-      originshelf: rowSelected?.originshelf || "",
-      originbatch: rowSelected?.originbatch || "",
-      ticketnumber: rowSelected?.ticketnumber || "",
-      quantity: rowSelected?.quantity || 0,
-      line: rowSelected?.line || 0,
-      unitcost: rowSelected?.unitcost || 0,
-      dispacthto: rowSelected?.dispacthto || "",
+      inventoryconsumptiondetailid: rowSelected?.row?.inventoryconsumptiondetailid||0,
+      inventoryconsumptionid: row?.inventoryconsumptionid||0,
+      line: rowSelected?.row?.line || 0,
+      productid: rowSelected?.row?.productid || 0,
+      description: rowSelected?.row?.description || "",
+      fromshelf: rowSelected?.row?.fromshelf || "",
+      fromlote: rowSelected?.row?.fromlote || "",
+      ticketnumber: rowSelected?.row?.ticketnumber || "",
+      transactiontype: rowSelected?.row?.transactiontype || "",
+      quantity: rowSelected?.row?.quantity || 0,
+      unitcost: rowSelected?.row?.unitcost || 0,
+      dispatchto: rowSelected?.row?.dispatchto || "",
       createby: row?.createby||user?.usr,
-      comment: rowSelected?.comment || "",
-      realdate: rowSelected?.realdate
-        ? new Date(rowSelected.realdate).toISOString().split("T")[0]
+      comment: rowSelected?.row?.comment || "",
+      realdate: rowSelected?.row?.realdate
+        ? new Date(rowSelected.row.realdate).toISOString().split("T")[0]
         : null,
-      status: "ACTIVO",
-      type: "NINGUNO",
-      productcode: rowSelected?.productcode||"",
-      operation: "INSERT",
+      status: rowSelected?.row?.status || "ACTIVO",
+      type: rowSelected?.row?.type ||"NINGUNO",
+      productcode: rowSelected?.row?.productcode||"",
+      operation: editRow? "EDIT":"INSERT",
     },
   });
+
+  useEffect(() => {
+	if (openModal) {
+	  reset({
+		inventoryconsumptiondetailid: rowSelected?.row?.inventoryconsumptiondetailid||0,
+		inventoryconsumptionid: row?.inventoryconsumptionid||0,
+		line: rowSelected?.row?.line || 0,
+		productid: rowSelected?.row?.productid || 0,
+		description: rowSelected?.row?.description || "",
+		fromshelf: rowSelected?.row?.fromshelf || "",
+		fromlote: rowSelected?.row?.fromlote || "",
+		ticketnumber: rowSelected?.row?.ticketnumber || "",
+		transactiontype: rowSelected?.row?.transactiontype || "",
+		quantity: rowSelected?.row?.quantity || 0,
+		unitcost: rowSelected?.row?.unitcost || 0,
+		dispatchto: rowSelected?.row?.dispatchto || "",
+		createby: row?.createby||user?.usr,
+		comment: rowSelected?.row?.comment || "",
+		realdate: rowSelected?.row?.realdate
+		  ? new Date(rowSelected.row.realdate).toISOString().split("T")[0]
+		  : null,
+		status: rowSelected?.row?.status || "ACTIVO",
+		type: rowSelected?.row?.type ||"NINGUNO",
+		productcode: rowSelected?.row?.productcode||"",
+		operation: editRow? "EDIT":"INSERT",
+	  });
+	}
+  }, [openModal]);
 
   useEffect(() => {
     if (waitSave) {
@@ -102,65 +137,70 @@ const AddInventoryConsumptionLineDialog: React.FC<{
   }, [executeRes, waitSave]);
 
   React.useEffect(() => {
-    register("inventorybalanceid");
+    register("inventoryconsumptiondetailid");
+    register("inventoryconsumptionid");
+    register("line");
+    register("productid", { validate: (value) => (value && value>0) || t(langKeys.field_required) });
     register("description");
-    register("originshelf");
-    register("originbatch");
+    register("fromshelf");
+    register("fromlote");
     register("ticketnumber");
     register("quantity", { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-    register("line");
     register("unitcost");
-    register("dispacthto");
+    register("dispatchto");
     register("createby");
     register("comment");
     register("realdate");
     register("status");
     register("type");
+    register("transactiontype", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     register("operation");
     register("productcode", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
   }, [register, openModal]);
 
   function setProduct(selectedRow: any) {
     setSelectedProduct(selectedRow)
+    setValue("productid",selectedRow.productid)
     setValue("productcode",selectedRow.productcode)
-    setValue("description",selectedRow.description)
+    setValue("description",selectedRow.productdescription)
+    setValue("unitcost",parseFloat(selectedRow.priceunit))
+  }
+  function setUser(selectedRow: any) {
+    setSelectedUser(selectedRow)
+    setValue("createby",selectedRow.usr)
   }
 
-  const submitData = handleMainSubmit((data) => {
-    const callback = () => {
-      dispatch(showBackdrop(true));
-      dispatch(execute(inventoryConsumptionDetailIns(data)));
-      setWaitSave(true);
-    };
-    dispatch(
-      manageConfirmation({
-        visible: true,
-        question: t(langKeys.confirmation_save),
-        callback,
-      })
-    );
+    const submitData = handleMainSubmit((data) => {
+      const onlinecost = data.unitcost*data.quantity
+      if (rowSelected?.edit){
+		debugger
+          updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.inventoryconsumptiondetailid === rowSelected?.row?.inventoryconsumptiondetailid || '' ? { ...x, ...data,onlinecost, operation: (x.operation || "UPDATE") } : x));
+      }else
+          updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, onlinecost, status: rowSelected?.row?.status || 'ACTIVO' }]);
+
+      setOpenModal(false);
   });
 
   const columnsSelectionUser = React.useMemo(
     () => [
       {
         Header: t(langKeys.name),
-        accessor: "manufacturercode",
+        accessor: "firstname",
         width: "auto",
       },
       {
         Header: t(langKeys.lastname),
-        accessor: "description",
+        accessor: "lastname",
         width: "auto",
       },
       {
         Header: t(langKeys.user),
-        accessor: "family",
+        accessor: "usr",
         width: "auto",
       },
       {
         Header: t(langKeys.email),
-        accessor: "subfamily",
+        accessor: "email",
         width: "auto",
       },
     ],
@@ -176,7 +216,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
       },
       {
         Header: t(langKeys.description),
-        accessor: "description",
+        accessor: "productdescription",
         width: "auto",
       },
       {
@@ -210,10 +250,14 @@ const AddInventoryConsumptionLineDialog: React.FC<{
             />
           </div>
           <div className="row-zyx col-4">
-            <FieldView
+            <FieldEdit
               label={t(langKeys.originshelf)}
               className="col-6"
-              value={rowSelected?.rack || ""}
+              disabled={edit}
+              valueDefault={getValues("fromshelf")}
+              onChange={(value) => {
+                setValue("fromshelf", value);
+              }}
             />
           </div>
           <FieldEdit
@@ -222,6 +266,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
             disabled={edit}
             type="number"
             valueDefault={getValues("quantity")}
+			error={errors?.quantity?.message}
             onChange={(value) => {
               setValue("quantity", value);
             }}
@@ -229,39 +274,63 @@ const AddInventoryConsumptionLineDialog: React.FC<{
           <FieldEdit
             label={t(langKeys.dispatchto)}
             type="text"
-            valueDefault={getValues("dispacthto")}
+            valueDefault={getValues("dispatchto")}
             className="col-2"
             maxLength={50}
             onChange={(value) => {
-              setValue("dispacthto", value);
+              setValue("dispatchto", value);
             }}
           />
           <div className="row-zyx col-4">
-            <FieldView
+            <FieldSelect
               label={t(langKeys.transactiontype)}
               className="col-6"
-              value={rowSelected?.transactiontype || ""}
+              valueDefault={getValues('transactiontype')}
+              onChange={(e)=>setValue('transactiontype',e?.domainvalue||"")}
+              error={errors?.transactiontype?.message}
+              data={multiData?.data?.[2]?.data||[]}
+              optionDesc="domaindesc"
+              optionValue="domainvalue"
             />
           </div>
           <div className="row-zyx col-4">
-            <FieldView
+            <FieldEdit
               label={t(langKeys.originbatch)}
+              type="text"
+              valueDefault={getValues("fromlote")}
               className="col-6"
-              value={rowSelected?.lote || ""}
+              onChange={(value) => {
+                setValue("fromlote", value);
+              }}
             />
           </div>
-
-          <FieldView
+          <FieldEdit
             label={t(langKeys.unitcost)}
             className="col-2"
-            value={parseFloat(rowSelected?.unitcost) || 0}
+            valueDefault={getValues("unitcost")}
+            disabled
           />
           <FieldEdit
             label={t(langKeys.createdBy)}
             className="col-2"
             valueDefault={getValues("createby")}
             error={(errors?.createby?.message as string) ?? ""}
-            disabled={edit}
+            disabled
+            InputProps={
+              !edit
+                ? {
+                    endAdornment: (
+                      <IconButton
+                        onClick={() => {
+                          setOpenModalUser(true);
+                        }}
+                      >
+                        <Add />
+                      </IconButton>
+                    ),
+                  }
+                : {}
+            }
           />
           <FieldEdit
             label={t(langKeys.product)}
@@ -297,6 +366,9 @@ const AddInventoryConsumptionLineDialog: React.FC<{
               label={t(langKeys.ticketapplication)}
               className="col-4"
               valueDefault={getValues("ticketnumber")}
+              onChange={(value) => {
+                setValue("ticketnumber", value);
+              }}
               maxLength={36}
             />
           </div>
@@ -305,7 +377,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
             className="col-2"
             disabled
             valueDefault={
-              parseFloat(rowSelected?.unitcost || "0") *
+              getValues("unitcost") *
               getValues("quantity")
             }
           />
@@ -313,7 +385,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
             label={t(langKeys.realdate)}
             type="date"
             valueDefault={
-              new Date(rowSelected?.readdate || null)
+              new Date(rowSelected?.row?.realdate || null)
                 .toISOString()
                 .split("T")[0]
             }
@@ -377,6 +449,14 @@ const AddInventoryConsumptionLineDialog: React.FC<{
         data={warehouseProducts}
         columns={columnsSelectionProduct}
         title={t(langKeys.product)}
+      />
+      <TableSelectionDialog
+        openModal={openModalUser}
+        setOpenModal={setOpenModalUser}
+        setRow={setUser}
+        data={multiData?.data?.[3]?.data||[]}
+        columns={columnsSelectionUser}
+        title={t(langKeys.user)}
       />
     </form>
   );

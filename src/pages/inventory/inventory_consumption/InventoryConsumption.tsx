@@ -2,7 +2,7 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getPaginatedInventoryConsumption, getValuesFromDomain, getWarehouses } from "common/helpers";
+import { getPaginatedInventoryConsumption, getUserSel, getValuesFromDomain, getWarehouses } from "common/helpers";
 import { Dictionary, IFetchData } from "@types";
 import { getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
 import InventoryConsumptionMainView from "./views/InventoryConsumptionMainView";
@@ -60,7 +60,8 @@ const InventoryConsumption: FC = () => {
       getMultiCollectionAux([
         getValuesFromDomain("ESTADOCONSUMOINVENTARIO"),
         getWarehouses(),
-        getValuesFromDomain("TIPOTRANSACCIONINV")
+        getValuesFromDomain("TIPOTRANSACCIONINV"),
+        getUserSel(0)
       ])
     );
     return () => {
