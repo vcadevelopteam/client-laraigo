@@ -1,12 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
-import { Dictionary, IFetchData } from "@types";
+import React, { useState, useEffect } from 'react'; 
+import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch, IOSSwitch, TemplateBreadcrumbs, Title } from 'components';
+import { TitleDetail } from 'components';
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
@@ -15,41 +13,19 @@ import { Typography } from '@material-ui/core';
 
 
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    containerDescription: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingBottom: '10px',
-    },
-    containerDescriptionTitle: {
-        fontSize: 24
-    },
-    containerDescriptionSubtitle: {
-        fontSize: 14,
-        fontWeight: 500
-    },
-    iconResponse: {
-        cursor: 'pointer',
-        poisition: 'relative',
-        color: '#2E2C34',
-        '&:hover': {
-            // color: theme.palette.primary.main,
-            backgroundColor: '#EBEAED',
-            borderRadius: 4
-        }
-    },
-    iconSendDisabled: {
-        backgroundColor: "#EBEAED",
-        cursor: 'not-allowed',
-    },
-    button: {
-        marginRight: theme.spacing(2),
-    },
+  containerDetail: {
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(2),
+    background: '#fff',
+  },  
+  totalammount: {
+    textAlign:"right", 
+    padding:"2rem 2rem 0 0", 
+    fontSize:"1rem"
+  },
+ 
+
+  
 }));
 
 interface InventoryTabDetailProps {
@@ -189,7 +165,7 @@ const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({
             toolsFooter={false}            
           />          
         </div>
-        <Typography style={{textAlign:"right", padding:"2rem 2rem 0 0", fontSize:"1rem"}}>
+        <Typography className={classes.totalammount}>
               {t(langKeys.totallistprice) + ": 00.00"}
         </Typography>         
       </div>

@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldSelect } from "components";
+import { Button, makeStyles } from "@material-ui/core";
+import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
@@ -13,6 +11,29 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 const useStyles = makeStyles((theme) => ({
   button: {
     marginRight: theme.spacing(2),
+    backgroundColor: "#55BD84", 
+    padding:"0 2rem",    
+    '&:hover': {
+      backgroundColor: '#55BD84',
+      borderRadius: 4
+    }   
+  },
+  div1: {
+    display: "flex", 
+    gap: "10px", 
+    alignItems: "center", 
+    justifyContent: "end"
+  },
+  div2: {
+    display:"flex", 
+    justifyContent: "center", 
+    margin:"0rem 1rem"
+  },
+  div3: {
+
+  },
+  div4: {
+
   },
 }));
 
@@ -44,7 +65,7 @@ const InvoiceTicketDialog: React.FC<{
   return (
     <DialogZyx open={openModal} title="" maxWidth="sm">
           
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
+      <div className={classes.div1}>
         <Button
           variant="contained"
           type="button"
@@ -60,13 +81,12 @@ const InvoiceTicketDialog: React.FC<{
       </div>
       <img style={{textAlign: "center"}} src="https://www.invoiceowl.com/wp-content/uploads/2023/02/freight-invoice-banner-template.svg" alt="Invoice"></img>
 
-      <div style={{display:"flex", justifyContent: "center", margin:"0rem 1rem"}}>
+      <div className={classes.div2}>
         <Button
           className={classes.button}
           variant="contained"
           color="primary"
           type="button"
-          style={{ backgroundColor: "#55BD84", padding:"0 2rem" }}        
         >
         {t(langKeys.download)}
         </Button> 
@@ -75,7 +95,6 @@ const InvoiceTicketDialog: React.FC<{
           variant="contained"
           color="primary"
           type="button"
-          style={{ backgroundColor: "#55BD84", padding:"0 2rem" }}        
         >
         {t(langKeys.print)}
         </Button> 

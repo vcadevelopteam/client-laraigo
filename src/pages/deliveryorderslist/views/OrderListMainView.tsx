@@ -25,40 +25,23 @@ import { CellProps } from 'react-table';
 
 
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    containerDescription: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingBottom: '10px',
-    },
-    containerDescriptionTitle: {
-        fontSize: 24
-    },
-    containerDescriptionSubtitle: {
-        fontSize: 14,
-        fontWeight: 500
-    },
-    iconResponse: {
-        cursor: 'pointer',
-        poisition: 'relative',
-        color: '#2E2C34',
-        '&:hover': {            
-            backgroundColor: '#EBEAED',
-            borderRadius: 4
-        }
-    },
-    iconSendDisabled: {
-        backgroundColor: "#EBEAED",
-        cursor: 'not-allowed',
-    },
-    button: {
-        marginRight: theme.spacing(2),
-    },
+  button: {
+    backgroundColor: "#55BD84", 
+    marginLeft: theme.spacing(1.2),
+    '&:hover': {
+      backgroundColor: '#55BD84',
+    } 
+  },
+  container: {     
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,  
+  },
+  titleandcrumbs: {    
+    marginBottom: 12,
+    marginTop: 4,  
+  },
 }));
 
 interface InventoryTabDetailProps {
@@ -89,6 +72,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const [openModalReschedulingUndelivered, setOpenModalReschedulingUndelivered] = useState(false);
     const [openModalElectronicTicketAndInvoice, setOpenModalElectronicTicketAndInvoice] = useState(false);
     const [openModalPrint, setOpenModalPrint] = useState(false);
+    const classes = useStyles();
 
     
     const dispatch = useDispatch();
@@ -318,25 +302,20 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
       setAnchorEl(null);
     }
 
+    function moveDetailView() {
+      setViewSelected("detail-view");
+      setRowSelected({ row: null, edit: false });
+    }
+
+    function moveDetailView2() {
+      setViewSelected("detail-view2");
+      setRowSelected({ row: null, edit: false });
+    }
+
   
     return (
-        <div 
-            style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                flex: 1,
-            }}
-        >
-            <div
-                style={{
-                    display: "flex",
-                    gap: 8,
-                    flexDirection: "row",
-                    marginBottom: 12,
-                    marginTop: 4,
-                  }}
-            >
+        <div className={classes.container}>
+            <div className={classes.titleandcrumbs}>
                 <div style={{ flexGrow: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={arrayBread}
@@ -364,7 +343,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
               filterGeneral={true}      
               useSelection={true}
               register={true}
-              handleRegister={setOpenModalCanceled}
+              handleRegister={moveDetailView}
               ButtonsElement={() => (
                 <div style={{ textAlign: 'right'}}>            
                     <Button      
@@ -380,8 +359,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         variant="contained"
                         color="primary"
                         disabled={mainPaginated.loading}
-                        startIcon={<ListAltIcon color="secondary" />}             
-                        style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}       
+                        startIcon={<ListAltIcon color="secondary" />}    
+                        className={classes.button}       
                         onClick={(e) => {
                             setAnchorEl(e.currentTarget);
                             e.stopPropagation();
@@ -394,7 +373,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         color="primary"
                         disabled={mainPaginated.loading}
                         startIcon={<PrintIcon color="secondary" />}             
-                        style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}                            
+                        className={classes.button}       
                         onClick={() => {setOpenModalPrint(true)}}
                     >
                         <Trans i18nKey={langKeys.print} />
@@ -404,7 +383,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         color="primary"
                         disabled={mainPaginated.loading}
                         startIcon={<ReceiptIcon color="secondary" />}             
-                        style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}       
+                        className={classes.button}       
                         onClick={() => {setOpenModalElectronicTicketAndInvoice(true)}}
                     >
                         <Trans i18nKey={langKeys.electronic_ticket_and_invoice} />
@@ -414,11 +393,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         color="primary"
                         disabled={mainPaginated.loading}
                         startIcon={<ReceiptIcon color="secondary" />}             
-                        style={{ backgroundColor: "#55BD84", marginLeft: "8px"}}       
-                        onClick={() => {
-                          setViewSelected("detail-view2");
-                          setRowSelected({ row: null, edit: false });
-                        }}
+                        className={classes.button}       
+                        onClick={() => moveDetailView2()}
                     >
                         <Trans i18nKey={langKeys.test} />
                     </Button>

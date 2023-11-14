@@ -1,4 +1,4 @@
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, Typography, makeStyles } from "@material-ui/core";
+import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, makeStyles } from "@material-ui/core";
 import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
@@ -10,10 +10,14 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 import DoneIcon from "@material-ui/icons/Done";
 
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({  
   button: {
-    marginRight: theme.spacing(2),
-  },
+    display: "flex", 
+    gap: "1rem", 
+    alignItems: "center", 
+    justifyContent: "end"
+  }, 
+
 }));
 
 const InvoiceShareDialog: React.FC<{
@@ -65,9 +69,8 @@ const InvoiceShareDialog: React.FC<{
           </FormControl>
       </div>    
 
-      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", justifyContent: "end" }}>
+      <div className={classes.button}>
         <Button
-          className={classes.button}
           variant="contained"
           type="button"
           color="primary"
@@ -80,7 +83,6 @@ const InvoiceShareDialog: React.FC<{
           {t(langKeys.back)}
         </Button>
         <Button
-          className={classes.button}
           variant="contained"
           color="primary"
           type="button"

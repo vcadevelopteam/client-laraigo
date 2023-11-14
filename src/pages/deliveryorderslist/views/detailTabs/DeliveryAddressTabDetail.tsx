@@ -1,12 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
-import { Dictionary, IFetchData } from "@types";
+import React, { useState, useEffect } from 'react'; 
+import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldCheckbox, TitleDetail, TemplateIcons, TemplateSwitch, IOSSwitch, TemplateBreadcrumbs, Title } from 'components';
+import { FieldEdit, TitleDetail } from 'components';
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
@@ -18,37 +16,29 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
+    }, 
+    subtittle: {
+      textAlign:"left", 
+      padding:"2rem 2rem 2rem 0", 
+      fontSize:"1.3rem"
     },
-    containerDescription: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingBottom: '10px',
+    
+    image: {
+     display:"flex", 
+     textAlign:"center", 
+     width:"100%", 
+     height:"25rem", 
+     objectFit:"cover" 
+
     },
-    containerDescriptionTitle: {
-        fontSize: 24
+    imagetext: {
+      textAlign:"center", 
+      padding: '1rem 0rem 3rem 0', 
+      fontSize: '1rem', 
+      color: 'gray'
     },
-    containerDescriptionSubtitle: {
-        fontSize: 14,
-        fontWeight: 500
-    },
-    iconResponse: {
-        cursor: 'pointer',
-        poisition: 'relative',
-        color: '#2E2C34',
-        '&:hover': {
-            // color: theme.palette.primary.main,
-            backgroundColor: '#EBEAED',
-            borderRadius: 4
-        }
-    },
-    iconSendDisabled: {
-        backgroundColor: "#EBEAED",
-        cursor: 'not-allowed',
-    },
-    button: {
-        marginRight: theme.spacing(2),
-    },
+    
+    
 }));
 
 interface InventoryTabDetailProps {
@@ -151,7 +141,7 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({
           <TitleDetail title={t(langKeys.deliveryaddress)} />
         </div>
 
-         <Typography style={{textAlign:"left", padding:"2rem 2rem 2rem 0", fontSize:"1.3rem"}}>
+         <Typography className={classes.subtittle}>
             {t(langKeys.geolocation)}
         </Typography> 
 
@@ -169,16 +159,13 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({
          
         </div>
 
-        <div className='row-zyx' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div>
-            <img 
-              style={{display:"flex", textAlign:"center", width:"100%", height:"25rem", objectFit:"cover"}} 
-              src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/191:100/w_1280,c_limit/GoogleMapTA.jpg" 
-              alt="Invoice">
-            </img>
-          </div>
-          
-          <Typography style={{ textAlign:"center", padding: '1rem 0rem 3rem 0', fontSize: '1rem', color: 'gray' }}>
+        <div className='row-zyx' >           
+          <img 
+            className={classes.image}
+            src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/191:100/w_1280,c_limit/GoogleMapTA.jpg" 
+            alt="Invoice">
+          </img>
+          <Typography className={classes.imagetext}>
             {t(langKeys.address_found_in_geolocator)}
           </Typography>
         </div>      

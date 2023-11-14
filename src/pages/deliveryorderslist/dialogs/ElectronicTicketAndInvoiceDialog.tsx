@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Typography, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldSelect } from "components";
+import { Button, makeStyles } from "@material-ui/core";
+import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { Trans, useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
 import ShareIcon from "@material-ui/icons/Share";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -18,8 +16,16 @@ import InvoiceShareDialog from "./InvoiceShareDialog";
 
 
 const useStyles = makeStyles((theme) => ({
-  button: {
-    marginRight: theme.spacing(2),
+  buttonspace: {
+    justifyContent: "center", 
+    display:"flex", 
+    padding:"0.5rem 0 1rem 0", 
+    gap:"2rem"
+  }, 
+  buttonback: {
+    display: "flex", 
+    alignItems: "center", 
+    justifyContent: "end" 
   },
 }));
 
@@ -56,10 +62,9 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
   return (
     <DialogZyx open={openModal} title={t(langKeys.electronic_ticket_and_invoice)} maxWidth="sm">
       
-      <div style={{justifyContent: "center", display:"flex", padding:"0.5rem 0 1rem 0", gap:"2rem"}}>
+      <div className={classes.buttonspace}>
         <Button                        
           variant="contained"
-          className={classes.button}
           color="primary"
           startIcon={<ReceiptIcon color="secondary" />}
           style={{ backgroundColor: "#55BD84"}}
@@ -71,7 +76,6 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
         <Button                        
           variant="contained"
           color="primary"
-          className={classes.button}
           startIcon={<ReceiptIcon color="secondary" />}
           style={{ backgroundColor: "#55BD84"}}
           onClick={() => {setOpenModalInvoiceTicket(true)}}
@@ -81,11 +85,10 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
         </Button>    
       </div>
 
-      <div style={{justifyContent: "center", display:"flex", padding:"0.5rem 0rem 1rem 0rem", gap:"2rem"}}>
+      <div className={classes.buttonspace}>
         <Button                        
           variant="contained"
           color="primary"
-          className={classes.button}
           startIcon={<ShareIcon color="secondary" />}
           style={{ backgroundColor: "#55BD84"}}
           onClick={() => {setOpenModalInvoiceShare(true)}}
@@ -95,7 +98,7 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
         </Button>  
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "end" }}>
+      <div className={classes.buttonback}>
         <Button
           variant="contained"
           type="button"

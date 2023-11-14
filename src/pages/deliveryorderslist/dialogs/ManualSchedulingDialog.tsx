@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Typography, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
@@ -15,7 +14,13 @@ import TableZyx from "components/fields/table-simple";
 const useStyles = makeStyles((theme) => ({
   button: {
     marginRight: theme.spacing(2),
+    display: "flex", 
+    gap: "10px", 
+    alignItems: "center", 
+    justifyContent: "end"
   },
+  
+ 
 }));
 
 const ManualSchedulingDialog: React.FC<{
@@ -91,7 +96,7 @@ const columns = React.useMemo(
 
 
       </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
+      <div className={classes.button}>
         <Button
           variant="contained"
           type="button"
@@ -105,7 +110,6 @@ const columns = React.useMemo(
           {t(langKeys.back)}
         </Button>
         <Button
-          className={classes.button}
           variant="contained"
           color="primary"
           type="button"

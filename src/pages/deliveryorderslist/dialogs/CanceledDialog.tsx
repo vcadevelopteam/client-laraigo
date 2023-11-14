@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Typography, makeStyles } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
@@ -13,7 +12,11 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 const useStyles = makeStyles((theme) => ({
   button: {
     marginRight: theme.spacing(2),
-  },
+    display: "flex", 
+    gap: "10px", 
+    alignItems: "center", 
+    justifyContent: "end" 
+  } 
 }));
 
 const CanceledDialog: React.FC<{
@@ -53,7 +56,7 @@ const CanceledDialog: React.FC<{
         />
        
       </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "end" }}>
+      <div className={classes.button}>
         <Button
           variant="contained"
           type="button"

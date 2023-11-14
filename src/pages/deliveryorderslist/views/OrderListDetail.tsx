@@ -32,30 +32,29 @@ interface DetailProps {
 
 
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {       
-        width: '100%'
-    },
+   
     button: {
-        marginRight: theme.spacing(2),
-    },
-    containerHeader: {
-        padding: theme.spacing(1),
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
-        borderRadius: 4,
-        color: 'rgb(143, 146, 161)'
-    },
+        display: 'flex', 
+        gap: '10px', 
+        alignItems: 'center'
+    },   
     tabs: {
         color: '#989898',
-        backgroundColor: 'white',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: 'inherit',
+        backgroundColor: 'white',     
     },
+    titleandbuttons: {
+        display: 'flex', 
+        justifyContent: 'space-between' 
+    },
+    formcontainer: {
+        display: 'flex', 
+        flexDirection: 'column', 
+        width: '100%'
+    },   
+    
+
+
+
 }));
 
 const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
@@ -129,8 +128,8 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
 
     return (
         <>
-            <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <form onSubmit={onMainSubmit} className= {classes.formcontainer}>
+            <div className={classes.titleandbuttons}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -144,7 +143,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             />                    
                         </div>                                               
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div className={classes.button}>
                         <Button
                             variant="contained"
                             type="button"
@@ -177,21 +176,21 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                 >
                     <AntTab
                         label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <div>
                                 <Trans i18nKey={langKeys.clientdata} />
                             </div>
                         )}
                     />
                     <AntTab
                         label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <div> 
                                 <Trans i18nKey={langKeys.orderlist}/>
                             </div>
                         )}
                     />
                     <AntTab
                         label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <div> 
                                 <Trans i18nKey={langKeys.deliveryaddress}/>
                             </div>
                         )}
