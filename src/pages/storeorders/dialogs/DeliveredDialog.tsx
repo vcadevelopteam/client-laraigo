@@ -32,25 +32,16 @@ const DeliveredDialog: React.FC<{
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
-                    })
-                );
                 dispatch(showBackdrop(false));
                 setOpenModal(false);
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code ?? "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave]);
+    }, [executeRes, waitSave])
 
     return (
         <DialogZyx open={openModal} title={t(langKeys.delivered)} maxWidth="sm">

@@ -31,7 +31,6 @@ const UndeliveredDialog: React.FC<{
   useEffect(() => {
     if (waitSave) {
         if (!executeRes.loading && !executeRes.error) {
-            dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
             dispatch(showBackdrop(false));
             setOpenModal(false);
         } else if (executeRes.error) {

@@ -58,11 +58,11 @@ const StoreCoverage: FC = () => {
     );
   } else
     return (
-      <StoreCoverageDetail
-        data={rowSelected}
-        setViewSelected={redirectFunc}
-        fetchData={fetchData}
-      />
+        <StoreCoverageDetail
+            data={{ row: rowSelected.row ?? {}, edit: rowSelected.edit }}
+            setViewSelected={redirectFunc}
+            fetchData={fetchData}
+        />
     );
 };
 

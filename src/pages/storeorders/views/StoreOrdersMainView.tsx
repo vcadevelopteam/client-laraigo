@@ -1,14 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
 import { langKeys } from "lang/keys";
 import { makeStyles } from '@material-ui/core/styles';
-import ListAltIcon from "@material-ui/icons/ListAlt";
 import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { useSelector } from "hooks";
-import { Button, Menu, MenuItem } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
 import DeliveredDialog from "../dialogs/DeliveredDialog";
 import UndeliveredDialog from "../dialogs/UndeliveredDialog";
@@ -21,14 +19,13 @@ const useStyles = makeStyles(() => ({
     generalContainer: {       
         width: "100%",      
         flexDirection: "column",      
-    },  
-   
+    },     
 }));
 
 interface InventoryMainViewProps {
-    setRowSelected: (rowdata: any) => void;
-    fetchData: any;
+    fetchData: () => void;
     fetchDataAux: any;
+    setRowSelected: (rowdata: Dictionary) => void;
 }
 
 const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetchData, fetchDataAux }) => {
@@ -48,12 +45,12 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
     const importRes = useSelector((state) => state.main.execute);
     const [openModalDelivered, setOpenModalDelivered] = useState(false);
     const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
         { id: "detail-view", name: t(langKeys.storeorders) },
     ];
+
 
     const handleEdit = (row: Dictionary) => {
         setRowSelected({ row, edit: true });
@@ -71,7 +68,6 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
                 );
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
-                fetchData(fetchDataAux);
             } else if (importRes.error) {
                 dispatch(
                     showSnackbar({
@@ -136,7 +132,6 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
                         message: t(langKeys.successful_delete),
                     })
                 );
-                fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
@@ -153,17 +148,20 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
     const columns = React.useMemo(
         () => [
             {
-                accessor: "inventoryid",
+                accessor: 'orderlistid',
                 NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
-                width: "1%",
-                Cell: (props: CellProps<Dictionary>) => {                    
+                width: '1%',
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
-                    );
-                },
+                        <TemplateIcons
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
             },
             {
                 Header: t(langKeys.ordernumber),
@@ -234,18 +232,7 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
         []
     );
 
-    function handleOpenDeliveredModal() {
-        setOpenModalDelivered(true);
-    }
-
-    function handleOpenUndeliveredModal() {
-        setOpenModalUndelivered(true);
-    }
-
-    const handleClose = (e: any) => {
-        e.stopPropagation();
-        setAnchorEl(null);
-    };
+   
 
     return (
         <div className={classes.generalContainer}>
@@ -261,7 +248,6 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
                 totalrow={totalrow}
                 loading={mainPaginated.loading}
                 pageCount={pageCount}
-                fetchData={fetchData}
                 useSelection={true}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
@@ -275,10 +261,16 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ setRowSelected, fetch
                         undelivered={() => setOpenModalUndelivered(true)}
                     />
                 )}
+                
             />
-
-            <DeliveredDialog openModal={openModalDelivered} setOpenModal={setOpenModalDelivered} />
-            <UndeliveredDialog openModal={openModalUndelivered} setOpenModal={setOpenModalUndelivered} />
+            <DeliveredDialog 
+                openModal={openModalDelivered} 
+                setOpenModal={setOpenModalDelivered} 
+            />
+            <UndeliveredDialog 
+                openModal={openModalUndelivered} 
+                setOpenModal={setOpenModalUndelivered} 
+            />
         </div>
     );
 };
