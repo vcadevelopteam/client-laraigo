@@ -26,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
 
 interface NewAttentionOrdersTabDetailProps {
   fetchdata: () => void;
-  errors: FieldErrors<any>
-  row: Dictionary,
+  errors: FieldErrors
+  row: Dictionary | null,
   getValues: any,
   setValue: any
 }

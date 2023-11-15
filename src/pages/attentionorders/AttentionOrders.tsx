@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { Dictionary, IFetchData } from "@types";
+import { Dictionary } from "@types";
 import { getMultiCollection, resetAllMain } from "store/main/actions";
 import AttentionOrdersMainView from "./views/AttentionOrdersMainView";
 import AttentionOrdersDetail from "./views/AttentionOrdersDetail";
@@ -15,13 +15,6 @@ const AttentionOrders: FC = () => {
   const dispatch = useDispatch();
   const mainResult = useSelector((state) => state.main);
   const [viewSelected, setViewSelected] = useState("main-view");
-  const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
-    pageSize: 0,
-    pageIndex: 0,
-    filters: {},
-    sorts: {},
-    daterange: null,
-  });
   const [rowSelected, setRowSelected] = useState<RowSelected>({
     row: null,
     edit: false,
@@ -29,15 +22,14 @@ const AttentionOrders: FC = () => {
   function redirectFunc(view: string) {
     setViewSelected(view);
   }
-  const fetchData = ({
-    pageSize,
-    pageIndex,
-    filters,
-    sorts,
-    daterange,
-  }: IFetchData) => {
-    setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
-  };
+  
+  const fetchData = () => {    
+    /*dispatch(
+      getCollection(
+        selStore(0)
+      )
+    );*/
+  }; 
 
   useEffect(() => {
     return () => {
@@ -61,7 +53,6 @@ const AttentionOrders: FC = () => {
         setViewSelected={setViewSelected}
         setRowSelected={setRowSelected}
         fetchData={fetchData}
-        fetchDataAux={fetchDataAux}
       />
     );
   } else
@@ -69,8 +60,6 @@ const AttentionOrders: FC = () => {
       <AttentionOrdersDetail
         data={rowSelected}
         setViewSelected={redirectFunc}
-        fetchData={fetchData}
-        fetchDataAux={fetchDataAux}
       />
     );
 };

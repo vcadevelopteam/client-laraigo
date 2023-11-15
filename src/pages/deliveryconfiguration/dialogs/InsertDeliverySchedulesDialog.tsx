@@ -12,95 +12,94 @@ import { format } from "date-fns";
 import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
-  button: {
-    display: "flex", 
-    gap: "10px", 
-    alignItems: "center", 
-    justifyContent: "end" 
-  },
+    button: {
+        display: "flex",
+        gap: "10px",
+        alignItems: "center",
+        justifyContent: "end",
+    },
 }));
 
 const InsertDeliverySchedulesDialog: React.FC<{
-  openModal: boolean;
-  setOpenModal: (dat: boolean) => void;
-  row: Dictionary
+    openModal: boolean;
+    setOpenModal: (dat: boolean) => void;
+    row: Dictionary;
 }> = ({ openModal, setOpenModal, row }) => {
-  const { t } = useTranslation();
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const [waitSave, setWaitSave] = useState(false);
-  const executeRes = useSelector(state => state.main.execute);
+    const { t } = useTranslation();
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector((state) => state.main.execute);
 
-  const signatureDateDefault = format(new Date(), 'yyyy-MM-dd');
+    const signatureDateDefault = format(new Date(), "yyyy-MM-dd");
 
-  useEffect(() => {
-    if (waitSave) {
-        if (!executeRes.loading && !executeRes.error) {
-            dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-            dispatch(showBackdrop(false));
-            setOpenModal(false);
-        } else if (executeRes.error) {
-            const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-            setWaitSave(false);
-            dispatch(showBackdrop(false));
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "success",
+                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setOpenModal(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code ?? "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
         }
-    }
-}, [executeRes, waitSave])
+    }, [executeRes, waitSave]);
 
-
-  
-  return (
-    <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="sm">
-      <div className="row-zyx">
-        <FieldSelect
-          label={t(langKeys.shifts)}
-          className="col-4"
-          data={[]}
-          optionValue="shifts"
-          optionDesc="name"
-        />
-        <div className="col-2"></div>
-        <FieldEdit
-          label={t(langKeys.from)}
-          type="time"
-          valueDefault={signatureDateDefault}
-          className="col-3"
-          />
-        <FieldEdit
-          label={t(langKeys.until)}
-          type="time"
-          valueDefault={signatureDateDefault}
-          className="col-3"
-        />
-       
-
-      </div>
-      <div className={classes.button}>
-        <Button
-          variant="contained"
-          type="button"
-          color="primary"
-          startIcon={<ClearIcon color="secondary" />}
-          style={{ backgroundColor: "#FB5F5F" }}
-          onClick={() => {
-            setOpenModal(false);
-          }}
-        >
-          {t(langKeys.back)}
-        </Button>
-        <Button
-          variant="contained"
-          type="button"
-          color="primary"
-          startIcon={<AddIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84"}}         
-        >
-         {t(langKeys.add)}
-        </Button>
-      </div>
-    </DialogZyx>
-  );
+    return (
+        <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="sm">
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.shifts)}
+                    className="col-4"
+                    data={[]}
+                    optionValue="shifts"
+                    optionDesc="name"
+                />
+                <div className="col-2"></div>
+                <FieldEdit label={t(langKeys.from)} type="time" valueDefault={signatureDateDefault} className="col-3" />
+                <FieldEdit
+                    label={t(langKeys.until)}
+                    type="time"
+                    valueDefault={signatureDateDefault}
+                    className="col-3"
+                />
+            </div>
+            <div className={classes.button}>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    onClick={() => {
+                        setOpenModal(false);
+                    }}
+                >
+                    {t(langKeys.back)}
+                </Button>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<AddIcon color="secondary" />}
+                    style={{ backgroundColor: "#55BD84" }}
+                >
+                    {t(langKeys.add)}
+                </Button>
+            </div>
+        </DialogZyx>
+    );
 };
 
 export default InsertDeliverySchedulesDialog;

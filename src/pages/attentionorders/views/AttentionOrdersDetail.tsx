@@ -37,13 +37,11 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData?: () => void;
-    fetchDataAux?: () => void;
 }
 
 
 
-const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, fetchDataAux }) => {
+const AttentionOrdersDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);

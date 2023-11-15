@@ -36,15 +36,17 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 12,
     marginTop: 4,  
   }
-
-
 }));
+
+interface RowSelected {
+  row: Dictionary | null;
+  edit: boolean;
+}
 
 interface InventoryMainViewProps {
   setViewSelected: (view: string) => void;
-  setRowSelected: (rowdata: any) => void;
+  setRowSelected: (rowdata: RowSelected) => void;
   fetchData: () => void;
-  fetchDataAux: () => void;
 }
 
 const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({

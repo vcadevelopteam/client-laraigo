@@ -37,9 +37,6 @@ interface DetailProps {
     data: RowSelected;
 }
 
-
-
-
 const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit } }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -153,7 +150,6 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
                 />
 
-              
                 <VehicleTypeDialog
                     openModal={openModalVehicleType}
                     setOpenModal={setOpenModalVehicleType}

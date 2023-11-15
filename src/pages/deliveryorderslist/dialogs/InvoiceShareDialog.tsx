@@ -9,95 +9,117 @@ import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import DoneIcon from "@material-ui/icons/Done";
 
-
-const useStyles = makeStyles(() => ({  
-  button: {
-    display: "flex", 
-    gap: "1rem", 
-    alignItems: "center", 
-    justifyContent: "end"
-  }, 
-
+const useStyles = makeStyles(() => ({
+    button: {
+        display: "flex",
+        gap: "1rem",
+        alignItems: "center",
+        justifyContent: "end",
+    },
 }));
 
 const InvoiceShareDialog: React.FC<{
-  openModal: boolean;
-  setOpenModal: (dat: boolean) => void;
+    openModal: boolean;
+    setOpenModal: (dat: boolean) => void;
 }> = ({ openModal, setOpenModal }) => {
-  const { t } = useTranslation();
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const [waitSave, setWaitSave] = useState(false);
-  const executeRes = useSelector(state => state.main.execute);
+    const { t } = useTranslation();
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector((state) => state.main.execute);
 
-  const [smsState, setSmsState] = useState(false);
-  const [emailState, setEmailState] = useState(false);
+    const [smsState, setSmsState] = useState(false);
+    const [emailState, setEmailState] = useState(false);
 
-
-  useEffect(() => {
-    if (waitSave) {
-        if (!executeRes.loading && !executeRes.error) {
-            dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-            dispatch(showBackdrop(false));
-            setOpenModal(false);
-        } else if (executeRes.error) {
-            const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-            setWaitSave(false);
-            dispatch(showBackdrop(false));
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "success",
+                        message: t(langKeys.successful_edit),
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setOpenModal(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code ?? "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
         }
-    }
-}, [executeRes, waitSave])
-  
-  return (
-    <DialogZyx open={openModal} title={t(langKeys.postcreator_publish_facebookmockup_share) + " " + t(langKeys.electronic_ticket_and_invoice)} maxWidth="sm">
-      
-      <div className="row-zyx" style={{justifyContent: "center"}}>      
-         <FormControl component="fieldset" >              
-              <FormGroup>
-                  <FormControlLabel
-                      style={{ pointerEvents: "none" }}
-                      control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={smsState} onChange={(e) => setSmsState(e.target.checked)} name="sun" />}
-                      label={t(langKeys.sms)}
-                  />
-                  <FormControlLabel
-                      style={{ pointerEvents: "none" }}
-                      control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={emailState} onChange={(e) => setEmailState(e.target.checked)} name="mon" />}
-                      label={t(langKeys.email)}
-                  />
-              </FormGroup>
-          </FormControl>
-      </div>    
+    }, [executeRes, waitSave]);
 
-      <div className={classes.button}>
-        <Button
-          variant="contained"
-          type="button"
-          color="primary"
-          startIcon={<ClearIcon color="secondary" />}
-          style={{ backgroundColor: "#FB5F5F" }}
-          onClick={() => {
-            setOpenModal(false);
-          }}
+    return (
+        <DialogZyx
+            open={openModal}
+            title={
+                t(langKeys.postcreator_publish_facebookmockup_share) + " " + t(langKeys.electronic_ticket_and_invoice)
+            }
+            maxWidth="sm"
         >
-          {t(langKeys.back)}
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          type="button"
-          startIcon={<DoneIcon color="secondary" />}
-          style={{ backgroundColor: "#55BD84" }}        
-        >
-        {t(langKeys.send)}
-        </Button> 
+            <div className="row-zyx" style={{ justifyContent: "center" }}>
+                <FormControl component="fieldset">
+                    <FormGroup>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={smsState}
+                                    onChange={(e) => setSmsState(e.target.checked)}
+                                    name="sun"
+                                />
+                            }
+                            label={t(langKeys.sms)}
+                        />
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={emailState}
+                                    onChange={(e) => setEmailState(e.target.checked)}
+                                    name="mon"
+                                />
+                            }
+                            label={t(langKeys.email)}
+                        />
+                    </FormGroup>
+                </FormControl>
+            </div>
 
-      
-       
-      </div>     
-
-    </DialogZyx>
-  );
+            <div className={classes.button}>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    onClick={() => {
+                        setOpenModal(false);
+                    }}
+                >
+                    {t(langKeys.back)}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="button"
+                    startIcon={<DoneIcon color="secondary" />}
+                    style={{ backgroundColor: "#55BD84" }}
+                >
+                    {t(langKeys.send)}
+                </Button>
+            </div>
+        </DialogZyx>
+    );
 };
 
 export default InvoiceShareDialog;

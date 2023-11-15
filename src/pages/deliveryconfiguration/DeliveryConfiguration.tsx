@@ -16,8 +16,6 @@ const DeliveryConfiguration: FC = () => {
     edit: false,
   });
 
- 
-
   useEffect(() => {
     return () => {
       dispatch(resetAllMain());
