@@ -21,6 +21,18 @@ interface TemplateIconsProps {
 export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ delivered, undelivered }) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const handleClickTyping = (e: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(e.currentTarget as HTMLElement);
+        e.stopPropagation();
+    };
+    const handleMenuItemDelivered = () => {
+        setAnchorEl(null);
+        delivered?.(true);
+    };
+    const handleMenuItemUndelivered = () => {
+        setAnchorEl(null);
+        undelivered?.(true)
+    };    
     const handleClose = (e: React.MouseEvent) => {
         e.stopPropagation();
         setAnchorEl(null);
@@ -36,10 +48,7 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ delivered, undelivere
                 startIcon={<LocalShippingIcon color="secondary" />}           
 
                 style={{ backgroundColor: "#55BD84" }}
-                onClick={(e) => {
-                    setAnchorEl(e.currentTarget);
-                    e.stopPropagation();
-                }}
+                onClick={handleClickTyping}
             >
                 <Trans i18nKey={langKeys.typing} />
             </Button>
@@ -59,18 +68,12 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ delivered, undelivere
                 onClose={handleClose}
             >
                 {delivered &&
-                    <MenuItem onClick={() => {
-                        setAnchorEl(null);
-                        delivered?.(true)
-                    }}>
+                    <MenuItem onClick={() => {handleMenuItemDelivered()}}>
                         <Trans i18nKey={langKeys.delivered} />
                     </MenuItem>
                 }
                 {undelivered &&
-                    <MenuItem onClick={() => {
-                        setAnchorEl(null);
-                        undelivered?.(true)
-                    }}>
+                    <MenuItem onClick={() => {handleMenuItemUndelivered()}}>
                         <Trans i18nKey={langKeys.undelivered} />
                     </MenuItem>
                 }
