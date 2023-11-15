@@ -62,7 +62,6 @@ interface WarehouseTabDetailProps {
     errors: FieldErrors<any>;
     viewSelected: string;
     dataDetail: any;
-    setDetailToDelete:(arg0: any)=>void;
     setDataDetail:(arg0: any)=>void;
 }
 
@@ -72,7 +71,6 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     setValue,
     getValues,
     dataDetail,
-    setDetailToDelete,
     setDataDetail,
     errors,
     viewSelected
@@ -119,14 +117,8 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     }, [selectedWarehouse]);
 
 
-    const handleDelete = (row: Dictionary) => {
-        if (row && row.operation !== "INSERT") {
-            setDetailToDelete((p: any) => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
-        } else {
-            row.operation = 'DELETE';
-        }
-
-        setDataDetail((p: any) => p.filter((x:any) => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.inventoryconsumptionid !== x.inventoryconsumptionid)));
+    const handleDelete = (i: number) => {
+        setDataDetail((p: any) => p.filter((_:any, index:number) => index !== i));
     }
 
     const handleEdit = (rowSelected: Dictionary) => {
@@ -146,15 +138,19 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             accessor: 'inventoryconsumptiondetailid',
             NoFilter: true,
             isComponent: true,
+            
             minWidth: 60,
             width: '1%',
             Cell: (props: any) => {
-                const row = props.cell.row.original;
-                return (
-                    <TemplateIcons
-                        deleteFunction={() => handleDelete(row)}
-                    />
-                )
+                if (!edit) {
+                    return (
+                        <TemplateIcons
+                            deleteFunction={() => handleDelete(props.cell.row.index)}
+                        />
+                    )                    
+                } else {                    
+                    return (<div></div>)
+                }
             }
         },
           {
@@ -221,71 +217,76 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             <div className="row-zyx">
                 <FieldEdit
                     label={"N° " + t(langKeys.inventory_consumption)}
-                    valueDefault={getValues('inventoryconsumptionid')}
+                    valueDefault={getValues("inventoryconsumptionid")}
                     className="col-3"
                     disabled
                 />
                 <FieldEdit
                     label={t(langKeys.description)}
-                    valueDefault={getValues('description')}
+                    valueDefault={getValues("description")}
                     className="col-6"
                     maxLength={256}
                     error={(errors?.description?.message as string) ?? ""}
-                    onChange={(value) => setValue('description', value)}
+                    onChange={(value) => setValue("description", value)}
                 />
-               <FieldSelect
+                <FieldSelect
                     label={t(langKeys.status)}
                     className="col-3"
                     disabled={edit}
-                    data={(multiData.data[2]?.data||[])} 
+                    data={multiData.data[2]?.data || []}
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                     valueDefault={getValues("transactiontype")}
-                    onChange={(value) => setValue("transactiontype", value.domainvalue)}  
+                    onChange={(value) => setValue("transactiontype", value.domainvalue)}
                 />
-                <div className='row-zyx col-9'>
+                <div className="row-zyx col-9">
                     <FieldEdit
                         label={t(langKeys.warehouse)}
                         className="col-3"
                         disabled
-                        valueDefault={edit? row?.warehousename: selectedWarehouse?.name}   
+                        valueDefault={edit ? row?.warehousename : selectedWarehouse?.name}
                         error={(errors?.warehouseid?.message as string) ?? ""}
                         InputProps={
-                            !edit? {
-                                    endAdornment: (
-                                        <IconButton onClick={() => { setOpenModalWarehouse(true) }}>
-                                            <Add />
-                                        </IconButton>
-                                    )
-                                }: {}
-                        }                   
+                            !edit
+                                ? {
+                                      endAdornment: (
+                                          <IconButton
+                                              onClick={() => {
+                                                  setOpenModalWarehouse(true);
+                                              }}
+                                          >
+                                              <Add />
+                                          </IconButton>
+                                      ),
+                                  }
+                                : {}
+                        }
                     />
                 </div>
                 <FieldSelect
                     disabled={edit}
                     label={t(langKeys.status)}
                     className="col-3"
-                    data={(multiData.data[0]?.data||[])} 
+                    data={multiData.data[0]?.data || []}
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                     valueDefault={getValues("status")}
-                    onChange={(value) => setValue("status", value.domainvalue)}  
+                    onChange={(value) => setValue("status", value.domainvalue)}
                 />
             </div>
             <div className="row-zyx">
-                <div className='row-zyx'>
-                    <TitleDetail
-                        title={t(langKeys.inventoryconsumptionlines)}
-                    />
+                <div className="row-zyx">
+                    <TitleDetail title={t(langKeys.inventoryconsumptionlines)} />
                 </div>
                 <div className="row-zyx">
                     <TableZyx
                         ButtonsElement={() => (
-                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
                                 <Button
                                     color="primary"
                                     style={{ backgroundColor: "#55BD84" }}
                                     onClick={handleOpenModalReturnProducts}
+                                    disabled={!edit}
                                     variant="contained"
                                 >
                                     {t(langKeys.selectproductsforreturn)}
@@ -294,6 +295,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                                     color="primary"
                                     style={{ backgroundColor: "#55BD84" }}
                                     onClick={handleOpenModalReservedProducts}
+                                    disabled={!edit}
                                     variant="contained"
                                 >
                                     {t(langKeys.selectreservedproducts)}
@@ -306,7 +308,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                         loading={multiDataAux2.loading}
                         download={false}
                         filterGeneral={false}
-                        register={!edit && !!selectedWarehouse}
+                        register={!edit && Boolean(selectedWarehouse)}
                         onClickRow={handleEdit}
                     />
                 </div>
@@ -319,17 +321,17 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 warehouseProducts={warehouseProducts}
                 row={row}
                 edit={edit}
-                editRow={!!row}
+                editRow={Boolean(row)}
             />
             <TableSelectionDialog
                 openModal={openModalWarehouse}
                 setOpenModal={setOpenModalWarehouse}
                 setRow={setWarehouse}
-                data={multiData?.data?.[1]?.data||[]}
+                data={multiData?.data?.[1]?.data || []}
                 columns={columnsSelectionWarehouse}
                 title={t(langKeys.warehouse)}
             />
-            <SelectReservedProductsDialog 
+            <SelectReservedProductsDialog
                 openModal={openModalReservedProducts}
                 setOpenModal={setOpenModalReservedProducts}
             />
@@ -338,7 +340,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 setOpenModal={setOpenModalReturnProducts}
             />
         </div>
-    )
+    );
 }
 
 export default InventoryConsumptionTabDetail;

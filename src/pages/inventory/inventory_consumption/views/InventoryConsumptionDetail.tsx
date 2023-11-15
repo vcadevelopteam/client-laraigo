@@ -76,7 +76,6 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     const [openModalSeeTransactions, setOpenModalSeeTransactions] = useState(false);
     const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
     const [dataDetail, setDataDetail] = useState<Dictionary[]>([]);
-    const [detailToDelete, setDetailToDelete] = useState<Dictionary[]>([]);
     const mainData = useSelector(state => state.main.mainData);
 
 
@@ -101,7 +100,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     });
 
     useEffect(() => {
-        if (viewSelected=="detail-view" && edit) {
+        if (viewSelected==="detail-view" && edit) {
             if(edit){
                 dispatch(
                     getCollection(getInventoryConsumptionDetail(row?.inventoryconsumptionid || 0))
@@ -206,6 +205,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                             variant="contained"
                             color="primary"
                             type="button"
+                            disabled={!edit}
                             style={{ backgroundColor: "#55BD84" }}
                             onClick={() => {
                                 setOpenModal(true)
@@ -223,12 +223,12 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                             {t(langKeys.save)}
                         </Button>
 
-                        <ExtrasMenu
+                        {edit && <ExtrasMenu
                             generatelabel={()=>{}}
                             referralguide={()=>{}}
                             transactions={handleOpenModalSeeTransactions}
                             statushistory={handleOpenModalStatusHistory}
-                        />
+                        />}
                     </div>
 
                 </div>
@@ -238,7 +238,6 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
                     setValue={setValue}
                     getValues={getValues}                   
                     errors={errors}
-                    setDetailToDelete={setDetailToDelete}
                     setDataDetail={setDataDetail}
                     viewSelected={viewSelected}
                     dataDetail={dataDetail}
