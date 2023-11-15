@@ -2684,7 +2684,7 @@ const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onSubmit, loading, integ
                         onChange={(value) => setName(value)}
                         label={t(langKeys.givechannelname)}
                         className="col-6"
-                        disabled={loading || integrationId !== null}
+                        disabled={loading || (`${integrationId}` !== "" && `${integrationId}` !== "undefined")}
                         valueDefault={channel?.communicationchanneldesc}
                     />
                 </div>
@@ -2719,7 +2719,7 @@ const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onSubmit, loading, integ
                         className={classes.button}
                         variant="contained"
                         color="primary"
-                        disabled={!name || loading || integrationId !== null}
+                        disabled={!name || loading || (`${integrationId}` !== "" && `${integrationId}` !== "undefined")}
                     >
                         <Trans i18nKey={langKeys.finishreg} />
                     </Button>
