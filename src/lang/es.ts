@@ -5408,6 +5408,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingreport_channeltotal: 'Canales Adicionales',
   billingreport_contactwhatsapp: 'Contactos en Canales WhatsApp',
   billingreport_contactother: 'Contactos en Canales No WhatsApp',
+  orderby: 'Ordenar por:',
+  trafficlightconfig: 'Configuracion de semáforo',
+  opportunityhours: 'Horario de atención de oportunidades',
+  maxtimegreen: 'Tiempo max. semáforo verde',
+  maxtimeamber: 'Tiempo max. semáforo ámbar',
+  start: 'Inicio',
+  end: 'Fin',
 };
 
 const esResource: ResourceLanguage = {

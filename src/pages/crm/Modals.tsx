@@ -5,8 +5,8 @@ import { Dictionary, ICrmGridPerson } from "@types";
 import { SaveActivityModal, TabPanelLogNote } from "./LeadForm";
 import { getAdvisers, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote } from "store/lead/actions";
 import { adviserSel, leadActivityIns, leadHistoryIns, leadLogNotesIns } from "common/helpers";
-import { Box, Button, makeStyles, Modal } from "@material-ui/core";
-import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, TitleDetail } from "components";
+import { Box, Button, makeStyles, Modal, Typography } from "@material-ui/core";
+import { DialogZyx, FieldEdit, FieldEditArray, FieldEditMulti, FieldSelect, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from "hooks";
@@ -86,6 +86,128 @@ export const NewActivityModal: FC<IFCModalProps> = ({ gridModalProps, setGridMod
             leadid={gridModalProps.payload?.leadid}
             onSubmit={submitActivitiesModal}
         />
+    )
+}
+
+const useStyles = makeStyles(() => ({
+    title: {
+        text: {
+            textAlign: 'center',
+            fontSize: 16
+        }
+    },
+}));
+
+export const TrafficLightConfigurationModal: React.FC<{
+    openModal: boolean;
+    setOpenModal: (data: boolean) => void;
+}> = ({ openModal, setOpenModal }) => {
+    const { t } = useTranslation();
+    const classes = useStyles();
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.trafficlightconfig)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={() => setOpenModal(false)}
+            maxWidth="lg"
+        >
+            <div className="row-zyx">
+                <span className="col-2">{t(langKeys.monday)}</span>
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.start)}
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.end)}
+                    className="col-2"
+                />
+                <span className="col-2">{t(langKeys.tuesday)}</span>
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.start)}
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.end)}
+                    className="col-2"
+                />
+                <span className="col-2">{t(langKeys.wednesday)}</span>
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.start)}
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.end)}
+                    className="col-2"
+                />
+                <span className="col-2">{t(langKeys.thursday)}</span>
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.start)}
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.end)}
+                    className="col-2"
+                />
+                <span className="col-2">{t(langKeys.friday)}</span>
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.start)}
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.end)}
+                    className="col-2"
+                />
+                <span className="col-2">{t(langKeys.saturday)}</span>
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.start)}
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.end)}
+                    className="col-2"
+                />
+                <span className="col-2">{t(langKeys.sunday)}</span>
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.start)}
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    label={t(langKeys.end)}
+                    className="col-2"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.maxtimegreen)}
+                    variant="outlined"
+                    type="number"
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.maxtimeamber)}
+                    variant="outlined"
+                    type="number"
+                    className="col-6"
+                />
+            </div>
+        </DialogZyx>
     )
 }
 

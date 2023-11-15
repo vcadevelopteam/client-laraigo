@@ -5481,6 +5481,13 @@ const translation: LangKeys = {
   billingreport_channeltotal: 'Additional Channels',
   billingreport_contactwhatsapp: 'WhatsApp Channels Contacts',
   billingreport_contactother: 'Other Channels Contacts',
+  orderby: 'Order by:',
+  trafficlightconfig: 'Traffic light configuration',
+  opportunityhours: 'Opportunity Business Hours',
+  maxtimegreen: 'Green light max. time',
+  maxtimeamber: 'Amber light max. time',
+  start: 'Start',
+  end: 'End',
 };
 
 const enResource: ResourceLanguage = {
