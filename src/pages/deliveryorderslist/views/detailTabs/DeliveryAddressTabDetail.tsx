@@ -9,7 +9,58 @@ import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { Typography } from "@material-ui/core";
+import { GoogleMap, LoadScript, Polygon } from "@react-google-maps/api";
 
+const default_latitude = -12.07672999152434;
+const default_longitude = -77.09354067649065; 
+
+interface MapContainerProps {
+    coordinates: {
+        latitude: number;
+        longitude: number;
+    };
+}
+  
+const mapStyles = {
+    height: "20rem",
+    width: "100%",
+};
+
+const MapContainer: React.FC<MapContainerProps> = ({ coordinates }) => {
+    const defaultCenter = {
+      lat: coordinates.latitude,
+      lng: coordinates.longitude,
+    };
+  
+    return (
+      <LoadScript googleMapsApiKey="AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w">
+        <GoogleMap mapContainerStyle={mapStyles} zoom={15} center={defaultCenter}>
+          <Polygon
+            paths={[
+              { lat: coordinates.latitude - 0.001, lng: coordinates.longitude - 0.001 },
+              { lat: coordinates.latitude + 0.001, lng: coordinates.longitude - 0.001 },
+              { lat: coordinates.latitude + 0.001, lng: coordinates.longitude + 0.001 },
+              { lat: coordinates.latitude - 0.001, lng: coordinates.longitude + 0.001 },
+            ]}
+            options={{
+              fillColor: "#00FF00",
+              fillOpacity: 0.4,
+              strokeColor: "#FF0000",
+              strokeOpacity: 1,
+              strokeWeight: 2,
+              clickable: true,
+              draggable: true,
+              editable: true,
+              visible: true,
+            }}
+          />
+        </GoogleMap>
+      </LoadScript>
+    );
+};
+
+
+//acá lo de antes, para visualiazar el tab detail Delivery Address
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -25,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     image: {
         display: "flex",
         textAlign: "center",
-        width: "100%",
+        width: "50%",
         height: "25rem",
         objectFit: "cover",
     },
@@ -55,6 +106,22 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setV
     const [waitUpload, setWaitUpload] = useState(false);
     const importRes = useSelector((state) => state.main.execute);
 
+    const [latitude, setLatitude] = useState<number | undefined>(undefined);
+    const [longitude, setLongitude] = useState<number | undefined>(undefined);
+
+    const handleCoordinateChange = (value: number, isLatitude: boolean) => {
+        if (isLatitude) {
+          setLatitude(value);
+        } else {
+          setLongitude(value);
+        }
+    };  
+
+    useEffect(() => { //effect provicional, para ponerle valuedefault funcional al google maps
+        setLatitude(default_latitude);
+        setLongitude(default_longitude);
+    }, []);
+
     useEffect(() => {
         if (waitUpload) {
             if (!importRes.loading && !importRes.error) {
@@ -80,6 +147,7 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setV
             }
         }
     }, [importRes, waitUpload]);
+
 
     useEffect(() => {
         if (waitExport) {
@@ -126,17 +194,31 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setV
             <div className="row-zyx">
                 <TitleDetail title={t(langKeys.deliveryaddress)} />
             </div>
-            <Typography className={classes.subtittle}>{t(langKeys.geolocation)}</Typography>
+            <Typography className={classes.subtittle}>{t(langKeys.geolocation)}</Typography>            
             <div className="row-zyx" style={{ paddingBottom: "1rem" }}>
-                <FieldEdit label={t(langKeys.latitude) + ": "} disabled={true} className="col-6" />
-                <FieldEdit label={t(langKeys.longitude) + ": "} disabled={true} className="col-6" />
+                <FieldEdit
+                    label={t(langKeys.latitude) + ": "}
+                    type="number"
+                    valueDefault={default_latitude.toString()}
+                    onChange={(value) => handleCoordinateChange(Number(value), true)}
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.longitude) + ": "}
+                    type="number"
+                    valueDefault={default_longitude.toString()}
+                    onChange={(value) => handleCoordinateChange(Number(value), false)}
+                    className="col-6"
+                />
             </div>
-            <div className="row-zyx">
-                <img
-                    className={classes.image}
-                    src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/191:100/w_1280,c_limit/GoogleMapTA.jpg"
-                    alt="Invoice"
-                ></img>
+            <div className="row-zyx" style={{ justifyContent: "center" }}>
+                {latitude !== undefined && longitude !== undefined ? (
+                    <MapContainer coordinates={{ latitude, longitude }} />
+                ) : (
+                    <LoadScript googleMapsApiKey="AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w">
+                        <GoogleMap mapContainerStyle={mapStyles} zoom={2} center={{ lat: 0, lng: 0 }} />
+                    </LoadScript>
+                )}
                 <Typography className={classes.imagetext}>{t(langKeys.address_found_in_geolocator)}</Typography>
             </div>
         </div>
