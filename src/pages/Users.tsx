@@ -1735,7 +1735,6 @@ const Users: FC = () => {
         if (file) {
             const excel: any = await uploadExcel(file, undefined);
             const datainit = array_trimmer(excel);
-            //domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             const data = datainit.filter((f: Dictionary) => {
                 return (
                     (f.company === undefined ||
@@ -1776,9 +1775,10 @@ const Users: FC = () => {
                     (f.pwdchangefirstlogin === undefined ||
                         ["true", "false"].includes(String(f.pwdchangefirstlogin))) &&
                     (f.role === undefined ||
-                        Object.keys(
-                            domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: d.roldesc }), {})
-                        ).includes(String(f.role)))
+                        String(f.role).split(",").every((role:string) => {
+                            const roleId = parseInt(role.trim(), 10);
+                            return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
+                        }))
                 );
             });
             const messageerrors = datainit
@@ -1835,9 +1835,12 @@ const Users: FC = () => {
                         ) ||
                         !(
                             f.role === undefined ||
-                            Object.keys(
-                                domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: d.roldesc }), {})
-                            ).includes(String(f.role))
+                            String(f.role)
+                                .split(",")
+                                .every((role: string) => {
+                                    const roleId = parseInt(role.trim(), 10);
+                                    return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
+                                })
                         )
                     );
                 })
