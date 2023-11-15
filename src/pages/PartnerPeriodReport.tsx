@@ -354,34 +354,6 @@ const PartnerPeriodReport: React.FC = () => {
                                             </StyledTableRow>
                                             <StyledTableRow>
                                                 <StyledTableCell>
-                                                    <b>{t(langKeys.othercosts)}</b>
-                                                </StyledTableCell>
-                                                <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
-                                                    dataAux.reduce(
-                                                        (accumulator: number, item: Dictionary) =>
-                                                            accumulator + (parseFloat(item.othercost) / item.tax_costneto),
-                                                        0
-                                                    )
-                                                )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
-                                                    dataAux.reduce(
-                                                        (accumulator: number, item: Dictionary) =>
-                                                            accumulator + (parseFloat(item.othercost) / item.tax_costneto * item.tax),
-                                                        0
-                                                    )
-                                                )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
-                                                    dataAux.reduce(
-                                                        (accumulator: number, item: Dictionary) =>
-                                                            accumulator + parseFloat(item.othercost),
-                                                        0
-                                                    )
-                                                )}`}</StyledTableCell>
-                                            </StyledTableRow>
-                                            <StyledTableRow>
-                                                <StyledTableCell>
                                                     <div>
                                                         <b>{t(langKeys.contacts)}</b>
                                                     </div>
@@ -588,6 +560,34 @@ const PartnerPeriodReport: React.FC = () => {
                                                         )}`}</div>
                                                     )}
                                                 </StyledTableCell>
+                                            </StyledTableRow>
+                                            <StyledTableRow>
+                                                <StyledTableCell>
+                                                    <b>{t(langKeys.othercosts)}</b>
+                                                </StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: Dictionary) =>
+                                                            accumulator + (parseFloat(item.othercost) / item.tax_costneto),
+                                                        0
+                                                    )
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: Dictionary) =>
+                                                            accumulator + (parseFloat(item.othercost) / item.tax_costneto * item.tax),
+                                                        0
+                                                    )
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.symbol}${formatNumber(
+                                                    dataAux.reduce(
+                                                        (accumulator: number, item: Dictionary) =>
+                                                            accumulator + parseFloat(item.othercost),
+                                                        0
+                                                    )
+                                                )}`}</StyledTableCell>
                                             </StyledTableRow>
                                             <StyledTableRow>
                                                 <StyledTableCell>
