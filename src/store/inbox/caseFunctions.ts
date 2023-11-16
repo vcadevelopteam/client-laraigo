@@ -788,7 +788,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
             },
             isOnBottom: null,
             configurationVariables: {
-                data: action.payload.data[2].data.filter((x: any) => !!x.visible) || [],
+                data: action.payload.data[2].data.filter((x: any) => x.visible) || [],
                 count: action.payload.count,
                 loading: false,
                 error: false,

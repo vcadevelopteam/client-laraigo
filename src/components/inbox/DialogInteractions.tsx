@@ -311,7 +311,7 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
     const interactionExtraList = useSelector(state => state.inbox.interactionExtraList);
     const [interactionsToShow, setinteractionsToShow] = React.useState<IGroupInteraction[]>([])
     const el = React.useRef<null | HTMLDivElement>(null);
-
+    
     useEffect(() => {
         if (ticket && openModal)
             dispatch(getInteractions(ticket?.conversationid, false, 0));
@@ -338,13 +338,13 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
                     if (pdf) {
                         DomToImage.toPng(gg)
                             .then(imgData => {
-                                var imgWidth = 200;
-                                var pageHeight = 297;
-                                var imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
-                                var heightLeft = imgHeight;
-                                var doc = new jsPDF.jsPDF('p', 'mm');
-                                var topPadding = 10;
-                                var position = topPadding; // give some top padding to first page
+                                const imgWidth = 200;
+                                const pageHeight = 297;
+                                const imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
+                                let heightLeft = imgHeight;
+                                const doc = new jsPDF.jsPDF('p', 'mm');
+                                const topPadding = 10;
+                                let position = topPadding; // give some top padding to first page
 
                                 doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                                 heightLeft -= pageHeight;

@@ -3682,6 +3682,20 @@ export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getreportleadgridtracking = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LEADGRID_TRACKING_SEL",
+    methodCount: "UFN_LEADGRID_TRACKING_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "leadgridtracking",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 export const getRequestSDExport = ({ filters, sorts, startdate, enddate, company }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_REQUESTSD_EXPORT",
     key: "UFN_REPORT_REQUESTSD_EXPORT",
@@ -3691,6 +3705,18 @@ export const getRequestSDExport = ({ filters, sorts, startdate, enddate, company
         startdate,
         enddate,
         company,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const getleadgridtrackingExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_LEADGRID_TRACKING_EXPORT",
+    key: "UFN_LEADGRID_TRACKING_EXPORT",
+    parameters: {
+        origin: "reportrequestsd",
+        filters,
+        startdate,
+        enddate,
         sorts,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
@@ -4089,4 +4115,46 @@ export const rasaModelSel = () => ({
     method: "UFN_RASA_MODEL_SEL",
     key: "UFN_RASA_MODEL_SEL",
     parameters: {},
+});
+
+export const partnerSel = ({ id, all }: Dictionary) => ({
+    method: "UFN_PARTNER_SEL",
+    key: "UFN_PARTNER_SEL",
+    parameters: { id, all },
+});
+
+export const partnerIns = ({ id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation }: Dictionary) => ({
+    method: "UFN_PARTNER_INS",
+    key: "UFN_PARTNER_INS",
+    parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation },
+});
+
+export const customerByPartnerSel = ( partnerid: number ) => ({
+    method: "UFN_CUSTOMER_BY_PARTNER_SEL",
+    key: "UFN_CUSTOMER_BY_PARTNER_SEL",
+    parameters: { partnerid },
+});
+
+export const customerPartnersByUserSel = () => ({
+    method: "UFN_CUSTOMERPARTNER_BY_USER_SEL",
+    key: "UFN_CUSTOMERPARTNER_BY_USER_SEL",
+    parameters: {},
+});
+
+export const customerByPartnerIns = ({ id, corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, status, operation }: Dictionary) => ({
+    method: "UFN_CUSTOMER_BY_PARTNER_INS",
+    key: "UFN_CUSTOMER_BY_PARTNER_INS",
+    parameters: { id, corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, status, operation },
+});
+
+export const billingPeriodPartnerEnterprise = ({ partnerid, corpid, orgid, year, month, reporttype, username }: Dictionary) => ({
+    method: "UFN_BILLINGPERIODPARTNER_ENTERPRISE",
+    key: "UFN_BILLINGPERIODPARTNER_ENTERPRISE",
+    parameters: { partnerid, corpid, orgid, year, month, reporttype, username },
+});
+
+export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid, year, month, username }: Dictionary) => ({
+    method: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
+    key: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
+    parameters: { partnerid, corpid, orgid, year, month, username },
 });

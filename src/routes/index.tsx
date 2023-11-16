@@ -18,6 +18,48 @@ import React, { FC, lazy, useCallback } from "react";
 
 const ActivateUser = lazy(() => import('pages/ActivateUser'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
+const Users = lazy(() => import('pages/Users'));
+const ReportScheduler = lazy(() => import('pages/ReportScheduler'));
+const ProductCatalog = lazy(() => import('pages/ProductCatalog'));
+const CatalogMaster = lazy(() => import('pages/CatalogMaster'));
+const Orders = lazy(() => import('pages/orders/Orders'));
+const SignIn = lazy(() => import('pages/SignIn'));
+const Properties = lazy(() => import('pages/Properties'));
+const Quickreplies = lazy(() => import('pages/Quickreplies'));
+const Groupconfig = lazy(() => import('pages/GroupConfig'));
+const Whitelist = lazy(() => import('pages/Whitelist'));
+const InappropriateWords = lazy(() => import('pages/InappropriateWords'));
+const IntelligentModels = lazy(() => import('pages/IntelligentModels'));
+const IAConfiguration = lazy(() => import('pages/Iaservices'));
+const SLA = lazy(() => import('pages/SLA'));
+const Domains = lazy(() => import('pages/Domains'));
+const Reports = lazy(() => import('pages/Reports'));
+const Person = lazy(() => import('pages/Person'));
+const PersonDetail = lazy(() => import('pages/PersonDetail'));
+const Supervisor = lazy(() => import('pages/Supervisor'));
+const MessageInbox = lazy(() => import('pages/MessageInbox'));
+const MessageTemplates = lazy(() => import('pages/MessageTemplates'));
+const Tipifications = lazy(() => import('pages/Tipifications'));
+const InputValidation = lazy(() => import('pages/InputValidation'));
+const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
+const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
+const Emojis = lazy(() => import('pages/Emojis'));
+const IATraining = lazy(() => import('pages/LaraigoIA'));
+const Campaign = lazy(() => import('pages/campaign/Campaign'));
+const NotFound = lazy(() => import('pages/NotFound'));
+const Forbidden = lazy(() => import('pages/Forbidden'));
+const InternalServererror = lazy(() => import('pages/InternalServerError'));
+const Corporations = lazy(() => import('pages/Corporations'));
+const Partners = lazy(() => import('pages/partners/Partners'));
+const BillingSetups = lazy(() => import('pages/BillingSetups'));
+const TimeSheet = lazy(() => import('pages/TimeSheet'));
+const Organizations = lazy(() => import('pages/Organizations'));
+const Tickets = lazy(() => import('pages/Tickets'));
+const UserSettings = lazy(() => import('pages/UserSettings'));
+const Invoice = lazy(() => import('pages/Invoice'));
+const KPIManager = lazy(() => import('pages/KPIManager'));
+const GetLocations = lazy(() => import('pages/GetLocations'));
+const Calendar = lazy(() => import('pages/calendar/Calendar'));
 const AutomatizationRules = lazy(() => import('pages/AutomatizationRules'));
 const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const BotDesigner = lazy(() => import('pages/BotDesigner'));
@@ -314,6 +356,39 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPPONBOARDING.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsAppOnboarding edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_YOUTUBE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddYouTube edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS} component={() => (<Layout mainClasses={classes.main}><Channels /></Layout>)} />
+					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
+					<ProtectRoute exact path={paths.PARTNERS} component={() => (<Layout mainClasses={classes.main}><Partners /></Layout>)} />
+					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />
+					<ProtectRoute exact path={paths.SUPERVISOR} component={() => (<Layout ><Supervisor /></Layout>)} />
+					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
+					<ProtectRoute exact path={paths.TIMESHEET} component={() => (<Layout mainClasses={classes.main}><TimeSheet /></Layout>)} />
+					<ProtectRoute exact path={paths.INVOICE} component={() => (<Layout mainClasses={classes.main}><Invoice /></Layout>)} />
+					<ProtectRoute exact path={paths.MESSAGE_INBOX} component={() => (<Layout><MessageInbox /></Layout>)} />
+					<ProtectRoute exact path={paths.PROPERTIES} component={() => <Layout mainClasses={classes.main}><Properties /></Layout>} />
+					<ProtectRoute exact path={paths.USERS} component={() => <Layout mainClasses={classes.main}><Users /></Layout>} />
+					<ProtectRoute exact path={paths.QUICKREPLIES} component={() => <Layout mainClasses={classes.main}><Quickreplies /></Layout>} />
+					<ProtectRoute exact path={paths.GROUPCONFIG} component={() => <Layout mainClasses={classes.main}><Groupconfig /></Layout>} />
+					<ProtectRoute exact path={paths.USERSETTINGS} component={() => <Layout mainClasses={classes.main}><UserSettings /></Layout>} />
+					<ProtectRoute exact path={paths.INAPPROPRIATEWORDS} component={() => <Layout mainClasses={classes.main}><InappropriateWords /></Layout>} />
+					<ProtectRoute exact path={paths.INTELLIGENTMODELS} component={() => <Layout mainClasses={classes.main}><IntelligentModels /></Layout>} />
+					<ProtectRoute exact path={paths.SLA} component={() => <Layout mainClasses={classes.main}><SLA /></Layout>} />
+					<ProtectRoute exact path={paths.TIPIFICATIONS} component={() => <Layout mainClasses={classes.main}><Tipifications /></Layout>} />
+					<ProtectRoute exact path={paths.INPUTVALIDATION} component={() => <Layout mainClasses={classes.main}><InputValidation /></Layout>} />
+					<ProtectRoute exact path={paths.DOMAINS} component={() => <Layout mainClasses={classes.main}><Domains /></Layout>} />
+					<ProtectRoute exact path={paths.WHITELIST} component={() => <Layout mainClasses={classes.main}><Whitelist /></Layout>} />
+					<ProtectRoute exact path={paths.PERSON} component={() => <Layout mainClasses={classes.main}><Person /></Layout>} />
+					<ProtectRoute exact path={paths.PERSON_DETAIL.path} component={() => <Layout mainClasses={classes.main}><PersonDetail /></Layout>} />
+					<ProtectRoute exact path={paths.MESSAGETEMPLATE} component={() => <Layout mainClasses={classes.main}><MessageTemplates /></Layout>} />
+					<ProtectRoute exact path={paths.INTEGRATIONMANAGER} component={() => <Layout mainClasses={classes.main}><IntegrationManager /></Layout>} />
+					<ProtectRoute exact path={paths.CAMPAIGN} component={() => <Layout mainClasses={classes.main}><Campaign /></Layout>} />
+					<ProtectRoute exact path={paths.BOTDESIGNER} component={() => <Layout mainClasses={classes.main}><BotDesigner /></Layout>} />
+					<ProtectRoute exact path={paths.VARIABLECONFIGURATION} component={() => <Layout mainClasses={classes.main}><VariableConfiguration /></Layout>} />
+					<ProtectRoute exact path={paths.EMOJIS} component={() => <Layout mainClasses={classes.main}><Emojis /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD} component={() => <Layout mainClasses={classes.main}><Dashboard /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD_ADD} component={() => <Layout mainClasses={classes.main}><DashboardAdd /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD_EDIT.path} component={() => <Layout mainClasses={classes.main}><DashboardAdd edit /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD_COPY} component={() => <Layout mainClasses={classes.main}><DashboardAdd edit /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD_LAYOUT.path} component={() => <Layout mainClasses={classes.main}><DashboardLayout /></Layout>} />
 					<ProtectRoute exact path={paths.CONFIGURATION} component={() => <Layout mainClasses={classes.main}><Settings /></Layout>} />
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.CRM_ADD_LEAD} component={() => <Layout mainClasses={classes.main}><LeadForm /></Layout>} />
