@@ -8,14 +8,13 @@ import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Tooltip from '@material-ui/core/Tooltip';
-import { GetIcon } from 'components'
 import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket } from 'store/inbox/actions';
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
 import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { AntTab, BadgeGo, ListItemSkeleton } from 'components';
+import { AntTab, BadgeGo, ListItemSkeleton, GetIcon } from 'components';
 import { SearchIcon } from 'icons';
 import { Dictionary, IAgent } from "@types";
 import clsx from 'clsx';
@@ -38,19 +37,19 @@ const filterAboutStatusName = (data: IAgent[], page: number, textToSearch: strin
         return data;
     }
     if (page === 0 && textToSearch !== "") {
-        return data.filter(item => (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
+        return data.filter(item => (filterBy === "user" ? item.name : (item.groups ?? "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
     if (page === 1 && textToSearch === "") {
         return data.filter(item => item.status === "ACTIVO");
     }
     if (page === 1 && textToSearch !== "") {
-        return data.filter(item => item.status === "ACTIVO" && (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
+        return data.filter(item => item.status === "ACTIVO" && (filterBy === "user" ? item.name : (item.groups ?? "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
     if (page === 2 && textToSearch === "") {
         return data.filter(item => item.status !== "ACTIVO");
     }
     if (page === 2 && textToSearch !== "") {
-        return data.filter(item => item.status !== "ACTIVO" && (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
+        return data.filter(item => item.status !== "ACTIVO" && (filterBy === "user" ? item.name : (item.groups ?? "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
     return data;
 }
@@ -178,8 +177,8 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                     }}
                     variant="dot"
                 >
-                    <Tooltip title={motivetype || ""}>
-                        <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    <Tooltip title={motivetype ?? ""}>
+                        <Avatar src={image ?? undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
                     </Tooltip>
                 </BadgeGo>
                 <div>
@@ -203,7 +202,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                 {(userid === 2 || userid === 3) &&
                     <CountTicket
                         label={t(langKeys.active) + "s"}
-                        count={countAnswered + (countNotAnswered || 0)}
+                        count={countAnswered + (countNotAnswered ?? 0)}
                         color="#55BD84"
                     />
                 }
@@ -216,7 +215,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                         />
                         <CountTicket
                             label={t(langKeys.pending)}
-                            count={countNotAnswered || 0}
+                            count={countNotAnswered ?? 0}
                             color="#FB5F5F"
                         />
                     </>
@@ -363,9 +362,9 @@ const AgentPanel: FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     useEffect(() => {
         if (!agentList.loading && !agentList.error) {
-            setDataAgents(agentList.data as IAgent[])
+            setDataAgents(agentList.data)
             if (firstLoad.current && agentList.data.length > 0) {
-                setAgentsToShow(agentList.data as IAgent[])
+                setAgentsToShow(agentList.data)
                 firstLoad.current = false
             } else {
                 setAgentsToShow(agentList.data.filter(y => agentsToShow.map(x => x.userid).includes(y.userid)))
@@ -397,7 +396,6 @@ const AgentPanel: FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             </FixedSizeList>
                         )}
                     </AutoSizer>
-                    {/* {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))} */}
                 </div>
             }
         </div>

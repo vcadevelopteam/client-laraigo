@@ -82,6 +82,9 @@ import {
     templateMaker,
     timeSheetPeriodSel,
     uploadExcel,
+    partnerSel,
+    customerByPartnerSel,
+    customerPartnersByUserSel,
 } from "common/helpers";
 
 import {
@@ -153,6 +156,7 @@ import TableZyx from "../components/fields/table-simple";
 import Typography from "@material-ui/core/Typography";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import PartnerPeriodReport from "./PartnerPeriodReport";
 
 interface RowSelected {
     edit: boolean;
@@ -3913,7 +3917,14 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                         className={classes.fieldsfilter}
                         data={datatotalize}
                         label={t(langKeys.totalize)}
-                        onChange={(value) => setdataMain((prev) => ({ ...prev, totalize: value?.value || 0 }))}
+                        onChange={(value) => {
+                            if (value?.value === 1) {
+                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0, orgid: 0 }))
+                            }
+                            else {
+                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0 }))
+                            }
+                        }}
                         optionDesc="description"
                         optionValue="value"
                         orderbylabel={true}
@@ -11281,7 +11292,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()])
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()]),
             );
         } else {
             dispatch(
@@ -11290,7 +11301,7 @@ const Invoice: FC = () => {
                     getOrgSelList(user?.corpid ?? 0),
                     getCorpSelVariant(user?.corpid ?? 0, user?.orgid ?? 0, user?.usr ?? ""),
                     getPaymentPlanSel(),
-                    currencySel(),
+                    currencySel()
                 ])
             );
         }
@@ -11298,7 +11309,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            {user?.roledesc?.includes("SUPERADMIN") && (
+            {user?.roledesc?.includes("SUPERADMIN") ? (
                 <div>
                     <Tabs
                         indicatorColor="primary"
@@ -11308,12 +11319,15 @@ const Invoice: FC = () => {
                         value={pageSelected}
                         variant="fullWidth"
                     >
-                        <AntTab label={t(langKeys.costperperiod)} />
-                        <AntTab label={t(langKeys.periodreport)} />
-                        <AntTab label={t(langKeys.payments)} />
-                        <AntTab label={t(langKeys.invoice)} />
-                        <AntTab label={t(langKeys.messagingpackages)} />
-                        <AntTab label={t(langKeys.paymentmethods)} />
+                        <AntTab label={t(langKeys.costperperiod)} value={0} />
+                        <AntTab label={t(langKeys.periodreport)} value={1} />
+                        {user?.roledesc?.includes("SUPERADMINISTRADOR SOCIOS") && (
+                            <AntTab label={t(langKeys.partnersperiodreport)} value={2} />
+                        )}
+                        <AntTab label={t(langKeys.payments)} value={3} />
+                        <AntTab label={t(langKeys.invoice)} value={4} />
+                        <AntTab label={t(langKeys.messagingpackages)} value={5} />
+                        <AntTab label={t(langKeys.paymentmethods)} value={6} />
                     </Tabs>
                     {pageSelected === 0 && (
                         <div style={{ marginTop: 16 }}>
@@ -11333,29 +11347,34 @@ const Invoice: FC = () => {
                     )}
                     {pageSelected === 2 && (
                         <div style={{ marginTop: 16 }}>
-                            <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
+                            <PartnerPeriodReport customSearch={customSearch} />
                         </div>
                     )}
                     {pageSelected === 3 && (
                         <div style={{ marginTop: 16 }}>
-                            <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
+                            <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                         </div>
                     )}
                     {pageSelected === 4 && (
                         <div style={{ marginTop: 16 }}>
-                            <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                            <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
                         </div>
                     )}
                     {pageSelected === 5 && (
+                        <div style={{ marginTop: 16 }}>
+                            <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                        </div>
+                    )}
+                    {pageSelected === 6 && (
                         <div style={{ marginTop: 16 }}>
                             <PaymentMethods />
                         </div>
                     )}
                 </div>
-            )}
-            {(user?.roledesc ?? "")
-                .split(",")
-                .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
+            ) : (
+                (user?.roledesc ?? "")
+                    .split(",")
+                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
                     <div>
                         <Tabs
                             indicatorColor="primary"
@@ -11391,7 +11410,7 @@ const Invoice: FC = () => {
                             </div>
                         )}
                     </div>
-                )}
+                ))}
         </div>
     );
 };

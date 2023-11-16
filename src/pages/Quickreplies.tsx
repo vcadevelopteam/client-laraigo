@@ -1037,6 +1037,7 @@ const Quickreplies: FC = () => {
             {
                 Header: t(langKeys.review),
                 accessor: 'description',
+                disableGlobalFilter: true,
                 NoFilter: true
             },
             {
