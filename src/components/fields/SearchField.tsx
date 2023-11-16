@@ -9,10 +9,10 @@ import { langKeys } from 'lang/keys';
 
 interface Props extends InputBaseProps { 
     colorPlaceHolder: string,
-    handleChangeOther?: (params: any) => void,
-    handleSubmitOther?: (params: any) => void,
+    handleChangeOther?: (params: string) => void,
+    handleSubmitOther?: (params: string) => void,
     cleanState?:boolean;
-    setCleanState?:(params: any) => void,
+    setCleanState?:(params: string) => void,
     lazy?: boolean;
     timelapse?: number; // available when lazy prop is true
 }

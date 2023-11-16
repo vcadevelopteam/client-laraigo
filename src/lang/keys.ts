@@ -18,6 +18,9 @@ export const langKeys = {
   edit_all: "edit_all",
   set_your_weekly: "set_your_weekly",
   orders: "orders",
+  statusdate: "statusdate",
+  currentphase: "currentphase",
+  changedby: "changedby",
   funnelType: "funnelType",
   byway: "byway",
   bycount: "bycount",
@@ -658,6 +661,7 @@ export const langKeys = {
   companyinformation: "companyinformation",
 
   agent: 'agent',
+  commercialagent: 'commercialagent',
 
   billinginformation: "billinginformation",
   highestTMO: "highestTMO",
@@ -1187,6 +1191,8 @@ export const langKeys = {
   dateactivity: "dateactivity",
   leadactivity: "leadactivity",
   datenote: "datenote",
+  estimatedimplementationdate: "estimatedimplementationdate",
+  estimatedbillingdate: "estimatedbillingdate",
   note: "note",
   no_people_to_send: "no_people_to_send",
 
@@ -2415,6 +2421,7 @@ export const langKeys = {
   type_CATEGORIA: "type_CATEGORIA",
   catalogmaster: "catalogmaster",
 
+  report_leadgridtracking: "report_leadgridtracking",
   report_productivity: 'report_productivity',
   report_productivity_ticket: 'report_productivity_ticket',
   report_productivity_ticketyear: 'report_productivity_ticketyear',

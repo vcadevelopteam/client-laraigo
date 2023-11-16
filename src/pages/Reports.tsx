@@ -13,7 +13,7 @@ import Graphic from 'components/fields/Graphic';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx, DateRangePicker } from 'components';
+import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx, DateRangePicker, SkeletonReport } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
 import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp, getDateCleaned } from 'common/helpers';
@@ -23,7 +23,6 @@ import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
 import AssessorProductivity from 'components/report/AssessorProductivity';
 import DetailReportDesigner from 'pages/ReportTemplate';
-import { SkeletonReport } from 'components';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -47,6 +46,7 @@ import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'components/report/ReportRequestSD';
+import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
 interface RowSelected {
     row: Dictionary | null,
@@ -321,7 +321,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 setWaitSave(false);
                 resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                const errormessage = t(resExportData.code ?? "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -459,7 +459,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                 className={classes.button}
                                                 variant="contained"
                                                 color="primary"
-                                                disabled={mainPaginated.loading || !(mainPaginated.data.length > 0)}
+                                                disabled={mainPaginated.loading || mainPaginated.data.length <= 0}
                                                 onClick={() => setOpenModal(true)}
                                                 startIcon={<AssessmentIcon />}
                                             >
@@ -607,7 +607,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     label={t(langKeys.graphic_type)}
                     className="col-12"
                     valueDefault={getValues('graphictype')}
-                    error={errors?.graphictype?.message}
+                    error={(errors?.graphictype?.message as string) ?? ""}
                     onChange={(value) => setValue('graphictype', value?.key)}
                     data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
                     uset={true}
@@ -620,8 +620,8 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_view_by)}
                     className="col-12"
-                    valueDefault={getValues('column')}
-                    error={errors?.column?.message}
+                    valueDefault={getValues('column')}                    
+                    error={(errors?.column?.message as string) ?? ""}
                     onChange={(value) => setValue('column', value?.key)}
                     data={columns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
@@ -912,7 +912,7 @@ const Reports: FC = () => {
 
         dispatch(getMultiCollection(allRequestBody));
         setViewSelected("view-2");
-        setCustomReport(row.reportname === 'PRODUCTIVITY' ? true : false);
+        setCustomReport(row.reportname === 'PRODUCTIVITY');
     }
 
     useEffect(() => {
@@ -923,7 +923,7 @@ const Reports: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code ?? "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -1163,6 +1163,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'LEADGRIDTRACKING':
+                return (
+                    <Grid item key={"leadgridtracking"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("leadgridtracking")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/36231e3d-cf33-4d5e-a676-88a9ce3aac64/image_720.png"
+                                    title={t(langKeys.report_leadgridtracking)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t(langKeys.report_leadgridtracking)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             case 'UNIQUECONTACTS':
                 if (user?.roledesc?.includes("SUPERADMIN")) {
                     return (
@@ -1173,7 +1194,7 @@ const Reports: FC = () => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                        image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                         title={t(langKeys.uniquecontactsreport)}
                                     />
                                     <CardContent>
@@ -1197,7 +1218,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                    image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                     title={t('report_' + report?.origin)}
                                 />
                                 <CardContent>
@@ -1218,7 +1239,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                    image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                     title={t('report_' + report?.origin)}
                                 />
                                 <CardContent>
@@ -1621,6 +1642,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <ReportRequestSD />
+                </div>
+            </>
+        )
+    }else if (viewSelected === "leadgridtracking") {
+        return (
+            <>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_leadgridtracking'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <ReportLeadGridTracking />
                 </div>
             </>
         )

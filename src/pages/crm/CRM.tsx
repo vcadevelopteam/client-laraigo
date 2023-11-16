@@ -770,6 +770,8 @@ const CRM: FC = () => {
       })),
       { key: 'notedescription', alias: t(langKeys.notedescription) }, // parte de la columna comments
       { key: 'activitydescription', alias: t(langKeys.activitydescription) }, // parte de la columna comments
+      { key: 'estimatedimplementationdate', alias: t(langKeys.estimatedimplementationdate) }, // parte de la columna comments
+      { key: 'estimatedbillingdate', alias: t(langKeys.estimatedbillingdate) }, // parte de la columna comments
     ];
     dispatch(exportData(getLeadExport(
       {

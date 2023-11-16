@@ -543,7 +543,7 @@ export const downloadJson = (filename: string, data: any) => {
 }
 
 export function uploadCSV(file: any, owner: any = {}): Promise<Dictionary[]> {
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsText(file);
     return new Promise((res, rej) => {
         reader.onload = (event: any) => {
