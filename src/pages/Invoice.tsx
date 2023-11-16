@@ -3917,7 +3917,14 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                         className={classes.fieldsfilter}
                         data={datatotalize}
                         label={t(langKeys.totalize)}
-                        onChange={(value) => setdataMain((prev) => ({ ...prev, totalize: value?.value || 0 }))}
+                        onChange={(value) => {
+                            if (value?.value === 1) {
+                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0, orgid: 0 }))
+                            }
+                            else {
+                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0 }))
+                            }
+                        }}
                         optionDesc="description"
                         optionValue="value"
                         orderbylabel={true}
@@ -11312,15 +11319,15 @@ const Invoice: FC = () => {
                         value={pageSelected}
                         variant="fullWidth"
                     >
-                        <AntTab label={t(langKeys.costperperiod)} value={0}/>
-                        <AntTab label={t(langKeys.periodreport)} value={1}/>
-                        { user?.roledesc?.includes("SUPERADMINISTRADOR SOCIOS") && (
-                            <AntTab label={t(langKeys.partnersperiodreport)} value={2}/>
+                        <AntTab label={t(langKeys.costperperiod)} value={0} />
+                        <AntTab label={t(langKeys.periodreport)} value={1} />
+                        {user?.roledesc?.includes("SUPERADMINISTRADOR SOCIOS") && (
+                            <AntTab label={t(langKeys.partnersperiodreport)} value={2} />
                         )}
-                        <AntTab label={t(langKeys.payments)} value={3}/>
-                        <AntTab label={t(langKeys.invoice)} value={4}/>
-                        <AntTab label={t(langKeys.messagingpackages)} value={5}/>
-                        <AntTab label={t(langKeys.paymentmethods)} value={6}/>
+                        <AntTab label={t(langKeys.payments)} value={3} />
+                        <AntTab label={t(langKeys.invoice)} value={4} />
+                        <AntTab label={t(langKeys.messagingpackages)} value={5} />
+                        <AntTab label={t(langKeys.paymentmethods)} value={6} />
                     </Tabs>
                     {pageSelected === 0 && (
                         <div style={{ marginTop: 16 }}>
@@ -11365,9 +11372,9 @@ const Invoice: FC = () => {
                     )}
                 </div>
             ) : (
-            (user?.roledesc ?? "")
-                .split(",")
-                .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
+                (user?.roledesc ?? "")
+                    .split(",")
+                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
                     <div>
                         <Tabs
                             indicatorColor="primary"
