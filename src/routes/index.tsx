@@ -186,7 +186,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin: (!fromChangeOrganization && automaticConnection), roledesc }));
 			if (sitevoxi && ownervoxi) {
 				dispatch(voximplantConnect({
-					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
+					automaticConnection: automaticConnection || Boolean(localStorage.getItem("agentConnected")) || false,
 					user: `user${userid}.${orgid}`,
 					application: ownervoxi
 				}));
