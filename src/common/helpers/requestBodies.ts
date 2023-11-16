@@ -4090,3 +4090,45 @@ export const rasaModelSel = () => ({
     key: "UFN_RASA_MODEL_SEL",
     parameters: {},
 });
+
+export const partnerSel = ({ id, all }: Dictionary) => ({
+    method: "UFN_PARTNER_SEL",
+    key: "UFN_PARTNER_SEL",
+    parameters: { id, all },
+});
+
+export const partnerIns = ({ id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation }: Dictionary) => ({
+    method: "UFN_PARTNER_INS",
+    key: "UFN_PARTNER_INS",
+    parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation },
+});
+
+export const customerByPartnerSel = ( partnerid: number ) => ({
+    method: "UFN_CUSTOMER_BY_PARTNER_SEL",
+    key: "UFN_CUSTOMER_BY_PARTNER_SEL",
+    parameters: { partnerid },
+});
+
+export const customerPartnersByUserSel = () => ({
+    method: "UFN_CUSTOMERPARTNER_BY_USER_SEL",
+    key: "UFN_CUSTOMERPARTNER_BY_USER_SEL",
+    parameters: {},
+});
+
+export const customerByPartnerIns = ({ id, corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, status, operation }: Dictionary) => ({
+    method: "UFN_CUSTOMER_BY_PARTNER_INS",
+    key: "UFN_CUSTOMER_BY_PARTNER_INS",
+    parameters: { id, corpid, orgid, partnerid, typepartner, billingplan, comissionpercentage, status, operation },
+});
+
+export const billingPeriodPartnerEnterprise = ({ partnerid, corpid, orgid, year, month, reporttype, username }: Dictionary) => ({
+    method: "UFN_BILLINGPERIODPARTNER_ENTERPRISE",
+    key: "UFN_BILLINGPERIODPARTNER_ENTERPRISE",
+    parameters: { partnerid, corpid, orgid, year, month, reporttype, username },
+});
+
+export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid, year, month, username }: Dictionary) => ({
+    method: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
+    key: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
+    parameters: { partnerid, corpid, orgid, year, month, username },
+});
