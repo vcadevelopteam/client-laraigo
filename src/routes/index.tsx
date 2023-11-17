@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, lazy } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
@@ -147,7 +146,7 @@ const cleanPath = (pathx: string) => {
 // insert: 2
 // delete: 3
 
-const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
+const ProtectRoute: FC<PrivateRouteProps> = ({ component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
 	const applications = resValidateToken?.user?.menu;
@@ -158,7 +157,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 
 	React.useEffect(() => {
 		if (existToken)
-			dispatch(validateToken());
+			dispatch(validateToken(localStorage.getItem("firstLoad") ?? ""));
 	}, [])
 
 	React.useEffect(() => {
