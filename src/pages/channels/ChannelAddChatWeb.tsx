@@ -1870,6 +1870,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 <ChannelAddEnd
                     loading={insertChannel.loading || editChannel.loading}
                     integrationId={insertChannel.value?.integrationid}
+                    insertChannel={insertChannel}
                     onSubmit={handleSubmit}
                     onClose={() => setShowFinalStep(false)}
                     channel={channel}
@@ -1905,13 +1906,15 @@ interface ChannelAddEndProps {
     onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
     onClose?: () => void;
     channel: IChannel | null;
+    insertChannel: any;
 }
 
-const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel }) => {
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel, insertChannel }) => {
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
+    const [enableVirtual, setEnableVirtual] = useState<number|null>(null);
     const [coloricon, setcoloricon] = useState("#7721ad");
     const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
@@ -1924,7 +1927,14 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const handleSave = () => {
         onSubmit(name, auto, hexIconColor);
     }
-
+    const handleend = () => {
+        setEnableVirtual(insertChannel.value.result.ufn_communicationchannel_ins)
+    }
+    if(enableVirtual){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={enableVirtual}
+        />
+    }
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <Breadcrumbs aria-label="breadcrumb">
@@ -1977,7 +1987,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
                 {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
             </code></pre><div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                <Button variant="contained" color="primary" onClick={handleend}>
                     {t(langKeys.close)}
                 </Button>
             </div>

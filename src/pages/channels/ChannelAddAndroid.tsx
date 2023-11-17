@@ -27,6 +27,7 @@ import Link from '@material-ui/core/Link';
 import paths from "common/constants/paths";
 import React, { FC, useEffect, useRef, useState } from "react";
 import SendIcon from '@material-ui/icons/Send';
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 interface FieldTemplate {
     text: React.ReactNode;
@@ -1944,6 +1945,7 @@ export const ChannelAddAndroid: FC = () => {
     const channel = location.state as IChannel | null;
     const insertChannel = useSelector(state => state.channel.insertChannel);
     const editChannel = useSelector(state => state.channel.editChannel);
+    const [viewSelected, setViewSelected] = useState("main-view");
 
     useEffect(() => {
         dispatch(getMultiCollection([
@@ -1979,14 +1981,16 @@ export const ChannelAddAndroid: FC = () => {
                 severity: "error"
             }));
         } else if (editChannel.success) {
-            dispatch(showBackdrop(false));
-            setShowScript(true);
-            dispatch(showSnackbar({
-                message: t(langKeys.channeleditsuccess),
-                show: true,
-                severity: "success"
-            }));
-            history.push(paths.CHANNELS);
+            if(!channel?.haveflow){
+                setViewSelected("enable-virtual-assistant")
+            }else{
+                dispatch(showSnackbar({
+                    message: t(langKeys.channeleditsuccess),
+                    show: true,
+                    severity: "success"
+                }));
+                history.push(paths.CHANNELS);
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, editChannel]);
@@ -2075,6 +2079,14 @@ export const ChannelAddAndroid: FC = () => {
         }
 
     }
+    const handleend = () => {
+        setViewSelected("enable-virtual-assistant")
+    }
+    if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={insertChannel?.value?.result?.ufn_communicationchannel_ins||null}
+        />
+    }
 
     return (
         <div style={{ width: '100%' }}>
@@ -2106,7 +2118,7 @@ export const ChannelAddAndroid: FC = () => {
                 <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
                     {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
                 </code></pre><div style={{ height: 20 }} />
-                    <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                    <Button variant="contained" color="primary" onClick={handleend}>
                         {t(langKeys.close)}
                     </Button>
                 </div>

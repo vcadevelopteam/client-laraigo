@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelAppStore } from "icons";
 import { FC, useEffect, useState } from "react";
 import { FieldEdit, FieldEditMulti, ColorInput } from "components";
@@ -13,6 +12,7 @@ import { useTranslation } from "react-i18next";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -88,7 +88,7 @@ export const ChannelAddAppStore: FC = () => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS);
+                setViewSelected("enable-virtual-assistant")
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),
@@ -113,6 +113,7 @@ export const ChannelAddAppStore: FC = () => {
         partialf.parameters.description = value;
         setFields(partialf);
     }
+
 
     if (viewSelected === "view1") {
         return (
@@ -212,7 +213,12 @@ export const ChannelAddAppStore: FC = () => {
                 </div>
             </div>
         );
-    } else {
+    } else if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
+    }
+    else {
         return (
             <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">

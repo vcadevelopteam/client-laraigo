@@ -286,12 +286,8 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                 setsetins(false);
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                if(edit && !whatsAppData?.row?.haveflow){
-                    setViewSelected("enable-virtual-assistant")
-                }else{
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
-                    history.push(paths.CHANNELS);
-                }
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
+                setViewSelected("enable-virtual-assistant")
             } else if (!executeResult) {
                 dispatch(
                     showSnackbar({
@@ -415,8 +411,10 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         }
     }, [executeActivationResult]);
 
-    if (viewSelected === "enable-virtual-assistant") {
-        return <ChannelEnableVirtualAssistant/>
+    if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
     }
     
     if (viewSelected === "view1") {

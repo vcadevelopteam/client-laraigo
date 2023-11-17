@@ -10,7 +10,7 @@ export const getChannelsSuccessInsert = (state: IState, action: IAction): IState
     return {
         ...state,
         channelList: {
-            data: [{ applicationId: action.payload?.applicationId, integrationId: action.payload?.integrationId }],
+            data: [{ applicationId: action.payload?.applicationId, integrationId: action.payload?.integrationId, communicantionchannelid:action.payload?.result?.ufn_communicationchannel_ins }],
             count: 0,
             loading: false,
             error: false,

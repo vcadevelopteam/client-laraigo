@@ -30,7 +30,7 @@ export interface IState {
     instagramDMPages: IListStatePaginated<any>;
 
     successinsert: Boolean;
-    insertChannel: IObjectState<{ success: boolean, integrationid: string, integrationId: string }>;
+    insertChannel: IObjectState<{ success: boolean, integrationid: string, integrationId: string, result: any }>;
     activateChannel: IObjectState<{ success: boolean }>;
     checkPaymentPlan: IObjectState<{ success: boolean, createChannel: boolean, providerWhatsApp: string }>;
     editChannel: IProcessState;

@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
@@ -92,7 +93,7 @@ export const ChannelAddFacebookDM: FC = () => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS);
+                setViewSelected("enable-virtual-assistant")
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -186,6 +187,10 @@ export const ChannelAddFacebookDM: FC = () => {
                 </div>
             </div>
         )
+    } else if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
     } else {
         return (
             <div style={{ width: "100%" }}>

@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 const useChannelAddStyles = makeStyles((theme) => ({
     button: {
@@ -54,6 +55,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
     const [showLastStep, setShowLastStep] = useState(false);
     const [waitList, setWaitList] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
+    const [viewSelected, setViewSelected] = useState("view1");
 
     const [fields, setFields] = useState({
         method: "UFN_COMMUNICATIONCHANNEL_INS",
@@ -88,7 +90,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
     }
 
     async function goBack() {
-        history.push(paths.CHANNELS);
+        setViewSelected("enable-virtual-assistant")
     }
 
     useEffect(() => {
@@ -227,7 +229,11 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
             }
         }
     };
-
+    if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
+    }
     return (
         <div style={{ width: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">

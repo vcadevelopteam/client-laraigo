@@ -1220,18 +1220,27 @@ interface ChannelAddEndProps {
 const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel }) => {
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
-    const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
     const [auto] = useState(true);
+    const [enableVirtual, setEnableVirtual] = useState<number|null>(null);
+    const insertChannel = useSelector(state => state.channel.insertChannel);
     
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
         if (!integrationId) onClose?.();
     }
+    const handleend = () => {
+        setEnableVirtual(insertChannel?.value?.result?.ufn_communicationchannel_ins||null)
+    }
 
     const handleSave = () => {
         onSubmit(name, auto);
+    }
+    if(enableVirtual){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={enableVirtual}
+        />
     }
 
     return (
@@ -1280,7 +1289,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginBottom: 20 }}>
                 *{t(langKeys.containeridExplained)}
             </div>
-                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                <Button variant="contained" color="primary" onClick={handleend}>
                     {t(langKeys.close)}
                 </Button>
             </div>

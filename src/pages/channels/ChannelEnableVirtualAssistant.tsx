@@ -83,7 +83,8 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const ChannelEnableVirtualAssistant: FC = () => {
+const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({communicationchannelid}) => {
+    console.log(communicationchannelid)
     const { t } = useTranslation();
     const history = useHistory();
     const location = useLocation();
@@ -104,7 +105,7 @@ const ChannelEnableVirtualAssistant: FC = () => {
     } = useForm({
         defaultValues: {
             chatblockid: "",
-            communicationchannelid: channel?.communicationchannelid??0,
+            communicationchannelid: communicationchannelid ?? channel?.communicationchannelid ?? 0,
             template_body: "",
             prop_value: 0,
         },
