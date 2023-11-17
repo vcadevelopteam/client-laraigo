@@ -1,48 +1,23 @@
-import { ChannelChat01 } from "icons";
-import { Close, CloudUpload } from "@material-ui/icons";
-import { ColorChangeHandler } from "react-color";
-import { ColorInput, FieldEdit, IOSSwitch } from "components";
-import { getEditChatWebChannel, getInsertChatwebChannel } from "common/helpers";
-import { IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
-import { langKeys } from "lang/keys";
-import { showSnackbar } from "store/popus/actions";
-import { TabPanel } from "pages/crm/components";
-import { Trans, useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
-import { useForm, UseFormReturn } from "react-hook-form";
-import { useHistory, useLocation } from "react-router";
-import { useSelector } from "hooks";
-
-import {
-    AppBar,
-    Box,
-    Button,
-    makeStyles,
-    Link,
-    Tab,
-    Tabs,
-    Typography,
-    TextField,
-    Grid,
-    Select,
-    IconButton,
-    FormControl,
-    MenuItem,
-    Divider,
-    Breadcrumbs,
-    FormHelperText,
-} from "@material-ui/core";
-
-import {
-    editChannel as getEditChannel,
-    insertChannel2,
-    resetInsertChannel,
-    resetEditChannel,
-} from "store/channel/actions";
-
-import clsx from "clsx";
-import paths from "common/constants/paths";
-import React, { FC, useEffect, useRef, useState } from "react";
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
+import { ChannelChat01 } from 'icons';
+import { Close, CloudUpload } from '@material-ui/icons';
+import { ColorChangeHandler } from 'react-color';
+import { ColorInput, FieldEdit, IOSSwitch } from 'components';
+import { editChannel as getEditChannel, insertChannel2, resetInsertChannel, resetEditChannel } from 'store/channel/actions';
+import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
+import { IChannel, IChatWebAdd, IChatWebAddFormField } from '@types';
+import { langKeys } from 'lang/keys';
+import { showSnackbar } from 'store/popus/actions';
+import { TabPanel } from 'pages/crm/components';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { useHistory, useLocation } from 'react-router';
+import { useSelector } from 'hooks';
+import clsx from 'clsx';
+import paths from 'common/constants/paths';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
 
 interface FieldTemplate {
     text: React.ReactNode;
@@ -1773,6 +1748,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const [tabIndex, setTabIndex] = useState("0");
     const [showFinalStep, setShowFinalStep] = useState(false);
+    const [viewSelected, setViewSelected] = useState("main-view");
 
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -1833,14 +1809,16 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 })
             );
         } else if (editChannel.success) {
-            dispatch(
-                showSnackbar({
+            if(edit && !channel?.haveflow){
+                setViewSelected("enable-virtual-assistant")
+            }else{
+                dispatch(showSnackbar({
                     message: t(langKeys.channeleditsuccess),
                     show: true,
-                    severity: "success",
-                })
-            );
-            history.push(paths.CHANNELS);
+                    severity: "success"
+                }));
+                history.push(paths.CHANNELS);
+            }
         }
     }, [dispatch, editChannel]);
 
@@ -1944,6 +1922,10 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
         return <div />;
     }
 
+    if (viewSelected !== "main-view") {
+        return <ChannelEnableVirtualAssistant/>
+    }
+
     return (
         <div className={classes.root}>
             <div style={{ display: showFinalStep ? "none" : "flex", flexDirection: "column" }}>
@@ -2014,6 +1996,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 <ChannelAddEnd
                     loading={insertChannel.loading || editChannel.loading}
                     integrationId={insertChannel.value?.integrationid}
+                    insertChannel={insertChannel}
                     onSubmit={handleSubmit}
                     onClose={() => setShowFinalStep(false)}
                     channel={channel}
@@ -2049,16 +2032,18 @@ interface ChannelAddEndProps {
     onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
     onClose?: () => void;
     channel: IChannel | null;
+    insertChannel: any;
 }
 
-const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel }) => {
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel, insertChannel }) => {
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
     const history = useHistory();
-    const auto = true;
-    const [name, setName] = useState(channel?.communicationchanneldesc ?? "");
-    const [coloricon, setColoricon] = useState("#7721ad");
-    const [hexIconColor, setHexIconColor] = useState(channel?.coloricon ?? "#7721ad");
+    const [name, setName] = useState(channel?.communicationchanneldesc || "");
+    const [enableVirtual, setEnableVirtual] = useState<number|null>(null);
+    const [coloricon, setcoloricon] = useState("#7721ad");
+    const [auto] = useState(true);
+    const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -2067,8 +2052,15 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
 
     const handleSave = () => {
         onSubmit(name, auto, hexIconColor);
-    };
-
+    }
+    const handleend = () => {
+        setEnableVirtual(insertChannel.value.result.ufn_communicationchannel_ins)
+    }
+    if(enableVirtual){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={enableVirtual}
+        />
+    }
     return (
         <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
             <Breadcrumbs aria-label="breadcrumb">
@@ -2138,35 +2130,10 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             >
                 {t(langKeys.chatwebstep)}
             </div>
-            <div
-                style={{
-                    display: integrationId ? "flex" : "none",
-                    flexDirection: "column",
-                    marginLeft: 120,
-                    marginRight: 120,
-                }}
-            >
-                <pre
-                    style={{
-                        background: "#f4f4f4",
-                        border: "1px solid #ddd",
-                        color: "#666",
-                        pageBreakInside: "avoid",
-                        fontFamily: "monospace",
-                        lineHeight: 1.6,
-                        maxWidth: "100%",
-                        overflow: "auto",
-                        padding: "1em 1.5em",
-                        display: "block",
-                        wordWrap: "break-word",
-                    }}
-                >
-                    <code>
-                        {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
-                    </code>
-                </pre>
-                <div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
+                {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
+            </code></pre><div style={{ height: 20 }} />
+                <Button variant="contained" color="primary" onClick={handleend}>
                     {t(langKeys.close)}
                 </Button>
             </div>

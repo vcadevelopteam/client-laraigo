@@ -308,6 +308,7 @@ const SignIn = () => {
             history.push('/');
         } else {
             localStorage.removeItem("firstLoad")
+            localStorage.removeItem("firstloadeddialog")
         }
     }, [])
 

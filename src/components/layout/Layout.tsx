@@ -1,4 +1,4 @@
-import React, { FC } from 'react'; // we need this to make JSX compile
+import React, { FC, useState, useMemo, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from './Header';
 import clsx from 'clsx';
@@ -8,11 +8,11 @@ import { useSelector } from 'hooks';
 import { CssBaseline } from '@material-ui/core';
 import { routes } from 'routes/routes';
 import Popus from 'components/layout/Popus';
-// import ManageCall from 'components/inbox/ManageCall';
 import MakeCall from 'components/inbox/MakeCall';
-import CloseTicketVoxi from 'components/inbox/CloseTicketVoxi';
+import { useHistory, useLocation } from 'react-router-dom';import CloseTicketVoxi from 'components/inbox/CloseTicketVoxi';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import { DialogZyx } from 'components/fields/templates';
 
 const drawerWidth = 260;
 const drawerWidthCompressed = 73;
@@ -229,9 +229,67 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const useStylesDialog = makeStyles(() => ({
+    title: {
+        fontWeight: 500,
+        fontSize: "1.3rem"
+    },
+    subtitle: {
+        display: "flex", 
+        gap: 4,
+        marginBottom: ".5rem"
+    }
+}));
+
 interface LayoutProps {
     mainClasses?: string;
 }
+
+const WelcomeDialog = React.memo(() => {
+    const classes = useStylesDialog();
+    const location = useLocation();
+    const history = useHistory();
+    const { t } = useTranslation();
+    
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
+    const firstName = useSelector(state => state.login.validateToken.user?.firstname);
+    const [openModal, setOpenModal] = useState(false);
+    
+    useEffect(() => {
+        if (newChannels && !localStorage.getItem("firstloadeddialog")) {
+            if (location.pathname !== "/channels") {
+                history.push("/channels")
+            } else {
+                setOpenModal(true);
+                localStorage.setItem("firstloadeddialog", "1")
+            }
+        }
+    }, [])
+    
+    return (
+        <DialogZyx
+            open={openModal}
+            title={""}
+            maxWidth={"xs"}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={() => setOpenModal(false)}
+        >
+            <div>
+                <div className={classes.title}>¡Hola, {firstName}!</div>
+                <div className={classes.subtitle}>
+                    <div className={classes.title}>Te damos la bienvenida a</div>
+                    <div className={classes.title}>Laraigo</div>
+                </div>
+                <div>Para empezar a comunicarte con tus clientes, termina de configurar los canales seleccionados durante la suscripción.</div>
+                <br></br>
+                <div>Si deseas agregar un canal adicional puedes utilizar el botón registrar.</div>
+            </div>
+        </DialogZyx>
+    );
+})
+WelcomeDialog.displayName = "WelcomeDialog"
 
 const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const theme = useTheme();
@@ -270,6 +328,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             </div>
 
                         </main>
+                        <WelcomeDialog />
                     </>
                 }
             </div>

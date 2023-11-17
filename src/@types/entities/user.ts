@@ -66,6 +66,7 @@ export interface IUser {
     userid: number;
     corpid: number;
     orgid: number;
+    newChannels: boolean;
     menu: IApplicationsRecord;
     image: string | null;
     domains: Domains;
