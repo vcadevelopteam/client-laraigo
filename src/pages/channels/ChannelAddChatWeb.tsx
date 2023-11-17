@@ -17,6 +17,7 @@ import { useSelector } from 'hooks';
 import clsx from 'clsx';
 import paths from 'common/constants/paths';
 import React, { FC, useEffect, useRef, useState } from 'react';
+import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
 
 interface FieldTemplate {
     text: React.ReactNode;
@@ -1661,6 +1662,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
     const [showFinalStep, setShowFinalStep] = useState(false);
+    const [viewSelected, setViewSelected] = useState("main-view");
 
     const insertChannel = useSelector(state => state.channel.insertChannel);
     const editChannel = useSelector(state => state.channel.editChannel);
@@ -1713,12 +1715,16 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 severity: "error"
             }));
         } else if (editChannel.success) {
-            dispatch(showSnackbar({
-                message: t(langKeys.channeleditsuccess),
-                show: true,
-                severity: "success"
-            }));
-            history.push(paths.CHANNELS);
+            if(edit && !channel?.haveflow){
+                setViewSelected("enable-virtual-assistant")
+            }else{
+                dispatch(showSnackbar({
+                    message: t(langKeys.channeleditsuccess),
+                    show: true,
+                    severity: "success"
+                }));
+                history.push(paths.CHANNELS);
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, editChannel]);
@@ -1818,6 +1824,10 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     if (edit && !channel) {
         return <div />;
+    }
+
+    if (viewSelected !== "main-view") {
+        return <ChannelEnableVirtualAssistant/>
     }
 
     return (

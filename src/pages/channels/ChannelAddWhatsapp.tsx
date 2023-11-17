@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import Link from "@material-ui/core/Link";
 import MuiPhoneNumber from "material-ui-phone-number";
 import paths from "common/constants/paths";
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 const useChannelAddStyles = makeStyles((theme) => ({
     centerbutton: {
@@ -283,10 +284,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
                 setsetins(false);
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS);
+                if(edit && !whatsAppData?.row?.haveflow){
+                    setViewSelected("enable-virtual-assistant")
+                }else{
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
+                    history.push(paths.CHANNELS);
+                }
             } else if (!executeResult) {
                 dispatch(
                     showSnackbar({
@@ -410,6 +415,10 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         }
     }, [executeActivationResult]);
 
+    if (viewSelected === "enable-virtual-assistant") {
+        return <ChannelEnableVirtualAssistant/>
+    }
+    
     if (viewSelected === "view1") {
         if (setRegister360) {
             return (

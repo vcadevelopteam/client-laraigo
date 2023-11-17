@@ -4,16 +4,16 @@ import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Dictionary, IChannel } from '@types';
-import React from 'react';
 import { TemplateIcons } from 'components';
 import { getCollection, resetAllMain } from 'store/main/actions';
 import { getChannelSel } from 'common/helpers/requestBodies';
 import { checkPaymentPlan, deleteChannel } from 'store/channel/actions';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 export const Channels: FC = () => {
     const dispatch = useDispatch();
@@ -72,6 +72,7 @@ export const Channels: FC = () => {
     }
 
     const handleEdit = (row: IChannel) => {
+        console.log(row.type)
         if (row.type === 'WHAT' && row.status === 'PENDIENTE' && roledesc?.includes("SUPERADMIN")) {
             var whatsAppData = {
                 typeWhatsApp: 'SMOOCH',
@@ -149,6 +150,19 @@ export const Channels: FC = () => {
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: "",
+                accessor: 'haveflow',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { haveflow } = props.cell.row.original;
+                    if(haveflow){
+                        return <div></div>
+                    }else{
+                        return <div style={{display:"flex", alignItems:"center", color: "#7721ad", fontWeight:"bold"}}><SettingsIcon/>{t(langKeys.configure)}</div>
+                    }
                 }
             },
         ],
