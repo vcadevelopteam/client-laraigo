@@ -12,8 +12,8 @@ import paths from "common/constants/paths";
 import { ICrmLead } from "@types";
 import { FieldEdit, FieldSelect } from "components";
 import { useSelector } from "hooks";
-import { getSecondsUntelNow } from "common/helpers";
-import { TrafficLightConfigurationModal } from "./Modals";
+import { getSecondsUntelNow, secondsToTime } from "common/helpers";
+import { TrafficIndividualConfigurationModal, TrafficLightConfigurationModal } from "./Modals";
 const isIncremental = window.location.href.includes("incremental");
 
 const columnWidth = 275;
@@ -99,7 +99,7 @@ const useLeadCardStyles = makeStyles((theme) => ({
         textTransform: "capitalize",
     },
     popoverPaper: {
-        maxWidth: 150,
+        maxWidth: 100,
     },
     footer: {
         display: "flex",
@@ -107,17 +107,22 @@ const useLeadCardStyles = makeStyles((theme) => ({
         width: "100%",
         alignItems: "center",
     },
+    greenLight: {
+        backgroundColor: 'green',
+        color: 'white',
+        borderRadius: 10
+    },
+    redLight: {
+        backgroundColor: 'red',
+        color: 'white',
+        borderRadius: 10
+    },
+    yellowLight: {
+        backgroundColor: 'yellow',
+        color: 'black',
+        borderRadius: 10
+    },
 }));
-
-const formatTime = (seconds: number): string => {
-	const hours = Math.floor(seconds / 3600);
-	const minutes = Math.floor((seconds % 3600) / 60);
-	const remainingSeconds = seconds % 60;
-  
-	const formatWithLeadingZero = (value: number): string => (value < 10 ? `0${value}` : `${value}`);
-  
-	return `${formatWithLeadingZero(hours)}:${formatWithLeadingZero(minutes)}:${formatWithLeadingZero(remainingSeconds)}`;
-};
 
 export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     lead,
@@ -136,14 +141,15 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     const history = useHistory();
     const user = useSelector((state) => state.login.validateToken.user);
 
+    const [openModal, setOpenModal] = useState(false);
 	const now = new Date();
-	const todayAt1PM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 0, 0, 0);
-	const [time, settime] = useState(Math.max(getSecondsUntelNow(todayAt1PM, true), 0));
+	const todayAt1PM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 2, 0, 0, 0);
+	const [time, settime] = useState(Math.max(getSecondsUntelNow(todayAt1PM), 0));
 
 	React.useEffect(() => {
         const timer = setTimeout(() => {
             if(time > 0) {
-				const timeSeconds = getSecondsUntelNow(todayAt1PM, true);
+				const timeSeconds = getSecondsUntelNow(todayAt1PM);
 				settime(timeSeconds);
 			}
         }, 1000);
@@ -222,9 +228,15 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                         readOnly
                     />
                     <div style={{ flexGrow: 1 }} />
-                    <Box bgcolor="green" color="white" p={1} borderRadius={10}>
-                        <Typography variant="body2">{formatTime(time)}</Typography>
-                    </Box>
+                    <div className={clsx({
+                        [classes.greenLight]: 0 <= time && time <= 18000,
+                        [classes.yellowLight]: 18001 <= time && time <= 36000,
+                        [classes.redLight]: 36001 <= time
+                    })}>
+                        <Box p={1}>
+                            <Typography variant="body2">{secondsToTime(time)}</Typography>
+                        </Box>
+                    </div>
                 </div>
             </div>
             <div className={classes.floatingMenuIcon}>
@@ -266,7 +278,21 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     >
                         <Trans i18nKey={langKeys.delete} />
                     </Button>
+                    <Button
+                        variant="text"
+                        color="inherit"
+                        fullWidth
+                        type="button"
+                        onClick={() => setOpenModal(true)}
+                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                    >
+                        <Trans i18nKey={langKeys.trafficlight} />
+                    </Button>
                 </Popover>
+                <TrafficIndividualConfigurationModal
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                />
             </div>
         </Box>
     );
@@ -503,6 +529,7 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
 
 interface AddColumnTemplatePops extends Omit<BoxProps, "onSubmit"> {
     onSubmit: (data: any) => void;
+    updateSortParams: (value: any) => void;
 }
 
 const useAddColumnTemplateStyles = makeStyles((theme) => ({
@@ -553,7 +580,7 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
 	}
 }));
 
-export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxProps }) => {
+export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, ...boxProps }) => {
     const classes = useAddColumnTemplateStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const { t } = useTranslation();
@@ -575,6 +602,15 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
         handleClose();
     };
 
+    const [sortParams, setSortParams] = useState({
+        type: '',
+        order: ''
+    })
+
+    useEffect(() => {
+        updateSortParams(sortParams)
+    }, [sortParams])
+
     return (
         <Box>
             <div className={classes.root}>
@@ -591,18 +627,40 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
 				<FieldSelect
 					variant="outlined"
 					label={t(langKeys.type)}
-					data={[]}
+                    valueDefault={sortParams.type}
+					data={[
+                        {domainvalue: 'firstname', domaindesc: 'firstname'},
+                        {domainvalue: 'description', domaindesc: 'description'}
+                    ]}
 					className={classes.filterComponent}
-					optionDesc=""
-					optionValue=""
+					optionDesc="domaindesc"
+					optionValue="domainvalue"
+                    onChange={(value) => {
+                        if(value?.domainvalue) {
+                            setSortParams({...sortParams, type: value.domaindesc})
+                        } else {
+                            setSortParams({...sortParams, type: ""})
+                        }
+                    }}
 				/>
 				<FieldSelect
 					variant="outlined"
 					label={t(langKeys.order)}
-					data={[]}
+                    valueDefault={sortParams.order}
+					data={[
+                        {domainvalue: 'menor a mayor', domaindesc: 'menor a mayor'},
+                        {domainvalue: 'mayor a menor', domaindesc: 'mayor a menor'}
+                    ]}
 					className={classes.filterComponent}
-					optionDesc=""
-					optionValue=""
+					optionDesc="domaindesc"
+					optionValue="domainvalue"
+                    onChange={(value) => {
+                        if(value?.domainvalue) {
+                            setSortParams({...sortParams, order: value.domaindesc})
+                        } else {
+                            setSortParams({...sortParams, order: ""})
+                        }
+                    }}
 				/>
 				<Button
 					variant="contained"

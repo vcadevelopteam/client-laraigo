@@ -5411,10 +5411,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   orderby: 'Ordenar por:',
   trafficlightconfig: 'Configuracion de semáforo',
   opportunityhours: 'Horario de atención de oportunidades',
-  maxtimegreen: 'Tiempo max. semáforo verde',
-  maxtimeamber: 'Tiempo max. semáforo ámbar',
+  maxtimegreen: 'Tiempo max. semáforo verde (minutos)',
+  maxtimeamber: 'Tiempo max. semáforo ámbar (minutos)',
   start: 'Inicio',
   end: 'Fin',
+  trafficlight: 'Semáforo',
+  trafficindividualconfig: 'Configuracion individual del semáforo',
 };
 
 const esResource: ResourceLanguage = {

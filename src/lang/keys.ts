@@ -5403,6 +5403,8 @@ export const langKeys = {
   maxtimeamber: 'maxtimeamber',
   start: 'start',
   end: 'end',
+  trafficlight: 'trafficlight',
+  trafficindividualconfig: 'trafficindividualconfig',
 };
 
 export type LangKeys = typeof langKeys;

@@ -95,9 +95,10 @@ interface IBoardFilter {
   persontype: string;
 }
 
-const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean }> = ({ column,
-  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental }) => {
+const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams }> = ({ column,
+  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental, sortParams }) => {
   const { t } = useTranslation();
+
   return (
     <Draggable draggableId={column.column_uuid} index={index + 1} key={column.column_uuid} isDragDisabled={isIncremental}>
       {(provided) => (
@@ -173,6 +174,11 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
       )}
     </Draggable>
   )
+}
+
+interface sortParams {
+  type: string
+  order: string
 }
 
 const CRM: FC = () => {
@@ -488,6 +494,14 @@ const CRM: FC = () => {
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
   const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });
+  const [sortParams, setSortParams] = useState({
+    type: '',
+    order: ''
+  })
+
+  const updateSortParams = (value: sortParams) => {
+    setSortParams(value)
+  }
 
   const setAllParameters = useCallback((prop: typeof allParameters) => {
     if (!user) return;
@@ -1021,7 +1035,7 @@ const CRM: FC = () => {
               <Trans i18nKey={langKeys.search} />
             </Button>
           </div>
-          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} />}
+          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} updateSortParams={updateSortParams} />}
           <div style={{ display: "flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold" }}>
             <div style={{ minWidth: 280, maxWidth: 280, backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column", }}>{t(langKeys.new)}</div>
             <div style={{
@@ -1046,7 +1060,7 @@ const CRM: FC = () => {
                   style={{ display: 'flex' }}
                 >
                   {dataColumn.map((column, index) =>
-                    <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x: any) => x.type === column.type).length > 1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead} />
+                    <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x: any) => x.type === column.type).length > 1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead} sortParams={sortParams} />
                   )}
                 </div>
               )}

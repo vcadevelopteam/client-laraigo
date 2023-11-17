@@ -5484,10 +5484,12 @@ const translation: LangKeys = {
   orderby: 'Order by:',
   trafficlightconfig: 'Traffic light configuration',
   opportunityhours: 'Opportunity Business Hours',
-  maxtimegreen: 'Green light max. time',
-  maxtimeamber: 'Amber light max. time',
+  maxtimegreen: 'Green light max. time (minutes)',
+  maxtimeamber: 'Amber light max. time (minutes)',
   start: 'Start',
   end: 'End',
+  trafficlight: 'Traffic light',
+  trafficindividualconfig: 'Traffic light individual configuration',
 };
 
 const enResource: ResourceLanguage = {
