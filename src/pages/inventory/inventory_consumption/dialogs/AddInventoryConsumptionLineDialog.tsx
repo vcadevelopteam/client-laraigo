@@ -156,7 +156,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
         setValue("description", selectedRow.productdescription);
         setValue("unitcost", parseFloat(selectedRow.priceunit));
     }
-    function setUser(selectedRow: unknown) {
+    function setUser(selectedRow: any) {
         setValue("createby", selectedRow.usr);
     }
 

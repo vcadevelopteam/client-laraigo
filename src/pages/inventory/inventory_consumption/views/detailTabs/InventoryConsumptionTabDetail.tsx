@@ -295,7 +295,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                                     color="primary"
                                     style={{ backgroundColor: "#55BD84" }}
                                     onClick={handleOpenModalReservedProducts}
-                                    disabled={!edit}
+                                    disabled={edit || !selectedWarehouse}
                                     variant="contained"
                                 >
                                     {t(langKeys.selectreservedproducts)}

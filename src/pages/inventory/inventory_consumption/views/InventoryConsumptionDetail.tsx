@@ -175,87 +175,81 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({ data: { row, edit }
     }
 
     return (
-            <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={(view) => {
-                                setViewSelected(view);
-                            }}
-                        />
-                        <TitleDetail
-                            title={row?.name || t(langKeys.inventory_consumption)}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => {
-                                setViewSelected("main-view")
-                            }}
-                        >
-                            {t(langKeys.back)}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            type="button"
-                            disabled={!edit}
-                            style={{ backgroundColor: "#55BD84" }}
-                            onClick={() => {
-                                setOpenModal(true)
-                            }}
-                        >
-                            {`${t(langKeys.complete)} ${t(langKeys.inventory_consumption)}`}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            {t(langKeys.save)}
-                        </Button>
+        <form onSubmit={onMainSubmit} style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={(view) => {
+                            setViewSelected(view);
+                        }}
+                    />
+                    <TitleDetail title={row?.name || t(langKeys.inventory_consumption)} />
+                </div>
+                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => {
+                            setViewSelected("main-view");
+                        }}
+                    >
+                        {t(langKeys.back)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        type="button"
+                        disabled={!edit}
+                        style={{ backgroundColor: "#55BD84" }}
+                        onClick={() => {
+                            setOpenModal(true);
+                        }}
+                    >
+                        {`${t(langKeys.complete)} ${t(langKeys.inventory_consumption)}`}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        startIcon={<SaveIcon color="secondary" />}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        {t(langKeys.save)}
+                    </Button>
 
-                        {edit && <ExtrasMenu
-                            generatelabel={()=>{}}
-                            referralguide={()=>{}}
+                    {edit && (
+                        <ExtrasMenu
+                            generatelabel={() => {}}
+                            referralguide={() => {}}
                             transactions={handleOpenModalSeeTransactions}
                             statushistory={handleOpenModalStatusHistory}
-                        />}
-                    </div>
-
+                        />
+                    )}
                 </div>
-                <InventoryConsumptionTabDetail
-                    row={row}
-                    edit={edit}
-                    setValue={setValue}
-                    getValues={getValues}                   
-                    errors={errors}
-                    setDataDetail={setDataDetail}
-                    viewSelected={viewSelected}
-                    dataDetail={dataDetail}
-                />
-                <CompleteInventoryConsumptionDialog
-                    openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    row={row}
-                />
-                <SeeTransactionsDialog
-                    openModal={openModalSeeTransactions}
-                    setOpenModal={setOpenModalSeeTransactions}
-                />
-                <StatusHistoryDialog
-                    openModal={openModalStatusHistory}
-                    setOpenModal={setOpenModalStatusHistory}
-                />
-            </form>
+            </div>
+            <InventoryConsumptionTabDetail
+                row={row}
+                edit={edit}
+                setValue={setValue}
+                getValues={getValues}
+                errors={errors}
+                setDataDetail={setDataDetail}
+                viewSelected={viewSelected}
+                dataDetail={dataDetail}
+            />
+            <CompleteInventoryConsumptionDialog
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                row={row}
+                setViewSelected={setViewSelected}
+            />
+            <SeeTransactionsDialog openModal={openModalSeeTransactions} setOpenModal={setOpenModalSeeTransactions} />
+            <StatusHistoryDialog openModal={openModalStatusHistory} setOpenModal={setOpenModalStatusHistory} />
+        </form>
     );
 }
 

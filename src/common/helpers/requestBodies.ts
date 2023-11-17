@@ -4566,3 +4566,8 @@ export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, p_
     key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
     parameters: { inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype },
 });
+export const inventoryConsumptionComplete = ({ inventoryconsumptionid, status, comment }: Dictionary) => ({
+    method: "UFN_INVENTORYCONSUMPTION_PROCESS",
+    key: "UFN_INVENTORYCONSUMPTION_PROCESS",
+    parameters: { inventoryconsumptionid, status, comment },
+});
