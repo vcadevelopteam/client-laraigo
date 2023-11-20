@@ -99,7 +99,8 @@ export const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         position: "absolute",
         top: 44,
-        left: 40
+        left: 40,
+        zIndex: 3
     },
     childContainer: {
         display: 'flex',
@@ -333,7 +334,7 @@ const SignIn = () => {
                         </div>
                         <div className={classes.paper} style={{ flex: 1 }}>
                             {(resLogin.error && showError) && (
-                                <Alert className={classes.alertheader} variant="filled" severity="error" >
+                                <Alert className={classes.alertheader} variant="filled" severity="error">
                                     <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                                         {t(resLogin.code || "error_unexpected_error")}
                                         <CloseIcon
