@@ -19,6 +19,7 @@ export interface ILead {
 }
 
 export interface ICrmLead {
+    lastchangestatusdate: string;
     changeby: string;
     changedate: string;
     column_uuid: string;

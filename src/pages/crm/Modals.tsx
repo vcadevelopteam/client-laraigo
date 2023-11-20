@@ -116,90 +116,88 @@ export const TrafficLightConfigurationModal: React.FC<{
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
-            maxWidth="lg"
+            maxWidth="sm"
         >
             <div className="row-zyx">
                 <Typography/>{t(langKeys.opportunityhours)}
             </div>
             <div style={{height:20}}></div>
             <div className="row-zyx">
-                <span className={`col-1 ${classes.weekDay}`}>{t(langKeys.monday)}</span>
+                <span className="col-1">{t(langKeys.day)}</span>
+                <span className="col-2">{t(langKeys.monday)}</span>
+                <span className="col-2">{t(langKeys.tuesday)}</span>
+                <span className="col-2">{t(langKeys.wednesday)}</span>
+                <span className="col-2">{t(langKeys.thursday)}</span>
+                <span className="col-2">{t(langKeys.friday)}</span>
+                <div className="col-1"></div>
+                <span className="col-1">{t(langKeys.start)}</span>
                 <FieldEdit
                     type="time"
-                    label={t(langKeys.start)}
-                    className="col-1"
+                    className="col-2"
                 />
                 <FieldEdit
                     type="time"
-                    label={t(langKeys.end)}
-                    className="col-1"
-                />
-                <span className={`col-1 ${classes.weekDay}`}>{t(langKeys.tuesday)}</span>
-                <FieldEdit
-                    type="time"
-                    label={t(langKeys.start)}
-                    className="col-1"
+                    className="col-2"
                 />
                 <FieldEdit
                     type="time"
-                    label={t(langKeys.end)}
-                    className="col-1"
-                />
-                <span className={`col-1 ${classes.weekDay}`}>{t(langKeys.wednesday)}</span>
-                <FieldEdit
-                    type="time"
-                    label={t(langKeys.start)}
-                    className="col-1"
+                    className="col-2"
                 />
                 <FieldEdit
                     type="time"
-                    label={t(langKeys.end)}
-                    className="col-1"
-                />
-                <span className={`col-1 ${classes.weekDay}`}>{t(langKeys.thursday)}</span>
-                <FieldEdit
-                    type="time"
-                    label={t(langKeys.start)}
-                    className="col-1"
+                    className="col-2"
                 />
                 <FieldEdit
                     type="time"
-                    label={t(langKeys.end)}
-                    className="col-1"
+                    className="col-2"
                 />
-                <span className={`col-1 ${classes.weekDay}`}>{t(langKeys.friday)}</span>
+                <div className="col-1"></div>
+                <span className="col-1">{t(langKeys.end)}</span>
                 <FieldEdit
                     type="time"
-                    label={t(langKeys.start)}
-                    className="col-1"
-                />
-                <FieldEdit
-                    type="time"
-                    label={t(langKeys.end)}
-                    className="col-1"
-                />
-                <span className={`col-1 ${classes.weekDay}`}>{t(langKeys.saturday)}</span>
-                <FieldEdit
-                    type="time"
-                    label={t(langKeys.start)}
-                    className="col-1"
+                    className="col-2"
                 />
                 <FieldEdit
                     type="time"
-                    label={t(langKeys.end)}
-                    className="col-1"
-                />
-                <span className={`col-1 ${classes.weekDay}`}>{t(langKeys.sunday)}</span>
-                <FieldEdit
-                    type="time"
-                    label={t(langKeys.start)}
-                    className="col-1"
+                    className="col-2"
                 />
                 <FieldEdit
                     type="time"
-                    label={t(langKeys.end)}
-                    className="col-1"
+                    className="col-2"
                 />
+                <FieldEdit
+                    type="time"
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    className="col-2"
+                />
+                <div className="col-1"></div>
+                <span className="col-1">{t(langKeys.day)}</span>
+                <span className="col-2">{t(langKeys.saturday)}</span>
+                <span className="col-2">{t(langKeys.sunday)}</span>
+                <div className="col-7"></div>
+                <span className="col-1">{t(langKeys.start)}</span>
+                <FieldEdit
+                    type="time"
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    className="col-2"
+                />
+                <div className="col-7"></div>
+                <span className="col-1">{t(langKeys.end)}</span>
+                <FieldEdit
+                    type="time"
+                    className="col-2"
+                />
+                <FieldEdit
+                    type="time"
+                    className="col-2"
+                />
+                <div className="col-7"></div>
             </div>
             <div style={{height:10}}></div>
             <div className="row-zyx">
@@ -207,13 +205,13 @@ export const TrafficLightConfigurationModal: React.FC<{
                     label={t(langKeys.maxtimegreen)}
                     variant="outlined"
                     type="number"
-                    className="col-6"
+                    className="col-12"
                 />
                 <FieldEdit
                     label={t(langKeys.maxtimeamber)}
                     variant="outlined"
                     type="number"
-                    className="col-6"
+                    className="col-12"
                 />
             </div>
         </DialogZyx>

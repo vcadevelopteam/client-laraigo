@@ -142,16 +142,15 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     const user = useSelector((state) => state.login.validateToken.user);
 
     const [openModal, setOpenModal] = useState(false);
-	const now = new Date();
-	const todayAt1PM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 2, 0, 0, 0);
-	const [time, settime] = useState(Math.max(getSecondsUntelNow(todayAt1PM), 0));
+	const phasechangedate = lead.lastchangestatusdate || '';
+    const dateInUTC = new Date(phasechangedate.replace('Z', ''));
+    const dateWithSubtractedHours = new Date(dateInUTC.getTime() - (new Date().getTimezoneOffset()/60 * 3600 * 1000));
+	const [time, settime] = useState(getSecondsUntelNow(dateWithSubtractedHours));
 
 	React.useEffect(() => {
         const timer = setTimeout(() => {
-            if(time > 0) {
-				const timeSeconds = getSecondsUntelNow(todayAt1PM);
-				settime(timeSeconds);
-			}
+            const timeSeconds = getSecondsUntelNow(dateWithSubtractedHours);
+			settime(timeSeconds);
         }, 1000);
 
         return () => {
