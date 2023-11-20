@@ -84,7 +84,6 @@ const useStyles = makeStyles(() => ({
 }));
 
 const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({communicationchannelid}) => {
-    console.log(communicationchannelid)
     const { t } = useTranslation();
     const history = useHistory();
     const location = useLocation();
@@ -102,6 +101,7 @@ const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({co
         handleSubmit,
         register,
         setValue,
+        trigger
     } = useForm({
         defaultValues: {
             chatblockid: "",
@@ -205,7 +205,7 @@ const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({co
                     style={{ minHeight: "300px", margin: "15px 0", backgroundColor: "white" }}
                     dangerouslySetInnerHTML={{ __html: templateBody }}
                 ></div>
-                <div style={{ display: "flex" }}>
+                <div style={{ display: "flex", marginTop: 24 }}>
                     <div className={classes.fieldContainer}>
                         <div style={{ fontSize: 18 }}>
                             {t(langKeys.automaticclosingtime)}
@@ -227,12 +227,22 @@ const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({co
                         </div>
                         <div className={classes.closingTimeContainerField}>
                             <Input
-                                defaultValue={getValues("prop_value")}
+                                value={getValues("prop_value")}
                                 style={{ width: "50%" }}
-                                onChange={(e)=>setValue("prop_value", parseFloat(e?.target?.value||"0"))}
+                                onChange={(e)=> {
+                                    const value = parseFloat(e.target.value);
+                                    if (!isNaN(value) && value > 0) {
+                                      setValue("prop_value", value);
+                                    } else {
+                                      setValue("prop_value", 0);
+                                    }
+                                    trigger('prop_value');
+                                    
+                                }}
                                 inputProps={{
                                     "aria-label": "description",
                                     type: "number",
+                                    min: "0" 
                                 }}
                             />
                             <Trans i18nKey={langKeys.minute_plural} />
