@@ -5500,6 +5500,8 @@ export const langKeys = {
   reschedule: 'reschedule',
   deliver: 'deliver',
   entereddata: 'entereddata',
+  coordinate: 'coordinate',
+  area: 'area',
 };
 
 export type LangKeys = typeof langKeys;

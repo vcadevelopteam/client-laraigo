@@ -5510,6 +5510,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   reschedule: 'Reagendar',
   deliver: 'Entregar',
   entereddata: 'Datos Ingresados',
+  coordinate: 'Coordenada',
+  area: 'Área',
 
 };
 

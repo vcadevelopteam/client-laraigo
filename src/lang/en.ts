@@ -5581,7 +5581,8 @@ const translation: LangKeys = {
   reschedule: 'Reschedule',
   deliver: 'Deliver',
   entereddata: 'Entered Data',
-
+  coordinate: 'Coordinate',
+  area: 'Area',
 };
 
 const enResource: ResourceLanguage = {
