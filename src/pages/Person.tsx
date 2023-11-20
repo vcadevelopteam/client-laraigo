@@ -611,8 +611,8 @@ export const Person: FC = () => {
             {},
             domains.value?.docTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_documenttype_${d.domainvalue?.toLowerCase()}`) }), {}),
             {},
-            domains.value?.personGenTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_persontype_${d.domaindesc?.toLowerCase()}`) }), {}),
             domains.value?.personTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_personlevel_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.personGenTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_persontype_${d.domaindesc?.toLowerCase()}`) }), {}),
             {},
             {},
             {},
@@ -660,39 +660,39 @@ export const Person: FC = () => {
 
     const handleUpload = async (files: any) => {
         const file = files?.item(0);
-        files=null
+        files = null
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             let data: IPersonImport[] = array_trimmer(excel);
             data = data.filter((f: IPersonImport) =>
                 (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
-                && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
-                && (f.type === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
+                && (f.persontype === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
+                && (f.type === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
                 && (f.gender === undefined || Object.keys(domains.value?.genders.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.gender))
                 && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.educationlevel))
                 && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
                 && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
                 && (f.email === undefined || (/\S+@\S+\.\S+/.test(f.email)))
-                && (f.phone === undefined || (`${f.phone}`.startsWith("+51")? `${f.phone}`.length === 12:true))
-                && (f.alternativephone === undefined || (f.alternativephone.startsWith("+51")? f.alternativephone.length === 12:true))
-                && (f.documenttype === undefined || (f.documenttype === "DNI" && f.documentnumber?.length === 8) || (f.documenttype === "RUC" && f.documentnumber?.length === 11)|| (f.documenttype === "CE" && f.documentnumber?.length <= 12))
+                && (f.phone === undefined || (`${f.phone}`.startsWith("+51") ? `${f.phone}`.length === 12 : true))
+                && (f.alternativephone === undefined || (f.alternativephone.startsWith("+51") ? f.alternativephone.length === 12 : true))
+                && (f.documenttype === undefined || (f.documenttype === "DNI" && f.documentnumber?.length === 8) || (f.documenttype === "RUC" && f.documentnumber?.length === 11) || (f.documenttype === "CE" && f.documentnumber?.length <= 12))
                 //&& (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
             );
             if (data.length > 0) {
-                let datavalidation = data.reduce((acc:any,x:any)=>[...acc,{phone:x.phone,alternativephone:x.alternativephone,email:x.email,alternativeemail:x.alternativeemail}],[])
-                let table: Dictionary = data.reduce((a: any, d: IPersonImport,i:number) => ({
+                let datavalidation = data.reduce((acc: any, x: any) => [...acc, { phone: x.phone, alternativephone: x.alternativephone, email: x.email, alternativeemail: x.alternativeemail }], [])
+                let table: Dictionary = data.reduce((a: any, d: IPersonImport, i: number) => ({
                     ...a,
                     [`${d.firstname}_${d.lastname}_${i}`]: {
                         personid: 0,
                         firstname: d.firstname || null,
                         lastname: d.lastname || null,
-                        documenttype: d.documenttype||"",
-                        documentnumber: d.documentnumber||"",
+                        documenttype: d.documenttype || "",
+                        documentnumber: d.documentnumber || "",
                         persontype: d.persontype || null,
                         type: d.type || '',
-                        phone: String(d.phone|| "") ,
-                        alternativephone: String(d?.alternativephone|| "") ,
+                        phone: String(d.phone || ""),
+                        alternativephone: String(d?.alternativephone || ""),
                         email: d.email || null,
                         alternativeemail: d.alternativeemail || null,
                         birthday: d.birthday || null,
@@ -700,9 +700,9 @@ export const Person: FC = () => {
                         educationlevel: d.educationlevel || null,
                         civilstatus: d.civilstatus || null,
                         occupation: d.occupation || null,
-                        address: d.address|| "",
-                        healthprofessional: d.healthprofessional|| "",
-                        referralchannel: d.referralchannel|| "",
+                        address: d.address || "",
+                        healthprofessional: d.healthprofessional || "",
+                        referralchannel: d.referralchannel || "",
                         groups: d.groups || null,
                         status: 'ACTIVO',
                         personstatus: 'ACTIVO',
@@ -712,9 +712,9 @@ export const Person: FC = () => {
                         sex: null,
                         operation: 'INSERT',
                     }
-                }), {});                
+                }), {});
                 setImportData(table)
-                
+
                 const callback = () => {
                     dispatch(execute(personImportValidation({
                         table: JSON.stringify(datavalidation)
@@ -733,12 +733,12 @@ export const Person: FC = () => {
             }
         }
     }
-    
+
     useEffect(() => {
         if (waitValidation) {
             if (!executeResult.loading && !executeResult.error) {
-                let phonesexisting:any[] = []
-                let emailsexisting:any[] = []
+                let phonesexisting: any[] = []
+                let emailsexisting: any[] = []
                 const callback = () => {
                     setWaitImport(true)
                     dispatch(showBackdrop(true));
@@ -752,10 +752,10 @@ export const Person: FC = () => {
                     callback()
                 } else {
                     let warningmessage = ""
-                    if(phonesexisting.length!==0){
+                    if (phonesexisting.length !== 0) {
                         warningmessage += ` ${t(langKeys.phone)}: ${phonesexisting.join(', ')}`
                     }
-                    if(emailsexisting.length!==0){
+                    if (emailsexisting.length !== 0) {
                         warningmessage += ` ${t(langKeys.email)}: ${emailsexisting.join(', ')}`
                     }
                     dispatch(showBackdrop(false));
@@ -816,10 +816,12 @@ export const Person: FC = () => {
     }, [selectedRows])
 
     return (
-        <div style={{ height: '100%', width: 'inherit', 
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1 }}>
+        <div style={{
+            height: '100%', width: 'inherit',
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1
+        }}>
 
             <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
                 <div style={{ flexGrow: 1 }} >

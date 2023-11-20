@@ -42,7 +42,6 @@ class SubmitObservable {
 const submitObservable = new SubmitObservable();
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
-
 interface Subscription {
     addChannel: (option: keyof ListChannels) => void;
     commonClasses: ReturnType<typeof useStyles>;

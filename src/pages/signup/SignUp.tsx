@@ -1,13 +1,15 @@
+import React, { FC, useContext, useState, useEffect } from 'react';
 import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { LogoSuscription } from "icons";
 import { makeStyles } from "@material-ui/core/styles";
-import { SubscriptionContext, SubscriptionProvider, usePlanData } from "./context";
+import { RouteParams, SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
 import { Trans } from "react-i18next";
 import { useFormContext } from "react-hook-form";
+import { loadScripts } from 'common/helpers';
+import { useRouteMatch } from 'react-router-dom';
 
 import Popus from "components/layout/Popus";
-import React, { FC, useContext, useState } from "react";
 import RightSideMenu from "./RightSideMenu";
 import ThirdStep from "./ThirdStep";
 
@@ -103,13 +105,14 @@ export const SignUp: FC = () => {
 };
 
 const SignUpFunc: FC = () => {
+    const classes = useSignUpStyles();
+    const { step, setStep } = useContext(SubscriptionContext);
     const { getValues, reset } = useFormContext();
     const { loading: planDataLoading } = usePlanData();
-    const { step, setStep } = useContext(SubscriptionContext);
 
     const [openWarning, setOpenWarning] = useState(false);
+    const match = useRouteMatch<RouteParams>();
 
-    const classes = useSignUpStyles();
 
     function setDefaultMainData() {
         reset({
@@ -176,6 +179,21 @@ const SignUpFunc: FC = () => {
         }
         setOpenWarning(false);
     };
+
+    useEffect(() => {
+        if (["BUSINESS START", "BUSINESS BASIC", "BUSINESS PRO", "BUSINESS PRO+"].includes(match.params.token)) {
+            const scriptsToLoad = ["gtm"];
+            const { scriptRecaptcha, scriptPlatform, clarityScript } = loadScripts(scriptsToLoad);
+    
+            return () => {
+                scriptRecaptcha && document.body.removeChild(scriptRecaptcha);
+                scriptPlatform && document.body.removeChild(scriptPlatform);
+                if (clarityScript?.parentNode) {
+                    clarityScript.parentNode.removeChild(clarityScript);
+                }
+            };
+        }
+    }, [])
 
     return (
         <div className={classes.root}>

@@ -51,7 +51,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    
+
     const auxResult = useSelector(state => state.main.mainAux);
 
     const [valuefile, setvaluefile] = useState('');
@@ -60,18 +60,19 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [headers, setHeaders] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.headers || [] : []);
     const [jsonData, setJsonData] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.jsonData || [] : []);
     const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
+    const [jsonDataPerson, setJsonDataPerson] = useState<any[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
         detaildata.selectedColumns
-        ? detaildata.selectedColumns
-        : (detaildata.fields?.primarykey || '') !== ''
-            ? { ...detaildata.fields } as SelectedColumns
-            : new SelectedColumns());
+            ? detaildata.selectedColumns
+            : (detaildata.fields?.primarykey || '') !== ''
+                ? { ...detaildata.fields } as SelectedColumns
+                : new SelectedColumns());
     const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
-    const [selectionKey, setSelectionKey] = useState<string| any>(
+    const [selectionKey, setSelectionKey] = useState<string | any>(
         detaildata.source === 'EXTERNAL' ? selectedColumns.primarykey :
-        detaildata.source === 'PERSON' ? 'personid' :
-        detaildata.source === 'LEAD' ? 'leadid' :
-        'campaignmemberid')
+            detaildata.source === 'PERSON' ? 'personid' :
+                detaildata.source === 'LEAD' ? 'leadid' :
+                    'campaignmemberid')
     const [selectedRows, setSelectedRows] = useState<any>(detaildata.sourcechanged ? {} : detaildata.selectedRows || {});
     const [allRowsSelected, setAllRowsSelected] = useState<boolean>(false);
 
@@ -108,7 +109,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     useEffect(() => {
         if (frameProps.checkPage) {
             const valid = changeStep(frameProps.page);
-            setFrameProps({...frameProps, executeSave: false, checkPage: false, valid: {...frameProps.valid, 1: valid}});
+            setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 1: valid } });
             if (frameProps.page < 1 || valid) {
                 setPageSelected(frameProps.page);
             }
@@ -117,7 +118,22 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             }
         }
     }, [frameProps.checkPage])
-    
+
+    useEffect(() => {
+        if (jsonData) {
+            if (jsonData.length > 0) {
+                const dataPerson = [...jsonDataPerson, ...jsonData];
+                setJsonDataPerson((dataPerson || []).filter((v, i, a) => a.findIndex(v2 => (v2.personid === v.personid)) === i));
+            }
+            else {
+                setJsonDataPerson([]);
+            }
+        }
+        else {
+            setJsonDataPerson([]);
+        }
+    }, [jsonData])
+
     useEffect(() => {
         // Load Headers
         switch (detaildata.source) {
@@ -142,7 +158,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     { Header: `${t(langKeys.field)} 13`, accessor: 'field13' },
                     { Header: `${t(langKeys.field)} 14`, accessor: 'field14' },
                     { Header: `${t(langKeys.field)} 15`, accessor: 'field15' }
-                ]);    
+                ]);
                 fetchCampaignInternalData(row?.id);
                 break;
             case 'EXTERNAL':
@@ -162,7 +178,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     { Header: t(langKeys.alternativePhone), accessor: 'alternativephone' },
                     { Header: t(langKeys.email), accessor: 'email' },
                     { Header: t(langKeys.alternativeEmail), accessor: 'alternativeemail' },
-                    { Header: t(langKeys.lastContactDate), accessor: 'lastcontact', type: 'date',
+                    {
+                        Header: t(langKeys.lastContactDate), accessor: 'lastcontact', type: 'date',
                         Cell: (props: any) => {
                             const row = props.cell.row.original;
                             return convertLocalDate(row.lastcontact).toLocaleString()
@@ -179,7 +196,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             case 'LEAD':
                 setHeaders([
                     { Header: t(langKeys.opportunity), accessor: 'opportunity' },
-                    { Header: t(langKeys.lastUpdate), accessor: 'changedate', type: 'date',
+                    {
+                        Header: t(langKeys.lastUpdate), accessor: 'changedate', type: 'date',
                         Cell: (props: any) => {
                             const row = props.cell.row.original;
                             return convertLocalDate(row.changedate).toLocaleString()
@@ -189,7 +207,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     { Header: t(langKeys.email), accessor: 'email' },
                     { Header: t(langKeys.phone), accessor: 'phone' },
                     { Header: t(langKeys.expected_revenue), accessor: 'expected_revenue' },
-                    { Header: t(langKeys.endDate), accessor: 'date_deadline', type: 'date',
+                    {
+                        Header: t(langKeys.endDate), accessor: 'date_deadline', type: 'date',
                         Cell: (props: any) => {
                             const row = props.cell.row.original;
                             return convertLocalDate(row.date_deadline).toLocaleString()
@@ -207,10 +226,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         // Clean selected data on source change
         if (detaildata.sourcechanged) {
-            setDetaildata({...detaildata, sourcechanged: false, selectedRows: {}, person: [] });
+            setDetaildata({ ...detaildata, sourcechanged: false, selectedRows: {}, person: [] });
         }
     }, [])
-    
+
     // Internal data
     useEffect(() => {
         if (!auxResult.loading && !auxResult.error && auxResult.data.length > 0) {
@@ -218,10 +237,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 setJsonData(auxResult.data);
                 let selectedRowsTemp = {};
                 if (detaildata.selectedRows) {
-                    selectedRowsTemp = {...detaildata.selectedRows};
+                    selectedRowsTemp = { ...detaildata.selectedRows };
                 }
                 else {
-                    selectedRowsTemp = {...auxResult.data.reduce((ad, d, i) => ({...ad, [d.campaignmemberid]: true }), {})};
+                    selectedRowsTemp = { ...auxResult.data.reduce((ad, d, i) => ({ ...ad, [d.campaignmemberid]: true }), {}) };
                 }
                 setSelectedRows(selectedRowsTemp)
                 setDetaildata({
@@ -230,11 +249,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     jsonData: auxResult.data,
                     selectedColumns: selectedColumns,
                     selectedRows: selectedRowsTemp,
-                    person: auxResult.data.map(j => 
-                        Object.keys(selectedRowsTemp).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'}
+                    person: auxResult.data.map(j =>
+                        Object.keys(selectedRowsTemp).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' }
                     )
                 });
-                setFrameProps({...frameProps, valid: {...frameProps.valid, 1: Object.keys(selectedRowsTemp).length > 0}});
+                setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 1: Object.keys(selectedRowsTemp).length > 0 } });
             }
         }
     }, [auxResult]);
@@ -263,18 +282,18 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_without_data)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_without_data) }));
             return null;
         }
         if (data.length > 100000) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.too_many_records)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.too_many_records) }));
             return null;
         }
         let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
         let newHeaders = Object.keys(data[0]);
         if (actualHeaders) {
             if (!actualHeaders.every(h => newHeaders?.includes(h))) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_incompatbile_with_previous_one)}));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_incompatbile_with_previous_one) }));
                 return null;
             }
         }
@@ -288,11 +307,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         // Initialize primary key
         let localSelectedColumns = { ...selectedColumns };
         if (!localColumnList.includes(localSelectedColumns.primarykey)) {
-            localSelectedColumns = {...localSelectedColumns, primarykey: ''};
+            localSelectedColumns = { ...localSelectedColumns, primarykey: '' };
         }
         // Initialize selected column booleans
         if (selectedColumns.columns.length === 0) {
-            localSelectedColumns = {...localSelectedColumns, column: new Array(localColumnList.length).fill(false)};
+            localSelectedColumns = { ...localSelectedColumns, column: new Array(localColumnList.length).fill(false) };
         }
         // Code for reuse campaign
         else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
@@ -319,7 +338,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         setJsonData([]);
         setColumnList([]);
         if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
-            setSelectedColumns({...detaildata.fields} as SelectedColumns);
+            setSelectedColumns({ ...detaildata.fields } as SelectedColumns);
         }
         else {
             setSelectedColumns(new SelectedColumns());
@@ -330,15 +349,15 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             headers: [],
             jsonData: [],
             selectedColumns: (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '')
-            ? {...detaildata.fields} as SelectedColumns
-            : new SelectedColumns(),
+                ? { ...detaildata.fields } as SelectedColumns
+                : new SelectedColumns(),
             selectedRows: {},
-            person: [] 
+            person: []
         });
     }
 
     const handleCancelModal = () => {
-        setSelectedColumns({...selectedColumnsBackup} as SelectedColumns);
+        setSelectedColumns({ ...selectedColumnsBackup } as SelectedColumns);
         setOpenModal(false);
     }
 
@@ -350,7 +369,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 }
                 return h
             }, []);
-            setSelectedColumns({...selectedColumns, columns: columns});
+            setSelectedColumns({ ...selectedColumns, columns: columns });
             setJsonDataTemp(
                 JSON.parse(JSON.stringify(jsonDataTemp, [
                     selectedColumns.primarykey,
@@ -359,17 +378,17 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             )
             let jsondatadata = [
                 ...JSON.parse(JSON.stringify(jsonData,
-                [
-                    selectedColumns.primarykey,
-                    ...columns
-                ])),
-                ...JSON.parse(JSON.stringify(jsonDataTemp.filter(j => 
+                    [
+                        selectedColumns.primarykey,
+                        ...columns
+                    ])),
+                ...JSON.parse(JSON.stringify(jsonDataTemp.filter(j =>
                     !jsonData.map(jd => jd[selectedColumns.primarykey])
-                    .includes(j[selectedColumns.primarykey])),
-                [
-                    selectedColumns.primarykey,
-                    ...columns
-                ]))
+                        .includes(j[selectedColumns.primarykey])),
+                    [
+                        selectedColumns.primarykey,
+                        ...columns
+                    ]))
             ];
             setJsonData(jsondatadata);
             // Changing field(n) with new order
@@ -385,13 +404,13 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                         message = message?.replace(`{{field${i + 2}}}`, `{{${c}}}`);
                     }
                 });
-                setDetaildata({...detaildata, message: message});
+                setDetaildata({ ...detaildata, message: message });
             }
             else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
                 message?.match(/({{)(.*?)(}})/g)?.forEach((c: string, i: number) => {
                     message = message?.replace(`${c}`, `{{${i + 1}}}`);
                 });
-                setDetaildata({...detaildata, message: message});
+                setDetaildata({ ...detaildata, message: message });
             }
             setOpenModal(false);
         }
@@ -426,7 +445,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const changeStep = (step: number) => {
         if (Object.keys(selectedRows).length === 0) {
             if (step === 2) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected)}));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected) }));
             }
             return false;
         }
@@ -438,8 +457,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     jsonData: jsonData,
                     selectedColumns: selectedColumns,
                     selectedRows: selectedRows,
-                    person: jsonData.map(j => 
-                        Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'}
+                    person: jsonData.map(j =>
+                        Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' }
                     )
                 });
                 break;
@@ -461,7 +480,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     person: Array.from(
                         new Map([
                             ...(detaildata.person || []),
-                            ...jsonData
+                            ...jsonDataPerson
                         ].map(d => [d['personid'], d])).values()).filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
                 });
                 break;
@@ -503,7 +522,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             style={{ backgroundColor: "#53a6fa" }}
                         ><Trans i18nKey={langKeys.uploadFile} />
                         </Button>
-                    </label> 
+                    </label>
                     <Button
                         className={classes.button}
                         variant="contained"
@@ -521,49 +540,49 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             </>
         }
     }
-    
+
     return (
         <React.Fragment>
             <div className={classes.containerDetail}>
                 {
-                    ['PERSON','LEAD'].includes(detaildata?.source || '') ?
-                    <TablePaginated
-                        columns={headers}
-                        data={jsonData}
-                        totalrow={totalrow}
-                        pageCount={pageCount}
-                        loading={paginatedAuxResult.loading}
-                        filterrange={true}
-                        FiltersElement={<></>}
-                        ButtonsElement={() => <>
-                            <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
-                         </>}
-                        fetchData={fetchPaginatedData}
-                        useSelection={true}
-                        selectionKey={selectionKey}
-                        initialSelectedRows={selectedRows}
-                        setSelectedRows={setSelectedRows}
-                        allRowsSelected={allRowsSelected}
-                        setAllRowsSelected={setAllRowsSelected}
-                    />
-                    :
-                    <TableZyx
-                        titlemodule=" "
-                        columns={headers}
-                        data={jsonData}
-                        download={false}
-                        loading={detaildata.source === 'INTERNAL' && auxResult.loading}
-                        filterGeneral={false}
-                        ButtonsElement={AdditionalButtons}
-                        useSelection={true}
-                        selectionKey={selectionKey}
-                        initialSelectedRows={selectedRows}
-                        setSelectedRows={setSelectedRows}
-                        allRowsSelected={allRowsSelected}
-                        setAllRowsSelected={setAllRowsSelected}
-                    />
+                    ['PERSON', 'LEAD'].includes(detaildata?.source || '') ?
+                        <TablePaginated
+                            columns={headers}
+                            data={jsonData}
+                            totalrow={totalrow}
+                            pageCount={pageCount}
+                            loading={paginatedAuxResult.loading}
+                            filterrange={true}
+                            FiltersElement={<></>}
+                            ButtonsElement={() => <>
+                                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
+                            </>}
+                            fetchData={fetchPaginatedData}
+                            useSelection={true}
+                            selectionKey={selectionKey}
+                            initialSelectedRows={selectedRows}
+                            setSelectedRows={setSelectedRows}
+                            allRowsSelected={allRowsSelected}
+                            setAllRowsSelected={setAllRowsSelected}
+                        />
+                        :
+                        <TableZyx
+                            titlemodule=" "
+                            columns={headers}
+                            data={jsonData}
+                            download={false}
+                            loading={detaildata.source === 'INTERNAL' && auxResult.loading}
+                            filterGeneral={false}
+                            ButtonsElement={AdditionalButtons}
+                            useSelection={true}
+                            selectionKey={selectionKey}
+                            initialSelectedRows={selectedRows}
+                            setSelectedRows={setSelectedRows}
+                            allRowsSelected={allRowsSelected}
+                            setAllRowsSelected={setAllRowsSelected}
+                        />
                 }
-                
+
             </div>
             <ModalCampaignColumns
                 columnList={columnList}
@@ -590,7 +609,7 @@ const ModalCampaignColumns: React.FC<ModalProps> = ({ columnList, selectedColumn
     const { t } = useTranslation();
 
     const [checkboxEnable, setCheckboxEnable] = useState(true);
-    
+
     const handleMaxColumns = () => {
         setCheckboxEnable(selectedColumns.column.filter(c => c === true).length < 14 ? true : false);
     }
@@ -620,7 +639,7 @@ const ModalCampaignColumns: React.FC<ModalProps> = ({ columnList, selectedColumn
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {columnList.map((c, i) => 
+                        {columnList.map((c, i) =>
                             <TableRow key={i}>
                                 <TableCell>{c}</TableCell>
                                 <TableCell>

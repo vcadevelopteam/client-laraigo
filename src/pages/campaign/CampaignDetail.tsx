@@ -194,7 +194,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             });
             message = splitMessage.join('{{');
         }
-        if (['PERSON','LEAD'].includes(detaildata.source || '')) {
+        if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
                 // field i + 2 because i + 1 is used for primary key, pccowner
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
@@ -209,7 +209,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
                         ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
                     ]));
-                    localtablevariable = localtablevariable.map(x => x.slice(2,-2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
+                    localtablevariable = localtablevariable.map(x => x.slice(2, -2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
                     if (Object.keys(usedTablevariable).length > 0) {
                         Object.entries(usedTablevariable).forEach((v: any) => {
                             subject = subject.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
@@ -260,7 +260,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             let localsubject = newmessages.subject || '';
             let localheader = newmessages.header || '';
             let localmessage = newmessages.message || '';
-            
+
             let elemVariables: string[] = [];
             let errorIndex = null;
 
@@ -378,8 +378,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             personcommunicationchannelowner: p.email || p.alternativeemail || '',
                             type: detaildata.source || '',
                             displayname: detaildata.source === 'PERSON'
-                            ? `${p.firstname || ''} ${p.lastname || ''}`.trim()
-                            : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
+                                ? `${p.firstname || ''} ${p.lastname || ''}`.trim()
+                                : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
                             status: 'ACTIVO',
                             field1: p.email || p.alternativeemail || '',
                             field2: validateField(detaildata.source, p, messageVariables[0]?.text),
@@ -411,8 +411,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             personcommunicationchannelowner: p.phone || p.alternativephone || '',
                             type: detaildata.source || '',
                             displayname: detaildata.source === 'PERSON'
-                            ? `${p.firstname || ''} ${p.lastname || ''}`.trim()
-                            : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
+                                ? `${p.firstname || ''} ${p.lastname || ''}`.trim()
+                                : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
                             status: 'ACTIVO',
                             field1: p.phone || p.alternativephone || '',
                             field2: validateField(detaildata.source, p, usedTablevariable['field2']),
