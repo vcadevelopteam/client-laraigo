@@ -41,7 +41,7 @@ class SubmitObservable {
 const submitObs = new SubmitObservable();
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
-type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED";
+type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED" | "BUSINESS START" | "BUSINESS BASIC" | "BUSINESS PRO" | "BUSINESS PRO+";
 interface Subscription {
     selectedChannels: number;
     commonClasses: ReturnType<typeof useStyles>;

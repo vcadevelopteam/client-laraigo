@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from 'react';
+import React, { FC, useContext, useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import RightSideMenu from './RightSideMenu';
 import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
@@ -7,9 +6,11 @@ import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 import { LaraigoLogo } from 'icons';
 import { LeftSide } from './LeftSideMenu';
-import { SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
+import { RouteParams, SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
 import Popus from 'components/layout/Popus';
 import { useFormContext } from 'react-hook-form';
+import { loadScripts } from 'common/helpers';
+import { useRouteMatch } from 'react-router-dom';
 
 const useSignUpStyles = makeStyles(theme => ({
     root: {
@@ -105,10 +106,12 @@ export const SignUp: FC = () => {
 }
 
 const SignUpFunc: FC = () => {
+    const classes = useSignUpStyles();
     const { step, setStep } = useContext(SubscriptionContext);
     const { getValues, reset } = useFormContext();
     const { loading: planDataLoading } = usePlanData();
     const [openWarning, setOpenWarning] = useState(false);
+    const match = useRouteMatch<RouteParams>();
 
     function setDefaultMainData() {
         reset({
@@ -174,7 +177,20 @@ const SignUpFunc: FC = () => {
         setOpenWarning(false);
     };
 
-    const classes = useSignUpStyles();
+    useEffect(() => {
+        if (["BUSINESS START", "BUSINESS BASIC", "BUSINESS PRO", "BUSINESS PRO+"].includes(match.params.token)) {
+            const scriptsToLoad = ["gtm"];
+            const { scriptRecaptcha, scriptPlatform, clarityScript } = loadScripts(scriptsToLoad);
+    
+            return () => {
+                scriptRecaptcha && document.body.removeChild(scriptRecaptcha);
+                scriptPlatform && document.body.removeChild(scriptPlatform);
+                if (clarityScript?.parentNode) {
+                    clarityScript.parentNode.removeChild(clarityScript);
+                }
+            };
+        }
+    }, [])
 
     return (
         <div className={classes.root}>
