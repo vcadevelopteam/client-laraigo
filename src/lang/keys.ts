@@ -1436,6 +1436,11 @@ export const langKeys = {
 
   no_reply_use_hsm: 'no_reply_use_hsm',
   no_reply_claro: 'no_reply_claro',
+  
+  hello: 'hello',
+  welcome_onboarding: 'welcome_onboarding',
+  text1_onboarding: 'text1_onboarding',
+  text2_onboarding: 'text2_onboarding',
 
   active: 'active',
   inactive: 'inactive',

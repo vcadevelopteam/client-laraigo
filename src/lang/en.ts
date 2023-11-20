@@ -440,6 +440,12 @@ const translation: LangKeys = {
 
   no_reply_use_hsm: 'This conversation is blocked until the client sends a reply to the sent HSM to start a conversation with its consent.',
   no_reply_claro: 'Due to profile permissions, the options for reassigning conversation or contact with the client are not enabled, being in Holding or Bot.',
+  
+  hello: 'Hi, {{name}}!',
+  welcome_onboarding: 'We welcome you to',
+  text1_onboarding: 'To start communicating with your customers, finish setting up the channels selected during subscription.',
+  text2_onboarding: 'If you want to add an additional channel you can use the register button.',
+  
   password_different: "Passwords do not match",
   password_not_allowed: "The password must contain at least 10 characters, a letter and a number",
   status: 'Status',
