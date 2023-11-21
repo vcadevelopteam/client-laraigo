@@ -10,51 +10,50 @@ import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import TableZyx from "components/fields/table-simple";
 import TablePaginated from "components/fields/table-paginated";
+import { useSelector } from "hooks";
+import { Dictionary } from "@types";
+
+const selectionKey="inventorybookingid"
 
 const SelectReservedProductsDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
-}> = ({ openModal, setOpenModal }) => {
+  updateRecords: (dat: any) => void;
+}> = ({ openModal, setOpenModal, updateRecords }) => {
   const { t } = useTranslation();
-  const [selectedRows, setSelectedRows] = useState(false);
+  const multiData = useSelector(state => state.main.multiData);
+  const [selectedRows, setSelectedRows] = useState<any>({});
 
   const columns = React.useMemo(
     () => [
       {
-        accessor: "warehouseid",
-        NoFilter: true,
-        isComponent: true,
-        minWidth: 60,
-        width: "1%",
-      },
-      {
         Header: t(langKeys.product),
-        accessor: "inventory_consumption",
+        accessor: "productcode",
         width: "auto",
       },
       {
         Header: t(langKeys.description),
-        accessor: "description",
+        accessor: "productdescription",
         width: "auto",
       },
       {
         Header: t(langKeys.reservedquantity),
-        accessor: "transactiontype",
+        accessor: "bookingquantity",
         width: "auto",
       },
       {
         Header: t(langKeys.ticketapplication),
-        accessor: "status",
+        accessor: "ticketid",
         width: "auto",
       },
       {
         Header: t(langKeys.requestedby),
-        accessor: "requestedby",
+        accessor: "createby",
         width: "auto",
       },
       {
         Header: t(langKeys.applicationdate),
-        accessor: "applicationdate",
+        accessor: "requestdate",
         width: "auto",
       }
     ],
@@ -64,10 +63,11 @@ const SelectReservedProductsDialog: React.FC<{
   return (
     <DialogZyx open={openModal} title={t(langKeys.selectreservedproducts)} maxWidth="lg">
       <div className="row-zyx">
-        <TablePaginated
+        <TableZyx
           columns={columns}
-          data={[]}
+          data={multiData?.data?.[1]?.data||[]}
           useSelection={true}
+          selectionKey={selectionKey}
           setSelectedRows={setSelectedRows}
           initialSelectedRows={selectedRows}
           filterGeneral={false}
@@ -90,6 +90,15 @@ const SelectReservedProductsDialog: React.FC<{
           variant="contained"
           color="primary"
           type="button"
+          onClick={()=>{
+            
+            updateRecords((p: Dictionary[]) => [
+                ...p,
+                ...selectedRows,
+            ]);
+            setOpenModal(false);
+            setSelectedRows({})
+          }}
           startIcon={<SaveIcon color="secondary" />}
           style={{ backgroundColor: "#55BD84" }}
         >

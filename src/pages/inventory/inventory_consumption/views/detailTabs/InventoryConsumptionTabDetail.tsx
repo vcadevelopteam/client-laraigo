@@ -12,11 +12,11 @@ import { useSelector } from 'hooks';
 import TableZyx from 'components/fields/table-simple';
 import AddInventoryConsumptionLineDialog from '../../dialogs/AddInventoryConsumptionLineDialog';
 import TableSelectionDialog from '../../dialogs/TableSelectionDialog';
-import { execute, getCollection, getMultiCollectionAux2 } from 'store/main/actions';
+import { execute, getCollection, getMultiCollection, getMultiCollectionAux2 } from 'store/main/actions';
 import { manageConfirmation, showBackdrop } from 'store/popus/actions';
 import SelectReservedProductsDialog from '../../dialogs/SelectReservedProductsDialog';
 import SelectProductsForReturnDialog from '../../dialogs/SelectProductsForReturnDialog';
-import { getInventoryConsumptionDetail, getWarehouseProducts } from 'common/helpers';
+import { getInventoryConsumptionDetail, getWarehouseProducts, reservationswarehouseSel } from 'common/helpers';
 import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
@@ -78,7 +78,8 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    const multiData = useSelector(state => state.main.multiDataAux);
+    const multiData = useSelector(state => state.main.multiData);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
     const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const [openModal, setOpenModal] = useState(false);
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
@@ -87,7 +88,6 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const [openModalReturnProducts, setOpenModalReturnProducts] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
     const [warehouseProducts, setWarehouseProducts] = useState<any>(null);
-    const mainData = useSelector(state => state.main.mainData);
 
     function setWarehouse(warehouseSelected:any){
         setSelectedWarehouse(warehouseSelected)
@@ -96,23 +96,26 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     }
 
     useEffect(() => {
-        if (viewSelected=="detail-view") {
+        if (viewSelected==="detail-view") {
             setSelectedWarehouse(null)
             setWarehouseProducts(null)
         }       
     }, [viewSelected]);
 
     useEffect(() => {
-        if(!mainData?.loading && !mainData?.error){
-            if(mainData?.key === "UFN_ALL_PRODUCT_WAREHOUSE_SEL"){
-                setWarehouseProducts(mainData?.data||[])
+        if(!multiData?.loading && !multiData?.error){
+            if(multiData?.data?.[0]?.key === "UFN_ALL_PRODUCT_WAREHOUSE_SEL"){
+                setWarehouseProducts(multiData?.data?.[0]?.data||[])
             }
         }   
-    }, [mainData]);
+    }, [multiData]);
 
     useEffect(() => {
         if(selectedWarehouse && !edit){
-            dispatch(getCollection(getWarehouseProducts(selectedWarehouse?.warehouseid||0)))
+            dispatch(getMultiCollection([
+                getWarehouseProducts(selectedWarehouse?.warehouseid||0),
+                reservationswarehouseSel(selectedWarehouse?.warehouseid||0),
+            ]))
         }
     }, [selectedWarehouse]);
 
@@ -233,11 +236,14 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     label={t(langKeys.status)}
                     className="col-3"
                     disabled={edit}
-                    data={multiData.data[2]?.data || []}
+                    data={multiDataAux.data[2]?.data || []}
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                     valueDefault={getValues("transactiontype")}
-                    onChange={(value) => setValue("transactiontype", value.domainvalue)}
+                    onChange={(value) => {
+                        setValue("transactiontype", value.domainvalue)
+                        setDataDetail([]);                        
+                    }}
                 />
                 <div className="row-zyx col-9">
                     <FieldEdit
@@ -267,7 +273,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     disabled={edit}
                     label={t(langKeys.status)}
                     className="col-3"
-                    data={multiData.data[0]?.data || []}
+                    data={multiDataAux.data[0]?.data || []}
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                     valueDefault={getValues("status")}
@@ -321,19 +327,21 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 warehouseProducts={warehouseProducts}
                 row={row}
                 edit={edit}
+                transactiontype={getValues("transactiontype")}
                 editRow={Boolean(row)}
             />
             <TableSelectionDialog
                 openModal={openModalWarehouse}
                 setOpenModal={setOpenModalWarehouse}
                 setRow={setWarehouse}
-                data={multiData?.data?.[1]?.data || []}
+                data={multiDataAux?.data?.[1]?.data || []}
                 columns={columnsSelectionWarehouse}
                 title={t(langKeys.warehouse)}
             />
             <SelectReservedProductsDialog
                 openModal={openModalReservedProducts}
                 setOpenModal={setOpenModalReservedProducts}
+                updateRecords={setDataDetail}
             />
             <SelectProductsForReturnDialog
                 openModal={openModalReturnProducts}

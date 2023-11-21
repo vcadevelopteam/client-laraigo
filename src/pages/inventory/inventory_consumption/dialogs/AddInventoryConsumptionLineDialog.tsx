@@ -30,8 +30,9 @@ const AddInventoryConsumptionLineDialog: React.FC<{
     rowSelected: any;
     updateRecords: (dat: any) => void;
     edit: boolean;
+    transactiontype: string;
     editRow: boolean;
-}> = ({ openModal, setOpenModal, row, rowSelected, updateRecords, editRow, edit, warehouseProducts }) => {
+}> = ({ openModal, setOpenModal, row, rowSelected, updateRecords, editRow, edit, warehouseProducts, transactiontype, }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -59,7 +60,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
             fromshelf: rowSelected?.row?.fromshelf || "",
             fromlote: rowSelected?.row?.fromlote || "",
             ticketnumber: rowSelected?.row?.ticketnumber || "",
-            transactiontype: rowSelected?.row?.transactiontype || "",
+            transactiontype: transactiontype||"",
             quantity: rowSelected?.row?.quantity || 0,
             unitcost: rowSelected?.row?.unitcost || 0,
             dispatchto: rowSelected?.row?.dispatchto || "",
@@ -86,7 +87,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                 fromshelf: rowSelected?.row?.fromshelf || "",
                 fromlote: rowSelected?.row?.fromlote || "",
                 ticketnumber: rowSelected?.row?.ticketnumber || "",
-                transactiontype: rowSelected?.row?.transactiontype || "",
+                transactiontype: transactiontype || "",
                 quantity: rowSelected?.row?.quantity || 0,
                 unitcost: rowSelected?.row?.unitcost || 0,
                 dispatchto: rowSelected?.row?.dispatchto || "",
@@ -302,6 +303,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                             data={multiData?.data?.[2]?.data || []}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                            disabled
                         />
                     </div>
                     <div className="row-zyx col-4">

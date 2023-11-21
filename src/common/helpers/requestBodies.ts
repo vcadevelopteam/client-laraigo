@@ -4571,3 +4571,8 @@ export const inventoryConsumptionComplete = ({ inventoryconsumptionid, status, c
     key: "UFN_INVENTORYCONSUMPTION_PROCESS",
     parameters: { inventoryconsumptionid, status, comment },
 });
+export const reservationswarehouseSel = (warehouseid: number) => ({
+    method: "UFN_BOOKINGWAREHOUSE_SEL",
+    key: "UFN_BOOKINGWAREHOUSE_SEL",
+    parameters: { warehouseid },
+});
