@@ -880,7 +880,7 @@ const translation: LangKeys = {
   devenvironment: "Ingrese el Entorno de Desarrollo",
   consumerapikey: "Ingrese la Llave API del Consumidor",
   consumerapisecret: "Ingrese la Contraseña API del Consumidor",
-  authenticationtoken: "Ingrese el Token de Accesso",
+  authenticationtoken: "Ingrese el Token de Acceso",
   authenticationsecret: "Ingrese la Contraseña de Acceso",
   consumerpageid: "Ingrese el ID de Página del Consumidor",
   socialmediachannel: "Canales de redes sociales",

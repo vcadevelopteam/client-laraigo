@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import Link from "@material-ui/core/Link";
 import MuiPhoneNumber from "material-ui-phone-number";
 import paths from "common/constants/paths";
-import React, { FC, Fragment, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -79,14 +79,12 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [disablebutton2, setDisablebutton2] = useState(true);
     const [disablebutton3, setDisablebutton3] = useState(true);
     const [nextbutton, setNextbutton] = useState(true);
-    const [set360, setSet360] = useState(false);
     const [setins, setSetins] = useState(false);
     const [setParameters, setSetParameters] = useState(true);
     const [setRegister360, setSetRegister360] = useState(false);
     const [setRegisterGupshup, setSetRegisterGupshup] = useState(false);
     const [setRegisterMeta, setSetRegisterMeta] = useState(false);
     const [setRegisterSmooch, setSetRegisterSmooch] = useState(false);
-    const [setsmooch, setSetsmooch] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
 
@@ -98,6 +96,8 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const location = useLocation<WhatsAppData>();
     const mainResult = useSelector((state) => state.channel.channelList);
     const whatsAppData = location.state as WhatsAppData | null;
+    const set360 = false;
+    const setsmooch = false;
 
     const errors = {
         accesstoken: "",
@@ -279,12 +279,12 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false);
+                setSetins(false);
                 dispatch(showBackdrop(false));
                 setSetins(false);
                 setWaitSave(false);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
-                setViewSelected("enable-virtual-assistant")
+                setViewSelected("enable-virtual-assistant");
             } else if (!executeResult) {
                 dispatch(
                     showSnackbar({
@@ -409,12 +409,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         }
     }, [executeActivationResult]);
 
-    if(viewSelected==="enable-virtual-assistant"){
-        return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
-        />
+    if (viewSelected === "enable-virtual-assistant") {
+        return (
+            <ChannelEnableVirtualAssistant
+                communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
+            />
+        );
     }
-    
+
     if (viewSelected === "view1") {
         if (setRegister360) {
             return (
