@@ -1731,7 +1731,6 @@ const Users: FC = () => {
 
     const handleUpload = async (files: any, useravailable: number, limit: number) => {
         const file = files?.item(0);
-        debugger;
         if (file) {
             const excel: any = await uploadExcel(file, undefined);
             const datainit = array_trimmer(excel);
@@ -1859,7 +1858,7 @@ const Users: FC = () => {
                     const channelError: Dictionary[] = [];
                     data.forEach((x) => {
                         const pattern = /^(\d+(,\s*\d+)*)?$/;
-                        if(x.channels || x.channels.length>0){
+                        if(x.channels || x?.channels?.length>0){
                             if (!pattern.test(x.channels)) {
                                 channelError.push(x.email);
                             }
