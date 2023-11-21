@@ -1575,6 +1575,7 @@ const Users: FC = () => {
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
             domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            { true: "true", false: "false" },
         ];
         const header = [
             "firstname",
@@ -1594,6 +1595,7 @@ const Users: FC = () => {
             "role",
             "channels",
             "groups",
+            "balance",
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     };
@@ -1773,6 +1775,8 @@ const Users: FC = () => {
                         ).includes(String(f.status))) &&
                     (f.pwdchangefirstlogin === undefined ||
                         ["true", "false"].includes(String(f.pwdchangefirstlogin))) &&
+                    (f.balance === undefined ||
+                        ["true", "false"].includes(String(f.balance))) &&
                     (f.role === undefined ||
                         String(f.role).split(",").every((role:string) => {
                             const roleId = parseInt(role.trim(), 10);
@@ -1833,6 +1837,10 @@ const Users: FC = () => {
                             ["true", "false"].includes(String(f.pwdchangefirstlogin))
                         ) ||
                         !(
+                            f.balance === undefined ||
+                            ["true", "false"].includes(String(f.balance))
+                        ) ||
+                        !(
                             f.role === undefined ||
                             String(f.role)
                                 .split(",")
@@ -1877,7 +1885,7 @@ const Users: FC = () => {
                                     firstname: String(d.firstname),
                                     lastname: String(d.lastname),
                                     email: String(d.email),
-                                    pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
+                                    pwdchangefirstlogin: d.pwdchangefirstlogin==="true",
                                     type: "NINGUNO",
                                     status: d.status,
                                     operation: "INSERT",
@@ -1894,7 +1902,7 @@ const Users: FC = () => {
                                         groups: d.groups || "",
                                         channels: d.channels || "",
                                         status: "DESCONECTADO",
-                                        type: "SUPERVISOR",
+                                        type: d.balance==="true"? "ASESOR" : "SUPERVISOR",
                                         supervisor: "",
                                         operation: "INSERT",
                                         redirect: "/usersettings",
