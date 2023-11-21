@@ -348,6 +348,8 @@ const CRM: FC = () => {
         const sourceItems = (sourceColumn.items) ? [...sourceColumn.items] : null
         const destItems = (destColumn.items) ? [...destColumn.items] : null
         const [removed] = sourceItems!.splice(source.index, 1);
+        const date = new Date().toISOString().replace('T', ' ').replace('Z', '')
+        removed.lastchangestatusdate = date
         removed.column_uuid = destination.droppableId
         destItems!.splice(destination.index, 0, removed);
         const sourceTotalRevenue = sourceItems!.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)
