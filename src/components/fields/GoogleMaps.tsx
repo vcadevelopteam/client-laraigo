@@ -6,9 +6,10 @@ import { useTranslation } from 'react-i18next';
 interface GoogleMapsProps {
     coordinates: Array<{ latitude: number; longitude: number }>;
     onCoordinatesChange: (newCoordinates: Array<{ latitude: number; longitude: number }>) => void;
+    onPolygonChange: (isInside: boolean) => void;
 }
 
-const GoogleMaps: React.FC<GoogleMapsProps> = ({ coordinates, onCoordinatesChange }) => {
+const GoogleMaps: React.FC<GoogleMapsProps> = ({ coordinates, onCoordinatesChange, onPolygonChange }) => {
     const { t } = useTranslation();
     const mapContainerStyle = {
         height: '20rem',
@@ -19,7 +20,9 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({ coordinates, onCoordinatesChang
     const [isBeingEdited] = useState(false);
     const polygonRef = useRef<google.maps.Polygon | null>(null);
     const [center, setCenter] = useState({ lat: 0, lng: 0 });
+    const [isCoordinateInsidePolygon, setIsCoordinateInsidePolygon] = useState<boolean | null>(null);  
     const mapRef = useRef<google.maps.Map | null>(null);
+    const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
     useEffect(() => {
         setDefaultPolygonCoords(coordinates.map((coord) => ({ lat: coord.latitude, lng: coord.longitude })));
@@ -41,8 +44,27 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({ coordinates, onCoordinatesChang
         setCenter(calculatePolygonCenter(defaultPolygonCoords));
     };
 
+    const validateCoordinatesInsidePolygon = (
+        coordinatesToValidate: google.maps.LatLngLiteral[]
+      ): boolean => {
+        if (polygonRef.current) {
+          const polygon = polygonRef.current;
+          const isInside = google.maps.geometry.poly.containsLocation(
+            new google.maps.LatLng(coordinatesToValidate[0]),
+            polygon
+          );
+          return isInside;
+        }
+        return false;
+    };
+      
+
     const handleMapClick = (event: google.maps.MapMouseEvent) => {
         event.latLng && (() => {
+            if (infoWindowRef.current) {
+                infoWindowRef.current.close();
+            }
+    
             const clickCoords = event.latLng.toJSON();
             const latDiff = clickCoords.lat - center.lat;
             const lngDiff = clickCoords.lng - center.lng;
@@ -51,18 +73,18 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({ coordinates, onCoordinatesChang
                 lng: coord.lng + lngDiff,
             }));
 
+            const isInsidePolygon = validateCoordinatesInsidePolygon(newPolygonCoords);
+            onPolygonChange(isInsidePolygon);
+            setIsCoordinateInsidePolygon(isInsidePolygon);
+
+    
             setDefaultPolygonCoords(newPolygonCoords);
             setCenter(calculatePolygonCenter(newPolygonCoords));
             onCoordinatesChange(newPolygonCoords.map((coord) => ({ latitude: coord.lat, longitude: coord.lng })));
         })();
-    };
+    };    
 
-    const handlePolygonLoad = (polygon: google.maps.Polygon) => {
-        polygonRef.current = polygon;
-        google.maps.event.addListener(polygon, 'dragend', handlePolygonPathsChanged);
-    };
-
-    const handlePolygonPathsChanged = () => {
+    const handlePolygonAndVertexDragging = () => {
         if (polygonRef.current && !isBeingEdited) {
             const newPolygonCoords = polygonRef.current
                 .getPath()
@@ -77,24 +99,32 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({ coordinates, onCoordinatesChang
         }
     };
 
+    const handlePolygonLoad = (polygon: google.maps.Polygon) => {
+        polygonRef.current = polygon;
+        google.maps.event.addListener(polygon, 'dragend', handlePolygonAndVertexDragging);  
+        google.maps.event.addListener(polygon, 'mouseup', () => handlePolygonAndVertexDragging());      
+    };
+
     const handlePolygonClick = (event: google.maps.PolyMouseEvent) => {
         if (event.latLng && polygonRef.current) {
             const polygon = polygonRef.current;
-            const vertices = polygon.getPath();
-
-            let contentString =
-                `<b>${t(langKeys.coveragearea)}</b>`;
-
-            for (let i = 0; i < vertices.getLength(); i++) {
-                const xy = vertices.getAt(i);
-                contentString += `<br><br>${t(langKeys.coordinate)}  ${i + 1}:<br>${xy.lat()}, ${xy.lng()}`;
+            const area = google.maps.geometry.spherical.computeArea(polygon.getPath());
+            const areaInSquareMeters = Math.abs(area);
+    
+            const title = `<b>${t(langKeys.coveragearea)}</b>`;
+            const areaInfo = `<br>${t(langKeys.area)}: ${areaInSquareMeters.toFixed(2)} m²`;
+    
+            const contentString = title + areaInfo;
+    
+            if (infoWindowRef.current) {
+                infoWindowRef.current.close();
             }
 
             const infoWindow = new google.maps.InfoWindow({
                 content: contentString,
                 position: event.latLng,
             });
-
+            infoWindowRef.current = infoWindow;
             infoWindow.open(mapRef.current);
         }
     };
