@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import Link from "@material-ui/core/Link";
 import MuiPhoneNumber from "material-ui-phone-number";
 import paths from "common/constants/paths";
-import React, { FC, Fragment, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 const useChannelAddStyles = makeStyles(() => ({
     centerbutton: {
@@ -78,14 +78,12 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [disablebutton2, setDisablebutton2] = useState(true);
     const [disablebutton3, setDisablebutton3] = useState(true);
     const [nextbutton, setNextbutton] = useState(true);
-    const [set360, setSet360] = useState(false);
     const [setins, setSetins] = useState(false);
     const [setParameters, setSetParameters] = useState(true);
     const [setRegister360, setSetRegister360] = useState(false);
     const [setRegisterGupshup, setSetRegisterGupshup] = useState(false);
     const [setRegisterMeta, setSetRegisterMeta] = useState(false);
     const [setRegisterSmooch, setSetRegisterSmooch] = useState(false);
-    const [setsmooch, setSetsmooch] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
 
@@ -97,6 +95,8 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const location = useLocation<WhatsAppData>();
     const mainResult = useSelector((state) => state.channel.channelList);
     const whatsAppData = location.state as WhatsAppData | null;
+    const set360 = false;
+    const setsmooch = false;
 
     const errors = {
         accesstoken: "",

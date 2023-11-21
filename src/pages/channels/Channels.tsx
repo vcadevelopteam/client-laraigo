@@ -19,7 +19,6 @@ export const Channels: FC = () => {
     const { t } = useTranslation();
 
     const [canRegister, setCanRegister] = useState(false);
-    const [typeWhatsApp, setTypeWhatsApp] = useState("DIALOG");
     const [waitCheck, setWaitCheck] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
@@ -294,7 +293,6 @@ export const Channels: FC = () => {
         if (waitCheck) {
             if (!paymentPlanResult.loading && !paymentPlanResult.error) {
                 if (paymentPlanResult.value) {
-                    setTypeWhatsApp(paymentPlanResult.value.providerWhatsApp);
                     setCanRegister(paymentPlanResult.value.createChannel);
 
                     if (!paymentPlanResult.value.createChannel) {
@@ -325,7 +323,7 @@ export const Channels: FC = () => {
 
             history.push(paths.CHANNELS_ADD, {
                 row: null,
-                typeWhatsApp: typeWhatsApp,
+                typeWhatsApp: 'NONE',
             });
         }
     }, [canRegister]);
