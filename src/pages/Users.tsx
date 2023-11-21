@@ -1859,8 +1859,10 @@ const Users: FC = () => {
                     const channelError: Dictionary[] = [];
                     data.forEach((x) => {
                         const pattern = /^(\d+(,\s*\d+)*)?$/;
-                        if (!pattern.test(x.channels)) {
-                            channelError.push(x.email);
+                        if(x.channels || x.channels.length>0){
+                            if (!pattern.test(x.channels)) {
+                                channelError.push(x.email);
+                            }
                         }
                     });
                     if (channelError.length === 0) {
