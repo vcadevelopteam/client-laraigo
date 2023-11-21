@@ -63,7 +63,6 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({ coordinates, onCoordinatesChang
     };
 
     const handlePolygonPathsChanged = () => {
-        console.log()
         if (polygonRef.current && !isBeingEdited) {
             const newPolygonCoords = polygonRef.current
                 .getPath()
