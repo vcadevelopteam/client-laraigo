@@ -9,11 +9,13 @@ import { Trans, useTranslation } from "react-i18next";
 import { Rating } from "@material-ui/lab";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
-import { ICrmLead } from "@types";
+import { Dictionary, ICrmLead } from "@types";
 import { FieldEdit, FieldSelect } from "components";
 import { useSelector } from "hooks";
-import { getSecondsUntelNow, secondsToTime } from "common/helpers";
+import { getSecondsUntelNow, secondsToTime, selOrderConfig } from "common/helpers";
 import { TrafficIndividualConfigurationModal, TrafficLightConfigurationModal } from "./Modals";
+import { getCollection } from "store/main/actions";
+import { useDispatch } from "react-redux";
 const isIncremental = window.location.href.includes("incremental");
 
 const columnWidth = 275;
@@ -27,6 +29,7 @@ interface LeadCardContentProps extends Omit<BoxProps, "onClick"> {
     onDelete?: (value: ICrmLead) => void;
     onClick?: (lead: ICrmLead) => void;
     onCloseLead?: (lead: ICrmLead) => void;
+    configuration: Dictionary
 }
 
 const useLeadCardStyles = makeStyles((theme) => ({
@@ -130,6 +133,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     onDelete,
     onClick,
     onCloseLead,
+    configuration,
     ...boxProps
 }) => {
     const classes = useLeadCardStyles();
@@ -177,8 +181,43 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
         onDelete?.(lead);
     };
 
+    const handleOpenModal = () => {
+        setAnchorEl(null);
+        setOpenModal(true)
+    }
+
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
+
+    const getDynamicColorClass = (maxGreen: string, maxYellow: string, configuration: Dictionary) => {
+        if (maxGreen !== null && maxYellow !== null) {
+            if (0 <= time && time <= parseInt(maxGreen) * 60) {
+                return classes.greenLight;
+            } else if (parseInt(maxGreen) * 60 + 1 <= time && time <= parseInt(maxGreen) * 60 + parseInt(maxYellow) * 60) {
+                return classes.yellowLight;
+            } else {
+                return classes.redLight;
+            }
+        } else if (configuration?.maxgreen !== null && configuration?.maxyellow !== null) {
+            if (0 <= time && time <= parseInt(configuration.maxgreen) * 60) {
+                return classes.greenLight;
+            } else if (parseInt(configuration.maxgreen) * 60 + 1 <= time && time <= parseInt(configuration.maxgreen) * 60 + parseInt(configuration.maxyellow) * 60) {
+                return classes.yellowLight;
+            } else {
+                return classes.redLight;
+            }
+        } else {
+            if (0 <= time && time <= 18000) {
+                return classes.greenLight;
+            } else if (18001 <= time && time <= 36000) {
+                return classes.yellowLight;
+            } else {
+                return classes.redLight;
+            }
+        }
+    };
+    
+    const dynamicColorClass = getDynamicColorClass(lead.maxgreen, lead.maxyellow, configuration);
 
     return (
         <Box {...boxProps} style={{ position: "relative" }} pb={1}>
@@ -227,11 +266,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                         readOnly
                     />
                     <div style={{ flexGrow: 1 }} />
-                    <div className={clsx({
-                        [classes.greenLight]: 0 <= time && time <= 18000,
-                        [classes.yellowLight]: 18001 <= time && time <= 36000,
-                        [classes.redLight]: 36001 <= time
-                    })}>
+                    <div className={clsx(dynamicColorClass)}>
                         <Box p={1}>
                             <Typography variant="body2">{secondsToTime(time)}</Typography>
                         </Box>
@@ -282,7 +317,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                         color="inherit"
                         fullWidth
                         type="button"
-                        onClick={() => setOpenModal(true)}
+                        onClick={handleOpenModal}
                         style={{ fontWeight: "normal", textTransform: "uppercase" }}
                     >
                         <Trans i18nKey={langKeys.trafficlight} />
@@ -291,6 +326,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                 <TrafficIndividualConfigurationModal
                     openModal={openModal}
                     setOpenModal={setOpenModal}
+                    lead={lead}
                 />
             </div>
         </Box>
@@ -529,6 +565,7 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
 interface AddColumnTemplatePops extends Omit<BoxProps, "onSubmit"> {
     onSubmit: (data: any) => void;
     updateSortParams: (value: any) => void;
+    passConfiguration: (value: Dictionary) => void;
 }
 
 const useAddColumnTemplateStyles = makeStyles((theme) => ({
@@ -579,8 +616,10 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
 	}
 }));
 
-export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, ...boxProps }) => {
+export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, passConfiguration, ...boxProps }) => {
     const classes = useAddColumnTemplateStyles();
+    const dispatch = useDispatch();
+    const main = useSelector((state) => state.main.mainData);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const { t } = useTranslation();
 	const [openModal, setOpenModal] = useState(false);
@@ -609,6 +648,35 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
     useEffect(() => {
         updateSortParams(sortParams)
     }, [sortParams])
+
+    const fetchConfiguration = () => dispatch(getCollection(selOrderConfig()))
+
+    useEffect(() => {
+        fetchConfiguration()
+    }, []);
+
+    const configuration = main.data[0] ? main.data[0].orderconfig : {
+        monbegin: '',
+        monend: '',
+        tuebegin: '',
+        tueend: '',
+        wedbegin: '',
+        wedend: '',
+        thubegin: '',
+        thuend: '',
+        fribegin: '',
+        friend: '',
+        satbegin: '',
+        satend: '',
+        sunbegin: '',
+        sunend: '',
+        maxgreen: null,
+        maxyellow: null,
+    }
+
+    useEffect(() => {
+        passConfiguration(configuration)
+    }, [configuration])
 
     return (
         <Box>
@@ -687,6 +755,8 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 			<TrafficLightConfigurationModal
 				openModal={openModal}
 				setOpenModal={setOpenModal}
+                fetchData={fetchConfiguration}
+                configuration={configuration}
 			/>
         </Box>
     );

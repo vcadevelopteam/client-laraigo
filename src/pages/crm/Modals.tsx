@@ -1,19 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Dictionary, ICrmGridPerson } from "@types";
+import { Dictionary, ICrmGridPerson, ICrmLead } from "@types";
 import { SaveActivityModal, TabPanelLogNote } from "./LeadForm";
 import { getAdvisers, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote } from "store/lead/actions";
-import { adviserSel, leadActivityIns, leadHistoryIns, leadLogNotesIns } from "common/helpers";
+import { adviserSel, insLeadConfig, insOrderConfig, leadActivityIns, leadHistoryIns, leadLogNotesIns } from "common/helpers";
 import { Box, Button, makeStyles, Modal, Typography } from "@material-ui/core";
 import { DialogZyx, FieldEdit, FieldEditArray, FieldEditMulti, FieldSelect, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from "hooks";
 import { useFieldArray, useForm } from "react-hook-form";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { getDataForOutbound, sendHSM } from "store/inbox/actions";
 import { execute, resetExecute } from "store/main/actions";
+import { json } from "stream/consumers";
 
 interface IModalProps {
     name: string;
@@ -91,31 +92,125 @@ export const NewActivityModal: FC<IFCModalProps> = ({ gridModalProps, setGridMod
 
 const useStyles = makeStyles(() => ({
     title: {
-        text: {
-            textAlign: 'center',
-            fontSize: 16
-        }
-    },
-    weekDay: {
-        textAlign: 'center',
-        alignSelf: 'center',
+        fontSize: 30,
+        fontWeight: 'bold'
     }
 }));
 
 export const TrafficLightConfigurationModal: React.FC<{
     openModal: boolean;
     setOpenModal: (data: boolean) => void;
-}> = ({ openModal, setOpenModal }) => {
+    fetchData: () => void;
+    configuration: Dictionary
+}> = ({ openModal, setOpenModal, fetchData, configuration }) => {
     const { t } = useTranslation();
+    const main = useSelector((state) => state.main.mainData);
+    const user = useSelector((state) => state.login.validateToken.user);
+    const dispatch = useDispatch();
+    const executeRes = useSelector(state => state.main.execute);
+    const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
+    const [configjson, setConfigjson] = useState({
+        monbegin: configuration?.monbegin,
+        monend: configuration?.monend,
+        tuebegin: configuration?.tuebegin,
+        tueend: configuration?.tueend,
+        wedbegin: configuration?.wedbegin,
+        wedend: configuration?.wedend,
+        thubegin: configuration?.thubegin,
+        thuend: configuration?.thuend,
+        fribegin: configuration?.fribegin,
+        friend: configuration?.friend,
+        satbegin: configuration?.satbegin,
+        satend: configuration?.satend,
+        sunbegin: configuration?.sunbegin,
+        sunend: configuration?.sunend,
+        maxgreen: configuration?.maxgreen,
+        maxyellow: configuration?.maxyellow,
+    })
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+                dispatch(showBackdrop(false));
+                fetchData()
+                setOpenModal(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onMainSubmit = (() => {
+        const existingConfig = main.data.find(item => item.corpid === user?.corpid && item.orgid === user?.orgid);
+
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            if(existingConfig) {
+                console.log(configjson)
+                dispatch(execute(insOrderConfig({
+                    id: existingConfig.orderconfigid,
+                    orderconfig: JSON.stringify(configjson),
+                    type: '',
+                    status: 'ACTIVO',
+                    operation: 'UPDATE',
+                })));
+            } else {
+                dispatch(execute(insOrderConfig({
+                    id: 0,
+                    orderconfig: JSON.stringify(configjson),
+                    type: '',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })));
+            }
+            setWaitSave(true);
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    function handleCloseConfiguration () {
+        setConfigjson({
+            monbegin: configuration.monbegin,
+            monend: configuration.monend,
+            tuebegin: configuration.tuebegin,
+            tueend: configuration.tueend,
+            wedbegin: configuration.wedbegin,
+            wedend: configuration.wedend,
+            thubegin: configuration.thubegin,
+            thuend: configuration.thuend,
+            fribegin: configuration.fribegin,
+            friend: configuration.friend,
+            satbegin: configuration.satbegin,
+            satend: configuration.satend,
+            sunbegin: configuration.sunbegin,
+            sunend: configuration.sunend,
+            maxgreen: configuration.maxgreen,
+            maxyellow: configuration.maxyellow,
+        })
+        setOpenModal(false);
+    }
+
+    function handleSaveConfiguration () {
+        onMainSubmit()
+    }
 
     return (
         <DialogZyx
             open={openModal}
-            title={<span style={{fontSize:30, fontWeight:'bold'}}>{t(langKeys.trafficlightconfig)}</span>}
+            title={<span className={classes.title}>{t(langKeys.trafficlightconfig)}</span>}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.save)}
-            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton1={handleCloseConfiguration}
+            handleClickButton2={handleSaveConfiguration}
             maxWidth="sm"
         >
             <div className="row-zyx">
@@ -130,72 +225,100 @@ export const TrafficLightConfigurationModal: React.FC<{
                 <span className="col-2">{t(langKeys.thursday)}</span>
                 <span className="col-2">{t(langKeys.friday)}</span>
                 <div className="col-1"></div>
-                <span className="col-1">{t(langKeys.start)}</span>
+                <span className="col-1" style={{alignSelf: 'center'}}>{t(langKeys.start)}</span>
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.monbegin}
+                    onChange={(value) => setConfigjson({...configjson, monbegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.tuebegin}
+                    onChange={(value) => setConfigjson({...configjson, tuebegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.wedbegin}
+                    onChange={(value) => setConfigjson({...configjson, wedbegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.thubegin}
+                    onChange={(value) => setConfigjson({...configjson, thubegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.fribegin}
+                    onChange={(value) => setConfigjson({...configjson, fribegin: value})}
                 />
                 <div className="col-1"></div>
-                <span className="col-1">{t(langKeys.end)}</span>
+                <span className="col-1" style={{alignSelf: 'center'}}>{t(langKeys.end)}</span>
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.monend}
+                    onChange={(value) => setConfigjson({...configjson, monend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.tueend}
+                    onChange={(value) => setConfigjson({...configjson, tueend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.wedend}
+                    onChange={(value) => setConfigjson({...configjson, wedend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.thuend}
+                    onChange={(value) => setConfigjson({...configjson, thuend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.friend}
+                    onChange={(value) => setConfigjson({...configjson, friend: value})}
                 />
                 <div className="col-1"></div>
                 <span className="col-1">{t(langKeys.day)}</span>
                 <span className="col-2">{t(langKeys.saturday)}</span>
                 <span className="col-2">{t(langKeys.sunday)}</span>
                 <div className="col-7"></div>
-                <span className="col-1">{t(langKeys.start)}</span>
+                <span className="col-1" style={{alignSelf: 'center'}}>{t(langKeys.start)}</span>
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.satbegin}
+                    onChange={(value) => setConfigjson({...configjson, satbegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.sunbegin}
+                    onChange={(value) => setConfigjson({...configjson, sunbegin: value})}
                 />
                 <div className="col-7"></div>
-                <span className="col-1">{t(langKeys.end)}</span>
+                <span className="col-1" style={{alignSelf: 'center'}}>{t(langKeys.end)}</span>
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.satend}
+                    onChange={(value) => setConfigjson({...configjson, satend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
+                    valueDefault={configuration?.sunend}
+                    onChange={(value) => setConfigjson({...configjson, sunend: value})}
                 />
                 <div className="col-7"></div>
             </div>
@@ -206,12 +329,28 @@ export const TrafficLightConfigurationModal: React.FC<{
                     variant="outlined"
                     type="number"
                     className="col-12"
+                    valueDefault={configuration?.maxgreen}
+                    onChange={(value) => {
+                        if(value < 0) {
+                            setConfigjson({...configjson, maxgreen: value * -1})
+                        } else {
+                            setConfigjson({...configjson, maxgreen: value})
+                        }
+                    }}
                 />
                 <FieldEdit
                     label={t(langKeys.maxtimeamber)}
                     variant="outlined"
                     type="number"
                     className="col-12"
+                    valueDefault={configuration?.maxyellow}
+                    onChange={(value) => {
+                        if(value < 0) {
+                            setConfigjson({...configjson, maxyellow: value * -1})
+                        } else {
+                            setConfigjson({...configjson, maxyellow: value})
+                        }
+                    }}
                 />
             </div>
         </DialogZyx>
@@ -221,8 +360,39 @@ export const TrafficLightConfigurationModal: React.FC<{
 export const TrafficIndividualConfigurationModal: React.FC<{
     openModal: boolean;
     setOpenModal: (data: boolean) => void;
-}> = ({ openModal, setOpenModal }) => {
+    lead: ICrmLead;
+}> = ({ openModal, setOpenModal, lead }) => {
     const { t } = useTranslation();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
+    const dispatch = useDispatch();
+    const [maxGreen, setMaxGreen] = useState(lead.maxgreen)
+    const [maxYellow, setMaxYellow] = useState(lead.maxyellow)
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+                dispatch(showBackdrop(false));
+                setOpenModal(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onMainSubmit = (() => {
+        dispatch(showBackdrop(true));
+        dispatch(execute(insLeadConfig({
+            id: lead.leadid,
+            maxgreen: maxGreen,
+            maxyellow: maxYellow
+        })));
+        setWaitSave(true);
+    });
 
     return (
         <DialogZyx
@@ -231,18 +401,23 @@ export const TrafficIndividualConfigurationModal: React.FC<{
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onMainSubmit}
             maxWidth="sm"
         >
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.maxtimegreen)}
                     variant="outlined"
+                    valueDefault={maxGreen}
+                    onChange={(value) => setMaxGreen(value)}
                     type="number"
                     className="col-12"
                 />
                 <FieldEdit
                     label={t(langKeys.maxtimeamber)}
                     variant="outlined"
+                    valueDefault={maxYellow}
+                    onChange={(value) => setMaxYellow(value)}
                     type="number"
                     className="col-12"
                 />

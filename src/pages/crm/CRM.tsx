@@ -95,8 +95,8 @@ interface IBoardFilter {
   persontype: string;
 }
 
-const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams }> = ({ column,
-  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental, sortParams }) => {
+const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams, configuration: Dictionary }> = ({ column,
+  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental, sortParams, configuration }) => {
   const { t } = useTranslation();
 
   return (
@@ -154,6 +154,7 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
                                         snapshot={snapshot}
                                         onDelete={handleDelete}
                                         onCloseLead={handleCloseLead}
+                                        configuration={configuration}
                                       />
                                     </div>
                                   )}
@@ -179,6 +180,25 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
 interface sortParams {
   type: string
   order: string
+}
+
+interface Configuration {
+  monbegin: string
+  monend: string
+  tuebegin: string
+  tueend: string
+  wedbegin: string
+  wedend: string
+  thubegin: string
+  thuend: string
+  fribegin: string
+  friend: string
+  satbegin: string
+  satend: string
+  sunbegin: string
+  sunend: string
+  maxgreen: string
+  maxyellow: string
 }
 
 const CRM: FC = () => {
@@ -500,9 +520,14 @@ const CRM: FC = () => {
     type: '',
     order: ''
   })
+  const [configuration, setConfiguration] = useState<Configuration>()
 
   const updateSortParams = (value: sortParams) => {
     setSortParams(value)
+  }
+
+  const passConfiguration = (value: Configuration) => {
+    setConfiguration(value)
   }
 
   const setAllParameters = useCallback((prop: typeof allParameters) => {
@@ -1037,7 +1062,7 @@ const CRM: FC = () => {
               <Trans i18nKey={langKeys.search} />
             </Button>
           </div>
-          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} updateSortParams={updateSortParams} />}
+          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} updateSortParams={updateSortParams} passConfiguration={passConfiguration} />}
           <div style={{ display: "flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold" }}>
             <div style={{ minWidth: 280, maxWidth: 280, backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column", }}>{t(langKeys.new)}</div>
             <div style={{
@@ -1062,7 +1087,7 @@ const CRM: FC = () => {
                   style={{ display: 'flex' }}
                 >
                   {dataColumn.map((column, index) =>
-                    <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x: any) => x.type === column.type).length > 1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead} sortParams={sortParams} />
+                    <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x: any) => x.type === column.type).length > 1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead} sortParams={sortParams} configuration={configuration} />
                   )}
                 </div>
               )}

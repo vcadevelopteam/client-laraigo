@@ -19,6 +19,8 @@ export interface ILead {
 }
 
 export interface ICrmLead {
+    maxyellow: string;
+    maxgreen: string;
     lastchangestatusdate: string;
     changeby: string;
     changedate: string;
