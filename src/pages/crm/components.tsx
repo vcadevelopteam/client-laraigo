@@ -643,6 +643,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
     const main = useSelector((state) => state.main.mainData);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const { t } = useTranslation();
+    const user = useSelector((state) => state.login.validateToken.user);
 	const [openModal, setOpenModal] = useState(false);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -676,7 +677,9 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
         fetchConfiguration()
     }, []);
 
-    const configuration = main.data[0] ? main.data[0].orderconfig : {
+    const configuration = main.data.find(item => 
+        item.corpid === user?.corpid && item.orgid === user?.orgid
+    )?.orderconfig || {
         monbegin: '',
         monend: '',
         tuebegin: '',
@@ -693,7 +696,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
         sunend: '',
         maxgreen: null,
         maxyellow: null,
-    }
+    };
 
     useEffect(() => {
         passConfiguration(configuration)
