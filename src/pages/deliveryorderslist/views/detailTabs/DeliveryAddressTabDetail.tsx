@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -7,7 +7,7 @@ import { langKeys } from 'lang/keys';
 import { FieldErrors } from 'react-hook-form';
 import { FieldEdit } from 'components';
 import { Button, IconButton, Typography } from '@material-ui/core';
-import GoogleMaps from 'components/fields/GoogleMaps';
+import GoogleMaps, {IsOrderCoordinateInsidePolygon } from 'components/fields/GoogleMaps';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -64,19 +64,17 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
     setCoordinates(newCoordinates);
     };
 
-    const handlePolygonChange = (isInside: boolean) => {
-        setIsCoordinateInsidePolygon(isInside);
-        setValidationMessage(isInside ? 'Coordenadas dentro del polígono.' : 'Coordenadas fuera del polígono.');
-    };
 
-    const [isCoordinateInsidePolygon, setIsCoordinateInsidePolygon] = useState<boolean | null>(null);
-    const [validationMessage, setValidationMessage] = useState<string>('');
-
-    const initialCoordinates = { latitude: -12.00000000000008, longitude: -77.00000000000001 };
-    const [coordinatesSearch, setCoordinatesSearch] = useState<{ latitude: number; longitude: number }>( initialCoordinates );
-    const [currentLatitude, setCurrentLatitude] = useState<number>(initialCoordinates.latitude);
-    const [currentLongitude, setCurrentLongitude] = useState<number>(initialCoordinates.longitude);
-
+    const [orderCoordinate, setOrderCoordinate] = useState<{ latitude: number; longitude: number }>({ latitude: 0, longitude: 0 });
+    const [isOrderInsidePolygon, setIsOrderInsidePolygon] = useState<boolean | null>(null);
+    useEffect(() => {
+        const isInside = IsOrderCoordinateInsidePolygon(
+            { lat: orderCoordinate.latitude, lng: orderCoordinate.longitude },
+            coordinates.map(coord => ({ lat: coord.latitude, lng: coord.longitude }))
+        );
+        setIsOrderInsidePolygon(isInside);
+    }, [orderCoordinate, coordinates]);
+    
 
     return (
     <div className={classes.containerDetail}>
@@ -84,24 +82,28 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
 
         <div className="row-zyx">
             <FieldEdit
-            label={`${t(langKeys.latitude)} de Pedido`}
-            type="number"
-            className="col-6"
-            valueDefault={initialCoordinates.latitude}
-            onChange={(newValue) => {
-                setCoordinatesSearch((prev) => ({ ...prev, latitude: Number(newValue) }));
-                setCurrentLatitude(Number(newValue));
-            }}
+                label={`${t(langKeys.latitude)} de Orden`}
+                type="number"
+                className="col-6"
+                valueDefault={orderCoordinate.latitude}
+                onChange={(newValue) => {
+                    setOrderCoordinate({
+                        ...orderCoordinate,
+                        latitude: Number(newValue),
+                    });
+                }}
             />
             <FieldEdit
-            label={`${t(langKeys.longitude)} de Pedido`}
-            type="number"
-            className="col-6"
-            valueDefault={initialCoordinates.longitude}
-            onChange={(newValue) => {
-                setCoordinatesSearch((prev) => ({ ...prev, longitude: Number(newValue) }));
-                setCurrentLongitude(Number(newValue));
-            }}
+                label={`${t(langKeys.longitude)} de Orden`}
+                type="number"
+                className="col-6"
+                valueDefault={orderCoordinate.longitude}
+                onChange={(newValue) => {
+                    setOrderCoordinate({
+                        ...orderCoordinate,
+                        longitude: Number(newValue),
+                    });
+                }}
             />
             <FieldEdit
                 label={t(langKeys.message)}
@@ -109,21 +111,20 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
                 disabled={true}
                 className="col-12"
                 valueDefault={
-                    isCoordinateInsidePolygon !== null
-                        ? isCoordinateInsidePolygon
+                    isOrderInsidePolygon !== null
+                        ? isOrderInsidePolygon
                             ? 'Coordenadas dentro del polígono.'
                             : 'Coordenadas fuera del polígono.'
                         : 'Cargando...'
                 }
             />
-      </div>
+        </div>
 
 
         <div className="row-zyx" style={{ justifyContent: 'center' }}>
         <GoogleMaps 
             coordinates={coordinates} 
             onCoordinatesChange={handleCoordinatesChange} 
-            onPolygonChange={handlePolygonChange}
         />
         </div>
         <Typography className={classes.mapFooter}>{t(langKeys.address_found_in_geolocator)}</Typography>
