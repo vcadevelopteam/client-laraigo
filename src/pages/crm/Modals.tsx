@@ -147,11 +147,9 @@ export const TrafficLightConfigurationModal: React.FC<{
 
     const onMainSubmit = (() => {
         const existingConfig = main.data.find(item => item.corpid === user?.corpid && item.orgid === user?.orgid);
-
         const callback = () => {
             dispatch(showBackdrop(true));
             if(existingConfig) {
-                console.log(configjson)
                 dispatch(execute(insOrderConfig({
                     id: existingConfig.orderconfigid,
                     orderconfig: JSON.stringify(configjson),

@@ -151,16 +151,37 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     const dateWithSubtractedHours = new Date(dateInUTC.getTime() - (new Date().getTimezoneOffset()/60 * 3600 * 1000));
 	const [time, settime] = useState(getSecondsUntelNow(dateWithSubtractedHours));
 
-	React.useEffect(() => {
-        const timer = setTimeout(() => {
-            const timeSeconds = getSecondsUntelNow(dateWithSubtractedHours);
-			settime(timeSeconds);
-        }, 1000);
+    const getDayOfWeek = () => {
+        const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+        const today = new Date();
+        return days[today.getDay()];
+    };
 
+	React.useEffect(() => {
+        const timer = setInterval(() => {
+            const currentDay = getDayOfWeek();
+            const beginKey = `${currentDay}begin`;
+            const endKey = `${currentDay}end`;
+        
+            const beginTime = configuration[beginKey];
+            const endTime = configuration[endKey];
+        
+            if (beginTime && endTime) {
+                const now = new Date();
+                const begin = new Date(now.toDateString() + ' ' + beginTime);
+                const end = new Date(now.toDateString() + ' ' + endTime);
+        
+                if (now >= begin && now <= end) {
+                    const timeSeconds = getSecondsUntelNow(dateWithSubtractedHours);
+                    settime(timeSeconds);
+                }
+            }
+        }, 1000);
+      
         return () => {
-            timer && clearTimeout(timer);
-        }
-    }, [time]);
+          timer && clearInterval(timer);
+        };
+    }, [time, configuration]);
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
