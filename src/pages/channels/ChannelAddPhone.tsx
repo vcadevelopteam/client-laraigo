@@ -19,6 +19,7 @@ import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import Tooltip from "@material-ui/core/Tooltip";
 import React, { FC, useEffect, useState } from "react";
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 interface WhatsAppData {
     row?: unknown;
@@ -846,7 +847,11 @@ export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
                     </div>
                 </div>
             </div>
-        );
+        )
+    } else if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
     } else {
         return (
             <div style={{ width: "100%" }}>
@@ -1033,7 +1038,7 @@ export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
                             <div style={{ paddingLeft: "80%" }}>
                                 <Button
                                     onClick={() => {
-                                        history.push(paths.CHANNELS);
+                                        setViewSelected("enable-virtual-assistant")
                                     }}
                                     className={classes.button}
                                     disabled={channelreg}

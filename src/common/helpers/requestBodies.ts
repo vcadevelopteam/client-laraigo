@@ -4634,3 +4634,13 @@ export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, in
     key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
     parameters: { inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation },
 });
+export const getTemplatesChatflow = () => ({
+    method: "UFN_CHATFLOW_BLOCK_TEMPLATES_SEL",
+    key: "UFN_CHATFLOW_BLOCK_TEMPLATES_SEL",
+    parameters: {  },
+});
+export const templatesChatflowClone = ({chatblockid,communicationchannelid,prop_value}:Dictionary) => ({
+    method: "UFN_CHATFLOW_BLOCK_TEMPLATE_CLONE",
+    key: "UFN_CHATFLOW_BLOCK_TEMPLATE_CLONE",
+    parameters: { chatblockid,communicationchannelid,prop_value },
+});

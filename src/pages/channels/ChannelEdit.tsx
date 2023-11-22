@@ -27,6 +27,7 @@ import paths from "common/constants/paths";
 import PublishIcon from "@material-ui/icons/Publish";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import Tooltip from "@material-ui/core/Tooltip";
+import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
 
 const useFinalStepStyles = makeStyles(() => ({
     title: {
@@ -61,6 +62,7 @@ const ChannelEdit: FC = () => {
     const { t } = useTranslation();
 
     const [auto, setAuto] = useState(false);
+    const [viewSelected, setViewSelected] = useState("main-view");
     const [checkedCallSupervision, setCheckedCallSupervision] = useState(false);
     const [checkedRecording, setCheckedRecording] = useState(false);
     const [hexIconColor, setHexIconColor] = useState("");
@@ -136,15 +138,18 @@ const ChannelEdit: FC = () => {
                 })
             );
         } else if (edit.success) {
-            dispatch(
-                showSnackbar({
-                    message: t(langKeys.communicationchannel_editsuccess),
-                    severity: "success",
-                    show: true,
-                })
-            );
-
-            history.push(paths.CHANNELS);
+            if (!channel?.haveflow) {
+                setViewSelected("enable-virtual-assistant")
+            } else {
+                dispatch(
+                    showSnackbar({
+                        message: t(langKeys.communicationchannel_editsuccess),
+                        show: true,
+                        severity: "success",
+                    })
+                );
+                history.push(paths.CHANNELS);                
+            }
         }
     }, [edit, history, dispatch]);
 
@@ -197,9 +202,7 @@ const ChannelEdit: FC = () => {
 
     const onUploadFile = (files: FileList | null, type: string) => {
         if (files) {
-            const selectedFile = files[0];
-
-            if (selectedFile.size <= 1024 * 1024 * 5) {
+            const selectedFile = files[0];if (selectedFile.size <= 1024 * 1024 * 5) {
                 const fd = new FormData();
                 fd.append("file", selectedFile, selectedFile.name);
                 dispatch(uploadFile(fd));
@@ -215,303 +218,319 @@ const ChannelEdit: FC = () => {
             }
         }
     };
-
-    return (
-        <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
-            <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                    {t(langKeys.previoustext)}
-                </Link>
-            </Breadcrumbs>
-            <div
-                style={{
-                    display: "flex",
-                    flex: "wrap",
-                    flexDirection: "column",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    width: "700px",
-                }}
-            >
-                <div className={classes.title}>{t(langKeys.communicationchannel_edit)}</div>
-                <div style={{ display: "flex", gap: 24 }}>
-                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
-                        <FieldEdit
-                            disabled={edit.loading}
-                            label={t(langKeys.givechannelname)}
-                            onChange={(value) => setName(value)}
-                            valueDefault={channel?.communicationchanneldesc}
-                        />
-                        {channel?.phone && (
-                            <div>
-                                <FieldView label={t(langKeys.phone)} value={channel?.phone} />
-                            </div>
-                        )}
-                        {channel?.type === "VOXI" && (
-                            <>
-                                {serviceCredentials?.countryname && (
-                                    <div>
-                                        <FieldView
-                                            label={t(langKeys.country)}
-                                            value={serviceCredentials?.countryname}
-                                        />
-                                    </div>
-                                )}
-                                {serviceCredentials?.categoryname && (
-                                    <div>
-                                        <FieldView
-                                            label={t(langKeys.category)}
-                                            value={t(serviceCredentials?.categoryname)}
-                                        />
-                                    </div>
-                                )}
-                                {serviceCredentials?.statename && (
-                                    <div>
-                                        <FieldView
-                                            label={t(langKeys.voximplant_state)}
-                                            value={serviceCredentials?.statename}
-                                        />
-                                    </div>
-                                )}
-                                {serviceCredentials?.regionname && (
-                                    <div>
-                                        <FieldView
-                                            label={t(langKeys.voximplant_region)}
-                                            value={serviceCredentials?.regionname}
-                                        />
-                                    </div>
-                                )}
-                                {serviceCredentials?.costvca && (
-                                    <div>
-                                        <FieldView
-                                            label={t(langKeys.voximplant_pricealert)}
-                                            value={`$${formatNumber(parseFloat(serviceCredentials?.costvca || "0"))}`}
-                                        />
-                                    </div>
-                                )}
-                            </>
-                        )}
-                        {(channel?.type === "FBDM" || channel?.type === "FBWA") && (
-                            <>
-                                {serviceCredentials?.siteId && (
-                                    <div className="row-zyx">
-                                        <FieldView
-                                            className="col-6"
-                                            label={t(langKeys.url)}
-                                            value={`https://www.facebook.com/${serviceCredentials?.siteId}`}
-                                        />
-                                    </div>
-                                )}
-                            </>
-                        )}
-                        <div>
-                            <div>
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                    {t(langKeys.givechannelcolor)}
-                                </Box>
-                                <ColorInput hex={hexIconColor} onChange={(e) => setHexIconColor(e.hex)} />
-                            </div>
-                        </div>
-                    </div>
-                    {channel?.type === "VOXI" && (
+    if (viewSelected === "main-view") {
+        return (
+            <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
+                        {t(langKeys.previoustext)}
+                    </Link>
+                </Breadcrumbs>
+                <div
+                    style={{
+                        width: "700px",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: "wrap",
+                    }}
+                >
+                    <div className={classes.title}>{t(langKeys.communicationchannel_edit)}</div>
+                    <div style={{ display: "flex", gap: 24 }}>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
-                            <div>
-                                <Box
-                                    color="textPrimary"
-                                    fontSize={14}
-                                    fontWeight={500}
-                                    lineHeight="18px"
-                                    mb={0.5}
-                                    style={{ display: "flex" }}
-                                >
-                                    {t(langKeys.welcometone)}
-                                    <div style={{ display: "flex", alignItems: "center" }}>
-                                        <Tooltip
-                                            arrow
-                                            placement="top"
-                                            title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>}
-                                        >
-                                            <InfoRoundedIcon
-                                                color="action"
-                                                style={{ width: 15, height: 15, cursor: "pointer" }}
-                                            />
-                                        </Tooltip>
-                                    </div>
-                                </Box>
-                                <div style={{ display: "flex" }}>
-                                    <div style={{ flex: 1 }}>
-                                        {uploadResult.loading && waitUploadFile === "welcome" ? (
-                                            <div
-                                                style={{
-                                                    alignItems: "center",
-                                                    display: "flex",
-                                                    flex: 1,
-                                                    height: "100%",
-                                                    justifyContent: "center",
-                                                }}
-                                            >
-                                                <CircularProgress size={30} />
-                                            </div>
-                                        ) : (
-                                            <FieldEdit
-                                                disabled={true}
-                                                valueDefault={welcometoneurl
-                                                    ?.split("/")
-                                                    ?.[welcometoneurl?.split("/")?.length - 1]?.replaceAll("%20", " ")}
-                                            />
-                                        )}
-                                    </div>
+                            <FieldEdit
+                                onChange={(value) => setName(value)}
+                                label={t(langKeys.givechannelname)}
+                                disabled={edit.loading}
+                                valueDefault={channel!.communicationchanneldesc}
+                            />
+                            {channel?.phone && (
+                                <>
                                     <div>
-                                        <input
-                                            accept=".mp3,audio/*"
-                                            id="contained-button-file"
-                                            style={{ display: "none" }}
-                                            type="file"
-                                            onChange={(e) => {
-                                                onUploadFile(e.target.files, "welcome");
-                                            }}
-                                        />
-                                        <label htmlFor="contained-button-file" style={{ height: 0 }}>
-                                            <IconButton
-                                                aria-label="upload picture"
-                                                color="primary"
-                                                component="span"
-                                                disabled={uploadResult.loading}
-                                                size="small"
-                                            >
-                                                <PublishIcon />
-                                            </IconButton>
-                                        </label>
+                                        <FieldView label={t(langKeys.phone)} value={channel!.phone} />
                                     </div>
-                                </div>
-                            </div>
-                            <div>
-                                <Box
-                                    color="textPrimary"
-                                    fontSize={14}
-                                    fontWeight={500}
-                                    lineHeight="18px"
-                                    mb={0.5}
-                                    style={{ display: "flex" }}
-                                >
-                                    {t(langKeys.standbytone)}
-                                    <div style={{ display: "flex", alignItems: "center" }}>
-                                        <Tooltip
-                                            arrow
-                                            placement="top"
-                                            title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>}
-                                        >
-                                            <InfoRoundedIcon
-                                                color="action"
-                                                style={{ width: 15, height: 15, cursor: "pointer" }}
+                                </>
+                            )}
+                            {channel?.type === "VOXI" && (
+                                <>
+                                    {serviceCredentials?.countryname && (
+                                        <div>
+                                            <FieldView
+                                                label={t(langKeys.country)}
+                                                value={serviceCredentials?.countryname}
                                             />
-                                        </Tooltip>
-                                    </div>
-                                </Box>
-
-                                <div style={{ display: "flex" }}>
-                                    <div style={{ flex: 1 }}>
-                                        {uploadResult.loading && waitUploadFile === "holding" ? (
-                                            <div
-                                                style={{
-                                                    alignItems: "center",
-                                                    display: "flex",
-                                                    flex: 1,
-                                                    height: "100%",
-                                                    justifyContent: "center",
-                                                }}
-                                            >
-                                                <CircularProgress size={30} />
-                                            </div>
-                                        ) : (
-                                            <FieldEdit
-                                                disabled={true}
-                                                valueDefault={holdingtoneurl
-                                                    ?.split("/")
-                                                    ?.[holdingtoneurl?.split("/")?.length - 1]?.replaceAll("%20", " ")}
+                                        </div>
+                                    )}
+                                    {serviceCredentials?.categoryname && (
+                                        <div>
+                                            <FieldView
+                                                label={t(langKeys.category)}
+                                                value={t(serviceCredentials?.categoryname)}
                                             />
-                                        )}
-                                    </div>
-                                    <div>
-                                        <input
-                                            accept=".mp3,audio/*"
-                                            id="contained-button-file2"
-                                            style={{ display: "none" }}
-                                            type="file"
-                                            onChange={(e) => {
-                                                onUploadFile(e.target.files, "holding");
-                                            }}
-                                        />
-                                        <label htmlFor="contained-button-file2">
-                                            <IconButton
-                                                aria-label="upload picture"
-                                                color="primary"
-                                                component="span"
-                                                disabled={uploadResult.loading}
-                                                size="small"
-                                            >
-                                                <PublishIcon />
-                                            </IconButton>
-                                        </label>
-                                    </div>
+                                        </div>
+                                    )}
+                                    {serviceCredentials?.statename && (
+                                        <div>
+                                            <FieldView
+                                                label={t(langKeys.voximplant_state)}
+                                                value={serviceCredentials?.statename}
+                                            />
+                                        </div>
+                                    )}
+                                    {serviceCredentials?.regionname && (
+                                        <div>
+                                            <FieldView
+                                                label={t(langKeys.voximplant_region)}
+                                                value={serviceCredentials?.regionname}
+                                            />
+                                        </div>
+                                    )}
+                                    {serviceCredentials?.costvca && (
+                                        <div>
+                                            <FieldView
+                                                label={t(langKeys.voximplant_pricealert)}
+                                                value={`$${formatNumber(parseFloat(serviceCredentials?.costvca || 0))}`}
+                                            />
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                            {(channel?.type === "FBDM" || channel?.type === "FBWA") && (
+                                <>
+                                    {serviceCredentials?.siteId && (
+                                        <div className="row-zyx">
+                                            <FieldView
+                                                label={t(langKeys.url)}
+                                                className="col-6"
+                                                value={`https://www.facebook.com/${serviceCredentials?.siteId}`}
+                                            />
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                            <div>
+                                <div>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                        {t(langKeys.givechannelcolor)}
+                                    </Box>
+                                    <ColorInput hex={hexIconColor} onChange={(e) => setHexIconColor(e.hex)} />
                                 </div>
-                            </div>
-                            <div>
-                                {t(langKeys.voicechannel_callsupervisor)}
-                                <Tooltip
-                                    placement="top-start"
-                                    title={`${t(langKeys.voicechannel_callsupervisortooltip)}`}
-                                >
-                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
-                                </Tooltip>
-                                <FormControlLabel
-                                    label={""}
-                                    style={{ marginRight: "4px", marginLeft: 50 }}
-                                    control={
-                                        <IOSSwitchPurple
-                                            checked={checkedCallSupervision}
-                                            onChange={(e) => {
-                                                setCheckedCallSupervision(e.target.checked);
-                                            }}
-                                        />
-                                    }
-                                />
-                            </div>
-                            <div>
-                                {t(langKeys.voicechannel_recording)}
-                                <Tooltip title={`${t(langKeys.voicechannel_recordingtooltip)}`} placement="top-start">
-                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
-                                </Tooltip>
-                                <FormControlLabel
-                                    label={""}
-                                    style={{ marginRight: "4px", marginLeft: 50 }}
-                                    control={
-                                        <IOSSwitchPurple
-                                            checked={checkedRecording}
-                                            onChange={(e) => {
-                                                setCheckedRecording(e.target.checked);
-                                            }}
-                                        />
-                                    }
-                                />
                             </div>
                         </div>
-                    )}
-                </div>
-                <div style={{ marginLeft: "auto", marginTop: 16 }}>
-                    <Button
-                        className={classes.button}
-                        color="primary"
-                        disabled={edit.loading || uploadResult.loading}
-                        onClick={handleSubmit}
-                        variant="contained"
-                    >
-                        <Trans i18nKey={langKeys.finishreg} />
-                    </Button>
+                        {channel?.type === "VOXI" && (
+                            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
+                                <div>
+                                    <Box
+                                        fontWeight={500}
+                                        lineHeight="18px"
+                                        fontSize={14}
+                                        mb={0.5}
+                                        color="textPrimary"
+                                        style={{ display: "flex" }}
+                                    >
+                                        {t(langKeys.welcometone)}
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <Tooltip
+                                                title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>}
+                                                arrow
+                                                placement="top"
+                                            >
+                                                <InfoRoundedIcon
+                                                    color="action"
+                                                    style={{ width: 15, height: 15, cursor: "pointer" }}
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                    </Box>
+
+                                    <div style={{ display: "flex" }}>
+                                        <div style={{ flex: 1 }}>
+                                            {uploadResult.loading && waitUploadFile === "welcome" ? (
+                                                <div
+                                                    style={{
+                                                        flex: 1,
+                                                        height: "100%",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                    }}
+                                                >
+                                                    <CircularProgress size={30} />
+                                                </div>
+                                            ) : (
+                                                <FieldEdit
+                                                    valueDefault={welcometoneurl
+                                                        ?.split("/")
+                                                        ?.[welcometoneurl?.split("/")?.length - 1]?.replaceAll(
+                                                            "%20",
+                                                            " "
+                                                        )}
+                                                    disabled={true}
+                                                />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <input
+                                                accept=".mp3,audio/*"
+                                                id="contained-button-file"
+                                                type="file"
+                                                style={{ display: "none" }}
+                                                onChange={(e) => {
+                                                    onUploadFile(e.target.files, "welcome");
+                                                }}
+                                            />
+                                            <label htmlFor="contained-button-file" style={{ height: 0 }}>
+                                                <IconButton
+                                                    color="primary"
+                                                    aria-label="upload picture"
+                                                    size="small"
+                                                    component="span"
+                                                    disabled={uploadResult.loading}
+                                                >
+                                                    <PublishIcon />
+                                                </IconButton>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <Box
+                                        fontWeight={500}
+                                        lineHeight="18px"
+                                        fontSize={14}
+                                        mb={0.5}
+                                        color="textPrimary"
+                                        style={{ display: "flex" }}
+                                    >
+                                        {t(langKeys.standbytone)}
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <Tooltip
+                                                title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>}
+                                                arrow
+                                                placement="top"
+                                            >
+                                                <InfoRoundedIcon
+                                                    color="action"
+                                                    style={{ width: 15, height: 15, cursor: "pointer" }}
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                    </Box>
+
+                                    <div style={{ display: "flex" }}>
+                                        <div style={{ flex: 1 }}>
+                                            {uploadResult.loading && waitUploadFile === "holding" ? (
+                                                <div
+                                                    style={{
+                                                        flex: 1,
+                                                        height: "100%",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                    }}
+                                                >
+                                                    <CircularProgress size={30} />
+                                                </div>
+                                            ) : (
+                                                <FieldEdit
+                                                    valueDefault={holdingtoneurl
+                                                        ?.split("/")
+                                                        ?.[holdingtoneurl?.split("/")?.length - 1]?.replaceAll(
+                                                            "%20",
+                                                            " "
+                                                        )}
+                                                    disabled={true}
+                                                />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <input
+                                                accept=".mp3,audio/*"
+                                                id="contained-button-file2"
+                                                type="file"
+                                                style={{ display: "none" }}
+                                                onChange={(e) => {
+                                                    onUploadFile(e.target.files, "holding");
+                                                }}
+                                            />
+                                            <label htmlFor="contained-button-file2">
+                                                <IconButton
+                                                    color="primary"
+                                                    size="small"
+                                                    aria-label="upload picture"
+                                                    component="span"
+                                                    disabled={uploadResult.loading}
+                                                >
+                                                    <PublishIcon />
+                                                </IconButton>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    {t(langKeys.voicechannel_callsupervisor)}
+                                    <Tooltip
+                                        title={`${t(langKeys.voicechannel_callsupervisortooltip)}`}
+                                        placement="top-start"
+                                    >
+                                        <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                    </Tooltip>
+                                    <FormControlLabel
+                                        control={
+                                            <IOSSwitchPurple
+                                                checked={checkedCallSupervision}
+                                                onChange={(e) => {
+                                                    setCheckedCallSupervision(e.target.checked);
+                                                }}
+                                            />
+                                        }
+                                        label={""}
+                                        style={{ marginRight: "4px", marginLeft: 50 }}
+                                    />
+                                </div>
+                                <div>
+                                    {t(langKeys.voicechannel_recording)}
+                                    <Tooltip
+                                        title={`${t(langKeys.voicechannel_recordingtooltip)}`}
+                                        placement="top-start"
+                                    >
+                                        <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                    </Tooltip>
+                                    <FormControlLabel
+                                        control={
+                                            <IOSSwitchPurple
+                                                checked={checkedRecording}
+                                                onChange={(e) => {
+                                                    setCheckedRecording(e.target.checked);
+                                                }}
+                                            />
+                                        }
+                                        label={""}
+                                        style={{ marginRight: "4px", marginLeft: 50 }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div style={{ marginLeft: "auto", marginTop: 16 }}>
+                        <Button
+                            onClick={handleSubmit}
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={edit.loading || uploadResult.loading}
+                        >
+                            <Trans i18nKey={langKeys.finishreg} />
+                        </Button>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
-};
+        );        
+    }
+    else {
+        return <ChannelEnableVirtualAssistant/>
+    }
+}
 
 export default ChannelEdit;

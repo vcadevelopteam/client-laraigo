@@ -151,7 +151,7 @@ const cleanPath = (pathx: string) => {
 // insert: 2
 // delete: 3
 
-const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
+const ProtectRoute: FC<PrivateRouteProps> = ({ component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
 	const applications = resValidateToken?.user?.menu;
@@ -162,7 +162,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 
 	React.useEffect(() => {
 		if (existToken)
-			dispatch(validateToken());
+			dispatch(validateToken(localStorage.getItem("firstLoad") ?? ""));
 	}, [])
 
 	React.useEffect(() => {
@@ -186,7 +186,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin: (!fromChangeOrganization && automaticConnection), roledesc }));
 			if (sitevoxi && ownervoxi) {
 				dispatch(voximplantConnect({
-					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
+					automaticConnection: automaticConnection || Boolean(localStorage.getItem("agentConnected")) || false,
 					user: `user${userid}.${orgid}`,
 					application: ownervoxi
 				}));

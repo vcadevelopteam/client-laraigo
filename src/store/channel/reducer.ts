@@ -29,7 +29,7 @@ export interface IState {
     checkPaymentPlan: IObjectState<{ success: boolean; createChannel: boolean; providerWhatsApp: string }>;
     editChannel: IProcessState;
     facebookPages: IListStatePaginated<unknown>;
-    insertChannel: IObjectState<{ success: boolean; integrationid: string; integrationId: string }>;
+    insertChannel: IObjectState<{ success: boolean, integrationid: string, integrationId: string, result: any }>;
     instagramDMPages: IListStatePaginated<unknown>;
     instagramPages: IListStatePaginated<unknown>;
     messengerPages: IListStatePaginated<unknown>;

@@ -25,8 +25,10 @@ export interface IChannel {
     orgid: number;
     other: string;
     phone: string;
-    resolvelithium: boolean;
-    schedule: string;
+    haveflow: boolean;
+    resolvelithium: any;
+    schedule: any;
+    /**RAW JSON - service payload */
     servicecredentials: string;
     status: string;
     statusdesc: string;

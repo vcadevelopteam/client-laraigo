@@ -16,6 +16,7 @@ import FacebookLogin from "react-facebook-login";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import React, { FC, useEffect, useState } from "react";
+import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
 
 interface WhatsAppData {
     row?: unknown;
@@ -103,7 +104,7 @@ export const ChannelAddInstagramDM: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS);
+                setViewSelected("enable-virtual-assistant")
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code ?? "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),
@@ -306,7 +307,11 @@ export const ChannelAddInstagramDM: FC<{ edit: boolean }> = ({ edit }) => {
                     </div>
                 </div>
             </div>
-        );
+        )
+    } else if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
     } else {
         return (
             <div style={{ width: "100%" }}>
