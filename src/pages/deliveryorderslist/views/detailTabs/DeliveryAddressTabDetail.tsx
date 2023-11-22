@@ -46,8 +46,7 @@ errors: FieldErrors;
 
 const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors }) => {
     const { t } = useTranslation();
-    const classes = useStyles();
-    
+    const classes = useStyles();    
     const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>([
         { latitude: -12.00000000000001, longitude: -77.00000000000001 },
     ]);
@@ -64,7 +63,6 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
     setCoordinates(newCoordinates);
     };
 
-
     const [orderCoordinate, setOrderCoordinate] = useState<{ latitude: number; longitude: number }>({ latitude: 0, longitude: 0 });
     const [isOrderInsidePolygon, setIsOrderInsidePolygon] = useState<boolean | null>(null);
     useEffect(() => {
@@ -73,13 +71,11 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
             coordinates.map(coord => ({ lat: coord.latitude, lng: coord.longitude }))
         );
         setIsOrderInsidePolygon(isInside);
-    }, [orderCoordinate, coordinates]);
-    
+    }, [orderCoordinate, coordinates]);    
 
     return (
     <div className={classes.containerDetail}>
         <Typography className={classes.subtitle}>{t(langKeys.geolocation)}</Typography>
-
         <div className="row-zyx">
             <FieldEdit
                 label={`${t(langKeys.latitude)} de Orden`}
@@ -119,8 +115,6 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
                 }
             />
         </div>
-
-
         <div className="row-zyx" style={{ justifyContent: 'center' }}>
         <GoogleMaps 
             coordinates={coordinates} 
@@ -128,8 +122,7 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
         />
         </div>
         <Typography className={classes.mapFooter}>{t(langKeys.address_found_in_geolocator)}</Typography>
-        <div style={{ textAlign: "right" }}>
-    
+        <div style={{ textAlign: "right" }}>    
         <Button
             className={classes.addbutton}
             variant="contained"
@@ -141,7 +134,6 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
             {t(langKeys.add) + " " + t(langKeys.coordinate)}
         </Button>
         </div>
-
         {coordinates.map((coord, index) => (
         <div key={index} className="row-zyx">
             <div className="col-1">
@@ -179,10 +171,7 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
             </div>
         </div>
         ))}
-
-    
     </div>
     );
 };
-
 export default DeliveryAddressTabDetail;
