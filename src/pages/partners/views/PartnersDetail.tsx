@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
@@ -33,25 +32,9 @@ interface DetailProps {
 
 
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        // marginTop: theme.spacing(2),
-        // marginRight: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
-        width: '100%'
-    },
     button: {
         marginRight: theme.spacing(2),
-    },
-    containerHeader: {
-        padding: theme.spacing(1),
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
-        borderRadius: 4,
-        color: 'rgb(143, 146, 161)'
+        backgroundColor: "#55BD84"
     },
     tabs: {
         color: '#989898',
@@ -61,6 +44,25 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         width: 'inherit',
     },
+    mainComponent: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%'
+    },
+    header: {
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
+    headerButtons: {
+        display: 'flex',
+        gap: '10px',
+        alignItems: 'center'
+    },
+    tab: {
+        display: 'flex',
+        gap: 8,
+        alignItems: 'center'
+    }
 }));
 
 const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected, fetchData }) => {
@@ -203,10 +205,14 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected,
         }))
     });
 
+    const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
+        setTabIndex(newIndex);
+    };
+
     return (
         <>
-            <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <form onSubmit={onMainSubmit} className={classes.mainComponent}>
+                <div className={classes.header}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -215,24 +221,21 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected,
                             }}
                         />
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div className={classes.headerButtons}>
                         <Button
                             variant="contained"
                             type="button"
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => {
-                                setViewSelected("main-view")
-                            }}
+                            onClick={() => setViewSelected("main-view")}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
                             variant="contained"
                             color="primary"
                             type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}>
+                            startIcon={<SaveIcon color="secondary" />}>
                             {t(langKeys.save)}
                         </Button>
                     </div>
@@ -240,7 +243,7 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected,
                 </div>
                 <Tabs
                     value={tabIndex}
-                    onChange={(_:any, i:any) => setTabIndex(i)}
+                    onChange={handleChangeTab}
                     className={classes.tabs}
                     textColor="primary"
                     indicatorColor="primary"
@@ -248,14 +251,14 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected,
                 >
                     <AntTab
                         label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <div className={classes.tab}>
                                 <Trans i18nKey={langKeys.generalinformation} />
                             </div>
                         )}
                     />
                     <AntTab
                         label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <div className={classes.tab}>
                                 <Trans i18nKey={langKeys.clients}/>
                             </div>
                         )}

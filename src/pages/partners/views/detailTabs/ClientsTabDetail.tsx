@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
@@ -12,6 +11,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
 import { customerByPartnerIns } from "common/helpers";
+import { CellProps } from "react-table";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -92,7 +92,7 @@ const ClientsTabDetail: React.FC<ClientsTabDetailProps> = ({fetchdata, row}) => 
         isComponent: true,
         minWidth: 60,
         width: "1%",
-        Cell: (props: any) => {
+        Cell: (props: CellProps<Dictionary>) => {
           const row = props.cell.row.original;
           return (
             <TemplateIcons
