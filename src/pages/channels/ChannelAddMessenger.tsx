@@ -117,7 +117,6 @@ export const ChannelAddMessenger: FC<{ edit: boolean }> = ({ edit }) => {
     }, [mainResult]);
 
     const processFacebookCallback = async (r: any) => {
-        console.log(r);
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsList(r.accessToken, `${apiUrls.FACEBOOKAPP}`));
             setViewSelected("view2");
