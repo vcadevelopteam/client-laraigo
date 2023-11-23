@@ -44,7 +44,6 @@ import {
 import React, { FC, useEffect, useRef, useState } from "react";
 import paths from "common/constants/paths";
 import clsx from "clsx";
-import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
 
 interface FieldTemplate {
     text: React.ReactNode;
@@ -1034,7 +1033,6 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
     const [showFinalStep, setShowFinalStep] = useState(false);
     const [tabIndex, setTabIndex] = useState("0");
-    const [viewSelected, setViewSelected] = useState("main-view");
 
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -1096,16 +1094,14 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                 })
             );
         } else if (editChannel.success) {
-            if(edit && !channel?.haveflow){
-                setViewSelected("enable-virtual-assistant")
-            }else{
-                dispatch(showSnackbar({
+            dispatch(
+                showSnackbar({
                     message: t(langKeys.channeleditsuccess),
                     show: true,
-                    severity: "success"
-                }));
-                history.push(paths.CHANNELS);
-            }
+                    severity: "success",
+                })
+            );
+            history.push(paths.CHANNELS);
         }
     }, [dispatch, editChannel]);
 
@@ -1215,9 +1211,6 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
         return <div />;
     }
 
-    if (viewSelected !== "main-view") {
-        return <ChannelEnableVirtualAssistant/>
-    }
     return (
         <div className={classes.root}>
             <div style={{ display: showFinalStep ? "none" : "flex", flexDirection: "column" }}>
@@ -1312,28 +1305,18 @@ interface ChannelAddEndProps {
 const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel }) => {
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
+    const history = useHistory();
     const auto = true;
     const [name, setName] = useState(channel?.communicationchanneldesc ?? "");
-    const [enableVirtual, setEnableVirtual] = useState<number|null>(null);
-    const insertChannel = useSelector(state => state.channel.insertChannel);
-    
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
         if (!integrationId) onClose?.();
-    }
-    const handleend = () => {
-        setEnableVirtual(insertChannel?.value?.result?.ufn_communicationchannel_ins||null)
-    }
+    };
 
     const handleSave = () => {
         onSubmit(name, auto);
-    }
-    if(enableVirtual){
-        return <ChannelEnableVirtualAssistant
-            communicationchannelid={enableVirtual}
-        />
-    }
+    };
 
     return (
         <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
@@ -1407,11 +1390,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 <div id="${name}"></div>
                 <script src="${apiUrls.WEBFORMCHANNEL_FORM}" integrationid="${integrationId}" containerid="${name}"></script>
                 `}
-            </code></pre><div style={{ height: 20 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginBottom: 20 }}>
-                *{t(langKeys.containeridExplained)}
-            </div>
-                <Button variant="contained" color="primary" onClick={handleend}>
+                    </code>
+                </pre>
+                <div style={{ height: 20 }} />
+                <div style={{ display: integrationId ? "flex" : "none", flexDirection: "column", marginBottom: 20 }}>
+                    *{t(langKeys.containeridExplained)}
+                </div>
+                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     {t(langKeys.close)}
                 </Button>
             </div>

@@ -12,8 +12,8 @@ import { IChannel } from "@types";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
+import React, { FC, useEffect, useState } from "react";
 
 interface WhatsAppData {
     row?: unknown;
@@ -124,6 +124,11 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
             communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
         />
     }
+
+    if (edit && !channel) {
+        return <div />;
+    }
+
     return (
         <div style={{ width: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">

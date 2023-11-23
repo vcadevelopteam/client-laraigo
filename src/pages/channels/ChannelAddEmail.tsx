@@ -10,8 +10,8 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { IChannel } from "@types";
 import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
+import { IChannel } from "@types";
 
 import GoogleLogInFrame from "./GoogleLogInFrame";
 import Link from "@material-ui/core/Link";
@@ -619,7 +619,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                     </div>
                 </div>
             )
-        }else {
+        }else if(viewSelected==="enable-virtual-assistant"){
+            return <ChannelEnableVirtualAssistant
+                communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            />
+        }
+        else {
             return (
                 <div style={{ width: "100%" }}>
                     <div style={{ width: "100%" }}>

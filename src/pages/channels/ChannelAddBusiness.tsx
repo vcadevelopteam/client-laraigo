@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from "react";
 import { apiUrls } from "common/constants";
 import { Breadcrumbs, Box, Button, makeStyles } from "@material-ui/core";
 import { ChannelMyBusiness } from "icons";
@@ -10,13 +11,12 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { IChannel } from "@types";
 import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
+import { IChannel } from "@types";
 
 import GoogleLogInFrame from "./GoogleLogInFrame";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
 
 interface WhatsAppData {
     row?: unknown;

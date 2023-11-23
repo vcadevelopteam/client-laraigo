@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from "react";
 import { activateChannel, insertChannel } from "store/channel/actions";
 import { Box, Breadcrumbs, Button, FormControlLabel, makeStyles, TextField } from "@material-ui/core";
 import { ChannelWhatsApp01 } from "icons";
@@ -14,7 +15,6 @@ import { useTranslation } from "react-i18next";
 import Link from "@material-ui/core/Link";
 import MuiPhoneNumber from "material-ui-phone-number";
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -279,7 +279,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setSetins(false);
+                setsetins(false);
                 dispatch(showBackdrop(false));
                 setSetins(false);
                 setWaitSave(false);

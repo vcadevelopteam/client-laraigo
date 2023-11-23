@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from "react";
 import { checkPaymentPlan, deleteChannel } from "store/channel/actions";
 import { Dictionary, IChannel } from "@types";
 
@@ -12,9 +13,8 @@ import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
-import SettingsIcon from '@material-ui/icons/Settings';
 import TableZyx from "components/fields/table-simple";
+import SettingsIcon from '@material-ui/icons/Settings';
 
 export const Channels: FC = () => {
     const { t } = useTranslation();

@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from "react";
 import { apiUrls } from "common/constants";
 import { Box, Breadcrumbs, Button, makeStyles } from "@material-ui/core";
 import { ChannelYouTube } from "icons";
@@ -16,7 +17,6 @@ import { useTranslation } from "react-i18next";
 import GoogleLogInFrame from "./GoogleLogInFrame";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 interface WhatsAppData {
