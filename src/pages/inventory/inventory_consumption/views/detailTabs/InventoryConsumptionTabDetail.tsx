@@ -85,6 +85,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
     const [openModalReservedProducts, setOpenModalReservedProducts] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary|null>(null);
+    const [typeOperation, setTypeOperation] = useState(getValues("transactiontype"));
     const [openModalReturnProducts, setOpenModalReturnProducts] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
     const [warehouseProducts, setWarehouseProducts] = useState<any>(null);
@@ -214,7 +215,6 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
         ],
         []
       )
-
     return (
         <div className={classes.containerDetail}>
             <div className="row-zyx">
@@ -242,6 +242,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                     valueDefault={getValues("transactiontype")}
                     onChange={(value) => {
                         setValue("transactiontype", value.domainvalue)
+                        setTypeOperation(value.domainvalue)
                         setDataDetail([]);                        
                     }}
                 />
@@ -301,7 +302,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                                     color="primary"
                                     style={{ backgroundColor: "#55BD84" }}
                                     onClick={handleOpenModalReservedProducts}
-                                    disabled={edit || !selectedWarehouse}
+                                    disabled={edit || !selectedWarehouse || typeOperation !== "DESPACHO"}
                                     variant="contained"
                                 >
                                     {t(langKeys.selectreservedproducts)}
