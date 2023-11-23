@@ -587,6 +587,8 @@ interface AddColumnTemplatePops extends Omit<BoxProps, "onSubmit"> {
     onSubmit: (data: any) => void;
     updateSortParams: (value: any) => void;
     passConfiguration: (value: Dictionary) => void;
+    ordertype: Dictionary;
+    orderby: Dictionary;
 }
 
 const useAddColumnTemplateStyles = makeStyles((theme) => ({
@@ -637,7 +639,7 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
 	}
 }));
 
-export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, passConfiguration, ...boxProps }) => {
+export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, passConfiguration, ordertype, orderby, ...boxProps }) => {
     const classes = useAddColumnTemplateStyles();
     const dispatch = useDispatch();
     const main = useSelector((state) => state.main.mainData);
@@ -719,16 +721,13 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 					variant="outlined"
 					label={t(langKeys.type)}
                     valueDefault={sortParams.type}
-					data={[
-                        {domainvalue: 'firstname', domaindesc: 'firstname'},
-                        {domainvalue: 'description', domaindesc: 'description'}
-                    ]}
+					data={ordertype || []}
 					className={classes.filterComponent}
 					optionDesc="domaindesc"
 					optionValue="domainvalue"
                     onChange={(value) => {
                         if(value?.domainvalue) {
-                            setSortParams({...sortParams, type: value.domaindesc})
+                            setSortParams({...sortParams, type: value.domainvalue})
                         } else {
                             setSortParams({...sortParams, type: ""})
                         }
@@ -738,16 +737,13 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 					variant="outlined"
 					label={t(langKeys.order)}
                     valueDefault={sortParams.order}
-					data={[
-                        {domainvalue: 'menor a mayor', domaindesc: 'menor a mayor'},
-                        {domainvalue: 'mayor a menor', domaindesc: 'mayor a menor'}
-                    ]}
+					data={orderby || []}
 					className={classes.filterComponent}
 					optionDesc="domaindesc"
 					optionValue="domainvalue"
                     onChange={(value) => {
                         if(value?.domainvalue) {
-                            setSortParams({...sortParams, order: value.domaindesc})
+                            setSortParams({...sortParams, order: value.domainvalue})
                         } else {
                             setSortParams({...sortParams, order: ""})
                         }

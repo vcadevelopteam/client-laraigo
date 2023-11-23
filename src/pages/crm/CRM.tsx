@@ -252,6 +252,15 @@ const CRM: FC = () => {
     }
   }, [user, boardFilter]);
 
+  const [sortParams, setSortParams] = useState({
+    type: '',
+    order: ''
+  })
+
+  const updateSortParams = (value: sortParams) => {
+    setSortParams(value)
+  }
+
   useEffect(() => {
     dispatch(getMultiCollection([
       getColumnsSel(1),
@@ -264,6 +273,8 @@ const CRM: FC = () => {
         tags: boardFilter.tags,
         userid: String(boardFilter.asesorid || ""),
         supervisorid: user?.userid || 0,
+        ordertype: sortParams.type,
+        orderby: sortParams.order,
       }),
       // adviserSel(),
       getAdviserFilteredUserRol(),
@@ -272,12 +283,13 @@ const CRM: FC = () => {
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
       getLeadTasgsSel(),
       getValuesFromDomain('TIPOPERSONA'),
+      getValuesFromDomain('ORDERTYPE'),
+      getValuesFromDomain('ORDERBY'),
     ]));
     return () => {
       dispatch(resetAllMain());
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+  }, [dispatch, sortParams]);
 
   useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
@@ -319,6 +331,8 @@ const CRM: FC = () => {
         tags: boardFilter.tags,
         userid: String(boardFilter.asesorid || ""),
         supervisorid: user?.userid || 0,
+        ordertype: sortParams.type,
+        orderby: sortParams.order,
       }),
       // adviserSel(),
       getAdviserFilteredUserRol(),
@@ -327,8 +341,9 @@ const CRM: FC = () => {
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
       getLeadTasgsSel(),
       getValuesFromDomain('TIPOPERSONA'),
+      getValuesFromDomain('ORDERTYPE'),
+      getValuesFromDomain('ORDERBY'),
     ]));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardFilter, dispatch]);
 
   const onDragEnd = (result: DropResult, columns: dataBackend[], setDataColumn: any) => {
@@ -516,15 +531,8 @@ const CRM: FC = () => {
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
   const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });
-  const [sortParams, setSortParams] = useState({
-    type: '',
-    order: ''
-  })
-  const [configuration, setConfiguration] = useState<Configuration>()
 
-  const updateSortParams = (value: sortParams) => {
-    setSortParams(value)
-  }
+  const [configuration, setConfiguration] = useState<Configuration>()
 
   const passConfiguration = (value: Configuration) => {
     setConfiguration(value)
@@ -1062,7 +1070,7 @@ const CRM: FC = () => {
               <Trans i18nKey={langKeys.search} />
             </Button>
           </div>
-          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} updateSortParams={updateSortParams} passConfiguration={passConfiguration} />}
+          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} updateSortParams={updateSortParams} passConfiguration={passConfiguration} ordertype={mainMulti?.data[8]?.data} orderby={mainMulti?.data[9]?.data} />}
           <div style={{ display: "flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold" }}>
             <div style={{ minWidth: 280, maxWidth: 280, backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column", }}>{t(langKeys.new)}</div>
             <div style={{

@@ -342,6 +342,8 @@ export interface ICrmLeadSel {
     /**id del usuario de la sesión - OBLIGATORIO no puede ser cero */
     supervisorid: number;
     persontype: string;
+    ordertype: string;
+    orderby: string;
 	all?: boolean;
 }
 
