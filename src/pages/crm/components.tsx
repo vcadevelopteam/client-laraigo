@@ -220,9 +220,9 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                 return classes.redLight;
             }
         } else if (configuration?.maxgreen !== null && configuration?.maxyellow !== null) {
-            if (0 <= time && time <= parseInt(configuration.maxgreen) * 60) {
+            if (0 <= time && time <= parseInt(configuration?.maxgreen) * 60) {
                 return classes.greenLight;
-            } else if (parseInt(configuration.maxgreen) * 60 + 1 <= time && time <= parseInt(configuration.maxgreen) * 60 + parseInt(configuration.maxyellow) * 60) {
+            } else if (parseInt(configuration?.maxgreen) * 60 + 1 <= time && time <= parseInt(configuration?.maxgreen) * 60 + parseInt(configuration?.maxyellow) * 60) {
                 return classes.yellowLight;
             } else {
                 return classes.redLight;
@@ -681,24 +681,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 
     const configuration = main.data.find(item => 
         item.corpid === user?.corpid && item.orgid === user?.orgid
-    )?.orderconfig || {
-        monbegin: '',
-        monend: '',
-        tuebegin: '',
-        tueend: '',
-        wedbegin: '',
-        wedend: '',
-        thubegin: '',
-        thuend: '',
-        fribegin: '',
-        friend: '',
-        satbegin: '',
-        satend: '',
-        sunbegin: '',
-        sunend: '',
-        maxgreen: null,
-        maxyellow: null,
-    };
+    )?.orderconfig
 
     useEffect(() => {
         passConfiguration(configuration)

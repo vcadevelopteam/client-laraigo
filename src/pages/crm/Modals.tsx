@@ -110,24 +110,45 @@ export const TrafficLightConfigurationModal: React.FC<{
     const executeRes = useSelector(state => state.main.execute);
     const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
-    const [configjson, setConfigjson] = useState({
-        monbegin: configuration?.monbegin,
-        monend: configuration?.monend,
-        tuebegin: configuration?.tuebegin,
-        tueend: configuration?.tueend,
-        wedbegin: configuration?.wedbegin,
-        wedend: configuration?.wedend,
-        thubegin: configuration?.thubegin,
-        thuend: configuration?.thuend,
-        fribegin: configuration?.fribegin,
-        friend: configuration?.friend,
-        satbegin: configuration?.satbegin,
-        satend: configuration?.satend,
-        sunbegin: configuration?.sunbegin,
-        sunend: configuration?.sunend,
-        maxgreen: configuration?.maxgreen,
-        maxyellow: configuration?.maxyellow,
+    const [configjson, setConfigjson] = useState(configuration || {
+        monbegin: '',
+        monend: '',
+        tuebegin: '',
+        tueend: '',
+        wedbegin: '',
+        wedend: '',
+        thubegin: '',
+        thuend: '',
+        fribegin: '',
+        friend: '',
+        satbegin: '',
+        satend: '',
+        sunbegin: '',
+        sunend: '',
+        maxgreen: null,
+        maxyellow: null,
     })
+
+    useEffect(() => {
+        setConfigjson({
+            monbegin: configuration?.monbegin,
+            monend: configuration?.monend,
+            tuebegin: configuration?.tuebegin,
+            tueend: configuration?.tueend,
+            wedbegin: configuration?.wedbegin,
+            wedend: configuration?.wedend,
+            thubegin: configuration?.thubegin,
+            thuend: configuration?.thuend,
+            fribegin: configuration?.fribegin,
+            friend: configuration?.friend,
+            satbegin: configuration?.satbegin,
+            satend: configuration?.satend,
+            sunbegin: configuration?.sunbegin,
+            sunend: configuration?.sunend,
+            maxgreen: configuration?.maxgreen,
+            maxyellow: configuration?.maxyellow,
+        })
+    }, [configuration])
 
     useEffect(() => {
         if (waitSave) {
@@ -177,22 +198,22 @@ export const TrafficLightConfigurationModal: React.FC<{
 
     function handleCloseConfiguration () {
         setConfigjson({
-            monbegin: configuration.monbegin,
-            monend: configuration.monend,
-            tuebegin: configuration.tuebegin,
-            tueend: configuration.tueend,
-            wedbegin: configuration.wedbegin,
-            wedend: configuration.wedend,
-            thubegin: configuration.thubegin,
-            thuend: configuration.thuend,
-            fribegin: configuration.fribegin,
-            friend: configuration.friend,
-            satbegin: configuration.satbegin,
-            satend: configuration.satend,
-            sunbegin: configuration.sunbegin,
-            sunend: configuration.sunend,
-            maxgreen: configuration.maxgreen,
-            maxyellow: configuration.maxyellow,
+            monbegin: configuration?.monbegin,
+            monend: configuration?.monend,
+            tuebegin: configuration?.tuebegin,
+            tueend: configuration?.tueend,
+            wedbegin: configuration?.wedbegin,
+            wedend: configuration?.wedend,
+            thubegin: configuration?.thubegin,
+            thuend: configuration?.thuend,
+            fribegin: configuration?.fribegin,
+            friend: configuration?.friend,
+            satbegin: configuration?.satbegin,
+            satend: configuration?.satend,
+            sunbegin: configuration?.sunbegin,
+            sunend: configuration?.sunend,
+            maxgreen: configuration?.maxgreen,
+            maxyellow: configuration?.maxyellow,
         })
         setOpenModal(false);
     }
@@ -227,31 +248,31 @@ export const TrafficLightConfigurationModal: React.FC<{
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.monbegin}
+                    valueDefault={configjson.monbegin}
                     onChange={(value) => setConfigjson({...configjson, monbegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.tuebegin}
+                    valueDefault={configjson.tuebegin}
                     onChange={(value) => setConfigjson({...configjson, tuebegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.wedbegin}
+                    valueDefault={configjson.wedbegin}
                     onChange={(value) => setConfigjson({...configjson, wedbegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.thubegin}
+                    valueDefault={configjson.thubegin}
                     onChange={(value) => setConfigjson({...configjson, thubegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.fribegin}
+                    valueDefault={configjson.fribegin}
                     onChange={(value) => setConfigjson({...configjson, fribegin: value})}
                 />
                 <div className="col-1"></div>
@@ -259,31 +280,31 @@ export const TrafficLightConfigurationModal: React.FC<{
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.monend}
+                    valueDefault={configjson.monend}
                     onChange={(value) => setConfigjson({...configjson, monend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.tueend}
+                    valueDefault={configjson.tueend}
                     onChange={(value) => setConfigjson({...configjson, tueend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.wedend}
+                    valueDefault={configjson.wedend}
                     onChange={(value) => setConfigjson({...configjson, wedend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.thuend}
+                    valueDefault={configjson.thuend}
                     onChange={(value) => setConfigjson({...configjson, thuend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.friend}
+                    valueDefault={configjson.friend}
                     onChange={(value) => setConfigjson({...configjson, friend: value})}
                 />
                 <div className="col-1"></div>
@@ -295,13 +316,13 @@ export const TrafficLightConfigurationModal: React.FC<{
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.satbegin}
+                    valueDefault={configjson.satbegin}
                     onChange={(value) => setConfigjson({...configjson, satbegin: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.sunbegin}
+                    valueDefault={configjson.sunbegin}
                     onChange={(value) => setConfigjson({...configjson, sunbegin: value})}
                 />
                 <div className="col-7"></div>
@@ -309,13 +330,13 @@ export const TrafficLightConfigurationModal: React.FC<{
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.satend}
+                    valueDefault={configjson.satend}
                     onChange={(value) => setConfigjson({...configjson, satend: value})}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
-                    valueDefault={configuration?.sunend}
+                    valueDefault={configjson.sunend}
                     onChange={(value) => setConfigjson({...configjson, sunend: value})}
                 />
                 <div className="col-7"></div>
@@ -327,7 +348,7 @@ export const TrafficLightConfigurationModal: React.FC<{
                     variant="outlined"
                     type="number"
                     className="col-12"
-                    valueDefault={configuration?.maxgreen}
+                    valueDefault={configjson.maxgreen}
                     onChange={(value) => {
                         if(value < 0) {
                             setConfigjson({...configjson, maxgreen: value * -1})
@@ -341,7 +362,7 @@ export const TrafficLightConfigurationModal: React.FC<{
                     variant="outlined"
                     type="number"
                     className="col-12"
-                    valueDefault={configuration?.maxyellow}
+                    valueDefault={configjson.maxyellow}
                     onChange={(value) => {
                         if(value < 0) {
                             setConfigjson({...configjson, maxyellow: value * -1})
