@@ -1211,9 +1211,6 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
         return <div />;
     }
 
-    if (viewSelected !== "main-view") {
-        return <ChannelEnableVirtualAssistant/>
-    }
     return (
         <div className={classes.root}>
             <div style={{ display: showFinalStep ? "none" : "flex", flexDirection: "column" }}>
