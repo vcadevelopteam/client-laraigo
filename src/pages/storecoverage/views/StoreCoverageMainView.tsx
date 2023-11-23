@@ -198,7 +198,7 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
       },
       {
         Header: t(langKeys.coveragearea),
-        accessor: "coveragearea",
+        accessor: "area",
         width: "auto",
       },
       {

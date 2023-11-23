@@ -46,9 +46,10 @@ interface NewOrderTabDetailProps {
   row: Dictionary
   getValues: any,
   setValue: any
+  setStoreAreaCoordinates: (value: any) => void
 }
 
-const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, row, setValue, getValues}) => {
+const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, row, setValue, getValues, setStoreAreaCoordinates}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [inStore, setInStore] = useState(row?.warehouseinstore || false);
@@ -60,196 +61,152 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
     }
 
     /*INICIO AGREGACIÓN Mapa*/
-    const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>([
-        { latitude: -12.00000000000001, longitude: -77.00000000000001 },
+    const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>(row.coveragearea||[
+        { latitude: 0, longitude: 0 },
     ]);
+
+    useEffect(() => {
+        setStoreAreaCoordinates(coordinates);
+    },[coordinates])
+    
     const handleAddCoordinate = () => {
-    setCoordinates((prevCoordinates) => [...prevCoordinates, { latitude: 0, longitude: 0 }]);
+        setCoordinates((prevCoordinates) => [...prevCoordinates, { latitude: 0, longitude: 0 }]);
     };
     const handleDeleteCoordinate = (index: number) => {
-    setCoordinates((prevCoordinates) => prevCoordinates.filter((_, i) => i !== index));
+        setCoordinates((prevCoordinates) => prevCoordinates.filter((_, i) => i !== index));
     };
     const handleCoordinatesChange = (newCoordinates: Array<{ latitude: number; longitude: number }>) => {
-    setCoordinates(newCoordinates);
+        setCoordinates(newCoordinates);
     };
 
-    const [orderCoordinate, setOrderCoordinate] = useState<{ latitude: number; longitude: number }>({ latitude: 0, longitude: 0 });
-    const [isOrderInsidePolygon, setIsOrderInsidePolygon] = useState<boolean | null>(null);
-    useEffect(() => {
-        const isInside = IsOrderCoordinateInsidePolygon(
-            { lat: orderCoordinate.latitude, lng: orderCoordinate.longitude },
-            coordinates.map(coord => ({ lat: coord.latitude, lng: coord.longitude }))
-        );
-        setIsOrderInsidePolygon(isInside);
-    }, [orderCoordinate, coordinates]);    
+   
     /*FIN AGREGACIÓN Mapa*/
 
   return (
     <div className={classes.containerDetail}>
-      <div className='row-zyx'>
-        <FieldEdit
-            label={t(langKeys.storezonename)}
-            valueDefault={getValues('description')}
-            onChange={(value) => setValue('description', value)}
-            className="col-6"
-            maxLength={100}
-            error={typeof errors?.description?.message === 'string' ? errors?.description?.message : ''}
-        />
-        <FieldEdit
-            label={t(langKeys.telephonenumber)}
-            type="number"
-            maxLength={15}
-            valueDefault={getValues('phone')}
-            onChange={(value) => setValue('phone', value)}
-            className="col-6"
-            error={typeof errors?.phone?.message === 'string' ? errors?.phone?.message : ''}
-        />
-        <FieldEdit
-            label={t(langKeys.address)}
-            valueDefault={getValues('address')}
-            maxLength={200}
-            onChange={(value) => setValue('address', value)}
-            className="col-6"
-            error={typeof errors?.address?.message === 'string' ? errors?.address?.message : ''}
-        />      
-        <FieldSelect
-          label={t(langKeys.status)}
-          className="col-6"
-          data={[
-            { domainvalue: "ACTIVO", domaindesc: "ACTIVO" },
-            { domainvalue: "INACTIVO", domaindesc: "INACTIVO" },
-          ]}
-          valueDefault={getValues('status')}
-          onChange={(value) => setValue('status', value?.domainvalue)}
-          error={typeof errors?.status?.message === 'string' ? errors?.status?.message : ''}
-          optionValue="domainvalue"
-          optionDesc="domaindesc"
-        />
-        <FieldSelect
-          label={t(langKeys.warehouse)}
-          className="col-6"
-          valueDefault={getValues('warehouseid')}
-          data={multiData?.data?.[0]?.data || []}
-          onChange={(value) => setValue('warehouseid', value?.warehouseid)}
-          error={typeof errors?.warehouseid?.message === 'string' ? errors?.warehouseid?.message : ''}
-          optionValue="warehouseid"
-          optionDesc="name"
-        />
-        <FormControlLabel 
-          style={{paddingLeft:"10px"}}
-          control={
-          <IOSSwitch
-              checked={inStore}
-              onChange={(event) => handleSwitchChange(event)}
-              color='primary'
-          />}
-          label={t(langKeys.instorewarehouse)}
-          className="col-5"
-        /> 
-       
-
-        <div /*agregacion mapa*/>
-        <Typography className={classes.subtitle}>{t(langKeys.coveragearea)}</Typography>
-        <div className="row-zyx">
+        <div className='row-zyx'>
             <FieldEdit
-                label={`${t(langKeys.latitude)}`}
-                type="number"
+                label={t(langKeys.storezonename)}
+                valueDefault={getValues('description')}
+                onChange={(value) => setValue('description', value)}
                 className="col-6"
-                valueDefault={orderCoordinate.latitude}
-                onChange={(newValue) => {
-                    setOrderCoordinate({
-                        ...orderCoordinate,
-                        latitude: Number(newValue),
-                    });
-                }}
+                maxLength={100}
+                error={typeof errors?.description?.message === 'string' ? errors?.description?.message : ''}
             />
             <FieldEdit
-                label={`${t(langKeys.longitude)}`}
+                label={t(langKeys.telephonenumber)}
                 type="number"
+                maxLength={15}
+                valueDefault={getValues('phone')}
+                onChange={(value) => setValue('phone', value)}
                 className="col-6"
-                valueDefault={orderCoordinate.longitude}
-                onChange={(newValue) => {
-                    setOrderCoordinate({
-                        ...orderCoordinate,
-                        longitude: Number(newValue),
-                    });
-                }}
+                error={typeof errors?.phone?.message === 'string' ? errors?.phone?.message : ''}
             />
             <FieldEdit
-                label={t(langKeys.message)}
-                type="text"
-                disabled={true}
-                className="col-12"
-                valueDefault={
-                    isOrderInsidePolygon !== null
-                        ? isOrderInsidePolygon
-                            ? 'Coordenadas dentro del polígono.'
-                            : 'Coordenadas fuera del polígono.'
-                        : 'Cargando...'
-                }
+                label={t(langKeys.address)}
+                valueDefault={getValues('address')}
+                maxLength={200}
+                onChange={(value) => setValue('address', value)}
+                className="col-6"
+                error={typeof errors?.address?.message === 'string' ? errors?.address?.message : ''}
+            />      
+            <FieldSelect
+                label={t(langKeys.status)}
+                className="col-6"
+                data={[
+                    { domainvalue: "ACTIVO", domaindesc: "ACTIVO" },
+                    { domainvalue: "INACTIVO", domaindesc: "INACTIVO" },
+                ]}
+                valueDefault={getValues('status')}
+                onChange={(value) => setValue('status', value?.domainvalue)}
+                error={typeof errors?.status?.message === 'string' ? errors?.status?.message : ''}
+                optionValue="domainvalue"
+                optionDesc="domaindesc"
             />
-        </div>
-        <div className="row-zyx" style={{ justifyContent: 'center' }}>
-        <GoogleMaps 
-            coordinates={coordinates} 
-            onCoordinatesChange={handleCoordinatesChange} 
-        />
-        </div>
-        <Typography className={classes.mapFooter}>{t(langKeys.address_found_in_geolocator)}</Typography>
-        <div style={{ textAlign: "right" }}>    
-        <Button
-            className={classes.addbutton}
-            variant="contained"
-            type="button"
-            color="primary"
-            startIcon={<AddIcon color="secondary" />}
-            onClick={handleAddCoordinate}
-        >
-            {t(langKeys.add) + " " + t(langKeys.coordinate)}
-        </Button>
-        </div>
-        {coordinates.map((coord, index) => (
-        <div key={index} className="row-zyx">
-            <div className="col-1">
-            <IconButton onClick={() => handleDeleteCoordinate(index)}>
-                <DeleteIcon />
-            </IconButton>
-            </div>
-            <div className="col-5">
-            <FieldEdit
-                label={`${t(langKeys.latitude)} ${index + 1}`}
-                type="number"
-                valueDefault={coord.latitude}
-                onChange={(newValue) => {
-                setCoordinates((prevCoordinates) =>
-                    prevCoordinates.map((prevCoord, i) =>
-                    i === index ? { ...prevCoord, latitude: Number(newValue) } : prevCoord
-                    )
-                );
-                }}
+            <FieldSelect
+                label={t(langKeys.warehouse)}
+                className="col-6"
+                valueDefault={getValues('warehouseid')}
+                data={multiData?.data?.[0]?.data || []}
+                onChange={(value) => setValue('warehouseid', value?.warehouseid)}
+                error={typeof errors?.warehouseid?.message === 'string' ? errors?.warehouseid?.message : ''}
+                optionValue="warehouseid"
+                optionDesc="name"
             />
-            </div>
-            <div className="col-5">
-            <FieldEdit
-                label={`${t(langKeys.longitude)} ${index + 1}`}
-                type="number"
-                valueDefault={coord.longitude}
-                onChange={(newValue) => {
-                setCoordinates((prevCoordinates) =>
-                    prevCoordinates.map((prevCoord, i) =>
-                    i === index ? { ...prevCoord, longitude: Number(newValue) } : prevCoord
-                    )
-                );
-                }}
-            />
-            </div>
-        </div>
-        ))}
+            <FormControlLabel 
+                style={{paddingLeft:"10px"}}
+                control={
+                    <IOSSwitch
+                        checked={inStore}
+                        onChange={(event) => handleSwitchChange(event)}
+                        color='primary'
+                    />}
+                label={t(langKeys.instorewarehouse)}
+                className="col-5"
+            />        
 
+            <div /*agregacion mapa*/>
+                <Typography className={classes.subtitle}>{t(langKeys.coveragearea)}</Typography>
+                <div className="row-zyx" style={{ justifyContent: 'center' }}>
+                <GoogleMaps 
+                    coordinates={coordinates} 
+                    onCoordinatesChange={handleCoordinatesChange} 
+                />
+                </div>
+                <Typography className={classes.mapFooter}>{t(langKeys.address_found_in_geolocator)}</Typography>
+                <div style={{ textAlign: "right" }}>    
+                <Button
+                    className={classes.addbutton}
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<AddIcon color="secondary" />}
+                    onClick={handleAddCoordinate}
+                >
+                    {t(langKeys.add) + " " + t(langKeys.coordinate)}
+                </Button>
+                </div>
 
+                {coordinates.map((coord, index) => (
+                    <div key={index} className="row-zyx">
+                        <div className="col-1">
+                            <IconButton onClick={() => handleDeleteCoordinate(index)}>
+                                <DeleteIcon />
+                            </IconButton>
+                            </div>
+                            <div className="col-5">
+                            <FieldEdit
+                                label={`${t(langKeys.latitude)} ${index + 1}`}
+                                type="number"
+                                valueDefault={coord.latitude}
+                                onChange={(newValue) => {
+                                setCoordinates((prevCoordinates) =>
+                                    prevCoordinates.map((prevCoord, i) =>
+                                    i === index ? { ...prevCoord, latitude: Number(newValue) } : prevCoord
+                                    )
+                                );
+                                }}
+                            />
+                        </div>
+                        <div className="col-5">
+                            <FieldEdit
+                                label={`${t(langKeys.longitude)} ${index + 1}`}
+                                type="number"
+                                valueDefault={coord.longitude}
+                                onChange={(newValue) => {
+                                setCoordinates((prevCoordinates) =>
+                                    prevCoordinates.map((prevCoord, i) =>
+                                    i === index ? { ...prevCoord, longitude: Number(newValue) } : prevCoord
+                                    )
+                                );
+                                }}
+                            />
+                        </div>
+                    </div>
+                ))}
+
+            </div>          
         </div>
-          
-      </div>
     </div>
   );
 };

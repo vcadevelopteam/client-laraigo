@@ -59,13 +59,14 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         { id: "detail-view", name: `${t(langKeys.storecoveragearea)} ${t(langKeys.detail)}` },
     ];
     
+    const [storeAreaCoordinates, setStoreAreaCoordinates] =useState();
+
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.storeid || 0,
             description: row?.description || '',
             phone: row?.phone || '',
-            address: row?.address || '',
-            coveragearea: row?.coveragearea || '',
+            address: row?.address || '',           
             status: row?.status || 'ACTIVO',
             warehouseinstore: row?.warehouseinstore || false,
             warehouseid: row?.warehouseid || 0,
@@ -73,6 +74,7 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
             operation: edit ? 'UPDATE' : 'INSERT'
         }
     });
+
 
     useEffect(() => {
         if (waitSave) {
@@ -97,7 +99,6 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('coveragearea', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status');
         register('type');
         register('operation');
@@ -108,7 +109,7 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insStore(data)));
+            dispatch(execute(insStore({...data, coveragearea: JSON.stringify(storeAreaCoordinates)})));
             setWaitSave(true);
         }
         dispatch(manageConfirmation({
@@ -158,7 +159,7 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                     </div>
 
                 </div>
-                <NewStoreCoverageTabDetail errors={errors} row={row} getValues={getValues} setValue={setValue}/>
+                <NewStoreCoverageTabDetail errors={errors} row={row} getValues={getValues} setValue={setValue} setStoreAreaCoordinates={setStoreAreaCoordinates}/>
             </form>
         </>
     );
