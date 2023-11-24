@@ -808,21 +808,21 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     }}
 				/>
 				<FieldSelect
-					variant="outlined"
-					label={t(langKeys.order)}
+                    variant="outlined"
+                    label={t(langKeys.order)}
                     valueDefault={sortParams.order}
-					data={orderby || []}
-					className={classes.filterComponent}
-					optionDesc="domaindesc"
-					optionValue="domainvalue"
+                    data={orderby || []}
+                    className={classes.filterComponent}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                     onChange={(value) => {
-                        if(value?.domainvalue) {
-                            setSortParams({...sortParams, order: value.domainvalue})
+                        if (value?.domainvalue) {
+                            setSortParams({ ...sortParams, order: value.domainvalue });
                         } else {
-                            setSortParams({...sortParams, order: ""})
+                            setSortParams({ ...sortParams, order: '' });
                         }
                     }}
-				/>
+                />
 				<Button
 					variant="contained"
 					color="primary"

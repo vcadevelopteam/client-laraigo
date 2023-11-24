@@ -285,7 +285,6 @@ const CRM: FC = () => {
       getValuesFromDomain('TIPOPERSONA'),
       getValuesFromDomain('ORDERTYPE'),
       getValuesFromDomain('ORDERBY'),
-      selOrderConfig()
     ]));
 
     return () => {
