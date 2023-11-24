@@ -5685,6 +5685,15 @@ const translation: LangKeys = {
   subscription_signup_plandescription_04: 'Access to the main features of Laraigo',
   subscription_signup_plandescription_05: 'Contact data export options',
   channel_metalead: 'Meta Leads',
+  orderby: 'Order by:',
+  trafficlightconfig: 'Traffic light configuration',
+  opportunityhours: 'Opportunity Business Hours',
+  maxtimegreen: 'Green light max. time (minutes)',
+  maxtimeamber: 'Amber light max. time (minutes)',
+  start: 'Start',
+  end: 'End',
+  trafficlight: 'Traffic light',
+  trafficindividualconfig: 'Traffic light individual configuration',
 };
 
 const enResource: ResourceLanguage = {

@@ -5612,6 +5612,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   subscription_signup_plandescription_04: 'Acceso a las características principales de Laraigo',
   subscription_signup_plandescription_05: 'Exportación de datos de contacto',
   channel_metalead: 'Meta Leads',
+  orderby: 'Ordenar por:',
+  trafficlightconfig: 'Configuracion de semáforo',
+  opportunityhours: 'Horario de atención de oportunidades',
+  maxtimegreen: 'Tiempo max. semáforo verde (minutos)',
+  maxtimeamber: 'Tiempo max. semáforo ámbar (minutos)',
+  start: 'Inicio',
+  end: 'Fin',
+  trafficlight: 'Semáforo',
+  trafficindividualconfig: 'Configuracion individual del semáforo',
 };
 
 const esResource: ResourceLanguage = {
