@@ -1,6 +1,6 @@
 import {
   convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns,
-  insLead2, updateColumnsLeads, updateColumnsOrder, uuidv4
+  insLead2, selOrderConfig, updateColumnsLeads, updateColumnsOrder, uuidv4
 } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
@@ -285,9 +285,11 @@ const CRM: FC = () => {
       getValuesFromDomain('TIPOPERSONA'),
       getValuesFromDomain('ORDERTYPE'),
       getValuesFromDomain('ORDERBY'),
+      selOrderConfig()
     ]));
+
     return () => {
-      dispatch(resetAllMain());
+      //dispatch(resetAllMain());
     };
   }, [dispatch, sortParams]);
 

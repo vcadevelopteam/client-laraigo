@@ -146,42 +146,133 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     const user = useSelector((state) => state.login.validateToken.user);
 
     const [openModal, setOpenModal] = useState(false);
+
+    const getWeekDay = (date: Date) => {
+        const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+        return days[date.getDay()];
+    };
+
+    const calculateTotalInactiveTime = (start: Date): number => {
+        let totalInactiveTime = 0;
+        const currentDate = new Date(start);
+
+        const startTime = start.getHours() * 60 * 60 + start.getMinutes() * 60 + start.getSeconds();
+        const dayEndTime = 86400;
+
+        const nowDate = new Date();
+
+        while (currentDate <= nowDate) {
+            const now = new Date();
+            const nowTime = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
+            const dayOfWeek = getWeekDay(currentDate);
+            const [beginHours, beginMinutes] = configuration?.[`${dayOfWeek.toLowerCase()}begin`]?.split(':') || [null, null];
+            const beginSeconds = parseInt(beginHours) * 3600 + parseInt(beginMinutes) * 60;
+            const [endHours, endMinutes] = configuration?.[`${dayOfWeek.toLowerCase()}end`]?.split(':') || [null, null];
+            const endSeconds = parseInt(endHours) * 3600 + parseInt(endMinutes) * 60;
+
+            if(currentDate.getDate() === now.getDate() && now.getDate() === start.getDate()) {
+                if(beginSeconds && endSeconds){
+                    if(startTime < beginSeconds) {
+                        if(nowTime < beginSeconds){
+                            totalInactiveTime += (nowTime - startTime)
+                            return totalInactiveTime;
+                        } else if(beginSeconds <= nowTime && nowTime < endSeconds){
+                            totalInactiveTime += (beginSeconds - startTime)
+                            return totalInactiveTime;
+                        } else if(endSeconds <= nowTime){
+                            totalInactiveTime += (beginSeconds - startTime)
+                            totalInactiveTime += (nowTime - endSeconds)
+                            return totalInactiveTime;
+                        }
+                    } else if(beginSeconds <= startTime && startTime < endSeconds) {
+                        if(nowTime <= endSeconds){
+                            return 0;
+                        } else if(endSeconds < nowTime){
+                            totalInactiveTime += (nowTime - endSeconds)
+                            return totalInactiveTime;
+                        }
+                    } else if(endSeconds <= startTime) {
+                        totalInactiveTime += (nowTime - startTime)
+                        return totalInactiveTime;
+                    }
+                }
+                else {
+                    return getSecondsUntelNow(start)
+                }
+            } else {
+                if(currentDate.getDate() === now.getDate()){
+                    if(beginSeconds && endSeconds) {
+                        if(nowTime < beginSeconds) {
+                            totalInactiveTime += nowTime
+                            return totalInactiveTime;
+                        } else if(beginSeconds <= nowTime && nowTime < endSeconds) {
+                            totalInactiveTime += beginSeconds
+                            return totalInactiveTime;
+                        } else if(endSeconds <= nowTime) {
+                            totalInactiveTime += (nowTime - endSeconds)
+                            totalInactiveTime += beginSeconds
+                            return totalInactiveTime;
+                        }
+                    } else {
+                        totalInactiveTime += nowTime
+                        return totalInactiveTime;
+                    }
+                } else if(currentDate.getDate() === start.getDate()) {
+                    if(beginSeconds && endSeconds){
+                        if(startTime < beginSeconds) {
+                            totalInactiveTime += (beginSeconds - startTime)
+                            totalInactiveTime += (dayEndTime - endSeconds)
+                            return totalInactiveTime;
+                        } else if(beginSeconds <= startTime && startTime < endSeconds) {
+                            totalInactiveTime += (dayEndTime - endSeconds)
+                            return totalInactiveTime;
+                        } else if(endSeconds <= startTime) {
+                            totalInactiveTime += (dayEndTime - startTime)
+                            return totalInactiveTime;
+                        }
+                    }
+                    else {
+                        totalInactiveTime += (dayEndTime - startTime)
+                    }
+                } else{
+                    if(beginSeconds && endSeconds){
+                        totalInactiveTime += beginSeconds
+                        totalInactiveTime += (dayEndTime - endSeconds)
+                    }
+                    else {
+                        totalInactiveTime += dayEndTime
+                    }
+                }
+            }
+
+            currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+        }
+
+        return totalInactiveTime;
+    };
+
 	const phasechangedate = lead.lastchangestatusdate || '';
     const dateInUTC = new Date(phasechangedate.replace('Z', ''));
     const dateWithSubtractedHours = new Date(dateInUTC.getTime() - (new Date().getTimezoneOffset()/60 * 3600 * 1000));
-	const [time, settime] = useState(getSecondsUntelNow(dateWithSubtractedHours));
 
-    const getDayOfWeek = () => {
-        const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-        const today = new Date();
-        return days[today.getDay()];
-    };
+    const [inactiveTime, setInactiveTime] = useState<number>(() => {
+        return calculateTotalInactiveTime(dateWithSubtractedHours);
+    });
+    const [time, settime] = useState(getSecondsUntelNow(dateWithSubtractedHours) - inactiveTime);
 
 	React.useEffect(() => {
         const timer = setInterval(() => {
-            const currentDay = getDayOfWeek();
-            const beginKey = `${currentDay}begin`;
-            const endKey = `${currentDay}end`;
-        
-            const beginTime = configuration[beginKey];
-            const endTime = configuration[endKey];
-        
-            if (beginTime && endTime) {
-                const now = new Date();
-                const begin = new Date(now.toDateString() + ' ' + beginTime);
-                const end = new Date(now.toDateString() + ' ' + endTime);
-        
-                if (now >= begin && now <= end) {
-                    const timeSeconds = getSecondsUntelNow(dateWithSubtractedHours);
-                    settime(timeSeconds);
-                }
-            }
+            const totalInactiveTime = calculateTotalInactiveTime(dateWithSubtractedHours);
+            setInactiveTime(totalInactiveTime);
+
+            const timeSeconds = getSecondsUntelNow(dateWithSubtractedHours);
+            settime(timeSeconds - totalInactiveTime);
         }, 1000);
-      
+
         return () => {
-          timer && clearInterval(timer);
+            timer && clearInterval(timer);
         };
-    }, [time, configuration]);
+    }, [configuration]);
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -289,7 +380,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     <div style={{ flexGrow: 1 }} />
                     <div className={clsx(dynamicColorClass)}>
                         <Box p={1}>
-                            <Typography variant="body2">{secondsToTime(time)}</Typography>
+                            <Typography variant="body2">{parseInt(secondsToTime(time)) >= 0 ? secondsToTime(time) : secondsToTime(0)}</Typography>
                         </Box>
                     </div>
                 </div>
@@ -685,7 +776,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 
     useEffect(() => {
         passConfiguration(configuration)
-    }, [configuration])
+    }, [configuration, sortParams])
 
     return (
         <Box>

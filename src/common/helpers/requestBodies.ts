@@ -4100,6 +4100,7 @@ export const insOrderConfig = ({ id, orderconfig, type, status, operation }: Dic
 export const selOrderConfig = () => ({
     method: "UFN_ORDERCONFIG_SEL",
     key: "UFN_ORDERCONFIG_SEL",
+    parameters: {},
 });
 
 export const insLeadConfig = ({ id, maxgreen, maxyellow }: Dictionary): IRequestBody => ({
