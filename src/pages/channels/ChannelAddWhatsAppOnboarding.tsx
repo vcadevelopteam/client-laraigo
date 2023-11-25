@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from "react";
 import { apiUrls } from "common/constants";
 import { Box, Breadcrumbs, Button, FormControlLabel, makeStyles } from "@material-ui/core";
 import { ChannelWhatsApp01 } from "icons";
@@ -14,7 +15,6 @@ import { useTranslation } from "react-i18next";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -50,7 +50,6 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
     const [showLastStep, setShowLastStep] = useState(false);
     const [waitList, setWaitList] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
-    const [viewSelected, setViewSelected] = useState("view1");
 
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
@@ -62,6 +61,7 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
     const whatsAppData = location.state as WhatsAppData | null;
 
     const channel = whatsAppData?.row as IChannel | null;
+    const [viewSelected, setViewSelected] = useState("view1");
 
     const [fields, setFields] = useState({
         method: "UFN_COMMUNICATIONCHANNEL_INS",
@@ -243,6 +243,10 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
             communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
         />
     }
+    if (edit && !channel) {
+        return <div />;
+    }
+
     return (
         <div style={{ width: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">

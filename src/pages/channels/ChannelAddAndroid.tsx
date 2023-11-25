@@ -45,7 +45,7 @@ import InfoIcon from "@material-ui/icons/Info";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import React, { FC, useEffect, useRef, useState } from "react";
-import SendIcon from '@material-ui/icons/Send';
+import SendIcon from "@material-ui/icons/Send";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 interface FieldTemplate {
@@ -2785,16 +2785,21 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                 })
             );
         } else if (editChannel.success) {
-            if(!channel?.haveflow){
+            if (!channel?.haveflow) {
                 setViewSelected("enable-virtual-assistant")
-            }else{
-                dispatch(showSnackbar({
-                    message: t(langKeys.channeleditsuccess),
-                    show: true,
-                    severity: "success"
-                }));
+            } else {
+                dispatch(showBackdrop(false));
+                setShowScript(true);
+                dispatch(
+                    showSnackbar({
+                        message: t(langKeys.channeleditsuccess),
+                        show: true,
+                        severity: "success",
+                    })
+                );
                 history.push(paths.CHANNELS);
             }
+            
         }
     }, [dispatch, editChannel]);
 
@@ -2882,8 +2887,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
             const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor, "SMOOCHANDROID");
             dispatch(getEditChannel(body, "SMOOCHANDROID"));
         }
-    };
-
+    }
     if (edit && !channel) {
         return <div />;
     }
@@ -2933,30 +2937,64 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                 </Link>
             </Breadcrumbs>
             {view === "view-1" && <ChannelAddAndroidDetail form={form} setView={setView} />}
-            {view === "view-2" && <>
-
-                {!showScript && <ChannelAndroidAddEnd
-                    loading={insertChannel.loading || editChannel.loading}
-                    integrationId={integrationId}
-                    onSubmit={handleSubmit}
-                    onClose={() => setView("view-1")}
-                    channel={channel}
-                />}
-                <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
-                <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
-                <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
-                    {t(langKeys.androidlibrary)}
-                </div>
-                <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
-                    {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
-                </code></pre><div style={{ height: 20 }} />
-                    <Button variant="contained" color="primary" onClick={handleend}>
-                        {t(langKeys.close)}
-                    </Button>
-                </div>
-                <div style={{ display: showScript ? 'flex' : 'none', height: 20 }}>
-                </div>
-            </>}
+            {view === "view-2" && (
+                <>
+                    {!showScript && (
+                        <ChannelAndroidAddEnd
+                            loading={insertChannel.loading || editChannel.loading}
+                            integrationId={integrationId}
+                            onSubmit={handleSubmit}
+                            onClose={() => setView("view-1")}
+                            channel={channel}
+                        />
+                    )}
+                    <div style={{ display: showScript ? "flex" : "none", height: 10 }} />
+                    <div style={{ display: showScript ? "flex" : "none", height: 10 }} />
+                    <div
+                        style={{
+                            display: showScript ? "flex" : "none",
+                            flexDirection: "column",
+                            marginLeft: 120,
+                            marginRight: 120,
+                        }}
+                    >
+                        {t(langKeys.androidlibrary)}
+                    </div>
+                    <div
+                        style={{
+                            display: showScript ? "flex" : "none",
+                            flexDirection: "column",
+                            marginLeft: 120,
+                            marginRight: 120,
+                        }}
+                    >
+                        <pre
+                            style={{
+                                background: "#f4f4f4",
+                                border: "1px solid #ddd",
+                                color: "#666",
+                                pageBreakInside: "avoid",
+                                fontFamily: "monospace",
+                                lineHeight: 1.6,
+                                maxWidth: "100%",
+                                overflow: "auto",
+                                padding: "1em 1.5em",
+                                display: "block",
+                                wordWrap: "break-word",
+                            }}
+                        >
+                            <code>
+                                {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
+                            </code>
+                        </pre>
+                        <div style={{ height: 20 }} />
+                        <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                            {t(langKeys.close)}
+                        </Button>
+                    </div>
+                    <div style={{ display: showScript ? "flex" : "none", height: 20 }}></div>
+                </>
+            )}
         </div>
     );
 };

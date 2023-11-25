@@ -1,18 +1,19 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import TableZyx from 'components/fields/table-simple';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'hooks';
-import React, { FC, useEffect, useState } from 'react';
-import { langKeys } from 'lang/keys';
-import { useTranslation } from 'react-i18next';
-import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { Dictionary, IChannel } from '@types';
-import { TemplateIcons } from 'components';
-import { getCollection, resetAllMain } from 'store/main/actions';
-import { getChannelSel } from 'common/helpers/requestBodies';
-import { checkPaymentPlan, deleteChannel } from 'store/channel/actions';
+import React, { FC, useEffect, useState } from "react";
+import { checkPaymentPlan, deleteChannel } from "store/channel/actions";
+import { Dictionary, IChannel } from "@types";
+
+import { getChannelSel } from "common/helpers/requestBodies";
+import { getCollection, resetAllMain } from "store/main/actions";
+import { langKeys } from "lang/keys";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { TemplateIcons } from "components";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
+
+import paths from "common/constants/paths";
+import TableZyx from "components/fields/table-simple";
 import SettingsIcon from '@material-ui/icons/Settings';
 
 export const Channels: FC = () => {
@@ -82,14 +83,11 @@ export const Channels: FC = () => {
     };
 
     const handleEdit = (row: IChannel) => {
-        let pathname;
+        if (row.status === "INACTIVO") {
+            let pathname;
 
-        if (row.type === "ANDR") {
-            pathname = paths.CHANNELS_EDIT_ANDROID.resolve(row.communicationchannelid);}
-        if (row.type === 'WHAT' && row.status === 'PENDIENTE' && roledesc?.includes("SUPERADMIN")) {
-            var whatsAppData = {
-                typeWhatsApp: 'SMOOCH',
-                row: row
+            if (row.type === "ANDR") {
+                pathname = paths.CHANNELS_EDIT_ANDROID.resolve(row.communicationchannelid);
             }
 
             if (row.type === "APPL") {
@@ -284,12 +282,12 @@ export const Channels: FC = () => {
                 Header: "",
                 accessor: 'haveflow',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: { cell: { row: { original: { haveflow: boolean; }; }; }; }) => {
                     const { haveflow } = props.cell.row.original;
-                    if(haveflow){
+                    if (haveflow) {
                         return <div></div>
-                    }else{
-                        return <div style={{display:"flex", alignItems:"center", color: "#7721ad", fontWeight:"bold"}}><SettingsIcon/>{t(langKeys.configure)}</div>
+                    } else {
+                        return <div style={{ display: "flex", alignItems: "center", color: "#7721ad", fontWeight: "bold" }}><SettingsIcon />{t(langKeys.configure)}</div>
                     }
                 }
             },
@@ -339,7 +337,7 @@ export const Channels: FC = () => {
 
             history.push(paths.CHANNELS_ADD, {
                 row: null,
-                typeWhatsApp: 'NONE',
+                typeWhatsApp: "NONE",
             });
         }
     }, [canRegister]);

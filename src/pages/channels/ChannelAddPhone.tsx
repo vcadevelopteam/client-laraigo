@@ -18,8 +18,8 @@ import InfoIcon from "@material-ui/icons/Info";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import Tooltip from "@material-ui/core/Tooltip";
-import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
+import React, { FC, useEffect, useState } from "react";
 
 interface WhatsAppData {
     row?: unknown;

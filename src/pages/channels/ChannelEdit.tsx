@@ -62,7 +62,6 @@ const ChannelEdit: FC = () => {
     const { t } = useTranslation();
 
     const [auto, setAuto] = useState(false);
-    const [viewSelected, setViewSelected] = useState("main-view");
     const [checkedCallSupervision, setCheckedCallSupervision] = useState(false);
     const [checkedRecording, setCheckedRecording] = useState(false);
     const [hexIconColor, setHexIconColor] = useState("");
@@ -71,7 +70,7 @@ const ChannelEdit: FC = () => {
     const [serviceCredentials, setServiceCredentials] = useState<ServiceCredentialType | null>(null);
     const [waitUploadFile, setWaitUploadFile] = useState("");
     const [welcometoneurl, setWelcometoneurl] = useState("");
-
+    const [viewSelected, setViewSelected] = useState("main-view");
     const classes = useFinalStepStyles();
     const dispatch = useDispatch();
     const edit = useSelector((state) => state.channel.editChannel);
@@ -202,7 +201,9 @@ const ChannelEdit: FC = () => {
 
     const onUploadFile = (files: FileList | null, type: string) => {
         if (files) {
-            const selectedFile = files[0];if (selectedFile.size <= 1024 * 1024 * 5) {
+            const selectedFile = files[0];
+
+            if (selectedFile.size <= 1024 * 1024 * 5) {
                 const fd = new FormData();
                 fd.append("file", selectedFile, selectedFile.name);
                 dispatch(uploadFile(fd));
@@ -228,29 +229,27 @@ const ChannelEdit: FC = () => {
                 </Breadcrumbs>
                 <div
                     style={{
-                        width: "700px",
+                        display: "flex",
+                        flex: "wrap",
+                        flexDirection: "column",
                         marginLeft: "auto",
                         marginRight: "auto",
-                        display: "flex",
-                        flexDirection: "column",
-                        flex: "wrap",
+                        width: "700px",
                     }}
                 >
                     <div className={classes.title}>{t(langKeys.communicationchannel_edit)}</div>
                     <div style={{ display: "flex", gap: 24 }}>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
                             <FieldEdit
-                                onChange={(value) => setName(value)}
-                                label={t(langKeys.givechannelname)}
                                 disabled={edit.loading}
-                                valueDefault={channel!.communicationchanneldesc}
+                                label={t(langKeys.givechannelname)}
+                                onChange={(value) => setName(value)}
+                                valueDefault={channel?.communicationchanneldesc}
                             />
                             {channel?.phone && (
-                                <>
-                                    <div>
-                                        <FieldView label={t(langKeys.phone)} value={channel!.phone} />
-                                    </div>
-                                </>
+                                <div>
+                                    <FieldView label={t(langKeys.phone)} value={channel?.phone} />
+                                </div>
                             )}
                             {channel?.type === "VOXI" && (
                                 <>
@@ -290,7 +289,7 @@ const ChannelEdit: FC = () => {
                                         <div>
                                             <FieldView
                                                 label={t(langKeys.voximplant_pricealert)}
-                                                value={`$${formatNumber(parseFloat(serviceCredentials?.costvca || 0))}`}
+                                                value={`$${formatNumber(parseFloat(serviceCredentials?.costvca || "0"))}`}
                                             />
                                         </div>
                                     )}
@@ -301,8 +300,8 @@ const ChannelEdit: FC = () => {
                                     {serviceCredentials?.siteId && (
                                         <div className="row-zyx">
                                             <FieldView
-                                                label={t(langKeys.url)}
                                                 className="col-6"
+                                                label={t(langKeys.url)}
                                                 value={`https://www.facebook.com/${serviceCredentials?.siteId}`}
                                             />
                                         </div>
@@ -322,19 +321,19 @@ const ChannelEdit: FC = () => {
                             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
                                 <div>
                                     <Box
+                                        color="textPrimary"
+                                        fontSize={14}
                                         fontWeight={500}
                                         lineHeight="18px"
-                                        fontSize={14}
                                         mb={0.5}
-                                        color="textPrimary"
                                         style={{ display: "flex" }}
                                     >
                                         {t(langKeys.welcometone)}
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <Tooltip
-                                                title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>}
                                                 arrow
                                                 placement="top"
+                                                title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>}
                                             >
                                                 <InfoRoundedIcon
                                                     color="action"
@@ -343,16 +342,15 @@ const ChannelEdit: FC = () => {
                                             </Tooltip>
                                         </div>
                                     </Box>
-
                                     <div style={{ display: "flex" }}>
                                         <div style={{ flex: 1 }}>
                                             {uploadResult.loading && waitUploadFile === "welcome" ? (
                                                 <div
                                                     style={{
+                                                        alignItems: "center",
+                                                        display: "flex",
                                                         flex: 1,
                                                         height: "100%",
-                                                        display: "flex",
-                                                        alignItems: "center",
                                                         justifyContent: "center",
                                                     }}
                                                 >
@@ -360,13 +358,10 @@ const ChannelEdit: FC = () => {
                                                 </div>
                                             ) : (
                                                 <FieldEdit
+                                                    disabled={true}
                                                     valueDefault={welcometoneurl
                                                         ?.split("/")
-                                                        ?.[welcometoneurl?.split("/")?.length - 1]?.replaceAll(
-                                                            "%20",
-                                                            " "
-                                                        )}
-                                                    disabled={true}
+                                                        ?.[welcometoneurl?.split("/")?.length - 1]?.replaceAll("%20", " ")}
                                                 />
                                             )}
                                         </div>
@@ -374,19 +369,19 @@ const ChannelEdit: FC = () => {
                                             <input
                                                 accept=".mp3,audio/*"
                                                 id="contained-button-file"
-                                                type="file"
                                                 style={{ display: "none" }}
+                                                type="file"
                                                 onChange={(e) => {
                                                     onUploadFile(e.target.files, "welcome");
                                                 }}
                                             />
                                             <label htmlFor="contained-button-file" style={{ height: 0 }}>
                                                 <IconButton
-                                                    color="primary"
                                                     aria-label="upload picture"
-                                                    size="small"
+                                                    color="primary"
                                                     component="span"
                                                     disabled={uploadResult.loading}
+                                                    size="small"
                                                 >
                                                     <PublishIcon />
                                                 </IconButton>
@@ -396,19 +391,19 @@ const ChannelEdit: FC = () => {
                                 </div>
                                 <div>
                                     <Box
+                                        color="textPrimary"
+                                        fontSize={14}
                                         fontWeight={500}
                                         lineHeight="18px"
-                                        fontSize={14}
                                         mb={0.5}
-                                        color="textPrimary"
                                         style={{ display: "flex" }}
                                     >
                                         {t(langKeys.standbytone)}
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <Tooltip
-                                                title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>}
                                                 arrow
                                                 placement="top"
+                                                title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>}
                                             >
                                                 <InfoRoundedIcon
                                                     color="action"
@@ -423,10 +418,10 @@ const ChannelEdit: FC = () => {
                                             {uploadResult.loading && waitUploadFile === "holding" ? (
                                                 <div
                                                     style={{
+                                                        alignItems: "center",
+                                                        display: "flex",
                                                         flex: 1,
                                                         height: "100%",
-                                                        display: "flex",
-                                                        alignItems: "center",
                                                         justifyContent: "center",
                                                     }}
                                                 >
@@ -434,13 +429,10 @@ const ChannelEdit: FC = () => {
                                                 </div>
                                             ) : (
                                                 <FieldEdit
+                                                    disabled={true}
                                                     valueDefault={holdingtoneurl
                                                         ?.split("/")
-                                                        ?.[holdingtoneurl?.split("/")?.length - 1]?.replaceAll(
-                                                            "%20",
-                                                            " "
-                                                        )}
-                                                    disabled={true}
+                                                        ?.[holdingtoneurl?.split("/")?.length - 1]?.replaceAll("%20", " ")}
                                                 />
                                             )}
                                         </div>
@@ -448,19 +440,19 @@ const ChannelEdit: FC = () => {
                                             <input
                                                 accept=".mp3,audio/*"
                                                 id="contained-button-file2"
-                                                type="file"
                                                 style={{ display: "none" }}
+                                                type="file"
                                                 onChange={(e) => {
                                                     onUploadFile(e.target.files, "holding");
                                                 }}
                                             />
                                             <label htmlFor="contained-button-file2">
                                                 <IconButton
-                                                    color="primary"
-                                                    size="small"
                                                     aria-label="upload picture"
+                                                    color="primary"
                                                     component="span"
                                                     disabled={uploadResult.loading}
+                                                    size="small"
                                                 >
                                                     <PublishIcon />
                                                 </IconButton>
@@ -471,12 +463,14 @@ const ChannelEdit: FC = () => {
                                 <div>
                                     {t(langKeys.voicechannel_callsupervisor)}
                                     <Tooltip
-                                        title={`${t(langKeys.voicechannel_callsupervisortooltip)}`}
                                         placement="top-start"
+                                        title={`${t(langKeys.voicechannel_callsupervisortooltip)}`}
                                     >
                                         <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                     </Tooltip>
                                     <FormControlLabel
+                                        label={""}
+                                        style={{ marginRight: "4px", marginLeft: 50 }}
                                         control={
                                             <IOSSwitchPurple
                                                 checked={checkedCallSupervision}
@@ -485,19 +479,16 @@ const ChannelEdit: FC = () => {
                                                 }}
                                             />
                                         }
-                                        label={""}
-                                        style={{ marginRight: "4px", marginLeft: 50 }}
                                     />
                                 </div>
                                 <div>
                                     {t(langKeys.voicechannel_recording)}
-                                    <Tooltip
-                                        title={`${t(langKeys.voicechannel_recordingtooltip)}`}
-                                        placement="top-start"
-                                    >
+                                    <Tooltip title={`${t(langKeys.voicechannel_recordingtooltip)}`} placement="top-start">
                                         <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                     </Tooltip>
                                     <FormControlLabel
+                                        label={""}
+                                        style={{ marginRight: "4px", marginLeft: 50 }}
                                         control={
                                             <IOSSwitchPurple
                                                 checked={checkedRecording}
@@ -506,8 +497,6 @@ const ChannelEdit: FC = () => {
                                                 }}
                                             />
                                         }
-                                        label={""}
-                                        style={{ marginRight: "4px", marginLeft: 50 }}
                                     />
                                 </div>
                             </div>
@@ -515,22 +504,22 @@ const ChannelEdit: FC = () => {
                     </div>
                     <div style={{ marginLeft: "auto", marginTop: 16 }}>
                         <Button
-                            onClick={handleSubmit}
                             className={classes.button}
-                            variant="contained"
                             color="primary"
                             disabled={edit.loading || uploadResult.loading}
+                            onClick={handleSubmit}
+                            variant="contained"
                         >
                             <Trans i18nKey={langKeys.finishreg} />
                         </Button>
                     </div>
                 </div>
             </div>
-        );        
+        );
     }
     else {
         return <ChannelEnableVirtualAssistant/>
     }
-}
+};
 
 export default ChannelEdit;

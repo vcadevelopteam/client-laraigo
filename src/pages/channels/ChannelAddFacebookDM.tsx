@@ -8,8 +8,8 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { IChannel } from "@types";
 import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
+import { IChannel } from "@types";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";

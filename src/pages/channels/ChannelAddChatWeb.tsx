@@ -1,23 +1,48 @@
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
-import { ChannelChat01 } from 'icons';
-import { Close, CloudUpload } from '@material-ui/icons';
-import { ColorChangeHandler } from 'react-color';
-import { ColorInput, FieldEdit, IOSSwitch } from 'components';
-import { editChannel as getEditChannel, insertChannel2, resetInsertChannel, resetEditChannel } from 'store/channel/actions';
-import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
-import { IChannel, IChatWebAdd, IChatWebAddFormField } from '@types';
-import { langKeys } from 'lang/keys';
-import { showSnackbar } from 'store/popus/actions';
-import { TabPanel } from 'pages/crm/components';
-import { Trans, useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { useHistory, useLocation } from 'react-router';
-import { useSelector } from 'hooks';
-import clsx from 'clsx';
-import paths from 'common/constants/paths';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import { ChannelChat01 } from "icons";
+import { Close, CloudUpload } from "@material-ui/icons";
+import { ColorChangeHandler } from "react-color";
+import { ColorInput, FieldEdit, IOSSwitch } from "components";
+import { getEditChatWebChannel, getInsertChatwebChannel } from "common/helpers";
+import { IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
+import { langKeys } from "lang/keys";
+import { showSnackbar } from "store/popus/actions";
+import { TabPanel } from "pages/crm/components";
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { useForm, UseFormReturn } from "react-hook-form";
+import { useHistory, useLocation } from "react-router";
+import { useSelector } from "hooks";
 import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
+import {
+    AppBar,
+    Box,
+    Button,
+    makeStyles,
+    Link,
+    Tab,
+    Tabs,
+    Typography,
+    TextField,
+    Grid,
+    Select,
+    IconButton,
+    FormControl,
+    MenuItem,
+    Divider,
+    Breadcrumbs,
+    FormHelperText,
+} from "@material-ui/core";
+
+import {
+    editChannel as getEditChannel,
+    insertChannel2,
+    resetInsertChannel,
+    resetEditChannel,
+} from "store/channel/actions";
+
+import clsx from "clsx";
+import paths from "common/constants/paths";
+import React, { FC, useEffect, useRef, useState } from "react";
 
 interface FieldTemplate {
     text: React.ReactNode;
@@ -2041,7 +2066,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
     const [enableVirtual, setEnableVirtual] = useState<number|null>(null);
-    const [coloricon, setcoloricon] = useState("#7721ad");
+    const [coloricon, setColoricon] = useState("#7721ad");
     const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
 
@@ -2130,10 +2155,35 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             >
                 {t(langKeys.chatwebstep)}
             </div>
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
-                {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
-            </code></pre><div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={handleend}>
+            <div
+                style={{
+                    display: integrationId ? "flex" : "none",
+                    flexDirection: "column",
+                    marginLeft: 120,
+                    marginRight: 120,
+                }}
+            >
+                <pre
+                    style={{
+                        background: "#f4f4f4",
+                        border: "1px solid #ddd",
+                        color: "#666",
+                        pageBreakInside: "avoid",
+                        fontFamily: "monospace",
+                        lineHeight: 1.6,
+                        maxWidth: "100%",
+                        overflow: "auto",
+                        padding: "1em 1.5em",
+                        display: "block",
+                        wordWrap: "break-word",
+                    }}
+                >
+                    <code>
+                        {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
+                    </code>
+                </pre>
+                <div style={{ height: 20 }} />
+                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     {t(langKeys.close)}
                 </Button>
             </div>

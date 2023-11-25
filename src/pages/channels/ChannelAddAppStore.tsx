@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from "react";
 import { ChannelAppStore } from "icons";
 import { FieldEdit, FieldEditMulti, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
@@ -12,7 +13,6 @@ import { IChannel } from "@types";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 interface WhatsAppData {
@@ -116,6 +116,9 @@ export const ChannelAddAppStore: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
+    if (edit && !channel) {
+        return <div />;
+    }
 
     if (viewSelected === "view1") {
         return (

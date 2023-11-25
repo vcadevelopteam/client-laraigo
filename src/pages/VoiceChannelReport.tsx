@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -13,7 +12,6 @@ import { langKeys } from 'lang/keys';
 import { cleanViewChange, exportData, getCollectionPaginated, getMainGraphic, getMultiCollectionAux2, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-
 import { useForm } from 'react-hook-form';
 import Graphic from 'components/fields/Graphic';
 import AssessmentIcon from '@material-ui/icons/Assessment';
@@ -21,6 +19,7 @@ import TablePaginated from 'components/fields/table-paginated';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { CallRecordIcon } from 'icons';
 import { VoximplantService } from 'network';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -31,11 +30,7 @@ interface DetailVoiceChannelReportProps {
     setViewSelected: (view: string) => void;
 }
 
-
-const useStyles = makeStyles((theme) => ({
-    containerHeader: {
-        padding: theme.spacing(1),
-    },
+const useStyles = makeStyles((theme) => ({   
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
@@ -46,14 +41,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
-        borderRadius: 4,
-        color: 'rgb(143, 146, 161)'
-    },
+    },   
 }));
 
 const columnsTemp = [
@@ -102,7 +90,6 @@ const DetailVoiceChannelReport: React.FC<DetailVoiceChannelReportProps> = ({ dat
     useEffect(() => {
         search()
     }, [])
-    
 
     const columns = React.useMemo(
         () => [
@@ -136,7 +123,7 @@ const DetailVoiceChannelReport: React.FC<DetailVoiceChannelReportProps> = ({ dat
                 accessor: 'status',
                 NoFilter: false,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
@@ -180,8 +167,7 @@ const DetailVoiceChannelReport: React.FC<DetailVoiceChannelReportProps> = ({ dat
                     download={true}
                     loading={multiDataAux2.loading}
                     register={false}
-                    filterGeneral={false}
-                // fetchData={fetchData}
+                    filterGeneral={false}                
                 />
             </div>
         </div>
@@ -194,7 +180,6 @@ const VoiceChannelReport: FC = () => {
     const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiData);
     const [viewSelected, setViewSelected] = useState("view-1");
-    // const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
     const classes = useStyles()
@@ -214,9 +199,7 @@ const VoiceChannelReport: FC = () => {
         }
     }, [])
     
-    const downloadCallRecord = async (ticket: Dictionary) => {
-        // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
-        // setWaitDownloadRecord(true);
+    const downloadCallRecord = async (ticket: Dictionary) => {        
         try {
             const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
             if (axios_result.status === 200) {
@@ -242,7 +225,7 @@ const VoiceChannelReport: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.postexternalid
                         && row.callanswereddate ?
@@ -276,7 +259,7 @@ const VoiceChannelReport: FC = () => {
                 Header: `${t(langKeys.starttimecall)}`,
                 accessor: 'tickettime',
                 NoFilter: false,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.tickettime||"00:00:00")
                 }
@@ -285,7 +268,7 @@ const VoiceChannelReport: FC = () => {
                 Header: `${t(langKeys.finishtimecall)}`,
                 accessor: 'finishtime',
                 NoFilter: false,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.finishtime||"00:00:00")
                 }
@@ -295,7 +278,7 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'handoffdate',
                 NoFilter: false,
                 helpText: t(langKeys.transfertimecall_tooltip),
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.handoffdate||"00:00:00")
                 }
@@ -336,7 +319,7 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'totalduration',
                 NoFilter: false,
                 helpText: t(langKeys.totalTime_tooltip),
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.totalduration||"00:00:00")
                 }
@@ -346,7 +329,7 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'agentduration',
                 NoFilter: false,
                 helpText: t(langKeys.advisorattentiontime_tooltip),
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.agentduration||"00:00:00")
                 }
@@ -356,7 +339,7 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'customerwaitingduration',
                 NoFilter: false,
                 helpText: t(langKeys.customerwaitingtime_tooltip),
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.customerwaitingduration||"00:00:00")
                 }
@@ -366,7 +349,7 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'holdingtime',
                 NoFilter: false,
                 helpText: t(langKeys.callwaitingtime_tooltip),
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.holdingtime||"00:00:00")
                 }
@@ -376,7 +359,7 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'transferduration',
                 NoFilter: false,
                 helpText: t(langKeys.transfertime_tooltip),
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (row.transferduration||"00:00:00")
                 }
@@ -470,7 +453,6 @@ const VoiceChannelReport: FC = () => {
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const handlerSearchGraphic = (daterange: any, column: string) => {
@@ -493,21 +475,21 @@ const VoiceChannelReport: FC = () => {
 
         return (
             <React.Fragment>
-                <div style={{ height: 10 }}></div>
+                <div style={{ height: 10 }}></div>               
                 {view === "GRID" ? (
                     <TablePaginated
-                        //onClickRow={handleView}    
                         columns={columns}
                         fetchData={fetchData}
                         data={mainPaginated.data}
                         totalrow={totalrow}
                         download={true}
                         pageCount={pageCount}
-                        autotrigger={true}
-                        filterrange={true}
+                        autotrigger={true}                        
                         filterGeneral={false}
+                        FiltersElement={<></>}
                         exportPersonalized={triggerExportData}
                         loading={mainPaginated.loading}
+                        filterrange={true} 
                         register={false}
                         ButtonsElement={() => (
                             <Button

@@ -19,6 +19,9 @@ export interface ILead {
 }
 
 export interface ICrmLead {
+    maxyellow: string;
+    maxgreen: string;
+    lastchangestatusdate: string;
     changeby: string;
     changedate: string;
     column_uuid: string;
@@ -341,6 +344,8 @@ export interface ICrmLeadSel {
     /**id del usuario de la sesión - OBLIGATORIO no puede ser cero */
     supervisorid: number;
     persontype: string;
+    ordertype: string;
+    orderby: string;
 	all?: boolean;
 }
 
