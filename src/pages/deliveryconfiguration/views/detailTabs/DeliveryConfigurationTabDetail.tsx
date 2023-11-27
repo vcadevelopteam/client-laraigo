@@ -72,6 +72,7 @@ interface ConfigurationTabDetailProps {
     getValues: UseFormGetValues<any>;
     errors: FieldErrors;
     setOpenModalNonWorkingDays: (flag: boolean) => void;
+    setOpenModalNonWorkingDaysCopy: (flag: boolean) => void;
     setOpenModalDeliveryShifts: (flag: boolean) => void;
     setOpenModalVehicleType: (flag: boolean) => void;
     setOpenModalDeliveryOrderPhoto: (flag: boolean) => void;
@@ -79,6 +80,7 @@ interface ConfigurationTabDetailProps {
 
 const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({  
     setOpenModalNonWorkingDays,
+    setOpenModalNonWorkingDaysCopy,
     setOpenModalDeliveryShifts,
     setOpenModalVehicleType,
     setOpenModalDeliveryOrderPhoto    
@@ -419,7 +421,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 
                 <div className='col-3'>    
                     <CustomTitleHelper title={t(langKeys.nonWorkingdays)}/>           
-                    <span className={classes.span} onClick={() => setOpenModalNonWorkingDays(true)}>
+                    <span className={classes.span} onClick={() => setOpenModalNonWorkingDaysCopy(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.nonworkingdays)}
                     </span>
                 </div>

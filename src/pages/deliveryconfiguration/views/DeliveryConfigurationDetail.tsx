@@ -17,6 +17,7 @@ import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
+import NonWorkingDaysCopyDialog from '../dialogs/NonWorkingDaysDialog copy';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -44,6 +45,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [openModalNonWorkingDays, setOpenModalNonWorkingDays] = useState(false)
+    const [openModalNonWorkingDaysCopy, setOpenModalNonWorkingDaysCopy] = useState(false)
     const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
@@ -145,6 +147,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     getValues={getValues}
                     errors={errors}
                     setOpenModalNonWorkingDays={setOpenModalNonWorkingDays}
+                    setOpenModalNonWorkingDaysCopy={setOpenModalNonWorkingDaysCopy}
                     setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
                     setOpenModalVehicleType={setOpenModalVehicleType}
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
@@ -157,6 +160,10 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                 <NonWorkingDaysDialog
                     openModal={openModalNonWorkingDays}
                     setOpenModal={setOpenModalNonWorkingDays}
+                />
+                <NonWorkingDaysCopyDialog
+                    openModal={openModalNonWorkingDaysCopy}
+                    setOpenModal={setOpenModalNonWorkingDaysCopy}
                 />
                 <DeliverySchedulesDialog
                     openModal={openModalDeliverySchedules}
