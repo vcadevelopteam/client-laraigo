@@ -25,21 +25,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface DealerTabProps { 
+  edit:boolean;
   row:any;
   fetchData: any;
   tabIndex: any;
+  dataTable: Dictionary[];
+  setDataTable: (a:Dictionary[])=>void;
   setTabIndex: any;
 }
 
-const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIndex}) => {
+const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIndex, dataTable,setDataTable, edit}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const [openModalDealer, setOpenModalDealer] = useState(false);
-  const dataDealer = useSelector(state => state.main.mainAux);
+  const mainData = useSelector(state => state.main.mainAux);
   const executeResult = useSelector((state) => state.main.execute);
 
+  useEffect(() => {
+    if(!mainData?.loading && !mainData?.error && edit&& mainData?.key==="UFN_ALL_MANUFACTURER_PRODUCT_SEL"){
+      setDataTable(mainData.data)
+    }
+  }, [mainData]);
+  
   useEffect(() => {
     if (waitSave) {
       if (!executeResult.loading && !executeResult.error) {
@@ -66,23 +75,29 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
     }
   }, [executeResult, waitSave]);
 
-  const handleDelete = (row: Dictionary) => {
-    const callback = () => {
+  const handleDelete = (row: Dictionary, i:number) => {
+    if(edit){
+      const callback = () => {
+        dispatch(
+          execute(insProductDealer({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+        );
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
+      };
+  
       dispatch(
-        execute(insProductDealer({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+        manageConfirmation({
+          visible: true,
+          question: t(langKeys.confirmation_delete),
+          callback,
+        })
       );
-      dispatch(showBackdrop(true));
-      setWaitSave(true);
-    };
-
-    dispatch(
-      manageConfirmation({
-        visible: true,
-        question: t(langKeys.confirmation_delete),
-        callback,
-      })
-    );
-  };
+    }else{
+      const dataTableAux = dataTable
+      dataTableAux.splice(i,1)
+      setDataTable(dataTableAux)
+    }
+  }
   
   const columns = React.useMemo(
     () => [
@@ -96,7 +111,7 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
               const row = props.cell.row.original;
               return (
                   <TemplateIcons
-                      deleteFunction={() => handleDelete(row)}
+                      deleteFunction={() => handleDelete(row, props.cell.row.index)}
                   />
               )
           }
@@ -169,17 +184,19 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={dataDealer.data}
+          data={dataTable}
           download={false}
           filterGeneral={false}
           register={true}
-          loading={dataDealer.loading}
+          loading={mainData.loading}
           handleRegister={handleRegister}
         />
       </div>
       <RegisterDealerDialog
         fetchData={fetchData}
         openModal={openModalDealer}
+        setDataTable={setDataTable}
+        edit={edit}
         setOpenModal={setOpenModalDealer}
         row={row}
       />

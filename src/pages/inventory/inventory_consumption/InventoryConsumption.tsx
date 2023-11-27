@@ -77,14 +77,12 @@ const InventoryConsumption: FC = () => {
   
 
   if (viewSelected === "main-view") {
-    if (mainResult.mainData.error) {
-      return <h1>ERROR</h1>;
-    }
     return (
       <InventoryConsumptionMainView
         setViewSelected={setViewSelected}
         setRowSelected={setRowSelected}
         fetchData={fetchData}
+        viewSelected={viewSelected}
         fetchDataAux={fetchDataAux}
       />
     );

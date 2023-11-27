@@ -25,6 +25,7 @@ interface WarehouseMainViewProps {
   setRowSelected: (rowdata: any) => void;
   fetchData: any;
   fetchDataAux: any;
+  viewSelected: string;
 }
 
 const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
@@ -32,6 +33,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
   setRowSelected,
   fetchData,
   fetchDataAux,
+  viewSelected,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -57,6 +59,12 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
     setViewSelected("detail-view");
       setRowSelected({ row: null, edit: false });
   }
+
+  useEffect(() => {
+    if(viewSelected==="main-view"){
+      fetchData(fetchDataAux);
+    }
+  }, [viewSelected]);
 
   useEffect(() => {
     if (waitUpload) {

@@ -135,7 +135,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             valueDefault={getValues('producttype')}
                             onChange={(value) => setValue('producttype', value?.domainvalue||"")}
                             error={(errors?.producttype?.message??"")  as string}
-                            data={multiData.data[0].data}
+                            data={multiData?.data?.[0]?.data}
                             optionValue="domainvalue"
                             optionDesc="domaindesc"
                         />

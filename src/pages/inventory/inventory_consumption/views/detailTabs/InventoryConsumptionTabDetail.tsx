@@ -78,9 +78,9 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
+    const mainData = useSelector((state) => state.main.mainData);
     const multiData = useSelector(state => state.main.multiData);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
-    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const [openModal, setOpenModal] = useState(false);
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
     const [openModalReservedProducts, setOpenModalReservedProducts] = useState(false);
@@ -312,7 +312,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                         handleRegister={handleRegister}
                         columns={columns}
                         data={dataDetail}
-                        loading={multiDataAux2.loading}
+                        loading={mainData.loading}
                         download={false}
                         filterGeneral={false}
                         register={!edit && Boolean(selectedWarehouse)}

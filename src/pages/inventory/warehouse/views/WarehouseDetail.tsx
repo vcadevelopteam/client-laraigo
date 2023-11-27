@@ -165,7 +165,6 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
     }
 
     return (
-        <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -223,14 +222,13 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
                             </div>
                         )}
                     />
-                    {edit &&
-                        <AntTab
+                    <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <Trans i18nKey={langKeys.product_plural}/>
                             </div>
                         )}
-                    />}
+                    />
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <WarehouseTabDetail
@@ -240,12 +238,10 @@ const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated 
                         errors={errors}
                     />
                 </AntTabPanel>
-                {edit &&
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <ProductTabDetail fetchdata={fetchWarehouseProducts}/>
-                </AntTabPanel>}
+                </AntTabPanel>
             </form>
-        </>
     );
 }
 
