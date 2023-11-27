@@ -1,4 +1,4 @@
-const ENV = 'LOCAL';
+const ENV = 'DEVELOP';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
