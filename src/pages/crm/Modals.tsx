@@ -226,7 +226,7 @@ export const TrafficLightConfigurationModal: React.FC<{
         <DialogZyx
             open={openModal}
             title={<span className={classes.title}>{t(langKeys.trafficlightconfig)}</span>}
-            buttonText1={t(langKeys.cancel)}
+            buttonText1={t(langKeys.close)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={handleCloseConfiguration}
             handleClickButton2={handleSaveConfiguration}
@@ -417,7 +417,7 @@ export const TrafficIndividualConfigurationModal: React.FC<{
         <DialogZyx
             open={openModal}
             title={t(langKeys.trafficindividualconfig)}
-            buttonText1={t(langKeys.cancel)}
+            buttonText1={t(langKeys.close)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onMainSubmit}

@@ -5416,7 +5416,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   start: 'Inicio',
   end: 'Fin',
   trafficlight: 'Semáforo',
-  trafficindividualconfig: 'Configuracion individual del semáforo',
+  trafficindividualconfig: 'Configuración individual semáforo',
 };
 
 const esResource: ResourceLanguage = {
