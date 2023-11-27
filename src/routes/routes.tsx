@@ -385,7 +385,7 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.EXTRASLOCATION,
-        description: <Trans i18nKey={langKeys.location} count={2} />,
+        description: <Trans i18nKey={langKeys.locations} count={2} />,
         tooltip: "",
         path: paths.EXTRASLOCATION,
         icon: (className) => <LocationIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,

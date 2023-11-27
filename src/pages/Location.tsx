@@ -454,12 +454,6 @@ const Location: FC = () => {
                     )
                 }
             },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true,
-            },
-            
         ],
         [t]
     );
@@ -544,7 +538,7 @@ const Location: FC = () => {
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
         const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
             key: x.accessor,
-            alias: x.Header
+            alias: x.Header ? x.Header : 'Google Maps URL'
         }))
         dispatch(exportData(getLocationExport({
             filters: {
@@ -658,7 +652,7 @@ const Location: FC = () => {
             <div style={{ height: '100%', width: 'inherit' }}>
             <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
                 <div style={{ flexGrow: 1 }} >
-                    <Title><Trans i18nKey={langKeys.location} count={2} /></Title>
+                    <Title><Trans i18nKey={langKeys.locations} count={2} /></Title>
                 </div>
             </div>
             <TablePaginated
