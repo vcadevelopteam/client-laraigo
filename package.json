@@ -33,6 +33,7 @@
         "material-ui-popup-state": "^5.0.9",
         "npm": "^7.20.3",
         "react": "^17.0.2",
+        "react-barcode": "^1.4.6",
         "react-beautiful-dnd": "^13.1.0",
         "react-color": "^2.19.3",
         "react-culqi": "^1.1.2",
