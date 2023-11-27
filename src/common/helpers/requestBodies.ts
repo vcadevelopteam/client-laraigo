@@ -4199,10 +4199,10 @@ export const getAllAttributeProduct = (productid: number): IRequestBody => ({
     }
 });
 
-export const insProductAttribute = ({ productattributeid, productid, attributeid, value, unitmeasureid, status, type, operation }: Dictionary) => ({
+export const insProductAttribute = ({ productattributeid, p_tableid, attributeid, value, unitmeasureid, status, type, operation }: Dictionary) => ({
     method: "UFN_PRODUCTATTRIBUTE_INS",
     key: "UFN_PRODUCTATTRIBUTE_INS",
-    parameters: {  productattributeid, productid, attributeid, value, unitmeasureid, status, type, operation  },
+    parameters: {  productattributeid, p_tableid, attributeid, value, unitmeasureid, status, type, operation  },
 });
 
 export const insStatusProduct = ({ statusid,comment,status,type,productid,ismoveinventory,operation}: Dictionary) => ({
@@ -4378,11 +4378,11 @@ export const insProductManufacturer = ({ productcompanyid, productid, manufactur
     parameters: { productcompanyid, productid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, operation }
 });
 
-export const insProductDealer = ({ productcompanyid, productid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid, operation }: Dictionary): IRequestBody => ({
+export const insProductDealer = ({ productcompanyid, p_tableid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTMANUFACTURER_INS",
     key: "UFN_PRODUCTMANUFACTURER_INS",
     parameters: {
-        productcompanyid, productid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid, operation
+        productcompanyid, p_tableid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid, operation
     }
 })
 export const getProductManufacturer = (productid:number): IRequestBody => ({
@@ -4629,10 +4629,10 @@ export const insInventoryConsumption = ({ inventoryconsumptionid, description, o
 });
 
 
-export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation }: Dictionary) => ({
+export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype }: Dictionary) => ({
     method: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
-    key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
-    parameters: { inventoryconsumptiondetailid, inventoryconsumptionid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation },
+    key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",    
+    parameters: { inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype },
 });
 export const getTemplatesChatflow = () => ({
     method: "UFN_CHATFLOW_BLOCK_TEMPLATES_SEL",
@@ -4660,4 +4660,29 @@ export const insLeadConfig = ({ id, maxgreen, maxyellow }: Dictionary): IRequest
     method: "UFN_LEAD_CONFIG_INS",
     key: "UFN_LEAD_CONFIG_INS",
     parameters: { id, maxgreen, maxyellow }
+});
+export const inventoryConsumptionComplete = ({ inventoryconsumptionid, status, comment }: Dictionary) => ({
+    method: "UFN_INVENTORYCONSUMPTION_PROCESS",
+    key: "UFN_INVENTORYCONSUMPTION_PROCESS",
+    parameters: { inventoryconsumptionid, status, comment },
+});
+export const reservationswarehouseSel = (warehouseid: number) => ({
+    method: "UFN_BOOKINGWAREHOUSE_SEL",
+    key: "UFN_BOOKINGWAREHOUSE_SEL",
+    parameters: { warehouseid },
+});
+export const generateLabelSel = (inventoryconsumptionid: number) => ({
+    method: "UFN_GENERATE_LABEL_SEL",
+    key: "UFN_GENERATE_LABEL_SEL",
+    parameters: { inventoryconsumptionid },
+});
+export const generateguiaremisionSel = (inventoryconsumptionid: number) => ({
+    method: "UFN_GUIAREMISIONDETAIL_SEL",
+    key: "UFN_GUIAREMISIONDETAIL_SEL",
+    parameters: { inventoryconsumptionid },
+});
+export const generateguiaremisiondetailSel = (inventoryconsumptionid: number) => ({
+    method: "UFN_GUIAREMISION_SEL",
+    key: "UFN_GUIAREMISION_SEL",
+    parameters: { inventoryconsumptionid },
 });

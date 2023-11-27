@@ -168,7 +168,6 @@ const ImportDialog: React.FC<{
       (a, d) => ({ ...a, [d.domainid]: true }),
       {}
     );
-    debugger
     return (
       validDomainProduct[element.productid] &&
       validDomainWarehouse[element.warehouseid] &&

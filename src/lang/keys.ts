@@ -18,6 +18,8 @@ export const langKeys = {
   edit_all: "edit_all",
   successful_inventoryconsumption: "successful_inventoryconsumption",
   set_your_weekly: "set_your_weekly",
+  error_generate_label:"error_generate_label",
+  transferdate:"transferdate",
   orders: "orders",
   configure: "configure",
   finish: "finish",
