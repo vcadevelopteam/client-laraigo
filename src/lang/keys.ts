@@ -2373,6 +2373,8 @@ export const langKeys = {
   dashboard_operationalpush_disconnections_userstatus: "dashboard_operationalpush_disconnections_userstatus",
   dashboard_operationalpush_disconnections_conectedtime: "dashboard_operationalpush_disconnections_conectedtime",
   dashboard_operationalpush_disconnections_desconectedtime: "dashboard_operationalpush_disconnections_desconectedtime",
+  dashboard_operationalpush_disconnections_percConnected: "dashboard_operationalpush_disconnections_percConnected",
+  dashboard_operationalpush_disconnections_percDesconnected: "dashboard_operationalpush_disconnections_percDesconnected",
 
   report_loginhistory: 'report_loginhistory',
   report_loginhistory_datehour: 'report_loginhistory_datehour',

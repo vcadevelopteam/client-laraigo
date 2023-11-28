@@ -2099,6 +2099,8 @@ const translation: LangKeys = {
   dashboard_operationalpush_disconnections_userstatus: "Estado",
   dashboard_operationalpush_disconnections_conectedtime: "Tiempo Conectado",
   dashboard_operationalpush_disconnections_desconectedtime: "Tiempo Desconectado",
+  dashboard_operationalpush_disconnections_percConnected: "Porcentaje de tiempo conectado",
+  dashboard_operationalpush_disconnections_percDesconnected: "Porcentaje de tiempo desconectado",
 
   report_loginhistory: 'Conexión de usuario',
   report_loginhistory_datehour: 'Fecha - Hora',

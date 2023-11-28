@@ -548,6 +548,25 @@ const Tipifications: FC = () => {
         setViewSelected(view)
     }
 
+    const fetchData = () => {
+        dispatch(getCollection(getClassificationSel(0)));
+        dispatch(getMultiCollection([
+            getValuesFromDomain("ESTADOGENERICO"),
+            getParentSel(),
+            getValuesFromDomain("TIPOCANAL"),
+            getValuesForTree("TIPIFICACION"),
+            getCatalogMasterList(),
+        ]));
+    };
+
+    useEffect(() => {
+        fetchData();
+        
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
+
     const columns = React.useMemo(
         () => [
 
@@ -589,6 +608,18 @@ const Tipifications: FC = () => {
                 }
             },
             {
+                Header: t(langKeys.app_productcatalog),
+                accessor: 'metacatalogid',
+                NoFilter: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { metacatalogid } = props.cell.row.original;
+                    let catalog = metacatalogid
+                    if(metacatalogid <= 0) catalog = null
+            
+                    return catalog;
+                }
+            },
+            {
                 Header: t(langKeys.parent),
                 accessor: 'parentdesc',
                 NoFilter: true
@@ -622,24 +653,6 @@ const Tipifications: FC = () => {
         ],
         []
     );
-    const fetchData = () => {
-        dispatch(getCollection(getClassificationSel(0)));
-        dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getParentSel(),
-            getValuesFromDomain("TIPOCANAL"),
-            getValuesForTree("TIPIFICACION"),
-            getCatalogMasterList(),
-        ]));
-    };
-
-    useEffect(() => {
-        fetchData();
-        
-        return () => {
-            dispatch(resetAllMain());
-        };
-    }, []);
 
     useEffect(() => {
         if (waitSave) {
@@ -730,9 +743,14 @@ const Tipifications: FC = () => {
             mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
             {},
             mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
-            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
+            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {}),
+            {},
+            {},
+            {},
+            {},
+            {},
         ];
-        const header = ['Clasificación', 'Descripción', 'Canales', 'Tag', 'Padre', 'Estado'];
+        const header = ['Clasificación', 'Descripción', 'Canales', 'Tag', 'Padre', 'Estado', 'Acción', 'Tipo', 'Variable', 'Endpoint', 'Data'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
@@ -749,7 +767,7 @@ const Tipifications: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.tipification, { count: 2 })}
-                        data={mainResult.mainData.data}
+                        data={mainResult.mainData.data.map(x => {if(x.type === 'TIPIFICACION') {return {...x, order: null}} return x})}
                         loading={mainResult.mainData.loading}
                         download={true}
                         register={true}
