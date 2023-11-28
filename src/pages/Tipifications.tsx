@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -23,6 +22,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { TreeItem, TreeView } from '@material-ui/lab';
 import { EmojiPickerZyx } from 'components'
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -157,6 +157,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data.filter(x=>x.type===type) : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    
     const datamastercatalog = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -327,7 +328,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         <FieldEdit
                             label={t(langKeys.path)}
                             className="col-6"
-                            valueDefault={row?.path || ""}
+                            valueDefault={row?.path || ""}optionDesc
                             onChange={(value) => setValue('path', value)}
                             error={errors?.path?.message}
                             disabled={true}
@@ -556,7 +557,7 @@ const Tipifications: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -582,7 +583,7 @@ const Tipifications: FC = () => {
                 accessor: 'type',
                 prefixTranslation: 'type_',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { type } = props.cell.row.original;
                     return (t(`type_${type}`) || "").toUpperCase()
                 }
@@ -613,7 +614,7 @@ const Tipifications: FC = () => {
                 accessor: 'statusdesc',
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
@@ -731,7 +732,7 @@ const Tipifications: FC = () => {
             mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
             mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
         ];
-        const header = ['classification', 'description', 'channels', 'tag', 'parent', 'status'];
+        const header = ['Clasificación', 'Descripción', 'Canales', 'Tag', 'Padre', 'Estado'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
