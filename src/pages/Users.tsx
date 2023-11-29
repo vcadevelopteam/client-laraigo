@@ -1583,6 +1583,7 @@ const Users: FC = () => {
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
             domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
             { true: "true", false: "false" },
+            { true: "true", false: "false" },
         ];
         const header = [
             "firstname",
@@ -1603,6 +1604,7 @@ const Users: FC = () => {
             "channels",
             "groups",
             "balance",
+            'showbots',
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     };
@@ -1788,7 +1790,7 @@ const Users: FC = () => {
                         String(f.role).split(",").every((role:string) => {
                             const roleId = parseInt(role.trim(), 10);
                             return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
-                        }))
+                        }))&& (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                 );
             });
             const messageerrors = datainit
@@ -1855,7 +1857,7 @@ const Users: FC = () => {
                                     const roleId = parseInt(role.trim(), 10);
                                     return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
                                 })
-                        )
+                        )|| !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                     );
                 })
                 .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, "");
@@ -1892,6 +1894,7 @@ const Users: FC = () => {
                                     firstname: String(d.firstname),
                                     lastname: String(d.lastname),
                                     email: String(d.email),
+                                    showbots: Boolean(d.showbots),
                                     pwdchangefirstlogin: d.pwdchangefirstlogin==="true",
                                     type: "NINGUNO",
                                     status: d.status,
