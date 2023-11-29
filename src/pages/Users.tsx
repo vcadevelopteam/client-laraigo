@@ -1222,6 +1222,7 @@ const Users: FC = () => {
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
             domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            { 'true': 'true', 'false': 'false' },
         ];
         const header = [
             'firstname',
@@ -1240,7 +1241,8 @@ const Users: FC = () => {
             'pwdchangefirstlogin',
             'role',
             'channels',
-            'groups'
+            'groups',
+            'showbots',
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     }
@@ -1378,6 +1380,7 @@ const Users: FC = () => {
                     && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
+                    && (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                     && (f.role !== undefined)
             });
             const messageerrors = datainit.filter((f: any) => {
@@ -1387,6 +1390,7 @@ const Users: FC = () => {
                     || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
+                    || !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                     || !(f.role !== undefined)
             }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, '');
 
@@ -1420,6 +1424,7 @@ const Users: FC = () => {
                                 lastname: String(d.lastname),
                                 email: String(d.email),
                                 pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
+                                showbots: Boolean(d.showbots),
                                 type: "NINGUNO",
                                 status: d.status,
                                 operation: "INSERT",
