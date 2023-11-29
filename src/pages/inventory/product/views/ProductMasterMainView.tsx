@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { execute, exportData } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
-import { getProductsExport, insProduct } from "common/helpers";
+import { duplicateProduct, getProductsExport, insProduct } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -59,6 +59,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     const [waitSave, setWaitSave] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [cleanSelected, setCleanSelected] = useState(false);
+    const [dupProduct, setDupProduct] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [pageCount, setPageCount] = useState(0);
     const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
@@ -78,7 +79,9 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     };
     const handleDuplicate = (row: Dictionary) => {
         setRowSelected({ row, edit: false, duplicated: true });
-        setViewSelected("detail-view");
+        dispatch(execute(duplicateProduct(row.productid)))
+        setDupProduct(true)
+        dispatch(showBackdrop(true));
     };
 
     const handleDelete = (row: Dictionary) => {
@@ -96,6 +99,31 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
             })
         );
     };
+    useEffect(() => {
+        if (dupProduct) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "success",
+                        message: t(langKeys.successful_duplicate),
+                    })
+                );
+                const product_id = executeResult?.data?.[0]?.p_tableid;
+                setRowSelected((e:any)=>{return {...e, row: {...e.row, productid: product_id}}})
+                setViewSelected("detail-view");
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, dupProduct]);
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {

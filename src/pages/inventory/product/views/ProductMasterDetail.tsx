@@ -7,7 +7,6 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from "components";
 import {
-    duplicateProduct,
     getAllAttributeProduct,
     getProductManufacturer,
     getProductProduct,
@@ -159,12 +158,6 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
                         })
                     );
                 }
-                if (duplicated) {
-                    const product_id = executeRes?.data?.[0]?.p_tableid;
-                    dispatch(
-                        execute(duplicateProduct({ productid: product_id, productreferenceid: row?.productid || 0 }))
-                    );
-                }
                 dispatch(showBackdrop(false));
                 setCancelDuplication(false);
                 setWaitSave(false);
@@ -248,7 +241,24 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
         }
     });
     function handleReturnMainView() {
-        setViewSelected("main-view");
+        if(duplicated){
+            const callback = () => {
+                dispatch(execute(insProduct({ ...row, operation: "DELETE", status: "ELIMINADO" })));
+                dispatch(showBackdrop(true));
+                setWaitSave(true);
+            };
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: "Se cancelara la duplicación del producto, ¿Esta seguro?",
+                    callback,
+                })
+            );
+
+        }else{
+            setViewSelected("main-view");
+        }
+        
     }
 
     return (

@@ -41,6 +41,7 @@ const ChangeStatusDialog: React.FC<{
   const executeRes = useSelector(state => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(row?.status);
+  const mainPaginated = useSelector((state) => state.main.mainPaginated);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset, formState: { errors } } = useForm({
     defaultValues: {
@@ -89,7 +90,16 @@ const ChangeStatusDialog: React.FC<{
     const callback = () => {
         dispatch(showBackdrop(true));
         if(massive){
-          dispatch(execute(insStatusProductMas({...data, productid: Object.keys(selectedRows).join(",")})));
+          const datatosend = Object.keys(selectedRows).reduce((acc, x) => {
+            //[...acc, mainPaginated.data.find(y => y.productid === Number(x))][...acc, mainPaginated.data.find(y => y.productid === Number(x))]
+            return [...acc, {...mainPaginated.data.find(y => y.productid === Number(x)),
+              ...data,
+              productid: 0,
+              operation: "INSERT",
+              type: "NINGUNO",
+            }]
+          }, []);
+          dispatch(execute(insStatusProductMas(datatosend)));
         }else{
           dispatch(execute(insStatusProduct(data)));
         }
