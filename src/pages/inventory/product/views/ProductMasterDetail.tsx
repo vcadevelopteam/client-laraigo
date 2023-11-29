@@ -268,7 +268,23 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
                     <TemplateBreadcrumbs
                         breadcrumbs={arrayBread}
                         handleClick={(view) => {
-                            setViewSelected(view);
+                            if(duplicated){
+                                const callback = () => {
+                                    dispatch(execute(insProduct({ ...row, operation: "DELETE", status: "ELIMINADO" })));
+                                    dispatch(showBackdrop(true));
+                                    setWaitSave(true);
+                                };
+                                dispatch(
+                                    manageConfirmation({
+                                        visible: true,
+                                        question: "Se cancelara la duplicación del producto, ¿Esta seguro?",
+                                        callback,
+                                    })
+                                );
+                    
+                            }else{
+                                setViewSelected(view);
+                            }
                         }}
                     />
                     <TitleDetail title={row?.description || `${t(langKeys.new)} ${t(langKeys.product)}`} />
