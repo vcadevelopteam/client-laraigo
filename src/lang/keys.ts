@@ -20,6 +20,7 @@ export const langKeys = {
   set_your_weekly: "set_your_weekly",
   error_generate_label:"error_generate_label",
   transferdate:"transferdate",
+  visualizationBotTooltip: "visualizationBotTooltip",
   orders: "orders",
   configure: "configure",
   finish: "finish",

@@ -327,6 +327,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             groups: row?.groups || "",
             labels: row?.labels || "",
             status: "DESCONECTADO",
+            showbots: row?.showbots || false,
             bydefault: row?.bydefault || false,
         });
 
@@ -461,14 +462,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="roldesc"
                                 optionValue="roleid"
                             />
-                            <TemplateSwitchYesNo
-                                label={"Balanceo"}
-                                className={classes.mb2}
-                                valueDefault={getValues("type") === "ASESOR"}
-                                onChange={(value) => {
-                                    setValue("type", value ? "ASESOR" : "SUPERVISOR");
-                                }}
-                            />
+                            <div className="row-zyx">
+                                <TemplateSwitchYesNo
+                                    label={"Balanceo"}
+                                    className="col-6"
+                                    valueDefault={getValues("type") === "ASESOR"}
+                                    onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
+                                <TemplateSwitchYesNo
+                                    label={"Visualización Bots"}
+                                    helperText={t(langKeys.visualizationBotTooltip)}
+                                    className="col-6"
+                                    valueDefault={getValues("showbots")}
+                                    onChange={(value) => { setValue('showbots', value); }} />
+
+                            </div>
                         </div>
                         <div className="col-6">
                             <FieldSelect
