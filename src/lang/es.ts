@@ -1811,6 +1811,7 @@ const translation: LangKeys = {
   emoji_favorites: 'Añadir Favorito',
   emoji_removefavorites: 'Remover Favorito',
   emoji_restricted: 'Añadir Restringido',
+  visualizationBotTooltip: "Al habilitar el switch, permitirá mostrar los Bots de “BOT SYSTEM” Y “BOT HOLDING” y todas las conversaciones que se encuentren asignadas.",
   emoji_removerestricted: 'Remover Restringido',
   emoji_message_favorites: 'Usted desea enviar el emoji como favorito a todas las organizaciones y canales',
   emoji_message_restricted: 'Usted desea restringir el emoji a todas las organizaciones y canales',

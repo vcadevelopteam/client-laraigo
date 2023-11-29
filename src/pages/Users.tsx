@@ -217,6 +217,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             channelsdesc: row ? row.channelsdesc : '', //for table
             supervisor: row ? row.supervisor : '',
             type: row?.type || '',
+            showbots: row?.showbots || false,
             channels: row?.channels || '',
             redirect: row?.redirect || '',
             groups: row?.groups || '',
@@ -228,6 +229,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('rolegroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
+        register('showbots');
         register('supervisor');
         // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels');
@@ -343,11 +345,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 optionDesc="roldesc"
                                 optionValue="roleid"
                             />
-                            <TemplateSwitchYesNo
-                                label={"Balanceo"}
-                                className={classes.mb2}
-                                valueDefault={getValues("type") === "ASESOR"}
-                                onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
+                            <div className="row-zyx">
+                                <TemplateSwitchYesNo
+                                    label={"Balanceo"}
+                                    className="col-6"
+                                    valueDefault={getValues("type") === "ASESOR"}
+                                    onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
+                                <TemplateSwitchYesNo
+                                    label={"Visualización Bots"}
+                                    helperText={t(langKeys.visualizationBotTooltip)}
+                                    className="col-6"
+                                    valueDefault={getValues("showbots")}
+                                    onChange={(value) => { setValue('showbots', value); }} />
+
+                            </div>
                         </div>
                         <div className="col-6">
                             <FieldSelect
