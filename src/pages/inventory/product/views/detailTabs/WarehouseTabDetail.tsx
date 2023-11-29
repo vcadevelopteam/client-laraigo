@@ -113,6 +113,7 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
         Header: t(langKeys.standard_cost),
         accessor: "standarcost",
         width: "auto",
+        type:"number"
       },
       {
         Header: t(langKeys.average_cost),
