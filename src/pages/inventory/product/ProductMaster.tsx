@@ -80,6 +80,11 @@ const ProductMaster: FC = () => {
       dispatch(resetAllMain());
     };
   }, []);
+  useEffect(() => {
+    if(viewSelected==="main-view"){
+      fetchData(fetchDataAux)
+    }
+  }, [viewSelected]);
 
   if (viewSelected === "main-view") {
     return (

@@ -253,6 +253,9 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         key: x.accessor,
         alias: x.Header
     }))
+    columnsExport.push({
+      key: "descriptionlarge", alias: t(langKeys.longdesc)
+    })
     dispatch(exportData(getWarehouseExport({
         filters: {
             ...filters,

@@ -40,7 +40,12 @@ import {
     ConfiguratuinIARouteIcon,
     ConectivityIARouteIcon,
     IAEntrenamientoIcon,
+    ProductMasterIcon,
+    WarehouseIcon,
     SLAIcon,
+    CompaniesIcon,
+    InventoryConsumptionIcon,
+    InventoryIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -557,7 +562,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.PRODUCTMASTER,
         initialSubroute: paths.PRODUCTMASTER,
-        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ProductMasterIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.WAREHOUSE,
@@ -566,7 +571,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.WAREHOUSE,
         initialSubroute: paths.WAREHOUSE,
-        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <WarehouseIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.COMPANIES,
@@ -575,7 +580,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.COMPANIES,
         initialSubroute: paths.COMPANIES,
-        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <CompaniesIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.INVENTORY,
@@ -584,7 +589,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.INVENTORY,
         initialSubroute: paths.INVENTORY,
-        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <InventoryIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.INVENTORYCONSUMPTION,
@@ -593,7 +598,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.INVENTORYCONSUMPTION,
         initialSubroute: paths.INVENTORYCONSUMPTION,
-        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <InventoryConsumptionIcon style={{ width: 22, height: 22 }} className={className} />,
     },
 ];
 

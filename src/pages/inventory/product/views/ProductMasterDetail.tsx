@@ -160,12 +160,11 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
                     );
                 }
                 if (duplicated) {
-                    const product_id = executeRes.data[0].p_tableid;
+                    const product_id = executeRes?.data?.[0]?.p_tableid;
                     dispatch(
                         execute(duplicateProduct({ productid: product_id, productreferenceid: row?.productid || 0 }))
                     );
                 }
-                fetchData && fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setCancelDuplication(false);
                 setWaitSave(false);
@@ -396,6 +395,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
                 setTabIndex={setTabIndex}
                 productid={row?.productid || 0}
                 fetchdata={fetchProductWarehouse}
+                row={row}
             />
             <AttachmentDialog openModal={openModalAttachments} setOpenModal={setOpenModalAttachments} row={row} />
         </form>

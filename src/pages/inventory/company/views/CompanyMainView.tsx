@@ -73,7 +73,7 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
   };
   const handleDuplicate = (row: Dictionary) => {
     setViewSelected("detail-view");
-    setRowSelected({ row:{...row, name:""}, edit: false, duplicated: true });
+    setRowSelected({ row:{...row, manufacturercode:""}, edit: false, duplicated: true });
   };
 
   useEffect(() => {
@@ -260,16 +260,15 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
       (a, d) => ({ ...a, [d.domainid]: true }),
       {}
     );
-
     return (
       ((element.ispaymentdelivery === 'true')||(element.ispaymentdelivery === 'false')) &&
-      typeof element.beginpage === 'string' && element.beginpage.length <= 136 &&
       validDomainTaxes[element.taxeid] &&
-      typeof element.clientenumbers === 'string' && element.clientenumbers.length <= 136 &&
+      (element?.clientenumbers? element.clientenumbers?.length <= 136:true) &&
+      (element?.beginpage? element.beginpage?.length <= 136:true) &&
       validDomainCurrency[element.currencyid] &&
       validDomainTypeManufacturer[element.typemanufacterid] &&
       typeof element.description === 'string' && element.description.length <= 256 &&
-      typeof element.descriptionlarge === 'string' && element.descriptionlarge.length <= 1000 &&
+      typeof element.descriptionlarge === 'string' && element.descriptionlarge.length <= 10000 &&
       typeof element.manufacturercode === 'string' && element.manufacturercode.length <= 20
     );
   };
@@ -376,7 +375,10 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
         setCleanSelection={setCleanSelected}
         register={true}
         importCSV={handleUpload}
-        FiltersElement={(
+        
+        ButtonsElement={() => (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            
           <Button
               variant="contained"
               color="primary"
@@ -387,6 +389,9 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
           >
               <Trans i18nKey={langKeys.template} />
           </Button>
+            </div>)}
+        FiltersElement={(
+          <div></div>
       )}
       />
     </div>

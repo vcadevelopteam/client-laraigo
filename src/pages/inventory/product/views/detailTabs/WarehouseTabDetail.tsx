@@ -89,8 +89,13 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
         }
       },
       {
-        Header: t(langKeys.warehouse),
-        accessor: "warehousename",
+        Header: t(langKeys.product),
+        accessor: "productcode",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.description),
+        accessor: "productdescription",
         width: "auto",
       },
       {
@@ -125,13 +130,13 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
         width: "auto",
       },
       {
-        Header: t(langKeys.default_shelf),
-        accessor: "rackcode",
+        Header: t(langKeys.dispatch_unit),
+        accessor: "unitdipatchid",
         width: "auto",
       },
       {
-        Header: t(langKeys.status),
-        accessor: "status",
+        Header: t(langKeys.purchase_unit),
+        accessor: "unitbuyid",
         width: "auto",
       },
     ],

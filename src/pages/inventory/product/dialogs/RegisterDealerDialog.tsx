@@ -95,30 +95,30 @@ const RegisterDealerDialog: React.FC<{
     });
 
     React.useEffect(() => {
-        register("productid");
+        register("p_tableid");
         register("model");
         register("productcompanyid");
         register("manufacturerid", {
-            validate: (value) => (value && value > 0 ? true : t(langKeys.field_required) + ""),
+            validate: (value) => (selectedDistributor || value && value > 0 ? true : String(t(langKeys.field_required))),
         });
         register("distributorid", {
-            validate: (value) => (value && value > 0 ? true : t(langKeys.field_required) + ""),
+            validate: (value) => (selectedManufacturer || value && value > 0 ? true : String(t(langKeys.field_required))),
         });
         register("catalognumber");
         register("webpage");
         register("taxeid");
         register("isstockistdefault");
         register("averagedeliverytime", {
-            validate: (value) => (value && value > 0 ? true : t(langKeys.field_required) + ""),
+            validate: (value) => (value >= 0 ? true : String(t(langKeys.no_negative))),
         });
-        register("lastprice", { validate: (value) => (value && value >= 0 ? true : t(langKeys.no_negative) + "") });
+        register("lastprice", { validate: (value) => (value >= 0 ? true : String(t(langKeys.no_negative))) });
         register("lastorderdate");
         register("unitbuy");
-    }, [openModal, register, getValues]);
+    }, [openModal, register, getValues, selectedDistributor, selectedManufacturer]);
 
     useEffect(() => {
-        setValue("manufacturerid", selectedDistributor?.manufacturerid);
-        setValue("manufacturer", selectedDistributor?.name);
+        setValue("manufacturerid", selectedManufacturer?.manufacturerid);
+        setValue("manufacturer", selectedManufacturer?.name);
     }, [selectedManufacturer]);
     useEffect(() => {
         setValue("distributorid", selectedDistributor?.manufacturerid);

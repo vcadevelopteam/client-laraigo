@@ -201,7 +201,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         BODEGAACME: false,
     },
     LOCAL: {
-        API: 'http://localhost:5000/api',
+        API: 'http://localhost:6065/api',
         //API: 'https://apix.laraigo.com/api',
         //WS: 'http://localhost:7070',
         WS: 'https://socket.laraigo.com',

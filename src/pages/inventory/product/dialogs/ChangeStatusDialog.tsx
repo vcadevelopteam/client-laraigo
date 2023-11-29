@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, makeStyles } from "@material-ui/core";
 import {
   DialogZyx,
@@ -8,13 +7,12 @@ import {
   FieldView,
 } from "components";
 import { langKeys } from "lang/keys";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
 import { useSelector } from "hooks";
-import React from "react";
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
@@ -42,6 +40,7 @@ const ChangeStatusDialog: React.FC<{
   const dispatch = useDispatch();
   const executeRes = useSelector(state => state.main.execute);
   const [waitSave, setWaitSave] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(row?.status);
 
   const { register, handleSubmit:handleMainSubmit, setValue, getValues, reset, formState: { errors } } = useForm({
     defaultValues: {
@@ -69,11 +68,12 @@ const ChangeStatusDialog: React.FC<{
         if (!executeRes.loading && !executeRes.error) {
             dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
             dispatch(showBackdrop(false));
-            if(!!setValueOutside){
+            if(setValueOutside){
               setValueOutside("status", getValues("status"))
             }else{
               fetchData(fetchDataAux)
-            }
+            }            
+            setCurrentStatus(getValues("status"))
             setOpenModal(false);
             reset()
         } else if (executeRes.error) {
@@ -101,7 +101,7 @@ const ChangeStatusDialog: React.FC<{
         callback
     }))
 });
-
+console.log(multiData?.data?.[5]?.data)
   return (
     <DialogZyx open={openModal} title={t(langKeys.change_status)}>
       <form onSubmit={onMainSubmit}>
@@ -111,7 +111,7 @@ const ChangeStatusDialog: React.FC<{
             <FieldView
               label={t(langKeys.code)}
               className={"col-6"}
-              value= {row?.productid || ""}
+              value= {row?.productcode || ""}
             />
             <FieldView
               label={t(langKeys.description)}
@@ -126,7 +126,7 @@ const ChangeStatusDialog: React.FC<{
           <FieldView
             label={`${t(langKeys.status)} ${t(langKeys.current)}`}
             className={"col-6"}
-            value= {row?.status || ""}
+            value= {currentStatus||""}
           />
         )}
         <FieldSelect
@@ -135,7 +135,7 @@ const ChangeStatusDialog: React.FC<{
           valueDefault={getValues("status")}
           onChange={(value) => setValue("status", value?.domainvalue || '')}
           error={errors?.status?.message}
-          data={multiData?.data?.[5]?.data}
+          data={multiData?.data?.[5]?.data?.filter(x=>x.domainvalue!==currentStatus)}
           optionValue="domainvalue"
           optionDesc="domainvalue"
         />
