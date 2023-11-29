@@ -352,7 +352,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     className="col-6"
                                     valueDefault={getValues("type") === "ASESOR"}
                                     onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
-                                {String(propertyBots?.[0]?.propertyvalue) ==="true" &&
+                                {String(propertyBots?.[0]?.propertyvalue) ==="1" &&
 
                                     <TemplateSwitchYesNo
                                         label={"Visualización Bots"}
