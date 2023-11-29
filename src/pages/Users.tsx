@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials } from 'common/helpers';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName } from 'common/helpers';
 import { getDomainsByTypename } from 'store/person/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -141,6 +141,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     // const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
+    const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
 
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] })
     const [dataSupervisors, setDataSupervisors] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
@@ -351,12 +352,15 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     className="col-6"
                                     valueDefault={getValues("type") === "ASESOR"}
                                     onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
-                                <TemplateSwitchYesNo
-                                    label={"Visualización Bots"}
-                                    helperText={t(langKeys.visualizationBotTooltip)}
-                                    className="col-6"
-                                    valueDefault={getValues("showbots")}
-                                    onChange={(value) => { setValue('showbots', value); }} />
+                                {String(propertyBots?.[0]?.propertyvalue) ==="true" &&
+
+                                    <TemplateSwitchYesNo
+                                        label={"Visualización Bots"}
+                                        helperText={t(langKeys.visualizationBotTooltip)}
+                                        className="col-6"
+                                        valueDefault={getValues("showbots")}
+                                        onChange={(value) => { setValue('showbots', value); }} />
+                                }
 
                             </div>
                         </div>
@@ -1282,6 +1286,7 @@ const Users: FC = () => {
             getRolesByOrg(), //formulario orguser
             getChannelsByOrg(user?.orgid),
             getSecurityRules(),
+            getPropertySelByName("VISUALIZACIONBOTSUSUARIOS"),
         ]));
         return () => {
             dispatch(resetAllMain());
