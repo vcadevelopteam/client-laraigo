@@ -15,6 +15,10 @@ import clsx from 'clsx';
 import { ListItemIcon, Menu, MenuItem } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { showSnackbar } from 'store/popus/actions';
+import { WarehouseIcon } from 'icons';
+import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
+import AttachFileOutlinedIcon from '@material-ui/icons/AttachFileOutlined';
 
 interface TemplateIconsProps {
     changeStatus?: (param: any) => void;
@@ -68,7 +72,7 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusH
                         changeStatus?.(e)
                     }}>
                         <ListItemIcon color="inherit">
-                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            <SettingsOutlinedIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         <Trans i18nKey={langKeys.change_status} />
                     </MenuItem>
@@ -80,7 +84,7 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusH
                         statusHistory?.(e)
                     }}>
                         <ListItemIcon color="inherit">
-                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            <VisibilityOutlinedIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         <Trans i18nKey={langKeys.status_history} />
                     </MenuItem>
@@ -92,7 +96,7 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusH
                         addToWarehouse?.(e)
                     }}>
                         <ListItemIcon color="inherit">
-                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            <WarehouseIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         <Trans i18nKey={langKeys.add_product_to_warehouse} />
                     </MenuItem>
@@ -104,7 +108,7 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusH
                         showattachments?.(e)
                     }}>
                         <ListItemIcon color="inherit">
-                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                            <AttachFileOutlinedIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         <Trans i18nKey={langKeys.showattachments} />
                     </MenuItem>

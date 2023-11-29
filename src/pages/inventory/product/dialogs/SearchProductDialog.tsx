@@ -36,12 +36,12 @@ const SearchProductDialog: React.FC<SearchProductDialogProps> = ({
     () => [
       {
         Header: t(langKeys.product),
-        accessor: "description",
+        accessor: "productcode",
         width: "auto",
       },
       {
         Header: t(langKeys.description),
-        accessor: "descriptionlarge",
+        accessor: "description",
         width: "auto",
       },
       {

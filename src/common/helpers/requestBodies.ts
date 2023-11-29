@@ -4211,10 +4211,10 @@ export const insStatusProduct = ({ statusid,comment,status,type,productid,ismove
     parameters: {  statusid,comment,status,type,productid,ismoveinventory,operation  },
 });
 
-export const insStatusProductMas = ({ statusid,comment,productid,ismoveinventory,operation}: Dictionary) => ({
-    method: "UFN_STATUSPRODUCT_INS",
-    key: "UFN_STATUSPRODUCT_INS",
-    parameters: {  statusid,comment,productid,ismoveinventory,operation  },
+export const insStatusProductMas = (data:any): IRequestBody => ({
+    method: "UFN_STATUSPRODUCT_MAS",
+    key: "UFN_STATUSPRODUCT_MAS",
+    parameters: {  json: JSON.stringify(data)  },
 });
 
 export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
@@ -4460,11 +4460,19 @@ export const importManufacturer = (data:any): IRequestBody => ({
     }
 });
 
-export const duplicateProduct = ({ productid, productreferenceid  }: Dictionary): IRequestBody => ({
+export const importstatusProduct = (data:any): IRequestBody => ({
+    method: "UFN_STATUSPRODUCT_MAS",
+    key: "UFN_STATUSPRODUCT_MAS",
+    parameters: {
+        json: JSON.stringify(data)
+    }
+});
+
+export const duplicateProduct = (productid: number): IRequestBody => ({
     method: "UFN_PRODUCT_DUP",
     key: "UFN_PRODUCT_DUP",
     parameters: {
-        productid, productreferenceid
+        productid, operation: "INSERT"
     }
 });
 
