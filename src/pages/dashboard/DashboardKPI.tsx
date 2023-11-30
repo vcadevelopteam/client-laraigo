@@ -1,5 +1,5 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { timetoseconds, formattime, getUserGroupsSel, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned, getUserAsesorByOrgID} from "common/helpers";
+import { timetoseconds, formattime, getUserGroupsSel, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned, getUserAsesorByOrgID } from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { DownloadIcon } from "icons";
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
             margin: "0 0 2% 0",
             backgroundColor: 'white',
         },
-        quarterbox: {            
+        quarterbox: {
             textAlign: "center",
             width: "24%",
             margin: "0 1% 2% 0",
@@ -41,52 +41,52 @@ const useStyles = makeStyles((theme: Theme) =>
             backgroundColor: 'white',
             padding: "15px"
         },
-        boxtitle:{
+        boxtitle: {
             fontWeight: "bold",
             fontSize: "1.6em",
             width: "50%"
         },
-        boxtitledata:{
+        boxtitledata: {
             fontSize: "1.6em",
             width: "50%",
             textAlign: "end"
         },
-        boxtitlequarter:{
+        boxtitlequarter: {
             width: "100%",
             textAlign: "center",
             fontWeight: "bold",
             fontSize: "1.5em",
         },
-        maintitle:{
+        maintitle: {
             fontWeight: "bold",
             fontSize: "2em",
             padding: "0 0 20px;"
         },
-        rowstyles:{
-            margin:"0!important"
+        rowstyles: {
+            margin: "0!important"
         },
-        containerFields:{
+        containerFields: {
             border: "black 1px solid",
             margin: "0!important",
             display: "flex",
             padding: "0 15px"
         },
-        label:{
+        label: {
             width: "60%",
             fontSize: "1.2em",
             padding: "5px"
         },
-        datafield:{
+        datafield: {
             fontSize: "1.2em",
             padding: "5px"
         },
-        datafieldquarter:{
+        datafieldquarter: {
             fontSize: "1.2em",
             textAlign: "center",
             width: "100%",
             padding: "5px"
         },
-        containerFieldsQuarter:{
+        containerFieldsQuarter: {
             margin: "0!important",
             display: "flex",
             width: "100%",
@@ -134,10 +134,10 @@ const useStyles = makeStyles((theme: Theme) =>
         dontshow: {
             display: "none"
         },
-        downloadiconcontainer:{
-            width:"100%",display: "flex",justifyContent: "end"
+        downloadiconcontainer: {
+            width: "100%", display: "flex", justifyContent: "end"
         },
-        styleicon:{
+        styleicon: {
             width: "18px",
             height: "18px",
             '&:hover': {
@@ -155,7 +155,7 @@ const useStyles = makeStyles((theme: Theme) =>
             gap: theme.spacing(1)
         },
         subtitle: {
-            fontSize:"0.8em"
+            fontSize: "0.8em"
         },
         less: {
             color: "#ff5b5b",
@@ -163,7 +163,7 @@ const useStyles = makeStyles((theme: Theme) =>
         more: {
             color: "#8bafd6",
         },
-        containertitleboxes:{
+        containertitleboxes: {
             display: "flex",
             justifyContent: "space-between",
             width: "100%"
@@ -177,7 +177,7 @@ const initialRange = {
     key: 'selection'
 }
 
-  
+
 const DashboardKPI: FC = () => {
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
@@ -204,23 +204,23 @@ const DashboardKPI: FC = () => {
         asesor: "",
     });
     const user = useSelector(state => state.login.validateToken.user);
-    
+
     async function funcsearch() {
-        let mes = String((dateRangeCreateDate?.endDate?.getMonth()||0)+1).padStart(2, '0')
-        let year = String(dateRangeCreateDate?.endDate?.getFullYear())||""
+        let mes = String((dateRangeCreateDate?.endDate?.getMonth() || 0) + 1).padStart(2, '0')
+        let year = String(dateRangeCreateDate?.endDate?.getFullYear()) || ""
         setauxdata({
-            mes,year
+            mes, year
         })
-        let tosend = { 
-            date: `${year}-${mes}-01`, 
+        let tosend = {
+            date: `${year}-${mes}-01`,
             origin: searchfields.origin,
             usergroup: searchfields.groups,
-            supervisorid: user?.userid||0,
+            supervisorid: user?.userid || 0,
             userid: searchfields.asesor
         }
-        let days=[]
-        for (let i = dateRangeCreateDate?.startDate?.getDate()||1; i <= (dateRangeCreateDate?.endDate?.getDate()||1); i++) {
-            days.push(i);            
+        let days = []
+        for (let i = dateRangeCreateDate?.startDate?.getDate() || 1; i <= (dateRangeCreateDate?.endDate?.getDate() || 1); i++) {
+            days.push(i);
         }
         setfilteredDays(days.join())
         dispatch(showBackdrop(true));
@@ -280,13 +280,13 @@ const DashboardKPI: FC = () => {
                     gg.style.width = '460mm';
                     gg.style.paddingTop = '14mm';
                     gg.id = "newexportcontainer"
-    
+
                     gg.innerHTML = el.innerHTML;
-    
+
                     document.body.appendChild(gg);
                     const pdf = new jsPDF.jsPDF('l', 'mm');
                     if (pdf) {
-                        DomToImage.toPng(gg)
+                        DomToImage.toPng(gg, { cacheBust: true })
                             .then(imgData => {
                                 const imgWidth = 280;
                                 const pageHeight = 210;
@@ -295,10 +295,10 @@ const DashboardKPI: FC = () => {
                                 const doc = new jsPDF.jsPDF('l', 'mm');
                                 const topPadding = 10;
                                 let position = topPadding; // give some top padding to first page
-    
+
                                 doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                                 heightLeft -= pageHeight;
-    
+
                                 while (heightLeft >= 0) {
                                     position = heightLeft - imgHeight + topPadding; // top padding for other pages
                                     doc.addPage();
@@ -311,9 +311,9 @@ const DashboardKPI: FC = () => {
                     }
                 }
             });
-    
+
         }
-    
+
         return (
             <Button
                 variant="contained"
@@ -327,7 +327,7 @@ const DashboardKPI: FC = () => {
 
 
     function processSummary() {
-        const emptydata={
+        const emptydata = {
             firstassignedtime_avg: "00:00:00",
             holdingwaitingtime_avg: "00:00:00",
             firstreplytime_avg: "00:00:00",
@@ -338,57 +338,58 @@ const DashboardKPI: FC = () => {
             abandoned_tickets: 0,
             balancetimes_avg: "00:00:00",
         }
-        const prevmonth= remultiaux?.data?.[0]?.data[0]||emptydata;
-        const actmonth= remultiaux?.data?.[0]?.data[1]||emptydata;
+        const prevmonth = remultiaux?.data?.[0]?.data[0] || emptydata;
+        const actmonth = remultiaux?.data?.[0]?.data[1] || emptydata;
         const selectedDays = filteredDays.split(",")
         const cantdays = selectedDays.length
-        const dataDays = remultiaux?.data?.[1]?.data?.filter(x=>selectedDays.includes(String(x.day)))||[]
-        
-        function compareFn(a:any,b:any){
+        const dataDays = remultiaux?.data?.[1]?.data?.filter(x => selectedDays.includes(String(x.day))) || []
+
+        function compareFn(a: any, b: any) {
             let na = Number(a.date.split(" ")[1])
             let nb = Number(b.date.split(" ")[1])
-            if(na<nb) return -1;
-            if(na>nb) return 1;
+            if (na < nb) return -1;
+            if (na > nb) return 1;
             return 0;
         }
-        let graphdata = selectedDays.reduce((acc:any,x:string)=>{
-            let foundDay = dataDays.filter(y=>String(y.day)===x)?.[0];
+        let graphdata = selectedDays.reduce((acc: any, x: string) => {
+            let foundDay = dataDays.filter(y => String(y.day) === x)?.[0];
             return [...acc, {
-            date: t(langKeys.day) + " "+ x,
-            tme: timetoseconds(foundDay?.tme_avg || "00:00:00"),
-            tmr: timetoseconds(foundDay?.tmr_avg || "00:00:00"),
-            tickets_agents: foundDay?.tickets_agents||0,
-            agents: foundDay?.agents||1,
-            balancetimes_avg: foundDay?.balancetimes_avg||0,
-            tickets_count: (foundDay?.tickets_count + foundDay?.abandoned_tickets)||0,
-            abandoned_tickets: foundDay?.abandoned_tickets||0,
-            //faltauno
-            holdingwaitingtime_avg: timetoseconds(foundDay?.holdingwaitingtime_avg || "00:00:00"),
-            firstassignedtime_avg: timetoseconds(foundDay?.firstassignedtime_avg || "00:00:00"),
-            firstreplytime_avg: timetoseconds(foundDay?.firstreplytime_avg || "00:00:00"),
-            participacion: foundDay?.stake||0,
-        }]}, [])
+                date: t(langKeys.day) + " " + x,
+                tme: timetoseconds(foundDay?.tme_avg || "00:00:00"),
+                tmr: timetoseconds(foundDay?.tmr_avg || "00:00:00"),
+                tickets_agents: foundDay?.tickets_agents || 0,
+                agents: foundDay?.agents || 1,
+                balancetimes_avg: foundDay?.balancetimes_avg || 0,
+                tickets_count: (foundDay?.tickets_count + foundDay?.abandoned_tickets) || 0,
+                abandoned_tickets: foundDay?.abandoned_tickets || 0,
+                //faltauno
+                holdingwaitingtime_avg: timetoseconds(foundDay?.holdingwaitingtime_avg || "00:00:00"),
+                firstassignedtime_avg: timetoseconds(foundDay?.firstassignedtime_avg || "00:00:00"),
+                firstreplytime_avg: timetoseconds(foundDay?.firstreplytime_avg || "00:00:00"),
+                participacion: foundDay?.stake || 0,
+            }]
+        }, [])
         setDataSummary({
             month: auxdata.mes,
             year: auxdata.year,
-            firstassignedtime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstassignedtime_avg)),"00:00:00"),cantdays),
-            holdingwaitingtime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.holdingwaitingtime_avg)),"00:00:00"),cantdays),
-            firstreplytime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstreplytime_avg)),"00:00:00"),cantdays),
-            tmr_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.tmr_avg)),"00:00:00"),cantdays),
-            tme_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.tme_avg)),"00:00:00"),cantdays),
-            agents: (dataDays.reduce((acc,x)=>(acc + x.agents),0)/cantdays).toFixed(0),
-            tickets_count: (dataDays.reduce((acc,x)=>(acc + x.tickets_count + x.abandoned_tickets),0)/cantdays).toFixed(0),
-            abandoned_tickets: (dataDays.reduce((acc,x)=>(acc + x.abandoned_tickets),0)/cantdays).toFixed(0),
-            balancetimes_avg: (dataDays.reduce((acc,x)=>(acc + x.balancetimes_avg),0)/cantdays).toFixed(2),
-            varperfata: varpercTime(actmonth.firstassignedtime_avg, prevmonth.firstassignedtime_avg,0),
-            varperhwta: varpercTime(actmonth.holdingwaitingtime_avg, prevmonth.holdingwaitingtime_avg,0),
-            varperfrta: varpercTime(actmonth.firstreplytime_avg, prevmonth.firstreplytime_avg,0),
-            varpertmr_avg: varpercTime(actmonth.tmr_avg, prevmonth.tmr_avg,0),
-            varpertme_avg: varpercTime(actmonth.tme_avg, prevmonth.tme_avg,0),
-            varperagents: varpercnumber(actmonth.agents, prevmonth.agents,0),
-            varpertc: varpercnumber(actmonth.tickets_count + actmonth.abandoned_tickets, prevmonth.tickets_count + prevmonth.abandoned_tickets,0),
-            varperat: varpercnumber(actmonth.abandoned_tickets, prevmonth.abandoned_tickets,0),
-            varperbta: varpercnumber(actmonth.balancetimes_avg, prevmonth.balancetimes_avg,0),
+            firstassignedtime_avg: divisionTimeNumber(dataDays.reduce((acc, x) => (addTimes(acc, x.firstassignedtime_avg)), "00:00:00"), cantdays),
+            holdingwaitingtime_avg: divisionTimeNumber(dataDays.reduce((acc, x) => (addTimes(acc, x.holdingwaitingtime_avg)), "00:00:00"), cantdays),
+            firstreplytime_avg: divisionTimeNumber(dataDays.reduce((acc, x) => (addTimes(acc, x.firstreplytime_avg)), "00:00:00"), cantdays),
+            tmr_avg: divisionTimeNumber(dataDays.reduce((acc, x) => (addTimes(acc, x.tmr_avg)), "00:00:00"), cantdays),
+            tme_avg: divisionTimeNumber(dataDays.reduce((acc, x) => (addTimes(acc, x.tme_avg)), "00:00:00"), cantdays),
+            agents: (dataDays.reduce((acc, x) => (acc + x.agents), 0) / cantdays).toFixed(0),
+            tickets_count: (dataDays.reduce((acc, x) => (acc + x.tickets_count + x.abandoned_tickets), 0) / cantdays).toFixed(0),
+            abandoned_tickets: (dataDays.reduce((acc, x) => (acc + x.abandoned_tickets), 0) / cantdays).toFixed(0),
+            balancetimes_avg: (dataDays.reduce((acc, x) => (acc + x.balancetimes_avg), 0) / cantdays).toFixed(2),
+            varperfata: varpercTime(actmonth.firstassignedtime_avg, prevmonth.firstassignedtime_avg, 0),
+            varperhwta: varpercTime(actmonth.holdingwaitingtime_avg, prevmonth.holdingwaitingtime_avg, 0),
+            varperfrta: varpercTime(actmonth.firstreplytime_avg, prevmonth.firstreplytime_avg, 0),
+            varpertmr_avg: varpercTime(actmonth.tmr_avg, prevmonth.tmr_avg, 0),
+            varpertme_avg: varpercTime(actmonth.tme_avg, prevmonth.tme_avg, 0),
+            varperagents: varpercnumber(actmonth.agents, prevmonth.agents, 0),
+            varpertc: varpercnumber(actmonth.tickets_count + actmonth.abandoned_tickets, prevmonth.tickets_count + prevmonth.abandoned_tickets, 0),
+            varperat: varpercnumber(actmonth.abandoned_tickets, prevmonth.abandoned_tickets, 0),
+            varperbta: varpercnumber(actmonth.balancetimes_avg, prevmonth.balancetimes_avg, 0),
             graphdata: graphdata.sort(compareFn),
         })
     }
@@ -436,9 +437,9 @@ const DashboardKPI: FC = () => {
                         valueDefault={searchfields.origin}
                         onChange={(value) => setsearchfields(p => ({ ...p, origin: value.map((o: any) => o.value).join(), asesor: "" }))}
                         data={[
-                            {value:"INBOUND"},
-                            {value:"OUTBOUND"},
-                            {value:"EXTERNAL"},
+                            { value: "INBOUND" },
+                            { value: "OUTBOUND" },
+                            { value: "EXTERNAL" },
                         ]}
                         optionValue="value"
                         optionDesc="value"
@@ -449,7 +450,7 @@ const DashboardKPI: FC = () => {
                         variant="outlined"
                         valueDefault={searchfields.asesor}
                         onChange={(value) => setsearchfields(p => ({ ...p, asesor: value.map((o: any) => o.userid).join() }))}
-                        data={!!searchfields.groups?dataAdvisor.filter((x:any)=>x.groups.split(',').reduce((acc:any,y:any)=>acc + searchfields.groups.split(',').includes(y),0)):dataAdvisor}
+                        data={!!searchfields.groups ? dataAdvisor.filter((x: any) => x.groups.split(',').reduce((acc: any, y: any) => acc + searchfields.groups.split(',').includes(y), 0)) : dataAdvisor}
                         optionDesc="userdesc"
                         optionValue="userid"
                     />
@@ -458,7 +459,7 @@ const DashboardKPI: FC = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div className={classes.maintitle}> {t(langKeys.dashboardkpi)}</div>
-                <div style={{display:"flex",gap: 6}}>
+                <div style={{ display: "flex", gap: 6 }}>
                     <GenericPdfDownloader
                         downloadFileName={`kpi-${dataSummary.year}-${dataSummary.month}-${filteredDays}`}
                         el={el.current}
@@ -473,183 +474,183 @@ const DashboardKPI: FC = () => {
                 </div>
             </div>
             <div ref={el} style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
-                <div className={classes.replacerowzyx} style={{alignItems: "stretch"}}>
+                <div className={classes.replacerowzyx} style={{ alignItems: "stretch" }}>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.firstavgassignment)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.firstassignedtime_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperfata<0, [classes.less]: dataSummary.varperfata>0})}>{dataSummary.varperfata>0?"+":""}{dataSummary.varperfata}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.firstassignedtime_avg || "00:00:00"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.more]: dataSummary.varperfata < 0, [classes.less]: dataSummary.varperfata > 0 })}>{dataSummary.varperfata > 0 ? "+" : ""}{dataSummary.varperfata}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageholdingtime)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.holdingwaitingtime_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperhwta<0, [classes.less]: dataSummary.varperhwta>0})}>{dataSummary.varperhwta>0?"+":""}{dataSummary.varperhwta}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.holdingwaitingtime_avg || "00:00:00"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.more]: dataSummary.varperhwta < 0, [classes.less]: dataSummary.varperhwta > 0 })}>{dataSummary.varperhwta > 0 ? "+" : ""}{dataSummary.varperhwta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.avg1stresponsetime)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.firstreplytime_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperfrta<0, [classes.less]: dataSummary.varperfrta>0})}>{dataSummary.varperfrta>0?"+":""}{dataSummary.varperfrta}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.firstreplytime_avg || "00:00:00"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.more]: dataSummary.varperfrta < 0, [classes.less]: dataSummary.varperfrta > 0 })}>{dataSummary.varperfrta > 0 ? "+" : ""}{dataSummary.varperfrta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.tmrprom)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.tmr_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varpertmr_avg<0, [classes.more]: dataSummary.varpertmr_avg>0})}>{dataSummary.varpertmr_avg>0?"+":""}{dataSummary.varpertmr_avg}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.tmr_avg || "00:00:00"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.less]: dataSummary.varpertmr_avg < 0, [classes.more]: dataSummary.varpertmr_avg > 0 })}>{dataSummary.varpertmr_avg > 0 ? "+" : ""}{dataSummary.varpertmr_avg}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.tmeprom)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.tme_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varpertme_avg<0, [classes.more]: dataSummary.varpertme_avg>0})}>{dataSummary.varpertme_avg>0?"+":""}{dataSummary.varpertme_avg}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.tme_avg || "00:00:00"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.less]: dataSummary.varpertme_avg < 0, [classes.more]: dataSummary.varpertme_avg > 0 })}>{dataSummary.varpertme_avg > 0 ? "+" : ""}{dataSummary.varpertme_avg}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.asesoresprom)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.agents || "0"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperagents<0, [classes.more]: dataSummary.varperagents>0})}>{dataSummary.varperagents>0?"+":""}{dataSummary.varperagents}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.agents || "0"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.less]: dataSummary.varperagents < 0, [classes.more]: dataSummary.varperagents > 0 })}>{dataSummary.varperagents > 0 ? "+" : ""}{dataSummary.varperagents}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.ticketsprom)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.tickets_count || "0"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varpertc<0, [classes.more]: dataSummary.varpertc>0})}>{dataSummary.varpertc>0?"+":""}{dataSummary.varpertc}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.tickets_count || "0"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.less]: dataSummary.varpertc < 0, [classes.more]: dataSummary.varpertc > 0 })}>{dataSummary.varpertc > 0 ? "+" : ""}{dataSummary.varpertc}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.unattendedticketsavg)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.abandoned_tickets || "0"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperat<0, [classes.less]: dataSummary.varperat>0})}>{dataSummary.varperat>0?"+":""}{dataSummary.varperat}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.abandoned_tickets || "0"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.more]: dataSummary.varperat < 0, [classes.less]: dataSummary.varperat > 0 })}>{dataSummary.varperat > 0 ? "+" : ""}{dataSummary.varperat}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.nprombalanceos)}
-                        <div className={classes.datafieldquarter}>{dataSummary?.balancetimes_avg || "0"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperbta<0, [classes.less]: dataSummary.varperbta>0})}>{dataSummary.varperbta>0?"+":""}{dataSummary.varperbta}% {t(langKeys.vsprevmonth)}</div>
+                            <div className={classes.datafieldquarter}>{dataSummary?.balancetimes_avg || "0"}</div>
+                            <div className={clsx(classes.subtitle, { [classes.more]: dataSummary.varperbta < 0, [classes.less]: dataSummary.varperbta > 0 })}>{dataSummary.varperbta > 0 ? "+" : ""}{dataSummary.varperbta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                 </div>
-                <div className="todown" style={{display:"flex", gap:8}}>
+                <div className="todown" style={{ display: "flex", gap: 8 }}>
 
-                    <div className={classes.replacerowzyx} style={{width:"100%"}} >
+                    <div className={classes.replacerowzyx} style={{ width: "100%" }} >
                         <Box
                             className={classes.itemCard}
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
-                                <LineChart data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <LineChart data={dataSummary?.graphdata || []} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
-                                    <YAxis tickFormatter={v=>formattime(v)} width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
-                                    <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]}/>
-                                    <Legend verticalAlign="top" height={70}/>
+                                    <YAxis tickFormatter={v => formattime(v)} width={100} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
+                                    <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
+                                    <Legend verticalAlign="top" height={70} />
                                     <Line type="monotone" name="TME" dataKey="tme" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tme" position="top" fill="#c0504d" formatter={(v:any)=>formattime(v)}/>
+                                        <LabelList dataKey="tme" position="top" fill="#c0504d" formatter={(v: any) => formattime(v)} />
                                     </Line>
                                     <Line type="monotone" name="TMR" dataKey="tmr" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="tmr" position="top" fill="#4f81bd" formatter={(v:any)=>formattime(v)}/>
+                                        <LabelList dataKey="tmr" position="top" fill="#4f81bd" formatter={(v: any) => formattime(v)} />
                                     </Line>
                                 </LineChart>
-                            </ResponsiveContainer>                        
+                            </ResponsiveContainer>
                         </Box>
                     </div>
                 </div>
-                <div className="todown" style={{display:"flex", gap:8}}>
+                <div className="todown" style={{ display: "flex", gap: 8 }}>
 
-                    <div className={classes.replacerowzyx} style={{width:"100%"}} >
+                    <div className={classes.replacerowzyx} style={{ width: "100%" }} >
                         <Box
                             className={classes.itemCard}
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
-                                <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <LineChart width={730} height={250} data={dataSummary?.graphdata || []} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid stroke="#f5f5f5" />
-                                    <Legend verticalAlign="top"/>
+                                    <Legend verticalAlign="top" />
                                     <XAxis dataKey="date" />
-                                    <YAxis tickFormatter={v=>(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
+                                    <YAxis tickFormatter={v => (v)} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
                                     <RechartsTooltip formatter={(value: any, name: any) => [(value), t(name)]} />
                                     <Line type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tickets_count" position="top"  fill="#c0504d"/>
+                                        <LabelList dataKey="tickets_count" position="top" fill="#c0504d" />
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.agent_plural)} dataKey="agents" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="agents" position="top" fill="#4f81bd"/>
+                                        <LabelList dataKey="agents" position="top" fill="#4f81bd" />
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.ticket_balancetimes)} dataKey="balancetimes_avg" stroke="#9bbb59" strokeWidth={2}>
-                                        <LabelList dataKey="balancetimes_avg" position="top" fill="#9bbb59"/>
+                                        <LabelList dataKey="balancetimes_avg" position="top" fill="#9bbb59" />
                                     </Line>
                                 </LineChart>
-                            </ResponsiveContainer>                        
+                            </ResponsiveContainer>
                         </Box>
                     </div>
                 </div>
-                <div className="todown" style={{display:"flex", gap:8}}>
-                    <div className={classes.replacerowzyx} style={{width:"100%"}} >
+                <div className="todown" style={{ display: "flex", gap: 8 }}>
+                    <div className={classes.replacerowzyx} style={{ width: "100%" }} >
                         <Box
                             className={classes.itemCard}
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
-                                <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <LineChart width={730} height={250} data={dataSummary?.graphdata || []} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
-                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v=>v + " %"} domain={[0,200]}/>
-                                    <YAxis yAxisId="left"width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
-                                    <RechartsTooltip formatter={(value: any, name: any, props:any) => [props.dataKey==="participacion"?value+"%":value, t(name)]} />
-                                    <Legend verticalAlign="top" height={50}/>
-                                    <Line yAxisId="left" type="monotone" name={ t(langKeys.report_kpioperativo_tickets) } dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tickets_count" position="top"  fill="#c0504d"/>
+                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v => v + " %"} domain={[0, 200]} />
+                                    <YAxis yAxisId="left" width={100} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
+                                    <RechartsTooltip formatter={(value: any, name: any, props: any) => [props.dataKey === "participacion" ? value + "%" : value, t(name)]} />
+                                    <Legend verticalAlign="top" height={50} />
+                                    <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
+                                        <LabelList dataKey="tickets_count" position="top" fill="#c0504d" />
                                     </Line>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_abandoned_tickets)} dataKey="abandoned_tickets" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="abandoned_tickets" position="top" fill="#4f81bd"/>
+                                        <LabelList dataKey="abandoned_tickets" position="top" fill="#4f81bd" />
                                     </Line>
                                     <Line yAxisId="right" type="monotone" name={t(langKeys.percparticipation)} dataKey="participacion" stroke="#9bbb59" strokeWidth={2}>
-                                        <LabelList dataKey="participacion" position="top"  fill="#9bbb59" formatter={(value: any, name: any) => [value + "%", t(name)]}/>
+                                        <LabelList dataKey="participacion" position="top" fill="#9bbb59" formatter={(value: any, name: any) => [value + "%", t(name)]} />
                                     </Line>
                                 </LineChart>
-                            </ResponsiveContainer>                        
+                            </ResponsiveContainer>
                         </Box>
                     </div>
                 </div>
-                <div className="todown" style={{display:"flex", gap:8}}>
-                    <div className={classes.replacerowzyx} style={{width:"100%"}} >
+                <div className="todown" style={{ display: "flex", gap: 8 }}>
+                    <div className={classes.replacerowzyx} style={{ width: "100%" }} >
                         <Box
                             className={classes.itemCard}
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
-                                <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <LineChart width={730} height={250} data={dataSummary?.graphdata || []} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
-                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v=>formattime(v)}  width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 3) + 5)]}/>
-                                    <YAxis yAxisId="left" tickFormatter={v=>formattime(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.05) + 5)]}/>
+                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v => formattime(v)} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 3) + 5)]} />
+                                    <YAxis yAxisId="left" tickFormatter={v => formattime(v)} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.05) + 5)]} />
                                     <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
-                                    <Legend verticalAlign="top" height={50}/>
+                                    <Legend verticalAlign="top" height={50} />
                                     <Line yAxisId="right" type="monotone" name={t(langKeys.report_voicecall_holdingtime)} dataKey="holdingwaitingtime_avg" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="holdingwaitingtime_avg" position="top"  fill="#c0504d" formatter={(v:any)=>formattime(v)}/>
+                                        <LabelList dataKey="holdingwaitingtime_avg" position="top" fill="#c0504d" formatter={(v: any) => formattime(v)} />
                                     </Line>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.firstassignmenttime)} dataKey="firstassignedtime_avg" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="firstassignedtime_avg" position="top" fill="#4f81bd" formatter={(v:any)=>formattime(v)}/>
+                                        <LabelList dataKey="firstassignedtime_avg" position="top" fill="#4f81bd" formatter={(v: any) => formattime(v)} />
                                     </Line>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.ticket_tiempoprimerarespuesta)} dataKey="firstreplytime_avg" stroke="#9bbb59" strokeWidth={2}>
-                                        <LabelList dataKey="firstreplytime_avg" position="top"  fill="#9bbb59" formatter={(v:any)=>formattime(v)}/>
+                                        <LabelList dataKey="firstreplytime_avg" position="top" fill="#9bbb59" formatter={(v: any) => formattime(v)} />
                                     </Line>
 
                                 </LineChart>
-                            </ResponsiveContainer>                        
+                            </ResponsiveContainer>
                         </Box>
                     </div>
                 </div>
