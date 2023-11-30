@@ -42,7 +42,7 @@ const SelectProductsForReturnDialog: React.FC<{
         width: "auto",
       },
       {
-        Header: t(langKeys.reservedquantity),
+        Header: t(langKeys.dispatchedquantity),
         accessor: "transactiontype",
         width: "auto",
       },
@@ -70,7 +70,7 @@ const SelectProductsForReturnDialog: React.FC<{
       <div className="row-zyx">
           <TableZyx
               columns={columns}
-              data={multiData?.data?.[1]?.data || []}
+              data={multiData?.data?.[2]?.data || []}
               useSelection={true}
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}

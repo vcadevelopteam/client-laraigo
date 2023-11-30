@@ -1801,6 +1801,7 @@ const translation: LangKeys = {
   batch: "Lote",
   move_new_status: "¿Trasladar el nuevo estado al Inventario?",
   change_status: "Cambiar estado",
+  dispatchedquantity: "Cantidad despachada",
   gotolaraigo: "Ir a laraigo",
 
   error_already_exists_record: '23505: Ya existe un mismo {{module}} registrado',

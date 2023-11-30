@@ -811,6 +811,7 @@ const translation: LangKeys = {
   type_ocupation_39: "BUILDER",
   type_ocupation_40: "COUNTER",
   transferdate:"Transfer date",
+  dispatchedquantity: "Dispatched quantity",
   error_generate_label:"The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",
   type_ocupation_41: "CONTRACTOR",
   type_ocupation_42: "CLOTHING AND CUTTING / GARMENT MANUFACTURER",
