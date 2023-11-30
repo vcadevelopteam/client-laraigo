@@ -303,4 +303,10 @@ export { ReactComponent as SalesRouteIcon } from './sales_route.svg';
 export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg';
 export { ReactComponent as IAEntrenamientoIcon } from './Ai_laraigo_new.svg';
 
+export { ReactComponent as ProductMasterIcon } from './maestro-productos.svg';
+export { ReactComponent as WarehouseIcon } from './almacenes.svg';
+export { ReactComponent as InventoryConsumptionIcon } from './consumo_inventario.svg';
+export { ReactComponent as CompaniesIcon } from './empresas.svg';
+export { ReactComponent as InventoryIcon } from './inventarios.svg';
+
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';

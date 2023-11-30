@@ -57,7 +57,6 @@ const AddToWarehouseDialog: React.FC<{
     ],
     []
   )
-
   const {
     register,
     handleSubmit: handleSubmitWarehouse,
@@ -67,21 +66,21 @@ const AddToWarehouseDialog: React.FC<{
     reset,
   } = useForm({
     defaultValues: {
-      productwarehouseid: row?.productwarehouseid || 0,
-      productid: row?.productid || productid,
-      warehouseid: row?.warehouseid || 0,
-      warehousename: row?.warehousename || "",
-      priceunit: row?.priceunit || 0,
-      ispredeterminate: row?.ispredeterminate || false,
-      rackcode: row?.rackcode || "",
-      typecostdispatch: row?.typecostdispatch || 0,
+      productwarehouseid: 0,
+      productid: productid,
+      warehouseid: 0,
+      warehousename: "",
+      priceunit:  0,
+      ispredeterminate:  false,
+      rackcode:  "",
+      typecostdispatch:  0,
       unitdispatchid: row?.unitdispatchid || 0,
       unitbuyid: row?.unitbuyid || 0,
-      currentbalance: row?.currentbalance || 0,
-      lotecode: row?.lotecode || "",
-      status: row?.status || "ACTIVO",
-      type: row?.type || "NINGUNO",
-      operation: row?.productwarehouseid ? "EDIT" : "INSERT",
+      currentbalance: 0,
+      lotecode: "",
+      status: "ACTIVO",
+      type: "NINGUNO",
+      operation: "INSERT",
     },
   });
 
@@ -102,7 +101,7 @@ const AddToWarehouseDialog: React.FC<{
       }
     });
     register('unitdispatchid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-    register('lotecode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+    register('lotecode', { validate: (value) => multiData.data[6].data.filter(x=>x.domainid === row.loteid)[0].domainvalue !== "LOTE" || ((value && value.length>0) || t(langKeys.field_required)) });
     register('unitbuyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
     register("ispredeterminate");
     register("rackcode");

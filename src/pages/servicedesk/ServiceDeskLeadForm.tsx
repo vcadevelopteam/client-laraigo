@@ -1330,7 +1330,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     valueDefault={getValues('priority')}
                                     onChange={(value) => setValue('priority', value?.domainvalue || '')}
-                                    disabled={true}
                                     data={dataPriority.data}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"

@@ -42,9 +42,9 @@ const Warehouse: FC = () => {
     dispatch(
       getCollectionPaginated(
         getPaginatedWarehouse({
-          startdate: daterange?.startDate || null,
-          enddate: daterange?.endDate || null,
-          take: pageSize,
+          startdate: daterange?.startDate || new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+          enddate: daterange?.endDate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0],
+          take: pageSize||20,
           skip: pageIndex * pageSize,
           sorts: sorts,
           filters: {

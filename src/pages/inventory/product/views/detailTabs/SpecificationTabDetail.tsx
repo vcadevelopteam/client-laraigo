@@ -27,17 +27,26 @@ const useStyles = makeStyles((theme) => ({
 interface SpecificationTabDetailProps {
   fetchData: any;
   row: any;
+  edit: boolean;
   tabIndex: any;
+  dataTable: Dictionary[];
+  setDataTable: (a:Dictionary[])=>void;
 }
 
-const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchData, row, tabIndex}) => {
+const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchData,edit, dataTable,setDataTable, row, tabIndex}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [openModalDealer, setOpenModalDealer] = useState(false);
-  const dataAttributes = useSelector(state => state.main.mainAux);
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const mainData = useSelector(state => state.main.mainAux);
+
+  useEffect(() => {
+    if(!mainData?.loading && !mainData?.error && edit && mainData?.key==="UFN_ALL_ATTRIBUTE_PRODUCT_SEL"){
+      setDataTable(mainData.data)
+    }
+  }, [mainData]);
 
   useEffect(() => {
     if(tabIndex === 3) {
@@ -60,14 +69,22 @@ const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchDat
     }
   }, [executeRes, waitSave])
 
-  const handleDelete = (data: Dictionary) => {
-    dispatch(execute(insProductAttribute({
-      ...data,
-      status: 'ELIMINADO',
-      type: 'NINGUNO',
-      operation: 'DELETE'
-    })))
-    setWaitSave(true);
+  const handleDelete = (data: Dictionary, i:number) => {
+    
+    if(edit){
+      dispatch(execute(insProductAttribute({
+        ...data,
+        status: 'ELIMINADO',
+        type: 'NINGUNO',
+        operation: 'DELETE'
+      })))
+      setWaitSave(true);
+    }else{
+      const dataTableAux = dataTable
+      dataTableAux.splice(i,1)
+      setDataTable(dataTableAux)
+    }
+
   }
 
   const columns = React.useMemo(
@@ -82,7 +99,7 @@ const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchDat
             const row = props.cell.row.original;
             return (
                 <TemplateIcons
-                    deleteFunction={() => handleDelete(row)}
+                deleteFunction={() => handleDelete(row, props.cell.row.index)}
                 />
             )
         }
@@ -113,19 +130,21 @@ const SpecificationTabDetail: React.FC<SpecificationTabDetailProps> = ({fetchDat
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={dataAttributes.data}
+          data={dataTable}
           download={false}
           filterGeneral={false}
           register={true}
           handleRegister={handleRegister}
-          loading={dataAttributes.loading}
+          loading={mainData.loading}
         />
       </div>
       <RegisterSpecificationDialog
         openModal={openModalDealer}
         setOpenModal={setOpenModalDealer}
+        setDataTable={setDataTable}
         row={row}
         fetchData={fetchData}
+        edit={edit}
       />
     </div>
   );

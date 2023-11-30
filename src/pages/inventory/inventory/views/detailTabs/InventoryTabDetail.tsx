@@ -314,7 +314,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             <FieldSelect
                                 label={t(langKeys.dispatch_unit)}
                                 valueDefault={row?.unitdispatchdescription}
-                                data={multiData.data[1].data}
+                                data={multiData?.data?.[1]?.data||[]}
                                 className="col-6"
                                 optionDesc="domaindesc"
                                 optionValue="domaindesc"

@@ -9,7 +9,7 @@ import {
   UseFormGetValues,
   UseFormSetValue,
 } from "react-hook-form";
-import { Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { useSelector } from 'hooks';
 import TableZyx from "components/fields/table-simple";
 import { Search as SearchIcon } from "@material-ui/icons";
@@ -133,7 +133,10 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
   return (
     <div className={classes.containerDetail}>
       <div className="row-zyx">
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+          <Typography style={{ fontSize: 22 }} color="textPrimary">{t(langKeys.alternativeproducts)}</Typography>
+          </div>
           <Button
             className={classes.button}
             variant="contained"

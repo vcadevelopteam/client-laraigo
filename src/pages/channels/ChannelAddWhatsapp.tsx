@@ -279,7 +279,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false);
+                setSetins(false);
                 dispatch(showBackdrop(false));
                 setSetins(false);
                 setWaitSave(false);
