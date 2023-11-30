@@ -13,6 +13,8 @@ import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, X
 import { cleanViewChange, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux, setViewChange } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 const COLORS = ["#0087e0", "#ff0000", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -172,6 +174,13 @@ const DashboardDisconnections: FC = () => {
     const [groupFilter, setGroupFilter] = useState("");
     const [dataperuser, setdataperuser] = useState<any>([]);
     const user = useSelector(state => state.login.validateToken.user);
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 10;
+
+    const slicedData = dataperuser.slice(
+        currentPage * itemsPerPage,
+        (currentPage + 1) * itemsPerPage
+    );
     
     async function funcsearch() {
         let tosend = { 
@@ -188,6 +197,7 @@ const DashboardDisconnections: FC = () => {
         ]))
         setWaitSave(true)
     }
+
     useEffect(() => {
         if (waitSave) {
             if (!remultiaux.loading && !remultiaux.error) {
@@ -439,7 +449,7 @@ const DashboardDisconnections: FC = () => {
                             <div style={{width: "100%", paddingTop: 50}}>
                                 <ResponsiveContainer width="100%" aspect={5.0 / 2.0}>
                                 <BarChart
-                                        data={dataperuser}
+                                        data={slicedData}
                                         layout="vertical"
                                     >
                                     <XAxis type="number" hide/> 
@@ -457,6 +467,26 @@ const DashboardDisconnections: FC = () => {
                                 </ResponsiveContainer>
                             </div>
 
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+                            <Button
+                                color="primary"
+                                onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
+                                disabled={currentPage === 0}
+                            >
+                                <KeyboardArrowLeftIcon />
+                            </Button>
+                            <div style={{ flex: 1 }} />
+                            <div>
+                            {`${currentPage + 1} de ${Math.ceil(dataperuser.length / itemsPerPage)}`}
+                            </div>
+                            <Button
+                                color="primary"
+                                onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                                disabled={(currentPage + 1) * itemsPerPage >= dataperuser.length}
+                            >
+                                <KeyboardArrowRightIcon />
+                            </Button>
                         </div>
                     </Box>
                 </div>
