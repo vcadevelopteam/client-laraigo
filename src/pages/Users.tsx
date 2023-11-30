@@ -428,7 +428,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                     setValue("showbots", false)
                 }
                 setValue("type", "SUPERVISOR")
-                setActivateSwitchBots(false)
                 break;
         }
 
