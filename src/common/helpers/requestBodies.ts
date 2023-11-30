@@ -4584,6 +4584,11 @@ export const reservationswarehouseSel = (warehouseid: number) => ({
     key: "UFN_BOOKINGWAREHOUSE_SEL",
     parameters: { warehouseid },
 });
+export const inventoryconsumptionsbywarehouseSel = (warehouseid: number) => ({
+    method: "UFN_ALL_WAREHOUSE_INVENTORYCONSUMPTION_SEL",
+    key: "UFN_ALL_WAREHOUSE_INVENTORYCONSUMPTION_SEL",
+    parameters: { warehouseid },
+});
 export const generateLabelSel = (inventoryconsumptionid: number) => ({
     method: "UFN_GENERATE_LABEL_SEL",
     key: "UFN_GENERATE_LABEL_SEL",
