@@ -1938,6 +1938,7 @@ const Users: FC = () => {
                                     billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
                                     image: d?.image || "",
                                     detail: {
+                                        showbots: Boolean(d.showbots),
                                         rolegroups: d.role,
                                         orgid: user?.orgid,
                                         bydefault: true,
