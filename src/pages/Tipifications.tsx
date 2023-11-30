@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -23,6 +22,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { TreeItem, TreeView } from '@material-ui/lab';
 import { EmojiPickerZyx } from 'components'
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -55,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: '22px',
         lineHeight: '48px',
-        // fontWeight: 'bold',
         height: '48px',
         color: theme.palette.text.primary,
     },
@@ -72,11 +71,13 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 400,
     }
 }));
+
 const dataTypeAction = [
     { dat: "Simple" },
     { dat: "Variable" },
     { dat: "Request" }
 ]
+
 const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassTotal }) => {
     const parents: any[] = []
     const children: any[] = []
@@ -148,8 +149,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
     const executeRes = useSelector(state => state.main.execute);
-    // const user = useSelector(state => state.login.validateToken.user);
-
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -157,6 +156,24 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data.filter(x=>x.type===type) : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    
+    const filteredChannels = datachannels
+    .filter((channel) => channel && channel.domaindesc)     
+    .reduce((filteredChannels, channel) => {
+      let isUnique = true;
+      filteredChannels.forEach((uniqueChannel: Dictionary) => {
+        if (uniqueChannel.domaindesc === channel.domaindesc) {
+          isUnique = false;
+        }
+      });  
+      if (isUnique) {
+        filteredChannels.push(channel);
+      }  
+      return filteredChannels;
+    }, [] as Dictionary[]);
+  
+
+
     const datamastercatalog = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -219,12 +236,12 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             }
         }
     }, [executeRes, waitSave])
+   
     function addaction() {
         setjobplan((p) => [...p, { action: "", type: "Simple" }])
     }
     function deleteitem(i: number) {
         setjobplan(jobplan.filter((e, index) => index !== i))
-
     }
     function setValueAction(field: string, value: string, i: number) {
         setjobplan((p: Dictionary[]) => p.map((x, index) => index === i ? { ...x, [field]: value } : x))
@@ -327,7 +344,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         <FieldEdit
                             label={t(langKeys.path)}
                             className="col-6"
-                            valueDefault={row?.path || ""}
+                            valueDefault={row?.path || ""}optionDesc
                             onChange={(value) => setValue('path', value)}
                             error={errors?.path?.message}
                             disabled={true}
@@ -386,7 +403,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             }}
                             valueDefault={auxVariables.communicationchannel}
                             error={errors?.communicationchannel?.message}
-                            data={datachannels}
+                            data={filteredChannels as Dictionary[]}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
@@ -547,6 +564,25 @@ const Tipifications: FC = () => {
         setViewSelected(view)
     }
 
+    const fetchData = () => {
+        dispatch(getCollection(getClassificationSel(0)));
+        dispatch(getMultiCollection([
+            getValuesFromDomain("ESTADOGENERICO"),
+            getParentSel(),
+            getValuesFromDomain("TIPOCANAL"),
+            getValuesForTree("TIPIFICACION"),
+            getCatalogMasterList(),
+        ]));
+    };
+
+    useEffect(() => {
+        fetchData();
+        
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
+
     const columns = React.useMemo(
         () => [
 
@@ -556,7 +592,7 @@ const Tipifications: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -582,9 +618,21 @@ const Tipifications: FC = () => {
                 accessor: 'type',
                 prefixTranslation: 'type_',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { type } = props.cell.row.original;
                     return (t(`type_${type}`) || "").toUpperCase()
+                }
+            },
+            {
+                Header: t(langKeys.app_productcatalog),
+                accessor: 'metacatalogid',
+                NoFilter: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { metacatalogid } = props.cell.row.original;
+                    let catalog = metacatalogid
+                    if(metacatalogid <= 0) catalog = null
+            
+                    return catalog;
                 }
             },
             {
@@ -613,7 +661,7 @@ const Tipifications: FC = () => {
                 accessor: 'statusdesc',
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
@@ -621,24 +669,6 @@ const Tipifications: FC = () => {
         ],
         []
     );
-    const fetchData = () => {
-        dispatch(getCollection(getClassificationSel(0)));
-        dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getParentSel(),
-            getValuesFromDomain("TIPOCANAL"),
-            getValuesForTree("TIPIFICACION"),
-            getCatalogMasterList(),
-        ]));
-    };
-
-    useEffect(() => {
-        fetchData();
-        
-        return () => {
-            dispatch(resetAllMain());
-        };
-    }, []);
 
     useEffect(() => {
         if (waitSave) {
@@ -729,9 +759,14 @@ const Tipifications: FC = () => {
             mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
             {},
             mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
-            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
+            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {}),
+            {},
+            {},
+            {},
+            {},
+            {},
         ];
-        const header = ['classification', 'description', 'channels', 'tag', 'parent', 'status'];
+        const header = ['Clasificación', 'Descripción', 'Canales', 'Tag', 'Padre', 'Estado', 'Acción', 'Tipo', 'Variable', 'Endpoint', 'Data'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
@@ -748,7 +783,7 @@ const Tipifications: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.tipification, { count: 2 })}
-                        data={mainResult.mainData.data}
+                        data={mainResult.mainData.data.map(x => {if(x.type === 'TIPIFICACION') {return {...x, order: null}} return x})}
                         loading={mainResult.mainData.loading}
                         download={true}
                         register={true}
@@ -808,5 +843,4 @@ const Tipifications: FC = () => {
         return null;
 
 }
-
 export default Tipifications;

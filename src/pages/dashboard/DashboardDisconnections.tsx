@@ -195,11 +195,11 @@ const DashboardDisconnections: FC = () => {
                 let userereasons = remultiaux?.data[0]?.data || []
                 let timestotal = [0,0]
                 let dataauxuser=userereasons.reduce((acc:any,x)=>{
-                    let timetotal = timetoseconds(x.conectedtime) + timetoseconds(x.desconectedtime)
-                    if (timetotal === 0 )  return acc;
-                    let percConnected =timetoseconds(x.conectedtime)*100/timetotal;
+                    let time = timetoseconds(x.conectedtime) + timetoseconds(x.desconectedtime)
+                    if (time === 0 )  return acc;
+                    let percConnected =timetoseconds(x.conectedtime)*100/time;
                     let percDesconnected = 100-percConnected;
-                    return [...acc,{...x,percConnected,percDesconnected}]
+                    return [...acc,{...x,time,percConnected,percDesconnected}]
                 },[])
                 setdataperuser(dataauxuser)
                 userereasons.forEach(x=>{
@@ -278,7 +278,10 @@ const DashboardDisconnections: FC = () => {
 
     function downloaddata(data:any,title:string) {
         if (data.length !== 0) {
-            let seteddata = data.map((x:any)=>{return {...x,time:formattime(x.time)}})
+            let seteddata = data.map((x:any)=>{
+                const { desconectedtimejson, userid, ...prev } = x;
+                return {...prev,time:formattime(x.time)}
+            })
             exportExcel(title, seteddata, Object.keys(seteddata[0]).reduce((ac: any[], c: any) => (
                 [
                     ...ac,
@@ -423,7 +426,9 @@ const DashboardDisconnections: FC = () => {
                         style={{width:"100%"}}
                     >
                         <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata(dataperuser,t(langKeys.timeconnectedvstimeoffperasesor))} className={classes.styleicon}/>
+                            <CloudDownloadIcon onClick={()=>{
+                                downloaddata(dataperuser,t(langKeys.timeconnectedvstimeoffperasesor))
+                            }} className={classes.styleicon}/>
                         </div>
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
