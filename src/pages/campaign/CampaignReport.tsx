@@ -18,6 +18,7 @@ import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
 
+
 interface DetailProps {
     setViewSelected?: (view: string) => void;
     externalUse?: boolean;
@@ -382,7 +383,16 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                         optionDesc="value"
                         optionValue="key"
                     />
-                   
+                      <Button
+                            className={classes.button}
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            onClick={() => triggerExportData()}                         
+                            startIcon={<DownloadIcon />}
+                            variant="contained"
+                        >
+                            {`${t(langKeys.download)}`}
+                        </Button>
                         
                 </div>
                    
@@ -423,11 +433,9 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     data={mainPaginated.data}
                     totalrow={totalrow}
                     loading={mainPaginated.loading}
-                    pageCount={pageCount}
-                    /*FiltersElement={<>{ButtonsElement()}</>}*/
-                    /*ButtonsElement={ButtonsElement}*/
+                    pageCount={pageCount}                    
                     fetchData={fetchData}               
-                    download={true}
+                    download={false}
                     hoverShadow={false}
                     exportPersonalized={triggerExportData}
                     useSelection={true}
