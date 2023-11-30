@@ -187,8 +187,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
     const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
-    const activateSwitchBots = propertyBots?.[0]?.propertyvalue ==="1"
 
+    const [activateSwitchBots, setActivateSwitchBots] = useState(propertyBots?.[0]?.propertyvalue ==="1")
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({
         loading: false,
         data: [],
@@ -412,15 +412,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             case "ASESOR":
                 if(activateSwitchBots) setValue("showbots", true)
                 setValue("type", "ASESOR")
+                setActivateSwitchBots(false)
                 break;
             case "GESTOR DE SEGURIDAD":
             case "GESTOR DE CAMPAÑAS":
             case "VISOR SD":
                 if(activateSwitchBots) setValue("showbots", false)
                 setValue("type", "SUPERVISOR")
+                setActivateSwitchBots(false)
                 break;
         
             default:
+                if(propertyBots?.[0]?.propertyvalue ==="1") setActivateSwitchBots(true)
                 break;
         }
 
