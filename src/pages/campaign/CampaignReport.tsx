@@ -7,8 +7,9 @@ import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPa
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import { DownloadIcon } from 'icons';
 import { Button } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
@@ -38,6 +39,12 @@ const useStyles = makeStyles(() => ({
         borderRadius: 4,
         color: 'rgb(143, 146, 161)',
         alignItems:'left'
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
     },
 }));
 
@@ -363,7 +370,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     </Button>
                 </div> 
 
-                <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem'}}>
+                <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
                     <FieldSelect
                         uset={true}
                         variant="outlined"
@@ -375,6 +382,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                         optionDesc="value"
                         optionValue="key"
                     />
+                   
                         
                 </div>
                    
@@ -409,7 +417,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             {externalUse && <div style={{ height: 10 }}></div>}
             
             <div style={{width:'100%', height:'100%'}}>        
-                <ButtonsElement/>    
+                <ButtonsElement/>
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}
@@ -417,6 +425,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     loading={mainPaginated.loading}
                     pageCount={pageCount}
                     /*FiltersElement={<>{ButtonsElement()}</>}*/
+                    /*ButtonsElement={ButtonsElement}*/
                     fetchData={fetchData}               
                     download={true}
                     hoverShadow={false}

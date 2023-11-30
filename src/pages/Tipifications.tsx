@@ -55,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: '22px',
         lineHeight: '48px',
-        // fontWeight: 'bold',
         height: '48px',
         color: theme.palette.text.primary,
     },
@@ -72,11 +71,13 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 400,
     }
 }));
+
 const dataTypeAction = [
     { dat: "Simple" },
     { dat: "Variable" },
     { dat: "Request" }
 ]
+
 const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassTotal }) => {
     const parents: any[] = []
     const children: any[] = []
@@ -148,8 +149,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
     const executeRes = useSelector(state => state.main.execute);
-    // const user = useSelector(state => state.login.validateToken.user);
-
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -158,6 +157,23 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     
+    const filteredChannels = datachannels
+    .filter((channel) => channel && channel.domaindesc)     
+    .reduce((filteredChannels, channel) => {
+      let isUnique = true;
+      filteredChannels.forEach((uniqueChannel: Dictionary) => {
+        if (uniqueChannel.domaindesc === channel.domaindesc) {
+          isUnique = false;
+        }
+      });  
+      if (isUnique) {
+        filteredChannels.push(channel);
+      }  
+      return filteredChannels;
+    }, [] as Dictionary[]);
+  
+
+
     const datamastercatalog = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -220,12 +236,12 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             }
         }
     }, [executeRes, waitSave])
+   
     function addaction() {
         setjobplan((p) => [...p, { action: "", type: "Simple" }])
     }
     function deleteitem(i: number) {
         setjobplan(jobplan.filter((e, index) => index !== i))
-
     }
     function setValueAction(field: string, value: string, i: number) {
         setjobplan((p: Dictionary[]) => p.map((x, index) => index === i ? { ...x, [field]: value } : x))
@@ -387,7 +403,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             }}
                             valueDefault={auxVariables.communicationchannel}
                             error={errors?.communicationchannel?.message}
-                            data={datachannels}
+                            data={filteredChannels as Dictionary[]}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
@@ -827,5 +843,4 @@ const Tipifications: FC = () => {
         return null;
 
 }
-
 export default Tipifications;
