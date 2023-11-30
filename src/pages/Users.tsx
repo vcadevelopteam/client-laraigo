@@ -1130,6 +1130,7 @@ const Users: FC = () => {
     const mainAuxResult = useSelector(state => state.main.mainAux);
     const [messageError, setMessageError] = useState('');
     const [importCount, setImportCount] = useState(0)
+    const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
     const arrayBread = [
         { id: "view-1", name: t(langKeys.user_plural) },
     ];
@@ -1248,6 +1249,11 @@ const Users: FC = () => {
             'groups',
             'showbots',
         ];
+        if (String(propertyBots?.[0]?.propertyvalue) ==="1") {
+            data.pop(); 
+            header.pop(); 
+        }
+        //
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     }
     const handleTemplateDrop = () => {
