@@ -187,6 +187,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
     const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
+    const activateSwitchBots = propertyBots?.[0]?.propertyvalue ==="1"
 
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({
         loading: false,
@@ -318,25 +319,26 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         reset({
             orgid: row ? row.orgid : dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0,
             rolegroups: row ? row.rolegroups : "",
-            roledesc: row ? row.roledesc : "", //for table
-            orgdesc: row ? row.orgdesc : "", //for table
-            supervisordesc: row ? row.supervisordesc : "", //for table
-            channelsdesc: row ? row.channelsdesc : "", //for table
-            supervisor: row ? row.supervisor : "",
-            type: row?.type || "",
-            channels: row?.channels || "",
-            redirect: row?.redirect || "",
-            groups: row?.groups || "",
-            labels: row?.labels || "",
-            status: "DESCONECTADO",
-            showbots: row?.showbots || false,
+            roledesc: row ? row.roledesc : '', //for table
+            orgdesc: row ? row.orgdesc : '', //for table
+            supervisordesc: row ? row.supervisordesc : '', //for table
+            channelsdesc: row ? row.channelsdesc : '', //for table
+            supervisor: row ? row.supervisor : '',
+            type: row?.type || '',
+            showbots: activateSwitchBots? (row?.showbots || false):true,
+            channels: row?.channels || '',
+            redirect: row?.redirect || '',
+            groups: row?.groups || '',
+            labels: row?.labels || '',
+            status: 'DESCONECTADO',
             bydefault: row?.bydefault || false,
         });
 
-        register("orgid", { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-        register("rolegroups", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register("type");
-        register("supervisor");
+        register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('rolegroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type');
+        register('showbots');
+        register('supervisor');
         // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("channels");
         register("redirect", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -406,6 +408,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         setValue("redirect", "");
         updatefield("redirect", "");
 
+        switch (value.slice(-1)[0].roldesc) {
+            case "ASESOR":
+                if(activateSwitchBots) setValue("showbots", true)
+                setValue("type", "ASESOR")
+                break;
+            case "GESTOR DE SEGURIDAD":
+            case "GESTOR DE CAMPAÑAS":
+            case "VISOR SD":
+                if(activateSwitchBots) setValue("showbots", false)
+                setValue("type", "SUPERVISOR")
+                break;
+        
+            default:
+                break;
+        }
+
         updateRecords &&
             updateRecords((p: Dictionary[], itmp: number) => {
                 p[index] = {
@@ -415,7 +433,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 };
                 return p;
             });
-        if (!!value.length) {
+        if (value.length) {
             setDataApplications({ loading: true, data: [] });
             dispatch(
                 getMultiCollectionAux([getApplicationsByRole(value.map((o: Dictionary) => o.roleid).join(), index + 1)])
@@ -470,7 +488,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                     className="col-6"
                                     valueDefault={getValues("type") === "ASESOR"}
                                     onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
-                                {String(propertyBots?.[0]?.propertyvalue) ==="1" &&
+                                {activateSwitchBots &&
 
                                     <TemplateSwitchYesNo
                                         label={"Visualización Bots"}
@@ -1482,10 +1500,12 @@ const Users: FC = () => {
     const [waitCheck, setWaitCheck] = useState(false);
     const [operation, setOperation] = useState("REGISTER");
     const [fileToUpload, setFileToUpload] = useState(null);
-    const mainAuxResult = useSelector((state) => state.main.mainAux);
-    const [messageError, setMessageError] = useState("");
-    const [importCount, setImportCount] = useState(0);
-    const arrayBread = [{ id: "view-1", name: t(langKeys.user_plural) }];
+    const mainAuxResult = useSelector(state => state.main.mainAux);
+    const [messageError, setMessageError] = useState('');
+    const [importCount, setImportCount] = useState(0)
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.user_plural) },
+    ];
     function redirectFunc(view: string) {
         setViewSelected(view);
     }
@@ -1608,9 +1628,13 @@ const Users: FC = () => {
             "role",
             "channels",
             "groups",
-            "balance",
+            "balanced",
             'showbots',
         ];
+        if (mainMultiResult.data[12].data[0].propertyvalue !=="1") {
+            data.pop(); 
+            header.pop(); 
+        }
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     };
     const handleTemplateDrop = () => {
@@ -1788,13 +1812,14 @@ const Users: FC = () => {
                         ).includes(String(f.status))) &&
                     (f.pwdchangefirstlogin === undefined ||
                         ["true", "false"].includes(String(f.pwdchangefirstlogin))) &&
-                    (f.balance === undefined ||
-                        ["true", "false"].includes(String(f.balance))) &&
+                    (f.balanced === undefined ||
+                        ["true", "false"].includes(String(f.balanced))) &&
                     (f.role === undefined ||
                         String(f.role).split(",").every((role:string) => {
                             const roleId = parseInt(role.trim(), 10);
                             return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
-                        }))&& (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                        }))
+                        && (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                 );
             });
             const messageerrors = datainit
@@ -1850,8 +1875,8 @@ const Users: FC = () => {
                             ["true", "false"].includes(String(f.pwdchangefirstlogin))
                         ) ||
                         !(
-                            f.balance === undefined ||
-                            ["true", "false"].includes(String(f.balance))
+                            f.balanced === undefined ||
+                            ["true", "false"].includes(String(f.balanced))
                         ) ||
                         !(
                             f.role === undefined ||
@@ -1861,7 +1886,8 @@ const Users: FC = () => {
                                     const roleId = parseInt(role.trim(), 10);
                                     return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
                                 })
-                        )|| !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                        )
+                        || !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                     );
                 })
                 .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, "");
@@ -1904,6 +1930,7 @@ const Users: FC = () => {
                                     status: d.status,
                                     operation: "INSERT",
                                     company: d.company,
+                                    showbots: Boolean(d.showbots),
                                     twofactorauthentication: d.twofactorauthentication === "ACTIVO",
                                     registercode: String(d.registercode),
                                     billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
@@ -1916,7 +1943,7 @@ const Users: FC = () => {
                                         groups: d.groups || "",
                                         channels: d.channels || "",
                                         status: "DESCONECTADO",
-                                        type: d.balance==="true"? "ASESOR" : "SUPERVISOR",
+                                        type: d.balanced==="true"? "ASESOR" : "SUPERVISOR",
                                         supervisor: "",
                                         operation: "INSERT",
                                         redirect: "/usersettings",
