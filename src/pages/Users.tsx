@@ -407,11 +407,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         setValue("roledesc", value.map((o: Dictionary) => o.roledesc).join());
         setValue("redirect", "");
         updatefield("redirect", "");
-        if(value.slice(-1)[0].roldesc.includes("ASESOR")){
-            if(activateSwitchBots) setValue("showbots", true)
-            setValue("type", "ASESOR")
-            setActivateSwitchBots(false)
-        }
         switch (value.slice(-1)[0].roldesc) {
             case "GESTOR DE SEGURIDAD":
             case "GESTOR DE CAMPAÑAS":
@@ -421,11 +416,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 setActivateSwitchBots(false)
                 break;        
             default:
-                if(propertyBots?.[0]?.propertyvalue ==="1") {
-                    setActivateSwitchBots(true)
-                    setValue("showbots", false)
+                
+                if(value.slice(-1)[0].roldesc.includes("ASESOR")){
+                    if(activateSwitchBots) setValue("showbots", true)
+                    setValue("type", "ASESOR")
+                    setActivateSwitchBots(false)
+                }else{
+                    if(propertyBots?.[0]?.propertyvalue ==="1") {
+                        setActivateSwitchBots(true)
+                        setValue("showbots", false)
+                    }
+                    setValue("type", "SUPERVISOR")
                 }
-                setValue("type", "SUPERVISOR")
                 break;
         }
 
