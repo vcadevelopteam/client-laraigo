@@ -1932,12 +1932,12 @@ const Users: FC = () => {
                                     status: d.status,
                                     operation: "INSERT",
                                     company: d.company,
-                                    showbots: Boolean(d.showbots),
                                     twofactorauthentication: d.twofactorauthentication === "ACTIVO",
                                     registercode: String(d.registercode),
                                     billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
                                     image: d?.image || "",
                                     detail: {
+                                        showbots: Boolean(d.showbots),
                                         rolegroups: d.role,
                                         orgid: user?.orgid,
                                         bydefault: true,
