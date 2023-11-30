@@ -583,6 +583,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 tags: '',
                 userid: "",
                 supervisorid: user?.userid || 0, // Obligatorio sin ser cero
+                ordertype: '',
+                orderby: '', 
                 persontype: "",
                 all: false,
             })));

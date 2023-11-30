@@ -90,6 +90,7 @@ const CompanyTabDetail: React.FC<CompanyTabDetailProps> = ({
                     className="col-12"
                     error={errors?.descriptionlarge?.message}
                     onChange={(value) => setValue('descriptionlarge', value)}
+                    inputProps={{ maxLength: 10000 }}
                 />   
                 <FieldSelect
                     label={t(langKeys.type)}
@@ -107,7 +108,7 @@ const CompanyTabDetail: React.FC<CompanyTabDetailProps> = ({
                     valueDefault={getValues('currencyid')}
                     onChange={(value) => setValue('currencyid', value?.domainid||"")}
                     error={errors?.currencyid?.message}
-                    data={multiData.data[1].data}
+                    data={multiData?.data?.[1]?.data||[]}
                     optionValue="domainid"
                     optionDesc="domaindesc"
                 />    

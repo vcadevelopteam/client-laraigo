@@ -168,14 +168,11 @@ const ImportDialog: React.FC<{
       (a, d) => ({ ...a, [d.domainid]: true }),
       {}
     );
-    debugger
     return (
       validDomainProduct[element.productid] &&
       validDomainWarehouse[element.warehouseid] &&
       typeof element.priceunit === 'number' && element.priceunit > 0 &&
-      typeof element.currentbalance === 'number' && element.currentbalance >= 0 &&
       ((element.ispredeterminate === 'true')||(element.ispredeterminate === 'false')) &&
-      element.rackcode.toString().length > 0 &&
       validDomainTypeCostDispatch[element.typecostdispatch]&&
       validDomainUnitDispatch[element.unitdispatchid] &&
       validDomainUnitBuy[element.unitbuyid]

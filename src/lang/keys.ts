@@ -18,6 +18,9 @@ export const langKeys = {
   edit_all: "edit_all",
   successful_inventoryconsumption: "successful_inventoryconsumption",
   set_your_weekly: "set_your_weekly",
+  error_generate_label:"error_generate_label",
+  transferdate:"transferdate",
+  visualizationBotTooltip: "visualizationBotTooltip",
   orders: "orders",
   configure: "configure",
   finish: "finish",
@@ -5600,6 +5603,15 @@ export const langKeys = {
   seetransactions: 'seetransactions',
   seestatushistory: 'seestatushistory',
   contactsincludedinplan: "contactsincludedinplan",
+  orderby: 'orderby',
+  trafficlightconfig: 'trafficlightconfig',
+  opportunityhours: 'opportunityhours',
+  maxtimegreen: 'maxtimegreen',
+  maxtimeamber: 'maxtimeamber',
+  start: 'start',
+  end: 'end',
+  trafficlight: 'trafficlight',
+  trafficindividualconfig: 'trafficindividualconfig',
 };
 
 export type LangKeys = typeof langKeys;

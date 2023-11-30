@@ -70,8 +70,8 @@ const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated },
         dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.satisfactoryduplication) }))
     }
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.company) },
-        { id: "detail-view", name: `${t(langKeys.company)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: "Empresa" },
+        { id: "detail-view", name: `Empresa ${t(langKeys.detail)}` },
     ];
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -113,10 +113,10 @@ const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated },
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('manufacturercode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('descriptionlarge');
-        register('clientenumbers', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('beginpage', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('clientenumbers');
+        register('beginpage');
         register('currencyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('taxeid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('taxeid');
         register('typemanufacterid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
 
         dispatch(resetMainAux());
@@ -157,7 +157,6 @@ const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated },
     }
 
     return (
-        <>
             <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -168,7 +167,7 @@ const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated },
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.company)}`}
+                            title={row? "Empresas" : `${t(langKeys.new)} Empresa`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -207,7 +206,6 @@ const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated },
                     errors={errors}
                 />
             </form>
-        </>
     );
 }
 

@@ -35,6 +35,7 @@ import {
     validateNumbersEqualsConsecutive,
     validateDomainCharacters,
     validateDomainCharactersSpecials,
+    getPropertySelByName,
 } from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
@@ -184,7 +185,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     // const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
     // const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
-    const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : [];
+    const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
+    const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
 
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({
         loading: false,
@@ -327,6 +329,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             groups: row?.groups || "",
             labels: row?.labels || "",
             status: "DESCONECTADO",
+            showbots: row?.showbots || false,
             bydefault: row?.bydefault || false,
         });
 
@@ -461,14 +464,23 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="roldesc"
                                 optionValue="roleid"
                             />
-                            <TemplateSwitchYesNo
-                                label={"Balanceo"}
-                                className={classes.mb2}
-                                valueDefault={getValues("type") === "ASESOR"}
-                                onChange={(value) => {
-                                    setValue("type", value ? "ASESOR" : "SUPERVISOR");
-                                }}
-                            />
+                            <div className="row-zyx">
+                                <TemplateSwitchYesNo
+                                    label={"Balanceo"}
+                                    className="col-6"
+                                    valueDefault={getValues("type") === "ASESOR"}
+                                    onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
+                                {String(propertyBots?.[0]?.propertyvalue) ==="1" &&
+
+                                    <TemplateSwitchYesNo
+                                        label={"Visualización Bots"}
+                                        helperText={t(langKeys.visualizationBotTooltip)}
+                                        className="col-6"
+                                        valueDefault={getValues("showbots")}
+                                        onChange={(value) => { setValue('showbots', value); }} />
+                                }
+
+                            </div>
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -1576,6 +1588,7 @@ const Users: FC = () => {
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
             domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
             { true: "true", false: "false" },
+            { true: "true", false: "false" },
         ];
         const header = [
             "firstname",
@@ -1596,6 +1609,7 @@ const Users: FC = () => {
             "channels",
             "groups",
             "balance",
+            'showbots',
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     };
@@ -1621,22 +1635,21 @@ const Users: FC = () => {
     useEffect(() => {
         fetchData();
         dispatch(getDomainsByTypename());
-        dispatch(
-            getMultiCollection([
-                getValuesFromDomain("ESTADOGENERICO"),
-                getValuesFromDomain("TIPODOCUMENTO"),
-                getValuesFromDomain("EMPRESA"),
-                getValuesFromDomain("GRUPOFACTURACION"),
-                getValuesFromDomain("ESTADOUSUARIO"),
-                getValuesFromDomain("TIPOUSUARIO"), //formulario orguser
-                getValuesFromDomain("GRUPOS"), //formulario orguser
-                getValuesFromDomain("ESTADOORGUSER"), //formulario orguser
-                getOrgsByCorp(0), //formulario orguser
-                getRolesByOrg(), //formulario orguser
-                getChannelsByOrg(user?.orgid),
-                getSecurityRules(),
-            ])
-        );
+        dispatch(getMultiCollection([
+            getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("TIPODOCUMENTO"),
+            getValuesFromDomain("EMPRESA"),
+            getValuesFromDomain("GRUPOFACTURACION"),
+            getValuesFromDomain("ESTADOUSUARIO"),
+            getValuesFromDomain("TIPOUSUARIO"), //formulario orguser
+            getValuesFromDomain("GRUPOS"), //formulario orguser
+            getValuesFromDomain("ESTADOORGUSER"), //formulario orguser
+            getOrgsByCorp(0), //formulario orguser
+            getRolesByOrg(), //formulario orguser
+            getChannelsByOrg(user?.orgid),
+            getSecurityRules(),
+            getPropertySelByName("VISUALIZACIONBOTSUSUARIOS"),
+        ]));
         return () => {
             dispatch(resetAllMain());
         };
@@ -1781,7 +1794,7 @@ const Users: FC = () => {
                         String(f.role).split(",").every((role:string) => {
                             const roleId = parseInt(role.trim(), 10);
                             return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
-                        }))
+                        }))&& (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                 );
             });
             const messageerrors = datainit
@@ -1848,7 +1861,7 @@ const Users: FC = () => {
                                     const roleId = parseInt(role.trim(), 10);
                                     return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
                                 })
-                        )
+                        )|| !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                     );
                 })
                 .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, "");
@@ -1885,6 +1898,7 @@ const Users: FC = () => {
                                     firstname: String(d.firstname),
                                     lastname: String(d.lastname),
                                     email: String(d.email),
+                                    showbots: Boolean(d.showbots),
                                     pwdchangefirstlogin: d.pwdchangefirstlogin==="true",
                                     type: "NINGUNO",
                                     status: d.status,

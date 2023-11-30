@@ -1,6 +1,6 @@
 import {
   convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns,
-  insLead2, updateColumnsLeads, updateColumnsOrder, uuidv4
+  insLead2, selOrderConfig, updateColumnsLeads, updateColumnsOrder, uuidv4
 } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
@@ -95,9 +95,10 @@ interface IBoardFilter {
   persontype: string;
 }
 
-const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean }> = ({ column,
-  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental }) => {
+const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams, configuration: Dictionary }> = ({ column,
+  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental, sortParams, configuration }) => {
   const { t } = useTranslation();
+
   return (
     <Draggable draggableId={column.column_uuid} index={index + 1} key={column.column_uuid} isDragDisabled={isIncremental}>
       {(provided) => (
@@ -153,6 +154,7 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
                                         snapshot={snapshot}
                                         onDelete={handleDelete}
                                         onCloseLead={handleCloseLead}
+                                        configuration={configuration}
                                       />
                                     </div>
                                   )}
@@ -173,6 +175,30 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
       )}
     </Draggable>
   )
+}
+
+interface sortParams {
+  type: string
+  order: string
+}
+
+interface Configuration {
+  monbegin: string
+  monend: string
+  tuebegin: string
+  tueend: string
+  wedbegin: string
+  wedend: string
+  thubegin: string
+  thuend: string
+  fribegin: string
+  friend: string
+  satbegin: string
+  satend: string
+  sunbegin: string
+  sunend: string
+  maxgreen: string
+  maxyellow: string
 }
 
 const CRM: FC = () => {
@@ -226,6 +252,15 @@ const CRM: FC = () => {
     }
   }, [user, boardFilter]);
 
+  const [sortParams, setSortParams] = useState({
+    type: '',
+    order: ''
+  })
+
+  const updateSortParams = (value: sortParams) => {
+    setSortParams(value)
+  }
+
   useEffect(() => {
     dispatch(getMultiCollection([
       getColumnsSel(1),
@@ -238,6 +273,8 @@ const CRM: FC = () => {
         tags: boardFilter.tags,
         userid: String(boardFilter.asesorid || ""),
         supervisorid: user?.userid || 0,
+        ordertype: sortParams.type,
+        orderby: sortParams.order,
       }),
       // adviserSel(),
       getAdviserFilteredUserRol(),
@@ -246,12 +283,14 @@ const CRM: FC = () => {
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
       getLeadTasgsSel(),
       getValuesFromDomain('TIPOPERSONA'),
+      getValuesFromDomain('ORDERTYPE'),
+      getValuesFromDomain('ORDERBY'),
     ]));
+
     return () => {
-      dispatch(resetAllMain());
+      //dispatch(resetAllMain());
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+  }, [dispatch, sortParams]);
 
   useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
@@ -293,6 +332,8 @@ const CRM: FC = () => {
         tags: boardFilter.tags,
         userid: String(boardFilter.asesorid || ""),
         supervisorid: user?.userid || 0,
+        ordertype: sortParams.type,
+        orderby: sortParams.order,
       }),
       // adviserSel(),
       getAdviserFilteredUserRol(),
@@ -301,8 +342,9 @@ const CRM: FC = () => {
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
       getLeadTasgsSel(),
       getValuesFromDomain('TIPOPERSONA'),
+      getValuesFromDomain('ORDERTYPE'),
+      getValuesFromDomain('ORDERBY'),
     ]));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardFilter, dispatch]);
 
   const onDragEnd = (result: DropResult, columns: dataBackend[], setDataColumn: any) => {
@@ -342,6 +384,8 @@ const CRM: FC = () => {
         const sourceItems = (sourceColumn.items) ? [...sourceColumn.items] : null
         const destItems = (destColumn.items) ? [...destColumn.items] : null
         const [removed] = sourceItems!.splice(source.index, 1);
+        const date = new Date().toISOString().replace('T', ' ').replace('Z', '')
+        removed.lastchangestatusdate = date
         removed.column_uuid = destination.droppableId
         destItems!.splice(destination.index, 0, removed);
         const sourceTotalRevenue = sourceItems!.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)
@@ -488,6 +532,12 @@ const CRM: FC = () => {
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
   const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });
+
+  const [configuration, setConfiguration] = useState<Configuration>()
+
+  const passConfiguration = (value: Configuration) => {
+    setConfiguration(value)
+  }
 
   const setAllParameters = useCallback((prop: typeof allParameters) => {
     if (!user) return;
@@ -1023,7 +1073,7 @@ const CRM: FC = () => {
               <Trans i18nKey={langKeys.search} />
             </Button>
           </div>
-          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} />}
+          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} updateSortParams={updateSortParams} passConfiguration={passConfiguration} ordertype={mainMulti?.data[8]?.data} orderby={mainMulti?.data[9]?.data} />}
           <div style={{ display: "flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold" }}>
             <div style={{ minWidth: 280, maxWidth: 280, backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column", }}>{t(langKeys.new)}</div>
             <div style={{
@@ -1048,7 +1098,7 @@ const CRM: FC = () => {
                   style={{ display: 'flex' }}
                 >
                   {dataColumn.map((column, index) =>
-                    <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x: any) => x.type === column.type).length > 1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead} />
+                    <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x: any) => x.type === column.type).length > 1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead} sortParams={sortParams} configuration={configuration} />
                   )}
                 </div>
               )}

@@ -821,6 +821,8 @@ const translation: LangKeys = {
   type_ocupation_38: "JANITOR / GOALKEEPER / GUARDIAN / WATCHMAN",
   type_ocupation_39: "BUILDER",
   type_ocupation_40: "COUNTER",
+  transferdate:"Transfer date",
+  error_generate_label:"The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",
   type_ocupation_41: "CONTRACTOR",
   type_ocupation_42: "CLOTHING AND CUTTING / GARMENT MANUFACTURER",
   type_ocupation_43: "COSMETOLOGIST, HAIRDRESSER AND BARBER",
@@ -911,6 +913,7 @@ const translation: LangKeys = {
   typepg_numeric: 'number',
   typepg_text: 'text',
   "typepg_timestamp without time zone": 'date',
+  visualizationBotTooltip: "By enabling the switch, it will allow you to display the “BOT SYSTEM” AND “BOT HOLDING” Bots and all the conversations that are assigned.",
   typepg_variable: 'variable',
 
   animals: "Animals",
@@ -5688,6 +5691,15 @@ const translation: LangKeys = {
   subscription_signup_plandescription_04: 'Access to the main features of Laraigo',
   subscription_signup_plandescription_05: 'Contact data export options',
   channel_metalead: 'Meta Leads',
+  orderby: 'Order by:',
+  trafficlightconfig: 'Traffic light configuration',
+  opportunityhours: 'Opportunity Business Hours',
+  maxtimegreen: 'Green light max. time (minutes)',
+  maxtimeamber: 'Amber light max. time (minutes)',
+  start: 'Start',
+  end: 'End',
+  trafficlight: 'Traffic light',
+  trafficindividualconfig: 'Traffic light individual configuration',
 };
 
 const enResource: ResourceLanguage = {

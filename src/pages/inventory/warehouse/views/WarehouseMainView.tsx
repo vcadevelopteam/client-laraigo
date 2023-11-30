@@ -76,13 +76,24 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   useEffect(() => {
     if (waitUpload) {
       if (!importRes.loading && !importRes.error) {
-        dispatch(
-          showSnackbar({
-            show: true,
-            severity: "success",
-            message: t(langKeys.successful_import),
-          })
-        );
+        if(importRes?.data?.[0]?.p_messagetype==="ERROR"){
+          dispatch(
+            showSnackbar({
+              show: true,
+              severity: "error",
+              message: t(langKeys.error_already_exists_record,{module:t(langKeys.warehouse)}),
+            })
+          );
+
+        }else{
+          dispatch(
+            showSnackbar({
+              show: true,
+              severity: "success",
+              message: t(langKeys.successful_import),
+            })
+          );
+        }
         dispatch(showBackdrop(false));
         setWaitUpload(false);
         fetchData(fetchDataAux);
@@ -242,6 +253,9 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
         key: x.accessor,
         alias: x.Header
     }))
+    columnsExport.push({
+      key: "descriptionlarge", alias: t(langKeys.longdesc)
+    })
     dispatch(exportData(getWarehouseExport({
         filters: {
             ...filters,
