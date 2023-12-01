@@ -905,6 +905,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
                     data={multiData?.data[2] && multiData?.data[2].data.filter(obj => {
                         const channelsInMultiData = obj.communicationchannel.split(',').map(channel => channel.trim());
                         if(ticketSelected?.communicationchanneltype === 'TKTT') return channelsInMultiData.includes('TKTK');
+                        else if(ticketSelected?.communicationchanneltype.includes('WHA')) return channelsInMultiData.some(channel => channel.includes('WHA'));
                         return channelsInMultiData.includes(ticketSelected?.communicationchanneltype);
                     })}
                     optionDesc="path"
