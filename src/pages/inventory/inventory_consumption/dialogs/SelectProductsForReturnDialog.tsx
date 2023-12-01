@@ -25,7 +25,7 @@ const SelectProductsForReturnDialog: React.FC<{
   const columns = React.useMemo(
     () => [
       {
-        accessor: "warehouseid",
+        accessor: "inventoryconsumptionid",
         NoFilter: true,
         isComponent: true,
         minWidth: 60,
@@ -33,12 +33,12 @@ const SelectProductsForReturnDialog: React.FC<{
       },
       {
         Header: t(langKeys.product),
-        accessor: "inventory_consumption",
+        accessor: "productcode",
         width: "auto",
       },
       {
         Header: t(langKeys.description),
-        accessor: "description",
+        accessor: "productdescription",
         width: "auto",
       },
       {
@@ -48,12 +48,12 @@ const SelectProductsForReturnDialog: React.FC<{
       },
       {
         Header: t(langKeys.ticketapplication),
-        accessor: "status",
+        accessor: "ticketid",
         width: "auto",
       },
       {
         Header: t(langKeys.requestedby),
-        accessor: "requestedby",
+        accessor: "createby",
         width: "auto",
       },
       {
