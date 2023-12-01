@@ -173,6 +173,12 @@ export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: nu
         corpid: corpid || undefined
     }
 });
+export const getDomainChannelTypeList = () => ({
+    method: "UFN_DOMAIN_CHANNELTYPE_LST",
+    key: "UFN_DOMAIN_CHANNELTYPE_LST",
+    parameters: {}
+});
+
 export const getCatalogMasterList = () => ({
     method: "UFN_METACATALOG_SEL",
     key: "UFN_METACATALOG_SEL",
