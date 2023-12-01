@@ -625,15 +625,8 @@ const Tipifications: FC = () => {
             },
             {
                 Header: t(langKeys.app_productcatalog),
-                accessor: 'metacatalogid',
+                accessor: 'catalogname',
                 NoFilter: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { metacatalogid } = props.cell.row.original;
-                    let catalog = metacatalogid
-                    if(metacatalogid <= 0) catalog = null
-            
-                    return catalog;
-                }
             },
             {
                 Header: t(langKeys.parent),
