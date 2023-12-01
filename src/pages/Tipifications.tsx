@@ -156,7 +156,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data.filter(x=>x.type===type) : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    
+
     const filteredChannels = datachannels
     .filter((channel) => channel && channel.domaindesc)     
     .reduce((filteredChannels, channel) => {
@@ -171,8 +171,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
       }  
       return filteredChannels;
     }, [] as Dictionary[]);
-  
-
 
     const datamastercatalog = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -398,8 +396,19 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             label={t(langKeys.channel_plural)}
                             className="col-6"
                             onChange={(value) => {
-                                setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())
-                                seauxVariables({...auxVariables, communicationchannel: value.map((o: Dictionary) => o.domainvalue).join()})
+                                const selectedChannels = value.map((o: Dictionary) => o.domainvalue);
+                                const selectedDescriptions = value.map((o: Dictionary) => o.domaindesc);
+                        
+                                // Buscar otros domainvalue con la misma descripción
+                                const additionalChannels = datachannels
+                                    .filter((channel) => selectedDescriptions.includes(channel.domaindesc) && !selectedChannels.includes(channel.domainvalue))
+                                    .map((channel) => channel.domainvalue);
+                        
+                                // Combinar todos los domainvalue seleccionados
+                                const allSelectedChannels = [...selectedChannels, ...additionalChannels];
+                        
+                                setValue('communicationchannel', allSelectedChannels.join());
+                                seauxVariables({...auxVariables, communicationchannel: allSelectedChannels.join()});
                             }}
                             valueDefault={auxVariables.communicationchannel}
                             error={errors?.communicationchannel?.message}
