@@ -882,7 +882,9 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
         setWaitTipify(true)
     });
+    console.log(ticketSelected)
 
+    console.log(ticketSelected)
     return (
         <DialogZyx
             open={openModal}
@@ -895,12 +897,16 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={`${t(langKeys.a)} ${t(langKeys.level)} 1`}
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 1`}
                     className="col-12"
                     valueDefault={getValues('classificationid1')}
                     onChange={onChangeTipificationLevel1}
                     error={errors?.classificationid1?.message}
-                    data={multiData?.data[2] && multiData?.data[2].data}
+                    data={multiData?.data[2] && multiData?.data[2].data.filter(obj => {
+                        const channelsInMultiData = obj.communicationchannel.split(',').map(channel => channel.trim());
+                        if(ticketSelected?.communicationchanneltype === 'TKTT') return channelsInMultiData.includes('TKTK');
+                        return channelsInMultiData.includes(ticketSelected?.communicationchanneltype);
+                    })}
                     optionDesc="path"
                     optionValue="classificationid"
                 />
