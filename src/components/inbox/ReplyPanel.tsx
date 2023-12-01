@@ -98,10 +98,10 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
             />
             <label htmlFor={`laraigo-upload-${type}`}>
                 <IconButton color="primary" aria-label="upload picture" component="span">
-                    { type === 'image' &&
+                    {type === 'image' &&
                         <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
                     }
-                    { type !== 'image' &&
+                    {type !== 'image' &&
                         <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
                     }
                 </IconButton>
@@ -445,6 +445,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     const resReplyTicket = useSelector(state => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
+    const [lastSelection, setLastSelection] = useState(0);
 
     const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
@@ -789,6 +790,11 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 return triggerReplyMessage()
         }
     }
+
+    const handleSelectionChange = (event: any) => {
+        setLastSelection(event?.target?.selectionEnd ?? 0);
+    }
+
     function onPasteTextbar(e: any) {
         if (e.clipboardData.files.length) {
             e.preventDefault()
@@ -810,7 +816,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     <div style={{ alignItems: "center" }}>
                         <ClickAwayListener onClickAway={handleClickAway}>
                             <div>
-                                <MailRecipients setCopyEmails={setCopyEmails}/>
+                                <MailRecipients setCopyEmails={setCopyEmails} />
                                 <RichText
                                     style={{ width: "100%" }}
                                     value={bodyobject}
@@ -833,10 +839,10 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                             </div>
                                         </div>
                                     }
-                                    >
-                                        <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
-                                        <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                        <UploaderIcon type="file" classes={classes} setFiles={setFiles} 
+                                >
+                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
+                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                    <UploaderIcon type="file" classes={classes} setFiles={setFiles}
                                     />
                                 </RichText>
                                 {openDialogHotKey && (
@@ -911,6 +917,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     multiline
                                     inputProps={{ 'aria-label': 'naked' }}
                                     onPaste={onPasteTextbar}
+                                    onSelect={handleSelectionChange}
                                 />
                                 {openDialogHotKey && (
                                     <div style={{
@@ -957,7 +964,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                 <TmpRichResponseIcon classes={classes} setText={setText} />
                                 <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                                 <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
+                                <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => { (lastSelection < (text || '').length - 1) ? setText(p => p.substring(0, lastSelection) + e.native + p.substring(lastSelection)) : setText(p => p + e.native) }} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
                                 <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                             </div>
                             <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
