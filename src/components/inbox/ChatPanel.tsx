@@ -883,6 +883,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         setWaitTipify(true)
     });
 
+    console.log(ticketSelected)
     return (
         <DialogZyx
             open={openModal}
@@ -895,7 +896,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={`${t(langKeys.a)} ${t(langKeys.level)} 1`}
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 1`}
                     className="col-12"
                     valueDefault={getValues('classificationid1')}
                     onChange={onChangeTipificationLevel1}
