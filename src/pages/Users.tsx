@@ -1510,6 +1510,7 @@ const Users: FC = () => {
     const mainAuxResult = useSelector(state => state.main.mainAux);
     const [messageError, setMessageError] = useState('');
     const [importCount, setImportCount] = useState(0)
+    const propertyBots = mainMultiResult?.data?.[12] && mainMultiResult?.data?.[12].success ? mainMultiResult?.data?.[12].data : []
     const arrayBread = [
         { id: "view-1", name: t(langKeys.user_plural) },
     ];
@@ -1920,7 +1921,26 @@ const Users: FC = () => {
                     });
                     if (channelError.length === 0) {
                         const table: Dictionary = data.reduce(
-                            (a: any, d) => ({
+                            (a: any, d) => {
+                                const roleids = d.role.split(",")
+                                let roles = domains?.value?.roles?.filter(x=>roleids.includes(String(x.roleid)))||[]
+                                let type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
+                                let showbots = Boolean(d.showbots)
+                                if(roles.filter(x=>x.roldesc.includes("ASESOR"))){
+                                    type = "ASESOR"
+                                    showbots=false
+                                    roles = roles.filter(x=>!x.roldesc.includes("ASESOR"))
+                                }
+                                if(roles.filter(x=>x.roldesc.includes("GESTOR DE SEGURIDAD"))||roles.filter(x=>x.roldesc.includes("GESTOR DE CAMPAÑAS"))||roles.filter(x=>x.roldesc.includes("VISOR SD"))){
+                                    type = "SUPERVISOR"
+                                    showbots=false
+                                    roles = roles.filter(x=>!x.roldesc.includes("GESTOR DE SEGURIDAD") && !x.roldesc.includes("GESTOR DE CAMPAÑAS") &&!x.roldesc.includes("VISOR SD"))
+                                }
+                                if(roles.length){
+                                    type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
+                                    showbots = Boolean(d.showbots)
+                                }
+                                return ({
                                 ...a,
                                 [`${d.user}_${d.docnum}`]: {
                                     id: 0,
@@ -1942,7 +1962,7 @@ const Users: FC = () => {
                                     billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
                                     image: d?.image || "",
                                     detail: {
-                                        showbots: Boolean(d.showbots),
+                                        showbots: (propertyBots?.[0]?.propertyvalue ==="1")?Boolean(showbots):true,
                                         rolegroups: d.role,
                                         orgid: user?.orgid,
                                         bydefault: true,
@@ -1950,13 +1970,13 @@ const Users: FC = () => {
                                         groups: d.groups || "",
                                         channels: d.channels || "",
                                         status: "DESCONECTADO",
-                                        type: d.balanced==="true"? "ASESOR" : "SUPERVISOR",
+                                        type: type,
                                         supervisor: "",
                                         operation: "INSERT",
                                         redirect: "/usersettings",
                                     },
                                 },
-                            }),
+                            })},
                             {}
                         );
                         Object.values(table).forEach((p) => {
