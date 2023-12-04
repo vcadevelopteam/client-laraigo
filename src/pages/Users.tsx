@@ -1926,12 +1926,12 @@ const Users: FC = () => {
                                 let roles = domains?.value?.roles?.filter(x=>roleids.includes(String(x.roleid)))||[]
                                 let type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
                                 let showbots = Boolean(d.showbots)
-                                if(roles.filter(x=>x.roldesc.includes("ASESOR"))){
+                                if(roles.filter(x=>x.roldesc.includes("ASESOR")).length){
                                     type = "ASESOR"
                                     showbots=false
                                     roles = roles.filter(x=>!x.roldesc.includes("ASESOR"))
                                 }
-                                if(roles.filter(x=>x.roldesc.includes("GESTOR DE SEGURIDAD"))||roles.filter(x=>x.roldesc.includes("GESTOR DE CAMPAÑAS"))||roles.filter(x=>x.roldesc.includes("VISOR SD"))){
+                                if(roles.filter(x=>x.roldesc.includes("GESTOR DE SEGURIDAD")).length||roles.filter(x=>x.roldesc.includes("GESTOR DE CAMPAÑAS")).length||roles.filter(x=>x.roldesc.includes("VISOR SD")).length){
                                     type = "SUPERVISOR"
                                     showbots=false
                                     roles = roles.filter(x=>!x.roldesc.includes("GESTOR DE SEGURIDAD") && !x.roldesc.includes("GESTOR DE CAMPAÑAS") &&!x.roldesc.includes("VISOR SD"))
