@@ -1922,7 +1922,7 @@ const Users: FC = () => {
                     if (channelError.length === 0) {
                         const table: Dictionary = data.reduce(
                             (a: any, d) => {
-                                const roleids = d.role.split(",")
+                                const roleids = d?.role?.split(",")||[]
                                 let roles = domains?.value?.roles?.filter(x=>roleids.includes(String(x.roleid)))||[]
                                 let type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
                                 let showbots = Boolean(d.showbots)
