@@ -148,8 +148,8 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={dataWarehouse?.data?.map(y=>({...y, unitdipatchdesc: multiData.data[4].data.filter(x=>x.domainid===y.unitdipatchid)[0].domainvalue,
-            unitbuydesc: multiData.data[3].data.filter(x=>x.domainid===y.unitbuyid)[0].domainvalue
+          data={dataWarehouse?.data?.map(y=>({...y, unitdipatchdesc: multiData.data[4].data.filter(x=>x.domainid===y?.unitdipatchid)?.[0]?.domainvalue,
+            unitbuydesc: multiData.data[3].data.filter(x=>x.domainid===y?.unitbuyid)?.[0]?.domainvalue
           }))}
           download={false}
           filterGeneral={false}
