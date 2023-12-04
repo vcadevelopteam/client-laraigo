@@ -18,7 +18,7 @@ import { SynonimsRasa } from './rasa/SynonimsRasa';
 import TestModelDialog from 'components/inbox/TestModelDialog';
 import { rasaModelSel } from 'common/helpers';
 import { ModelsRasa } from './rasa/ModelsRasa';
-import GenerativeAI from './generativeIA/GenerativeIAMainView';
+import GenerativeAIMainView from './generativeIA/GenerativeAIMainView';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -480,7 +480,6 @@ const IATraining: React.FC = () => {
         // })))
     }, [mainResult.mainData.data])
 
-
     if (viewSelectedTraining === "view-1") {
         return (
             <div style={{ width: "100%" }}>
@@ -560,18 +559,13 @@ const IATraining: React.FC = () => {
                                             >{t(langKeys.enter)}
                                             </Button>
                                         </div>
-                                        
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
                                             <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
                             </Grid>
-
                         </Grid>
-
-
-
                     </div>
                 </div>
             </div>
@@ -590,7 +584,7 @@ const IATraining: React.FC = () => {
         )
     }else if (viewSelectedTraining === "generativeia") {
         return (
-            <GenerativeAI 
+            <GenerativeAIMainView 
             setViewSelected={functionChange}
             arrayBread={arrayBread}
             />

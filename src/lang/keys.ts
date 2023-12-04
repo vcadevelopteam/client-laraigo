@@ -5440,8 +5440,8 @@ export const langKeys = {
   basemodel: "basemodel",
   chatwithassistant: "chatwithassistant",
   createssistant: "createssistant",
-  personality: "personality"
-
+  personality: "personality",
+  generativeiamodels: "generativeiamodels",
 };
 
 export type LangKeys = typeof langKeys;

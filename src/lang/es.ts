@@ -5452,8 +5452,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   basemodel: "Modelo Base",
   chatwithassistant: "Chatea con tu Asistente",
   createssistant: "Crear Asistente",
-  personality: "Personalidad"
-
+  personality: "Personalidad",
+  generativeiamodels: "Modelos IA Generativa",
 };
 
 const esResource: ResourceLanguage = {

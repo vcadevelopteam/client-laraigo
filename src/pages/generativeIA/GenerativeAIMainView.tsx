@@ -2,108 +2,95 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { TemplateBreadcrumbs } from "components";
+import { TemplateBreadcrumbs, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
-import { resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
-import { Intentions } from "pages/assistant/Intentions";
-import { Entities } from "pages/assistant/Entities";
 import TableZyx from "components/fields/table-simple";
 import { Button } from "@material-ui/core";
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
 import CreateAssistant from "./CreateAssistant";
 
-
-
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    title: {
-        fontSize: '22px',
-        fontWeight: 'bold',
-        color: theme.palette.text.primary,
+    titleandcrumbs: {
+        marginBottom: 12,
+        marginTop: 4,
     },
     container: {
-        width: '100%',
-        color: "#2e2c34",
-    },
-   
-    containerDetails: {
-        marginTop: theme.spacing(3)
-    },       
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+    },   
     button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        marginTop: 5
+        backgroundColor: "#55BD84",
+        marginLeft: theme.spacing(1.2),
+        "&:hover": {
+            backgroundColor: "#55BD84",
+        },
     },
 }));
 
-const GenerativeAI: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}> = ({ setViewSelected, arrayBread }) => {
+interface GenerativeAIMainViewProps {
+    setViewSelected: (view: string) => void;
+    arrayBread: any;
+}
+
+const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({ 
+    setViewSelected,
+    arrayBread,
+}) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
+    const [viewSelectedTraining, setViewSelectedTraining] = useState("generativeia")
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
 
     const newArrayBread = [
         ...arrayBread,
         { id: "generativeia", name: t(langKeys.generativeia) },
+        { id: "generativeia", name: t(langKeys.generativeiamodels)}
     ];
 
     const [waitSave, setWaitSave] = useState(false);
-
-    
-    const functionChange = (change:string) => {
-        if(change === "generativeia"){
-            setViewSelectedTraining("view-1")
-        }else{
-            setViewSelected(change);
-        }
-    }
 
     const columnsGenerativeIA = React.useMemo(
         () => [
             {
                 Header: t(langKeys.name),
                 accessor: 'name',
-                NoFilter: true,
+                width: "auto",
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: true,
+                width: "auto",
             },
             {
                 Header: t(langKeys.last_modification),
                 accessor: 'last_modification',
-                NoFilter: true,
+                width: "auto",
             },
             {
                 Header: t(langKeys.last_trainning),
                 accessor: 'last_trainning',
-                NoFilter: true,
+                width: "auto",
             },
             {
                 Header: t(langKeys.basemodel),
                 accessor: 'basemodel',
-                NoFilter: true,
+                width: "auto",
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true,
+                width: "auto",
             },
             {
                 Header: t(langKeys.chatwithassistant),
                 accessor: 'chatwithassistant',
-                NoFilter: true,
+                width: "auto",
             },
         ],
         []
@@ -111,14 +98,13 @@ const GenerativeAI: React.FC<{arrayBread: any, setViewSelected: (view: string) =
 
     const ButtonsElement = () => {
         return (
-            <div style={{display: 'flex', gap: '8px'}}>           
+            <div style={{display: 'flex', justifyContent: 'right'}}>           
                 <Button
                     variant="contained"
                     type="button"
                     color="primary"
                     startIcon={<ClearIcon color="secondary" />}
                     style={{ backgroundColor: "#FB5F5F" }}
-                    onClick={() => setViewSelected("view-1")}
                 >{t(langKeys.delete)}
                 </Button>
                 <Button
@@ -126,20 +112,13 @@ const GenerativeAI: React.FC<{arrayBread: any, setViewSelected: (view: string) =
                     type="button"
                     color="primary"
                     startIcon={<AddIcon color="secondary" />}
-                    style={{ backgroundColor: "#55BD84" }}
-                    onClick={() => setViewSelected("createassistant")}
-                    
+                    style={{ backgroundColor: "#55BD84", marginLeft: 9 }}
+                    onClick={() => setViewSelectedTraining("createassistant")}
                 >{t(langKeys.createssistant)}
                 </Button>        
             </div>        
         )
     }
-
-    useEffect(() => {
-        return () => {
-            dispatch(resetAllMain());
-        };
-    }, []);
 
     useEffect(() => {
         if (waitSave) {
@@ -156,41 +135,35 @@ const GenerativeAI: React.FC<{arrayBread: any, setViewSelected: (view: string) =
         }
     }, [executeResult, waitSave])
 
-
-    if (viewSelectedTraining === "view-1") {
+    if(viewSelectedTraining === 'generativeia') {
         return (
-            <div style={{ width: "100%" }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={newArrayBread}
-                        handleClick={functionChange}
-                    />
-                </div>
-                <div className={classes.container}>               
-
-                    <div className={classes.containerDetails}>                          
-                        <TableZyx
-                            columns={columnsGenerativeIA}
-                            titlemodule={t(langKeys.ai_assistants)}
-                            data={[]}
-                            filterGeneral={false}
-                            download={true}
-                            ButtonsElement={ButtonsElement}
-                            useFooter = {true}
-                            
+            <div className={classes.container}>
+                <div className={classes.titleandcrumbs}>
+                    <div style={{ flexGrow: 1}}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={newArrayBread}
+                            handleClick={(view) => setViewSelected(view)}
                         />
+                        <TitleDetail title={t(langKeys.ai_assistants)} />
                     </div>
                 </div>
+                <TableZyx
+                    columns={columnsGenerativeIA}
+                    data={[]}
+                    filterGeneral={false}
+                    useSelection={true}
+                    download={true}
+                    ButtonsElement={ButtonsElement}
+                />
             </div>
-        )  
-    } else if (viewSelectedTraining === "createassistant") {
-        return <CreateAssistant 
-            setViewSelected={functionChange}
-            arrayBread={arrayBread}
-        /> 
-    } else
-        return null;
-
+        )
+    } else if(viewSelectedTraining === 'createassistant') {
+        return <CreateAssistant
+            arrayBread={newArrayBread}
+            setViewSelected={setViewSelectedTraining}
+            setExternalViewSelected={setViewSelected}
+        />
+    } else return null;
 }
 
-export default GenerativeAI;
+export default GenerativeAIMainView;

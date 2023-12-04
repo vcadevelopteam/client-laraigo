@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
@@ -14,7 +11,6 @@ import { Box, Button, Card, Grid } from "@material-ui/core";
 import SaveIcon from '@material-ui/icons/Save';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { SynonimsRasaLogo } from "icons";
-
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -47,30 +43,28 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const CreateAssistant: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}> = ({ setViewSelected, arrayBread }) => {
+interface CreateAssistantProps {
+    arrayBread: any,
+    setViewSelected: (view: string) => void,
+    setExternalViewSelected: (view: string) => void
+}
+
+const CreateAssistant: React.FC<CreateAssistantProps> = ({
+    setViewSelected,
+    arrayBread,
+    setExternalViewSelected
+}) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
 
     const newArrayBread = [
         ...arrayBread,
-        { id: "generativeia", name: t(langKeys.generativeia) },
-        { id: "generativeia", name: t(langKeys.createssistant) },
+        { id: "createassistant", name: t(langKeys.createssistant) },
     ];
 
     const [waitSave, setWaitSave] = useState(false);
-
-    
-    const functionChange = (change:string) => {
-        if(change === "createassistant"){
-            setViewSelectedTraining("view-1")
-        }else{
-            setViewSelected(change);
-        }
-    }
-
 
     useEffect(() => {
         return () => {
@@ -93,20 +87,15 @@ const CreateAssistant: React.FC<{arrayBread: any, setViewSelected: (view: string
         }
     }, [executeResult, waitSave])
 
-
-    if (viewSelectedTraining === "view-1") {
-        return (
-            <div style={{ width: "100%" }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={newArrayBread}
-                        handleClick={functionChange}
-                    />
-                </div>
-
-
-                <div className={classes.container}>     
-
+    return (
+        <div style={{ width: "100%" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={newArrayBread}
+                    handleClick={(view) => setExternalViewSelected(view)}
+                />
+            </div>
+            <div className={classes.container}>     
                 <div id="assistant">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
@@ -123,7 +112,7 @@ const CreateAssistant: React.FC<{arrayBread: any, setViewSelected: (view: string
                                 type="button"
                                 startIcon={<ArrowBackIcon color="primary" />}
                                 style={{ backgroundColor: '#ffff', color: '#7721AD' }}
-                                onClick={() => setViewSelected('view-1')}
+                                onClick={() => setViewSelected('generativeia')}
                             >
                                 {t(langKeys.return)}
                             </Button>
@@ -172,8 +161,6 @@ const CreateAssistant: React.FC<{arrayBread: any, setViewSelected: (view: string
                         />
                     </div>
                 </div>
-
-
                 <div id="parameters">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
@@ -183,42 +170,27 @@ const CreateAssistant: React.FC<{arrayBread: any, setViewSelected: (view: string
                                 </span>
                             </Box>
                         </div>
-                      
+                    
                     </div>
 
                     <div className="row-zyx" style={{marginTop:"1.5rem"}}>
 
-                    <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '80%' }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%" }} />
+                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330, display: 'flex'}}>
+                            <Card style={{ position: 'relative', width: '80%' }}>
+                                <div style={{ textAlign: 'center', alignContent: 'center' }}>
+                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                        <SynonimsRasaLogo style={{ height: 220, width:"100%" }} />
+                                    </div>
+                                    <div style={{ fontWeight: 'bold' }}>{t(langKeys.employeeaplication)}</div>
+                                    <div>{t(langKeys.sinonimsdescription)}</div>
                                 </div>
-                                <div style={{ fontWeight: 'bold' }}>{t(langKeys.employeeaplication)}</div>
-                                <div>{t(langKeys.sinonimsdescription)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
-                    
-
-
-                        
+                            </Card>
+                        </Grid>
                     </div>
-                    
-                </div>
-                  
-
-
-
-
-                   
                 </div>
             </div>
-        )  
-   
-    } else
-        return null;
-
+        </div>
+    )
 }
 
 export default CreateAssistant;
