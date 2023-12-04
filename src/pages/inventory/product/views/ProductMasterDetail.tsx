@@ -121,7 +121,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
             unitbuyid: row?.unitbuyid || 0,
             unitdispatchid: row?.unitdispatchid || 0,
             status: row?.status || "ACTIVO",
-            operation: edit ? "EDIT" : "INSERT",
+            operation: (edit||duplicated) ? "EDIT" : "INSERT",
             productcode: edit ? row?.productcode : "",
             subfamilyid: row?.subfamilyid || 0,
             loteid: row?.loteid || 0,

@@ -92,10 +92,12 @@ const ChangeStatusDialog: React.FC<{
         if(massive){
           const datatosend = Object.keys(selectedRows).reduce((acc, x) => {
             //[...acc, mainPaginated.data.find(y => y.productid === Number(x))][...acc, mainPaginated.data.find(y => y.productid === Number(x))]
-            return [...acc, {...mainPaginated.data.find(y => y.productid === Number(x)),
-              ...data,
-              productid: 0,
-              operation: "INSERT",
+            return [...acc, {
+              status: data.status,
+              comment: data.comment,
+              statusid: data.statusid,
+              ismoveinventory: data.ismoveinventory,
+              productid: x,
               type: "NINGUNO",
             }]
           }, []);
