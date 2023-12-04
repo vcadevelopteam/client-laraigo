@@ -431,7 +431,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                         setValue("showbots", false)
                     }
                     setValue("type", "SUPERVISOR")
-                    settypeSwitch(true)
+                    settypeSwitch(false)
                 }
                 break;
         }
@@ -1948,6 +1948,7 @@ const Users: FC = () => {
                                         showbots = Boolean(d.showbots)
                                     }
                                 }
+                                debugger
                                 return ({
                                 ...a,
                                 [`${d.user}_${d.docnum}`]: {
