@@ -189,6 +189,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
 
     const [activateSwitchBots, setActivateSwitchBots] = useState(propertyBots?.[0]?.propertyvalue ==="1")
+    const [typeSwitch, settypeSwitch] = useState(row?.type === "ASESOR")
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({
         loading: false,
         data: [],
@@ -339,7 +340,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         register('type');
         register('showbots');
         register('supervisor');
-        // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("channels");
         register("redirect", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("groups");
@@ -373,6 +373,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 updateRecords((p: Dictionary[]) =>
                     p.map((x) => (x.orgid === row ? { ...x, ...data, operation: x.operation || "UPDATE" } : x))
                 );
+
+        setActivateSwitchBots(propertyBots?.[0]?.propertyvalue ==="1")
         // setOpenModal(false)
     });
 
@@ -413,6 +415,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             case "VISOR SD":
                 if(activateSwitchBots) setValue("showbots", false)
                 setValue("type", "SUPERVISOR")
+                settypeSwitch(false)
                 setActivateSwitchBots(false)
                 break;        
             default:
@@ -420,6 +423,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 if(value.slice(-1)[0].roldesc.includes("ASESOR")){
                     if(activateSwitchBots) setValue("showbots", true)
                     setValue("type", "ASESOR")
+                    settypeSwitch(true)
                     setActivateSwitchBots(false)
                 }else{
                     if(propertyBots?.[0]?.propertyvalue ==="1") {
@@ -427,6 +431,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                         setValue("showbots", false)
                     }
                     setValue("type", "SUPERVISOR")
+                    settypeSwitch(true)
                 }
                 break;
         }
@@ -493,8 +498,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 <TemplateSwitchYesNo
                                     label={"Balanceo"}
                                     className="col-6"
-                                    valueDefault={getValues("type") === "ASESOR"}
-                                    onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
+                                    valueDefault={typeSwitch}
+                                    onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR");
+                                    settypeSwitch(value) }} />
                                 {activateSwitchBots &&
 
                                     <TemplateSwitchYesNo
@@ -1926,19 +1932,21 @@ const Users: FC = () => {
                                 let roles = domains?.value?.roles?.filter(x=>roleids.includes(String(x.roleid)))||[]
                                 let type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
                                 let showbots = Boolean(d.showbots)
-                                if(roles.filter(x=>x.roldesc.includes("ASESOR")).length){
-                                    type = "ASESOR"
-                                    showbots=false
-                                    roles = roles.filter(x=>!x.roldesc.includes("ASESOR"))
-                                }
-                                if(roles.filter(x=>x.roldesc.includes("GESTOR DE SEGURIDAD")).length||roles.filter(x=>x.roldesc.includes("GESTOR DE CAMPAÑAS")).length||roles.filter(x=>x.roldesc.includes("VISOR SD")).length){
-                                    type = "SUPERVISOR"
-                                    showbots=false
-                                    roles = roles.filter(x=>!x.roldesc.includes("GESTOR DE SEGURIDAD") && !x.roldesc.includes("GESTOR DE CAMPAÑAS") &&!x.roldesc.includes("VISOR SD"))
-                                }
-                                if(roles.length){
-                                    type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
-                                    showbots = Boolean(d.showbots)
+                                if(propertyBots?.[0]?.propertyvalue ==="1"){
+                                    if(roles.filter(x=>x.roldesc.includes("ASESOR")).length){
+                                        type = "ASESOR"
+                                        showbots=false
+                                        roles = roles.filter(x=>!x.roldesc.includes("ASESOR"))
+                                    }
+                                    if(roles.filter(x=>x.roldesc.includes("GESTOR DE SEGURIDAD")).length||roles.filter(x=>x.roldesc.includes("GESTOR DE CAMPAÑAS")).length||roles.filter(x=>x.roldesc.includes("VISOR SD")).length){
+                                        type = "SUPERVISOR"
+                                        showbots=false
+                                        roles = roles.filter(x=>!x.roldesc.includes("GESTOR DE SEGURIDAD") && !x.roldesc.includes("GESTOR DE CAMPAÑAS") &&!x.roldesc.includes("VISOR SD"))
+                                    }
+                                    if(roles.length){
+                                        type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
+                                        showbots = Boolean(d.showbots)
+                                    }
                                 }
                                 return ({
                                 ...a,
@@ -1962,7 +1970,7 @@ const Users: FC = () => {
                                     billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
                                     image: d?.image || "",
                                     detail: {
-                                        showbots: (propertyBots?.[0]?.propertyvalue ==="1")?Boolean(showbots):true,
+                                        showbots: Boolean(showbots),
                                         rolegroups: d.role,
                                         orgid: user?.orgid,
                                         bydefault: true,
