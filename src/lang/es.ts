@@ -5444,6 +5444,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   amountwithmembershipdiscount: "Monto con descuento de socio",
   amountnotapplicabletodiscount: "Monto no aplicable a descuento",
   contactsincludedinplan: "Cantidad de contactos incluidos en el plan",
+  generativeia: "IA GENERATIVA",
+  generativeidescription: "Configura y entrena tu modelo de asistente virtual para tu canal",
 };
 
 const esResource: ResourceLanguage = {

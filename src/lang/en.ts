@@ -5517,6 +5517,9 @@ const translation: LangKeys = {
   amountwithmembershipdiscount: "Amount with membership discount",
   amountnotapplicabletodiscount: "Amount not applicable to discount",
   contactsincludedinplan: "Number of contacts included in the plan",
+  generativeia: "GENERATIVE AI",
+  generativeidescription: "Configure and train your virtual assistant model for your channel",
+  
 };
 
 const enResource: ResourceLanguage = {

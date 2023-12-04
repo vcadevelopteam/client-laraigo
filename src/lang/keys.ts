@@ -5432,6 +5432,8 @@ export const langKeys = {
   amountwithmembershipdiscount: "amountwithmembershipdiscount",
   amountnotapplicabletodiscount: "amountnotapplicabletodiscount",
   contactsincludedinplan: "contactsincludedinplan",
+  generativeia: "generativeia",
+  generativeidescription: "generativeidescription",
 };
 
 export type LangKeys = typeof langKeys;
