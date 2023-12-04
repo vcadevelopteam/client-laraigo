@@ -16,7 +16,7 @@ import { execute, getCollection, getMultiCollection, getMultiCollectionAux2 } fr
 import { manageConfirmation, showBackdrop } from 'store/popus/actions';
 import SelectReservedProductsDialog from '../../dialogs/SelectReservedProductsDialog';
 import SelectProductsForReturnDialog from '../../dialogs/SelectProductsForReturnDialog';
-import { getInventoryConsumptionDetail, getWarehouseProducts, reservationswarehouseSel } from 'common/helpers';
+import { getInventoryConsumptionDetail, getWarehouseProducts, inventoryconsumptionsbywarehouseSel, reservationswarehouseSel } from 'common/helpers';
 import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
@@ -116,6 +116,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             dispatch(getMultiCollection([
                 getWarehouseProducts(selectedWarehouse?.warehouseid||0),
                 reservationswarehouseSel(selectedWarehouse?.warehouseid||0),
+                inventoryconsumptionsbywarehouseSel(selectedWarehouse?.warehouseid||0),
             ]))
         }
     }, [selectedWarehouse]);
@@ -293,7 +294,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                                     color="primary"
                                     style={{ backgroundColor: "#55BD84" }}
                                     onClick={handleOpenModalReturnProducts}
-                                    disabled={!edit}
+                                    disabled={edit || !selectedWarehouse || typeOperation !== "DEVOLUCION"}
                                     variant="contained"
                                 >
                                     {t(langKeys.selectproductsforreturn)}
@@ -347,6 +348,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             <SelectProductsForReturnDialog
                 openModal={openModalReturnProducts}
                 setOpenModal={setOpenModalReturnProducts}
+                updateRecords={setDataDetail}
             />
         </div>
     );

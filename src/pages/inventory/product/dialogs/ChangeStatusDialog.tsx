@@ -111,12 +111,11 @@ const ChangeStatusDialog: React.FC<{
         callback
     }))
 });
-console.log(multiData?.data?.[5]?.data)
+
   return (
     <DialogZyx open={openModal} title={t(langKeys.change_status)}>
       <form onSubmit={onMainSubmit}>
       {!massive && (
-        <>
           <div className="row-zyx">
             <FieldView
               label={t(langKeys.code)}
@@ -129,7 +128,6 @@ console.log(multiData?.data?.[5]?.data)
               value= {row?.description || ""}
             />
           </div>
-        </>
       )}
       <div className="row-zyx">
         {!massive && (

@@ -154,6 +154,7 @@ export const langKeys = {
   overdueamountinstock: "overdueamountinstock",
   availablequantity: "availablequantity",
   reservedquantity: "reservedquantity",
+  dispatchedquantity: "dispatchedquantity",
   dispatchhistory: "dispatchhistory",
   dateoflastshipment: "dateoflastshipment",
   dateoflastshipmenttooltip: "dateoflastshipmenttooltip",

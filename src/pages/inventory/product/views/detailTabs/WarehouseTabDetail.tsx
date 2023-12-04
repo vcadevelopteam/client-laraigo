@@ -38,6 +38,7 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const multiData = useSelector((state) => state.main.multiDataAux);
 
   useEffect(() => {
     if(tabIndex === 1){
@@ -132,13 +133,12 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
       },
       {
         Header: t(langKeys.dispatch_unit),
-        accessor: "unitdipatchid",
+        accessor: "unitdipatchdesc",
         width: "auto",
       },
       {
         Header: t(langKeys.purchase_unit),
-        accessor: "unitbuyid",
-        width: "auto",
+        accessor: "unitbuydesc",
       },
     ],
     []
@@ -148,7 +148,9 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={dataWarehouse.data}
+          data={dataWarehouse?.data?.map(y=>({...y, unitdipatchdesc: multiData.data[4].data.filter(x=>x.domainid===y.unitdipatchid)[0].domainvalue,
+            unitbuydesc: multiData.data[3].data.filter(x=>x.domainid===y.unitbuyid)[0].domainvalue
+          }))}
           download={false}
           filterGeneral={false}
           register={false}
