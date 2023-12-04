@@ -1,7 +1,5 @@
 //TODO: en conectares hay un tipo preguntar de donde sale
-
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -20,6 +18,7 @@ import { SynonimsRasa } from './rasa/SynonimsRasa';
 import TestModelDialog from 'components/inbox/TestModelDialog';
 import { rasaModelSel } from 'common/helpers';
 import { ModelsRasa } from './rasa/ModelsRasa';
+import GenerativeAI from './generativeIA/GenerativeIAMainView';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -338,11 +337,7 @@ const WitIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}
     }, [executeResult, waitSave])
 
     useEffect(() => {
-        // setMainData(mainResult.mainData.data.map(x => ({
-        //     ...x,
-        //     typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
-        //     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
-        // })))
+        // setMainData(mainResult.mainData.data.map        
     }, [mainResult.mainData.data])
 
 
@@ -589,6 +584,13 @@ const IATraining: React.FC = () => {
     }else if (viewSelectedTraining === "rasaia") {
         return (
             <RasaIA 
+            setViewSelected={functionChange}
+            arrayBread={arrayBread}
+            />
+        )
+    }else if (viewSelectedTraining === "generativeia") {
+        return (
+            <GenerativeAI 
             setViewSelected={functionChange}
             arrayBread={arrayBread}
             />

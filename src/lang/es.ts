@@ -5446,6 +5446,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   contactsincludedinplan: "Cantidad de contactos incluidos en el plan",
   generativeia: "IA GENERATIVA",
   generativeidescription: "Configura y entrena tu modelo de asistente virtual para tu canal",
+  ai_assistants: "Asistentes IA",
+  last_modification: "Última Modificación",
+  last_trainning: "Último Entretanimiento",
+  basemodel: "Modelo Base",
+  chatwithassistant: "Chatea con tu Asistente",
+  createssistant: "Crear Asistente",
+
 };
 
 const esResource: ResourceLanguage = {

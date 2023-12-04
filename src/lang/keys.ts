@@ -5434,6 +5434,13 @@ export const langKeys = {
   contactsincludedinplan: "contactsincludedinplan",
   generativeia: "generativeia",
   generativeidescription: "generativeidescription",
+  ai_assistants: "ai_assistants",
+  last_modification: "last_modification",
+  last_trainning: "last_trainning",
+  basemodel: "basemodel",
+  chatwithassistant: "chatwithassistant",
+  createssistant: "createssistant",
+
 };
 
 export type LangKeys = typeof langKeys;

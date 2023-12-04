@@ -5519,7 +5519,13 @@ const translation: LangKeys = {
   contactsincludedinplan: "Number of contacts included in the plan",
   generativeia: "GENERATIVE AI",
   generativeidescription: "Configure and train your virtual assistant model for your channel",
-  
+  ai_assistants: "AI Assistants",
+  last_modification: "Last Modification",
+  last_trainning: "Last Trainning",
+  basemodel: "Base Model",
+  chatwithassistant: "Chat with your Assistant",
+  createssistant: "Create Assistant",
+
 };
 
 const enResource: ResourceLanguage = {
