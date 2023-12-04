@@ -13,6 +13,7 @@ import TableZyx from "components/fields/table-simple";
 import { Button } from "@material-ui/core";
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
+import CreateAssistant from "./CreateAssistant";
 
 
 
@@ -126,6 +127,7 @@ const GenerativeAI: React.FC<{arrayBread: any, setViewSelected: (view: string) =
                     color="primary"
                     startIcon={<AddIcon color="secondary" />}
                     style={{ backgroundColor: "#55BD84" }}
+                    onClick={() => setViewSelected("createassistant")}
                     
                 >{t(langKeys.createssistant)}
                 </Button>        
@@ -181,6 +183,11 @@ const GenerativeAI: React.FC<{arrayBread: any, setViewSelected: (view: string) =
                 </div>
             </div>
         )  
+    } else if (viewSelectedTraining === "createassistant") {
+        return <CreateAssistant 
+            setViewSelected={functionChange}
+            arrayBread={arrayBread}
+        /> 
     } else
         return null;
 

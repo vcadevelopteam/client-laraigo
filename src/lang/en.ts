@@ -5525,6 +5525,7 @@ const translation: LangKeys = {
   basemodel: "Base Model",
   chatwithassistant: "Chat with your Assistant",
   createssistant: "Create Assistant",
+  personality: "Personality"
 
 };
 
