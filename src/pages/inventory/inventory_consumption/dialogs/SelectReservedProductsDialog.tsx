@@ -111,7 +111,6 @@ const SelectReservedProductsDialog: React.FC<{
                                 ticketnumber: item.ticketid,
                                 transactiontype: "DESPACHO",
                             }));
-
                         updateRecords((p: Dictionary[]) => [...p, ...dataTosend]);
                         setOpenModal(false);
                         setSelectedRows({});
