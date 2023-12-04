@@ -160,8 +160,11 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
         const dayEndTime = 86400;
 
         const nowDate = new Date();
+        const nowDateWithoutTime = new Date(nowDate);
+        nowDateWithoutTime.setHours(0,0,0,0)
+        currentDate.setHours(0,0,0,0)
 
-        while (currentDate <= nowDate) {
+        while (currentDate <= nowDateWithoutTime) {
             const now = new Date();
             const nowTime = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
             const dayOfWeek = getWeekDay(currentDate);
@@ -170,65 +173,54 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
             const [endHours, endMinutes] = configuration?.[`${dayOfWeek.toLowerCase()}end`]?.split(':') || [null, null];
             const endSeconds = parseInt(endHours) * 3600 + parseInt(endMinutes) * 60;
 
-            if(currentDate.getDate() === now.getDate() && now.getDate() === start.getDate()) {
+            if(currentDate.getDate() === now.getDate() && currentDate.getMonth() === now.getMonth() && currentDate.getFullYear() === now.getFullYear() && 
+            now.getDate() === start.getDate() && now.getMonth() === start.getMonth() && now.getFullYear() === start.getFullYear()) {
                 if(beginSeconds && endSeconds){
                     if(startTime < beginSeconds) {
                         if(nowTime < beginSeconds){
                             totalInactiveTime += (nowTime - startTime)
-                            return totalInactiveTime;
                         } else if(beginSeconds <= nowTime && nowTime < endSeconds){
                             totalInactiveTime += (beginSeconds - startTime)
-                            return totalInactiveTime;
                         } else if(endSeconds <= nowTime){
                             totalInactiveTime += (beginSeconds - startTime)
                             totalInactiveTime += (nowTime - endSeconds)
-                            return totalInactiveTime;
                         }
                     } else if(beginSeconds <= startTime && startTime < endSeconds) {
                         if(nowTime <= endSeconds){
-                            return 0;
+                            totalInactiveTime += 0
                         } else if(endSeconds < nowTime){
                             totalInactiveTime += (nowTime - endSeconds)
-                            return totalInactiveTime;
                         }
                     } else if(endSeconds <= startTime) {
                         totalInactiveTime += (nowTime - startTime)
-                        return totalInactiveTime;
                     }
                 }
                 else {
-                    return getSecondsUntelNow(start)
+                    totalInactiveTime += (nowTime - startTime)
                 }
             } else {
-                if(currentDate.getDate() === now.getDate()){
+                if(currentDate.getDate() === now.getDate() && currentDate.getMonth() === now.getMonth() && currentDate.getFullYear() === now.getFullYear()){
                     if(beginSeconds && endSeconds) {
                         if(nowTime < beginSeconds) {
                             totalInactiveTime += nowTime
-                            return totalInactiveTime;
                         } else if(beginSeconds <= nowTime && nowTime < endSeconds) {
                             totalInactiveTime += beginSeconds
-                            return totalInactiveTime;
                         } else if(endSeconds <= nowTime) {
                             totalInactiveTime += (nowTime - endSeconds)
                             totalInactiveTime += beginSeconds
-                            return totalInactiveTime;
                         }
                     } else {
                         totalInactiveTime += nowTime
-                        return totalInactiveTime;
                     }
-                } else if(currentDate.getDate() === start.getDate()) {
+                } else if(currentDate.getDate() === start.getDate() && currentDate.getMonth() === start.getMonth() && currentDate.getFullYear() === start.getFullYear()) {
                     if(beginSeconds && endSeconds){
                         if(startTime < beginSeconds) {
                             totalInactiveTime += (beginSeconds - startTime)
                             totalInactiveTime += (dayEndTime - endSeconds)
-                            return totalInactiveTime;
                         } else if(beginSeconds <= startTime && startTime < endSeconds) {
                             totalInactiveTime += (dayEndTime - endSeconds)
-                            return totalInactiveTime;
                         } else if(endSeconds <= startTime) {
                             totalInactiveTime += (dayEndTime - startTime)
-                            return totalInactiveTime;
                         }
                     }
                     else {
@@ -272,7 +264,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
         return () => {
             timer && clearInterval(timer);
         };
-    }, [configuration]);
+    }, [configuration, time, inactiveTime]);
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
