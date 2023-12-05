@@ -1933,7 +1933,7 @@ const Users: FC = () => {
                                 const roleids = String(d?.role)?.split(",")||[]
                                 let roles = domains?.value?.roles?.filter(x=>roleids.includes(String(x.roleid)))||[]
                                 let type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
-                                let showbots = Boolean(d.showbots)
+                                let showbots = d.showbots ==="true"
                                 if(propertyBots?.[0]?.propertyvalue ==="1"){
                                     if(roles.filter(x=>x.roldesc.includes("ASESOR")).length){
                                         type = "ASESOR"
@@ -1947,7 +1947,7 @@ const Users: FC = () => {
                                     }
                                     if(roles.length){
                                         type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
-                                        showbots = Boolean(d.showbots)
+                                        showbots = d.showbots ==="true"
                                     }
                                 }
                                 debugger
