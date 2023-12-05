@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
-import { FieldEdit, TemplateBreadcrumbs, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
 import { resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { Button, IconButton, Paper, TextField, Typography, Menu, MenuItem } from "@material-ui/core";
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import AddIcon from '@material-ui/icons/Add';
 import { SendIcon } from 'icons';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -22,14 +19,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         height: '100%',
         width: '100%',
-    },
-    titleandcrumbs: {
-        marginBottom: 12,
-        marginTop: 4,
-    },
-    containerDetails: {
-        marginTop: theme.spacing(3)
-    },       
+    },   
     button: {
         padding: 12,
         fontWeight: 500,
@@ -73,7 +63,6 @@ const useStyles = makeStyles((theme) => ({
     },   
 }));
 
-
 interface ChatAIProps {
     setViewSelected: (view: string) => void;
 }
@@ -94,7 +83,6 @@ const ChatAI: React.FC<ChatAIProps> = ({
       { id: 1, title: "Chat 1", date: "Today" },
       { id: 2, title: "Chat 2", date: "Yesterday" },
     ]);
-
        
     const chatMessages = [
         { id: 1, sender: "User", text: "Hola, prueba", timestamp: "12:00 PM" },
@@ -107,40 +95,27 @@ const ChatAI: React.FC<ChatAIProps> = ({
         };
     }, []);
 
-
     const [selectedChat, setSelectedChat] = useState<number | null>(null);
     const [moreMenuAnchor, setMoreMenuAnchor] = useState<null | HTMLElement>(null);
 
-    const handleOpenMoreMenu = (event: React.MouseEvent<HTMLButtonElement>, chatId: number) => {
-        setMoreMenuAnchor(event.currentTarget);
-        setSelectedChat(chatId);
-    };
-
-    const handleCloseMoreMenu = () => {
-        setMoreMenuAnchor(null);
-        setSelectedChat(null);
-    };
-
     const handleNewChat = () => {
         setCreateChatModalOpen(true);
-  };
+    };
     
-      const handleCloseCreateChatModal = () => {
+    const handleCloseCreateChatModal = () => {
         setCreateChatModalOpen(false);
         setNewChatName("");
-      };
+    };
     
-      const handleCreateChat = () => {
+    const handleCreateChat = () => {
         const newChat = {
-          id: chatList.length + 1,
-          title: newChatName || `Chat ${chatList.length + 1}`,
-          date: "Today",
+            id: chatList.length + 1,
+            title: newChatName || `Chat ${chatList.length + 1}`,
+            date: "Today",
         };
-
         setChatList([newChat, ...chatList]);
-
         handleCloseCreateChatModal();
-        };
+    };
 
     return (
         <div className={classes.container}>
@@ -148,37 +123,43 @@ const ChatAI: React.FC<ChatAIProps> = ({
             <Paper className={classes.chatList}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                     <Button
-                    variant="contained"
-                    type="button"
-                    startIcon={<ArrowBackIcon color="primary" />}
-                    style={{ backgroundColor: '#ffff', color: '#7721AD' }}
-                    onClick={() => setViewSelected('assistantdetail')}
+                        variant="contained"
+                        type="button"
+                        startIcon={<CloseIcon />}
+                        style={{ backgroundColor: '#ffff', color: 'red', border: '1px solid red' }}
+                        onClick={() => setViewSelected('assistantdetail')}
                     >
-                    {t(langKeys.return)}
+                        {t(langKeys.close)}
                     </Button>
                     <Button
-                    variant="contained"
-                    type="button"
-                    startIcon={<AddIcon color="secondary" />}
-                    style={{ backgroundColor: '#7721AD', color: '#fff' }}
-                    onClick={handleNewChat}
-                    > Nuevo Chat
+                        variant="contained"
+                        type="button"
+                        startIcon={<AddIcon color="secondary" />}
+                        style={{ backgroundColor: '#7721AD', color: '#fff' }}
+                        onClick={handleNewChat}
+                    >
+                        Nuevo Chat
                     </Button>
                 </div>
         
                 {chatList.map(chat => (
                     <div key={chat.id}>
-                    <Typography variant="h6" style={{ marginTop: '16px' }}>
-                        {chat.date}
-                    </Typography>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                        <Typography variant="subtitle1">{chat.title}</Typography>
+                        <Typography variant="h6" style={{ marginTop: '16px' }}>
+                            {chat.date}
+                        </Typography>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <Typography variant="subtitle1">{chat.title}</Typography>
+                            </div>
+                            <div>
+                                <IconButton>
+                                    <EditIcon color="primary"/>
+                                </IconButton>
+                                <IconButton>
+                                    <DeleteIcon color="primary"/>
+                                </IconButton>
+                            </div>
                         </div>
-                        <IconButton onClick={(e) => handleOpenMoreMenu(e, chat.id)}>
-                        <MoreVertIcon />
-                        </IconButton>
-                    </div>
                     </div>
                 ))}
             </Paper>
@@ -189,58 +170,43 @@ const ChatAI: React.FC<ChatAIProps> = ({
                 {/* Chat Messages */}
                 <div className={classes.chatMessages}>
                     {chatMessages.map(message => (
-                        <div key={message.id}>
-                            <Typography variant="caption" color="textSecondary">
-                                {message.timestamp}
-                            </Typography>
-                            <Typography variant="body1" gutterBottom>
-                                {message.sender}: {message.text}
-                            </Typography>
+                        <div key={message.id} style={{ display: 'flex', justifyContent: 'center', backgroundColor: message.sender === 'ChatGPT' ? '': 'white' }}>
+                            <div style={{ padding: 10, width: 700 }}>
+                                <Typography variant="caption" color="textSecondary">
+                                    {message.timestamp}
+                                </Typography>
+                                <Typography variant="body1" gutterBottom>
+                                    {message.sender}: {message.text}
+                                </Typography>
+                            </div>
                         </div>
                     ))}
                 </div>
 
-            {/* Chat Input */}
-            <div className={classes.chatInputContainer}>
-                <TextField
-                    fullWidth
-                    label="Type a message..."
-                    variant="outlined"
-                    InputProps={{
-                    endAdornment: (
-                    <InputAdornment position="end">
-                        <Button
-                            variant="contained"
-                            type="button"
-                            startIcon={<SendIcon color="secondary" />}
-                            style={{ backgroundColor: '#7721AD', color: '#fff' }}
+                {/* Chat Input */}
+                <div className={classes.chatInputContainer}>
+                    <TextField
+                        fullWidth
+                        label="Type a message..."
+                        variant="outlined"
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        startIcon={<SendIcon color="secondary" />}
+                                        style={{ backgroundColor: '#7721AD', color: '#fff' }}
 
-                        >
-                            {t(langKeys.send)}
-                        </Button>
-                    </InputAdornment>
-                ),
-                }}
-                />
-            </div>             
-             
+                                    >
+                                        {t(langKeys.send)}
+                                    </Button>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </div>
             </div>
-
-            {/* More Menu */}
-            <Menu
-                anchorEl={moreMenuAnchor}
-                open={Boolean(moreMenuAnchor)}
-                onClose={handleCloseMoreMenu}
-            >
-                   <MenuItem onClick={handleCloseMoreMenu}>
-                        <EditIcon style={{ marginRight: '8px' }} />
-                        {t(langKeys.edit)}
-                    </MenuItem>
-                    <MenuItem onClick={handleCloseMoreMenu}>
-                        <DeleteIcon style={{ marginRight: '8px' }} />
-                        {t(langKeys.delete)}
-                    </MenuItem>
-            </Menu>
         </div>
     );
 };
