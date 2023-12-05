@@ -812,6 +812,7 @@ const translation: LangKeys = {
   typepg_numeric: 'number',
   typepg_text: 'text',
   "typepg_timestamp without time zone": 'date',
+  visualizationBotTooltip: "By enabling the switch, it will allow you to display the “BOT SYSTEM” AND “BOT HOLDING” Bots and all the conversations that are assigned.",
   typepg_variable: 'variable',
 
   animals: "Animals",
