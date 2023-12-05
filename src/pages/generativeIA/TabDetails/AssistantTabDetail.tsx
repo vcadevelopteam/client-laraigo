@@ -17,14 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-interface InventoryTabDetailProps {
-    row: Dictionary | null;
-    setValue: UseFormSetValue<any>;
-    getValues: UseFormGetValues<any>;
-    errors: FieldErrors;
-}
-
-const AssistantTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, getValues, errors }) => {
+const AssistantTabDetail: React.FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
@@ -103,42 +96,39 @@ const AssistantTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, 
 
     return (
         <div className={classes.containerDetail}>
-             <div className="row-zyx" style={{marginTop:"1.5rem"}}>
-                                <FieldEdit
-                                    className="col-6"
-                                    label={t(langKeys.name)}
-                                    type="text"
-                                    maxLength={60}                                    
-                                />
-                                <FieldEdit
-                                    className="col-6"
-                                    label={t(langKeys.description)}
-                                    type="text"
-                                    maxLength={640}                                    
-                                />
-        
-                                <FieldSelect
-                                    label={t(langKeys.basemodel)}
-                                    data={[]}
-                                    optionDesc="value"
-                                    optionValue="value"
-                                    className="col-6"
-                                />
-                                                
-                                <FieldSelect
-                                    className="col-6"
-                                    label={t(langKeys.status)}
-                                    data={[]}
-                                    optionDesc="value"
-                                    optionValue="value"
-                                />
-                                <FieldEdit
-                                    className="col-12"
-                                    label={t(langKeys.apikey)}
-                                    type="password"
-                                />
-                            </div>
-          
+             <div className="row-zyx">
+                <FieldEdit
+                    className="col-6"
+                    label={t(langKeys.name)}
+                    type="text"
+                    maxLength={60}                                    
+                />
+                <FieldEdit
+                    className="col-6"
+                    label={t(langKeys.description)}
+                    type="text"
+                    maxLength={640}                                    
+                />
+                <FieldSelect
+                    label={t(langKeys.basemodel)}
+                    data={[]}
+                    optionDesc="value"
+                    optionValue="value"
+                    className="col-6"
+                />        
+                <FieldSelect
+                    className="col-6"
+                    label={t(langKeys.status)}
+                    data={[]}
+                    optionDesc="value"
+                    optionValue="value"
+                />
+                <FieldEdit
+                    className="col-12"
+                    label={t(langKeys.apikey)}
+                    type="password"
+                />
+            </div>
         </div>
     );
 };

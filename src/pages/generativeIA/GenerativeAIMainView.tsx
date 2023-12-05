@@ -47,7 +47,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [viewSelectedTraining, setViewSelectedTraining] = useState("generativeia")
+    const [viewSelectedTraining, setViewSelectedTraining] = useState("assistantdetail")
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
 
@@ -156,14 +156,22 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         }
     }, [executeResult, waitSave])
 
-    if(viewSelectedTraining === 'generativeia') {
+    const functionChange = (change:string) => {
+        if(change === "generativeia"){
+            setViewSelectedTraining("assistantdetail")
+        }else{
+            setViewSelected(change);
+        }
+    }
+
+    if(viewSelectedTraining === 'assistantdetail') {
         return (
             <div className={classes.container}>
                 <div className={classes.titleandcrumbs}>
                     <div style={{ flexGrow: 1}}>
                         <TemplateBreadcrumbs
                             breadcrumbs={newArrayBread}
-                            handleClick={(view) => setViewSelected(view)}
+                            handleClick={functionChange}
                         />
                         <TitleDetail title={t(langKeys.ai_assistants)} />
                     </div>
@@ -181,13 +189,13 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         return <CreateAssistant
             arrayBread={newArrayBread}
             setViewSelected={setViewSelectedTraining}
-            setExternalViewSelected={setViewSelected}
+            setExternalViewSelected={functionChange}
         />
     } else if(viewSelectedTraining === 'chatai') {
         return <ChatAI
             arrayBread={newArrayBread}
             setViewSelected={setViewSelectedTraining}
-            setExternalViewSelected={setViewSelected}
+            setExternalViewSelected={functionChange}
         />
     } else return null;
 }

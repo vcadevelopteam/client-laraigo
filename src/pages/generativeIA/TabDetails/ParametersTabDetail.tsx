@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
-import { FieldEdit, FieldSelect, TitleDetail } from "components";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
@@ -25,9 +24,6 @@ const useStyles = makeStyles((theme) => ({
     container: {
         width: '100%',
         color: "#2e2c34",
-    },       
-    containerHeader: {      
-        marginTop: '1rem',      
     },
     button: {
         display: "flex",
@@ -49,14 +45,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-interface InventoryTabDetailProps {
-    row: Dictionary | null;
-    setValue: UseFormSetValue<any>;
-    getValues: UseFormGetValues<any>;
-    errors: FieldErrors;
-}
-
-const ParametersTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, getValues, errors }) => {
+const ParametersTabDetail: React.FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
@@ -138,21 +127,17 @@ const ParametersTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
             <div id="parameters">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
-                        <Box className={classes.containerHeader}>
-                            <span className={classes.title}>
-                                {t(langKeys.personality)}
-                            </span>
-                        </Box>
-                    </div>                    
+                        <span className={classes.title}>
+                            {t(langKeys.personality)}
+                        </span>
+                    </div>
                 </div>
 
                 <div className="row-zyx" style={{marginTop:"1.5rem", gap:"1.5rem"}}>
                     <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
                         <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
                             <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', alignItems:'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                </div>
+                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
                                 <div style={{ fontWeight: 'bold', paddingBottom:'1rem' }}>{t(langKeys.help_desk_clerk)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.help_desk_clerk_description)}</div>
                             </div>
@@ -161,9 +146,7 @@ const ParametersTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                     <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
                         <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
                             <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', alignItems:'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                </div>
+                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
                                 <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.customer_service)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.customer_service_description)}</div>
                             </div>
@@ -172,9 +155,7 @@ const ParametersTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                     <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
                         <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
                             <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', alignItems:'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                </div>
+                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
                                 <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.sales_expert)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.sales_expert_description)}</div>
                             </div>
@@ -183,9 +164,7 @@ const ParametersTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                     <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
                         <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
                             <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', alignItems:'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                </div>
+                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
                                 <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.technical_support)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.technical_support_description)}</div>
                             </div>
@@ -194,9 +173,7 @@ const ParametersTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                     <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
                         <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
                             <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', alignItems:'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                </div>
+                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
                                 <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.ai_base)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.ai_base_description)}</div>
                             </div>
@@ -205,9 +182,7 @@ const ParametersTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                     <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
                         <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
                             <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', alignItems:'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                </div>
+                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
                                 <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.custom_mode)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.custom_mode_description)}</div>
                             </div>

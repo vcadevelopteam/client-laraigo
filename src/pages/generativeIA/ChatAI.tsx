@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { FieldEdit, TemplateBreadcrumbs } from "components";
+import { FieldEdit, TemplateBreadcrumbs, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
 import { resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
@@ -26,7 +26,10 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         color: "#2e2c34",
     },
-   
+    titleandcrumbs: {
+        marginBottom: 12,
+        marginTop: 4,
+    },
     containerDetails: {
         marginTop: theme.spacing(3)
     },       
@@ -88,44 +91,36 @@ const ChatAI: React.FC<ChatAIProps> = ({
 
     return (
         <div style={{ width: "100%" }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <TemplateBreadcrumbs
-                    breadcrumbs={newArrayBread}
-                    handleClick={(view) => setExternalViewSelected(view)}
-                />
+            <div className={classes.titleandcrumbs}>
+                <div style={{flexGrow: 1}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={newArrayBread}
+                        handleClick={setExternalViewSelected}
+                    />
+                    <TitleDetail title={t(langKeys.chat)} />
+                </div>
             </div>
             <div className={classes.container}>     
                 <div id="chatai">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
-                            <Box className={classes.containerHeader}>
-                                <span className={classes.title}>
-                                    {t(langKeys.chat)}
-                                </span>
-                            </Box>
-                        </div>
-
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<ArrowBackIcon color="primary" />}
-                                style={{ backgroundColor: '#ffff', color: '#7721AD' }}
-                                onClick={() => setViewSelected('generativeia')}
-                            >
-                                {t(langKeys.return)}
-                            </Button>
-
-                            <Button
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: '#55BD84' }}
-                            >
-                                {t(langKeys.save)}
-                            </Button>
-                        </div>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            startIcon={<ArrowBackIcon color="primary" />}
+                            style={{ backgroundColor: '#ffff', color: '#7721AD' }}
+                            onClick={() => setViewSelected('assistantdetail')}
+                        >
+                            {t(langKeys.return)}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: '#55BD84' }}
+                        >
+                            {t(langKeys.save)}
+                        </Button>
                     </div>
 
                     <div className="row-zyx" style={{marginTop:"1.5rem"}}>

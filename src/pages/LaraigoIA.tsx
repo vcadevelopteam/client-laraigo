@@ -591,7 +591,6 @@ const IATraining: React.FC = () => {
         )
     } else
         return null;
-
 }
 
 export default IATraining;

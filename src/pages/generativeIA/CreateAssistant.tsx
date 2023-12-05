@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { FieldEdit, FieldSelect, TemplateBreadcrumbs, AntTab, AntTabPanel  } from "components";
+import { FieldEdit, FieldSelect, TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
 import { resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
@@ -46,19 +46,18 @@ const useStyles = makeStyles((theme) => ({
         color: "#989898",
         backgroundColor: "white",
     },
-    titleandbuttons: {
-        display: "flex",
-        justifyContent: "space-between",
-    },
     formcontainer: {
         display: "flex",
         flexDirection: "column",
         width: "100%",
     },
+    titleandcrumbs: {
+        marginBottom: 12,
+        marginTop: 4,
+    },
 }));
 
 interface CreateAssistantProps {
-    data: RowSelected;
     arrayBread: any,
     setViewSelected: (view: string) => void,
     setExternalViewSelected: (view: string) => void
@@ -66,15 +65,12 @@ interface CreateAssistantProps {
 
 }
 
-
 const CreateAssistant: React.FC<CreateAssistantProps> = ({
-    data = { row: null, edit: false }, 
     setViewSelected,
     fetchData,
     arrayBread,
     setExternalViewSelected
 }) => {
-    const { row, edit } = data;
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
@@ -82,35 +78,11 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
-    
-
 
     const newArrayBread = [
         ...arrayBread,
         { id: "createssistant", name: t(langKeys.createssistant) },       
     ];
-
-    const {
-        register,
-        handleSubmit: handleMainSubmit,
-        setValue,
-        getValues,
-        formState: { errors },
-    } = useForm({
-        defaultValues: {
-            warehouseid: row?.warehouseid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || "",
-            name: row?.name || "",
-            description: row?.description || "",
-            address: row?.address || "",
-            phone: row?.phone || "",
-            latitude: row?.latitude || "",
-            longitude: row?.longitude || "",
-            status: row?.status || "ACTIVO",
-        },
-    });
-
 
     useEffect(() => {
         return () => {
@@ -134,7 +106,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     }, [executeResult, waitSave])
 
 
-    const onMainSubmit = handleMainSubmit((data) => {
+    const onMainSubmit = ((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
             //dispatch(execute(insWarehouse(data)));
@@ -157,36 +129,29 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     if(viewSelectedTraining === 'createssistant') {
         return (
             <>
-            <form onSubmit={onMainSubmit} className={classes.formcontainer}>
-                <div style={{ width: "100%" }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={newArrayBread}
-                            handleClick={(view) => setExternalViewSelected(view)}
-                        />
-                    </div>
-                    <div className={classes.container}>     
-                        <div id="assistant">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
-                                    <Box className={classes.containerHeader}>
-                                        <span className={classes.title}>
-                                            {t(langKeys.createssistant)}
-                                        </span>
-                                    </Box>
-                                </div>
-        
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                <form onSubmit={onMainSubmit} className={classes.formcontainer}>
+                    <div style={{ width: "100%" }}>
+                        <div className={classes.titleandcrumbs}>
+                            <div style={{ flexGrow: 1 }}>
+                                <TemplateBreadcrumbs
+                                    breadcrumbs={newArrayBread}
+                                    handleClick={setExternalViewSelected}
+                                />
+                                <TitleDetail title={t(langKeys.createssistant)} />
+                            </div>
+                        </div>
+                        <div className={classes.container}>     
+                            <div id="assistant">
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginBottom: 10 }}>
                                     <Button
                                         variant="contained"
                                         type="button"
                                         startIcon={<ArrowBackIcon color="primary" />}
                                         style={{ backgroundColor: '#ffff', color: '#7721AD' }}
-                                        onClick={() => setViewSelected('generativeia')}
+                                        onClick={() => setViewSelected('assistantdetail')}
                                     >
                                         {t(langKeys.return)}
                                     </Button>
-        
                                     <Button
                                         variant="contained"
                                         type="button"
@@ -198,59 +163,51 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                     </Button>
                                 </div>
                             </div>
-        
-                          
                         </div>
-                       
                     </div>
-                </div>
-                <Tabs
-                    value={tabIndex}
-                    onChange={handleChangeTab}
-                    className={classes.tabs}
-                    textColor="primary"
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                >
-                    <AntTab
-                        label={
-                            <div>
-                                <Trans i18nKey={langKeys.assistant_singular} />
-                            </div>
-                        }
-                    />
-                    <AntTab
-                        label={
-                            <div>
-                                <Trans i18nKey={langKeys.parameters} />
-                            </div>
-                        }
-                    />
-                    <AntTab
-                        label={
-                            <div>
-                                <Trans i18nKey={langKeys.training} />
-                            </div>
-                        }
-                    />
-                </Tabs>
-                <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
-                </AntTabPanel>
-                <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail  row={row} setValue={setValue} getValues={getValues} errors={errors} />
-                </AntTabPanel>
-                <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
-                </AntTabPanel>
-
-
-            </form>
-        </>
+                    <Tabs
+                        value={tabIndex}
+                        onChange={handleChangeTab}
+                        className={classes.tabs}
+                        textColor="primary"
+                        indicatorColor="primary"
+                        variant="fullWidth"
+                    >
+                        <AntTab
+                            label={
+                                <div>
+                                    <Trans i18nKey={langKeys.assistant_singular} />
+                                </div>
+                            }
+                        />
+                        <AntTab
+                            label={
+                                <div>
+                                    <Trans i18nKey={langKeys.parameters} />
+                                </div>
+                            }
+                        />
+                        <AntTab
+                            label={
+                                <div>
+                                    <Trans i18nKey={langKeys.training} />
+                                </div>
+                            }
+                        />
+                    </Tabs>
+                    <AntTabPanel index={0} currentIndex={tabIndex}>
+                        <AssistantTabDetail />
+                    </AntTabPanel>
+                    <AntTabPanel index={1} currentIndex={tabIndex}>
+                        <ParametersTabDetail />
+                    </AntTabPanel>
+                    <AntTabPanel index={2} currentIndex={tabIndex}>
+                        <TrainingTabDetail />
+                    </AntTabPanel>
+                </form>
+            </>
         )
     }  else return null;
-
-   
 }
 
 export default CreateAssistant;

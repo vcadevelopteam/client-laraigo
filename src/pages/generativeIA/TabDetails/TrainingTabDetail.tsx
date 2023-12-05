@@ -4,14 +4,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
-import { FieldEdit, FieldSelect, TitleDetail } from "components";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { Box, Button, Card, Grid } from "@material-ui/core";
 import { SynonimsRasaLogo } from "icons";
 import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import TableZyx from "components/fields/table-simple";
 
@@ -31,14 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-interface InventoryTabDetailProps {
-    row: Dictionary | null;
-    setValue: UseFormSetValue<any>;
-    getValues: UseFormGetValues<any>;
-    errors: FieldErrors;
-}
-
-const TrainingTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, getValues, errors }) => {
+const TrainingTabDetail: React.FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
@@ -137,105 +128,83 @@ const TrainingTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, g
     }, [executeResult, waitSave]);
 
     return (
-        <div className={classes.containerDetail}>
-            <div className="row-zyx" style={{marginTop:"1.5rem"}}>
-
-            
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ justifyContent: 'flex-start', gap: '1rem' }}>
-                        <Box className={classes.containerHeader}>
-                            <span className={classes.title}>
-                                {t(langKeys.knowledge_base)}
-                            </span>                               
-                        </Box>
-                        <Box className={classes.containerHeader}>                               
-                            <span>
-                                {t(langKeys.knowledge_based_description)}
-                            </span>
-                        </Box>
-                    </div>                    
-                </div>
-
-                <div className="row-zyx" style={{marginTop:"1.5rem", gap:"1.5rem", alignItems: 'center'}}>
-                    <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', alignItems:'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                </div>
-                                <div style={{ fontWeight: 'bold', paddingBottom:'1rem' }}>{t(langKeys.upload_document)}</div>
-                                <div  style={{ textAlign: 'left' }}>{t(langKeys.upload_document_description)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <div className='col-6' style={{ display: 'flex', justifyContent: 'center', alignItems:'center', width: "50%" }}>
-                                    <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                </div>
-                                <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.import_web_page)}</div>
-                                <div  style={{ textAlign: 'left' }}>{t(langKeys.import_web_page_description)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
-                   
-                </div>
-
-                <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center', marginTop:'3rem' }}>
-                    
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            startIcon={<DeleteIcon color="primary" />}
-                            style={{ backgroundColor: '#ffff', color: '#7721AD' }}
-                        >
-                            {t(langKeys.delete)}
-                        </Button>
-
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<RefreshIcon color="primary" />}
-                            style={{ backgroundColor: '#ffff', color: '#7721AD' }}
-                        >
-                            {t(langKeys.train)}
-                        </Button>
-                    </div>
-
-                    <div style={{ justifyContent: 'flex-start', gap: '1rem' }}>
-                        <Box className={classes.containerHeader}>
-                            <span className={classes.title}>
-                                {t(langKeys.saved_documents)}
-                            </span>
-                        </Box>
-                        <Box className={classes.containerHeader}>
-                            <span >
-                                {t(langKeys.saved_documents_description)}
-                            </span>
-                        </Box>
-                    </div>
-                    
-                </div>
-
-                <div style={{marginTop:'2rem'}}>
-                    <TableZyx
-                        columns={columns}
-                        data={[]}
-                        filterGeneral={false}
-                        useSelection={true}
-                    />
-                </div>
-
-                
-               
-                           
-        
-            </div>
-          
-        </div>
+		<>
+			<div className={classes.containerDetail}>
+				<div className="row-zyx">
+					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+						<div style={{ justifyContent: 'flex-start', gap: '1rem' }}>
+							<span className={classes.title}>
+								{t(langKeys.knowledge_base)}
+							</span>
+							<div style={{marginTop: 10}}>
+								<span>{t(langKeys.knowledge_based_description)}</span>
+							</div>
+						</div>                    
+					</div>
+					<div style={{ marginTop:"1.5rem", justifyContent: 'center', alignItems: 'center', gap:"1.5rem", display: 'flex'}}>
+						<Grid item xs={2} md={1} lg={2} style={{ minWidth: 330 }}>
+							<Card style={{ position: 'relative', width: '100%', padding:"1rem", backgroundColor: '#F5F5F5', cursor: 'pointer' }}>
+								<div style={{ textAlign: 'center', alignContent: 'center' }}>
+									<SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
+									<div style={{ fontWeight: 'bold', paddingBottom:'1rem' }}>{t(langKeys.upload_document)}</div>
+									<div style={{ textAlign: 'left' }}>{t(langKeys.upload_document_description)}</div>
+								</div>
+							</Card>
+						</Grid>
+						<Grid item xs={2} md={1} lg={2} style={{ minWidth: 330 }}>
+							<Card style={{ position: 'relative', width: '100%', padding:"1rem", backgroundColor: '#F5F5F5', cursor: 'pointer' }}>
+								<div style={{ textAlign: 'center', alignContent: 'center' }}>
+									<SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
+									<div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.import_web_page)}</div>
+									<div style={{ textAlign: 'left' }}>{t(langKeys.import_web_page_description)}</div>
+								</div>
+							</Card>
+						</Grid>
+					</div>
+				</div>
+			</div>
+			<div className={classes.containerDetail}>
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+					<div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem', alignItems: 'center' }}>
+						<div>
+							<span className={classes.title}>
+								{t(langKeys.saved_documents)}
+							</span>
+							<div style={{ marginTop: 10 }}>
+								<span>{t(langKeys.saved_documents_description)}</span>
+							</div>
+						</div>
+					</div>
+					<div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', alignItems: 'center' }}>
+						<Button
+							variant="contained"
+							type="button"
+							startIcon={<DeleteIcon color="primary" />}
+							style={{ backgroundColor: '#ffff', color: '#7721AD' }}
+						>
+							{t(langKeys.delete)}
+						</Button>
+						<Button
+							variant="contained"
+							type="button"
+							color="primary"
+							startIcon={<RefreshIcon color="primary" />}
+							style={{ backgroundColor: '#ffff', color: '#7721AD' }}
+						>
+							{t(langKeys.train)}
+						</Button>
+					</div>
+				</div>
+				<div style={{marginTop:'2rem'}}>
+					<TableZyx
+						columns={columns}
+						data={[]}
+						filterGeneral={false}
+						useSelection={true}
+					/>
+				</div>
+			</div>
+		</>
     );
 };
 
