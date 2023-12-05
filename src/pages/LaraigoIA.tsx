@@ -446,6 +446,7 @@ const IATraining: React.FC = () => {
     
     const functionChange = (change:string) => {
         if(change==="view-0"){
+            //empty
         }else{
             setViewSelectedTraining(change);
         }
