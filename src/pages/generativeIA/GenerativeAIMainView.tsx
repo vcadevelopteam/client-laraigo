@@ -8,7 +8,9 @@ import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import TableZyx from "components/fields/table-simple";
 import { Button } from "@material-ui/core";
+import GetAppIcon from '@material-ui/icons/GetApp';
 import ClearIcon from '@material-ui/icons/Clear';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import AddIcon from '@material-ui/icons/Add';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
@@ -99,13 +101,22 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 
     const ButtonsElement = () => {
         return (
-            <div style={{display: 'flex', justifyContent: 'right'}}>           
+            <div style={{display: 'flex', justifyContent: 'right', marginBottom: '1rem'}}>   
+               <Button
+                    variant="contained"
+                    type="button"
+                    startIcon={<GetAppIcon color="primary" />}
+                    style={{ backgroundColor: '#ffff', color: '#7721AD' }}
+                >
+                    {t(langKeys.download)}
+                </Button>     
                 <Button
                     variant="contained"
                     type="button"
                     color="primary"
-                    startIcon={<ClearIcon color="secondary" />}
-                    style={{ backgroundColor: "#FB5F5F" }}
+                    disabled={true}
+                    startIcon={<ClearIcon color="disabled" />}
+                    style={{ backgroundColor: "#grey",marginLeft: 9 }}
                 >{t(langKeys.delete)}
                 </Button>
                 <Button
@@ -162,7 +173,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     data={[]}
                     filterGeneral={false}
                     useSelection={true}
-                    download={true}
                     ButtonsElement={ButtonsElement}
                 />
             </div>

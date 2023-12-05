@@ -156,7 +156,7 @@ const TrainingTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, g
                     </div>                    
                 </div>
 
-                <div className="row-zyx" style={{marginTop:"1.5rem", gap:"1.5rem"}}>
+                <div className="row-zyx" style={{marginTop:"1.5rem", gap:"1.5rem", alignItems: 'center'}}>
                     <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
                         <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
                             <div style={{ textAlign: 'center', alignContent: 'center' }}>

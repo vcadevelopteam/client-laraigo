@@ -108,11 +108,13 @@ const AssistantTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, 
                                     className="col-6"
                                     label={t(langKeys.name)}
                                     type="text"
+                                    maxLength={60}                                    
                                 />
                                 <FieldEdit
                                     className="col-6"
                                     label={t(langKeys.description)}
                                     type="text"
+                                    maxLength={640}                                    
                                 />
         
                                 <FieldSelect
@@ -123,15 +125,17 @@ const AssistantTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, 
                                     className="col-6"
                                 />
                                                 
-                                <FieldEdit
+                                <FieldSelect
                                     className="col-6"
                                     label={t(langKeys.status)}
-                                    type="text"
+                                    data={[]}
+                                    optionDesc="value"
+                                    optionValue="value"
                                 />
                                 <FieldEdit
                                     className="col-12"
                                     label={t(langKeys.apikey)}
-                                    type="text"
+                                    type="password"
                                 />
                             </div>
           
