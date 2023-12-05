@@ -187,10 +187,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
     const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
-    const rolesArray = row?.roledesc.split(',').map((role:string) => role.trim());
+    const rolesArray = (row?.roledesc || '').split(',').map((role: string) => role.trim());
 
-    const [activateSwitchBots, setActivateSwitchBots] = useState(propertyBots?.[0]?.propertyvalue ==="1" &&
-    !rolesArray.some((role:any) => ["GESTOR DE SEGURIDAD", "GESTOR DE CAMPAÑAS", "VISOR SD", "ASESOR"].includes(role)))
+    const [activateSwitchBots, setActivateSwitchBots] = useState(propertyBots?.[0]?.propertyvalue === "1" &&
+        !rolesArray.some((role: any) => ["GESTOR DE SEGURIDAD", "GESTOR DE CAMPAÑAS", "VISOR SD", "ASESOR"].includes(role)))
     const [typeSwitch, settypeSwitch] = useState(row?.type === "ASESOR")
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({
         loading: false,
@@ -297,9 +297,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             let tempdata =
                 resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success
                     ? resFromOrg.data[indexApplications].data.map((x) => ({
-                          ...x,
-                          description: (t(`app_${x.description}`.toLowerCase()) || "").toUpperCase(),
-                      }))
+                        ...x,
+                        description: (t(`app_${x.description}`.toLowerCase()) || "").toUpperCase(),
+                    }))
                     : [];
             tempdata.sort(function (a, b) {
                 if (a.description < b.description) {
@@ -328,7 +328,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             channelsdesc: row ? row.channelsdesc : '', //for table
             supervisor: row ? row.supervisor : '',
             type: row?.type || '',
-            showbots: activateSwitchBots? (row?.showbots || false):true,
+            showbots: activateSwitchBots ? (row?.showbots || false) : true,
             channels: row?.channels || '',
             redirect: row?.redirect || '',
             groups: row?.groups || '',
@@ -376,7 +376,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                     p.map((x) => (x.orgid === row ? { ...x, ...data, operation: x.operation || "UPDATE" } : x))
                 );
 
-        setActivateSwitchBots(propertyBots?.[0]?.propertyvalue ==="1")
+        setActivateSwitchBots(propertyBots?.[0]?.propertyvalue === "1")
         // setOpenModal(false)
     });
 
@@ -415,20 +415,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             case "GESTOR DE SEGURIDAD":
             case "GESTOR DE CAMPAÑAS":
             case "VISOR SD":
-                if(activateSwitchBots) setValue("showbots", false)
+                if (activateSwitchBots) setValue("showbots", false)
                 setValue("type", "SUPERVISOR")
                 settypeSwitch(false)
                 setActivateSwitchBots(false)
-                break;        
+                break;
             default:
-                
-                if(value.slice(-1)[0].roldesc.includes("ASESOR")){
-                    if(activateSwitchBots) setValue("showbots", true)
+
+                if (value.slice(-1)[0].roldesc.includes("ASESOR")) {
+                    if (activateSwitchBots) setValue("showbots", true)
                     setValue("type", "ASESOR")
                     settypeSwitch(true)
                     setActivateSwitchBots(false)
-                }else{
-                    if(propertyBots?.[0]?.propertyvalue ==="1") {
+                } else {
+                    if (propertyBots?.[0]?.propertyvalue === "1") {
                         setActivateSwitchBots(true)
                         setValue("showbots", false)
                     }
@@ -501,8 +501,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                     label={"Balanceo"}
                                     className="col-6"
                                     valueDefault={typeSwitch}
-                                    onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR");
-                                    settypeSwitch(value) }} />
+                                    onChange={(value) => {
+                                        setValue('type', value ? "ASESOR" : "SUPERVISOR");
+                                        settypeSwitch(value)
+                                    }} />
                                 {activateSwitchBots &&
 
                                     <TemplateSwitchYesNo
@@ -625,8 +627,8 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         consecutivecharacters: validateNumbersEqualsConsecutive(
             data?.password || "",
             securityRules?.data?.[0]?.numequalconsecutivecharacterspwd ||
-                securityRules?.data?.[0]?.maxcharacterspwd ||
-                0
+            securityRules?.data?.[0]?.maxcharacterspwd ||
+            0
         ),
         lowercaseletters: validateDomainCharacters(
             data?.password || "",
@@ -712,8 +714,8 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
             consecutivecharacters: validateNumbersEqualsConsecutive(
                 data?.password || "",
                 securityRules?.data?.[0]?.numequalconsecutivecharacterspwd ||
-                    securityRules?.data?.[0]?.maxcharacterspwd ||
-                    0
+                securityRules?.data?.[0]?.maxcharacterspwd ||
+                0
             ),
             lowercaseletters: validateDomainCharacters(
                 data?.password || "",
@@ -792,8 +794,8 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                             consecutivecharacters: validateNumbersEqualsConsecutive(
                                 value,
                                 securityRules?.data?.[0]?.numequalconsecutivecharacterspwd ||
-                                    securityRules?.data?.[0]?.maxcharacterspwd ||
-                                    0
+                                securityRules?.data?.[0]?.maxcharacterspwd ||
+                                0
                             ),
                             lowercaseletters: validateDomainCharacters(
                                 value,
@@ -1647,9 +1649,9 @@ const Users: FC = () => {
             "balanced",
             'showbots',
         ];
-        if (mainMultiResult.data[12].data[0].propertyvalue !=="1") {
-            data.pop(); 
-            header.pop(); 
+        if (mainMultiResult.data[12].data[0].propertyvalue !== "1") {
+            data.pop();
+            header.pop();
         }
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     };
@@ -1831,11 +1833,11 @@ const Users: FC = () => {
                     (f.balanced === undefined ||
                         ["true", "false"].includes(String(f.balanced))) &&
                     (f.role === undefined ||
-                        String(f.role).split(",").every((role:string) => {
+                        (String(f.role) || '').split(",").every((role: string) => {
                             const roleId = parseInt(role.trim(), 10);
                             return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
                         }))
-                        && (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                    && (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                 );
             });
             const messageerrors = datainit
@@ -1896,7 +1898,7 @@ const Users: FC = () => {
                         ) ||
                         !(
                             f.role === undefined ||
-                            String(f.role)
+                            (String(f.role) || '')
                                 .split(",")
                                 .every((role: string) => {
                                     const roleId = parseInt(role.trim(), 10);
@@ -1921,7 +1923,7 @@ const Users: FC = () => {
                     const channelError: Dictionary[] = [];
                     data.forEach((x) => {
                         const pattern = /^(\d+(,\s*\d+)*)?$/;
-                        if(x.channels || x?.channels?.length>0){
+                        if (x.channels || x?.channels?.length > 0) {
                             if (!pattern.test(x.channels)) {
                                 channelError.push(x.email);
                             }
@@ -1930,64 +1932,65 @@ const Users: FC = () => {
                     if (channelError.length === 0) {
                         const table: Dictionary = data.reduce(
                             (a: any, d) => {
-                                const roleids = String(d?.role)?.split(",")||[]
-                                let roles = domains?.value?.roles?.filter(x=>roleids.includes(String(x.roleid)))||[]
-                                let type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
-                                let showbots = d.showbots ==="true"
-                                if(propertyBots?.[0]?.propertyvalue ==="1"){
-                                    if(roles.filter(x=>x.roldesc.includes("ASESOR")).length){
+                                const roleids = (String(d?.role) || '').split(",") || []
+                                let roles = domains?.value?.roles?.filter(x => roleids.includes(String(x.roleid))) || []
+                                let type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
+                                let showbots = d.showbots === "true"
+                                if (propertyBots?.[0]?.propertyvalue === "1") {
+                                    if (roles.filter(x => x.roldesc.includes("ASESOR")).length) {
                                         type = "ASESOR"
-                                        showbots=false
-                                        roles = roles.filter(x=>!x.roldesc.includes("ASESOR"))
+                                        showbots = false
+                                        roles = roles.filter(x => !x.roldesc.includes("ASESOR"))
                                     }
-                                    if(roles.filter(x=>x.roldesc.includes("GESTOR DE SEGURIDAD")).length||roles.filter(x=>x.roldesc.includes("GESTOR DE CAMPAÑAS")).length||roles.filter(x=>x.roldesc.includes("VISOR SD")).length){
+                                    if (roles.filter(x => x.roldesc.includes("GESTOR DE SEGURIDAD")).length || roles.filter(x => x.roldesc.includes("GESTOR DE CAMPAÑAS")).length || roles.filter(x => x.roldesc.includes("VISOR SD")).length) {
                                         type = "SUPERVISOR"
-                                        showbots=false
-                                        roles = roles.filter(x=>!x.roldesc.includes("GESTOR DE SEGURIDAD") && !x.roldesc.includes("GESTOR DE CAMPAÑAS") &&!x.roldesc.includes("VISOR SD"))
+                                        showbots = false
+                                        roles = roles.filter(x => !x.roldesc.includes("GESTOR DE SEGURIDAD") && !x.roldesc.includes("GESTOR DE CAMPAÑAS") && !x.roldesc.includes("VISOR SD"))
                                     }
-                                    if(roles.length){
-                                        type = d.balanced==="true"? "ASESOR" : "SUPERVISOR"
-                                        showbots = d.showbots ==="true"
+                                    if (roles.length) {
+                                        type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
+                                        showbots = d.showbots === "true"
                                     }
                                 }
                                 debugger
                                 return ({
-                                ...a,
-                                [`${d.user}_${d.docnum}`]: {
-                                    id: 0,
-                                    usr: String(d.user || d.email),
-                                    doctype: d.doctype,
-                                    docnum: String(d.docnum),
-                                    password: String(d.password),
-                                    firstname: String(d.firstname),
-                                    lastname: String(d.lastname),
-                                    email: String(d.email),
-                                    showbots: Boolean(d.showbots),
-                                    pwdchangefirstlogin: d.pwdchangefirstlogin==="true",
-                                    type: "NINGUNO",
-                                    status: d.status,
-                                    operation: "INSERT",
-                                    company: d.company,
-                                    twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                                    registercode: String(d.registercode),
-                                    billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
-                                    image: d?.image || "",
-                                    detail: {
-                                        showbots: Boolean(showbots),
-                                        rolegroups: d.role,
-                                        orgid: user?.orgid,
-                                        bydefault: true,
-                                        labels: "",
-                                        groups: d.groups || "",
-                                        channels: d.channels || "",
-                                        status: "DESCONECTADO",
-                                        type: type,
-                                        supervisor: "",
+                                    ...a,
+                                    [`${d.user}_${d.docnum}`]: {
+                                        id: 0,
+                                        usr: String(d.user || d.email),
+                                        doctype: d.doctype,
+                                        docnum: String(d.docnum),
+                                        password: String(d.password),
+                                        firstname: String(d.firstname),
+                                        lastname: String(d.lastname),
+                                        email: String(d.email),
+                                        showbots: Boolean(d.showbots),
+                                        pwdchangefirstlogin: d.pwdchangefirstlogin === "true",
+                                        type: "NINGUNO",
+                                        status: d.status,
                                         operation: "INSERT",
-                                        redirect: "/usersettings",
+                                        company: d.company,
+                                        twofactorauthentication: d.twofactorauthentication === "ACTIVO",
+                                        registercode: String(d.registercode),
+                                        billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
+                                        image: d?.image || "",
+                                        detail: {
+                                            showbots: Boolean(showbots),
+                                            rolegroups: d.role,
+                                            orgid: user?.orgid,
+                                            bydefault: true,
+                                            labels: "",
+                                            groups: d.groups || "",
+                                            channels: d.channels || "",
+                                            status: "DESCONECTADO",
+                                            type: type,
+                                            supervisor: "",
+                                            operation: "INSERT",
+                                            redirect: "/usersettings",
+                                        },
                                     },
-                                },
-                            })},
+                                })
+                            },
                             {}
                         );
                         Object.values(table).forEach((p) => {
