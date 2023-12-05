@@ -293,7 +293,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({
                 row={row}
                 setViewSelected={setViewSelected}
             />
-            <SeeTransactionsDialog openModal={openModalSeeTransactions} setOpenModal={setOpenModalSeeTransactions} />
+            <SeeTransactionsDialog openModal={openModalSeeTransactions} setOpenModal={setOpenModalSeeTransactions}  dataDetail={dataDetail} row={row}/>
             <StatusHistoryDialog openModal={openModalStatusHistory} setOpenModal={setOpenModalStatusHistory} />
             <GenerateLabelDialog row={row} openModal={openModalLabel} setOpenModal={setOpenModalLabel} />
             <GenerateReferralGuideDialog row={row} openModal={openModalReferralGuide} setOpenModal={setOpenModalReferralGuide} />

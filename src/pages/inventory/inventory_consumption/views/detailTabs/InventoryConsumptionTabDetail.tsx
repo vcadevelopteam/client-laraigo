@@ -18,6 +18,7 @@ import SelectReservedProductsDialog from '../../dialogs/SelectReservedProductsDi
 import SelectProductsForReturnDialog from '../../dialogs/SelectProductsForReturnDialog';
 import { getInventoryConsumptionDetail, getWarehouseProducts, inventoryconsumptionsbywarehouseSel, reservationswarehouseSel } from 'common/helpers';
 import { useDispatch } from 'react-redux';
+import AddInventoryConsumptionTransferLineDialog from '../../dialogs/AddInventoryConsumptionTransferLineDialog';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -82,6 +83,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const multiData = useSelector(state => state.main.multiData);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [openModal, setOpenModal] = useState(false);
+    const [openModalTransfer, setOpenModalTransfer] = useState(false);
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
     const [openModalReservedProducts, setOpenModalReservedProducts] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary|null>(null);
@@ -127,12 +129,20 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     }
 
     const handleEdit = (rowSelected: Dictionary) => {
-        setOpenModal(true)
+        if(getValues("transactiontype") === "DESPACHO"){
+            setOpenModal(true)
+        }else{
+            setOpenModalTransfer(true)
+        }
         setRowSelected({ row: rowSelected, edit: true })
     }
 
     const handleRegister = () => {
-        setOpenModal(true)
+        if(getValues("transactiontype") === "DESPACHO"){
+            setOpenModal(true)
+        }else{
+            setOpenModalTransfer(true)
+        }
         setRowSelected({ row: null, edit: false });
     }
 
@@ -324,6 +334,17 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             <AddInventoryConsumptionLineDialog
                 openModal={openModal}
                 setOpenModal={setOpenModal}
+                updateRecords={setDataDetail}
+                rowSelected={rowSelected}
+                warehouseProducts={warehouseProducts}
+                row={row}
+                edit={edit}
+                transactiontype={getValues("transactiontype")}
+                editRow={Boolean(row)}
+            />
+            <AddInventoryConsumptionTransferLineDialog
+                openModal={openModalTransfer}
+                setOpenModal={setOpenModalTransfer}
                 updateRecords={setDataDetail}
                 rowSelected={rowSelected}
                 warehouseProducts={warehouseProducts}

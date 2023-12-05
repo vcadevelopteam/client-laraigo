@@ -4569,10 +4569,10 @@ export const insInventoryConsumption = ({ inventoryconsumptionid, description, o
 });
 
 
-export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype }: Dictionary) => ({
+export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype, warehouseto, rackcodeto, lotecodeto }: Dictionary) => ({
     method: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
     key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
-    parameters: { inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype },
+    parameters: { inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype, warehouseto, rackcodeto, lotecodeto },
 });
 export const inventoryConsumptionComplete = ({ inventoryconsumptionid, status, comment }: Dictionary) => ({
     method: "UFN_INVENTORYCONSUMPTION_PROCESS",

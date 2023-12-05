@@ -5529,7 +5529,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingreport_contactwhatsapp: 'Contactos en Canales WhatsApp',
   billingreport_contactother: 'Contactos en Canales No WhatsApp',
 
-  inventoryconsumptionlines: 'Líneas de Cosumo de Inventario',
+  inventoryconsumptionlines: 'Líneas de Consumo de Inventario',
   line: 'Línea',
   dispatchto: 'Despachar a',
   complete: 'Completar',
