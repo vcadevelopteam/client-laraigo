@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { FieldEdit, FieldSelect, TemplateBreadcrumbs } from "components";
-import { useTranslation } from "react-i18next";
+import { FieldEdit, FieldSelect, TemplateBreadcrumbs, AntTab, AntTabPanel  } from "components";
+import { Trans, useTranslation } from "react-i18next";
 import { resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
-import { showSnackbar, showBackdrop } from "store/popus/actions";
-import { Box, Button, Card, Grid } from "@material-ui/core";
+import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
+import { Box, Button, Card, Grid, Tabs } from "@material-ui/core";
 import SaveIcon from '@material-ui/icons/Save';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { SynonimsRasaLogo } from "icons";
 import GenerativeAIMainView from "./GenerativeAIMainView";
+import { Dictionary } from "@types";
+import { useForm } from "react-hook-form";
+import AssistantTabDetail from "./TabDetails/AssistantTabDetail";
+import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
+import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
+
+
+interface RowSelected {
+    row: Dictionary | null;
+    edit: boolean;
+}
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -26,31 +37,80 @@ const useStyles = makeStyles((theme) => ({
     containerHeader: {      
         marginTop: '1rem',      
     },
+    button: {
+        display: "flex",
+        gap: "10px",
+        alignItems: "center",
+    },
+    tabs: {
+        color: "#989898",
+        backgroundColor: "white",
+    },
+    titleandbuttons: {
+        display: "flex",
+        justifyContent: "space-between",
+    },
+    formcontainer: {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+    },
 }));
 
 interface CreateAssistantProps {
+    data: RowSelected;
     arrayBread: any,
     setViewSelected: (view: string) => void,
     setExternalViewSelected: (view: string) => void
+    fetchData?: () => void;
+
 }
 
+
 const CreateAssistant: React.FC<CreateAssistantProps> = ({
+    data = { row: null, edit: false }, 
     setViewSelected,
+    fetchData,
     arrayBread,
     setExternalViewSelected
 }) => {
+    const { row, edit } = data;
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const [waitSave, setWaitSave] = useState(false);
     const [viewSelectedTraining, setViewSelectedTraining] = useState("createssistant")
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const [tabIndex, setTabIndex] = useState(0);
+    
+
 
     const newArrayBread = [
         ...arrayBread,
         { id: "createssistant", name: t(langKeys.createssistant) },       
     ];
 
-    const [waitSave, setWaitSave] = useState(false);
+    const {
+        register,
+        handleSubmit: handleMainSubmit,
+        setValue,
+        getValues,
+        formState: { errors },
+    } = useForm({
+        defaultValues: {
+            warehouseid: row?.warehouseid || 0,
+            operation: edit ? "EDIT" : "INSERT",
+            type: row?.type || "",
+            name: row?.name || "",
+            description: row?.description || "",
+            address: row?.address || "",
+            phone: row?.phone || "",
+            latitude: row?.latitude || "",
+            longitude: row?.longitude || "",
+            status: row?.status || "ACTIVO",
+        },
+    });
+
 
     useEffect(() => {
         return () => {
@@ -73,108 +133,120 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         }
     }, [executeResult, waitSave])
 
+
+    const onMainSubmit = handleMainSubmit((data) => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            //dispatch(execute(insWarehouse(data)));
+
+            setWaitSave(true);
+        };
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback,
+            })
+        );
+    });
+
+	const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
+        setTabIndex(newIndex);
+    };
+
     if(viewSelectedTraining === 'createssistant') {
         return (
-            <div style={{ width: "100%" }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={newArrayBread}
-                        handleClick={(view) => setExternalViewSelected(view)}
+            <>
+            <form onSubmit={onMainSubmit} className={classes.formcontainer}>
+                <div style={{ width: "100%" }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={newArrayBread}
+                            handleClick={(view) => setExternalViewSelected(view)}
+                        />
+                    </div>
+                    <div className={classes.container}>     
+                        <div id="assistant">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
+                                    <Box className={classes.containerHeader}>
+                                        <span className={classes.title}>
+                                            {t(langKeys.createssistant)}
+                                        </span>
+                                    </Box>
+                                </div>
+        
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        startIcon={<ArrowBackIcon color="primary" />}
+                                        style={{ backgroundColor: '#ffff', color: '#7721AD' }}
+                                        onClick={() => setViewSelected('generativeia')}
+                                    >
+                                        {t(langKeys.return)}
+                                    </Button>
+        
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        color="primary"
+                                        startIcon={<SaveIcon color="secondary" />}
+                                        style={{ backgroundColor: '#55BD84' }}
+                                    >
+                                        {t(langKeys.save)}
+                                    </Button>
+                                </div>
+                            </div>
+        
+                          
+                        </div>
+                       
+                    </div>
+                </div>
+                <Tabs
+                    value={tabIndex}
+                    onChange={handleChangeTab}
+                    className={classes.tabs}
+                    textColor="primary"
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                >
+                    <AntTab
+                        label={
+                            <div>
+                                <Trans i18nKey={langKeys.assistant_singular} />
+                            </div>
+                        }
                     />
-                </div>
-                <div className={classes.container}>     
-                    <div id="assistant">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
-                                <Box className={classes.containerHeader}>
-                                    <span className={classes.title}>
-                                        {t(langKeys.createssistant)}
-                                    </span>
-                                </Box>
+                    <AntTab
+                        label={
+                            <div>
+                                <Trans i18nKey={langKeys.parameters} />
                             </div>
-    
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    startIcon={<ArrowBackIcon color="primary" />}
-                                    style={{ backgroundColor: '#ffff', color: '#7721AD' }}
-                                    onClick={() => setViewSelected('generativeia')}
-                                >
-                                    {t(langKeys.return)}
-                                </Button>
-    
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    color="primary"
-                                    startIcon={<SaveIcon color="secondary" />}
-                                    style={{ backgroundColor: '#55BD84' }}
-                                >
-                                    {t(langKeys.save)}
-                                </Button>
+                        }
+                    />
+                    <AntTab
+                        label={
+                            <div>
+                                <Trans i18nKey={langKeys.training} />
                             </div>
-                        </div>
-    
-                        <div className="row-zyx" style={{marginTop:"1.5rem"}}>
-                            <FieldEdit
-                                className="col-6"
-                                label={t(langKeys.name)}
-                                type="text"
-                            />
-                            <FieldEdit
-                                className="col-6"
-                                label={t(langKeys.description)}
-                                type="text"
-                            />
-    
-                            <FieldSelect
-                                label={t(langKeys.basemodel)}
-                                data={[]}
-                                optionDesc="value"
-                                optionValue="value"
-                                className="col-6"
-                            />
-                                            
-                            <FieldEdit
-                                className="col-6"
-                                label={t(langKeys.status)}
-                                type="text"
-                            />
-                            <FieldEdit
-                                className="col-12"
-                                label={t(langKeys.apikey)}
-                                type="text"
-                            />
-                        </div>
-                    </div>
-                    <div id="parameters">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
-                                <Box className={classes.containerHeader}>
-                                    <span className={classes.title}>
-                                        {t(langKeys.personality)}
-                                    </span>
-                                </Box>
-                            </div>                    
-                        </div>
-    
-                        <div className="row-zyx" style={{marginTop:"1.5rem"}}>
-                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330, display: 'flex'}}>
-                                <Card style={{ position: 'relative', width: '80%' }}>
-                                    <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <SynonimsRasaLogo style={{ height: 220, width:"100%" }} />
-                                        </div>
-                                        <div style={{ fontWeight: 'bold' }}>{t(langKeys.employeeaplication)}</div>
-                                        <div>{t(langKeys.sinonimsdescription)}</div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        }
+                    />
+                </Tabs>
+                <AntTabPanel index={0} currentIndex={tabIndex}>
+                    <AssistantTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
+                </AntTabPanel>
+                <AntTabPanel index={1} currentIndex={tabIndex}>
+                    <ParametersTabDetail  row={row} setValue={setValue} getValues={getValues} errors={errors} />
+                </AntTabPanel>
+                <AntTabPanel index={2} currentIndex={tabIndex}>
+                    <TrainingTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
+                </AntTabPanel>
+
+
+            </form>
+        </>
         )
     }  else return null;
 

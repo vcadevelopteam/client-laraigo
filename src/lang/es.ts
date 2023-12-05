@@ -5455,6 +5455,31 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   personality: "Personalidad",
   generativeiamodels: "Modelos IA Generativa",
   chat: "Chatear",
+  assistant_singular: "Asistente",
+  help_desk_clerk:"Empleado de mesa de ayuda",
+  customer_service:"Servicio al Cliente",
+  sales_expert:"Experto en Ventas",
+  technical_support:"Soporte Técnico",
+  ai_base:"Base AI",
+  custom_mode:"Modo Personalizado",
+  help_desk_clerk_description:"Ayuda a abordar la consulta de los empleados y las directrices de recursos humanos.",
+  customer_service_description:"Ofrece soluciones rápidas y efectivas a las consultas de los clientes.",
+  sales_expert_description:"Dominio en relaciones, persuasión y cierre de ventas.",
+  technical_support_description:"Proporciona soporte técnico y ofrece ayuda para solucionar problemas.",
+  ai_base_description:"Utiliza el modelo base, sin una base de conocimiento adicional.",
+  custom_mode_description:"Personaliza los parámetros de tu IA.",
+
+  knowledge_base:"Base de Conocimiento",
+  upload_document:"Subir Documento",
+  import_web_page:"Importar Página Web",
+  knowledge_based_description:"Puedes agregar conocimiento, subiendo un documento o importando una página web.",
+  upload_document_description:"Permitirá subir un documento (PDF, Word, PPT, TXT).",
+  import_web_page_description:"Permitirá importar una página web con la cual se podrá entrenar a la IA.",
+  saved_documents: "Documentos Guardados",
+  saved_documents_description: "Mostrará una tabla en la cual se registrarán todos los documentos que se han subido, para la base de conocimiento de la IA.",
+  upload: "Subida",
+
+
 };
 
 const esResource: ResourceLanguage = {
