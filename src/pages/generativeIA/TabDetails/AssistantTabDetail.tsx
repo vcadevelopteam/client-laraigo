@@ -107,7 +107,7 @@ const AssistantTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, 
                                 <FieldEdit
                                     className="col-6"
                                     label={t(langKeys.name)}
-                                    type="text"
+                                    type="string"
                                     maxLength={60}                                    
                                 />
                                 <FieldEdit
@@ -119,7 +119,12 @@ const AssistantTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, 
         
                                 <FieldSelect
                                     label={t(langKeys.basemodel)}
-                                    data={[]}
+                                    data={[
+                                        { value: 'GPT 3.5 Turbo', label: 'GPT 3.5 Turbo' },
+                                        { value: 'GPT 4', label: t('GPT 4') },
+                                        { value: 'GPT 4 Turbo', label: 'GPT 4 Turbo' },
+                                        { value: 'Llama 2', label:'Llama 2' },
+                                    ]}
                                     optionDesc="value"
                                     optionValue="value"
                                     className="col-6"
@@ -128,7 +133,10 @@ const AssistantTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, 
                                 <FieldSelect
                                     className="col-6"
                                     label={t(langKeys.status)}
-                                    data={[]}
+                                    data={[
+                                        { value: t(langKeys.active), label: t(langKeys.active) },
+                                        { value: t(langKeys.inactive), label: t(langKeys.inactive) },
+                                    ]}                                    
                                     optionDesc="value"
                                     optionValue="value"
                                 />

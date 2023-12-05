@@ -10,7 +10,6 @@ import TableZyx from "components/fields/table-simple";
 import { Button } from "@material-ui/core";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ClearIcon from '@material-ui/icons/Clear';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import AddIcon from '@material-ui/icons/Add';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
@@ -179,6 +178,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         )
     } else if(viewSelectedTraining === 'createassistant') {
         return <CreateAssistant
+            data={{row: null, edit: false}}
             arrayBread={newArrayBread}
             setViewSelected={setViewSelectedTraining}
             setExternalViewSelected={setViewSelected}
