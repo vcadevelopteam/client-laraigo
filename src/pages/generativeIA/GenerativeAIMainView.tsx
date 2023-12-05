@@ -10,7 +10,9 @@ import TableZyx from "components/fields/table-simple";
 import { Button } from "@material-ui/core";
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
+import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
+import ChatAI from "./ChatAI";
 
 const useStyles = makeStyles((theme) => ({
     titleandcrumbs: {
@@ -33,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface GenerativeAIMainViewProps {
-    setViewSelected: (view: string) => void;
     arrayBread: any;
+    setViewSelected: (view: string) => void;  
 }
 
 const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({ 
@@ -49,8 +51,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 
     const newArrayBread = [
         ...arrayBread,
-        { id: "generativeia", name: t(langKeys.generativeia) },
-        { id: "generativeia", name: t(langKeys.generativeiamodels)}
+        { id: "generativeia", name: t(langKeys.generativeia) },       
     ];
 
     const [waitSave, setWaitSave] = useState(false);
@@ -115,7 +116,16 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     style={{ backgroundColor: "#55BD84", marginLeft: 9 }}
                     onClick={() => setViewSelectedTraining("createassistant")}
                 >{t(langKeys.createssistant)}
-                </Button>        
+                </Button> 
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ChatBubbleIcon color="secondary" />}
+                    style={{ backgroundColor: "#55BD84", marginLeft: 9 }}
+                    onClick={() => setViewSelectedTraining("chatai")}
+                >{t(langKeys.chat)}
+                </Button>            
             </div>        
         )
     }
@@ -159,6 +169,12 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         )
     } else if(viewSelectedTraining === 'createassistant') {
         return <CreateAssistant
+            arrayBread={newArrayBread}
+            setViewSelected={setViewSelectedTraining}
+            setExternalViewSelected={setViewSelected}
+        />
+    } else if(viewSelectedTraining === 'chatai') {
+        return <ChatAI
             arrayBread={newArrayBread}
             setViewSelected={setViewSelectedTraining}
             setExternalViewSelected={setViewSelected}

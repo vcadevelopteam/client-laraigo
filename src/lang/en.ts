@@ -5527,6 +5527,7 @@ const translation: LangKeys = {
   createssistant: "Create Assistant",
   personality: "Personality",
   generativeiamodels: "Generative AI Models",
+  chat: "Chat",
 };
 
 const enResource: ResourceLanguage = {
