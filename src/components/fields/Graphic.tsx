@@ -319,6 +319,25 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             ) : (graphicType === "BAR" ? (
                 <div style={{ display: 'flex' }}>
                     <div style={{ flex: '0 0 70%', height: 500 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
+                            <Button
+                                color="primary"
+                                onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
+                                disabled={currentPage === 0}
+                            >
+                                <KeyboardArrowLeftIcon />
+                            </Button>
+                            <div>
+                            {`${currentPage + 1} de ${Math.ceil(dataGraphic.length / itemsPerPage)}`}
+                            </div>
+                            <Button
+                                color="primary"
+                                onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                                disabled={(currentPage + 1) * itemsPerPage >= dataGraphic.length}
+                            >
+                                <KeyboardArrowRightIcon />
+                            </Button>
+                        </div>
                         <ResponsiveContainer aspect={4.0 / 2}>
                             <BarChart
                                 data={slicedData}
@@ -339,26 +358,6 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
-                        <div style={{ height: 40 }} />
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-                            <Button
-                                color="primary"
-                                onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
-                                disabled={currentPage === 0}
-                            >
-                                <KeyboardArrowLeftIcon />
-                            </Button>
-                            <div>
-                            {`${currentPage + 1} de ${Math.ceil(dataGraphic.length / itemsPerPage)}`}
-                            </div>
-                            <Button
-                                color="primary"
-                                onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                                disabled={(currentPage + 1) * itemsPerPage >= dataGraphic.length}
-                            >
-                                <KeyboardArrowRightIcon />
-                            </Button>
-                        </div>
                     </div>
                     <div style={{ overflowX: 'auto' }}>
                         <TableResume
