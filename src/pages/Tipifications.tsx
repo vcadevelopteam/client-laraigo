@@ -718,7 +718,6 @@ const Tipifications: FC = () => {
         }))
     }
 
-
     const importCSV = async (files: any[]) => {
         const file = files[0];
         if (file) {
@@ -737,6 +736,7 @@ const Tipifications: FC = () => {
                         title: x.classification,
                         description: x.description,
                         communicationchannel: x.channels,
+                        jobplan: JSON.stringify([{action: x.action, type: x.type, variable: x.variable, endpoint: x.endpoint, data: x.data}]),
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
@@ -754,21 +754,44 @@ const Tipifications: FC = () => {
         }
     }
 
+    const datachannels = mainResult?.multiData?.data?.[2]?.data || [];
+
+    const filteredChannels = datachannels
+    .filter((channel) => channel && channel.domaindesc)     
+    .reduce((filteredChannels, channel) => {
+      let isUnique = true;
+      filteredChannels.forEach((uniqueChannel: Dictionary) => {
+        if (uniqueChannel.domaindesc === channel.domaindesc) {
+          isUnique = false;
+        }
+      });  
+      if (isUnique) {
+        filteredChannels.push(channel);
+      }  
+      return filteredChannels;
+    }, [] as Dictionary[]);
+
+    const dataTypeAction = [
+        { dat: "Simple" },
+        { dat: "Variable" },
+        { dat: "Request" }
+    ]
+
     const handleTemplate = () => {
         const data = [
             {},
             {},
-            mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
+            filteredChannels.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
             {},
             mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
             mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {}),
             {},
-            {},
+            dataTypeAction.reduce((a,d) => ({...a, [d.dat]: d.dat}), {}),
             {},
             {},
             {},
         ];
-        const header = ['Clasificación', 'Descripción', 'Canales', 'Tag', 'Padre', 'Estado', 'Acción', 'Tipo', 'Variable', 'Endpoint', 'Data'];
+        const header = ['classification', 'description', 'channels', 'tag', 'parent', 'status', 'action', 'type', 'variable', 'endpoint', 'data'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
