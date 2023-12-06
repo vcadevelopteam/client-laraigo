@@ -5466,6 +5466,15 @@ export const langKeys = {
   amountwithmembershipdiscount: "amountwithmembershipdiscount",
   amountnotapplicabletodiscount: "amountnotapplicabletodiscount",
   contactsincludedinplan: "contactsincludedinplan",
+  orderby: 'orderby',
+  trafficlightconfig: 'trafficlightconfig',
+  opportunityhours: 'opportunityhours',
+  maxtimegreen: 'maxtimegreen',
+  maxtimeamber: 'maxtimeamber',
+  start: 'start',
+  end: 'end',
+  trafficlight: 'trafficlight',
+  trafficindividualconfig: 'trafficindividualconfig',
 };
 
 export type LangKeys = typeof langKeys;

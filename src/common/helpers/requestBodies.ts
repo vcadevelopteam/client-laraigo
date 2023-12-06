@@ -4168,3 +4168,20 @@ export const templatesChatflowClone = ({chatblockid,communicationchannelid,prop_
     key: "UFN_CHATFLOW_BLOCK_TEMPLATE_CLONE",
     parameters: { chatblockid,communicationchannelid,prop_value },
 });
+export const insOrderConfig = ({ id, orderconfig, type, status, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_ORDERCONFIG_INS",
+    key: "UFN_ORDERCONFIG_INS",
+    parameters: { id, orderconfig, type, status, operation }
+});
+
+export const selOrderConfig = () => ({
+    method: "UFN_ORDERCONFIG_SEL",
+    key: "UFN_ORDERCONFIG_SEL",
+    parameters: {},
+});
+
+export const insLeadConfig = ({ id, maxgreen, maxyellow }: Dictionary): IRequestBody => ({
+    method: "UFN_LEAD_CONFIG_INS",
+    key: "UFN_LEAD_CONFIG_INS",
+    parameters: { id, maxgreen, maxyellow }
+});

@@ -5479,6 +5479,16 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   amountwithmembershipdiscount: "Monto con descuento de socio",
   amountnotapplicabletodiscount: "Monto no aplicable a descuento",
   contactsincludedinplan: "Cantidad de contactos incluidos en el plan",
+  orderby: 'Ordenar por:',
+  trafficlightconfig: 'Configuración de semáforo',
+  opportunityhours: 'Horario de atención de oportunidades',
+  maxtimegreen: 'Tiempo max. semáforo verde (minutos)',
+  maxtimeamber: 'Tiempo max. semáforo ámbar (minutos)',
+  start: 'Inicio',
+  end: 'Fin',
+  trafficlight: 'Semáforo',
+  trafficindividualconfig: 'Configuración individual semáforo',
+  finish: "Finalizar",
 };
 
 const esResource: ResourceLanguage = {

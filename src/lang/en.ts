@@ -5553,6 +5553,15 @@ const translation: LangKeys = {
   amountwithmembershipdiscount: "Amount with membership discount",
   amountnotapplicabletodiscount: "Amount not applicable to discount",
   contactsincludedinplan: "Number of contacts included in the plan",
+  orderby: 'Order by:',
+  trafficlightconfig: 'Traffic light configuration',
+  opportunityhours: 'Opportunity Business Hours',
+  maxtimegreen: 'Green light max. time (minutes)',
+  maxtimeamber: 'Amber light max. time (minutes)',
+  start: 'Start',
+  end: 'End',
+  trafficlight: 'Traffic light',
+  trafficindividualconfig: 'Traffic light individual configuration',
 };
 
 const enResource: ResourceLanguage = {
