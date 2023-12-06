@@ -2066,7 +2066,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
     const [enableVirtual, setEnableVirtual] = useState<number|null>(null);
-    const [coloricon, setcoloricon] = useState("#7721ad");
+    const [coloricon, setColoricon] = useState("#7721ad");
     const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
 

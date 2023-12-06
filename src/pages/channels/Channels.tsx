@@ -282,12 +282,12 @@ export const Channels: FC = () => {
                 Header: "",
                 accessor: 'haveflow',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: { cell: { row: { original: { haveflow: boolean; }; }; }; }) => {
                     const { haveflow } = props.cell.row.original;
-                    if(haveflow){
+                    if (haveflow) {
                         return <div></div>
-                    }else{
-                        return <div style={{display:"flex", alignItems:"center", color: "#7721ad", fontWeight:"bold"}}><SettingsIcon/>{t(langKeys.configure)}</div>
+                    } else {
+                        return <div style={{ display: "flex", alignItems: "center", color: "#7721ad", fontWeight: "bold" }}><SettingsIcon />{t(langKeys.configure)}</div>
                     }
                 }
             },
@@ -337,7 +337,7 @@ export const Channels: FC = () => {
 
             history.push(paths.CHANNELS_ADD, {
                 row: null,
-                typeWhatsApp: 'NONE',
+                typeWhatsApp: "NONE",
             });
         }
     }, [canRegister]);

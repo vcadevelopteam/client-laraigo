@@ -193,7 +193,11 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
     if (edit && !channel) {
         return <div />;
     }
-
+    if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
+    }
     if (viewSelected === "view1") {
         if (registerInfobip) {
             return (

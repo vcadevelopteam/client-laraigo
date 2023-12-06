@@ -1038,7 +1038,7 @@ export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
                             <div style={{ paddingLeft: "80%" }}>
                                 <Button
                                     onClick={() => {
-                                        history.push(paths.CHANNELS);
+                                        setViewSelected("enable-virtual-assistant")
                                     }}
                                     className={classes.button}
                                     disabled={channelreg}
