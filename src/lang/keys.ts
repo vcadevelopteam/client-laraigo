@@ -5466,7 +5466,11 @@ export const langKeys = {
   saved_documents_description: "saved_documents_description",
   upload: "upload",
 
-
+  uploadFileText: "uploadFileText",
+  uploadURLText: "uploadURLText",
+  importWebsite: "importWebsite",
+  clicktouploadfiles: "clicktouploadfiles",
+  maximun10files: "maximun10files",
 };
 
 export type LangKeys = typeof langKeys;

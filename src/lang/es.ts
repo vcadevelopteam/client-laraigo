@@ -5479,7 +5479,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   saved_documents_description: "Mostrará una tabla en la cual se registrarán todos los documentos que se han subido, para la base de conocimiento de la IA.",
   upload: "Subida",
 
-
+  uploadFileText: "Permitirá subir un documento (PDF, Word, PPT, TXT).",
+  uploadURLText: "Permitirá importar una página web con la cual se podrá entrenar a la IA.",
+  importWebsite: "Importar Website",
+  clicktouploadfiles: "Click para subir archivos o arrastra y suelta",
+  maximun10files: "Máximo 10 archivos puede ser PDF, Word, PPT, TXT.",
 };
 
 const esResource: ResourceLanguage = {

@@ -5551,6 +5551,11 @@ const translation: LangKeys = {
   saved_documents_description: "Will display a table in which all the documents that have been uploaded will be recorded, for the AI knowledge base.",
   upload: "Upload",
 
+  uploadFileText: "It will allow you to upload a document (PDF, Word, PPT, TXT).",
+  uploadURLText: "It will allow importing a web page with which AI can be trained.",
+  importWebsite: "Import Website",
+  clicktouploadfiles: "Click to upload files or drag and drop",
+  maximun10files: "Maximum 10 files can be PDF, Word, PPT, TXT.",
 };
 
 const enResource: ResourceLanguage = {
