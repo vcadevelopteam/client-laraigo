@@ -1,65 +1,104 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, Checkbox, FormControlLabel } from '@material-ui/core';
-import { ColorInput, FieldEdit, IOSSwitch } from 'components';
-import { Trans, useTranslation } from 'react-i18next';
-import clsx from 'clsx';
-import { langKeys } from 'lang/keys';
-import { ColorChangeHandler } from 'react-color';
-import { Close } from '@material-ui/icons';
-import { useHistory, useLocation } from 'react-router';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { IChannel, IFormWebAdd, IChatWebAddFormField } from '@types';
-import { useDispatch } from 'react-redux';
-import { editChannel as getEditChannel, insertChannel2, resetInsertChannel, resetEditChannel } from 'store/channel/actions';
-import { useSelector } from 'hooks';
-import { showSnackbar } from 'store/popus/actions';
-import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
-import paths from 'common/constants/paths';
-import { apiUrls } from 'common/constants';
+import { ColorInput, FieldEdit, IOSSwitch } from "components";
+import { Trans, useTranslation } from "react-i18next";
+import { langKeys } from "lang/keys";
+import { ColorChangeHandler } from "react-color";
+import { Close } from "@material-ui/icons";
+import { useHistory, useLocation } from "react-router";
+import { useForm, UseFormReturn } from "react-hook-form";
+import { IChannel, IFormWebAdd, IChatWebAddFormField } from "@types";
+import { useDispatch } from "react-redux";
+import { apiUrls } from "common/constants";
 import { TabPanel } from "pages/crm/components";
+import { useSelector } from "hooks";
+import { showSnackbar } from "store/popus/actions";
+import { getEditChatWebChannel, getInsertChatwebChannel } from "common/helpers";
+
+import {
+    editChannel as getEditChannel,
+    insertChannel2,
+    resetInsertChannel,
+    resetEditChannel,
+} from "store/channel/actions";
+
+import {
+    AppBar,
+    Box,
+    Button,
+    makeStyles,
+    Link,
+    Tab,
+    Tabs,
+    Typography,
+    TextField,
+    Grid,
+    Select,
+    IconButton,
+    FormControl,
+    MenuItem,
+    Divider,
+    Breadcrumbs,
+    Checkbox,
+    FormControlLabel,
+} from "@material-ui/core";
+
+import React, { FC, useEffect, useRef, useState } from "react";
+import paths from "common/constants/paths";
+import clsx from "clsx";
 
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IFormWebAdd>, index: number) => React.ReactNode;
+    node: (
+        onClose: (key: string) => void,
+        data: IChatWebAddFormField,
+        form: UseFormReturn<IFormWebAdd>,
+        index: number
+    ) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 
 const isEmpty = (str?: string) => {
     return !str || str.length === 0;
-}
+};
 
-const useTabInterfacetyles = makeStyles(theme => ({
+const useTabInterfacetyles = makeStyles((theme) => ({
     text: {
         fontWeight: 500,
         fontSize: 16,
-        color: '#381052',
+        color: "#381052",
     },
     icon: {
-        '&:hover': {
-            cursor: 'pointer',
+        "&:hover": {
+            cursor: "pointer",
             color: theme.palette.primary.main,
-        }
+        },
     },
     imgContainer: {
         borderRadius: 20,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         width: 157,
         height: 90,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
     },
     img: {
-        height: '80%',
-        width: 'auto',
+        height: "80%",
+        width: "auto",
     },
 }));
 
 const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
-    const { setValue, getValues, formState: { errors } } = form;
+    const {
+        setValue,
+        getValues,
+        formState: { errors },
+    } = form;
+
     const classes = useTabInterfacetyles();
+
     const { t } = useTranslation();
-    const [recaptcha, setrecaptcha] = useState(getValues('extra.recaptcha'));
+
+    const [recaptcha, setRecaptcha] = useState(getValues("extra.recaptcha"));
 
     return (
         <Grid container direction="column">
@@ -75,11 +114,11 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder={t(langKeys.formHeaderTitle)} // "Título de la cabecera del chat"
+                                placeholder={t(langKeys.formHeaderTitle)}
                                 name="titulo"
                                 size="small"
-                                defaultValue={getValues('extra.titleform')}
-                                onChange={(e) => setValue('extra.titleform', e.target.value)}
+                                defaultValue={getValues("extra.titleform")}
+                                onChange={(e) => setValue("extra.titleform", e.target.value)}
                                 error={!isEmpty(errors?.extra?.titleform?.message)}
                                 helperText={errors?.extra?.titleform?.message}
                             />
@@ -102,8 +141,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                                 placeholder={t(langKeys.formFooterText)}
                                 name="footer"
                                 size="small"
-                                defaultValue={getValues('extra.footerform')}
-                                onChange={(e) => setValue('extra.footerform', e.target.value)}
+                                defaultValue={getValues("extra.footerform")}
+                                onChange={(e) => setValue("extra.footerform", e.target.value)}
                             />
                         </Grid>
                     </Grid>
@@ -124,8 +163,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                                 placeholder={t(langKeys.submitButtomText)}
                                 name="subtitulo"
                                 size="small"
-                                defaultValue={getValues('extra.textButtonSend')}
-                                onChange={(e) => setValue('extra.textButtonSend', e.target.value)}
+                                defaultValue={getValues("extra.textButtonSend")}
+                                onChange={(e) => setValue("extra.textButtonSend", e.target.value)}
                                 error={!isEmpty(errors?.extra?.textButtonSend?.message)}
                                 helperText={errors?.extra?.textButtonSend?.message}
                             />
@@ -148,8 +187,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                                 placeholder={t(langKeys.thankyoupagetext)}
                                 name="subtitulo"
                                 size="small"
-                                defaultValue={getValues('extra.urlThanks')}
-                                onChange={(e) => setValue('extra.urlThanks', e.target.value)}
+                                defaultValue={getValues("extra.urlThanks")}
+                                onChange={(e) => setValue("extra.urlThanks", e.target.value)}
                                 error={!isEmpty(errors?.extra?.urlThanks?.message)}
                                 helperText={errors?.extra?.urlThanks?.message}
                             />
@@ -161,17 +200,20 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>
-                                reCAPTCHA
-                            </label>
+                            <label className={classes.text}>reCAPTCHA</label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <FormControlLabel
                                 checked={recaptcha}
-                                control={<Checkbox 
-                                    onChange={(e) => {setrecaptcha(e.target.checked);setValue('extra.recaptcha', e.target.checked)}}
-                                    color="primary" />}
-                                //onChange={(e) => {setValue('extra.recaptcha', e.target.value === "true")}}
+                                control={
+                                    <Checkbox
+                                        onChange={(e) => {
+                                            setRecaptcha(e.target.checked);
+                                            setValue("extra.recaptcha", e.target.checked);
+                                        }}
+                                        color="primary"
+                                    />
+                                }
                                 label={t(langKeys.recaptchaCheckbox)}
                                 labelPlacement="top"
                             />
@@ -181,17 +223,17 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
             </Grid>
         </Grid>
     );
-}
+};
 
-const useTabColorStyles = makeStyles(theme => ({
+const useTabColorStyles = makeStyles((theme) => ({
     text: {
         fontWeight: 500,
         fontSize: 16,
-        color: '#381052',
+        color: "#381052",
     },
     backdrop: {
         zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
+        color: "#fff",
     },
     colorOption: {
         width: 28,
@@ -206,29 +248,28 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const { t } = useTranslation();
     const { setValue, getValues } = form;
     const classes = useTabColorStyles();
-    const [colotBackgroundButton, setcolotBackgroundButton] = useState(getValues('extra.colotBackgroundButton'));
-    const [colorButtonLabel, setcolorButtonLabel] = useState(getValues('extra.colorButtonLabel'));
-    const [colorBackgroundForm, setColorBackgroundForm] = useState(getValues('extra.colorBackgroundForm'));
-    const [colorLabel, setColorLabel] = useState(getValues('extra.colorLabel'));
+    const [colotBackgroundButton, setColotBackgroundButton] = useState(getValues("extra.colotBackgroundButton"));
+    const [colorButtonLabel, setColorButtonLabel] = useState(getValues("extra.colorButtonLabel"));
+    const [colorBackgroundForm, setColorBackgroundForm] = useState(getValues("extra.colorBackgroundForm"));
+    const [colorLabel, setColorLabel] = useState(getValues("extra.colorLabel"));
 
     const handlecolotBackgroundButtonChange: ColorChangeHandler = (e) => {
-        setcolotBackgroundButton(e.hex);
-        setValue('extra.colotBackgroundButton', e.hex);
-    }
+        setColotBackgroundButton(e.hex);
+        setValue("extra.colotBackgroundButton", e.hex);
+    };
 
     const handleColorLabelChange: ColorChangeHandler = (e) => {
         setColorLabel(e.hex);
-        setValue('extra.colorLabel', e.hex);
-    }
+        setValue("extra.colorLabel", e.hex);
+    };
     const handleColorBackgroundFormChange: ColorChangeHandler = (e) => {
         setColorBackgroundForm(e.hex);
-        setValue('extra.colorBackgroundForm', e.hex);
-    }
+        setValue("extra.colorBackgroundForm", e.hex);
+    };
     const handleColorButtonLabelChange: ColorChangeHandler = (e) => {
-        setcolorButtonLabel(e.hex);
-        setValue('extra.colorButtonLabel', e.hex);
-    }
-
+        setColorButtonLabel(e.hex);
+        setValue("extra.colorButtonLabel", e.hex);
+    };
 
     return (
         <Grid container direction="row">
@@ -259,7 +300,7 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>            
+            </Grid>
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -289,7 +330,7 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
                 </Grid>
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={0.5} color="textPrimary">
                     {t(langKeys.inputstyles)}
                 </Box>
                 <TextField
@@ -298,13 +339,13 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
                     minRows={5}
                     maxRows={10}
                     fullWidth
-                    defaultValue={getValues('extra.stylesCSSInput')}
-                    onChange={e => setValue('extra.stylesCSSInput', e.target.value)}
+                    defaultValue={getValues("extra.stylesCSSInput")}
+                    onChange={(e) => setValue("extra.stylesCSSInput", e.target.value)}
                 />
             </Grid>
             <div style={{ height: 20 }} />
             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={0.5} color="textPrimary">
                     {t(langKeys.buttonstyles)}
                 </Box>
                 <TextField
@@ -313,20 +354,20 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
                     minRows={5}
                     maxRows={10}
                     fullWidth
-                    defaultValue={getValues('extra.stylesCSSButton')}
-                    onChange={e => setValue('extra.stylesCSSButton', e.target.value)}
+                    defaultValue={getValues("extra.stylesCSSButton")}
+                    onChange={(e) => setValue("extra.stylesCSSButton", e.target.value)}
                 />
             </Grid>
         </Grid>
     );
-}
+};
 
-const useTemplateStyles = makeStyles(theme => ({
+const useTemplateStyles = makeStyles((theme) => ({
     root: {
         border: `${theme.palette.primary.main} 1px solid`,
         borderRadius: 4,
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
         padding: theme.spacing(3),
         margin: theme.spacing(1),
     },
@@ -334,20 +375,20 @@ const useTemplateStyles = makeStyles(theme => ({
         fontWeight: 700,
         fontSize: 20,
         color: theme.palette.primary.main,
-        margin: '0 0 12 0',
+        margin: "0 0 12 0",
     },
     text: {
         fontWeight: 500,
         fontSize: 16,
-        color: '#381052',
+        color: "#381052",
     },
     fieldContainer: {
         margin: theme.spacing(1),
     },
     headertitle: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
     },
     closeBtn: {
         border: `${theme.palette.primary.main} 1px solid`,
@@ -363,7 +404,11 @@ interface NameTemplateProps {
 }
 
 const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index }) => {
-    const { setValue, register, formState: { errors } } = form;
+    const {
+        setValue,
+        register,
+        formState: { errors },
+    } = form;
     const classes = useTemplateStyles();
     const { t } = useTranslation();
     const [required, setRequired] = useState(data.required);
@@ -371,14 +416,12 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
     const handleRequired = (checked: boolean) => {
         setRequired(checked);
         data.required = checked;
-    }
+    };
 
     return (
         <div className={classes.root}>
             <div className={classes.headertitle}>
-                <label className={clsx(classes.title, classes.fieldContainer)}>
-                    {title}
-                </label>
+                <label className={clsx(classes.title, classes.fieldContainer)}>{title}</label>
                 <IconButton color="primary" onClick={onClose} className={classes.closeBtn}>
                     <Close color="primary" className="fa fa-plus-circle" />
                 </IconButton>
@@ -398,7 +441,13 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                                 </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <IOSSwitch checked={required} onChange={(_, v) => { handleRequired(v); form.setValue(`form.${index}.required`, v) }} />
+                                                <IOSSwitch
+                                                    checked={required}
+                                                    onChange={(_, v) => {
+                                                        handleRequired(v);
+                                                        form.setValue(`form.${index}.required`, v);
+                                                    }}
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -414,16 +463,16 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
                                                     {...register(`form.${index}.label`, {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                        })
-                                                    }
+                                                        validate: (value: any) =>
+                                                            value?.length || t(langKeys.field_required),
+                                                    })}
                                                     placeholder={t(langKeys.label)}
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => {
-                                                        setValue(`form.${index}.label`, e.target.value)
-                                                        data.label = e.target.value
+                                                    onChange={(e) => {
+                                                        setValue(`form.${index}.label`, e.target.value);
+                                                        data.label = e.target.value;
                                                     }}
                                                     defaultValue={data.label}
                                                     error={!isEmpty(errors?.form?.[index]?.label?.message)}
@@ -449,9 +498,9 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => {
-                                                        form.setValue(`form.${index}.placeholder`, e.target.value)
-                                                        data.placeholder = e.target.value
+                                                    onChange={(e) => {
+                                                        form.setValue(`form.${index}.placeholder`, e.target.value);
+                                                        data.placeholder = e.target.value;
                                                     }}
                                                     defaultValue={data.placeholder}
                                                 />
@@ -473,9 +522,9 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => {
-                                                        form.setValue(`form.${index}.validationtext`, e.target.value)
-                                                        data.validationtext = e.target.value
+                                                    onChange={(e) => {
+                                                        form.setValue(`form.${index}.validationtext`, e.target.value);
+                                                        data.validationtext = e.target.value;
                                                     }}
                                                     defaultValue={data.validationtext}
                                                 />
@@ -487,7 +536,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                         </Grid>
                     </Grid>
                 </Grid>
-                <Divider style={{ margin: '22px 0' }} />
+                <Divider style={{ margin: "22px 0" }} />
                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                     <Box m={1}>
                         <Grid container direction="row">
@@ -502,9 +551,9 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                     variant="outlined"
                                     size="small"
                                     fullWidth
-                                    onChange={e => {
-                                        form.setValue(`form.${index}.inputvalidation`, e.target.value)
-                                        data.inputvalidation = e.target.value
+                                    onChange={(e) => {
+                                        form.setValue(`form.${index}.inputvalidation`, e.target.value);
+                                        data.inputvalidation = e.target.value;
                                     }}
                                     defaultValue={data.inputvalidation}
                                 />
@@ -526,9 +575,9 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                     variant="outlined"
                                     size="small"
                                     fullWidth
-                                    onChange={e => {
-                                        form.setValue(`form.${index}.keyvalidation`, e.target.value)
-                                        data.keyvalidation = e.target.value
+                                    onChange={(e) => {
+                                        form.setValue(`form.${index}.keyvalidation`, e.target.value);
+                                        data.keyvalidation = e.target.value;
                                     }}
                                     defaultValue={data.keyvalidation}
                                 />
@@ -539,13 +588,13 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
             </Grid>
         </div>
     );
-}
+};
 
-const useTabFormStyles = makeStyles(theme => ({
+const useTabFormStyles = makeStyles(() => ({
     text: {
         fontWeight: 500,
         fontSize: 16,
-        color: '#381052',
+        color: "#381052",
     },
 }));
 
@@ -789,22 +838,27 @@ const templates: { [x: string]: FieldTemplate } = {
 
 const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
-    const defFields = useRef<FieldTemplate[]>((form.getValues('form') || []).map(x => {
-        return {
-            ...templates[`${x.field}_FIELD`],
-            data: x,
-        } as FieldTemplate;
-    }));
-    
+    const defFields = useRef<FieldTemplate[]>(
+        (form.getValues("form") || []).map((x) => {
+            return {
+                ...templates[`${x.field}_FIELD`],
+                data: x,
+            } as FieldTemplate;
+        })
+    );
+
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>(defFields.current);
 
     useEffect(() => {
-        form.setValue('form', fields.map(x => x.data));
+        form.setValue(
+            "form",
+            fields.map((x) => x.data)
+        );
     }, [fields, form]);
 
     const handleCloseTemplate = (key: string) => {
-        const newFields = fields.filter(e => e.data.field !== templates[key].data.field)
+        const newFields = fields.filter((e) => e.data.field !== templates[key].data.field);
         setFields(newFields);
     };
 
@@ -813,21 +867,25 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
 
         setFields([...fields, templates[fieldTemplate]]);
         setFieldTemplate("");
-    }
+    };
 
     const getMenuTemplates = () => {
         const temp: React.ReactNode[] = [];
         for (const key in templates) {
             if (fields.includes(templates[key])) continue;
-            temp.push(<MenuItem key={key} value={key}>{templates[key].text}</MenuItem>);
+            temp.push(
+                <MenuItem key={key} value={key}>
+                    {templates[key].text}
+                </MenuItem>
+            );
         }
         return temp;
-    }
+    };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
             <Grid container direction="column">
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: 'block' }}>
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: "block" }}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                             <Typography className={classes.text}>
@@ -839,12 +897,14 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
                                 <Select
                                     variant="outlined"
                                     value={fieldTemplate}
-                                    onChange={e => setFieldTemplate(e.target.value as string)}
+                                    onChange={(e) => setFieldTemplate(e.target.value as string)}
                                     displayEmpty
                                     style={{ height: 40 }}
                                 >
                                     <MenuItem value={""}>
-                                        <em><Trans i18nKey={langKeys.select} /> -</em>
+                                        <em>
+                                            <Trans i18nKey={langKeys.select} /> -
+                                        </em>
                                     </MenuItem>
                                     {getMenuTemplates()}
                                 </Select>
@@ -865,47 +925,47 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
             {fields.map((e, i) => e.node(handleCloseTemplate, e.data, form, i))}
         </div>
     );
-}
+};
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
-        width: 'inherit',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
+        width: "inherit",
+        marginLeft: "auto",
+        marginRight: "auto",
+        display: "flex",
+        flexDirection: "column",
     },
     title: {
         fontWeight: 500,
         fontSize: 32,
-        margin: '20px 0',
+        margin: "20px 0",
         color: theme.palette.primary.main,
     },
     subtitle: {
-        margin: '8px 0',
+        margin: "8px 0",
         fontSize: 20,
         fontWeight: 500,
     },
     text: {
         fontWeight: 500,
         fontSize: 16,
-        color: '#A59F9F',
+        color: "#A59F9F",
     },
     scriptPreview: {
-        width: 'inherit',
+        width: "inherit",
         height: 111,
         minHeight: 111,
-        backgroundColor: 'white',
-        border: '#A59F9F 1px solid',
-        margin: '24px 0',
+        backgroundColor: "white",
+        border: "#A59F9F 1px solid",
+        margin: "24px 0",
         padding: theme.spacing(2),
-        position: 'relative',
-        overflowWrap: 'break-word',
-        overflow: 'hidden',
+        position: "relative",
+        overflowWrap: "break-word",
+        overflow: "hidden",
     },
     scriptPreviewGradient: {
-        backgroundImage: 'linear-gradient(transparent, white)',
-        position: 'absolute',
+        backgroundImage: "linear-gradient(transparent, white)",
+        position: "absolute",
         top: 0,
         bottom: 0,
         left: 0,
@@ -916,78 +976,83 @@ const useStyles = makeStyles(theme => ({
         width: 123,
         minHeight: 45,
         minWidth: 123,
-        top: '50%',
-        transform: 'translateY(-50%)',
+        top: "50%",
+        transform: "translateY(-50%)",
         right: theme.spacing(2),
-        position: 'absolute',
-        alignSelf: 'center',
+        position: "absolute",
+        alignSelf: "center",
     },
     scriptPreviewFullViewTxt: {
         margin: 0,
-        position: 'absolute',
+        position: "absolute",
         bottom: theme.spacing(1),
-        left: '50%',
-        transform: 'translateX(-50%)',
+        left: "50%",
+        transform: "translateX(-50%)",
         height: 24,
 
-        WebkitTouchCallout: 'none',
-        WebkitUserSelect: 'none',
-        KhtmlUserSelect: 'none',
-        MozUserSelect: 'none',
-        msUserSelect: 'none',
-        userSelect: 'none',
+        WebkitTouchCallout: "none",
+        WebkitUserSelect: "none",
+        KhtmlUserSelect: "none",
+        MozUserSelect: "none",
+        msUserSelect: "none",
+        userSelect: "none",
 
-        '&:hover': {
-            cursor: 'pointer',
-        }
+        "&:hover": {
+            cursor: "pointer",
+        },
     },
     tabs: {
-        color: '#989898',
-        backgroundColor: 'white',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: 'inherit',
+        color: "#989898",
+        backgroundColor: "white",
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        width: "inherit",
     },
     tab: {
-        // width: 130,
         height: 45,
-        maxWidth: 'unset',
-        border: '#A59F9F 1px solid',
+        maxWidth: "unset",
+        border: "#A59F9F 1px solid",
         borderRadius: 6,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         flexGrow: 1,
     },
     activetab: {
-        color: 'white',
+        color: "white",
         backgroundColor: theme.palette.primary.main,
-    }
+    },
 }));
 
+interface WhatsAppData {
+    row?: unknown;
+    typeWhatsApp?: string;
+}
+
 export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
-    const classes = useStyles();
-    const history = useHistory();
-    const location = useLocation();
     const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const [tabIndex, setTabIndes] = useState('0');
+
     const [showFinalStep, setShowFinalStep] = useState(false);
+    const [tabIndex, setTabIndex] = useState("0");
 
-    const insertChannel = useSelector(state => state.channel.insertChannel);
-    const editChannel = useSelector(state => state.channel.editChannel);
-
-    const channel = location.state as IChannel | null;
-
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const editChannel = useSelector((state) => state.channel.editChannel);
+    const history = useHistory();
+    const insertChannel = useSelector((state) => state.channel.insertChannel);
+    const location = useLocation();
     const service = useRef<IFormWebAdd | null>(null);
+    const whatsAppData = location.state as WhatsAppData | null;
 
-    if (channel && !service.current && channel.servicecredentials.length > 0) {
-        service.current = JSON.parse(channel.servicecredentials);
+    const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
+
+    if (!whatsAppData?.row) {
+        if (channel && !service.current && channel.servicecredentials.length > 0) {
+            service.current = JSON.parse(channel.servicecredentials);
+        }
     }
 
     useEffect(() => {
         if (edit && !channel) {
-            history.push(paths.CHANNELS);
-        } else if (edit && channel && channel.servicecredentials.length === 0) {
             history.push(paths.CHANNELS);
         }
 
@@ -995,47 +1060,53 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
             dispatch(resetInsertChannel());
             dispatch(resetEditChannel());
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [history, dispatch]);
 
     useEffect(() => {
         if (insertChannel.loading) return;
         if (insertChannel.error === true) {
-            dispatch(showSnackbar({
-                message: insertChannel.message!,
-                show: true,
-                severity: "error"
-            }));
+            dispatch(
+                showSnackbar({
+                    message: insertChannel.message ?? "error_unexpected_error",
+                    show: true,
+                    severity: "error",
+                })
+            );
         } else if (insertChannel.value) {
-            dispatch(showSnackbar({
-                message: t(langKeys.channelcreatesuccess),
-                show: true,
-                severity: "success"
-            }));
+            dispatch(
+                showSnackbar({
+                    message: t(langKeys.channelcreatesuccess),
+                    show: true,
+                    severity: "success",
+                })
+            );
         }
     }, [dispatch, insertChannel, t]);
 
     useEffect(() => {
         if (editChannel.loading) return;
         if (editChannel.error === true) {
-            dispatch(showSnackbar({
-                message: editChannel.message!,
-                show: true,
-                severity: "error"
-            }));
+            dispatch(
+                showSnackbar({
+                    message: editChannel.message ?? "error_unexpected_error",
+                    show: true,
+                    severity: "error",
+                })
+            );
         } else if (editChannel.success) {
-            dispatch(showSnackbar({
-                message: t(langKeys.channeleditsuccess),
-                show: true,
-                severity: "success"
-            }));
+            dispatch(
+                showSnackbar({
+                    message: t(langKeys.channeleditsuccess),
+                    show: true,
+                    severity: "success",
+                })
+            );
             history.push(paths.CHANNELS);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, editChannel]);
 
     const form: UseFormReturn<IFormWebAdd> = useForm<IFormWebAdd>({
-        defaultValues: service.current || {
+        defaultValues: service.current ?? {
             interface: {
                 chattitle: "",
                 chatsubtitle: "",
@@ -1089,47 +1160,52 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                 stylesCSSInput: "display: block; margin: 10px",
                 stylesCSSButton: "display: block; margin: 10px",
             },
-        }
+        },
     });
 
     useEffect(() => {
         const mandatoryStrField = (value: string) => {
             return value.length === 0 ? t(langKeys.field_required) : undefined;
-        }
+        };
 
-        form.register('extra.titleform', { validate: mandatoryStrField });
-        form.register('extra.textButtonSend', { validate: mandatoryStrField });
+        form.register("extra.titleform", { validate: mandatoryStrField });
+        form.register("extra.textButtonSend", { validate: mandatoryStrField });
     }, [form, t]);
 
     const handleNext = () => {
-        if(!!form.getValues("form").length){
-            form.handleSubmit((_) => setShowFinalStep(true))();
-        }else{
-            dispatch(showSnackbar({
-                message: t(langKeys.emptyformerror),
-                show: true,
-                severity: "warning"
-            }));
+        if (form.getValues("form")?.length) {
+            form.handleSubmit(() => setShowFinalStep(true))();
+        } else {
+            dispatch(
+                showSnackbar({
+                    message: t(langKeys.emptyformerror),
+                    show: true,
+                    severity: "warning",
+                })
+            );
         }
-    }
+    };
 
     const handleSubmit = (name: string, auto: boolean) => {
         const values = form.getValues();
         if (!channel) {
-            const body = getInsertChatwebChannel(name, auto, "", values, "FORM");
+            const body = getInsertChatwebChannel(0, name, auto, "", values, "FORM");
+            dispatch(insertChannel2(body));
+        } else if (channel.status === "INACTIVO") {
+            const id = channel.communicationchannelid;
+            const body = getInsertChatwebChannel(id, name, auto, "", values, "FORM");
             dispatch(insertChannel2(body));
         } else {
             const id = channel.communicationchannelid;
             const body = getEditChatWebChannel(id, channel, values, name, auto, "", "FORM");
             dispatch(getEditChannel(body, "CHAZ"));
         }
-
-    }
+    };
 
     const handleGoBack: React.MouseEventHandler = (e) => {
         e.preventDefault();
         if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
-    }
+    };
 
     if (edit && !channel) {
         return <div />;
@@ -1137,7 +1213,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
     return (
         <div className={classes.root}>
-            <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
+            <div style={{ display: showFinalStep ? "none" : "flex", flexDirection: "column" }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
                         {t(langKeys.previoustext)}
@@ -1150,24 +1226,42 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                 <AppBar position="static" elevation={0}>
                     <Tabs
                         value={tabIndex}
-                        onChange={(_, i: string) => setTabIndes(i)}
+                        onChange={(_, i: string) => setTabIndex(i)}
                         className={classes.tabs}
-                        TabIndicatorProps={{ style: { display: 'none' } }}
+                        TabIndicatorProps={{ style: { display: "none" } }}
                     >
-                        <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label={<Trans i18nKey={langKeys.interface} />} value="0" />
-                        <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label={<Trans i18nKey={langKeys.styles} count={2} />} value="1" />
-                        <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label={<Trans i18nKey={langKeys.form} />} value="2" />
+                        <Tab
+                            className={clsx(classes.tab, tabIndex === "0" && classes.activetab)}
+                            label={<Trans i18nKey={langKeys.interface} />}
+                            value="0"
+                        />
+                        <Tab
+                            className={clsx(classes.tab, tabIndex === "1" && classes.activetab)}
+                            label={<Trans i18nKey={langKeys.styles} count={2} />}
+                            value="1"
+                        />
+                        <Tab
+                            className={clsx(classes.tab, tabIndex === "2" && classes.activetab)}
+                            label={<Trans i18nKey={langKeys.form} />}
+                            value="2"
+                        />
                     </Tabs>
                 </AppBar>
-                <TabPanel value="0" index={tabIndex}><TabPanelInterface form={form} /></TabPanel>
-                <TabPanel value="1" index={tabIndex}><TabPanelStyles form={form} /></TabPanel>
-                <TabPanel value="2" index={tabIndex}><TabPanelForm form={form} /></TabPanel>
+                <TabPanel value="0" index={tabIndex}>
+                    <TabPanelInterface form={form} />
+                </TabPanel>
+                <TabPanel value="1" index={tabIndex}>
+                    <TabPanelStyles form={form} />
+                </TabPanel>
+                <TabPanel value="2" index={tabIndex}>
+                    <TabPanelForm form={form} />
+                </TabPanel>
                 <div style={{ height: 20 }} />
                 <Button variant="contained" color="primary" onClick={handleNext}>
                     <Trans i18nKey={langKeys.next} />
                 </Button>
             </div>
-            <div style={{ display: showFinalStep ? 'block' : 'none' }}>
+            <div style={{ display: showFinalStep ? "block" : "none" }}>
                 <ChannelAddEnd
                     loading={insertChannel.loading || editChannel.loading}
                     integrationId={insertChannel.value?.integrationid}
@@ -1180,7 +1274,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     );
 };
 
-const useFinalStepStyles = makeStyles(theme => ({
+const useFinalStepStyles = makeStyles(() => ({
     title: {
         textAlign: "center",
         fontWeight: "bold",
@@ -1194,9 +1288,9 @@ const useFinalStepStyles = makeStyles(theme => ({
     button: {
         padding: 12,
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
+        fontSize: "14px",
+        textTransform: "initial",
+        width: "180px",
     },
 }));
 
@@ -1212,21 +1306,20 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
     const history = useHistory();
-    const [name, setName] = useState(channel?.communicationchanneldesc || "");
-    const [auto] = useState(true);
-    
+    const auto = true;
+    const [name, setName] = useState(channel?.communicationchanneldesc ?? "");
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
         if (!integrationId) onClose?.();
-    }
+    };
 
     const handleSave = () => {
         onSubmit(name, auto);
-    }
+    };
 
     return (
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
                     {t(langKeys.previoustext)}
@@ -1242,7 +1335,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         onChange={(value) => setName(value)}
                         label={t(langKeys.givechannelname)}
                         className="col-6"
-                        disabled={loading || integrationId != null}
+                        disabled={loading || (`${integrationId}` !== "" && `${integrationId}` !== "undefined")}
                         valueDefault={channel?.communicationchanneldesc}
                     />
                 </div>
@@ -1252,32 +1345,63 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         className={classes.button}
                         variant="contained"
                         color="primary"
-                        disabled={loading || integrationId != null}
+                        disabled={loading || (`${integrationId}` !== "" && `${integrationId}` !== "undefined")}
                     >
                         <Trans i18nKey={langKeys.finishreg} />
                     </Button>
                 </div>
             </div>
-            <div style={{ display: integrationId ? 'flex' : 'none', height: 10 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+            <div style={{ display: integrationId ? "flex" : "none", height: 10 }} />
+            <div
+                style={{
+                    display: integrationId ? "flex" : "none",
+                    flexDirection: "column",
+                    marginLeft: 120,
+                    marginRight: 120,
+                }}
+            >
                 {t(langKeys.webformstep)}
             </div>
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
-                {`
+            <div
+                style={{
+                    display: integrationId ? "flex" : "none",
+                    flexDirection: "column",
+                    marginLeft: 120,
+                    marginRight: 120,
+                }}
+            >
+                <pre
+                    style={{
+                        background: "#f4f4f4",
+                        border: "1px solid #ddd",
+                        color: "#666",
+                        pageBreakInside: "avoid",
+                        fontFamily: "monospace",
+                        lineHeight: 1.6,
+                        maxWidth: "100%",
+                        overflow: "auto",
+                        padding: "1em 1.5em",
+                        display: "block",
+                        wordWrap: "break-word",
+                    }}
+                >
+                    <code>
+                        {`
                 <div id="${name}"></div>
                 <script src="${apiUrls.WEBFORMCHANNEL_FORM}" integrationid="${integrationId}" containerid="${name}"></script>
                 `}
-            </code></pre><div style={{ height: 20 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginBottom: 20 }}>
-                *{t(langKeys.containeridExplained)}
-            </div>
+                    </code>
+                </pre>
+                <div style={{ height: 20 }} />
+                <div style={{ display: integrationId ? "flex" : "none", flexDirection: "column", marginBottom: 20 }}>
+                    *{t(langKeys.containeridExplained)}
+                </div>
                 <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     {t(langKeys.close)}
                 </Button>
             </div>
         </div>
     );
-}
+};
 
-
-export default ChannelAddWebForm
+export default ChannelAddWebForm;

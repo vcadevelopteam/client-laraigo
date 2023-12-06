@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, lazy } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
@@ -182,7 +181,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin: (!fromChangeOrganization && automaticConnection), roledesc }));
 			if (sitevoxi && ownervoxi) {
 				dispatch(voximplantConnect({
-					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
+					automaticConnection: automaticConnection || Boolean(localStorage.getItem("agentConnected")) || false,
 					user: `user${userid}.${orgid}`,
 					application: ownervoxi
 				}));
@@ -220,9 +219,10 @@ const RouterApp: FC = () => {
 	useForcedDisconnection(useCallback(() => {
 		removeAuthorizationToken()
 	}, [dispatch]));
-	
+
+
 	return (
-		<Router basename={ import.meta.env.BASE_URL}>
+		<Router basename={import.meta.env.BASE_URL}>
 			<React.Suspense fallback={(
 				<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
 					<CircularProgress color="inherit" />
@@ -249,39 +249,63 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.REPORTS} component={() => (<Layout mainClasses={classes.main}><Reports /></Layout>)} />
 					<ProtectRoute exact path={paths.REPORTSCHEDULER} component={() => (<Layout mainClasses={classes.main}><ReportScheduler /></Layout>)} />
 					<ProtectRoute exact path={paths.TICKETS} component={() => (<Layout mainClasses={classes.main}><Tickets /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS} component={() => (<Layout mainClasses={classes.main}><Channels /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD} component={() => (<Layout mainClasses={classes.main}><ChannelAdd /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit={false} /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_WEBFORM} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit={false} /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK_LEAD.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookLead /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebook /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOKDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookDM /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookWorkplace /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_MESSENGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddMessenger /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagram /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAMDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagramDM /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_ANDROID.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAndroid edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_APPSTORE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAppStore edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_BLOGGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBlogger edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_BUSINESS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBusiness edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_EMAIL.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddEmail edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebook edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK_LEAD.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookLead edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOKDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookDM edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookWorkplace edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagram edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAMDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagramDM edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_IOS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddIos edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddLinkedIn edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_MESSENGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddMessenger edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_PHONE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddPhone edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_PLAYSTORE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddPlayStore edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_SMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddSMS edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TEAMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTeams edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTelegram edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TIKTOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTikTok edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTwitter edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTwitterDM edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_WEBFORM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit={false} /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit={false} /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTelegram /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTwitter /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTwitterDM /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_PHONE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddPhone /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_SMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddSMS /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_EMAIL.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddEmail /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_IOS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddIos /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_ANDROID.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAndroid /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_TIKTOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTikTok /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_YOUTUBE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddYouTube /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_BUSINESS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBusiness /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_PLAYSTORE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddPlayStore /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_APPSTORE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAppStore /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddLinkedIn /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_TEAMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTeams /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_BLOGGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBlogger /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPPONBOARDING.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsAppOnboarding /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPPONBOARDING.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsAppOnboarding edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_YOUTUBE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddYouTube edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD} component={() => (<Layout mainClasses={classes.main}><ChannelAdd /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT.path} component={() => (<Layout mainClasses={classes.main}><ChannelEdit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_ANDROID.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAndroid edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_APPSTORE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAppStore edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_BLOGGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBlogger edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_BUSINESS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBusiness edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_EMAIL.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddEmail edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_FACEBOOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebook edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_FACEBOOK_LEAD.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookLead edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_FACEBOOKDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookDM edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_FACEBOOKWORKPLACE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookWorkplace edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_INSTAGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagram edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_INSTAGRAMDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagramDM edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_IOS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddIos edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_LINKEDIN.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddLinkedIn edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_MESSENGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddMessenger edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_PHONE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddPhone edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_PLAYSTORE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddPlayStore edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_SMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddSMS edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_TEAMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTeams edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_TELEGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTelegram edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_TIKTOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTikTok edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_TWITTER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTwitter edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_TWITTERDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTwitterDM edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WEBFORM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPPONBOARDING.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsAppOnboarding edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_YOUTUBE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddYouTube edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS} component={() => (<Layout mainClasses={classes.main}><Channels /></Layout>)} />
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.PARTNERS} component={() => (<Layout mainClasses={classes.main}><Partners /></Layout>)} />
 					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />

@@ -1,14 +1,10 @@
-import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
+import { Box, makeStyles, Paper, Typography } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { TemplateBreadcrumbs } from "components";
 import { useHistory, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 
-import React, { FC } from "react";
-import paths from "common/constants/paths";
-
 import {
-    VoiceColor,
     AndroidColor,
     AppStoreColor,
     BloggerColor,
@@ -20,6 +16,7 @@ import {
     IosColor,
     LinkedInColor,
     MailColor,
+    MetaColor,
     MyBusinessColor,
     PlayStoreColor,
     SmsColor,
@@ -27,13 +24,16 @@ import {
     TelegramColor,
     TikTokColor,
     TwitterColor,
+    VoiceColor,
     WhatsAppColor,
     WhatsAppOnboardingColor,
     WorkplaceColor,
     WorkplaceWallColor,
     YouTubeColor,
-    MetaColor,
 } from "icons";
+
+import paths from "common/constants/paths";
+import React, { FC } from "react";
 
 interface ChannelOption {
     icon: (className: string) => React.ReactNode;
@@ -41,288 +41,347 @@ interface ChannelOption {
     onClick: () => void;
 }
 
-interface whatsAppData {
+interface WhatsAppData {
+    row?: unknown;
     typeWhatsApp?: string;
-    row?: any;
 }
 
-const useChannelAddStyles = makeStyles(theme => ({
+const useChannelAddStyles = makeStyles((theme) => ({
     root: {
-        // maxWidth: 815,
-        width: 'inherit',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
+        marginLeft: "auto",
+        marginRight: "auto",
+        width: "inherit",
     },
     content: {
+        backgroundColor: "inherit",
+        display: "flex",
+        flexDirection: "column",
         flexGrow: 1,
-        backgroundColor: 'inherit',
-        textAlign: 'start',
-        padding: '0 34px',
-        display: 'flex',
-        flexDirection: 'column',
+        padding: "0 34px",
+        textAlign: "start",
     },
     title: {
-        fontWeight: 500,
-        fontSize: 32,
-        margin: '20px 0',
         color: theme.palette.primary.main,
+        fontSize: 32,
+        fontWeight: 500,
+        margin: "20px 0",
     },
     subtitle: {
-        margin: '8px 0 8px 4px',
         fontSize: 20,
         fontWeight: 500,
+        margin: "8px 0 8px 4px",
     },
     optionContainer: {
-        margin: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        width: 100,
-        height: 90,
-        backgroundColor: 'white',
+        backgroundColor: "white",
+        boxShadow: "-5px 7px 6px 0px #a5a5a5",
+        color: "#A59F9F",
+        display: "flex",
+        fill: "#A59F9F",
+        flexDirection: "column",
         fontSize: 16,
         fontWeight: 400,
-        color: '#A59F9F',
-        fill: '#A59F9F',
-        boxShadow: '-5px 7px 6px 0px #a5a5a5',
-        '&:hover': {
-            // color: 'white',
-            color: '#A59F9F',
-            boxShadow: 'none',
-            fill: 'white',
-            opacity: .6,
-            // backgroundColor: '#ffffffa8',
-            cursor: 'pointer',
+        height: 90,
+        margin: 4,
+        width: 100,
+        "&:hover": {
+            boxShadow: "none",
+            color: "#A59F9F",
+            cursor: "pointer",
+            fill: "white",
+            opacity: 0.6,
         },
     },
     centerbutton: {
+        marginBottom: "20px",
         marginLeft: "calc(50% - 96px)",
         marginTop: "30px",
-        marginBottom: "20px",
     },
     button: {
-        padding: 12,
+        fontSize: "14px",
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
+        padding: 12,
+        textTransform: "initial",
+        width: "180px",
     },
     icon: {
-        fill: 'inherit',
+        fill: "inherit",
         height: 40,
     },
 }));
 
 export const ChannelAdd: FC = () => {
-    const classes = useChannelAddStyles();
-    const history = useHistory();
-    const location = useLocation<whatsAppData>();
     const { t } = useTranslation();
 
-    const whatsAppData = location.state as whatsAppData | null;
+    const classes = useChannelAddStyles();
+    const history = useHistory();
+    const location = useLocation<WhatsAppData>();
+    const whatsAppData = location.state as WhatsAppData | null;
+
     const arrayBread = [
         { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.channel_plural) },
         { id: "view-2", name: t(langKeys.addchannel) },
     ];
 
-    if (typeof whatsAppData === 'undefined' || !whatsAppData) {
+    if (typeof whatsAppData === "undefined" || !whatsAppData) {
         history.push(paths.CHANNELS);
     }
 
     function redirectFunc(view: string) {
         if (view === "view-0") {
-            history.push(paths.CONFIGURATION)
+            history.push(paths.CONFIGURATION);
             return;
         }
+
         if (view === "view-1") {
-            history.push(paths.CHANNELS)
-            return;
+            history.push(paths.CHANNELS);
         }
     }
 
     const socialMediaOptions: ChannelOption[] = [
         {
-            icon: c => <FacebookColor className={c} />,
+            icon: (c) => <FacebookColor className={c} />,
             label: t(langKeys.channel_facebook),
-            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOK.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_FACEBOOK.path, whatsAppData);
+            },
         },
         {
-            icon: c => <FacebookMessengerColor className={c} />,
+            icon: (c) => <FacebookMessengerColor className={c} />,
             label: t(langKeys.channel_messenger),
-            onClick: () => { history.push(paths.CHANNELS_ADD_MESSENGER.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_MESSENGER.path, whatsAppData);
+            },
         },
         {
-            icon: c => <InstagramColor className={c} />,
+            icon: (c) => <InstagramColor className={c} />,
             label: t(langKeys.channel_instagram),
-            onClick: () => { history.push(paths.CHANNELS_ADD_INSTAGRAM.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_INSTAGRAM.path, whatsAppData);
+            },
         },
         {
-            icon: c => <InstagramColor className={c} />,
+            icon: (c) => <InstagramColor className={c} />,
             label: t(langKeys.channel_instagramdm),
-            onClick: () => { history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData);
+            },
         },
         {
-            icon: c => <WhatsAppColor className={c} />,
+            icon: (c) => <WhatsAppColor className={c} />,
             label: t(langKeys.channel_whatsapp),
-            onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData);
+            },
         },
         {
-            icon: c => <WhatsAppOnboardingColor className={c} />,
+            icon: (c) => <WhatsAppOnboardingColor className={c} />,
             label: t(langKeys.channel_whatsapponboarding),
-            onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, whatsAppData);
+            },
         },
         {
-            icon: c => <TelegramColor className={c} />,
+            icon: (c) => <TelegramColor className={c} />,
             label: t(langKeys.channel_telegram),
-            onClick: () => { history.push(paths.CHANNELS_ADD_TELEGRAM.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_TELEGRAM.path, whatsAppData);
+            },
         },
         {
-            icon: c => <TwitterColor className={c} />,
+            icon: (c) => <TwitterColor className={c} />,
             label: t(langKeys.channel_twitter),
-            onClick: () => { history.push(paths.CHANNELS_ADD_TWITTER.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_TWITTER.path, whatsAppData);
+            },
         },
         {
-            icon: c => <TwitterColor className={c} />,
+            icon: (c) => <TwitterColor className={c} />,
             label: t(langKeys.channel_twitterdm),
-            onClick: () => { history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData);
+            },
         },
         {
-            icon: c => <TikTokColor className={c} />,
+            icon: (c) => <TikTokColor className={c} />,
             label: t(langKeys.channel_tiktok),
-            onClick: () => { history.push(paths.CHANNELS_ADD_TIKTOK.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_TIKTOK.path, whatsAppData);
+            },
         },
         {
-            icon: c => <YouTubeColor className={c} />,
+            icon: (c) => <YouTubeColor className={c} />,
             label: t(langKeys.channel_youtube),
-            onClick: () => { history.push(paths.CHANNELS_ADD_YOUTUBE.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_YOUTUBE.path, whatsAppData);
+            },
         },
         {
-            icon: c => <MyBusinessColor className={c} />,
+            icon: (c) => <MyBusinessColor className={c} />,
             label: t(langKeys.channel_business),
-            onClick: () => { history.push(paths.CHANNELS_ADD_BUSINESS.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_BUSINESS.path, whatsAppData);
+            },
         },
         {
-            icon: c => <PlayStoreColor className={c} />,
+            icon: (c) => <PlayStoreColor className={c} />,
             label: t(langKeys.channel_playstore),
-            onClick: () => { history.push(paths.CHANNELS_ADD_PLAYSTORE.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_PLAYSTORE.path, whatsAppData);
+            },
         },
         {
-            icon: c => <AppStoreColor className={c} />,
+            icon: (c) => <AppStoreColor className={c} />,
             label: t(langKeys.channel_appstore),
             onClick: () => history.push(paths.CHANNELS_ADD_APPSTORE.path, whatsAppData),
         },
         {
-            icon: c => <LinkedInColor className={c} />,
+            icon: (c) => <LinkedInColor className={c} />,
             label: t(langKeys.channel_linkedin),
-            onClick: () => { history.push(paths.CHANNELS_ADD_LINKEDIN.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_LINKEDIN.path, whatsAppData);
+            },
         },
     ];
 
     const businessChannelOptions: ChannelOption[] = [
         {
-            icon: c => <MetaColor className={c} />,
-            label: "Meta Leads",
-            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOK_LEAD.path, whatsAppData) },
+            icon: (c) => <MetaColor className={c} />,
+            label: t(langKeys.channel_metalead),
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_FACEBOOK_LEAD.path, whatsAppData);
+            },
         },
         {
-            icon: c => <ChatWebColor className={c} />,
+            icon: (c) => <ChatWebColor className={c} />,
             label: t(langKeys.channel_chatweb),
-            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
+            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB.path),
         },
         {
-            icon: c => <FormColor className={c} />,
+            icon: (c) => <FormColor className={c} />,
             label: t(langKeys.web_form),
-            onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM),
+            onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM.path),
         },
         {
-            icon: c => <MailColor className={c} />,
+            icon: (c) => <MailColor className={c} />,
             label: t(langKeys.channel_email),
-            onClick: () => { history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData);
+            },
         },
         {
-            icon: c => <VoiceColor className={c} />,
+            icon: (c) => <VoiceColor className={c} />,
             label: t(langKeys.channel_phone),
-            onClick: () => { history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData);
+            },
         },
         {
-            icon: c => <SmsColor className={c} />,
+            icon: (c) => <SmsColor className={c} />,
             label: t(langKeys.channel_sms),
-            onClick: () => { history.push(paths.CHANNELS_ADD_SMS.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_SMS.path, whatsAppData);
+            },
         },
         {
-            icon: c => <IosColor className={c} />,
+            icon: (c) => <IosColor className={c} />,
             label: t(langKeys.channel_ios),
             onClick: () => history.push(paths.CHANNELS_ADD_IOS.path, whatsAppData),
         },
         {
-            icon: c => <AndroidColor className={c} />,
+            icon: (c) => <AndroidColor className={c} />,
             label: t(langKeys.channel_android),
             onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path, whatsAppData),
         },
         {
-            icon: c => <TeamsColor className={c} />,
+            icon: (c) => <TeamsColor className={c} />,
             label: t(langKeys.channel_teams),
             onClick: () => history.push(paths.CHANNELS_ADD_TEAMS.path, whatsAppData),
         },
         {
-            icon: c => <BloggerColor className={c} />,
+            icon: (c) => <BloggerColor className={c} />,
             label: t(langKeys.channel_blogger),
             onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, whatsAppData),
         },
         {
-            icon: c => <WorkplaceColor className={c} />,
+            icon: (c) => <WorkplaceColor className={c} />,
             label: t(langKeys.channel_workplacedm),
-            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOKDM.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_FACEBOOKDM.path, whatsAppData);
+            },
         },
         {
-            icon: c => <WorkplaceWallColor className={c} />,
+            icon: (c) => <WorkplaceWallColor className={c} />,
             label: t(langKeys.channel_workplace),
-            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, whatsAppData) },
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, whatsAppData);
+            },
         },
     ];
 
     const Option: FC<{ option: ChannelOption }> = ({ option }) => {
-
         return (
-            <Paper
-                className={classes.optionContainer}
-                elevation={0}
-                onClick={option.onClick}
-            >
-                <div style={{ flexGrow: 2, alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+            <Paper className={classes.optionContainer} elevation={0} onClick={option.onClick}>
+                <div style={{ flexGrow: 2, alignItems: "center", display: "flex", justifyContent: "center" }}>
                     {option.icon(classes.icon)}
                 </div>
-                <div style={{ flexGrow: 1, fontSize: 14, alignItems: 'start', textAlign: 'center', flexWrap: 'wrap', display: 'flex', justifyContent: 'center', maxHeight: 39 }}>
+                <div
+                    style={{
+                        alignItems: "start",
+                        display: "flex",
+                        flexGrow: 1,
+                        flexWrap: "wrap",
+                        fontSize: 14,
+                        justifyContent: "center",
+                        maxHeight: 39,
+                        textAlign: "center",
+                    }}
+                >
                     {option.label}
                 </div>
             </Paper>
         );
     };
-    return (<Box className={classes.root}>
-        <TemplateBreadcrumbs
-            breadcrumbs={arrayBread}
-            handleClick={redirectFunc}
-        />
-        <div className={classes.content}>
-            <h2 className={classes.title}>{t(langKeys.channeladdtitle)}</h2>
-            <div style={{ height: 29 }} />
-            <Typography className={classes.subtitle}>{t(langKeys.socialmediachannel)}</Typography>
-            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
-                {socialMediaOptions.map((e, i) =>
-                    <Option
-                        key={`social_media_option_${i}`}
-                        option={e}
-                    />
-                )}
+    return (
+        <Box className={classes.root}>
+            <TemplateBreadcrumbs breadcrumbs={arrayBread} handleClick={redirectFunc} />
+            <div className={classes.content}>
+                <h2 className={classes.title}>{t(langKeys.channeladdtitle)}</h2>
+                <div style={{ height: 29 }} />
+                <Typography className={classes.subtitle}>{t(langKeys.socialmediachannel)}</Typography>
+                <div
+                    style={{
+                        alignItems: "center",
+                        display: "flex",
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        gap: 8,
+                        justifyContent: "center",
+                    }}
+                >
+                    {socialMediaOptions.map((e, i) => (
+                        <Option key={`social_media_option_${i}`} option={e} />
+                    ))}
+                </div>
+                <Typography className={classes.subtitle}>{t(langKeys.businesschannel)}</Typography>
+                <div
+                    style={{
+                        alignItems: "center",
+                        display: "flex",
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                    }}
+                >
+                    {businessChannelOptions.map((e, i) => (
+                        <Option key={`business_channel_option_${i}`} option={e} />
+                    ))}
+                </div>
             </div>
-            <Typography className={classes.subtitle}>{t(langKeys.businesschannel)}</Typography>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
-                {businessChannelOptions.map((e, i) => <Option key={`business_channel_option_${i}`} option={e} />)}
-            </div>
-        </div>
-    </Box>)
+        </Box>
+    );
 };
 
-export default ChannelAdd
+export default ChannelAdd;

@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { apiUrls } from "common/constants";
 import { Box, Breadcrumbs, Button, FormControlLabel, makeStyles } from "@material-ui/core";
 import { ChannelWhatsApp01 } from "icons";
 import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
 import { ConnectButton } from "360dialog-connect-button";
-import { FC, useEffect, useState } from "react";
-import { insertChannel, getPhoneList } from "store/channel/actions";
+import { Dictionary, IChannel } from "@types";
+import { getPhoneList, insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
@@ -15,8 +14,9 @@ import { useTranslation } from "react-i18next";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import React, { FC, useEffect, useState } from "react";
 
-const useChannelAddStyles = makeStyles((theme) => ({
+const useChannelAddStyles = makeStyles(() => ({
     button: {
         fontSize: "14px",
         fontWeight: 500,
@@ -26,23 +26,18 @@ const useChannelAddStyles = makeStyles((theme) => ({
     },
 }));
 
-interface whatsAppData {
-    row?: any;
+interface WhatsAppData {
+    row?: unknown;
     typeWhatsApp?: string;
 }
 
-export const ChannelAddWhatsAppOnboarding: FC = () => {
-    const dispatch = useDispatch();
+interface CallbackData {
+    channels: string;
+    client: string;
+}
 
+export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) => {
     const { t } = useTranslation();
-
-    const classes = useChannelAddStyles();
-    const executeResult = useSelector((state) => state.channel.successinsert);
-    const history = useHistory();
-    const location = useLocation<whatsAppData>();
-    const mainResult = useSelector((state) => state.channel.channelList);
-    const numberResult = useSelector((state) => state.channel.requestGetNumberList);
-    const whatsAppData = location.state as whatsAppData | null;
 
     const [allowInsert, setAllowInsert] = useState(false);
     const [channelRegister, setChannelRegister] = useState(true);
@@ -50,13 +45,25 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
     const [colorIcon, setColorIcon] = useState("#4AC959");
     const [dialogChannels, setDialogChannels] = useState<string | null>(null);
     const [dialogClient, setDialogClient] = useState<string | null>(null);
-    const [numberList, setNumberList] = useState<any>([]);
+    const [numberList, setNumberList] = useState<Dictionary[]>([]);
     const [showLastStep, setShowLastStep] = useState(false);
     const [waitList, setWaitList] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
+    const classes = useChannelAddStyles();
+    const dispatch = useDispatch();
+    const executeResult = useSelector((state) => state.channel.successinsert);
+    const history = useHistory();
+    const location = useLocation<WhatsAppData>();
+    const mainResult = useSelector((state) => state.channel.channelList);
+    const numberResult = useSelector((state) => state.channel.requestGetNumberList);
+    const whatsAppData = location.state as WhatsAppData | null;
+
+    const channel = whatsAppData?.row as IChannel | null;
+
     const [fields, setFields] = useState({
         method: "UFN_COMMUNICATIONCHANNEL_INS",
+        type: "WHATSAPP",
         parameters: {
             apikey: "",
             chatflowenabled: true,
@@ -67,7 +74,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
             description: "",
             form: "",
             icons: "",
-            id: 0,
+            id: edit && channel ? channel.communicationchannelid : 0,
             integrationid: "",
             other: "",
             type: "",
@@ -78,7 +85,6 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
             iscloud: false,
             partnerid: apiUrls.DIALOG360PARTNERID,
         },
-        type: "WHATSAPP",
     });
 
     async function finishRegister() {
@@ -146,7 +152,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                     setWaitList(false);
 
                     if (numberResult.data) {
-                        setNumberList(numberResult.data || []);
+                        setNumberList((numberResult.data as unknown as Dictionary[]) || []);
                     } else {
                         setNumberList([]);
                     }
@@ -171,8 +177,8 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
         if (dialogClient && dialogChannels) {
             dispatch(
                 getPhoneList({
-                    partnerId: apiUrls.DIALOG360PARTNERID,
                     channelList: (dialogChannels || "").split("[").join("").split("]").join("").split(","),
+                    partnerId: apiUrls.DIALOG360PARTNERID,
                 })
             );
             dispatch(showBackdrop(true));
@@ -181,52 +187,59 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
         }
     }, [dialogClient, dialogChannels]);
 
-    function setNameField(value: any) {
+    function setNameField(value: string) {
         setChannelRegister(value === "");
-        let partialFields = fields;
+        const partialFields = fields;
         partialFields.parameters.description = value;
         setFields(partialFields);
     }
 
-    function setChecked(value: any) {
-        let partialFields = fields;
+    function setChecked(value: boolean) {
+        const partialFields = fields;
         partialFields.service.iscloud = value ?? false;
         setFields(partialFields);
     }
 
-    function setValueField(value: any) {
+    function setValueField(value: { channelId: string; phone: string }) {
         if (value) {
-            let partialFields = fields;
+            const partialFields = fields;
+
             partialFields.parameters.communicationchannelowner = value?.channelId || "";
             partialFields.parameters.communicationchannelsite = value?.phone || "";
             partialFields.service.channelid = value?.channelId || "";
-            setFields(partialFields);
 
+            setFields(partialFields);
             setShowLastStep(true);
         } else {
-            let partialFields = fields;
+            const partialFields = fields;
+
             partialFields.parameters.communicationchannelowner = "";
             partialFields.parameters.communicationchannelsite = "";
             partialFields.service.channelid = "";
-            setFields(partialFields);
 
+            setFields(partialFields);
             setShowLastStep(false);
         }
     }
 
-    const handleCallback = (callbackEvent: any) => {
-        setDialogClient(null);
+    const handleCallback = (callbackEvent: unknown) => {
         setDialogChannels(null);
+        setDialogClient(null);
 
         if (callbackEvent) {
-            if (callbackEvent.client) {
-                setDialogClient(callbackEvent.client || null);
+            if ((callbackEvent as CallbackData).channels) {
+                setDialogChannels((callbackEvent as CallbackData).channels || null);
             }
-            if (callbackEvent.channels) {
-                setDialogChannels(callbackEvent.channels || null);
+
+            if ((callbackEvent as CallbackData).client) {
+                setDialogClient((callbackEvent as CallbackData).client || null);
             }
         }
     };
+
+    if (edit && !channel) {
+        return <div />;
+    }
 
     return (
         <div style={{ width: "100%" }}>
@@ -237,7 +250,9 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                     key={"mainview"}
                     onClick={(e) => {
                         e.preventDefault();
-                        history.push(paths.CHANNELS_ADD, whatsAppData);
+                        channel?.status === "INACTIVO"
+                            ? history.push(paths.CHANNELS, whatsAppData)
+                            : history.push(paths.CHANNELS_ADD, whatsAppData);
                     }}
                 >
                     {t(langKeys.previoustext)}
@@ -273,7 +288,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                     <ConnectButton
                         callback={handleCallback}
                         label={t(langKeys.connect_whatsappnumber)}
-                        partnerId={apiUrls.DIALOG360PARTNERID}
+                        partnerId={`${apiUrls.DIALOG360PARTNERID}`}
                         queryParameters={{
                             redirect_url: `${window.location.origin}/channels/:id/add/ChannelAddWhatsAppOnboarding`,
                         }}

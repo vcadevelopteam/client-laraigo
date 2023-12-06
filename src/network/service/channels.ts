@@ -1,18 +1,17 @@
+import { APIManager } from "../manager";
+import { apiUrls } from "common/constants";
+import { IRequestBody } from "@types";
 
-import { IRequestBody } from '@types';
-import { apiUrls } from 'common/constants';
-import { APIManager } from '../manager';
-
-export function getPagelist(accessToken: String, appId: String) {
+export function getPagelist(accessToken: string, appId: string) {
     const data = { accessToken: accessToken, appId: appId };
     return APIManager.post(apiUrls.GET_PAGELIST, { data }, true);
 }
 
-export function getPhoneList(request: any) {
+export function getPhoneList(request: unknown) {
     return APIManager.post(apiUrls.GET_PHONELIST, { data: request }, true);
 }
 
-export function getPagelistSub(accessToken: String, appId: String) {
+export function getPagelistSub(accessToken: string, appId: string) {
     const data = { accessToken: accessToken, appId: appId };
     return APIManager.post(apiUrls.GET_PAGELISTSUB, { data }, true);
 }
@@ -58,23 +57,23 @@ export function editchnl(requestBody: IRequestBody) {
     return APIManager.post(uri, { data: requestBody }, true);
 }
 
-export function vrfplan(accessToken: String) {
+export function vrfplan(accessToken: string) {
     const data = { parameters: { code: accessToken } };
     return APIManager.post(apiUrls.VERIFY_CHANNEL, { data }, true);
 }
 
-export function synchronizeTemplate(request: any) {
+export function synchronizeTemplate(request: unknown) {
     return APIManager.post(apiUrls.SYNCHRONIZE_TEMPLATE, { data: request }, true);
 }
 
-export function addTemplate(request: any) {
+export function addTemplate(request: unknown) {
     return APIManager.post(apiUrls.ADD_TEMPLATE, { data: request }, true);
 }
 
-export function deleteTemplate(request: any) {
+export function deleteTemplate(request: unknown) {
     return APIManager.post(apiUrls.DELETE_TEMPLATE, { data: request }, true);
 }
 
-export function getGroupList(request: any) {
+export function getGroupList(request: unknown) {
     return APIManager.post(apiUrls.GET_GROUP_LIST, { data: request }, true);
 }

@@ -1,137 +1,173 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelTwitter01 } from "icons";
-import { FC, useEffect, useState } from "react";
 import { FieldEdit, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { IChannel } from "@types";
 
-import Link from '@material-ui/core/Link';
+import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import React, { FC, useEffect, useState } from "react";
 
-interface whatsAppData {
+interface WhatsAppData {
+    row?: unknown;
     typeWhatsApp?: string;
-    row?: any;
 }
 
-const useChannelAddStyles = makeStyles(theme => ({
+const useChannelAddStyles = makeStyles(() => ({
     button: {
         padding: 12,
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
+        fontSize: "14px",
+        textTransform: "initial",
+        width: "180px",
     },
 }));
 
-export const ChannelAddTwitterDM: FC = () => {
+export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
+    const { t } = useTranslation();
+
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
+    const [setins, setSetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
-    const [coloricon, setcoloricon] = useState("#1D9BF0");
+    const [coloricon, setColoricon] = useState("#1D9BF0");
     const [nextbutton2, setNextbutton2] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
-    const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
+
+    const mainResult = useSelector((state) => state.channel.channelList);
+    const executeResult = useSelector((state) => state.channel.successinsert);
     const history = useHistory();
     const dispatch = useDispatch();
-    const { t } = useTranslation();
     const classes = useChannelAddStyles();
+    const location = useLocation<WhatsAppData>();
+    const whatsAppData = location.state as WhatsAppData | null;
+
+    const channel = whatsAppData?.row as IChannel | null;
+
     const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#1D9BF0",
-            "voximplantcallsupervision": false
+        method: "UFN_COMMUNICATIONCHANNEL_INS",
+        type: "TWITTERDM",
+        parameters: {
+            id: edit && channel ? channel.communicationchannelid : 0,
+            description: "",
+            type: "",
+            communicationchannelsite: "",
+            communicationchannelowner: "",
+            chatflowenabled: true,
+            integrationid: "",
+            color: "",
+            icons: "",
+            other: "",
+            form: "",
+            apikey: "",
+            coloricon: "#1D9BF0",
+            voximplantcallsupervision: false,
         },
-        "type": "TWITTERDM",
-        "service": {
-            "consumerkey": "",
-            "consumersecret": "",
-            "accesstoken": "",
-            "accesssecret": "",
-            "devenvironment": ""
-        }
-    })
-
-    const location = useLocation<whatsAppData>();
-
-    const whatsAppData = location.state as whatsAppData | null;
+        service: {
+            consumerkey: "",
+            consumersecret: "",
+            accesstoken: "",
+            accesssecret: "",
+            devenvironment: "",
+        },
+    });
 
     async function finishreg() {
-        setsetins(true)
-        dispatch(insertChannel(fields))
+        setSetins(true);
+        dispatch(insertChannel(fields));
         setWaitSave(true);
-        setViewSelected("main")
+        setViewSelected("main");
     }
 
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+                setSetins(false);
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS)
+                history.push(paths.CHANNELS);
             } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                const errormessage = t(mainResult.code ?? "error_unexpected_error", {
+                    module: t(langKeys.property).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
-    }, [mainResult])
+    }, [mainResult]);
 
-    function setnameField(value: any) {
-        setChannelreg(value === "")
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
+    function setnameField(value: string) {
+        setChannelreg(value === "");
+        const partialf = fields;
+        partialf.parameters.description = value;
+        setFields(partialf);
+    }
+
+    if (edit && !channel) {
+        return <div />;
     }
 
     if (viewSelected === "view1") {
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
+                    <Link
+                        color="textSecondary"
+                        key={"mainview"}
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            channel?.status === "INACTIVO"
+                                ? history.push(paths.CHANNELS, whatsAppData)
+                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+                        }}
+                    >
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.twittertitle)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.twittertitle2)}</div>
+                    <div
+                        style={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            fontSize: "2em",
+                            color: "#7721ad",
+                            padding: "20px",
+                        }}
+                    >
+                        {t(langKeys.twittertitle)}
+                    </div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>
+                        {t(langKeys.twittertitle2)}
+                    </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumersecret === "" || fields.service.accesstoken === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.consumerkey = value
-                                setFields(partialf)
+                                setNextbutton(
+                                    value === "" ||
+                                        fields.service.consumersecret === "" ||
+                                        fields.service.accesstoken === "" ||
+                                        fields.service.accesssecret === ""
+                                );
+                                const partialf = fields;
+                                partialf.service.consumerkey = value;
+                                setFields(partialf);
                             }}
                             valueDefault={fields.service.consumerkey}
                             label={t(langKeys.consumerapikey)}
@@ -142,10 +178,15 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.accesstoken === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.consumersecret = value
-                                setFields(partialf)
+                                setNextbutton(
+                                    value === "" ||
+                                        fields.service.consumerkey === "" ||
+                                        fields.service.accesstoken === "" ||
+                                        fields.service.accesssecret === ""
+                                );
+                                const partialf = fields;
+                                partialf.service.consumersecret = value;
+                                setFields(partialf);
                             }}
                             valueDefault={fields.service.consumersecret}
                             label={t(langKeys.consumerapisecret)}
@@ -156,10 +197,15 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.consumersecret === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.accesstoken = value
-                                setFields(partialf)
+                                setNextbutton(
+                                    value === "" ||
+                                        fields.service.consumerkey === "" ||
+                                        fields.service.consumersecret === "" ||
+                                        fields.service.accesssecret === ""
+                                );
+                                const partialf = fields;
+                                partialf.service.accesstoken = value;
+                                setFields(partialf);
                             }}
                             valueDefault={fields.service.accesstoken}
                             label={t(langKeys.authenticationtoken)}
@@ -170,10 +216,15 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.consumersecret === "" || fields.service.accesstoken === "")
-                                let partialf = fields;
-                                partialf.service.accesssecret = value
-                                setFields(partialf)
+                                setNextbutton(
+                                    value === "" ||
+                                        fields.service.consumerkey === "" ||
+                                        fields.service.consumersecret === "" ||
+                                        fields.service.accesstoken === ""
+                                );
+                                const partialf = fields;
+                                partialf.service.accesssecret = value;
+                                setFields(partialf);
                             }}
                             valueDefault={fields.service.accesssecret}
                             label={t(langKeys.authenticationsecret)}
@@ -183,36 +234,59 @@ export const ChannelAddTwitterDM: FC = () => {
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
-                            onClick={() => { setViewSelected("view2") }}
+                            onClick={() => {
+                                setViewSelected("view2");
+                            }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.next)}
+                        >
+                            {t(langKeys.next)}
                         </Button>
                     </div>
                 </div>
             </div>
-        )
+        );
     } else if (viewSelected === "view2") {
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
+                    <Link
+                        color="textSecondary"
+                        key={"mainview"}
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setViewSelected("view1");
+                        }}
+                    >
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.twittertitle)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.twittertitle2)}</div>
+                    <div
+                        style={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            fontSize: "2em",
+                            color: "#7721ad",
+                            padding: "20px",
+                        }}
+                    >
+                        {t(langKeys.twittertitle)}
+                    </div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>
+                        {t(langKeys.twittertitle2)}
+                    </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton2(value === "")
-                                let partialf = fields;
+                                setNextbutton2(value === "");
+                                const partialf = fields;
                                 partialf.service.devenvironment = value;
                                 partialf.parameters.communicationchannelowner = "";
-                                setFields(partialf)
+                                setFields(partialf);
                             }}
                             valueDefault={fields.service.devenvironment}
                             label={t(langKeys.devenvironment)}
@@ -222,26 +296,50 @@ export const ChannelAddTwitterDM: FC = () => {
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton2}
-                            onClick={() => { setViewSelected("viewfinishreg") }}
+                            onClick={() => {
+                                setViewSelected("viewfinishreg");
+                            }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.next)}
+                        >
+                            {t(langKeys.next)}
                         </Button>
                     </div>
                 </div>
             </div>
-        )
+        );
     } else {
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
+                    <Link
+                        color="textSecondary"
+                        key={"mainview"}
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setViewSelected("view2");
+                        }}
+                    >
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
+                    <div
+                        style={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            fontSize: "2em",
+                            color: "#7721ad",
+                            padding: "20px",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            maxWidth: "800px",
+                        }}
+                    >
+                        {t(langKeys.commchannelfinishreg)}
+                    </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -256,16 +354,23 @@ export const ChannelAddTwitterDM: FC = () => {
                             <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                            <div
+                                style={{
+                                    alignItems: "center",
+                                    display: "flex",
+                                    justifyContent: "space-around",
+                                    marginTop: "20px",
+                                }}
+                            >
                                 <ChannelTwitter01 style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
-                                    onChange={e => {
-                                        setFields(prev => ({
+                                    onChange={(e) => {
+                                        setFields((prev) => ({
                                             ...prev,
                                             parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
                                         }));
-                                        setcoloricon(e.hex)
+                                        setColoricon(e.hex);
                                     }}
                                 />
                             </div>
@@ -273,18 +378,21 @@ export const ChannelAddTwitterDM: FC = () => {
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
-                            onClick={() => { finishreg() }}
+                            onClick={() => {
+                                finishreg();
+                            }}
                             className={classes.button}
                             disabled={channelreg || mainResult.loading}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.finishreg)}
+                        >
+                            {t(langKeys.finishreg)}
                         </Button>
                     </div>
                 </div>
             </div>
-        )
+        );
     }
-}
+};
 
-export default ChannelAddTwitterDM
+export default ChannelAddTwitterDM;
