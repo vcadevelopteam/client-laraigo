@@ -5,8 +5,10 @@ import { langKeys } from "lang/keys";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
-import { Card, Grid } from "@material-ui/core";
+import { Button, Card, Grid } from "@material-ui/core";
 import { SynonimsRasaLogo } from "icons";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { FieldEdit, FieldSelect } from "components";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -45,6 +47,11 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 330,
         display: 'flex'
     },
+    container2: {
+        display: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
 }));
 
 const ParametersTabDetail: React.FC = () => {
@@ -56,6 +63,7 @@ const ParametersTabDetail: React.FC = () => {
     const [waitExport, setWaitExport] = useState(false);
     const resExportData = useSelector((state) => state.main.exportData);
     const [waitUpload, setWaitUpload] = useState(false);
+    const [viewSelected, setViewSelected] = useState('main');
     const importRes = useSelector((state) => state.main.execute);
 
     useEffect(() => {
@@ -124,72 +132,136 @@ const ParametersTabDetail: React.FC = () => {
         }
     }, [executeResult, waitSave]);
 
-    return (
-        <div className={classes.containerDetail}>
-            <div id="parameters">
-                <span className={classes.title}>
-                    {t(langKeys.personality)}
-                </span>
-                <div className={`row-zyx ${classes.cardsContainer}`} >
-                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                        <Card className={classes.card}>
-                            <div className={classes.cardContent}>
-                                <SynonimsRasaLogo className={classes.logo} />
-                                <div className={classes.cardTitle}>{t(langKeys.help_desk_clerk)}</div>
-                                <div  style={{ textAlign: 'left' }}>{t(langKeys.help_desk_clerk_description)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                        <Card className={classes.card}>
-                            <div className={classes.cardContent}>
-                                <SynonimsRasaLogo className={classes.logo} />
-                                <div className={classes.cardTitle}>{t(langKeys.customer_service)}</div>
-                                <div  style={{ textAlign: 'left' }}>{t(langKeys.customer_service_description)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                        <Card className={classes.card}>
-                            <div className={classes.cardContent}>
-                                <SynonimsRasaLogo className={classes.logo} />
-                                <div className={classes.cardTitle}>{t(langKeys.sales_expert)}</div>
-                                <div  style={{ textAlign: 'left' }}>{t(langKeys.sales_expert_description)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                        <Card className={classes.card}>
-                            <div className={classes.cardContent}>
-                                <SynonimsRasaLogo className={classes.logo} />
-                                <div className={classes.cardTitle}>{t(langKeys.technical_support)}</div>
-                                <div  style={{ textAlign: 'left' }}>{t(langKeys.technical_support_description)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                        <Card className={classes.card}>
-                            <div className={classes.cardContent}>
-                                <SynonimsRasaLogo className={classes.logo} />
-                                <div className={classes.cardTitle}>{t(langKeys.ai_base)}</div>
-                                <div  style={{ textAlign: 'left' }}>{t(langKeys.ai_base_description)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                        <Card className={classes.card}>
-                            <div className={classes.cardContent}>
-                                <SynonimsRasaLogo className={classes.logo} />
-                                <div className={classes.cardTitle}>{t(langKeys.custom_mode)}</div>
-                                <div  style={{ textAlign: 'left' }}>{t(langKeys.custom_mode_description)}</div>
-                            </div>
-                        </Card>
-                    </Grid>
+    if(viewSelected === 'main') {
+        return (
+            <div className={classes.containerDetail}>
+                <div id="parameters">
+                    <span className={classes.title}>
+                        {t(langKeys.personality)}
+                    </span>
+                    <div className={`row-zyx ${classes.cardsContainer}`} >
+                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                            <Card className={classes.card} onClick={() => setViewSelected('detail')}>
+                                <div className={classes.cardContent}>
+                                    <SynonimsRasaLogo className={classes.logo} />
+                                    <div className={classes.cardTitle}>{t(langKeys.help_desk_clerk)}</div>
+                                    <div  style={{ textAlign: 'left' }}>{t(langKeys.help_desk_clerk_description)}</div>
+                                </div>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                            <Card className={classes.card}>
+                                <div className={classes.cardContent}>
+                                    <SynonimsRasaLogo className={classes.logo} />
+                                    <div className={classes.cardTitle}>{t(langKeys.customer_service)}</div>
+                                    <div  style={{ textAlign: 'left' }}>{t(langKeys.customer_service_description)}</div>
+                                </div>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                            <Card className={classes.card}>
+                                <div className={classes.cardContent}>
+                                    <SynonimsRasaLogo className={classes.logo} />
+                                    <div className={classes.cardTitle}>{t(langKeys.sales_expert)}</div>
+                                    <div  style={{ textAlign: 'left' }}>{t(langKeys.sales_expert_description)}</div>
+                                </div>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                            <Card className={classes.card}>
+                                <div className={classes.cardContent}>
+                                    <SynonimsRasaLogo className={classes.logo} />
+                                    <div className={classes.cardTitle}>{t(langKeys.technical_support)}</div>
+                                    <div  style={{ textAlign: 'left' }}>{t(langKeys.technical_support_description)}</div>
+                                </div>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                            <Card className={classes.card}>
+                                <div className={classes.cardContent}>
+                                    <SynonimsRasaLogo className={classes.logo} />
+                                    <div className={classes.cardTitle}>{t(langKeys.ai_base)}</div>
+                                    <div  style={{ textAlign: 'left' }}>{t(langKeys.ai_base_description)}</div>
+                                </div>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                            <Card className={classes.card}>
+                                <div className={classes.cardContent}>
+                                    <SynonimsRasaLogo className={classes.logo} />
+                                    <div className={classes.cardTitle}>{t(langKeys.custom_mode)}</div>
+                                    <div  style={{ textAlign: 'left' }}>{t(langKeys.custom_mode_description)}</div>
+                                </div>
+                            </Card>
+                        </Grid>
+                    </div>
                 </div>
+    
             </div>
-
-        </div>
-    );
+        );
+    } else if(viewSelected === 'detail') {
+        return (
+            <>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <div>
+                            <Button
+                                type="button"
+                                style={{color: '#7721AD'}}
+                                startIcon={<ArrowBackIcon />}
+                                onClick={() => setViewSelected('main')}
+                            >
+                                {t(langKeys.personality)}
+                            </Button>
+                        </div>
+                        <div style={{height:10}}/>
+                        <span className={classes.title}>
+                            {t(langKeys.reason_customerservice)}
+                        </span>
+                        <div style={{height: 10}}/>
+                        <div className="col-4">
+                            <span style={{fontWeight:'bold', fontSize: 18}}>{t(langKeys.language)}</span>
+                            <div><span style={{fontSize: 16}}>{t(langKeys.language)}</span></div>
+                            <FieldSelect
+                                label={t(langKeys.language)}
+                                data={[]}
+                                optionValue={""}
+                                optionDesc={""}
+                            />
+                        </div>
+                        <div className="col-4">
+                            <span style={{fontWeight:'bold', fontSize: 18}}>{t(langKeys.language)}</span>
+                            <div><span style={{fontSize: 16}}>{t(langKeys.language)}</span></div>
+                            <FieldSelect
+                                label={t(langKeys.organization)}
+                                data={[]}
+                                optionValue={""}
+                                optionDesc={""}
+                            />
+                        </div>
+                        <div className="col-4">
+                            <span style={{fontWeight:'bold', fontSize: 18}}>{t(langKeys.language)}</span>
+                            <div><span style={{fontSize: 16}}>{t(langKeys.language)}</span></div>
+                            <FieldSelect
+                                label={t(langKeys.language)}
+                                data={[]}
+                                optionValue={""}
+                                optionDesc={""}
+                            />
+                        </div>
+                        <div style={{height: 20}}/>
+                        <div className="row-zyx">
+                            <span style={{fontWeight:'bold', fontSize: 18}}>{t(langKeys.answeredmessages)}</span>
+                            <div><span style={{fontSize: 16}}>{t(langKeys.language)}</span></div>
+                            <FieldEdit
+                                variant="outlined"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </>
+        );
+    } else return null;
 };
 
 export default ParametersTabDetail;
