@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
-import { Box, Card, Grid } from "@material-ui/core";
+import { Card, Grid } from "@material-ui/core";
 import { SynonimsRasaLogo } from "icons";
 
 const useStyles = makeStyles((theme) => ({
@@ -21,27 +19,31 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         color: theme.palette.text.primary,
     },
-    container: {
+    cardsContainer: {
+        marginTop:"1.5rem",
+        gap:"1.5rem"
+    },
+    card: {
+        position: 'relative',
         width: '100%',
-        color: "#2e2c34",
+        padding:"1rem"
     },
-    button: {
-        display: "flex",
-        gap: "10px",
-        alignItems: "center",
+    cardContent: {
+        textAlign: 'center',
+        alignContent: 'center'
     },
-    tabs: {
-        color: "#989898",
-        backgroundColor: "white",
+    logo: {
+        height: 220,
+        width:"100%",
+        justifyContent: 'center'
     },
-    titleandbuttons: {
-        display: "flex",
-        justifyContent: "space-between",
+    cardTitle: {
+        fontWeight: 'bold',
+        paddingBottom:'1rem'
     },
-    formcontainer: {
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
+    grid: {
+        minWidth: 330,
+        display: 'flex'
     },
 }));
 
@@ -125,65 +127,60 @@ const ParametersTabDetail: React.FC = () => {
     return (
         <div className={classes.containerDetail}>
             <div id="parameters">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
-                        <span className={classes.title}>
-                            {t(langKeys.personality)}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="row-zyx" style={{marginTop:"1.5rem", gap:"1.5rem"}}>
-                    <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                <div style={{ fontWeight: 'bold', paddingBottom:'1rem' }}>{t(langKeys.help_desk_clerk)}</div>
+                <span className={classes.title}>
+                    {t(langKeys.personality)}
+                </span>
+                <div className={`row-zyx ${classes.cardsContainer}`} >
+                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                        <Card className={classes.card}>
+                            <div className={classes.cardContent}>
+                                <SynonimsRasaLogo className={classes.logo} />
+                                <div className={classes.cardTitle}>{t(langKeys.help_desk_clerk)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.help_desk_clerk_description)}</div>
                             </div>
                         </Card>
                     </Grid>
-                    <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.customer_service)}</div>
+                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                        <Card className={classes.card}>
+                            <div className={classes.cardContent}>
+                                <SynonimsRasaLogo className={classes.logo} />
+                                <div className={classes.cardTitle}>{t(langKeys.customer_service)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.customer_service_description)}</div>
                             </div>
                         </Card>
                     </Grid>
-                    <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.sales_expert)}</div>
+                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                        <Card className={classes.card}>
+                            <div className={classes.cardContent}>
+                                <SynonimsRasaLogo className={classes.logo} />
+                                <div className={classes.cardTitle}>{t(langKeys.sales_expert)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.sales_expert_description)}</div>
                             </div>
                         </Card>
                     </Grid>
-                    <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.technical_support)}</div>
+                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                        <Card className={classes.card}>
+                            <div className={classes.cardContent}>
+                                <SynonimsRasaLogo className={classes.logo} />
+                                <div className={classes.cardTitle}>{t(langKeys.technical_support)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.technical_support_description)}</div>
                             </div>
                         </Card>
                     </Grid>
-                    <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.ai_base)}</div>
+                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                        <Card className={classes.card}>
+                            <div className={classes.cardContent}>
+                                <SynonimsRasaLogo className={classes.logo} />
+                                <div className={classes.cardTitle}>{t(langKeys.ai_base)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.ai_base_description)}</div>
                             </div>
                         </Card>
                     </Grid>
-                    <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330, display: 'flex'}}>
-                        <Card style={{ position: 'relative', width: '100%', padding:"1rem" }}>
-                            <div style={{ textAlign: 'center', alignContent: 'center' }}>
-                                <SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-                                <div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.custom_mode)}</div>
+                    <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                        <Card className={classes.card}>
+                            <div className={classes.cardContent}>
+                                <SynonimsRasaLogo className={classes.logo} />
+                                <div className={classes.cardTitle}>{t(langKeys.custom_mode)}</div>
                                 <div  style={{ textAlign: 'left' }}>{t(langKeys.custom_mode_description)}</div>
                             </div>
                         </Card>

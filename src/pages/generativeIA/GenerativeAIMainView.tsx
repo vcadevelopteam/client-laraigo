@@ -15,7 +15,7 @@ import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     titleandcrumbs: {
         marginBottom: 12,
         marginTop: 4,
@@ -25,18 +25,16 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexDirection: "column",
         flex: 1,
-    },   
-    button: {
-        backgroundColor: "#55BD84",
-        marginLeft: theme.spacing(1.2),
-        "&:hover": {
-            backgroundColor: "#55BD84",
-        },
-    },
+    }
 }));
 
+type BreadCrumb = {
+    id: string,
+    name: string
+}
+
 interface GenerativeAIMainViewProps {
-    arrayBread: any;
+    arrayBread: BreadCrumb[];
     setViewSelected: (view: string) => void;  
 }
 
@@ -186,16 +184,13 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         )
     } else if(viewSelectedTraining === 'createassistant') {
         return <CreateAssistant
-            data={{row: null, edit: false}}
             arrayBread={newArrayBread}
             setViewSelected={setViewSelectedTraining}
             setExternalViewSelected={functionChange}
         />
     } else if(viewSelectedTraining === 'chatai') {
         return <ChatAI
-            arrayBread={newArrayBread}
             setViewSelected={setViewSelectedTraining}
-            setExternalViewSelected={functionChange}
         />
     } else return null;
 }

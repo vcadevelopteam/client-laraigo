@@ -62,6 +62,17 @@ const useStyles = makeStyles((theme) => ({
         width: '60%',
         padding: theme.spacing(2),
     },
+    buttonscontainer: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem',
+        marginBottom: '2rem'
+    },
+    redbutton: {
+        backgroundColor: '#ffff',
+        color: 'red',
+        border: '1px solid red'
+    },
 }));
 
 interface ChatAIProps {
@@ -86,11 +97,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useStyles();
-
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
     const [, setChatCounter] = useState(1);
     const [selectedChat, setSelectedChat] = useState<number | null>(null);
-
 
     const [chatList, setChatList] = useState<Chat[]>([
         { id: 0, title: "Chat #0", date: "Today", messages: [] },
@@ -152,7 +161,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
         setSelectedChatForEdit(chatId);
     };
 
-    const handleSaveChatEdit = (chatId: number) => {
+    const handleSaveChatEdit = () => {
         setSelectedChatForEdit(null);
     };
 
@@ -165,18 +174,15 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
         return selectedChatMessages.length === 0;
     };
 
-
     return (
-        
         <div className={classes.container}>
-            
             <Paper className={classes.chatList}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+                <div className={classes.buttonscontainer}>
                     <Button
                         variant="contained"
                         type="button"
                         startIcon={<CloseIcon />}
-                        style={{ backgroundColor: '#ffff', color: 'red', border: '1px solid red' }}
+                        className={classes.redbutton}
                         onClick={() => setViewSelected('assistantdetail')}
                     >
                         {t(langKeys.close)}
@@ -191,7 +197,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
                         Nuevo Chat
                     </Button>
                 </div>
-               
                 {chatList.map((chat, index) => (
                     <div key={chat.id} onClick={() => handleChatClick(chat.id)} style={{ cursor: 'pointer' }}>
                         {index === 0 && (
@@ -208,7 +213,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
                                         onChange={(e) => handleEditChatTitleChange(chat.id, e.target.value)}
                                         onKeyPress={(e) => {
                                             if (e.key === 'Enter') {
-                                                handleSaveChatEdit(chat.id);
+                                                handleSaveChatEdit();
                                             }
                                         }}
                                     />

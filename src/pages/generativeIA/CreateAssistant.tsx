@@ -2,45 +2,22 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { FieldEdit, FieldSelect, TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
+import { TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
 import { resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
-import { Box, Button, Card, Grid, Tabs } from "@material-ui/core";
+import { Button, Tabs } from "@material-ui/core";
 import SaveIcon from '@material-ui/icons/Save';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { SynonimsRasaLogo } from "icons";
-import GenerativeAIMainView from "./GenerativeAIMainView";
-import { Dictionary } from "@types";
-import { useForm } from "react-hook-form";
 import AssistantTabDetail from "./TabDetails/AssistantTabDetail";
 import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
 import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
 
-
-interface RowSelected {
-    row: Dictionary | null;
-    edit: boolean;
-}
-
-const useStyles = makeStyles((theme) => ({
-    title: {
-        fontSize: '22px',
-        fontWeight: 'bold',
-        color: theme.palette.text.primary,
-    },
+const useStyles = makeStyles(() => ({
     container: {
         width: '100%',
         color: "#2e2c34",
-    },       
-    containerHeader: {      
-        marginTop: '1rem',      
-    },
-    button: {
-        display: "flex",
-        gap: "10px",
-        alignItems: "center",
     },
     tabs: {
         color: "#989898",
@@ -55,10 +32,25 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 12,
         marginTop: 4,
     },
+    buttonscontainer: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: '1rem',
+        marginBottom: 10
+    },
+    purpleButton: {
+        backgroundColor: '#ffff',
+        color: '#7721AD'
+    },
 }));
 
+type BreadCrumb = {
+    id: string,
+    name: string
+}
+
 interface CreateAssistantProps {
-    arrayBread: any,
+    arrayBread: BreadCrumb[],
     setViewSelected: (view: string) => void,
     setExternalViewSelected: (view: string) => void
     fetchData?: () => void;
@@ -74,7 +66,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
-    const [viewSelectedTraining, setViewSelectedTraining] = useState("createssistant")
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
@@ -126,88 +117,86 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         setTabIndex(newIndex);
     };
 
-    if(viewSelectedTraining === 'createssistant') {
-        return (
-            <>
-                <form onSubmit={onMainSubmit} className={classes.formcontainer}>
-                    <div style={{ width: "100%" }}>
-                        <div className={classes.titleandcrumbs}>
-                            <div style={{ flexGrow: 1 }}>
-                                <TemplateBreadcrumbs
-                                    breadcrumbs={newArrayBread}
-                                    handleClick={setExternalViewSelected}
-                                />
-                                <TitleDetail title={t(langKeys.createssistant)} />
-                            </div>
+    return (
+        <>
+            <form onSubmit={onMainSubmit} className={classes.formcontainer}>
+                <div style={{ width: "100%" }}>
+                    <div className={classes.titleandcrumbs}>
+                        <div style={{ flexGrow: 1 }}>
+                            <TemplateBreadcrumbs
+                                breadcrumbs={newArrayBread}
+                                handleClick={setExternalViewSelected}
+                            />
+                            <TitleDetail title={t(langKeys.createssistant)} />
                         </div>
-                        <div className={classes.container}>     
-                            <div id="assistant">
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginBottom: 10 }}>
-                                    <Button
-                                        variant="contained"
-                                        type="button"
-                                        startIcon={<ArrowBackIcon color="primary" />}
-                                        style={{ backgroundColor: '#ffff', color: '#7721AD' }}
-                                        onClick={() => setViewSelected('assistantdetail')}
-                                    >
-                                        {t(langKeys.return)}
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        type="button"
-                                        color="primary"
-                                        startIcon={<SaveIcon color="secondary" />}
-                                        style={{ backgroundColor: '#55BD84' }}
-                                    >
-                                        {t(langKeys.save)}
-                                    </Button>
-                                </div>
+                    </div>
+                    <div className={classes.container}>     
+                        <div id="assistant">
+                            <div className={classes.buttonscontainer}>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<ArrowBackIcon color="primary" />}
+                                    className={classes.purpleButton}
+                                    onClick={() => setViewSelected('assistantdetail')}
+                                >
+                                    {t(langKeys.return)}
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<SaveIcon color="secondary" />}
+                                    style={{ backgroundColor: '#55BD84' }}
+                                >
+                                    {t(langKeys.save)}
+                                </Button>
                             </div>
                         </div>
                     </div>
-                    <Tabs
-                        value={tabIndex}
-                        onChange={handleChangeTab}
-                        className={classes.tabs}
-                        textColor="primary"
-                        indicatorColor="primary"
-                        variant="fullWidth"
-                    >
-                        <AntTab
-                            label={
-                                <div>
-                                    <Trans i18nKey={langKeys.assistant_singular} />
-                                </div>
-                            }
-                        />
-                        <AntTab
-                            label={
-                                <div>
-                                    <Trans i18nKey={langKeys.parameters} />
-                                </div>
-                            }
-                        />
-                        <AntTab
-                            label={
-                                <div>
-                                    <Trans i18nKey={langKeys.training} />
-                                </div>
-                            }
-                        />
-                    </Tabs>
-                    <AntTabPanel index={0} currentIndex={tabIndex}>
-                        <AssistantTabDetail />
-                    </AntTabPanel>
-                    <AntTabPanel index={1} currentIndex={tabIndex}>
-                        <ParametersTabDetail />
-                    </AntTabPanel>
-                    <AntTabPanel index={2} currentIndex={tabIndex}>
-                        <TrainingTabDetail />
-                    </AntTabPanel>
-                </form>
-            </>
-        )
-    }  else return null;
+                </div>
+                <Tabs
+                    value={tabIndex}
+                    onChange={handleChangeTab}
+                    className={classes.tabs}
+                    textColor="primary"
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                >
+                    <AntTab
+                        label={
+                            <div>
+                                <Trans i18nKey={langKeys.assistant_singular} />
+                            </div>
+                        }
+                    />
+                    <AntTab
+                        label={
+                            <div>
+                                <Trans i18nKey={langKeys.parameters} />
+                            </div>
+                        }
+                    />
+                    <AntTab
+                        label={
+                            <div>
+                                <Trans i18nKey={langKeys.training} />
+                            </div>
+                        }
+                    />
+                </Tabs>
+                <AntTabPanel index={0} currentIndex={tabIndex}>
+                    <AssistantTabDetail />
+                </AntTabPanel>
+                <AntTabPanel index={1} currentIndex={tabIndex}>
+                    <ParametersTabDetail />
+                </AntTabPanel>
+                <AntTabPanel index={2} currentIndex={tabIndex}>
+                    <TrainingTabDetail />
+                </AntTabPanel>
+            </form>
+        </>
+    )
 }
 
 export default CreateAssistant;

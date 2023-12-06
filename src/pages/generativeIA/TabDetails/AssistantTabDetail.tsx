@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
-import { FieldEdit, FieldSelect, TitleDetail } from "components";
+import { FieldEdit, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";

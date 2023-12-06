@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
-import { Box, Button, Card, Grid } from "@material-ui/core";
+import { Button, Card, Grid } from "@material-ui/core";
 import { SynonimsRasaLogo } from "icons";
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -26,6 +24,59 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '22px',
         fontWeight: 'bold',
         color: theme.palette.text.primary,
+    },
+    container2: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    cardsContainer: {
+        marginTop:"1.5rem",
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap:"1.5rem",
+        display: 'flex'
+    },
+    card: {
+        position: 'relative',
+        width: '100%',
+        padding:"1rem",
+        backgroundColor: '#F5F5F5', 
+        cursor: 'pointer'
+    },
+    cardContent: {
+        textAlign: 'center',
+        alignContent: 'center'
+    },
+    cardTitle: {
+        fontWeight: 'bold',
+        paddingBottom:'1rem'
+    },
+    header: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    headerLeft: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        gap: '1rem',
+        alignItems: 'center'
+    },
+    headerRight: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: '1rem',
+        alignItems: 'center'
+    },
+    purpleButton: {
+        backgroundColor: '#ffff',
+        color: '#7721AD'
+    },
+    logo: {
+        height: 220,
+        width:"100%",
+        justifyContent: 'center'
     },
 }));
 
@@ -131,8 +182,8 @@ const TrainingTabDetail: React.FC = () => {
 		<>
 			<div className={classes.containerDetail}>
 				<div className="row-zyx">
-					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-						<div style={{ justifyContent: 'flex-start', gap: '1rem' }}>
+					<div className={classes.container2}>
+						<div>
 							<span className={classes.title}>
 								{t(langKeys.knowledge_base)}
 							</span>
@@ -141,21 +192,21 @@ const TrainingTabDetail: React.FC = () => {
 							</div>
 						</div>                    
 					</div>
-					<div style={{ marginTop:"1.5rem", justifyContent: 'center', alignItems: 'center', gap:"1.5rem", display: 'flex'}}>
+					<div className={classes.cardsContainer}>
 						<Grid item xs={2} md={1} lg={2} style={{ minWidth: 330 }}>
-							<Card style={{ position: 'relative', width: '100%', padding:"1rem", backgroundColor: '#F5F5F5', cursor: 'pointer' }}>
-								<div style={{ textAlign: 'center', alignContent: 'center' }}>
-									<SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-									<div style={{ fontWeight: 'bold', paddingBottom:'1rem' }}>{t(langKeys.upload_document)}</div>
+							<Card className={classes.card}>
+								<div className={classes.cardContent}>
+									<SynonimsRasaLogo className={classes.logo} />
+									<div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
 									<div style={{ textAlign: 'left' }}>{t(langKeys.upload_document_description)}</div>
 								</div>
 							</Card>
 						</Grid>
 						<Grid item xs={2} md={1} lg={2} style={{ minWidth: 330 }}>
-							<Card style={{ position: 'relative', width: '100%', padding:"1rem", backgroundColor: '#F5F5F5', cursor: 'pointer' }}>
-								<div style={{ textAlign: 'center', alignContent: 'center' }}>
-									<SynonimsRasaLogo style={{ height: 220, width:"100%", justifyContent: 'center' }} />
-									<div style={{ fontWeight: 'bold', paddingBottom:'1rem'  }}>{t(langKeys.import_web_page)}</div>
+							<Card className={classes.card}>
+								<div className={classes.cardContent}>
+									<SynonimsRasaLogo className={classes.logo} />
+									<div className={classes.cardTitle}>{t(langKeys.import_web_page)}</div>
 									<div style={{ textAlign: 'left' }}>{t(langKeys.import_web_page_description)}</div>
 								</div>
 							</Card>
@@ -164,8 +215,8 @@ const TrainingTabDetail: React.FC = () => {
 				</div>
 			</div>
 			<div className={classes.containerDetail}>
-				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-					<div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem', alignItems: 'center' }}>
+				<div className={classes.header}>
+					<div className={classes.headerLeft}>
 						<div>
 							<span className={classes.title}>
 								{t(langKeys.saved_documents)}
@@ -175,12 +226,12 @@ const TrainingTabDetail: React.FC = () => {
 							</div>
 						</div>
 					</div>
-					<div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', alignItems: 'center' }}>
+					<div className={classes.headerRight}>
 						<Button
 							variant="contained"
 							type="button"
 							startIcon={<DeleteIcon color="primary" />}
-							style={{ backgroundColor: '#ffff', color: '#7721AD' }}
+							className={classes.purpleButton}
 						>
 							{t(langKeys.delete)}
 						</Button>
@@ -189,7 +240,7 @@ const TrainingTabDetail: React.FC = () => {
 							type="button"
 							color="primary"
 							startIcon={<RefreshIcon color="primary" />}
-							style={{ backgroundColor: '#ffff', color: '#7721AD' }}
+							className={classes.purpleButton}
 						>
 							{t(langKeys.train)}
 						</Button>
