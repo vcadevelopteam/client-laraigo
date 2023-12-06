@@ -4,14 +4,15 @@ import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
-import { Button, IconButton, Paper, TextField, Typography, Menu, MenuItem } from "@material-ui/core";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { Button, IconButton, Paper, TextField, Typography } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
-import { SendIcon } from 'icons';
+import SendIcon from '@material-ui/icons/Send';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CloseIcon from '@material-ui/icons/Close';
+import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
+import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         height: '100%',
         width: '100%',
-    },   
+    },
     button: {
         padding: 12,
         fontWeight: 500,
@@ -57,37 +58,43 @@ const useStyles = makeStyles((theme) => ({
     },
     chatInputContainer: {
         position: 'fixed',
-        bottom: 0,        
+        bottom: 0,
         width: '60%',
         padding: theme.spacing(2),
-    },   
+    },
 }));
 
 interface ChatAIProps {
     setViewSelected: (view: string) => void;
 }
 
-const ChatAI: React.FC<ChatAIProps> = ({
-    setViewSelected,
-    
-}) => {
+interface ChatMessage {
+    id: number;
+    sender: string;
+    text: string;
+    timestamp: string;
+}
+
+interface Chat {
+    id: number;
+    title: string;
+    date: string;
+    messages: ChatMessage[];
+}
+
+const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useStyles();
 
-    const [waitSave, setWaitSave] = useState(false);
+    const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
+    const [, setChatCounter] = useState(1);
+    const [selectedChat, setSelectedChat] = useState<number | null>(null);
 
-    const [newChatName, setNewChatName] = useState("");
-    const [isCreateChatModalOpen, setCreateChatModalOpen] = useState(false);
-    const [chatList, setChatList] = useState([
-      { id: 1, title: "Chat 1", date: "Today" },
-      { id: 2, title: "Chat 2", date: "Yesterday" },
+
+    const [chatList, setChatList] = useState<Chat[]>([
+        { id: 0, title: "Chat #0", date: "Today", messages: [] },
     ]);
-       
-    const chatMessages = [
-        { id: 1, sender: "User", text: "Hola, prueba", timestamp: "12:00 PM" },
-        { id: 2, sender: "ChatGPT", text: "Respuesta", timestamp: "12:01 PM" },
-    ];
 
     useEffect(() => {
         return () => {
@@ -95,33 +102,76 @@ const ChatAI: React.FC<ChatAIProps> = ({
         };
     }, []);
 
-    const [selectedChat, setSelectedChat] = useState<number | null>(null);
-    const [moreMenuAnchor, setMoreMenuAnchor] = useState<null | HTMLElement>(null);
-
-    const handleNewChat = () => {
-        setCreateChatModalOpen(true);
-    };
-    
-    const handleCloseCreateChatModal = () => {
-        setCreateChatModalOpen(false);
-        setNewChatName("");
-    };
-    
     const handleCreateChat = () => {
-        const newChat = {
-            id: chatList.length + 1,
-            title: newChatName || `Chat ${chatList.length + 1}`,
-            date: "Today",
-        };
-        setChatList([newChat, ...chatList]);
-        handleCloseCreateChatModal();
+        setChatCounter(prevCounter => {
+            const newChat: Chat = {
+                id: prevCounter,
+                title: `Chat #${prevCounter}`,
+                date: "Today",
+                messages: [],
+            };
+    
+            setChatList([newChat, ...chatList]);
+            return prevCounter + 1;
+        });
     };
+
+    const handleSendMessage = (text: string) => {
+        if (selectedChat !== null) {
+            const timestamp = new Date().toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+            });
+    
+            const updatedChatList = chatList.map(chat =>
+                chat.id === selectedChat
+                    ? { ...chat, messages: [...chat.messages, { id: chat.messages.length + 1, sender: "User", text, timestamp }] }
+                    : chat
+            );
+            setChatList(updatedChatList);
+        }
+    };
+
+    const handleDeleteChat = (chatId: number) => {
+        const updatedChatList = chatList.filter(chat => chat.id !== chatId);
+        setChatList(updatedChatList);
+    };
+
+    const handleEditChatTitleChange = (chatId: number, newTitle: string) => {
+        const updatedChatList = chatList.map(chat =>
+            chat.id === chatId ? { ...chat, title: newTitle } : chat
+        );
+        setChatList(updatedChatList);
+    };
+
+    const handleEditChat = (chatId: number) => {
+        setSelectedChatForEdit(chatId);
+    };
+
+    const handleSaveChatEdit = (chatId: number) => {
+        setSelectedChatForEdit(null);
+    };
+
+    const handleChatClick = (chatId: number) => {
+        setSelectedChat(chatId);
+    };
+
+    const isChatEmpty = () => {
+        const selectedChatMessages = chatList.find(chat => chat.id === selectedChat)?.messages || [];
+        return selectedChatMessages.length === 0;
+    };
+
 
     return (
+        
         <div className={classes.container}>
-            {/* Chat List */}
+            
             <Paper className={classes.chatList}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
                     <Button
                         variant="contained"
                         type="button"
@@ -136,27 +186,42 @@ const ChatAI: React.FC<ChatAIProps> = ({
                         type="button"
                         startIcon={<AddIcon color="secondary" />}
                         style={{ backgroundColor: '#7721AD', color: '#fff' }}
-                        onClick={handleNewChat}
+                        onClick={() => handleCreateChat()} 
                     >
                         Nuevo Chat
                     </Button>
                 </div>
-        
-                {chatList.map(chat => (
-                    <div key={chat.id}>
-                        <Typography variant="h6" style={{ marginTop: '16px' }}>
-                            {chat.date}
-                        </Typography>
+               
+                {chatList.map((chat, index) => (
+                    <div key={chat.id} onClick={() => handleChatClick(chat.id)} style={{ cursor: 'pointer' }}>
+                        {index === 0 && (
+                            <Typography style={{ marginBottom: '0.5rem' }}>
+                                {chat.date}
+                            </Typography>
+                        )}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                                <Typography variant="subtitle1">{chat.title}</Typography>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <ChatBubbleIcon style={{ color: '#757377', marginRight: '0.5rem' }} />
+                                {selectedChatForEdit === chat.id ? (
+                                    <TextField
+                                        value={chat.title}
+                                        onChange={(e) => handleEditChatTitleChange(chat.id, e.target.value)}
+                                        onKeyPress={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleSaveChatEdit(chat.id);
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    <Typography style={{ fontSize: '1.1rem' }}>{chat.title}</Typography>
+                                )}
                             </div>
                             <div>
-                                <IconButton>
-                                    <EditIcon color="primary"/>
+                                <IconButton onClick={() => handleEditChat(chat.id)}>
+                                    <EditIcon style={{ color: '#757377'}}/>
                                 </IconButton>
-                                <IconButton>
-                                    <DeleteIcon color="primary"/>
+                                <IconButton onClick={() => handleDeleteChat(chat.id)}>
+                                    <DeleteIcon style={{ color: '#757377' }}/>
                                 </IconButton>
                             </div>
                         </div>
@@ -164,26 +229,39 @@ const ChatAI: React.FC<ChatAIProps> = ({
                 ))}
             </Paper>
 
-            {/* Main Chat Area */}
-            <div className={classes.chatMain}>                
-
-                {/* Chat Messages */}
+            <div className={classes.chatMain}>
                 <div className={classes.chatMessages}>
-                    {chatMessages.map(message => (
-                        <div key={message.id} style={{ display: 'flex', justifyContent: 'center', backgroundColor: message.sender === 'ChatGPT' ? '': 'white' }}>
-                            <div style={{ padding: 10, width: 700 }}>
-                                <Typography variant="caption" color="textSecondary">
-                                    {message.timestamp}
-                                </Typography>
-                                <Typography variant="body1" gutterBottom>
-                                    {message.sender}: {message.text}
-                                </Typography>
-                            </div>
-                        </div>
-                    ))}
+                    {selectedChat !== null && (
+                        <>
+                            {isChatEmpty() ? (
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Typography variant="body1">
+                                        How can I help you today?
+                                    </Typography>
+                                </div>
+                            ) : (
+                                <>
+                                    {chatList.find(chat => chat.id === selectedChat)?.messages.map(message => (
+                                        <div key={message.id} style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: 10, backgroundColor: message.sender === 'ChatGPT' ? '' : 'white' }}>
+                                            <div style={{ marginRight: 10 }}>
+                                                <Avatar src="https://cdn.auth0.com/avatars/gm.png" alt="User Avatar" />
+                                            </div>
+                                            <div style={{ width: 700 }}>
+                                                <Typography variant="caption" color="textSecondary">
+                                                    {message.timestamp}
+                                                </Typography>
+                                                <Typography variant="body1" gutterBottom>
+                                                    {message.sender}: {message.text}
+                                                </Typography>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
+                            )}
+                        </>
+                    )}
                 </div>
 
-                {/* Chat Input */}
                 <div className={classes.chatInputContainer}>
                     <TextField
                         fullWidth
@@ -197,12 +275,28 @@ const ChatAI: React.FC<ChatAIProps> = ({
                                         type="button"
                                         startIcon={<SendIcon color="secondary" />}
                                         style={{ backgroundColor: '#7721AD', color: '#fff' }}
-
+                                        onClick={() => {
+                                            const messageInput = document.getElementById("message-input") as HTMLInputElement;
+                                            if (messageInput) {
+                                                handleSendMessage(messageInput.value);
+                                                messageInput.value = "";
+                                            }
+                                        }}
                                     >
                                         {t(langKeys.send)}
                                     </Button>
                                 </InputAdornment>
                             ),
+                        }}
+                        id="message-input"
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                const messageInput = document.getElementById("message-input") as HTMLInputElement;
+                                if (messageInput) {
+                                    handleSendMessage(messageInput.value);
+                                    messageInput.value = "";
+                                }
+                            }
                         }}
                     />
                 </div>
