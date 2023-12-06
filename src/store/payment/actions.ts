@@ -50,3 +50,27 @@ export const openpayProcessTransaction = (request: any): IActionCall => ({
 });
 
 export const resetOpenpayProcessTransaction = (): IActionCall => ({ type: actionTypes.PAYMENT_OPENPAY_PROCESSTRANSACTION_RESET });
+
+export const izipayGetPaymentOrder = (request: any): IActionCall => ({
+    callAPI: () => PaymentService.izipayGetPaymentOrder(request),
+    types: {
+        loading: actionTypes.PAYMENT_IZIPAY_GETPAYMENTORDER,
+        success: actionTypes.PAYMENT_IZIPAY_GETPAYMENTORDER_SUCCESS,
+        failure: actionTypes.PAYMENT_IZIPAY_GETPAYMENTORDER_FAILURE,
+    },
+    type: null,
+});
+
+export const resetIzipayGetPaymentOrder = (): IActionCall => ({ type: actionTypes.PAYMENT_IZIPAY_GETPAYMENTORDER_RESET });
+
+export const izipayProcessTransaction = (request: any): IActionCall => ({
+    callAPI: () => PaymentService.izipayProcessTransaction(request),
+    types: {
+        loading: actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION,
+        success: actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_SUCCESS,
+        failure: actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_FAILURE,
+    },
+    type: null,
+});
+
+export const resetIzipayProcessTransaction = (): IActionCall => ({ type: actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_RESET });
