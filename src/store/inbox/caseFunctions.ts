@@ -89,6 +89,9 @@ const cleanLogsReassignedTask = (interactions: IInteraction[], returnHidden: boo
 
 export const getAgents = (state: IState): IState => ({
     ...initialState,
+    holdingBySupervisor: state.holdingBySupervisor,
+    userGroup: state.userGroup,
+    role: state.role,
     wsConnected: state.wsConnected,
     userConnected: state.userConnected,
     userType: "SUPERVISOR",
