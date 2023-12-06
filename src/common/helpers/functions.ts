@@ -1164,3 +1164,60 @@ export const validateIsUrl = (text: string) => {
     const replaces = matches?.reduce((acc, item, index) => acc.replace(item, `<a href="###${index}###" target="_BLANK">###${index}###</a>`), text) || text
     return matches?.reduce((acc, item, index) => acc.replace(new RegExp(`###${index}###`, 'g'), item), replaces) || text
 }
+
+export const loadScripts = (scripts: string[]) => {
+    let scriptRecaptcha = null;
+    let scriptPlatform = null;
+    let clarityScript = null;
+    let gtmScript = null;
+
+    if (scripts.includes("recaptcha")) {
+        scriptRecaptcha = document.createElement('script');
+        scriptRecaptcha.src = "https://www.google.com/recaptcha/enterprise.js?render=6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n";
+        document.body.appendChild(scriptRecaptcha);
+    }
+
+    if (scripts.includes("google")) {
+        scriptPlatform = document.createElement('script');
+        scriptPlatform.src = "https://apis.google.com/js/platform.js";
+        scriptPlatform.async = true;
+        scriptPlatform.defer = true;
+        document.body.appendChild(scriptPlatform);
+    }
+
+    if (scripts.includes("clarity")) {
+        // Define la función de Clarity
+        window.clarity = window.clarity || function (...args: any) {
+            (window.clarity.q = window.clarity.q || []).push(args);
+        };
+
+        // Crea el script de Clarity
+        clarityScript = document.createElement('script');
+        clarityScript.type = 'text/javascript';
+        clarityScript.async = true;
+        clarityScript.src = 'https://www.clarity.ms/tag/jqymk7qifq';
+
+        // Inserta el script de Clarity en el documento
+        const scriptTag = document.getElementsByTagName('script')[0];
+        scriptTag?.parentNode?.insertBefore(clarityScript, scriptTag);
+    }
+
+    if (scripts.includes("gtm")) {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js',
+        });
+
+        // Crea el script de GTM
+        gtmScript = document.createElement('script');
+        gtmScript.async = true;
+        gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-M4PJVGT3';
+
+        // Inserta el script de GTM en el documento
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode?.insertBefore(gtmScript, firstScriptTag);
+    }
+
+    return { scriptPlatform, scriptRecaptcha, clarityScript, gtmScript }
+}
