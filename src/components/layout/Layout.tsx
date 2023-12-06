@@ -1,19 +1,22 @@
-import React, { FC } from 'react'; // we need this to make JSX compile
+import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from './Header';
 import clsx from 'clsx';
 import Aside from './Aside';
 import Box from '@material-ui/core/Box';
 import { useSelector } from 'hooks';
-import { CssBaseline } from '@material-ui/core';
-import { routes } from 'routes/routes';
+import { Button, CssBaseline, Icon } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Popus from 'components/layout/Popus';
-// import ManageCall from 'components/inbox/ManageCall';
 import MakeCall from 'components/inbox/MakeCall';
-import CloseTicketVoxi from 'components/inbox/CloseTicketVoxi';
+import { useHistory, useLocation } from 'react-router-dom'; import CloseTicketVoxi from 'components/inbox/CloseTicketVoxi';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import IconButton from '@material-ui/core/IconButton';
 const drawerWidth = 260;
 const drawerWidthCompressed = 73;
 const headerHeight = 54;
@@ -229,9 +232,106 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const useStylesDialog = makeStyles(() => ({
+    title: {
+        fontWeight: 500,
+        fontSize: "1.3rem"
+    },
+    subtitle: {
+        display: "flex",
+        gap: 4,
+        marginBottom: ".5rem"
+    },
+    close: {
+        position: "absolute",
+        right: 8,
+        top: 8
+    },
+    alignJustify: {
+        textAlign: "justify"
+    },
+    dialogContentWithBar: {
+        position: 'relative',
+        // ... cualquier otro estilo que necesites
+        "&::before": {
+            content: '""', // Esto es necesario para crear un pseudo-elemento
+            position: 'absolute',
+            left: 0,
+            top: "10%",
+            bottom: "20%",
+            width: '6px', // El grosor de la barra
+            backgroundColor: '#7721ad', // El color de la barra
+        },
+    },
+}));
+
 interface LayoutProps {
     mainClasses?: string;
 }
+
+const WelcomeDialog = React.memo(() => {
+    const classes = useStylesDialog();
+    const location = useLocation();
+    const history = useHistory();
+    const { t } = useTranslation();
+
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
+    const firstName = useSelector(state => state.login.validateToken.user?.firstname);
+    const [openModal, setOpenModal] = useState(false);
+
+    useEffect(() => {
+        if (newChannels && !localStorage.getItem("firstloadeddialog")) {
+            if (location.pathname !== "/channels") {
+                history.push("/channels")
+            } else {
+                setOpenModal(true);
+                localStorage.setItem("firstloadeddialog", "1")
+            }
+        }
+    }, [])
+    return (<Dialog
+        open={openModal}
+        fullWidth
+        maxWidth={"xs"}>
+        <div className={classes.dialogContentWithBar}>
+            <DialogTitle style={{ position: "relative" }}>
+                <IconButton
+                    className={classes.close}
+                    size='small'
+                    onClick={() => setOpenModal(false)}
+                >
+                    <HighlightOffIcon
+
+                        color='action'
+                    />
+                </IconButton>
+            </DialogTitle>
+            <DialogContent>
+                <div >
+                    <div className={classes.title}>{t(langKeys.hello, { name: firstName })}</div>
+                    <div className={classes.subtitle}>
+                        <div className={classes.title}>{t(langKeys.welcome_onboarding)}</div>
+                        <div className={classes.title} style={{ color: "#7721ad" }}>Laraigo</div>
+                    </div>
+                    <div className={classes.alignJustify}>{t(langKeys.text1_onboarding)}</div>
+                    <br></br>
+                    <div className={classes.alignJustify}>{t(langKeys.text2_onboarding)}</div>
+
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={() => setOpenModal(false)}
+                    color='primary'
+                    variant='outlined'
+                >
+                    {t(langKeys.continue)}
+                </Button>
+            </DialogActions>
+        </div>
+    </Dialog>)
+})
+WelcomeDialog.displayName = "WelcomeDialog"
 
 const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const theme = useTheme();
@@ -270,6 +370,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             </div>
 
                         </main>
+                        <WelcomeDialog />
                     </>
                 }
             </div>

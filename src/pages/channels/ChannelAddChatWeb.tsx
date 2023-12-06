@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
-
+import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
 import {
     AppBar,
     Box,
@@ -1773,6 +1773,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const [tabIndex, setTabIndex] = useState("0");
     const [showFinalStep, setShowFinalStep] = useState(false);
+    const [viewSelected, setViewSelected] = useState("main-view");
 
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -1833,14 +1834,16 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 })
             );
         } else if (editChannel.success) {
-            dispatch(
-                showSnackbar({
+            if(edit && !channel?.haveflow){
+                setViewSelected("enable-virtual-assistant")
+            }else{
+                dispatch(showSnackbar({
                     message: t(langKeys.channeleditsuccess),
                     show: true,
-                    severity: "success",
-                })
-            );
-            history.push(paths.CHANNELS);
+                    severity: "success"
+                }));
+                history.push(paths.CHANNELS);
+            }
         }
     }, [dispatch, editChannel]);
 
@@ -1944,6 +1947,10 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
         return <div />;
     }
 
+    if (viewSelected !== "main-view") {
+        return <ChannelEnableVirtualAssistant/>
+    }
+
     return (
         <div className={classes.root}>
             <div style={{ display: showFinalStep ? "none" : "flex", flexDirection: "column" }}>
@@ -2014,6 +2021,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 <ChannelAddEnd
                     loading={insertChannel.loading || editChannel.loading}
                     integrationId={insertChannel.value?.integrationid}
+                    insertChannel={insertChannel}
                     onSubmit={handleSubmit}
                     onClose={() => setShowFinalStep(false)}
                     channel={channel}
@@ -2049,16 +2057,18 @@ interface ChannelAddEndProps {
     onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
     onClose?: () => void;
     channel: IChannel | null;
+    insertChannel: any;
 }
 
-const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel }) => {
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel, insertChannel }) => {
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
     const history = useHistory();
-    const auto = true;
-    const [name, setName] = useState(channel?.communicationchanneldesc ?? "");
-    const [coloricon, setColoricon] = useState("#7721ad");
-    const [hexIconColor, setHexIconColor] = useState(channel?.coloricon ?? "#7721ad");
+    const [name, setName] = useState(channel?.communicationchanneldesc || "");
+    const [enableVirtual, setEnableVirtual] = useState<number|null>(null);
+    const [coloricon, setcoloricon] = useState("#7721ad");
+    const [auto] = useState(true);
+    const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -2067,8 +2077,15 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
 
     const handleSave = () => {
         onSubmit(name, auto, hexIconColor);
-    };
-
+    }
+    const handleend = () => {
+        setEnableVirtual(insertChannel.value.result.ufn_communicationchannel_ins)
+    }
+    if(enableVirtual){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={enableVirtual}
+        />
+    }
     return (
         <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
             <Breadcrumbs aria-label="breadcrumb">

@@ -14,8 +14,8 @@ export const login = (usr: string | null, password: string | null, facebookid?: 
 
 export const resetLogin = (): IActionCall => ({ type: actionTypes.LOGIN_RESET });
 
-export const validateToken = (): IActionCall => ({
-    callAPI: () => CommonService.validateToken(),
+export const validateToken = (firstLoad: string): IActionCall => ({
+    callAPI: () => CommonService.validateToken(firstLoad),
     types: {
         loading: actionTypes.VALIDATE_TOKEN,
         success: actionTypes.VALIDATE_TOKEN_SUCCESS,

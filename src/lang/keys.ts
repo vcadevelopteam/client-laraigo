@@ -19,7 +19,15 @@ export const langKeys = {
   set_your_weekly: "set_your_weekly",
   visualizationBotTooltip: "visualizationBotTooltip",
   orders: "orders",
+  configure: "configure",
+  finish: "finish",
+  automaticclosingtime: "automaticclosingtime",
+  noteclosingtime: "noteclosingtime",
+  successful_enablecirtualassistant: "successful_enablecirtualassistant",
+  closingtime: "closingtime",
+  automaticclosingtimehelpertext: "automaticclosingtimehelpertext",
   statusdate: "statusdate",
+  enablevirtualassistantforurchannel: "enablevirtualassistantforurchannel",
   currentphase: "currentphase",
   changedby: "changedby",
   funnelType: "funnelType",
@@ -1430,6 +1438,11 @@ export const langKeys = {
 
   no_reply_use_hsm: 'no_reply_use_hsm',
   no_reply_claro: 'no_reply_claro',
+  
+  hello: 'hello',
+  welcome_onboarding: 'welcome_onboarding',
+  text1_onboarding: 'text1_onboarding',
+  text2_onboarding: 'text2_onboarding',
 
   active: 'active',
   inactive: 'inactive',

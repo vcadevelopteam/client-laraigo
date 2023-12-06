@@ -442,6 +442,12 @@ const translation: LangKeys = {
 
   no_reply_use_hsm: 'This conversation is blocked until the client sends a reply to the sent HSM to start a conversation with its consent.',
   no_reply_claro: 'Due to profile permissions, the options for reassigning conversation or contact with the client are not enabled, being in Holding or Bot.',
+  
+  hello: 'Hi, {{name}}!',
+  welcome_onboarding: 'We welcome you to',
+  text1_onboarding: 'To start communicating with your customers, finish setting up the channels selected during subscription.',
+  text2_onboarding: 'If you want to add an additional channel you can use the register button.',
+  
   password_different: "Passwords do not match",
   password_not_allowed: "The password must contain at least 10 characters, a letter and a number",
   status: 'Status',
@@ -878,6 +884,7 @@ const translation: LangKeys = {
   refresh: 'Refresh',
   duplicate: 'Duplicate',
   stop: 'Stop',
+    enablevirtualassistantforurchannel: "Enable a virtual assistant to your channel",
   organizationclass: "Organization of Classifications",
   tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
   tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',
@@ -915,7 +922,14 @@ const translation: LangKeys = {
   graphic_detail: 'Graphic Detail',
 
   starttimecall: "Call start time",
+  automaticclosingtime: "Automatic closing time",
+  configure: "Configure",
+  closingtime: "Closing time",
+  noteclosingtime: "Set 0 if you do not want the ticket to be closed automatically.",
+  successful_enablecirtualassistant: "Virtual assistant enabled for channel",
+  automaticclosingtimehelpertext: "Set an automatic time for the conversation to close with the user.",
   finishtimecall: "Call end time",
+  finish: "FINISH",
   transfertimecall: "Transfer time",
   transfertimecall_tooltip: "Time since the agent dialed the 'Transfer call' option",
   lastadvisername: "Last adviser name",

@@ -16,7 +16,7 @@ import Popus from 'components/layout/Popus';
 import { useDispatch } from 'react-redux';
 import { login } from 'store/login/actions';
 import { getAccessToken, loadScripts } from 'common/helpers';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import FacebookLogin, { ReactFacebookFailureResponse } from 'react-facebook-login';
@@ -102,7 +102,8 @@ export const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         position: "absolute",
         top: 44,
-        left: 40
+        left: 40,
+        zIndex: 3
     },
     childContainer: {
         display: 'flex',
@@ -278,7 +279,7 @@ const SignIn = () => {
 
     const onGoogleLoginFailure = (event: AuthResponse) => {
         console.warn('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
-        if (event && event.error) {
+        if (event?.error) {
             switch (event.error) {
                 case 'idpiframe_initialization_failed':
                 case 'popup_closed_by_user':
@@ -300,12 +301,10 @@ const SignIn = () => {
             } else {
                 window.open("https://app.laraigo.com/sign-in", '_blank');
             }
+        } else if (window.location.hostname === 'claro.laraigo.com') {
+            window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
         } else {
-            if (window.location.hostname === 'claro.laraigo.com') {
-                window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
-            } else {
-                window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
-            }
+            window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
         }
     }
 
@@ -314,6 +313,7 @@ const SignIn = () => {
             history.push('/');
         } else {
             localStorage.removeItem("firstLoad")
+            localStorage.removeItem("firstloadeddialog")
         }
         const scriptsToLoad = ["recaptcha", "google"];
         // if (apiUrls.LOGIN_URL.includes("https://apiprd.laraigo.com")) {
@@ -426,23 +426,34 @@ const SignIn = () => {
                                                 </Button>
                                                 <FacebookLogin
                                                     appId={`${apiUrls.FACEBOOKAPP}`}
-                                                    callback={onAuthWithFacebook}
-                                                    cssClass={classes.button}
+                                                    autoLoad={false}
                                                     buttonStyle={{ border: '1px solid #4D6BB7' }}
+                                                    callback={onAuthWithFacebook}
                                                     containerStyle={{ width: "100%" }}
-                                                    textButton={t(langKeys.login_with_facebook)}
-                                                    icon={<FacebookIcon style={{ color: 'blue', marginRight: '8px' }} />}
+                                                    cssClass={classes.button}
                                                     disableMobileRedirect={true}
+                                                    fields="name,email,picture"
+                                                    icon={<FacebookIcon style={{ color: 'blue', marginRight: '8px' }} />}
+                                                    isDisabled={false}
+                                                    textButton={t(langKeys.login_with_facebook)}
+                                                    onClick={(e: any) => {
+                                                        e.view.window.FB.init({
+                                                            appId: apiUrls.FACEBOOKAPP,
+                                                            cookie: true,
+                                                            xfbml: true,
+                                                            version: apiUrls.FACEBOOKVERSION,
+                                                        });
+                                                    }}
                                                 />
                                                 <GoogleLogin
-                                                    clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
-                                                    buttonText={t(langKeys.login_with_google)}
-                                                    className={`${classes.button} ${classes.borderGoogle}`}
-                                                    onSuccess={onGoogleLoginSucess}
-                                                    onFailure={onGoogleLoginFailure}
-                                                    cookiePolicy={'single_host_origin'}
                                                     accessType='online'
                                                     autoLoad={false}
+                                                    buttonText={t(langKeys.login_with_google)}
+                                                    className={`${classes.button} ${classes.borderGoogle}`}
+                                                    clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
+                                                    cookiePolicy={'single_host_origin'}
+                                                    onFailure={onGoogleLoginFailure}
+                                                    onSuccess={onGoogleLoginSucess}
                                                 />
                                                 <Button
                                                     variant="outlined"
@@ -508,13 +519,9 @@ const SignIn = () => {
 
 const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: boolean) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-
     const recoverResult = useSelector(state => state.subscription.requestRecoverPassword);
-
     const [waitSave, setWaitSave] = useState(false);
-
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             username: ''

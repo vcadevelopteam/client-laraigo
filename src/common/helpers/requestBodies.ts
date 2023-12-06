@@ -4158,3 +4158,13 @@ export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid
     key: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
     parameters: { partnerid, corpid, orgid, year, month, username },
 });
+export const getTemplatesChatflow = () => ({
+    method: "UFN_CHATFLOW_BLOCK_TEMPLATES_SEL",
+    key: "UFN_CHATFLOW_BLOCK_TEMPLATES_SEL",
+    parameters: {  },
+});
+export const templatesChatflowClone = ({chatblockid,communicationchannelid,prop_value}:Dictionary) => ({
+    method: "UFN_CHATFLOW_BLOCK_TEMPLATE_CLONE",
+    key: "UFN_CHATFLOW_BLOCK_TEMPLATE_CLONE",
+    parameters: { chatblockid,communicationchannelid,prop_value },
+});

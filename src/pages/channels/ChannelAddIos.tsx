@@ -12,6 +12,7 @@ import { IChannel } from "@types";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 import React, { FC, useEffect, useState } from "react";
 
 interface WhatsAppData {
@@ -45,6 +46,7 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
     const mainResult = useSelector((state) => state.channel.channelList);
     const executeResult = useSelector((state) => state.channel.successinsert);
     const history = useHistory();
+    const [viewSelected, setViewSelected] = useState("view1");
     const classes = useChannelAddStyles();
     const location = useLocation<WhatsAppData>();
     const whatsAppData = location.state as WhatsAppData | null;
@@ -79,7 +81,7 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     async function goback() {
-        history.push(paths.CHANNELS);
+        setViewSelected("enable-virtual-assistant")
     }
 
     useEffect(() => {
@@ -116,6 +118,11 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
         const partialf = fields;
         partialf.parameters.description = value;
         setFields(partialf);
+    }
+    if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
     }
 
     if (edit && !channel) {

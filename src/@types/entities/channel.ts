@@ -25,6 +25,7 @@ export interface IChannel {
     orgid: number;
     other: string;
     phone: string;
+    haveflow: boolean;
     resolvelithium: boolean;
     schedule: string;
     servicecredentials: string;

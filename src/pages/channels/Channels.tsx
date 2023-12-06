@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from "react";
 import { checkPaymentPlan, deleteChannel } from "store/channel/actions";
 import { Dictionary, IChannel } from "@types";
 
@@ -12,8 +13,8 @@ import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
 import TableZyx from "components/fields/table-simple";
+import SettingsIcon from '@material-ui/icons/Settings';
 
 export const Channels: FC = () => {
     const { t } = useTranslation();
@@ -276,6 +277,19 @@ export const Channels: FC = () => {
                     const row = props.cell.row.original;
                     return <span>{(t(`status_${row.status}`.toLowerCase()) || "").toUpperCase()}</span>;
                 },
+            },
+            {
+                Header: "",
+                accessor: 'haveflow',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { haveflow } = props.cell.row.original;
+                    if(haveflow){
+                        return <div></div>
+                    }else{
+                        return <div style={{display:"flex", alignItems:"center", color: "#7721ad", fontWeight:"bold"}}><SettingsIcon/>{t(langKeys.configure)}</div>
+                    }
+                }
             },
         ],
         []

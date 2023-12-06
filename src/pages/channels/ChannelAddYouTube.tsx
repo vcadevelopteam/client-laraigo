@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from "react";
 import { apiUrls } from "common/constants";
 import { Box, Breadcrumbs, Button, makeStyles } from "@material-ui/core";
 import { ChannelYouTube } from "icons";
@@ -16,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import GoogleLogInFrame from "./GoogleLogInFrame";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import React, { FC, useEffect, useState } from "react";
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 interface WhatsAppData {
     row?: unknown;
@@ -203,8 +204,7 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 setSetins(false);
                 setWaitSave(false);
-
-                history.push(paths.CHANNELS);
+                setViewSelected("enable-virtual-assistant")
             } else if (!executeResult) {
                 dispatch(
                     showSnackbar({
@@ -354,7 +354,11 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                     </div>
                 </div>
             </div>
-        );
+        )
+    } else if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
     } else {
         return (
             <div style={{ width: "100%" }}>

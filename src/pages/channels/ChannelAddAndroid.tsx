@@ -46,6 +46,7 @@ import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import React, { FC, useEffect, useRef, useState } from "react";
 import SendIcon from "@material-ui/icons/Send";
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
 interface FieldTemplate {
     data: IChatWebAddFormField;
@@ -2744,6 +2745,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const editChannel = useSelector((state) => state.channel.editChannel);
     const whatsAppData = location.state as WhatsAppData | null;
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
+    const [viewSelected, setViewSelected] = useState("main-view");
 
     useEffect(() => {
         dispatch(getMultiCollection([getInputValidationSel(0)]));
@@ -2783,16 +2785,21 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                 })
             );
         } else if (editChannel.success) {
-            dispatch(showBackdrop(false));
-            setShowScript(true);
-            dispatch(
-                showSnackbar({
-                    message: t(langKeys.channeleditsuccess),
-                    show: true,
-                    severity: "success",
-                })
-            );
-            history.push(paths.CHANNELS);
+            if (!channel?.haveflow) {
+                setViewSelected("enable-virtual-assistant")
+            } else {
+                dispatch(showBackdrop(false));
+                setShowScript(true);
+                dispatch(
+                    showSnackbar({
+                        message: t(langKeys.channeleditsuccess),
+                        show: true,
+                        severity: "success",
+                    })
+                );
+                history.push(paths.CHANNELS);
+            }
+            
         }
     }, [dispatch, editChannel]);
 
@@ -2880,10 +2887,17 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
             const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor, "SMOOCHANDROID");
             dispatch(getEditChannel(body, "SMOOCHANDROID"));
         }
-    };
-
+    }
     if (edit && !channel) {
         return <div />;
+    }
+    const handleend = () => {
+        setViewSelected("enable-virtual-assistant")
+    }
+    if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={insertChannel?.value?.result?.ufn_communicationchannel_ins||null}
+        />
     }
 
     return (
