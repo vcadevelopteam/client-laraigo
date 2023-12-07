@@ -203,7 +203,7 @@ const ParametersTabDetail: React.FC = () => {
         return (
             <>
                 <div className={classes.containerDetail}>
-                    <div className="row-zyx">
+                    <div className="row-zyx" style={{marginBottom:0}}>
                         <div>
                             <Button
                                 type="button"
@@ -250,7 +250,7 @@ const ParametersTabDetail: React.FC = () => {
                             />
                         </div>
                         <div style={{height: 20}}/>
-                        <div className="row-zyx">
+                        <div>
                             <span style={{fontWeight:'bold', fontSize: 18}}>{t(langKeys.answeredmessages)}</span>
                             <div><span style={{fontSize: 16}}>{t(langKeys.language)}</span></div>
                             <FieldEdit
