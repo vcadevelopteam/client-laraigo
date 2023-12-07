@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: "#fff",
     },
+    containerDetail2: {
+        padding: theme.spacing(2),
+        background: "#F9F9FA",
+    },
     title: {
         fontSize: '22px',
         fontWeight: 'bold',
@@ -257,6 +261,18 @@ const ParametersTabDetail: React.FC = () => {
                                 variant="outlined"
                             />
                         </div>
+                    </div>
+                </div>
+                <div className={`row-zyx ${classes.containerDetail2}`}>
+                    <div className="col-8">
+                        <FieldEdit
+                            variant="outlined"
+                        />
+                    </div>
+                    <div className="col-4">
+                        <FieldEdit
+                            variant="outlined"
+                        />
                     </div>
                 </div>
             </>
