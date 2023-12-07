@@ -136,6 +136,19 @@ const ParametersTabDetail: React.FC = () => {
         }
     }, [executeResult, waitSave]);
 
+    const listaDeObjetos = [
+        { titulo: 'Objeto 1', descripcion: 'Descripción del objeto 1' },
+        { titulo: 'Objeto 2', descripcion: 'Descripción del objeto 2' },
+        { titulo: 'Objeto 3', descripcion: 'Descripción del objeto 2' },
+        { titulo: 'Objeto 4', descripcion: 'Descripción del objeto 2' },
+        { titulo: 'Objeto 5', descripcion: 'Descripción del objeto 2' },
+        { titulo: 'Objeto 6', descripcion: 'Descripción del objeto 2' },
+        { titulo: 'Objeto 7', descripcion: 'Descripción del objeto 2' },
+        { titulo: 'Objeto 8', descripcion: 'Descripción del objeto 2' },
+        { titulo: 'Objeto 9', descripcion: 'Descripción del objeto 2' },
+        { titulo: 'Objeto 10', descripcion: 'Descripción del objeto 2' },
+    ];
+
     if(viewSelected === 'main') {
         return (
             <div className={classes.containerDetail}>
@@ -265,14 +278,26 @@ const ParametersTabDetail: React.FC = () => {
                 </div>
                 <div className={`row-zyx ${classes.containerDetail2}`}>
                     <div className="col-8">
+                        <span style={{fontWeight:'bold', fontSize: 18}}>{t(langKeys.language)}</span>
+                        <div><span style={{fontSize: 16}}>{t(langKeys.language)}</span></div>
+                        <FieldEdit
+                            variant="outlined"
+                        />
+                        <span style={{fontWeight:'bold', fontSize: 18}}>{t(langKeys.language)}</span>
+                        <div><span style={{fontSize: 16}}>{t(langKeys.language)}</span></div>
                         <FieldEdit
                             variant="outlined"
                         />
                     </div>
                     <div className="col-4">
-                        <FieldEdit
-                            variant="outlined"
-                        />
+                        <Card style={{height: 300, overflowY: 'auto'}}>
+                            {listaDeObjetos.map((objeto, index) => (
+                                <div key={index}>
+                                    <span style={{fontWeight:'bold', fontSize: 18}}>{objeto.titulo}</span>
+                                    <div><span style={{fontSize: 16}}>{objeto.descripcion}</span></div>
+                                </div>
+                            ))}
+                        </Card>
                     </div>
                 </div>
             </>
