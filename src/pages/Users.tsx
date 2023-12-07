@@ -1951,8 +1951,7 @@ const Users: FC = () => {
                                         type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
                                         showbots = d.showbots === "true"
                                     }
-                                }
-                                debugger
+                                }                                
                                 return ({
                                     ...a,
                                     [`${d.user}_${d.docnum}`]: {
