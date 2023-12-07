@@ -1,61 +1,62 @@
-import { Dictionary, IListStatePaginated, IObjectState } from "@types";
 import { createReducer, initialListPaginatedState, initialObjectState } from "common/helpers";
-import * as caseFUnctions from './caseFunctions';
+import { Dictionary, IListStatePaginated, IObjectState } from "@types";
+
+import * as caseFunctions from "./caseFunctions";
 import actionTypes from "./actionTypes";
 
 export interface IState {
     channelList: IListStatePaginated<Dictionary>;
-    currencyList: IListStatePaginated<Dictionary>;
     countryList: IListStatePaginated<Dictionary>;
-    successinsert: Boolean;
-    insertChannel: IObjectState<{ success: boolean, code: string, message:string }>;
-    valChannelsChannel: IObjectState<{ success: boolean, code: string, message:string }>;
+    currencyList: IListStatePaginated<Dictionary>;
+    error: boolean;
+    insertChannel: IObjectState<{ success: boolean; code: string; message: string }>;
+    isvalid: boolean;
+    loading: boolean;
+    message: string;
+    successinsert: boolean;
+    valChannelsChannel: IObjectState<{ success: boolean; code: string; message: string }>;
     verifyPlan: IListStatePaginated<Dictionary>;
-    isvalid: Boolean;
-    loading: Boolean;
-    error: Boolean;
-    message: String;
 }
 
 export const initialState: IState = {
     channelList: initialListPaginatedState,
-    currencyList: initialListPaginatedState,
     countryList: initialListPaginatedState,
-    successinsert: false,
+    currencyList: initialListPaginatedState,
+    error: false,
     insertChannel: initialObjectState,
-    valChannelsChannel: initialObjectState,
-    verifyPlan: initialListPaginatedState,
     isvalid: false,
     loading: false,
-    error: false,
-    message: ""
+    message: "",
+    successinsert: false,
+    valChannelsChannel: initialObjectState,
+    verifyPlan: initialListPaginatedState,
 };
 
 export default createReducer<IState>(initialState, {
-    [actionTypes.PAGELIST]: caseFUnctions.getChannels,
-    [actionTypes.PAGELIST_SUCCESS]: caseFUnctions.getChannelsSuccess,
-    [actionTypes.PAGELIST_FAILURE]: caseFUnctions.getChannelsFailure,
-    [actionTypes.PAGELIST_RESET]: caseFUnctions.getChannelsReset,
-    [actionTypes.SIGNUP]: caseFUnctions.insertChannel,
-    [actionTypes.SIGNUP_SUCCESS]: caseFUnctions.insertChannelSuccess,
-    [actionTypes.SIGNUP_FAILURE]: caseFUnctions.insertChannelFailure,
-    [actionTypes.SIGNUP_RESET]: caseFUnctions.insertChannelReset,
-    [actionTypes.VALCHANNELS]: caseFUnctions.valChannelsChannel,
-    [actionTypes.VALCHANNELS_FAILURE]: caseFUnctions.valChannelsChannelSuccess,
-    [actionTypes.VALCHANNELS_SUCCESS]: caseFUnctions.valChannelsChannelFailure,
-    [actionTypes.VALCHANNELS_RESET]: caseFUnctions.valChannelsChannelReset,
-    [actionTypes.ISVALID]: caseFUnctions.checkvalidity,
-    [actionTypes.ISVALID_SUCCESS]: caseFUnctions.checkvaliditySuccess,
-    [actionTypes.ISVALID_FAILURE]: caseFUnctions.checkvalidityFailure,
-    [actionTypes.ISVALID_RESET]: caseFUnctions.checkvalidityReset,
-    [actionTypes.ISVALID_RESET]: caseFUnctions.checkvalidityReset,
-    [actionTypes.VERIFYPLAN]: caseFUnctions.verifyPlanFunc,
-    [actionTypes.VERIFYPLAN_SUCCESS]: caseFUnctions.verifyPlanSuccess,
-    [actionTypes.VERIFYPLAN_FAILURE]: caseFUnctions.verifyPlanFailure,
-    [actionTypes.CURRENCYLIST]: caseFUnctions.getCurrency,
-    [actionTypes.CURRENCYLIST_SUCCESS]: caseFUnctions.getCurrencySuccess,
-    [actionTypes.CURRENCYLIST_FAILURE]: caseFUnctions.getCurrencyFailure,
-    [actionTypes.COUNTRYLIST]: caseFUnctions.getCountry,
-    [actionTypes.COUNTRYLIST_SUCCESS]: caseFUnctions.getCountrySuccess,
-    [actionTypes.COUNTRYLIST_FAILURE]: caseFUnctions.getCountryFailure,
+    [actionTypes.COUNTRYLIST]: caseFunctions.getCountry,
+    [actionTypes.COUNTRYLIST_FAILURE]: caseFunctions.getCountryFailure,
+    [actionTypes.COUNTRYLIST_SUCCESS]: caseFunctions.getCountrySuccess,
+    [actionTypes.CURRENCYLIST]: caseFunctions.getCurrency,
+    [actionTypes.CURRENCYLIST_FAILURE]: caseFunctions.getCurrencyFailure,
+    [actionTypes.CURRENCYLIST_SUCCESS]: caseFunctions.getCurrencySuccess,
+    [actionTypes.ISVALID]: caseFunctions.checkvalidity,
+    [actionTypes.ISVALID_FAILURE]: caseFunctions.checkvalidityFailure,
+    [actionTypes.ISVALID_RESET]: caseFunctions.checkvalidityReset,
+    [actionTypes.ISVALID_RESET]: caseFunctions.checkvalidityReset,
+    [actionTypes.ISVALID_SUCCESS]: caseFunctions.checkvaliditySuccess,
+    [actionTypes.PAGELIST]: caseFunctions.getChannels,
+    [actionTypes.PAGELIST_FAILURE]: caseFunctions.getChannelsFailure,
+    [actionTypes.PAGELIST_RESET]: caseFunctions.getChannelsReset,
+    [actionTypes.PAGELIST_SUCCESS]: caseFunctions.getChannelsSuccess,
+    [actionTypes.SIGNUP]: caseFunctions.insertChannel,
+    [actionTypes.SIGNUP_FAILURE]: caseFunctions.insertChannelFailure,
+    [actionTypes.SIGNUP_RESET]: caseFunctions.insertChannelReset,
+    [actionTypes.SIGNUP_SUCCESS]: caseFunctions.insertChannelSuccess,
+    [actionTypes.VALCHANNELS]: caseFunctions.valChannelsChannel,
+    [actionTypes.VALCHANNELS_FAILURE]: caseFunctions.valChannelsChannelSuccess,
+    [actionTypes.VALCHANNELS_RESET]: caseFunctions.valChannelsChannelReset,
+    [actionTypes.VALCHANNELS_SUCCESS]: caseFunctions.valChannelsChannelFailure,
+    [actionTypes.VERIFYPLAN]: caseFunctions.verifyPlanFunc,
+    [actionTypes.VERIFYPLAN_FAILURE]: caseFunctions.verifyPlanFailure,
+    [actionTypes.VERIFYPLAN_SUCCESS]: caseFunctions.verifyPlanSuccess,
 });

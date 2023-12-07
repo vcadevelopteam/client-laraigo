@@ -26,8 +26,8 @@ export function exportData(requestBody: IRequestBody) {
     return APIManager.post(apiUrls.EXPORT_DATA, { data: requestBody }, true);
 }
 
-export function validateToken() {
-    return APIManager.get(apiUrls.LOGIN_URL, {}, true);
+export function validateToken(firstLoad: string) {
+    return APIManager.get(apiUrls.LOGIN_URL + `?firstload=${firstLoad ?? ""}`, {}, true);
 }
 export function reeschedulecall(requestBody: Dictionary) {
     return APIManager.post(apiUrls.REESCHEDULECALL, { data: requestBody }, true);

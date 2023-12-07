@@ -316,7 +316,7 @@ const ProductCatalog: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(catalogManageProduct({ ...row, id: row.productcatalogid, operation: 'DELETE', status: 'ELIMINADO' }));
+            dispatch(catalogManageProduct({ ...row, id: row.productcatalogid, operation: 'ELIMINAR', status: 'ELIMINADO' }));
             dispatch(showBackdrop(true));
             setWaitManage(true);
         }

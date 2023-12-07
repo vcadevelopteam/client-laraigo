@@ -231,10 +231,10 @@ export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, pass
     parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
-export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect }: Dictionary): IRequestBody => ({
+export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, showbots }: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
-    parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
+    parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect, showbots }
 });
 export const selOrgSimpleList = (): IRequestBody => ({
     method: "UFN_ORG_LST_SIMPLE",
@@ -959,7 +959,7 @@ export const insMessageTemplate = (
             body,
             bodyobject: JSON.stringify(bodyobject),
             footerenabled,
-            footer: footer||"",
+            footer: footer || "",
             buttonsenabled,
             buttons: JSON.stringify(buttons),
             priority,
@@ -1216,10 +1216,10 @@ export const insarrayVariableConfiguration = (table: Dictionary[]): IRequestBody
     }
 });
 
-export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string): IRequestBody<IChatWebAdd> => ({
+export const getInsertChatwebChannel = (id: number, name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
-        id: 0,
+        id: id || 0,
         description: name,
         type: "",
         communicationchannelsite: "id del canal",
@@ -1256,10 +1256,10 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
-        voximplantwelcometone: welcometoneurl || "",
-        voximplantholdtone: holdingtoneurl || "",
+        voximplantwelcometone: welcometoneurl ?? "",
+        voximplantholdtone: holdingtoneurl ?? "",
         voximplantcallsupervision: voximplantcallsupervision || false,
-        voximplantrecording: voximplantrecording || '',
+        voximplantrecording: voximplantrecording ?? '',
     },
 });
 
@@ -1283,7 +1283,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
         voximplantrecording: '',
         voximplantholdtone: "",
     },
-    type: typechannel || "CHATWEB",
+    type: typechannel ?? "CHATWEB",
     service,
 });
 
@@ -4157,4 +4157,31 @@ export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid
     method: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
     key: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
     parameters: { partnerid, corpid, orgid, year, month, username },
+});
+export const getTemplatesChatflow = () => ({
+    method: "UFN_CHATFLOW_BLOCK_TEMPLATES_SEL",
+    key: "UFN_CHATFLOW_BLOCK_TEMPLATES_SEL",
+    parameters: {  },
+});
+export const templatesChatflowClone = ({chatblockid,communicationchannelid,prop_value}:Dictionary) => ({
+    method: "UFN_CHATFLOW_BLOCK_TEMPLATE_CLONE",
+    key: "UFN_CHATFLOW_BLOCK_TEMPLATE_CLONE",
+    parameters: { chatblockid,communicationchannelid,prop_value },
+});
+export const insOrderConfig = ({ id, orderconfig, type, status, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_ORDERCONFIG_INS",
+    key: "UFN_ORDERCONFIG_INS",
+    parameters: { id, orderconfig, type, status, operation }
+});
+
+export const selOrderConfig = () => ({
+    method: "UFN_ORDERCONFIG_SEL",
+    key: "UFN_ORDERCONFIG_SEL",
+    parameters: {},
+});
+
+export const insLeadConfig = ({ id, maxgreen, maxyellow }: Dictionary): IRequestBody => ({
+    method: "UFN_LEAD_CONFIG_INS",
+    key: "UFN_LEAD_CONFIG_INS",
+    parameters: { id, maxgreen, maxyellow }
 });

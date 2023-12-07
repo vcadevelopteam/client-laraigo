@@ -1,3 +1,4 @@
+import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import { createTheme } from '@material-ui/core';
 import RouterApp from 'routes';

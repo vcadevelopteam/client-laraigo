@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelWorkplace } from "icons";
 import { ColorInput, FieldEdit, FieldSelect } from "components";
-import { FC, useEffect, useState } from "react";
 import { getGroupList, insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
@@ -10,78 +8,83 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import ChannelEnableVirtualAssistant from './ChannelEnableVirtualAssistant';
+import { Dictionary, IChannel } from "@types";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import React, { FC, useEffect, useState } from "react";
 
-interface whatsAppData {
+interface WhatsAppData {
+    row?: unknown;
     typeWhatsApp?: string;
-    row?: any;
 }
 
-const useChannelAddStyles = makeStyles(theme => ({
+const useChannelAddStyles = makeStyles(() => ({
     button: {
         padding: 12,
         fontWeight: 500,
         fontSize: "14px",
         textTransform: "initial",
-        width: "180px"
+        width: "180px",
     },
 }));
 
-export const ChannelAddFacebookWorkplace: FC = () => {
-    const dispatch = useDispatch();
-
+export const ChannelAddFacebookWorkplace: FC<{ edit: boolean }> = ({ edit }) => {
     const { t } = useTranslation();
 
-    const classes = useChannelAddStyles();
-    const executeResult = useSelector(state => state.channel.successinsert);
-    const history = useHistory();
-    const location = useLocation<whatsAppData>();
-    const mainResult = useSelector(state => state.channel.channelList);
-    const grouplist = useSelector(state => state.channel.requestGetGroupList);
-    const whatsAppData = location.state as whatsAppData | null;
-
     const [channelreg, setChannelreg] = useState(true);
-    const [channelList, setChannelList] = useState<any>([]);
+    const [channelList, setChannelList] = useState<Dictionary[]>([]);
     const [waitGetGroups, setWaitGetGroups] = useState(false);
-    const [coloricon, setcoloricon] = useState("#2d88ff");
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#2d88ff",
-            "voximplantcallsupervision": false
-        },
-        "type": "FBWM",
-        "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "groupid": "",
-        }
-    })
+    const [coloricon, setColoricon] = useState("#2d88ff");
     const [nextbutton, setNextbutton] = useState(true);
-    const [setins, setsetins] = useState(false);
+    const [setins, setSetins] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
 
+    const dispatch = useDispatch();
+    const classes = useChannelAddStyles();
+    const executeResult = useSelector((state) => state.channel.successinsert);
+    const history = useHistory();
+    const location = useLocation<WhatsAppData>();
+    const mainResult = useSelector((state) => state.channel.channelList);
+    const grouplist = useSelector((state) => state.channel.requestGetGroupList);
+    const whatsAppData = location.state as WhatsAppData | null;
+
+    const channel = whatsAppData?.row as IChannel | null;
+
+    const [fields, setFields] = useState({
+        method: "UFN_COMMUNICATIONCHANNEL_INS",
+        type: "FBWM",
+        parameters: {
+            id: edit && channel ? channel.communicationchannelid : 0,
+            description: "",
+            type: "",
+            communicationchannelsite: "",
+            communicationchannelowner: "",
+            chatflowenabled: true,
+            integrationid: "",
+            color: "",
+            icons: "",
+            other: "",
+            form: "",
+            apikey: "",
+            coloricon: "#2d88ff",
+            voximplantcallsupervision: false,
+        },
+        service: {
+            accesstoken: "",
+            siteid: "",
+            groupid: "",
+        },
+    });
+
     const openprivacypolicies = () => {
         window.open("/privacy", "_blank");
-    }
+    };
 
     async function finishreg() {
-        setsetins(true);
+        setSetins(true);
         dispatch(insertChannel(fields));
         setWaitSave(true);
         setViewSelected("main");
@@ -90,115 +93,172 @@ export const ChannelAddFacebookWorkplace: FC = () => {
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+                setSetins(false);
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS);
+                setViewSelected("enable-virtual-assistant")
             } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                const errormessage = t(mainResult.code ?? "error_unexpected_error", {
+                    module: t(langKeys.property).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     useEffect(() => {
         if (!grouplist.loading && waitGetGroups) {
             if (grouplist.error) {
-                const errormessage = t(langKeys.apikeydoesntexist).toLocaleLowerCase()
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                const errormessage = t(langKeys.apikeydoesntexist).toLocaleLowerCase();
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 dispatch(showBackdrop(false));
                 setViewSelected("view1");
                 setWaitGetGroups(false);
-                setChannelList([])
+                setChannelList([]);
             } else {
-                setChannelList(grouplist?.data || [])
+                setChannelList((grouplist?.data as unknown as Dictionary[]) ?? []);
                 dispatch(showBackdrop(false));
                 setViewSelected("view2");
                 setWaitGetGroups(false);
-                setNextbutton(true)
+                setNextbutton(true);
             }
         }
-    }, [grouplist])
+    }, [grouplist]);
 
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     function getgrouplistlocal() {
         dispatch(
             getGroupList({
                 accesstoken: fields.service.accesstoken,
-            }))
+            })
+        );
         dispatch(showBackdrop(true));
         setWaitGetGroups(true);
     }
 
-    function setnameField(value: any) {
-        setChannelreg(value === "")
-        let partialf = fields;
+    function setnameField(value: string) {
+        setChannelreg(value === "");
+        const partialf = fields;
         partialf.parameters.description = value;
         setFields(partialf);
+    }
+
+    if (edit && !channel) {
+        return <div />;
     }
 
     if (viewSelected === "view1") {
         return (
             <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
+                    <Link
+                        color="textSecondary"
+                        key={"mainview"}
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            channel?.status === "INACTIVO"
+                                ? history.push(paths.CHANNELS, whatsAppData)
+                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+                        }}
+                    >
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)} Workplace</div>
+                    <div
+                        style={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            fontSize: "2em",
+                            color: "#7721ad",
+                            padding: "20px",
+                        }}
+                    >
+                        {t(langKeys.connectface)} Workplace
+                    </div>
 
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                let partialf = fields;
-                                setNextbutton(value === "")
-                                partialf.service.accesstoken = value
-                                setFields(partialf)
+                                const partialf = fields;
+                                setNextbutton(value === "");
+                                partialf.service.accesstoken = value;
+                                setFields(partialf);
                             }}
                             valueDefault={fields.service.accesstoken}
                             label={t(langKeys.authenticationtoken)}
                             className="col-6"
                         />
                     </div>
-                    <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                    <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>
+                        {t(langKeys.connectface4)}
+                    </div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}>
+                        <a
+                            style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                            onMouseDown={openprivacypolicies}
+                            rel="noopener noreferrer"
+                        >
+                            {t(langKeys.privacypoliciestitle)}
+                        </a>
+                    </div>
 
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
-                            onClick={() => { getgrouplistlocal() }}
+                            onClick={() => {
+                                getgrouplistlocal();
+                            }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.next)}
+                        >
+                            {t(langKeys.next)}
                         </Button>
                     </div>
                 </div>
             </div>
-        )
+        );
     }
     if (viewSelected === "view2") {
         return (
             <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
+                    <Link
+                        color="textSecondary"
+                        key={"mainview"}
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setViewSelected("view1");
+                        }}
+                    >
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)} Workplace</div>
+                    <div
+                        style={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            fontSize: "2em",
+                            color: "#7721ad",
+                            padding: "20px",
+                        }}
+                    >
+                        {t(langKeys.connectface)} Workplace
+                    </div>
 
                     <div className="row-zyx">
                         <div className="col-3"></div>
@@ -207,43 +267,80 @@ export const ChannelAddFacebookWorkplace: FC = () => {
                             optionValue="id"
                             optionDesc="name"
                             onChange={(value) => {
-                                let partialf = fields;
-                                setNextbutton(!value?.id)
-                                partialf.service.groupid = value.id
-                                setFields(partialf)
+                                const partialf = fields;
+                                setNextbutton(!value?.id);
+                                partialf.service.groupid = value.id;
+                                setFields(partialf);
                             }}
                             valueDefault={fields.service.groupid}
                             label={t(langKeys.group)}
                             className="col-6"
                         />
                     </div>
-                    <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                    <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>
+                        {t(langKeys.connectface4)}
+                    </div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}>
+                        <a
+                            style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                            onMouseDown={openprivacypolicies}
+                            rel="noopener noreferrer"
+                        >
+                            {t(langKeys.privacypoliciestitle)}
+                        </a>
+                    </div>
 
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
-                            onClick={() => { setViewSelected("view3") }}
+                            onClick={() => {
+                                setViewSelected("view3");
+                            }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.next)}
+                        >
+                            {t(langKeys.next)}
                         </Button>
                     </div>
                 </div>
             </div>
         )
+    }else if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
     } else {
         return (
             <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
+                    <Link
+                        color="textSecondary"
+                        key={"mainview"}
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setViewSelected("view2");
+                        }}
+                    >
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
+                    <div
+                        style={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            fontSize: "2em",
+                            color: "#7721ad",
+                            padding: "20px",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            maxWidth: "800px",
+                        }}
+                    >
+                        {t(langKeys.commchannelfinishreg)}
+                    </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -259,16 +356,23 @@ export const ChannelAddFacebookWorkplace: FC = () => {
                             <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                            <div
+                                style={{
+                                    alignItems: "center",
+                                    display: "flex",
+                                    justifyContent: "space-around",
+                                    marginTop: "20px",
+                                }}
+                            >
                                 <ChannelWorkplace style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
-                                    onChange={e => {
-                                        setFields(prev => ({
+                                    onChange={(e) => {
+                                        setFields((prev) => ({
                                             ...prev,
                                             parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
                                         }));
-                                        setcoloricon(e.hex)
+                                        setColoricon(e.hex);
                                     }}
                                 />
                             </div>
@@ -276,18 +380,21 @@ export const ChannelAddFacebookWorkplace: FC = () => {
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
-                            onClick={() => { finishreg() }}
+                            onClick={() => {
+                                finishreg();
+                            }}
                             className={classes.button}
                             disabled={channelreg || mainResult.loading}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.finishreg)}
+                        >
+                            {t(langKeys.finishreg)}
                         </Button>
                     </div>
                 </div>
             </div>
-        )
+        );
     }
-}
+};
 
 export default ChannelAddFacebookWorkplace;

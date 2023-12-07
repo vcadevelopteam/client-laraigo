@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getDateCleaned } from 'common/helpers';
@@ -8,14 +7,17 @@ import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPa
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import { DownloadIcon } from 'icons';
 import { Button } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
+import { CellProps } from 'react-table';
+
 
 interface DetailProps {
     setViewSelected?: (view: string) => void;
@@ -27,30 +29,23 @@ const arrayBread = [
     { id: "view-2", name: "Campaign report" }
 ];
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
+const useStyles = makeStyles(() => ({
+      select: {
+        width: '200px'
+    },   
+    itemDate: {        
+        minHeight: 40,
+        height: 40,
+        border: '1px solid #bfbfc0',
+        borderRadius: 4,
+        color: 'rgb(143, 146, 161)',
+        alignItems:'left'
     },
     button: {
         padding: 12,
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
-    },
-    select: {
-        width: '200px'
-    },
-    flexgrow1: {
-        flexGrow: 1
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
-        borderRadius: 4,
-        color: 'rgb(143, 146, 161)'
     },
 }));
 
@@ -87,7 +82,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     
-    const cell = (props: any) => {
+    const cell = (props: CellProps<Dictionary>) => {
         const column = props.cell.column;
         const row = props.cell.row.original;
         return (
@@ -148,7 +143,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'executiontype',
                 NoFilter: false,
                 prefixTranslation: 'executiontype',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { executiontype } = props.cell.row.original;
                     return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }
@@ -348,41 +343,61 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
 
     const ButtonsElement = () => {
         return (
-            <div style={{display: 'flex', gap: '8px'}}>
-                <DateRangePicker
-                    open={openDateRangeCreateDateModal}
-                    setOpen={setOpenDateRangeCreateDateModal}
-                    range={dateRangeCreateDate}
-                    onSelect={setDateRangeCreateDate}
-                >
-                    <Button
-                        className={classes.itemDate}
-                        startIcon={<CalendarIcon />}
-                        onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+            <div style={{ width: '100%', display: 'flex'  }}>                 
+                
+                <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
+                    <DateRangePicker
+                        open={openDateRangeCreateDateModal}
+                        setOpen={setOpenDateRangeCreateDateModal}
+                        range={dateRangeCreateDate}
+                        onSelect={setDateRangeCreateDate}
                     >
-                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                        <Button
+                            className={classes.itemDate}
+                            startIcon={<CalendarIcon />}
+                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                        >
+                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                        </Button>
+                    </DateRangePicker>
+                    <Button
+                        disabled={mainPaginated.loading}
+                        variant="contained"
+                        color="primary"
+                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                        style={{ width: 120, backgroundColor: "#55BD84" }}
+                        onClick={() => fetchData(fetchDataAux)}
+                    >{t(langKeys.search)}
                     </Button>
-                </DateRangePicker>
-                <Button
-                    disabled={mainPaginated.loading}
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                    onClick={() => fetchData(fetchDataAux)}
-                >{t(langKeys.search)}
-                </Button>
-                <FieldSelect
-                    uset={true}
-                    variant="outlined"
-                    label={t(langKeys.reporttype)}
-                    className={classes.select}
-                    valueDefault={reportType}
-                    onChange={(value) => setReportType(value?.key)}
-                    data={dictToArrayKV(dataReportType)}
-                    optionDesc="value"
-                    optionValue="key"
-                />
+                </div> 
+
+                <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
+                    <FieldSelect
+                        uset={true}
+                        variant="outlined"
+                        label={t(langKeys.reporttype)}
+                        className={classes.select}
+                        valueDefault={reportType}
+                        onChange={(value) => setReportType(value?.key)}
+                        data={dictToArrayKV(dataReportType)}
+                        optionDesc="value"
+                        optionValue="key"
+                    />
+                      <Button
+                            className={classes.button}
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            onClick={() => triggerExportData()}                         
+                            startIcon={<DownloadIcon />}
+                            variant="contained"
+                        >
+                            {`${t(langKeys.download)}`}
+                        </Button>
+                        
+                </div>
+                   
+                
+              
             </div>
         )
     }
@@ -410,22 +425,25 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 </div>
             </div>}
             {externalUse && <div style={{ height: 10 }}></div>}
-            <div className={externalUse ? '' : classes.containerDetail}>
+            
+            <div style={{width:'100%', height:'100%'}}>        
+                <ButtonsElement/>
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}
                     totalrow={totalrow}
                     loading={mainPaginated.loading}
-                    pageCount={pageCount}
-                    download={true}
-                    fetchData={fetchData}
-                    ButtonsElement={ButtonsElement}
+                    pageCount={pageCount}                    
+                    fetchData={fetchData}               
+                    download={false}
+                    hoverShadow={false}
                     exportPersonalized={triggerExportData}
                     useSelection={true}
                     selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
                 />
             </div>
+            
             {openModal && <ModalReport
                 openModal={openModal}
                 setOpenModal={setOpenModal}
