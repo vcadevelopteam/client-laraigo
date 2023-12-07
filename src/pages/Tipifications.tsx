@@ -645,7 +645,12 @@ const Tipifications: FC = () => {
             {
                 Header: t(langKeys.order),
                 accessor: 'order',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    if(row.type === 'CATEGORIA') return row.order
+                    else return ''
+                }
             },
             {
                 Header: t(langKeys.tag),
@@ -808,7 +813,7 @@ const Tipifications: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.tipification, { count: 2 })}
-                        data={mainResult.mainData.data.map(x => {if(x.type === 'TIPIFICACION') {return {...x, order: null}} return x})}
+                        data={mainResult.mainData.data}
                         loading={mainResult.mainData.loading}
                         download={true}
                         register={true}
