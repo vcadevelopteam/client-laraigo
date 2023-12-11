@@ -3513,17 +3513,17 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                 : `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
                                     element.additionalfee
                                 )}`,
-                        intelligenceaicost: `${dataReport.invoicecurrencysymbol}${formatNumber(element.additionalfee)}`,
+                        intelligenceaicost: `${dataReport.invoicecurrencysymbol}${formatNumber(element.aicost)}`,
                         intelligenceaiquantity: `${formatNumberNoDecimals(element.aiquantity)}`,
                         intelligencefreeinteractions: `${formatNumberNoDecimals(element.freeinteractions)}`,
                         intelligenceigv: `${dataReport.invoicecurrencysymbol}${formatNumber(
-                            element.additionalfee - element.additionalfee / dataReport.exchangetax
+                            element.aicost - (element.aicost / dataReport.exchangetax)
                         )}`,
                         intelligenceplan: element.plan,
                         intelligenceprovider: element.provider,
                         intelligenceservice: element.type,
                         intelligencetaxableamount: `${dataReport.invoicecurrencysymbol}${formatNumber(
-                            element.additionalfee / dataReport.exchangetax
+                            element.aicost / dataReport.exchangetax
                         )}`,
                     });
                 });
