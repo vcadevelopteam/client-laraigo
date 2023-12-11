@@ -13,6 +13,8 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AssistantTabDetail from "./TabDetails/AssistantTabDetail";
 import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
 import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
+import { useForm } from "react-hook-form";
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -49,17 +51,21 @@ type BreadCrumb = {
     name: string
 }
 
+interface RowSelected {
+    row: Dictionary | null;
+    edit: boolean;
+}
+
 interface CreateAssistantProps {
+    data: RowSelected;
     arrayBread: BreadCrumb[],
     setViewSelected: (view: string) => void,
     setExternalViewSelected: (view: string) => void
-    fetchData?: () => void;
-
 }
 
 const CreateAssistant: React.FC<CreateAssistantProps> = ({
+    data: {row, edit},
     setViewSelected,
-    fetchData,
     arrayBread,
     setExternalViewSelected
 }) => {
@@ -96,6 +102,28 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         }
     }, [executeResult, waitSave])
 
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row?.assistantiid || 0,
+            name: row?.name || '',
+            description: row?.description || '',
+            basemodel: row?.basemodel || '',
+            language: row?.language || '',
+            organizationname: row?.organizationname || '',
+            querywithoutanswer: row?.querywithoutanswer || '',
+            response: row?.response || '',
+            prompt: row?.prompt || '',
+            negativeprompt: row?.negativeprompt || '',
+            generalprompt: row?.generalprompt || '',
+            temperature: row?.temperature || 0,
+            max_tokens: row?.max_tokens || 0,
+            top_p: row?.top_p || 0,
+            apikey: row?.apikey || '',
+            type: row?.type || '',
+            status: row?.status || '',
+            operation: edit ? 'UPDATE' : 'INSERT',
+        }
+    });
 
     const onMainSubmit = ((data) => {
         const callback = () => {
@@ -186,10 +214,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     />
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail />
+                    <AssistantTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail />
+                    <ParametersTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
                     <TrainingTabDetail />

@@ -14,6 +14,14 @@ import AddIcon from '@material-ui/icons/Add';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
+import { getMultiCollectionAux, resetAllMain } from "store/main/actions";
+import { getValuesFromDomain } from "common/helpers";
+import { Dictionary } from "@types";
+
+interface RowSelected {
+    row: Dictionary | null;
+    edit: boolean;
+}
 
 const useStyles = makeStyles(() => ({
     titleandcrumbs: {
@@ -47,6 +55,10 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     const [viewSelectedTraining, setViewSelectedTraining] = useState("assistantdetail")
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const [rowSelected, setRowSelected] = useState<RowSelected>({
+        row: null,
+        edit: false,
+    });
 
     const newArrayBread = [
         ...arrayBread,
@@ -95,6 +107,18 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         ],
         []
     );
+
+    useEffect(() => {
+        dispatch(
+          getMultiCollectionAux([
+            getValuesFromDomain('ESTADOGENERICO'),
+            getValuesFromDomain('QUERYWITHOUTANSWER')
+          ])
+        );
+        return () => {
+          dispatch(resetAllMain());
+        };
+      }, []);
 
     const ButtonsElement = () => {
         return (
@@ -184,6 +208,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         )
     } else if(viewSelectedTraining === 'createassistant') {
         return <CreateAssistant
+            data={rowSelected}
             arrayBread={newArrayBread}
             setViewSelected={setViewSelectedTraining}
             setExternalViewSelected={functionChange}

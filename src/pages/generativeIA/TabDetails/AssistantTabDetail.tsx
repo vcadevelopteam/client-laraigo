@@ -6,6 +6,8 @@ import { FieldEdit, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
+import { Dictionary } from "@types";
+import { FieldErrors } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -15,7 +17,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const AssistantTabDetail: React.FC = () => {
+interface AssistantTabDetailProps {
+    row: Dictionary | null
+    setValue: any
+    getValues: any,
+    errors: FieldErrors
+}
+
+const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
+    row,
+    setValue,
+    getValues,
+    errors
+}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
@@ -25,6 +39,7 @@ const AssistantTabDetail: React.FC = () => {
     const resExportData = useSelector((state) => state.main.exportData);
     const [waitUpload, setWaitUpload] = useState(false);
     const importRes = useSelector((state) => state.main.execute);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
 
     useEffect(() => {
         if (waitUpload) {
@@ -117,9 +132,9 @@ const AssistantTabDetail: React.FC = () => {
                 <FieldSelect
                     className="col-6"
                     label={t(langKeys.status)}
-                    data={[]}
-                    optionDesc="value"
-                    optionValue="value"
+                    data={(multiDataAux?.data?.[0]?.data||[])}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
                 <FieldEdit
                     className="col-12"
