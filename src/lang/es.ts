@@ -5468,7 +5468,6 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   technical_support_description:"Proporciona soporte técnico y ofrece ayuda para solucionar problemas.",
   ai_base_description:"Utiliza el modelo base, sin una base de conocimiento adicional.",
   custom_mode_description:"Personaliza los parámetros de tu IA.",
-
   knowledge_base:"Base de Conocimiento",
   upload_document:"Subir Documento",
   import_web_page:"Importar Página Web",
@@ -5478,12 +5477,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   saved_documents: "Documentos Guardados",
   saved_documents_description: "Mostrará una tabla en la cual se registrarán todos los documentos que se han subido, para la base de conocimiento de la IA.",
   upload: "Subida",
-
   uploadFileText: "Permitirá subir un documento (PDF, Word, PPT, TXT).",
   uploadURLText: "Permitirá importar una página web con la cual se podrá entrenar a la IA.",
   importWebsite: "Importar Website",
   clicktouploadfiles: "Click para subir archivos o arrastra y suelta",
   maximun10files: "Máximo 10 archivos puede ser PDF, Word, PPT, TXT.",
+  generativeailow: "IA Generativa",
+  howCanIHelpYouToday: "¿Cómo te puedo ayudar hoy?",
+  typeamessage: "Escribe un mensaje...",
+  newchat: "Nuevo Chat",
 };
 
 const esResource: ResourceLanguage = {

@@ -16,39 +16,19 @@ import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '100%',
+        display: 'flex',     
         width: '100%',
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        marginTop: 5
-    },
+    },  
     chatList: {
-        width: '30%',
         borderRight: `1px solid ${theme.palette.divider}`,
-        padding: theme.spacing(2),
+        padding: theme.spacing(2),       
     },
     chatMain: {
-        flex: 1,
-        padding: theme.spacing(2),
-    },
-    chatHeader: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: theme.spacing(2),
-    },
-    chatActions: {
-        display: 'flex',
-        gap: theme.spacing(1),
-    },
+        flex: 1,           
+        paddingLeft: theme.spacing(2),      
+    },     
     chatMessages: {
-        height: '70vh',
+        height: '81vh', 
         overflowY: 'auto',
     },
     chatInput: {
@@ -57,14 +37,12 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
     },
     chatInputContainer: {
-        position: 'fixed',
         bottom: 0,
-        width: '60%',
+        width: '100%',
         padding: theme.spacing(2),
     },
     buttonscontainer: {
-        display: 'flex',
-        alignItems: 'center',
+        display: 'flex',      
         gap: '1rem',
         marginBottom: '2rem'
     },
@@ -194,7 +172,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
                         style={{ backgroundColor: '#7721AD', color: '#fff' }}
                         onClick={() => handleCreateChat()} 
                     >
-                        Nuevo Chat
+                        {t(langKeys.newchat)}
                     </Button>
                 </div>
                 {chatList.map((chat, index) => (
@@ -241,7 +219,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
                             {isChatEmpty() ? (
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                                     <Typography variant="body1">
-                                        How can I help you today?
+                                        {t(langKeys.howCanIHelpYouToday)}
                                     </Typography>
                                 </div>
                             ) : (
@@ -251,7 +229,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
                                             <div style={{ marginRight: 10 }}>
                                                 <Avatar src="https://cdn.auth0.com/avatars/gm.png" alt="User Avatar" />
                                             </div>
-                                            <div style={{ width: 700 }}>
+                                            <div>
                                                 <Typography variant="caption" color="textSecondary">
                                                     {message.timestamp}
                                                 </Typography>
@@ -270,7 +248,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
                 <div className={classes.chatInputContainer}>
                     <TextField
                         fullWidth
-                        label="Type a message..."
+                        label= {t(langKeys.typeamessage)}
                         variant="outlined"
                         InputProps={{
                             endAdornment: (

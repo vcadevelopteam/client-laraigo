@@ -50,7 +50,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 
     const newArrayBread = [
         ...arrayBread,
-        { id: "generativeia", name: t(langKeys.generativeia) },       
+        { id: "generativeia", name: t(langKeys.generativeailow) },       
     ];
 
     const [waitSave, setWaitSave] = useState(false);

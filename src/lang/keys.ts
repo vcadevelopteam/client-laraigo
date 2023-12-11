@@ -5465,12 +5465,15 @@ export const langKeys = {
   saved_documents: "saved_documents",
   saved_documents_description: "saved_documents_description",
   upload: "upload",
-
   uploadFileText: "uploadFileText",
   uploadURLText: "uploadURLText",
   importWebsite: "importWebsite",
   clicktouploadfiles: "clicktouploadfiles",
   maximun10files: "maximun10files",
+  generativeailow: "generativeailow",
+  howCanIHelpYouToday: "howCanIHelpYouToday",
+  typeamessage: "typeamessage",
+  newchat: "newchat",
 };
 
 export type LangKeys = typeof langKeys;
