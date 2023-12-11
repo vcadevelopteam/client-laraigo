@@ -104,7 +104,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row?.assistantiid || 0,
+            id: row?.assistantaiid || 0,
             name: row?.name || '',
             description: row?.description || '',
             basemodel: row?.basemodel || '',
