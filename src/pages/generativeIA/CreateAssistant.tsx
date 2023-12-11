@@ -214,10 +214,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     />
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
+                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
+                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
                     <TrainingTabDetail />

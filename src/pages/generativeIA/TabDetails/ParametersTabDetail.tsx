@@ -85,15 +85,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+interface RowSelected {
+    row: Dictionary | null;
+    edit: boolean;
+}
+
 interface ParametersTabDetailProps {
-    row: Dictionary | null
+    data: RowSelected
     setValue: any
     getValues: any,
     errors: FieldErrors
 }
 
 const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
-    row,
+    data:{row, edit},
     setValue,
     getValues,
     errors

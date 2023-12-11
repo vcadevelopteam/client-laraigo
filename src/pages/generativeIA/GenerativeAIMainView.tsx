@@ -112,7 +112,8 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         dispatch(
           getMultiCollectionAux([
             getValuesFromDomain('ESTADOGENERICO'),
-            getValuesFromDomain('QUERYWITHOUTANSWER')
+            getValuesFromDomain('QUERYWITHOUTANSWER'),
+            getValuesFromDomain('BASEMODEL')
           ])
         );
         return () => {

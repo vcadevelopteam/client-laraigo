@@ -124,9 +124,9 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 />
                 <FieldSelect
                     label={t(langKeys.basemodel)}
-                    data={[]}
-                    optionDesc="value"
-                    optionValue="value"
+                    data={(multiDataAux?.data?.[2]?.data||[])}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                     className="col-6"
                 />        
                 <FieldSelect
