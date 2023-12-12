@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { TemplateBreadcrumbs, TitleDetail } from "components";
+import { TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { showSnackbar, showBackdrop } from "store/popus/actions";
+import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import TableZyx from "components/fields/table-simple";
 import { Button } from "@material-ui/core";
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -14,9 +14,10 @@ import AddIcon from '@material-ui/icons/Add';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
-import { getCollection, getMultiCollectionAux, resetAllMain } from "store/main/actions";
-import { assistantAiSel, getValuesFromDomain } from "common/helpers";
+import { execute, getCollection, resetAllMain } from "store/main/actions";
+import { assistantAiSel, insAssistantAi } from "common/helpers";
 import { Dictionary } from "@types";
+import { CellProps } from "react-table";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -68,8 +69,54 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 
     const [waitSave, setWaitSave] = useState(false);
 
+    const handleRegister = () => {
+        setViewSelectedTraining("createassistant")
+        setRowSelected({ row: null, edit: false });
+    };
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelectedTraining("createassistant")
+        setRowSelected({ row, edit: true });
+    };
+    console.log(viewSelectedTraining)
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+          dispatch(
+            execute(insAssistantAi({ ...row, id: row.assistantaiid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
+          );
+          dispatch(showBackdrop(true));
+          setWaitSave(true);
+        };
+    
+        dispatch(
+          manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback,
+          })
+        );
+    };
+
     const columnsGenerativeIA = React.useMemo(
         () => [
+            {
+                accessor: "assistantaiid",
+                NoFilter: true,
+                disableGlobalFilter: true,
+                isComponent: true,
+                minWidth: 60,
+                width: "1%",
+                Cell: (props: CellProps<Dictionary>) => {
+                  const row = props.cell.row.original;
+                  return (
+                    <TemplateIcons
+                      deleteFunction={() => handleDelete(row)}
+                      editFunction={() => handleEdit(row)}
+                    />
+                  );
+                },
+            },
             {
                 Header: t(langKeys.name),
                 accessor: 'name',
@@ -113,16 +160,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 
     useEffect(() => {
         fetchData();
-        dispatch(
-          getMultiCollectionAux([
-            getValuesFromDomain('ESTADOGENERICO'),
-            getValuesFromDomain('QUERYWITHOUTANSWER'),
-            getValuesFromDomain('BASEMODEL')
-          ])
-        );
-        return () => {
-          dispatch(resetAllMain());
-        };
     }, []);
 
     const ButtonsElement = () => {
@@ -135,15 +172,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     style={{ backgroundColor: '#ffff', color: '#7721AD' }}
                 >
                     {t(langKeys.download)}
-                </Button>     
-                <Button
-                    variant="contained"
-                    type="button"
-                    color="primary"
-                    disabled={true}
-                    startIcon={<ClearIcon color="disabled" />}
-                    style={{ backgroundColor: "#grey",marginLeft: 9 }}
-                >{t(langKeys.delete)}
                 </Button>
                 <Button
                     variant="contained"
@@ -151,9 +179,9 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     color="primary"
                     startIcon={<AddIcon color="secondary" />}
                     style={{ backgroundColor: "#55BD84", marginLeft: 9 }}
-                    onClick={() => setViewSelectedTraining("createassistant")}
+                    onClick={handleRegister}
                 >{t(langKeys.createssistant)}
-                </Button> 
+                </Button>
                 <Button
                     variant="contained"
                     type="button"
@@ -162,7 +190,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     style={{ backgroundColor: "#55BD84", marginLeft: 9 }}
                     onClick={() => setViewSelectedTraining("chatai")}
                 >{t(langKeys.chat)}
-                </Button>            
+                </Button>
             </div>        
         )
     }
@@ -207,8 +235,8 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     columns={columnsGenerativeIA}
                     data={main.data}
                     filterGeneral={false}
-                    useSelection={true}
                     ButtonsElement={ButtonsElement}
+                    onClickRow={handleEdit}
                 />
             </div>
         )
@@ -216,6 +244,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         return <CreateAssistant
             data={rowSelected}
             arrayBread={newArrayBread}
+            fetchData={fetchData}
             setViewSelected={setViewSelectedTraining}
             setExternalViewSelected={functionChange}
         />

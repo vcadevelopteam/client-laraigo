@@ -35,11 +35,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         width: '100%',
         padding:"1rem",
-        cursor: 'pointer',
-        transition: 'background-color 0.3s ease',
-        '&:hover': {
-            backgroundColor: '#D2DBE4',
-        },
+        backgroundColor: '#F7F7F7'
     },
     cardContent: {
         textAlign: 'center',
@@ -63,10 +59,6 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         alignItems: 'center'
     },
-    selectedCard: {
-        backgroundColor: '#EBF4FD',
-        border: '1px solid #7721AD'
-    },
     footer: {
         position: 'absolute',
         bottom: 0,
@@ -83,11 +75,47 @@ const useStyles = makeStyles((theme) => ({
         fontWeight:'bold',
         fontSize: 18
     },
+    actionButton: {
+        cursor: 'pointer',
+        padding: '5px',
+        backgroundColor: '#7721AD',
+        color: '#fff',
+        textAlign: 'center',
+        borderRadius: '4px',
+        fontSize: '12px',
+        transition: 'background-color 0.3s ease',
+        '&:hover': {
+            backgroundColor: '#3D1158',
+        },
+    },
+    cardActions: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        width: '100%',
+        padding: '10px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+    },
 }));
 
 interface RowSelected {
     row: Dictionary | null;
     edit: boolean;
+}
+interface CardDataType {
+    title: string;
+    description: string;
+    language: string;
+    organizationName: string;
+    querywithoutanswer: string;
+    response: string;
+    prompt: string;
+    negativeprompt: string;
+    max_tokens: number;
+    temperature: number;
+    top_p: number;
 }
 
 interface ParametersTabDetailProps {
@@ -108,57 +136,11 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [waitExport, setWaitExport] = useState(false);
-    const resExportData = useSelector((state) => state.main.exportData);
-    const [waitUpload, setWaitUpload] = useState(false);
     const [viewSelected, setViewSelected] = useState('main');
-    const importRes = useSelector((state) => state.main.execute);
-    const [selectedCard, setSelectedCard] = useState<number | null>(null);
+    const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
-    const [unansweredQueries, setUnansweredQueries] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (waitUpload) {
-            if (!importRes.loading && !importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_import),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            } else if (importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(importRes.code || "error_unexpected_error"),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            }
-        }
-    }, [importRes, waitUpload]);
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", {
-                    module: t(langKeys.person).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [resExportData, waitExport]);
+    const [unansweredQueries, setUnansweredQueries] = useState<string | null>(row?.querywithoutanswer || null);
+    const [selected, setSelected] = useState(edit);
 
     useEffect(() => {
         if (waitSave) {
@@ -183,20 +165,269 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         }
     }, [executeResult, waitSave]);
 
-    const handleCardClick = (cardIndex: number) => {
-        if (selectedCard === cardIndex) {
-          setSelectedCard(null);
-        } else {
-          setSelectedCard(cardIndex);
+    const languages = [
+        {
+            domainvalue: 'Español',
+            domaindesc: 'Español'
+        },
+        {
+            domainvalue: 'Inglés',
+            domaindesc: 'Inglés'
         }
-      };
-    
-    const isCardSelected = (cardIndex: number) => {
-        return selectedCard === cardIndex;
+    ]
+
+    const cardData = [
+        {
+            title: t(langKeys.help_desk_clerk),
+            description: t(langKeys.help_desk_clerk_description),
+            language: 'Español',
+            organizationName: '',
+            querywithoutanswer: 'Sin reacción',
+            response: '',
+            prompt: `Quiero que actúes como un Help Desk especializado en la satisfacción del cliente. Toma en consideración los siguientes argumentos para tu perfil:\n\n1) Explico las soluciones técnicas en un lenguaje simple y fácil de entender.\n2) Me aseguro que los usuarios comprendan cómo resolver sus problemas.\n3) Hago preguntas para obtener toda la información relevante.\n4) Soy un asistente amable, paciente y servicial.\n5) Sigo los procedimientos establecidos y utilizo las mejores prácticas.\n6) Puedo diagnosticar y solucionar una gran variedad de problemas técnicos.\n\nImportante: No puedes salir de tu rol de Help Desk.`,
+            negativeprompt: '1) Ser grosero.\n2) Hablar de temas políticos, sexuales, religiosos y culturales.\n3) Usar información falsa o incoherente.',
+            max_tokens: 500,
+            temperature: 1,
+            top_p: 1
+        },
+        {
+            title: t(langKeys.customer_service),
+            description: t(langKeys.customer_service_description),
+            language: 'Español',
+            organizationName: '',
+            querywithoutanswer: 'Sin reacción',
+            response: '',
+            prompt: 'Quiero que actúes como un experto de Servicio al Cliente. Toma en consideración los siguientes argumentos para tu perfil:\n\n1) Proporciona soluciones rápidas y efectivas a las consultas de los clientes.\n2) Muestro empatía ante las frustraciones de los clientes.\n3) Hago preguntas de seguimiento para obtener más detalles.\n4) Saludo a los clientes con entusiasmo y les demuestro que me importan.\n5) Promuevo una cultura centrada en el cliente dentro de la organización.\n6) Calmo a los clientes enojados y encuentro soluciones razonables.\n7) Soy hábil resolviendo quejas y reclamos.\n\nImportante: No puedes salir de tu rol de experto de Servicio al Cliente.',
+            negativeprompt: '1) Ser grosero.\n2) Hablar de temas políticos, sexuales, religiosos y culturales.\n3) Usar información falsa o incoherente.\n4) Hablar de otras organizaciones.',
+            max_tokens: 300,
+            temperature: 1,
+            top_p: 1
+        },
+        {
+            title: t(langKeys.sales_expert),
+            description: t(langKeys.sales_expert_description),
+            language: 'Español',
+            organizationName: '',
+            querywithoutanswer: 'Sin reacción',
+            response: '',
+            prompt: 'Quiero que actúes como un comercial experto en ventas y relaciones con los clientes especializado en captación de clientes. Toma en consideración los siguientes argumentos para tu perfil:\n\n1) Soy un vendedor entusiasta y apasionado.\n2) Creo firmemente en los productos y servicios que vendo.\n3) Escucho las necesidades de los clientes y les presento cómo nuestros productos pueden ayudarlos. Nunca asumo, siempre pregunto.\n4) Manejo con tacto las objeciones de los clientes y las convierto en oportunidades para construir valor.\n5) Soy experto en nuestra línea de productos/servicios.\n6) Mi meta es siempre poder vender un producto de la organización que represento, sin dejar de lado la satisfacción del cliente.\n\nImportante: No puedes salir de tu rol de comercial experto en ventas y relaciones con los clientes.',
+            negativeprompt: '1) Ser grosero.\n2) Hablar de temas políticos, sexuales, religiosos y culturales.\n3) Usar información falsa o incoherente.\n4) Ofrecer productos relacionados a otras organizaciones.',
+            max_tokens: 300,
+            temperature: 1,
+            top_p: 1
+        },
+        {
+            title: t(langKeys.technical_support),
+            description: t(langKeys.technical_support_description),
+            language: 'Español',
+            organizationName: '',
+            querywithoutanswer: 'Sin reacción',
+            response: '',
+            prompt: 'Quiero que actúes como ingeniero de soporte técnico experto en resolución de problemas y atención al cliente especializado en soporte al usuario. Toma en consideración los siguientes argumentos para tu perfil:\n\n1) Tengo amplios conocimientos sobre hardware y software de computadoras, redes y otros sistemas informáticos.\n2) Puedo diagnosticar y solucionar una gran variedad de problemas técnicos.\n3) Soy muy paciente y tranquilo al manejar situaciones estresantes y resolver problemas complejos.\n4) Escucho con atención los problemas reportados por los usuarios. Hago preguntas para entender bien el contexto.\n5) Utilizo un enfoque lógico y sistemático para diagnosticar la raíz de los problemas técnicos.\n6) Explico soluciones técnicas en un lenguaje sencillo para que los usuarios puedan entender. De ser necesario, puedo generar código y compartirlo.\n7) Investigo a fondo los problemas difíciles y persisto hasta encontrar una solución. No me rindo fácilmente.\n\nImportante: No puedes salir de tu rol de ingeniero de soporte técnico.',
+            negativeprompt: '1) Ser grosero.\n2) Hablar de temas políticos, sexuales, religiosos y culturales.\n3) Usar información falsa o incoherente.\n4) Hablar de otras organizaciones.',
+            max_tokens: 700,
+            temperature: 1,
+            top_p: 1
+        },
+        {
+            title: t(langKeys.ai_base),
+            description: t(langKeys.ai_base_description),
+            language: 'Español',
+            organizationName: '',
+            querywithoutanswer: 'Sin reacción',
+            response: '',
+            prompt: '',
+            negativeprompt: '1) Ser grosero.\n2) Usar información falsa o incoherente.',
+            max_tokens: 300,
+            temperature: 1,
+            top_p: 1
+        },
+        {
+            title: t(langKeys.custom_mode),
+            description: t(langKeys.custom_mode_description),
+            language: 'Español',
+            organizationName: '',
+            querywithoutanswer: 'Mejor Sugerencia',
+            response: '',
+            prompt: '',
+            negativeprompt: '',
+            max_tokens: 300,
+            temperature: 1,
+            top_p: 1
+        },
+    ];
+
+    const handleSeeMoreClick = (cardIndex: number) => {
+        setSelectedCardData(cardData[cardIndex]);
+        setViewSelected('detail');
     };
 
+    const handleSelectCard = (cardIndex: number) => {
+        setSelected(true)
+        setSelectedCardData(cardData[cardIndex])
+        setValue('language', cardData[cardIndex].language)
+        setValue('organizationname', cardData[cardIndex].organizationName)
+        setValue('querywithoutanswer', cardData[cardIndex].querywithoutanswer)
+        setValue('response', cardData[cardIndex].response)
+        setValue('prompt', cardData[cardIndex].prompt)
+        setValue('negativeprompt', cardData[cardIndex].negativeprompt)
+        setValue('temperature', cardData[cardIndex].temperature)
+        setValue('max_tokens', cardData[cardIndex].max_tokens)
+        setValue('top_p', cardData[cardIndex].top_p)
+        setViewSelected('detail');
+    }
+
     if(edit) {
-        return null;
+        return (
+            <>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx" style={{marginBottom:0}}>
+                        <span className={classes.title}>
+                            {t(langKeys.personality)}
+                        </span>
+                        <div style={{height: 10}}/>
+                        <div className="col-4">
+                            <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
+                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.selectAILang)}</span></div>
+                            <FieldSelect
+                                label={t(langKeys.language)}
+                                data={languages}
+                                valueDefault={getValues('language')}
+                                onChange={(value) => setValue('language', value)}
+                                error={errors?.language?.message}
+                                optionValue='domainvalue'
+                                optionDesc='domaindesc'
+                            />
+                        </div>
+                        <div className="col-4">
+                            <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
+                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.enterorgnametext)}</span></div>
+                            <FieldEdit
+                                label={t(langKeys.organization)}
+                                valueDefault={getValues('organizationname')}
+                                onChange={(value) => setValue('organizationname', value)}
+                                error={errors?.organizationname?.message}
+                            />
+                        </div>
+                        <div className="col-4">
+                            <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
+                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.aireaction)}</span></div>
+                            <FieldSelect
+                                label={t(langKeys.queries)}
+                                data={(multiDataAux?.data?.[1]?.data||[])}
+                                onChange={(value) => {
+                                    if(value?.domainvalue) {
+                                        setUnansweredQueries(value.domainvalue)
+                                        setValue('querywithoutanswer', value.domainvalue)
+                                    } else {
+                                        setUnansweredQueries('')
+                                        setValue('querywithoutanswer', '')
+                                    }
+                                }}
+                                error={errors?.querywithoutanswer?.message}
+                                valueDefault={getValues('querywithoutanswer')}
+                                optionValue="domainvalue"
+                                optionDesc="domainvalue"
+                            />
+                        </div>
+                        {unansweredQueries === 'Respuesta Sugerida' && (
+                            <>
+                                <div style={{height: 20}}/>
+                                <div>
+                                    <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
+                                    <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.aianswer)}</span></div>
+                                    <FieldEdit
+                                        variant="outlined"
+                                        InputProps={{
+                                            multiline: true,
+                                        }}
+                                        valueDefault={getValues('response')}
+                                        onChange={(value) => setValue('response', value)}
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+                <div className={`row-zyx ${classes.containerDetail2}`}>
+                    <div className="col-8" style={{paddingRight:50}}>
+                        <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
+                        <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.promptinstructions)}</span></div>
+                        <FieldEdit
+                            variant="outlined"
+                            InputProps={{
+                                multiline: true,
+                            }}
+                            valueDefault={getValues('prompt')}
+                            onChange={(value) => setValue('prompt', value)}
+                            error={errors?.prompt?.message}
+                        />
+                        <div style={{height: 20}}/>
+                        <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
+                        <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.negativepromptinstructions)}</span></div>
+                        <FieldEdit
+                            variant="outlined"
+                            InputProps={{
+                                multiline: true,
+                            }}
+                            valueDefault={getValues('negativeprompt')}
+                            onChange={(value) => setValue('negativeprompt', value)}
+                            error={errors?.negativeprompt?.message}
+                        />
+                    </div>
+                    <div className="col-4">
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
+                            <div style={{width:10}}/>
+                            <FieldEdit
+                                type="number"
+                                variant="outlined"
+                                size="small"
+                                width={80}
+                                valueDefault={getValues('max_tokens')}
+                                onChange={(value) => setValue('max_tokens', value)}
+                                error={errors?.max_tokens?.message}
+                            />
+                        </div>
+                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.maxtokensdesc)}</span></div>
+                        <div style={{height: 20}}/>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
+                            <div style={{width:10}}/>
+                            <span>0 - 2.0</span>
+                            <div style={{width:10}}/>
+                            <FieldEdit
+                                type="number"
+                                variant="outlined"
+                                size="small"
+                                width={80}
+                                valueDefault={getValues('temperature')}
+                                onChange={(value) => setValue('temperature', value)}
+                                error={errors?.temperature?.message}
+                            />
+                        </div>
+                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.temperaturedesc)}</span></div>
+                        <div style={{height: 20}}/>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
+                            <div style={{width:10}}/>
+                            <span>0 - 1.0</span>
+                            <div style={{width:10}}/>
+                            <FieldEdit
+                                type="number"
+                                variant="outlined"
+                                size="small"
+                                width={80}
+                                valueDefault={getValues('top_p')}
+                                onChange={(value) => setValue('top_p', value)}
+                                error={errors?.top_p?.message}
+                            />
+                        </div>
+                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.toppdesc)}</span></div>
+                    </div>
+                </div>
+            </>
+        );
     } else {
         if(viewSelected === 'main') {
             return (
@@ -207,66 +438,31 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         </span>
                         <div><span style={{fontSize: 16}}>{t(langKeys.selectpersonality)}</span></div>
                         <div className={`row-zyx ${classes.cardsContainer}`} >
-                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                                <Card className={`${classes.card} ${isCardSelected(0) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(0)}>
-                                    <div className={classes.cardContent}>
-                                        <SynonimsRasaLogo className={classes.logo} />
-                                        <div className={classes.cardTitle}>{t(langKeys.help_desk_clerk)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.help_desk_clerk_description)}</div>
-                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                                <Card className={`${classes.card} ${isCardSelected(1) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(1)}>
-                                    <div className={classes.cardContent}>
-                                        <SynonimsRasaLogo className={classes.logo} />
-                                        <div className={classes.cardTitle}>{t(langKeys.customer_service)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.customer_service_description)}</div>
-                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                                <Card className={`${classes.card} ${isCardSelected(2) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(2)}>
-                                    <div className={classes.cardContent}>
-                                        <SynonimsRasaLogo className={classes.logo} />
-                                        <div className={classes.cardTitle}>{t(langKeys.sales_expert)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.sales_expert_description)}</div>
-                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                                <Card className={`${classes.card} ${isCardSelected(3) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(3)}>
-                                    <div className={classes.cardContent}>
-                                        <SynonimsRasaLogo className={classes.logo} />
-                                        <div className={classes.cardTitle}>{t(langKeys.technical_support)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.technical_support_description)}</div>
-                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                                <Card className={`${classes.card} ${isCardSelected(4) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(4)}>
-                                    <div className={classes.cardContent}>
-                                        <SynonimsRasaLogo className={classes.logo} />
-                                        <div className={classes.cardTitle}>{t(langKeys.ai_base)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.ai_base_description)}</div>
-                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                                <Card className={`${classes.card} ${isCardSelected(6) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(6)}>
-                                    <div className={classes.cardContent}>
-                                        <SynonimsRasaLogo className={classes.logo} />
-                                        <div className={classes.cardTitle}>{t(langKeys.custom_mode)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.custom_mode_description)}</div>
-                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                    </div>
-                                </Card>
-                            </Grid>
+                            {cardData.map((card, index) => (
+                                <Grid item xs={2} md={1} lg={2} className={classes.grid} key={index}>
+                                    <Card className={classes.card}>
+                                        <div className={classes.cardContent}>
+                                            <SynonimsRasaLogo className={classes.logo} />
+                                            <div className={classes.cardTitle}>{card.title}</div>
+                                            <div className={classes.cardText}>{card.description}</div>
+                                            <div className={classes.cardActions}>
+                                                <div
+                                                    className={classes.actionButton}
+                                                    onClick={() => handleSelectCard(index)}
+                                                >
+                                                    Seleccionar
+                                                </div>
+                                                <div
+                                                    className={classes.actionButton}
+                                                    onClick={() => handleSeeMoreClick(index)}
+                                                >
+                                                    {t(langKeys.seeMore)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Grid>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -276,19 +472,23 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                 <>
                     <div className={classes.containerDetail}>
                         <div className="row-zyx" style={{marginBottom:0}}>
-                            <div>
-                                <Button
-                                    type="button"
-                                    style={{color: '#7721AD'}}
-                                    startIcon={<ArrowBackIcon />}
-                                    onClick={() => setViewSelected('main')}
-                                >
-                                    {t(langKeys.personality)}
-                                </Button>
-                            </div>
-                            <div style={{height:10}}/>
+                            { !selected && (
+                                <>
+                                    <div>
+                                        <Button
+                                            type="button"
+                                            style={{color: '#7721AD'}}
+                                            startIcon={<ArrowBackIcon />}
+                                            onClick={() => setViewSelected('main')}
+                                        >
+                                            {t(langKeys.personality)}
+                                        </Button>
+                                    </div>
+                                    <div style={{height:10}}/>
+                                </>
+                            )}
                             <span className={classes.title}>
-                                {t(langKeys.reason_customerservice)}
+                                {selectedCardData?.title}
                             </span>
                             <div style={{height: 10}}/>
                             <div className="col-4">
@@ -296,9 +496,11 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.selectAILang)}</span></div>
                                 <FieldSelect
                                     label={t(langKeys.language)}
-                                    data={[]}
-                                    optionValue={""}
-                                    optionDesc={""}
+                                    data={languages}
+                                    valueDefault={selectedCardData?.language}
+                                    onChange={(value) => setValue('language', value)}
+                                    optionValue='domainvalue'
+                                    optionDesc='domaindesc'
                                 />
                             </div>
                             <div className="col-4">
@@ -306,6 +508,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.enterorgnametext)}</span></div>
                                 <FieldEdit
                                     label={t(langKeys.organization)}
+                                    valueDefault={selectedCardData?.organizationName}
+                                    onChange={(value) => setValue('organizationname', value)}
                                 />
                             </div>
                             <div className="col-4">
@@ -317,10 +521,13 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     onChange={(value) => {
                                         if(value?.domainvalue) {
                                             setUnansweredQueries(value.domainvalue)
+                                            setValue('querywithoutanswer', value.domainvalue)
                                         } else {
                                             setUnansweredQueries('')
+                                            setValue('querywithoutanswer', '')
                                         }
                                     }}
+                                    valueDefault={selectedCardData?.querywithoutanswer}
                                     optionValue="domainvalue"
                                     optionDesc="domainvalue"
                                 />
@@ -336,6 +543,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             InputProps={{
                                                 multiline: true,
                                             }}
+                                            valueDefault={selectedCardData?.response}
+                                            onChange={(value) => setValue('response', value)}
                                         />
                                     </div>
                                 </>
@@ -351,6 +560,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 InputProps={{
                                     multiline: true,
                                 }}
+                                valueDefault={selectedCardData?.prompt}
+                                onChange={(value) => setValue('prompt', value)}
                             />
                             <div style={{height: 20}}/>
                             <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
@@ -360,6 +571,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 InputProps={{
                                     multiline: true,
                                 }}
+                                valueDefault={selectedCardData?.negativeprompt}
+                                onChange={(value) => setValue('negativeprompt', value)}
                             />
                         </div>
                         <div className="col-4">
@@ -371,6 +584,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     variant="outlined"
                                     size="small"
                                     width={80}
+                                    valueDefault={selectedCardData?.max_tokens}
+                                    onChange={(value) => setValue('max_tokens', value)}
                                 />
                             </div>
                             <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.maxtokensdesc)}</span></div>
@@ -385,6 +600,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     variant="outlined"
                                     size="small"
                                     width={80}
+                                    valueDefault={selectedCardData?.temperature}
+                                    onChange={(value) => setValue('temperature', value)}
                                 />
                             </div>
                             <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.temperaturedesc)}</span></div>
@@ -399,6 +616,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     variant="outlined"
                                     size="small"
                                     width={80}
+                                    valueDefault={selectedCardData?.top_p}
+                                    onChange={(value) => setValue('top_p', value)}
                                 />
                             </div>
                             <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.toppdesc)}</span></div>

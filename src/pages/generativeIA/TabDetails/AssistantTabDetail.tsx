@@ -17,15 +17,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+interface RowSelected {
+    row: Dictionary | null;
+    edit: boolean;
+}
 interface AssistantTabDetailProps {
-    row: Dictionary | null
+    data: RowSelected
     setValue: any
     getValues: any,
     errors: FieldErrors
 }
 
 const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
-    row,
+    data:{row, edit},
     setValue,
     getValues,
     errors
@@ -35,54 +39,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [waitExport, setWaitExport] = useState(false);
-    const resExportData = useSelector((state) => state.main.exportData);
-    const [waitUpload, setWaitUpload] = useState(false);
-    const importRes = useSelector((state) => state.main.execute);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
-
-    useEffect(() => {
-        if (waitUpload) {
-            if (!importRes.loading && !importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_import),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            } else if (importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(importRes.code || "error_unexpected_error"),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            }
-        }
-    }, [importRes, waitUpload]);
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", {
-                    module: t(langKeys.person).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [resExportData, waitExport]);
 
     useEffect(() => {
         if (waitSave) {
@@ -115,6 +72,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     label={t(langKeys.name)}
                     valueDefault={getValues('name')}
                     onChange={(value) => setValue('name', value)}
+                    error={errors?.name?.message}
                     type="text"
                     maxLength={60}                                    
                 />
@@ -123,6 +81,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     label={t(langKeys.description)}
                     valueDefault={getValues('description')}
                     onChange={(value) => setValue('description', value)}
+                    error={errors?.description?.message}
                     type="text"
                     maxLength={640}                                    
                 />
@@ -130,7 +89,8 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     label={t(langKeys.basemodel)}
                     data={(multiDataAux?.data?.[2]?.data||[])}
                     valueDefault={getValues('basemodel')}
-                    onChange={(value) => setValue('basemodel', value)}
+                    onChange={(value) => setValue('basemodel', value.domainvalue)}
+                    error={errors?.basemodel?.message}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                     className="col-6"
@@ -140,7 +100,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     label={t(langKeys.status)}
                     data={(multiDataAux?.data?.[0]?.data||[])}
                     valueDefault={getValues('status')}
-                    onChange={(value) => setValue('status', value)}
+                    onChange={(value) => setValue('status', value.domainvalue)}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -149,6 +109,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     label={t(langKeys.apikey)}
                     valueDefault={getValues('apikey')}
                     onChange={(value) => setValue('apikey', value)}
+                    error={errors?.apikey?.message}
                     type="password"
                 />
             </div>

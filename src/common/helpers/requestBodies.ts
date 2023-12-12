@@ -4170,3 +4170,9 @@ export const insAssistantAi = ({ id, name, description, basemodel, language, org
     key: "UFN_ASSISTANTAI_INS",
     parameters: { id, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, type, status, operation },
 });
+
+export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) => ({
+    method: "UFN_ASSISTANTAIDOCUMENT_SEL",
+    key: "UFN_ASSISTANTAIDOCUMENT_SEL",
+    parameters: { assistantaiid, id, all },
+});

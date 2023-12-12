@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
-import { execute, resetAllMain } from 'store/main/actions';
+import { execute, getCollection, getMultiCollectionAux, resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { Button, Tabs } from "@material-ui/core";
@@ -15,7 +15,7 @@ import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
 import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
 import { useForm } from "react-hook-form";
 import { Dictionary } from "@types";
-import { insAssistantAi } from "common/helpers";
+import { assistantAiDocumentSel, getValuesFromDomain, insAssistantAi } from "common/helpers";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -61,14 +61,16 @@ interface CreateAssistantProps {
     data: RowSelected;
     arrayBread: BreadCrumb[],
     setViewSelected: (view: string) => void,
-    setExternalViewSelected: (view: string) => void
+    setExternalViewSelected: (view: string) => void,
+    fetchData: () => void
 }
 
 const CreateAssistant: React.FC<CreateAssistantProps> = ({
     data: {row, edit},
     setViewSelected,
     arrayBread,
-    setExternalViewSelected
+    setExternalViewSelected,
+    fetchData
 }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -83,15 +85,22 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     ];
 
     useEffect(() => {
-        return () => {
-            dispatch(resetAllMain());
-        };
+        fetchData()
+        dispatch(
+          getMultiCollectionAux([
+            getValuesFromDomain('ESTADOGENERICO'),
+            getValuesFromDomain('QUERYWITHOUTANSWER'),
+            getValuesFromDomain('BASEMODEL')
+          ])
+        );
     }, []);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                fetchData();
+                setViewSelected('assistantdetail')
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
@@ -137,7 +146,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('response');
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('negativeprompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('generalprompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('generalprompt');
         register('temperature');
         register('max_tokens')
         register('top_p');
@@ -149,7 +158,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const onMainSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insAssistantAi(data)));
+            dispatch(execute(insAssistantAi({...data, generalprompt: data.prompt + ' - holatest'})));
             setWaitSave(true);
         };
         dispatch(
@@ -160,6 +169,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             })
         );
     });
+
+    const fetchDocumentsByAssistant = () => dispatch(getCollection(assistantAiDocumentSel({assistantaiid: getValues('id'), id: 0, all: true})));
 
 	const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
         setTabIndex(newIndex);
@@ -192,7 +203,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                 </Button>
                                 <Button
                                     variant="contained"
-                                    type="button"
+                                    type="submit"
                                     color="primary"
                                     startIcon={<SaveIcon color="secondary" />}
                                     style={{ backgroundColor: '#55BD84' }}
@@ -240,7 +251,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail />
+                    <TrainingTabDetail fetchData={fetchDocumentsByAssistant} />
                 </AntTabPanel>
             </form>
         </>

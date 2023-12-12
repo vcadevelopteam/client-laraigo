@@ -107,17 +107,24 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TrainingTabDetail: React.FC = () => {
+interface TrainingTabDetailProps {
+    fetchData: () => void;
+}
+
+const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
+    fetchData
+}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [waitExport, setWaitExport] = useState(false);
-    const resExportData = useSelector((state) => state.main.exportData);
-    const [waitUpload, setWaitUpload] = useState(false);
-    const importRes = useSelector((state) => state.main.execute);
     const [viewSelected, setViewSelected] = useState('main');
+    const dataDocuments = useSelector(state => state.main.mainAux);
+
+    useEffect(() => {
+        fetchData();
+    }, [])
 
     const columns = React.useMemo(
         () => [
@@ -139,49 +146,6 @@ const TrainingTabDetail: React.FC = () => {
         ],
         []
     );
-
-    useEffect(() => {
-        if (waitUpload) {
-            if (!importRes.loading && !importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_import),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            } else if (importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(importRes.code || "error_unexpected_error"),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            }
-        }
-    }, [importRes, waitUpload]);
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", {
-                    module: t(langKeys.person).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [resExportData, waitExport]);
 
     useEffect(() => {
         if (waitSave) {
@@ -278,7 +242,7 @@ const TrainingTabDetail: React.FC = () => {
                     <div style={{marginTop:'2rem'}}>
                         <TableZyx
                             columns={columns}
-                            data={[]}
+                            data={dataDocuments.data}
                             filterGeneral={false}
                             useSelection={true}
                         />
