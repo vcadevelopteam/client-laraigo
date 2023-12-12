@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, IconButton, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldEdit, FieldSelect, FieldView } from "components";
 import { langKeys } from "lang/keys";
@@ -21,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const AddInventoryConsumptionLineDialog: React.FC<{
+const AddInventoryConsumptionTransferLineDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
     row: any;
@@ -41,6 +42,8 @@ const AddInventoryConsumptionLineDialog: React.FC<{
     const user = useSelector((state) => state.login.validateToken.user);
     const [openModalProduct, setOpenModalProduct] = useState(false);
     const [openModalUser, setOpenModalUser] = useState(false);
+    const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
+    const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
 
     const {
         register,
@@ -72,11 +75,16 @@ const AddInventoryConsumptionLineDialog: React.FC<{
             type: rowSelected?.row?.type || "NINGUNO",
             productcode: rowSelected?.row?.productcode || "",
             operation: editRow ? "EDIT" : "INSERT",
-            warehouseto: 0,
-            rackcodeto: "",
-            lotecodeto: ""
+            warehouseto: row?.warehouseto||0,
+            rackcodeto: row?.rackcodeto||"",
+            lotecodeto: row?.lotecodeto||""
         },
     });
+
+    function setWarehouse(warehouseSelected:any){
+        setSelectedWarehouse(warehouseSelected)
+        setValue('warehouseto', warehouseSelected.warehouseid)
+    }
 
     useEffect(() => {
         if (openModal) {
@@ -102,10 +110,11 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                 type: rowSelected?.row?.type || "NINGUNO",
                 productcode: rowSelected?.row?.productcode || "",
                 operation: editRow ? "EDIT" : "INSERT",
-                warehouseto: 0,
-                rackcodeto: "",
-                lotecodeto: ""
+                warehouseto: row?.warehouseto||0,
+                rackcodeto: row?.rackcodeto||"",
+                lotecodeto: row?.lotecodeto||""
             });
+
         }
     }, [openModal]);
 
@@ -138,7 +147,7 @@ const AddInventoryConsumptionLineDialog: React.FC<{
         register("inventoryconsumptiondetailid");
         register("p_tableid");
         register("line");
-        register("warehouseto");
+        register("warehouseto", { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register("rackcodeto");
         register("lotecodeto");
         register("productid", { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
@@ -256,6 +265,21 @@ const AddInventoryConsumptionLineDialog: React.FC<{
         ],
         []
     );
+    const columnsSelectionWarehouse = React.useMemo(
+        () => [
+          {
+            Header: t(langKeys.warehouse),
+            accessor: "name",
+            width: "auto",
+          },
+          {
+            Header: t(langKeys.description),
+            accessor: "description",
+            width: "auto",
+          },
+        ],
+        []
+      )
 
     return (
         <form onSubmit={submitData}>
@@ -271,12 +295,12 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                     </div>
                     <div className="row-zyx col-4">
                         <FieldEdit
-                            label={t(langKeys.originshelf)}
+                            label={t(langKeys.originbatch)}
+                            type="text"
+                            valueDefault={getValues("fromlote")}
                             className="col-6"
-                            disabled={edit}
-                            valueDefault={getValues("fromshelf")}
                             onChange={(value) => {
-                                setValue("fromshelf", value);
+                                setValue("fromlote", value);
                             }}
                         />
                     </div>
@@ -315,14 +339,28 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                         />
                     </div>
                     <div className="row-zyx col-4">
+                        
                         <FieldEdit
-                            label={t(langKeys.originbatch)}
-                            type="text"
-                            valueDefault={getValues("fromlote")}
+                            label={"A " + t(langKeys.warehouse)}
                             className="col-6"
-                            onChange={(value) => {
-                                setValue("fromlote", value);
-                            }}
+                            disabled
+                            valueDefault={edit ? row?.warehousename : selectedWarehouse?.name}
+                            error={(errors?.warehouseto?.message as string) ?? ""}
+                            InputProps={
+                                !edit
+                                    ? {
+                                        endAdornment: (
+                                            <IconButton
+                                                onClick={() => {
+                                                    setOpenModalWarehouse(true);
+                                                }}
+                                            >
+                                                <Add />
+                                            </IconButton>
+                                        ),
+                                    }
+                                    : {}
+                            }
                         />
                     </div>
                     <FieldEdit
@@ -384,13 +422,12 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                     <div className="row-zyx col-4">
                         <FieldEdit
                             disabled={edit}
-                            label={t(langKeys.ticketapplication)}
-                            className="col-4"
-                            valueDefault={getValues("ticketnumber")}
+                            label={t(langKeys.destinationshelf)}
+                            className="col-6"
+                            valueDefault={getValues("rackcodeto")}
                             onChange={(value) => {
-                                setValue("ticketnumber", value);
+                                setValue("rackcodeto", value);
                             }}
-                            maxLength={36}
                         />
                     </div>
                     <FieldEdit
@@ -408,7 +445,25 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                             setValue("realdate", value);
                         }}
                     />
-                    <div className="row-zyx col-6"></div>
+                    <FieldEdit
+                        label={t(langKeys.originshelf)}
+                        className="col-2"
+                        disabled={edit}
+                        valueDefault={getValues("fromshelf")}
+                        onChange={(value) => {
+                            setValue("fromshelf", value);
+                        }}
+                    />
+                    <div className="row-zyx col-2"></div>
+                    <FieldEdit
+                        label={t(langKeys.destinationbatch)}
+                        className="col-2"
+                        disabled={edit}
+                        valueDefault={getValues("lotecodeto")}
+                        onChange={(value) => {
+                            setValue("lotecodeto", value);
+                        }}
+                    />
                     <div className="row-zyx col-6">
                         <FieldEdit
                             label={t(langKeys.ticket_comment)}
@@ -472,8 +527,16 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                 columns={columnsSelectionUser}
                 title={t(langKeys.user)}
             />
+            <TableSelectionDialog
+                openModal={openModalWarehouse}
+                setOpenModal={setOpenModalWarehouse}
+                setRow={setWarehouse}
+                data={multiData?.data?.[1]?.data || []}
+                columns={columnsSelectionWarehouse}
+                title={t(langKeys.warehouse)}
+            />
         </form>
     );
 };
 
-export default AddInventoryConsumptionLineDialog;
+export default AddInventoryConsumptionTransferLineDialog;

@@ -15,7 +15,6 @@ interface RowSelected {
 
 const InventoryConsumption: FC = () => {
   const dispatch = useDispatch();
-  const mainResult = useSelector((state) => state.main);
   const [viewSelected, setViewSelected] = useState("main-view");
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
     pageSize: 0,

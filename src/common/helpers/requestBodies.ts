@@ -4643,10 +4643,10 @@ export const insInventoryConsumption = ({ inventoryconsumptionid, description, o
 });
 
 
-export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype }: Dictionary) => ({
+export const inventoryConsumptionDetailIns = ({ inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype, warehouseto, rackcodeto, lotecodeto }: Dictionary) => ({
     method: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
-    key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",    
-    parameters: { inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype },
+    key: "UFN_INVENTORYCONSUMPTIONDETAIL_INS",
+    parameters: { inventoryconsumptiondetailid, p_tableid, line, productid, description, quantity, onlinecost, fromshelf, fromlote, unitcost, ticketnumber, dispatchto, realdate, comment, status, type, operation, transactiontype, warehouseto, rackcodeto, lotecodeto },
 });
 export const getTemplatesChatflow = () => ({
     method: "UFN_CHATFLOW_BLOCK_TEMPLATES_SEL",
@@ -4703,5 +4703,10 @@ export const generateguiaremisionSel = (inventoryconsumptionid: number) => ({
 export const generateguiaremisiondetailSel = (inventoryconsumptionid: number) => ({
     method: "UFN_GUIAREMISION_SEL",
     key: "UFN_GUIAREMISION_SEL",
+    parameters: { inventoryconsumptionid },
+});
+export const getStatusHistoryInventoryConsumption = (inventoryconsumptionid: number) => ({
+    method: "UFN_ALL_INVENTORYCONSUMPTIONSTATUS_INVENTORYCONSUMPTION_SEL",
+    key: "UFN_ALL_INVENTORYCONSUMPTIONSTATUS_INVENTORYCONSUMPTION_SEL",
     parameters: { inventoryconsumptionid },
 });

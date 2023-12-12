@@ -105,7 +105,7 @@ const CompleteInventoryConsumptionDialog: React.FC<{
                         optionDesc="domaindesc"
                         valueDefault={getValues("status")}
                         error={errors?.status?.message}
-                        onChange={(value) => setValue("status", value.manufacturerid)}
+                        onChange={(value) => setValue("status", value.domainvalue)}
                     />
                     <FieldEdit
                         label={t(langKeys.ticket_comment)}
