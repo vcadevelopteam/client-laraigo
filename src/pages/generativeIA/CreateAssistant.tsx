@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
-import { resetAllMain } from 'store/main/actions';
+import { execute, resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { Button, Tabs } from "@material-ui/core";
@@ -15,6 +15,7 @@ import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
 import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
 import { useForm } from "react-hook-form";
 import { Dictionary } from "@types";
+import { insAssistantAi } from "common/helpers";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -120,16 +121,35 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             top_p: row?.top_p || 0,
             apikey: row?.apikey || '',
             type: row?.type || '',
-            status: row?.status || '',
+            status: row?.status || 'ACTIVO',
             operation: edit ? 'UPDATE' : 'INSERT',
         }
     });
 
-    const onMainSubmit = ((data) => {
+    React.useEffect(() => {
+        register('id');
+        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('basemodel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
+        register('organizationname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('querywithoutanswer', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('response');
+        register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('negativeprompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('generalprompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('temperature');
+        register('max_tokens')
+        register('top_p');
+        register('type');
+        register('status');
+        register('operation');
+    }, [register, setValue]);
+
+    const onMainSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            //dispatch(execute(insWarehouse(data)));
-
+            dispatch(execute(insAssistantAi(data)));
             setWaitSave(true);
         };
         dispatch(

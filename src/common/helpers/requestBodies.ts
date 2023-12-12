@@ -4158,3 +4158,15 @@ export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid
     key: "UFN_BILLINGPERIODPARTNER_DEVELOPER_RESELLER",
     parameters: { partnerid, corpid, orgid, year, month, username },
 });
+
+export const assistantAiSel = ({ id, all }: Dictionary) => ({
+    method: "UFN_ASSISTANTAI_SEL",
+    key: "UFN_ASSISTANTAI_SEL",
+    parameters: { id, all },
+});
+
+export const insAssistantAi = ({ id, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, type, status, operation }: Dictionary) => ({
+    method: "UFN_ASSISTANTAI_INS",
+    key: "UFN_ASSISTANTAI_INS",
+    parameters: { id, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, type, status, operation },
+});

@@ -113,18 +113,24 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 <FieldEdit
                     className="col-6"
                     label={t(langKeys.name)}
+                    valueDefault={getValues('name')}
+                    onChange={(value) => setValue('name', value)}
                     type="text"
                     maxLength={60}                                    
                 />
                 <FieldEdit
                     className="col-6"
                     label={t(langKeys.description)}
+                    valueDefault={getValues('description')}
+                    onChange={(value) => setValue('description', value)}
                     type="text"
                     maxLength={640}                                    
                 />
                 <FieldSelect
                     label={t(langKeys.basemodel)}
                     data={(multiDataAux?.data?.[2]?.data||[])}
+                    valueDefault={getValues('basemodel')}
+                    onChange={(value) => setValue('basemodel', value)}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                     className="col-6"
@@ -133,12 +139,16 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     className="col-6"
                     label={t(langKeys.status)}
                     data={(multiDataAux?.data?.[0]?.data||[])}
+                    valueDefault={getValues('status')}
+                    onChange={(value) => setValue('status', value)}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
                 <FieldEdit
                     className="col-12"
                     label={t(langKeys.apikey)}
+                    valueDefault={getValues('apikey')}
+                    onChange={(value) => setValue('apikey', value)}
                     type="password"
                 />
             </div>

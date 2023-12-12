@@ -195,217 +195,219 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         return selectedCard === cardIndex;
     };
 
-    console.log(unansweredQueries)
-
-    if(viewSelected === 'main') {
-        return (
-            <div className={classes.containerDetail}>
-                <div id="parameters">
-                    <span className={classes.title}>
-                        {t(langKeys.personality)}
-                    </span>
-                    <div><span style={{fontSize: 16}}>{t(langKeys.selectpersonality)}</span></div>
-                    <div className={`row-zyx ${classes.cardsContainer}`} >
-                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                            <Card className={`${classes.card} ${isCardSelected(0) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(0)}>
-                                <div className={classes.cardContent}>
-                                    <SynonimsRasaLogo className={classes.logo} />
-                                    <div className={classes.cardTitle}>{t(langKeys.help_desk_clerk)}</div>
-                                    <div className={classes.cardText}>{t(langKeys.help_desk_clerk_description)}</div>
-                                    <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                </div>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                            <Card className={`${classes.card} ${isCardSelected(1) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(1)}>
-                                <div className={classes.cardContent}>
-                                    <SynonimsRasaLogo className={classes.logo} />
-                                    <div className={classes.cardTitle}>{t(langKeys.customer_service)}</div>
-                                    <div className={classes.cardText}>{t(langKeys.customer_service_description)}</div>
-                                    <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                </div>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                            <Card className={`${classes.card} ${isCardSelected(2) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(2)}>
-                                <div className={classes.cardContent}>
-                                    <SynonimsRasaLogo className={classes.logo} />
-                                    <div className={classes.cardTitle}>{t(langKeys.sales_expert)}</div>
-                                    <div className={classes.cardText}>{t(langKeys.sales_expert_description)}</div>
-                                    <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                </div>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                            <Card className={`${classes.card} ${isCardSelected(3) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(3)}>
-                                <div className={classes.cardContent}>
-                                    <SynonimsRasaLogo className={classes.logo} />
-                                    <div className={classes.cardTitle}>{t(langKeys.technical_support)}</div>
-                                    <div className={classes.cardText}>{t(langKeys.technical_support_description)}</div>
-                                    <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                </div>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                            <Card className={`${classes.card} ${isCardSelected(4) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(4)}>
-                                <div className={classes.cardContent}>
-                                    <SynonimsRasaLogo className={classes.logo} />
-                                    <div className={classes.cardTitle}>{t(langKeys.ai_base)}</div>
-                                    <div className={classes.cardText}>{t(langKeys.ai_base_description)}</div>
-                                    <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                </div>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={2} md={1} lg={2} className={classes.grid}>
-                            <Card className={`${classes.card} ${isCardSelected(6) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(6)}>
-                                <div className={classes.cardContent}>
-                                    <SynonimsRasaLogo className={classes.logo} />
-                                    <div className={classes.cardTitle}>{t(langKeys.custom_mode)}</div>
-                                    <div className={classes.cardText}>{t(langKeys.custom_mode_description)}</div>
-                                    <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
-                                </div>
-                            </Card>
-                        </Grid>
-                    </div>
-                </div>
-            </div>
-        );
-    } else if(viewSelected === 'detail') {
-        return (
-            <>
+    if(edit) {
+        return null;
+    } else {
+        if(viewSelected === 'main') {
+            return (
                 <div className={classes.containerDetail}>
-                    <div className="row-zyx" style={{marginBottom:0}}>
-                        <div>
-                            <Button
-                                type="button"
-                                style={{color: '#7721AD'}}
-                                startIcon={<ArrowBackIcon />}
-                                onClick={() => setViewSelected('main')}
-                            >
-                                {t(langKeys.personality)}
-                            </Button>
-                        </div>
-                        <div style={{height:10}}/>
+                    <div id="parameters">
                         <span className={classes.title}>
-                            {t(langKeys.reason_customerservice)}
+                            {t(langKeys.personality)}
                         </span>
-                        <div style={{height: 10}}/>
-                        <div className="col-4">
-                            <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
-                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.selectAILang)}</span></div>
-                            <FieldSelect
-                                label={t(langKeys.language)}
-                                data={[]}
-                                optionValue={""}
-                                optionDesc={""}
-                            />
+                        <div><span style={{fontSize: 16}}>{t(langKeys.selectpersonality)}</span></div>
+                        <div className={`row-zyx ${classes.cardsContainer}`} >
+                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                                <Card className={`${classes.card} ${isCardSelected(0) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(0)}>
+                                    <div className={classes.cardContent}>
+                                        <SynonimsRasaLogo className={classes.logo} />
+                                        <div className={classes.cardTitle}>{t(langKeys.help_desk_clerk)}</div>
+                                        <div className={classes.cardText}>{t(langKeys.help_desk_clerk_description)}</div>
+                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                                <Card className={`${classes.card} ${isCardSelected(1) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(1)}>
+                                    <div className={classes.cardContent}>
+                                        <SynonimsRasaLogo className={classes.logo} />
+                                        <div className={classes.cardTitle}>{t(langKeys.customer_service)}</div>
+                                        <div className={classes.cardText}>{t(langKeys.customer_service_description)}</div>
+                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                                <Card className={`${classes.card} ${isCardSelected(2) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(2)}>
+                                    <div className={classes.cardContent}>
+                                        <SynonimsRasaLogo className={classes.logo} />
+                                        <div className={classes.cardTitle}>{t(langKeys.sales_expert)}</div>
+                                        <div className={classes.cardText}>{t(langKeys.sales_expert_description)}</div>
+                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                                <Card className={`${classes.card} ${isCardSelected(3) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(3)}>
+                                    <div className={classes.cardContent}>
+                                        <SynonimsRasaLogo className={classes.logo} />
+                                        <div className={classes.cardTitle}>{t(langKeys.technical_support)}</div>
+                                        <div className={classes.cardText}>{t(langKeys.technical_support_description)}</div>
+                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                                <Card className={`${classes.card} ${isCardSelected(4) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(4)}>
+                                    <div className={classes.cardContent}>
+                                        <SynonimsRasaLogo className={classes.logo} />
+                                        <div className={classes.cardTitle}>{t(langKeys.ai_base)}</div>
+                                        <div className={classes.cardText}>{t(langKeys.ai_base_description)}</div>
+                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={2} md={1} lg={2} className={classes.grid}>
+                                <Card className={`${classes.card} ${isCardSelected(6) ? classes.selectedCard : ''}`} onClick={() => handleCardClick(6)}>
+                                    <div className={classes.cardContent}>
+                                        <SynonimsRasaLogo className={classes.logo} />
+                                        <div className={classes.cardTitle}>{t(langKeys.custom_mode)}</div>
+                                        <div className={classes.cardText}>{t(langKeys.custom_mode_description)}</div>
+                                        <div className={classes.footer} onClick={() => setViewSelected('detail')}>{t(langKeys.seeMore)}</div>
+                                    </div>
+                                </Card>
+                            </Grid>
                         </div>
-                        <div className="col-4">
-                            <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
-                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.enterorgnametext)}</span></div>
+                    </div>
+                </div>
+            );
+        } else if(viewSelected === 'detail') {
+            return (
+                <>
+                    <div className={classes.containerDetail}>
+                        <div className="row-zyx" style={{marginBottom:0}}>
+                            <div>
+                                <Button
+                                    type="button"
+                                    style={{color: '#7721AD'}}
+                                    startIcon={<ArrowBackIcon />}
+                                    onClick={() => setViewSelected('main')}
+                                >
+                                    {t(langKeys.personality)}
+                                </Button>
+                            </div>
+                            <div style={{height:10}}/>
+                            <span className={classes.title}>
+                                {t(langKeys.reason_customerservice)}
+                            </span>
+                            <div style={{height: 10}}/>
+                            <div className="col-4">
+                                <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
+                                <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.selectAILang)}</span></div>
+                                <FieldSelect
+                                    label={t(langKeys.language)}
+                                    data={[]}
+                                    optionValue={""}
+                                    optionDesc={""}
+                                />
+                            </div>
+                            <div className="col-4">
+                                <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
+                                <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.enterorgnametext)}</span></div>
+                                <FieldEdit
+                                    label={t(langKeys.organization)}
+                                />
+                            </div>
+                            <div className="col-4">
+                                <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
+                                <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.aireaction)}</span></div>
+                                <FieldSelect
+                                    label={t(langKeys.queries)}
+                                    data={(multiDataAux?.data?.[1]?.data||[])}
+                                    onChange={(value) => {
+                                        if(value?.domainvalue) {
+                                            setUnansweredQueries(value.domainvalue)
+                                        } else {
+                                            setUnansweredQueries('')
+                                        }
+                                    }}
+                                    optionValue="domainvalue"
+                                    optionDesc="domainvalue"
+                                />
+                            </div>
+                            {unansweredQueries === 'Respuesta Sugerida' && (
+                                <>
+                                    <div style={{height: 20}}/>
+                                    <div>
+                                        <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
+                                        <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.aianswer)}</span></div>
+                                        <FieldEdit
+                                            variant="outlined"
+                                            InputProps={{
+                                                multiline: true,
+                                            }}
+                                        />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    <div className={`row-zyx ${classes.containerDetail2}`}>
+                        <div className="col-8" style={{paddingRight:50}}>
+                            <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
+                            <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.promptinstructions)}</span></div>
                             <FieldEdit
-                                label={t(langKeys.organization)}
-                            />
-                        </div>
-                        <div className="col-4">
-                            <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
-                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.aireaction)}</span></div>
-                            <FieldSelect
-                                label={t(langKeys.queries)}
-                                data={(multiDataAux?.data?.[1]?.data||[])}
-                                onChange={(value) => {
-                                    if(value?.domainvalue) {
-                                        setUnansweredQueries(value.domainvalue)
-                                    } else {
-                                        setUnansweredQueries('')
-                                    }
+                                variant="outlined"
+                                InputProps={{
+                                    multiline: true,
                                 }}
-                                optionValue="domainvalue"
-                                optionDesc="domainvalue"
                             />
-                        </div>
-                        {unansweredQueries === 'Respuesta Sugerida' && (
-                            <>
-                                <div style={{height: 20}}/>
-                                <div>
-                                    <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
-                                    <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.aianswer)}</span></div>
-                                    <FieldEdit
-                                        variant="outlined"
-                                        InputProps={{
-                                            multiline: true,
-                                        }}
-                                    />
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-                <div className={`row-zyx ${classes.containerDetail2}`}>
-                    <div className="col-8" style={{paddingRight:50}}>
-                        <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
-                        <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.promptinstructions)}</span></div>
-                        <FieldEdit
-                            variant="outlined"
-                            InputProps={{
-                                multiline: true,
-                            }}
-                        />
-                        <div style={{height: 20}}/>
-                        <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
-                        <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.negativepromptinstructions)}</span></div>
-                        <FieldEdit
-                            variant="outlined"
-                            InputProps={{
-                                multiline: true,
-                            }}
-                        />
-                    </div>
-                    <div className="col-4">
-                        <div style={{display: 'flex', alignItems: 'center'}}>
-                            <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
-                            <div style={{width:10}}/>
+                            <div style={{height: 20}}/>
+                            <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
+                            <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.negativepromptinstructions)}</span></div>
                             <FieldEdit
-                                type="number"
                                 variant="outlined"
-                                size="small"
-                                width={80}
+                                InputProps={{
+                                    multiline: true,
+                                }}
                             />
                         </div>
-                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.maxtokensdesc)}</span></div>
-                        <div style={{height: 20}}/>
-                        <div style={{display: 'flex', alignItems: 'center'}}>
-                            <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
-                            <div style={{width:10}}/>
-                            <span>0 - 2.0</span>
-                            <div style={{width:10}}/>
-                            <FieldEdit
-                                type="number"
-                                variant="outlined"
-                                size="small"
-                                width={80}
-                            />
+                        <div className="col-4">
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
+                                <div style={{width:10}}/>
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                />
+                            </div>
+                            <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.maxtokensdesc)}</span></div>
+                            <div style={{height: 20}}/>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
+                                <div style={{width:10}}/>
+                                <span>0 - 2.0</span>
+                                <div style={{width:10}}/>
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                />
+                            </div>
+                            <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.temperaturedesc)}</span></div>
+                            <div style={{height: 20}}/>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
+                                <div style={{width:10}}/>
+                                <span>0 - 1.0</span>
+                                <div style={{width:10}}/>
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                />
+                            </div>
+                            <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.toppdesc)}</span></div>
                         </div>
-                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.temperaturedesc)}</span></div>
-                        <div style={{height: 20}}/>
-                        <div style={{display: 'flex', alignItems: 'center'}}>
-                            <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
-                            <div style={{width:10}}/>
-                            <span>0 - 1.0</span>
-                            <div style={{width:10}}/>
-                            <FieldEdit
-                                type="number"
-                                variant="outlined"
-                                size="small"
-                                width={80}
-                            />
-                        </div>
-                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.toppdesc)}</span></div>
                     </div>
-                </div>
-            </>
-        );
-    } else return null;
+                </>
+            );
+        } else return null;
+    }
 };
 
 export default ParametersTabDetail;

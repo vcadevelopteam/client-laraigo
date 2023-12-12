@@ -14,8 +14,8 @@ import AddIcon from '@material-ui/icons/Add';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
-import { getMultiCollectionAux, resetAllMain } from "store/main/actions";
-import { getValuesFromDomain } from "common/helpers";
+import { getCollection, getMultiCollectionAux, resetAllMain } from "store/main/actions";
+import { assistantAiSel, getValuesFromDomain } from "common/helpers";
 import { Dictionary } from "@types";
 
 interface RowSelected {
@@ -59,6 +59,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         row: null,
         edit: false,
     });
+    const main = useSelector((state) => state.main.mainData);
 
     const newArrayBread = [
         ...arrayBread,
@@ -81,12 +82,12 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             },
             {
                 Header: t(langKeys.last_modification),
-                accessor: 'last_modification',
+                accessor: 'changedate',
                 width: "auto",
             },
             {
                 Header: t(langKeys.last_trainning),
-                accessor: 'last_trainning',
+                accessor: 'lasttraining',
                 width: "auto",
             },
             {
@@ -108,7 +109,10 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         []
     );
 
+    const fetchData = () => dispatch(getCollection(assistantAiSel({id: 0, all: true})));
+
     useEffect(() => {
+        fetchData();
         dispatch(
           getMultiCollectionAux([
             getValuesFromDomain('ESTADOGENERICO'),
@@ -119,7 +123,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         return () => {
           dispatch(resetAllMain());
         };
-      }, []);
+    }, []);
 
     const ButtonsElement = () => {
         return (
@@ -167,6 +171,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
@@ -200,7 +205,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                 </div>
                 <TableZyx
                     columns={columnsGenerativeIA}
-                    data={[]}
+                    data={main.data}
                     filterGeneral={false}
                     useSelection={true}
                     ButtonsElement={ButtonsElement}
