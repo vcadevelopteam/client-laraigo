@@ -6,12 +6,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TemplateBreadcrumbs, TitleDetail } from "components";
-import { getInventoryConsumptionDetail, insInventoryConsumption, inventoryConsumptionDetailIns } from "common/helpers";
+import { getInventoryConsumptionDetail, getStatusHistoryInventoryConsumption, insInventoryConsumption, inventoryConsumptionDetailIns } from "common/helpers";
 import { Dictionary } from "@types";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
-import { execute, getCollection, resetMainAux } from "store/main/actions";
+import { execute, getCollection, getCollectionAux, resetMainAux } from "store/main/actions";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import InventoryConsumptionTabDetail from "./detailTabs/InventoryConsumptionTabDetail";
 import CompleteInventoryConsumptionDialog from "../dialogs/CompleteInventoryConsumptionDialog";
@@ -114,6 +114,8 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({
         if (viewSelected === "detail-view" && edit) {
             if (edit) {
                 dispatch(getCollection(getInventoryConsumptionDetail(row?.inventoryconsumptionid || 0)));
+                dispatch(getCollectionAux(getStatusHistoryInventoryConsumption(row?.inventoryconsumptionid || 0)));
+
             }
         }
     }, [viewSelected]);
@@ -294,7 +296,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({
                 setViewSelected={setViewSelected}
             />
             <SeeTransactionsDialog openModal={openModalSeeTransactions} setOpenModal={setOpenModalSeeTransactions}  dataDetail={dataDetail} row={row}/>
-            <StatusHistoryDialog openModal={openModalStatusHistory} setOpenModal={setOpenModalStatusHistory} />
+            <StatusHistoryDialog openModal={openModalStatusHistory} setOpenModal={setOpenModalStatusHistory}/>
             <GenerateLabelDialog row={row} openModal={openModalLabel} setOpenModal={setOpenModalLabel} />
             <GenerateReferralGuideDialog row={row} openModal={openModalReferralGuide} setOpenModal={setOpenModalReferralGuide} />
         </form>

@@ -4604,3 +4604,8 @@ export const generateguiaremisiondetailSel = (inventoryconsumptionid: number) =>
     key: "UFN_GUIAREMISION_SEL",
     parameters: { inventoryconsumptionid },
 });
+export const getStatusHistoryInventoryConsumption = (inventoryconsumptionid: number) => ({
+    method: "UFN_ALL_INVENTORYCONSUMPTIONSTATUS_INVENTORYCONSUMPTION_SEL",
+    key: "UFN_ALL_INVENTORYCONSUMPTIONSTATUS_INVENTORYCONSUMPTION_SEL",
+    parameters: { inventoryconsumptionid },
+});

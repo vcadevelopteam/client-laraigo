@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, IconButton, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldEdit, FieldSelect, FieldView } from "components";
 import { langKeys } from "lang/keys";
