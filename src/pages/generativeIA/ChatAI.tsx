@@ -13,6 +13,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import CloseIcon from '@material-ui/icons/Close';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import Avatar from '@material-ui/core/Avatar';
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -55,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface ChatAIProps {
     setViewSelected: (view: string) => void;
+    row: Dictionary | null;
 }
 
 interface ChatMessage {
@@ -71,8 +73,7 @@ interface Chat {
     messages: ChatMessage[];
 }
 
-const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
-    const dispatch = useDispatch();
+const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
@@ -82,12 +83,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
     const [chatList, setChatList] = useState<Chat[]>([
         { id: 0, title: "Chat #0", date: "Today", messages: [] },
     ]);
-
-    useEffect(() => {
-        return () => {
-            dispatch(resetAllMain());
-        };
-    }, []);
 
     const handleCreateChat = () => {
         setChatCounter(prevCounter => {
@@ -155,6 +150,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected }) => {
     return (
         <div className={classes.container}>
             <Paper className={classes.chatList}>
+                <div>{row?.name}</div>
                 <div className={classes.buttonscontainer}>
                     <Button
                         variant="contained"

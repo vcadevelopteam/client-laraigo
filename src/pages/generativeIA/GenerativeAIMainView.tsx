@@ -9,12 +9,12 @@ import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/acti
 import TableZyx from "components/fields/table-simple";
 import { Button } from "@material-ui/core";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import ClearIcon from '@material-ui/icons/Clear';
+import ForumIcon from '@material-ui/icons/Forum';
 import AddIcon from '@material-ui/icons/Add';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
-import { execute, getCollection, resetAllMain } from "store/main/actions";
+import { execute, getCollection } from "store/main/actions";
 import { assistantAiSel, insAssistantAi } from "common/helpers";
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
@@ -78,7 +78,11 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         setViewSelectedTraining("createassistant")
         setRowSelected({ row, edit: true });
     };
-    console.log(viewSelectedTraining)
+
+    const handleChat = (row: Dictionary) => {
+        setViewSelectedTraining("chatai")
+        setRowSelected({ row, edit: false });
+    }
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
@@ -151,6 +155,23 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                 Header: t(langKeys.chatwithassistant),
                 accessor: 'chatwithassistant',
                 width: "auto",
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <div
+                            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                handleChat(row);
+                            }}
+                        >
+                            <ForumIcon style={{ color: '#7721AD' }}/>
+                            <span style={{ marginLeft: '5px' }}>
+                                {t(langKeys.chat)}
+                            </span>
+                        </div>
+                    );
+                },
             },
         ],
         []
@@ -181,15 +202,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     style={{ backgroundColor: "#55BD84", marginLeft: 9 }}
                     onClick={handleRegister}
                 >{t(langKeys.createssistant)}
-                </Button>
-                <Button
-                    variant="contained"
-                    type="button"
-                    color="primary"
-                    startIcon={<ChatBubbleIcon color="secondary" />}
-                    style={{ backgroundColor: "#55BD84", marginLeft: 9 }}
-                    onClick={() => setViewSelectedTraining("chatai")}
-                >{t(langKeys.chat)}
                 </Button>
             </div>        
         )
@@ -251,6 +263,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     } else if(viewSelectedTraining === 'chatai') {
         return <ChatAI
             setViewSelected={setViewSelectedTraining}
+            row={rowSelected.row}
         />
     } else return null;
 }

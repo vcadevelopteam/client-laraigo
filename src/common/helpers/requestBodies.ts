@@ -4176,3 +4176,33 @@ export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) =
     key: "UFN_ASSISTANTAIDOCUMENT_SEL",
     parameters: { assistantaiid, id, all },
 });
+
+export const insAssistantAiDoc = ({ assistantaiid, id, description, url, type, status, operation }: Dictionary) => ({
+    method: "UFN_ASSISTANTAIDOCUMENT_INS",
+    key: "UFN_ASSISTANTAIDOCUMENT_INS",
+    parameters: { assistantaiid, id, description, url, type, status, operation },
+});
+
+export const threadSel = ({ assistantaiid, id, all }: Dictionary) => ({
+    method: "UFN_THREAD_SEL",
+    key: "UFN_THREAD_SEL",
+    parameters: { assistantaiid, id, all },
+});
+
+export const insThread = ({ assistantaiid, id, code, description, type, status, operation }: Dictionary) => ({
+    method: "UFN_THREAD_INS",
+    key: "UFN_THREAD_INS",
+    parameters: { assistantaiid, id, code, description, type, status, operation },
+});
+
+export const messageAiSel = ({ assistantaiid, threadid }: Dictionary) => ({
+    method: "UFN_MESSAGEAI_SEL",
+    key: "UFN_MESSAGEAI_SEL",
+    parameters: { assistantaiid, threadid },
+});
+
+export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation }: Dictionary) => ({
+    method: "UFN_MESSAGEAI_INS",
+    key: "UFN_MESSAGEAI_INS",
+    parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation },
+});

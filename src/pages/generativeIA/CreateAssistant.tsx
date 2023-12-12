@@ -158,7 +158,18 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const onMainSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insAssistantAi({...data, generalprompt: data.prompt + ' - holatest'})));
+
+            let generalprompt = 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. Si te hablan en otro idioma que no sea ' + data.language +
+                ', infórmales que solamente puedes comunicarte en ' + data.language + '.\n\nSolamente debes contestar o informar temas referidos a: ' + data.organizationname +
+                '.\n\n' + data.prompt + '\n\n' + 'Considera inapropiado o evita mencionar las siguientes ideas o temas:\n' + data.negativeprompt;
+
+            if(data.querywithoutanswer === 'Mejor Sugerencia') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.'
+            } else if(data.querywithoutanswer === 'Respuesta Sugerida') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere lo siguiente: ' + data.response
+            }
+
+            dispatch(execute(insAssistantAi({...data, generalprompt: generalprompt})));
             setWaitSave(true);
         };
         dispatch(
