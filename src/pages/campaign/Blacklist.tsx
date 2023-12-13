@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'; 
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate, getBlacklistExport, getBlacklistPaginated, insarrayBlacklist, insBlacklist, uploadExcel } from 'common/helpers';
@@ -24,7 +25,12 @@ const arrayBread = [
     { id: "view-2", name: "Campaign blacklist" }
 ];
 
-const useStyles = makeStyles(() => ({   
+const useStyles = makeStyles((theme) => ({
+    containerDetail: {
+        // marginTop: theme.spacing(2),
+        // padding: theme.spacing(2),
+        // background: '#fff',
+    },
     button: {
         padding: 12,
         fontWeight: 500,
@@ -84,7 +90,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 Header: t(langKeys.creationdate),
                 accessor: 'createdate',
                 type: 'date',
-                Cell: (props:  CellProps<Dictionary>) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <div>{convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})}</div>
@@ -95,45 +101,39 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
         []
     );
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });           
-        dispatch(getCollectionPaginated(getBlacklistPaginated({
-            creationdate: daterange?.creationdate || null, /*new*/   
-            take: pageSize,
-            skip: pageIndex * pageSize,
-            sorts: sorts,        
-            filters: {
-                ...filters,
-            },
-        })));    
-    };   
-   
+    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
+        dispatch(getCollectionPaginated(getBlacklistPaginated(
+            {
+                sorts: sorts,
+                filters: filters,
+                take: pageSize,
+                skip: pageIndex * pageSize,
+            }
+        )));
+    };
 
-
-    const triggerExportData = ({ filters, sorts, daterange/*new*/}: IFetchData) => {
+    const triggerExportData = ({ filters, sorts }: IFetchData) => {
         const columnsExport = columns.map(x => ({
             key: x.accessor,
-            alias: x.Header,           
-        }));    
+            alias: x.Header,
+        }));
         dispatch(exportData(getBlacklistExport(
-            {
-                /*new*/creationdate: daterange?.creationdate || null,
+            {              
                 sorts,
-                filters,
-            }), /*new*/"", "excel", false, columnsExport ));    
+                filters: filters,
+            }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
-    
-        
+
     const handleUpload = async (files: any[]) => {
         const file = files[0];
         if (file) {
-            const data: any = await uploadExcel(file, undefined);         
-    
+            const data: any = await uploadExcel(file, undefined);
             if (data.length > 0) {
-                const validpk = Object.keys(data[0]).includes('phone');              
-                const keys = Object.keys(data[0]);    
+                const validpk = Object.keys(data[0]).includes('phone');
+                const keys = Object.keys(data[0]);
                 dispatch(showBackdrop(true));
                 dispatch(execute(insarrayBlacklist(data.reduce((ad: any[], d: any) => {
                     ad.push({
@@ -144,15 +144,14 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                         type: d.type || 'NINGUNO',
                         status: d.status || 'ACTIVO',
                         operation: d.operation || 'INSERT',
-                    });
+                    })
                     return ad;
                 }, []))));
-                setWaitImport(true);
+                setWaitImport(true)
             }
         }
-    };
-    
-    
+    }
+
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
             dispatch(execute(insBlacklist({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
@@ -265,18 +264,18 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </Button>
                 </div>
             </div>
-            <div>
+            <div className={classes.containerDetail}>
                 <TablePaginated
                     columns={columns}
-                    fetchData={fetchData}
                     data={mainPaginated.data}
                     totalrow={totalrow}
+                    loading={mainPaginated.loading}
+                    pageCount={pageCount}
                     download={true}
-                    pageCount={pageCount}                    
-                    exportPersonalized={triggerExportData}                 
-                    loading={mainPaginated.loading}  
                     importCSV={handleUpload}
-                   autotrigger={false}
+                    fetchData={fetchData}
+                    exportPersonalized={triggerExportData}
+                    autotrigger={false}
                 />
             </div>
             {openModal && <ModalBlacklist
@@ -309,7 +308,6 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
             isnew: row ? false : true,
             id: row ? row.id : 0,
             description: row ? row.description : '',
-            creationdate: row ? row.creationdate : '',
             type: 'NINGUNO',
             status: 'ACTIVO',
             phone: row ? row.phone : '',
@@ -382,7 +380,6 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
                 <FieldEdit
                     label={t(langKeys.phone)}
                     className="col-6"
-                    type='number'
                     valueDefault={getValues('phone')}
                     onChange={(value) => setValue('phone', value)}
                     error={errors?.phone?.message}
@@ -390,7 +387,6 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
                 <FieldEdit
                     label={t(langKeys.description)}
                     className="col-6"
-                    type='text'
                     valueDefault={getValues('description')}
                     onChange={(value) => setValue('description', value)}
                     error={errors?.description?.message}
