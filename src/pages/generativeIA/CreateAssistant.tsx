@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
-import { execute, getCollection, getMultiCollectionAux, resetAllMain } from 'store/main/actions';
+import { execute, getCollection, getCollectionAux, getMultiCollectionAux, resetAllMain } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { Button, Tabs } from "@material-ui/core";
@@ -85,7 +85,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     ];
 
     useEffect(() => {
-        fetchData()
         dispatch(
           getMultiCollectionAux([
             getValuesFromDomain('ESTADOGENERICO'),
@@ -181,7 +180,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         );
     });
 
-    const fetchDocumentsByAssistant = () => dispatch(getCollection(assistantAiDocumentSel({assistantaiid: getValues('id'), id: 0, all: true})));
+    const fetchDocumentsByAssistant = () => dispatch(getCollectionAux(assistantAiDocumentSel({assistantaiid: getValues('id'), id: 0, all: true})));
 
 	const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
         setTabIndex(newIndex);
@@ -208,7 +207,9 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                     type="button"
                                     startIcon={<ArrowBackIcon color="primary" />}
                                     className={classes.purpleButton}
-                                    onClick={() => setViewSelected('assistantdetail')}
+                                    onClick={() => {
+                                        setViewSelected('assistantdetail')
+                                    }}
                                 >
                                     {t(langKeys.return)}
                                 </Button>
@@ -262,7 +263,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail fetchData={fetchDocumentsByAssistant} />
+                    <TrainingTabDetail data={{row, edit}} fetchData={fetchDocumentsByAssistant} />
                 </AntTabPanel>
             </form>
         </>
