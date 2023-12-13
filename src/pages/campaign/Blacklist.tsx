@@ -14,6 +14,7 @@ import TablePaginated from 'components/fields/table-paginated';
 import { Button } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { Add as AddIcon } from '@material-ui/icons';
+import { CellProps } from 'react-table';
 
 interface DetailProps {
     setViewSelected: (view: string) => void;
@@ -66,7 +67,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -89,7 +90,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 Header: t(langKeys.creationdate),
                 accessor: 'createdate',
                 type: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <div>{convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})}</div>
@@ -113,11 +114,15 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     };
 
     const triggerExportData = ({ filters, sorts }: IFetchData) => {
+        const columnsExport = columns.map(x => ({
+            key: x.accessor,
+            alias: x.Header,
+        }));
         dispatch(exportData(getBlacklistExport(
-            {
-                filters,
+            {              
                 sorts,
-            })));
+                filters: filters,
+            }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
