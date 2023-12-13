@@ -6,7 +6,6 @@ import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { Button, Card, Grid, IconButton, Modal, Typography } from "@material-ui/core";
-import DeleteIcon from '@material-ui/icons/Delete';
 import TableZyx from "components/fields/table-simple";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import BackupIcon from '@material-ui/icons/Backup';
@@ -20,6 +19,7 @@ import { insAssistantAiDoc } from "common/helpers";
 import { CellProps } from "react-table";
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -70,12 +70,6 @@ const useStyles = makeStyles((theme) => ({
     headerLeft: {
         display: 'flex',
         justifyContent: 'flex-start',
-        gap: '1rem',
-        alignItems: 'center'
-    },
-    headerRight: {
-        display: 'flex',
-        justifyContent: 'flex-end',
         gap: '1rem',
         alignItems: 'center'
     },
@@ -251,6 +245,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         setModalOpen(true);
     };
 
+    const handleTrain = () => {
+        console.log('trained')
+    }
+
     const columns = React.useMemo(
         () => [
             {
@@ -265,6 +263,9 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                   return (
                     <TemplateIcons
                       deleteFunction={() => handleDelete(row)}
+                      extraFunction={() => handleTrain()}
+                      extraOption={t(langKeys.train)}
+                      ExtraICon={() => <AutorenewIcon width={28} style={{ fill: '#7721AD' }} />}
                     />
                   );
                 },
@@ -376,25 +377,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     <span>{t(langKeys.saved_documents_description)}</span>
                                 </div>
                             </div>
-                        </div>
-                        <div className={classes.headerRight}>
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<DeleteIcon color="primary" />}
-                                className={classes.purpleButton}
-                                disabled={true}
-                            >
-                                {t(langKeys.delete)}
-                            </Button>
-                            <Button
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                className={classes.purpleButton}
-                            >
-                                {t(langKeys.train)}
-                            </Button>
                         </div>
                     </div>
                     <div style={{marginTop:'2rem'}}>
