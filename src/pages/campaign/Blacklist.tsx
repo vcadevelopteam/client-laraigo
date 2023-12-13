@@ -82,13 +82,13 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
             },
             {
                 Header: t(langKeys.creationdate),
-                accessor: 'creationdate',
+                accessor: 'createdate',
                 type: 'date',
-                Cell: (props: CellProps<Dictionary>) => {
+                Cell: (props:  CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <div>{convertLocalDate(row.creationdate).toLocaleDateString('en-US')}</div>
-                    );
+                        <div>{convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})}</div>
+                    )
                 }
             },
         ],
@@ -96,62 +96,44 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     );
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        
-        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts, daterange }});        
-        const creationDate = daterange?.creationdate || null;
-        const formattedCreationDate = creationDate ? convertLocalDate(creationDate).toLocaleDateString('en-US') : '';
-        
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });           
         dispatch(getCollectionPaginated(getBlacklistPaginated({
-            creationdate: formattedCreationDate,                
-            sorts: sorts,
-            filters: filters,
+            creationdate: daterange?.creationdate || null, /*new*/   
             take: pageSize,
             skip: pageIndex * pageSize,
+            sorts: sorts,        
+            filters: {
+                ...filters,
+            },
         })));    
-    };
-    
+    };   
+   
 
-    
-    const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-        const columnsExport = [
-            ...columns.map(x => ({
-                key: x.accessor,
-                alias: x.Header,
-                type: x.accessor === 'creationdate' ? 'date' : undefined,
-            })),
-        ];
-    
-        dispatch(exportData(
-            getBlacklistExport({
-                creationdate: daterange?.creationdate || null,
+
+    const triggerExportData = ({ filters, sorts, daterange/*new*/}: IFetchData) => {
+        const columnsExport = columns.map(x => ({
+            key: x.accessor,
+            alias: x.Header,           
+        }));    
+        dispatch(exportData(getBlacklistExport(
+            {
+                /*new*/creationdate: daterange?.creationdate || null,
                 sorts,
                 filters,
-            }),
-            "",
-            "excel",
-            false,
-            columnsExport
-        ));
-    
+            }), /*new*/"", "excel", false, columnsExport ));    
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
     
-    
-    
-    
-    
-    
+        
     const handleUpload = async (files: any[]) => {
         const file = files[0];
         if (file) {
-            const data: any = await uploadExcel(file, undefined);
-            console.log('Data from Excel:', data);
+            const data: any = await uploadExcel(file, undefined);         
     
             if (data.length > 0) {
-                const validpk = Object.keys(data[0]).includes('phone');
-                const keys = Object.keys(data[0]);
-    
+                const validpk = Object.keys(data[0]).includes('phone');              
+                const keys = Object.keys(data[0]);    
                 dispatch(showBackdrop(true));
                 dispatch(execute(insarrayBlacklist(data.reduce((ad: any[], d: any) => {
                     ad.push({
@@ -159,7 +141,6 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                         id: d.id || 0,
                         phone: (validpk ? d.phone : d[keys[0]]) || '',
                         description: (validpk ? d.description : d[keys[1]]) || '',
-                        creationdate: (validpk ? d.creationdate : convertLocalDate(d[keys[2]], false, false).toLocaleDateString()) || null,
                         type: d.type || 'NINGUNO',
                         status: d.status || 'ACTIVO',
                         operation: d.operation || 'INSERT',
@@ -172,8 +153,6 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     };
     
     
-    
-
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
             dispatch(execute(insBlacklist({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
@@ -289,15 +268,15 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
             <div>
                 <TablePaginated
                     columns={columns}
+                    fetchData={fetchData}
                     data={mainPaginated.data}
                     totalrow={totalrow}
-                    loading={mainPaginated.loading}
-                    pageCount={pageCount}
                     download={true}
+                    pageCount={pageCount}                    
+                    exportPersonalized={triggerExportData}                 
+                    loading={mainPaginated.loading}  
                     importCSV={handleUpload}
-                    fetchData={fetchData}
-                    exportPersonalized={triggerExportData}
-                    autotrigger={false}
+                   autotrigger={false}
                 />
             </div>
             {openModal && <ModalBlacklist
@@ -368,7 +347,6 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
             setValue('id', row.id);
             setValue('phone', row.phone);
             setValue('description', row.description);
-            setValue('creationdate', row.creationdate);
             trigger();
         }
     }, [row]);
