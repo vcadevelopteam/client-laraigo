@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate, getBlacklistExport, getBlacklistPaginated, insarrayBlacklist, insBlacklist, uploadExcel } from 'common/helpers';
@@ -14,6 +13,7 @@ import TablePaginated from 'components/fields/table-paginated';
 import { Button } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { Add as AddIcon } from '@material-ui/icons';
+import { CellProps } from 'react-table';
 
 interface DetailProps {
     setViewSelected: (view: string) => void;
@@ -24,12 +24,7 @@ const arrayBread = [
     { id: "view-2", name: "Campaign blacklist" }
 ];
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        // marginTop: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
-    },
+const useStyles = makeStyles(() => ({   
     button: {
         padding: 12,
         fontWeight: 500,
@@ -66,7 +61,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -87,48 +82,76 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
             },
             {
                 Header: t(langKeys.creationdate),
-                accessor: 'createdate',
+                accessor: 'creationdate',
                 type: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <div>{convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})}</div>
-                    )
+                        <div>{convertLocalDate(row.creationdate).toLocaleDateString('en-US')}</div>
+                    );
                 }
             },
         ],
         []
     );
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
-        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
-        dispatch(getCollectionPaginated(getBlacklistPaginated(
-            {
-                sorts: sorts,
-                filters: filters,
-                take: pageSize,
-                skip: pageIndex * pageSize,
-            }
-        )));
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        
+        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts, daterange }});        
+        const creationDate = daterange?.creationdate || null;
+        const formattedCreationDate = creationDate ? convertLocalDate(creationDate).toLocaleDateString('en-US') : '';
+        
+        dispatch(getCollectionPaginated(getBlacklistPaginated({
+            creationdate: formattedCreationDate,                
+            sorts: sorts,
+            filters: filters,
+            take: pageSize,
+            skip: pageIndex * pageSize,
+        })));    
     };
+    
 
-    const triggerExportData = ({ filters, sorts }: IFetchData) => {
-        dispatch(exportData(getBlacklistExport(
-            {
-                filters,
+    
+    const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = [
+            ...columns.map(x => ({
+                key: x.accessor,
+                alias: x.Header,
+                type: x.accessor === 'creationdate' ? 'date' : undefined,
+            })),
+        ];
+    
+        dispatch(exportData(
+            getBlacklistExport({
+                creationdate: daterange?.creationdate || null,
                 sorts,
-            })));
+                filters,
+            }),
+            "",
+            "excel",
+            false,
+            columnsExport
+        ));
+    
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
-
+    
+    
+    
+    
+    
+    
     const handleUpload = async (files: any[]) => {
         const file = files[0];
         if (file) {
             const data: any = await uploadExcel(file, undefined);
+            console.log('Data from Excel:', data);
+    
             if (data.length > 0) {
                 const validpk = Object.keys(data[0]).includes('phone');
                 const keys = Object.keys(data[0]);
+    
                 dispatch(showBackdrop(true));
                 dispatch(execute(insarrayBlacklist(data.reduce((ad: any[], d: any) => {
                     ad.push({
@@ -136,16 +159,20 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                         id: d.id || 0,
                         phone: (validpk ? d.phone : d[keys[0]]) || '',
                         description: (validpk ? d.description : d[keys[1]]) || '',
+                        creationdate: (validpk ? d.creationdate : convertLocalDate(d[keys[2]], false, false).toLocaleDateString()) || null,
                         type: d.type || 'NINGUNO',
                         status: d.status || 'ACTIVO',
                         operation: d.operation || 'INSERT',
-                    })
+                    });
                     return ad;
                 }, []))));
-                setWaitImport(true)
+                setWaitImport(true);
             }
         }
-    }
+    };
+    
+    
+    
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
@@ -259,7 +286,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </Button>
                 </div>
             </div>
-            <div className={classes.containerDetail}>
+            <div>
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}
@@ -303,6 +330,7 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
             isnew: row ? false : true,
             id: row ? row.id : 0,
             description: row ? row.description : '',
+            creationdate: row ? row.creationdate : '',
             type: 'NINGUNO',
             status: 'ACTIVO',
             phone: row ? row.phone : '',
@@ -340,6 +368,7 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
             setValue('id', row.id);
             setValue('phone', row.phone);
             setValue('description', row.description);
+            setValue('creationdate', row.creationdate);
             trigger();
         }
     }, [row]);
@@ -375,6 +404,7 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
                 <FieldEdit
                     label={t(langKeys.phone)}
                     className="col-6"
+                    type='number'
                     valueDefault={getValues('phone')}
                     onChange={(value) => setValue('phone', value)}
                     error={errors?.phone?.message}
@@ -382,6 +412,7 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
                 <FieldEdit
                     label={t(langKeys.description)}
                     className="col-6"
+                    type='text'
                     valueDefault={getValues('description')}
                     onChange={(value) => setValue('description', value)}
                     error={errors?.description?.message}
