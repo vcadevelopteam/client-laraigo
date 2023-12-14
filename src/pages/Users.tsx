@@ -1,42 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from "react"; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from "react"; 
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
-import {
-    DialogZyx,
-    TemplateIcons,
-    TemplateBreadcrumbs,
-    TitleDetail,
-    FieldEdit,
-    FieldSelect,
-    FieldMultiSelect,
-    TemplateSwitch,
-    TemplateSwitchYesNo,
-} from "components";
-import {
-    getOrgUserSel,
-    getUserSel,
-    getValuesFromDomain,
-    getOrgsByCorp,
-    getRolesByOrg,
-    getSupervisors,
-    getChannelsByOrg,
-    getApplicationsByRole,
-    insUser,
-    insOrgUser,
-    randomText,
-    templateMaker,
-    exportExcel,
-    uploadExcel,
-    array_trimmer,
-    checkUserPaymentPlan,
-    getSecurityRules,
-    validateNumbersEqualsConsecutive,
-    validateDomainCharacters,
-    validateDomainCharactersSpecials,
-    getPropertySelByName,
-} from "common/helpers";
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo,} from "components";
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName} from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -49,14 +16,7 @@ import Avatar from "@material-ui/core/Avatar";
 import { uploadFile } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import clsx from "clsx";
-import {
-    getCollection,
-    resetAllMain,
-    getMultiCollection,
-    getCollectionAux,
-    resetMainAux,
-    getMultiCollectionAux,
-} from "store/main/actions";
+import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux} from "store/main/actions";
 import { saveUser, delUser } from "store/activationuser/actions";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
@@ -103,8 +63,7 @@ interface ModalProps {
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        marginTop: theme.spacing(2),
-        // maxWidth: '80%',
+        marginTop: theme.spacing(2),       
         padding: theme.spacing(2),
         background: "#fff",
     },

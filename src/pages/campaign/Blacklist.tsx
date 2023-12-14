@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate, getBlacklistExport, getBlacklistPaginated, insarrayBlacklist, insBlacklist, uploadExcel } from 'common/helpers';
@@ -25,12 +24,7 @@ const arrayBread = [
     { id: "view-2", name: "Campaign blacklist" }
 ];
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        // marginTop: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
-    },
+const useStyles = makeStyles(() => ({   
     button: {
         padding: 12,
         fontWeight: 500,
@@ -264,7 +258,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </Button>
                 </div>
             </div>
-            <div className={classes.containerDetail}>
+            <div>
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}

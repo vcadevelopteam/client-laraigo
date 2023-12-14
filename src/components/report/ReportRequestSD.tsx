@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getreportrequestSD, getRequestSDExport } from 'common/helpers';
@@ -13,7 +12,6 @@ import { FieldSelect } from 'components/fields/templates';
 
 
 const ReportRequestSD: FC = () => {
-    // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiDataAux);
@@ -30,7 +28,6 @@ const ReportRequestSD: FC = () => {
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     const columns = React.useMemo(
@@ -205,7 +202,7 @@ const ReportRequestSD: FC = () => {
                 filterGeneral={false}
                 exportPersonalized={triggerExportData}
                 register={false}
-            // fetchData={fetchData}
+           
             />
             
         </React.Fragment>
