@@ -340,6 +340,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                         variant="outlined"
                                         InputProps={{
                                             multiline: true,
+                                            maxRows: 3
                                         }}
                                         valueDefault={getValues('response')}
                                         onChange={(value) => setValue('response', value)}
@@ -357,6 +358,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             variant="outlined"
                             InputProps={{
                                 multiline: true,
+                                maxRows: 7
                             }}
                             valueDefault={getValues('prompt')}
                             onChange={(value) => setValue('prompt', value)}
@@ -369,6 +371,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             variant="outlined"
                             InputProps={{
                                 multiline: true,
+                                maxRows: 5
                             }}
                             valueDefault={getValues('negativeprompt')}
                             onChange={(value) => setValue('negativeprompt', value)}

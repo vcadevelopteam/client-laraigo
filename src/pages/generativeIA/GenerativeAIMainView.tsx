@@ -11,7 +11,6 @@ import { Button } from "@material-ui/core";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ForumIcon from '@material-ui/icons/Forum';
 import AddIcon from '@material-ui/icons/Add';
-import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
 import { execute, getCollection } from "store/main/actions";
