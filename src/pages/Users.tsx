@@ -1,42 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from "react"; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from "react"; 
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
-import {
-    DialogZyx,
-    TemplateIcons,
-    TemplateBreadcrumbs,
-    TitleDetail,
-    FieldEdit,
-    FieldSelect,
-    FieldMultiSelect,
-    TemplateSwitch,
-    TemplateSwitchYesNo,
-} from "components";
-import {
-    getOrgUserSel,
-    getUserSel,
-    getValuesFromDomain,
-    getOrgsByCorp,
-    getRolesByOrg,
-    getSupervisors,
-    getChannelsByOrg,
-    getApplicationsByRole,
-    insUser,
-    insOrgUser,
-    randomText,
-    templateMaker,
-    exportExcel,
-    uploadExcel,
-    array_trimmer,
-    checkUserPaymentPlan,
-    getSecurityRules,
-    validateNumbersEqualsConsecutive,
-    validateDomainCharacters,
-    validateDomainCharactersSpecials,
-    getPropertySelByName,
-} from "common/helpers";
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo,} from "components";
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName} from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -49,14 +16,7 @@ import Avatar from "@material-ui/core/Avatar";
 import { uploadFile } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import clsx from "clsx";
-import {
-    getCollection,
-    resetAllMain,
-    getMultiCollection,
-    getCollectionAux,
-    resetMainAux,
-    getMultiCollectionAux,
-} from "store/main/actions";
+import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux} from "store/main/actions";
 import { saveUser, delUser } from "store/activationuser/actions";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
@@ -75,6 +35,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { DuplicateIcon } from "icons";
+import { CellProps } from "react-table";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -103,8 +64,7 @@ interface ModalProps {
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        marginTop: theme.spacing(2),
-        // maxWidth: '80%',
+        marginTop: theme.spacing(2),       
         padding: theme.spacing(2),
         background: "#fff",
     },
@@ -181,9 +141,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const resFromOrg = useSelector((state) => state.main.multiDataAux);
-
-    // const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
-    // const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
+  
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
     const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
@@ -621,7 +579,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
     const mainMultiResult = useSelector((state) => state.main.multiData);
     const securityRules = mainMultiResult.data.filter((x) => x.key === "UFN_SECURITYRULES_SEL")?.[0];
     const [passwordConditions, setpasswordConditions] = useState({
-        samepassword: !!data?.password,
+        samepassword: Boolean(data?.password),
         mincharacters: (data?.password || "").length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
         maxcharacters: (data?.password || "").length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
         consecutivecharacters: validateNumbersEqualsConsecutive(
@@ -708,7 +666,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         clearErrors();
         setpasswordConditions({
             ...passwordConditions,
-            samepassword: !!data?.password,
+            samepassword: Boolean(data?.password),
             mincharacters: (data?.password || "").length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
             maxcharacters: (data?.password || "").length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
             consecutivecharacters: validateNumbersEqualsConsecutive(
@@ -738,9 +696,10 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
             ),
         });
     };
+    //
 
     const onSubmitPassword = handleSubmit((data) => {
-        if (!!Object.values(passwordConditions).reduce((acc, x) => acc * +x, 1)) {
+        if (!!Object.values(passwordConditions).reduce((acc, x) => acc * Number(x), 1)) {
             parentSetValue("password", data.password);
             parentSetValue("send_password_by_email", data.send_password_by_email);
             parentSetValue("pwdchangefirstlogin", data.change_password_on_login);
@@ -1536,7 +1495,7 @@ const Users: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: "1%",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -1584,7 +1543,7 @@ const Users: FC = () => {
                 accessor: "status",
                 NoFilter: true,
                 prefixTranslation: "status_",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                 },
