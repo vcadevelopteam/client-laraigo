@@ -33,7 +33,25 @@ const useStyles = makeStyles(() => ({
         display: "flex",
         flexDirection: "column",
         flex: 1,
-    }
+    },
+    chatContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer'
+    },
+    buttonsContainer: {
+        display: 'flex',
+        justifyContent: 'right',
+        marginBottom: '1rem'
+    },
+    purpleButton: {
+        backgroundColor: '#ffff',
+        color: '#7721AD'
+    },
+    createButton: {
+        backgroundColor: "#55BD84",
+        marginLeft: 9
+    },
 }));
 
 type BreadCrumb = {
@@ -158,7 +176,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     const row = props.cell.row.original;
                     return (
                         <div
-                            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                            className={classes.chatContainer}
                             onClick={(event) => {
                                 event.stopPropagation();
                                 handleChat(row);
@@ -184,12 +202,12 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 
     const ButtonsElement = () => {
         return (
-            <div style={{display: 'flex', justifyContent: 'right', marginBottom: '1rem'}}>   
+            <div className={classes.buttonsContainer}>   
                <Button
                     variant="contained"
                     type="button"
                     startIcon={<GetAppIcon color="primary" />}
-                    style={{ backgroundColor: '#ffff', color: '#7721AD' }}
+                    className={classes.purpleButton}
                 >
                     {t(langKeys.download)}
                 </Button>
@@ -198,7 +216,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     type="button"
                     color="primary"
                     startIcon={<AddIcon color="secondary" />}
-                    style={{ backgroundColor: "#55BD84", marginLeft: 9 }}
+                    className={classes.createButton}
                     onClick={handleRegister}
                 >{t(langKeys.createssistant)}
                 </Button>

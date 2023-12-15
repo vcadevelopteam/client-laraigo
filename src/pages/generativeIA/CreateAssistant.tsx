@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
-import { execute, getCollection, getCollectionAux, getMultiCollectionAux, resetAllMain } from 'store/main/actions';
+import { execute, getCollectionAux, getMultiCollectionAux } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { Button, Tabs } from "@material-ui/core";

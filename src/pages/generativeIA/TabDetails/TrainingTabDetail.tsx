@@ -107,10 +107,16 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid blue',
         marginTop: 20,
     },
+    clipButton2: {
+        backgroundColor: '#ffff',
+        color: 'green',
+        border: '1px solid green',
+        marginTop: 20,
+    },
     fileInfoCard: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
-        backgroundColor: '#F5EDFA',
+        backgroundColor: '#E4F8EA',
     },
     fileInfoCardContent: {
         display: 'flex',
@@ -455,10 +461,9 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                             </Typography>
                                         </div>
                                         <IconButton
-                                            color="primary"
                                             onClick={handleClearFile}
                                         >
-                                            <ClearIcon />
+                                            <ClearIcon style={{color: "#008439"}}/>
                                         </IconButton>
                                     </div>
                                 </Card>
@@ -474,13 +479,12 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         <Button
                             variant="contained"
                             type="button"
-                            color="primary"
+                            startIcon={<AttachFileIcon />}
                             onClick={handleUpload}
-                            className={classes.purpleButton}
-                            style={{marginTop: 20}}
+                            className={classes.clipButton2}
                             disabled={fileAttachment === null}
                         >
-                            {t(langKeys.upload)}
+                            {t(langKeys.import)}
                         </Button>
                     </div>
                 </div>

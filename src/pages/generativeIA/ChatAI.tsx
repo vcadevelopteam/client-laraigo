@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { execute, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
 import { langKeys } from "lang/keys";
-import { Button, IconButton, Paper, TextField, Typography } from "@material-ui/core";
+import { Button, IconButton, Paper, Typography } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import SendIcon from '@material-ui/icons/Send';
 import EditIcon from '@material-ui/icons/Edit';
@@ -46,8 +46,9 @@ const useStyles = makeStyles((theme) => ({
     },
     chatInputContainer: {
         bottom: 0,
-        width: '100%',
         padding: theme.spacing(2),
+        display: 'flex',
+        justifyContent: 'center',
     },
     buttonscontainer: {
         display: 'flex',      
@@ -59,25 +60,80 @@ const useStyles = makeStyles((theme) => ({
         color: 'red',
         border: '1px solid red'
     },
+    purpleButton: {
+        backgroundColor: '#7721AD',
+        color: '#fff'
+    },
+    newChatContainer: {
+        backgroundColor: '#F4EDF8',
+        padding: '10px 10px 0',
+        marginBottom: '10px',
+        border: '1px solid #7721AD'
+    },
+    iconsContainer: {
+        display: 'flex',
+        justifyContent: 'flex-end'
+    },
+    threadContainer: {
+        cursor: 'pointer',
+        marginBottom: '15px'
+    },
+    threadNameContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    threadNameInput: {
+        display:'flex',
+        flexDirection:'row'
+    },
+    threadName: {
+        display:'flex',
+        flexDirection:'row'
+    },
+    chatIcon: {
+        color: '#757377',
+        marginRight: '0.5rem'
+    },
+    messageContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+    },
+    messageContainer2: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        width: 700
+    },
+    messageDate: {
+        alignSelf: 'center',
+        marginBottom: '10px'
+    },
+    messageText: {
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    messageAvatar: {
+        marginRight: 10,
+        alignSelf: 'flex-start'
+    },
+    textContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    initialText: {
+        display: 'flex',
+        justifyContent: 'center'
+    },
 }));
 
 interface ChatAIProps {
     setViewSelected: (view: string) => void;
     row: Dictionary | null;
-}
-
-interface ChatMessage {
-    id: number;
-    sender: string;
-    text: string;
-    timestamp: string;
-}
-
-interface Chat {
-    id: number;
-    title: string;
-    date: string;
-    messages: ChatMessage[];
 }
 
 const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
@@ -244,10 +300,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         fetchThreadMessages(chatId)
     };
 
-    const handleChange = (e:any) => {
-        setMessageText(e.target.value)
-    }
-
     return (
         <div className={classes.container}>
             <Paper className={classes.chatList}>
@@ -266,14 +318,14 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                         variant="contained"
                         type="button"
                         startIcon={<AddIcon color="secondary" />}
-                        style={{ backgroundColor: '#7721AD', color: '#fff' }}
+                        className={classes.purpleButton}
                         onClick={() => handleCreateChat()} 
                     >
                         {t(langKeys.newchat)}
                     </Button>
                 </div>
                 {isCreatingChat && (
-                    <div style={{backgroundColor: '#F4EDF8', padding: '10px 10px 0', marginBottom: '10px', border: '1px solid #7721AD'}}>
+                    <div className={classes.newChatContainer}>
                         <FieldEdit
                             label={t(langKeys.name)}
                             variant="outlined"
@@ -281,7 +333,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             onChange={(value) => setValue('description', value)}
                             error={errors?.description?.message}
                         />
-                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <div className={classes.iconsContainer}>
                             <IconButton onClick={handleCancelCreateChat}>
                                 <ClearIcon style={{color: '#7721AD'}}/>
                             </IconButton>
@@ -291,15 +343,15 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                         </div>
                     </div>
                 )}
-                {dataThreads.data.map((chat, index) => (
-                    <div key={chat.threadid} onClick={() => handleChatClick(chat.threadid)} style={{ cursor: 'pointer', marginBottom: '15px' }}>
+                {dataThreads.data.map((chat) => (
+                    <div key={chat.threadid} onClick={() => handleChatClick(chat.threadid)} className={classes.threadContainer}>
                         <Typography>
                             {chat.createdate.split('.')[0]}
                         </Typography>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className={classes.threadNameContainer}>
                             {selectedChatForEdit === chat.threadid ? (
                                 <>
-                                    <div style={{display:'flex', flexDirection:'row'}}>
+                                    <div className={classes.threadNameInput}>
                                         <FieldEdit
                                             valueDefault={getValues('description')}
                                             onChange={(value) => setValue('description', value)}
@@ -317,8 +369,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 </>
                             ) : (
                                 <>
-                                    <div style={{display:'flex', flexDirection:'row'}}>
-                                        <ChatBubbleIcon style={{ color: '#757377', marginRight: '0.5rem' }} />
+                                    <div className={classes.threadName}>
+                                        <ChatBubbleIcon className={classes.chatIcon}/>
                                         <Typography style={{ fontSize: '1.1rem' }}>{chat.description}</Typography>
                                     </div>
                                     <div>
@@ -343,21 +395,21 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             {messages.data && messages.data.length > 0 ? (
                                 <>
                                     {messages.data.map(message => (
-                                        <div key={message.messageaiid} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: message.type !== 'USER' ? '' : 'white' }}>
-                                            <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: 700}}>
-                                                <div style={{alignSelf: 'center', marginBottom: '10px'}}>
+                                        <div key={message.messageaiid} className={classes.messageContainer} style={{ backgroundColor: message.type !== 'USER' ? '' : 'white' }}>
+                                            <div className={classes.messageContainer2}>
+                                                <div className={classes.messageDate}>
                                                     <Typography variant="caption" color="textSecondary">
                                                         {message.createdate.split('.')[0]}
                                                     </Typography>
                                                 </div>
-                                                <div style={{display: 'flex', flexDirection: 'row'}}>
-                                                    <div style={{ marginRight: 10, alignSelf: 'flex-start' }}>
+                                                <div className={classes.messageText}>
+                                                    <div className={classes.messageAvatar}>
                                                         <Avatar
                                                             src={message.type === 'USER' ? 'https://cdn-icons-png.flaticon.com/512/2919/2919600.png' : 'https://play-lh.googleusercontent.com/YZxZDkJuvqZByRtcFe6PNjfOdl9oUgEXIqpQ_0WlEonqw93AT-3CvVcT76-iU82a-Q=w240-h480-rw'}
                                                             alt="User Avatar"
                                                         />
                                                     </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <div className={classes.textContainer}>
                                                         <Typography variant="body1">
                                                             {message.messagetext}
                                                         </Typography>
@@ -368,7 +420,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                     ))}
                                 </>
                             ) : (
-                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                <div className={classes.initialText}>
                                     <Typography variant="body1">
                                         {t(langKeys.howCanIHelpYouToday)}
                                     </Typography>
@@ -379,31 +431,33 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 </div>
 
                 <div className={classes.chatInputContainer}>
-                    <FieldEdit
-                        label= {t(langKeys.typeamessage)}
-                        variant="outlined"
-                        onChange={(value) => setMessageText(value)}
-                        valueDefault={messageText}
-                        disabled={!selectedChat}
-                        InputProps={{
-                            multiline: true,
-                            maxRows: 2,
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <Button
-                                        variant="contained"
-                                        type="button"
-                                        startIcon={<SendIcon color="secondary" />}
-                                        disabled={!selectedChat}
-                                        style={{ backgroundColor: '#7721AD', color: '#fff' }}
-                                        onClick={() => handleSendMessage()}
-                                    >
-                                        {t(langKeys.send)}
-                                    </Button>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
+                    <div style={{width: '700px'}}>
+                        <FieldEdit
+                            label= {t(langKeys.typeamessage)}
+                            variant="outlined"
+                            onChange={(value) => setMessageText(value)}
+                            valueDefault={messageText}
+                            disabled={!selectedChat}
+                            InputProps={{
+                                multiline: true,
+                                maxRows: 2,
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <Button
+                                            variant="contained"
+                                            type="button"
+                                            startIcon={<SendIcon color="secondary" />}
+                                            disabled={!selectedChat}
+                                            className={classes.purpleButton}
+                                            onClick={() => handleSendMessage()}
+                                        >
+                                            {t(langKeys.send)}
+                                        </Button>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
