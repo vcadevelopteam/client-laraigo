@@ -764,6 +764,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         register,
         setValue,
         trigger,
+        watch,
         unregister,
     } = useForm({
         defaultValues: {
@@ -801,6 +802,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
 
+    const [type] = watch(["type"]);
+
     React.useEffect(() => {
         register("body");
         register("category");
@@ -821,13 +824,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         register("type");
         register("typeattachment");
 
-        let type = getValues("type") || "HSM";
+        unregister([
+            "body",
+            "header",
+            "name",
+            "namespace",
+            "footer",
+        ]);
+        
+        register('body', {
+            validate: (value) => {
+                if (type === 'HSM') return (value && (value || "").length <= 1024) || t(langKeys.field_required);
+                if (type === 'SMS') return (value && (value || "").length <= 160) || t(langKeys.field_required);
+                return true;
+            }
+        });
+
 
         switch (type) {
             case "HSM":
-                register("body", {
-                    validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
-                });
+                // register("body", {
+                //     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
+                // });
                 register("name", {
                     validate: (value) =>
                         (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
@@ -862,9 +880,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 break;
 
             case "SMS":
-                register("body", {
-                    validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
-                });
+                // register("body", {
+                //     validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
+                // });
                 register("name", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
@@ -873,10 +891,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 break;
         }
 
-        if (getValues("type") === "HSM") {
-            register("body", {
-                validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
-            });
+        if (type === "HSM") {
+            // register("body", {
+            //     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
+            // });
 
             register("name", {
                 validate: (value) =>
@@ -907,20 +925,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
             register("namespace");
 
-            if (getValues("type") === "SMS") {
-                register("body", {
-                    validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
-                });
+            if (type === "SMS") {
+                // register("body", {
+                //     validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
+                // });
             } else {
-                register("body", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
+                // register("body", {
+                //     validate: (value) => (value && value.length) || t(langKeys.field_required),
+                // });
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
             }
         }
-    }, [register, getValues("type")]);
+    }, [register, type, unregister]);
+
 
     useEffect(() => {
         import("@codemirror/lang-html").then((html) => {
