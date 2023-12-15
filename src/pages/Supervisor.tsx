@@ -267,17 +267,17 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                     <>
                         <TimeTicket
                             label={t(langKeys.function_average)}
-                            count={extraInfo.avgtimewaiting ?? ""}
-                            color="#000"
-                        />
-                        <TimeTicket
-                            label={t(langKeys.function_maximum)}
-                            count={extraInfo.maxtimewaiting ?? ""}
+                            count={extraInfo.avgtimewaiting ?? "00:00:00"}
                             color="#000"
                         />
                         <TimeTicket
                             label={t(langKeys.function_minimum)}
-                            count={extraInfo.mintimewaiting ?? ""}
+                            count={extraInfo.mintimewaiting ?? "00:00:00"}
+                            color="#000"
+                        />
+                        <TimeTicket
+                            label={t(langKeys.function_maximum)}
+                            count={extraInfo.maxtimewaiting ?? "00:00:00"}
                             color="#000"
                         />
                     </>
