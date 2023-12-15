@@ -43,6 +43,7 @@ import Typography from "@material-ui/core/Typography";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import PartnerPeriodReport from "./PartnerPeriodReport";
+import { subMinutes } from "date-fns";
 
 interface RowSelected {
     edit: boolean;
@@ -336,6 +337,7 @@ const CostPerPeriod: React.FC<{
         []
     );
 
+    
     const fetchData = () => dispatch(getCollection(getBillingPeriodSel(dataMain)));
 
     useEffect(() => {
@@ -946,17 +948,17 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("additionalservice01fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_nonnegative),
         });
 
         register("additionalservice02fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_nonnegative),
         });
 
         register("additionalservice03fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_nonnegative),
         });
 
         register("agentactivequantity", {
@@ -1509,7 +1511,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                     });
                 }
 
+                
                 if (dataArtificialInsert.length > 0) {
+                    console.log('test') 
                     dispatch(
                         execute(
                             {
@@ -1526,6 +1530,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         )
                     );
                 } else {
+                    console.log('test') 
                     dispatch(execute(billingPeriodUpd(data)));
                 }
 
@@ -1613,6 +1618,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                             type="submit"
+                            onClick={()=>{
+                                console.log(getValues("billingtotalfee"));
+                                console.log(getValues("billingtotalfeenet"));
+                                console.log(getValues("billingtotalfeetax"));
+                            }}
                             variant="contained"
                         >
                             {t(langKeys.save)}
