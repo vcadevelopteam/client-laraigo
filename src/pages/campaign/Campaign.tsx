@@ -21,6 +21,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import StopIcon from '@material-ui/icons/Stop';
 import { formatDate} from 'common/helpers';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -152,7 +153,7 @@ export const Campaign: FC = () => {
                 accessor: 'startdate',
                 NoFilter: false,
                 type: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <div>{dateToLocalDate(row.startdate)}</div>
@@ -164,7 +165,7 @@ export const Campaign: FC = () => {
                 accessor: 'enddate',
                 NoFilter: false,
                 type: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <div>{dateToLocalDate(row.enddate)}</div>

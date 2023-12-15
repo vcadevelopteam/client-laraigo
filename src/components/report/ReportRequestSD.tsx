@@ -2,13 +2,15 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getreportrequestSD, getRequestSDExport } from 'common/helpers';
-import { IFetchData } from "@types";
+import { Dictionary, IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { cleanViewChange, exportData, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { FieldSelect } from 'components/fields/templates';
+import { CellProps } from 'react-table';
+import TableZyx from '../../components/fields/table-simple';
 
 
 const ReportRequestSD: FC = () => {
@@ -23,6 +25,8 @@ const ReportRequestSD: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    
+    
     useEffect(() => {
         dispatch(setViewChange("reportrequestsd"))
         return () => {
@@ -71,7 +75,7 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.reportdate),
                 accessor: 'report_date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { report_date } = props.cell.row.original;
                     return new Date(report_date).toLocaleString()
                 }
@@ -79,7 +83,7 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.dateofresolution),
                 accessor: 'resolution_date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { resolution_date } = props.cell.row.original;
                     return new Date(resolution_date).toLocaleString()
                 }
@@ -87,7 +91,8 @@ const ReportRequestSD: FC = () => {
         ],
         [t]
     );
-    
+
+
     useEffect(() => {
         return () => {
             dispatch(resetMultiMain());

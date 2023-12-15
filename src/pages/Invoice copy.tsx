@@ -10731,7 +10731,6 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
         register("expirationyear", {
             validate: (value) => (value && value.length && value.length <= 4) || t(langKeys.field_required),
         });
-        
     }, [edit, register]);
 
     useEffect(() => {
