@@ -52,6 +52,11 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     key: "UFN_USERBYSUPERVISOR_SEL",
     parameters: {}
 })
+export const getTimeWaiting = (useridselected: number): IRequestBody => ({
+    method: "UFN_TIME_WAITING_SEL",
+    key: "UFN_TIME_WAITING_SEL_" + useridselected,
+    parameters: { useridselected }
+})
 export const getUsersBySupervisorLst = (): IRequestBody => ({
     method: "UFN_USERBYSUPERVISOR_LST",
     key: "UFN_USERBYSUPERVISOR_LST",
