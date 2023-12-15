@@ -123,20 +123,49 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+    titleMargin: {
+        marginTop: 10
+    },
+    cardText: {
+        textAlign: 'left',
+    },
+    gridWidth: {
+        minWidth: 330
+    },
+    block10: {
+        height: 10
+    },
+    uploadIcon: {
+        height: 80,
+        width:"100%",
+        justifyContent: 'center',
+        color: 'green'
+    },
+    uploadTitle: {
+        textDecoration: 'underline',
+        marginBottom: 5
+    },
+    fileCardText: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    fileCardName: {
+        fontWeight:'bold',
+        fontSize: 20
+    },
+    block20: {
+        height: 20
+    },
 }));
 
-interface RowSelected {
-    row: Dictionary | null;
-    edit: boolean;
-}
-
 interface TrainingTabDetailProps {
-    data: RowSelected;
+    row: Dictionary | null;
     fetchData: () => void;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
-    data:{row,edit},
+    row,
     fetchData
 }) => {
     const { t } = useTranslation();
@@ -345,27 +374,27 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 <span className={classes.title}>
                                     {t(langKeys.knowledge_base)}
                                 </span>
-                                <div style={{marginTop: 10}}>
+                                <div className={classes.titleMargin}>
                                     <span>{t(langKeys.knowledge_based_description)}</span>
                                 </div>
                             </div>                    
                         </div>
                         <div className={classes.cardsContainer}>
-                            <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330 }}>
+                            <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
                                 <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
                                     <div className={classes.cardContent}>
                                         <BackupIcon className={classes.logo} style={{color:'green'}} />
                                         <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                        <div style={{ textAlign: 'left' }}>{t(langKeys.upload_document_description)}</div>
+                                        <div className={classes.cardText}>{t(langKeys.upload_document_description)}</div>
                                     </div>
                                 </Card>
                             </Grid>
-                            <Grid item xs={2} md={1} lg={2} style={{ minWidth: 330 }}>
+                            <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
                                 <Card className={classes.card} onClick={() => setViewSelected('uploadURL')}>
                                     <div className={classes.cardContent}>
                                         <AttachFileIcon className={classes.logo} style={{color: 'blue'}} />
                                         <div className={classes.cardTitle}>{t(langKeys.import_web_page)}</div>
-                                        <div style={{ textAlign: 'left' }}>{t(langKeys.import_web_page_description)}</div>
+                                        <div className={classes.cardText}>{t(langKeys.import_web_page_description)}</div>
                                     </div>
                                 </Card>
                             </Grid>
@@ -379,13 +408,13 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 <span className={classes.title}>
                                     {t(langKeys.saved_documents)}
                                 </span>
-                                <div style={{ marginTop: 10 }}>
+                                <div className={classes.titleMargin}>
                                     <span>{t(langKeys.saved_documents_description)}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div style={{marginTop:'2rem'}}>
+                    <div className={classes.titleMargin}>
                         <TableZyx
                             columns={columns}
                             data={dataDocuments.data}
@@ -423,12 +452,12 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 {t(langKeys.knowledge_base)}
                             </Button>
                         </div>
-                        <div style={{height:10}}/>
+                        <div className={classes.block10}/>
                         <div>
                             <span className={classes.title}>
                                 {t(langKeys.upload)}
                             </span>
-                            <div style={{marginTop: 10}}>
+                            <div className={classes.titleMargin}>
                                 <span>{t(langKeys.uploadFileText)}</span>
                             </div>
                         </div>                    
@@ -444,8 +473,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         { waitUploadFile || fileAttachment === null && (
                             <Card className={classes.uploadCard} onClick={onClickAttachment}>
                                 <div className={classes.uploadCardContent}>
-                                    <BackupIcon style={{height: 80, width:"100%", justifyContent: 'center', color: 'green'}}/>
-                                    <div style={{textDecoration: 'underline', marginBottom: 5}}>{t(langKeys.clicktouploadfiles)}</div>
+                                    <BackupIcon className={classes.uploadIcon}/>
+                                    <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
                                     <div>{t(langKeys.maximun10files)}</div>
                                 </div>
                             </Card>
@@ -454,9 +483,9 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             <>
                                 <Card className={classes.fileInfoCard}>
                                     <div className={classes.fileInfoCardContent}>
-                                        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                        <div className={classes.fileCardText}>
                                             <InsertDriveFileIcon style={{marginRight: 10}}/>
-                                            <Typography style={{fontWeight:'bold', fontSize: 20}}>
+                                            <Typography className={classes.fileCardName}>
                                                 {fileAttachment.name}
                                             </Typography>
                                         </div>
@@ -467,7 +496,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                         </IconButton>
                                     </div>
                                 </Card>
-                                <div style={{height: 20}}/>
+                                <div className={classes.block20}/>
                                 <FieldEdit
                                     variant="outlined"
                                     label="URL"
@@ -505,17 +534,17 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 {t(langKeys.knowledge_base)}
                             </Button>
                         </div>
-                        <div style={{height:10}}/>
+                        <div className={classes.block10}/>
                         <div>
                             <span className={classes.title}>
                                 {t(langKeys.importWebsite)}
                             </span>
-                            <div style={{marginTop: 10}}>
+                            <div className={classes.titleMargin}>
                                 <span>{t(langKeys.uploadURLText)}</span>
                             </div>
                         </div>                    
                     </div>
-                    <div style={{height: 20}}/>
+                    <div className={classes.block20}/>
                     <div>
                         <FieldEdit
                             label={t(langKeys.website)}

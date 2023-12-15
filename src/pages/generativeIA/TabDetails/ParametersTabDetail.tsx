@@ -98,6 +98,31 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         flexDirection: 'row',
     },
+    text: {
+        fontSize: 16
+    },
+    subTextContainer: {
+        height: 70
+    },
+    block10: {
+        height: 10
+    },
+    block20: {
+        height: 20
+    },
+    textMarginBot: {
+        marginBottom: 20
+    },
+    parameterContainer: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    widthBlock10: {
+        width: 10
+    },
+    parameterDesc: {
+        marginTop: 15
+    },
 }));
 
 interface RowSelected {
@@ -285,10 +310,10 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         <span className={classes.title}>
                             {t(langKeys.personality)}
                         </span>
-                        <div style={{height: 10}}/>
+                        <div className={classes.block10}/>
                         <div className="col-4">
                             <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
-                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.selectAILang)}</span></div>
+                            <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
                             <FieldSelect
                                 label={t(langKeys.language)}
                                 data={languages}
@@ -301,7 +326,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         </div>
                         <div className="col-4">
                             <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
-                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.enterorgnametext)}</span></div>
+                            <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.enterorgnametext)}</span></div>
                             <FieldEdit
                                 label={t(langKeys.organization)}
                                 valueDefault={getValues('organizationname')}
@@ -311,7 +336,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         </div>
                         <div className="col-4">
                             <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
-                            <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.aireaction)}</span></div>
+                            <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
                             <FieldSelect
                                 label={t(langKeys.queries)}
                                 data={(multiDataAux?.data?.[1]?.data||[])}
@@ -332,10 +357,10 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         </div>
                         {unansweredQueries === 'Respuesta Sugerida' && (
                             <>
-                                <div style={{height: 20}}/>
+                                <div className={classes.block20}/>
                                 <div>
                                     <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
-                                    <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.aianswer)}</span></div>
+                                    <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.aianswer)}</span></div>
                                     <FieldEdit
                                         variant="outlined"
                                         InputProps={{
@@ -353,7 +378,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                 <div className={`row-zyx ${classes.containerDetail2}`}>
                     <div className="col-8" style={{paddingRight:50}}>
                         <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
-                        <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.promptinstructions)}</span></div>
+                        <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
                         <FieldEdit
                             variant="outlined"
                             InputProps={{
@@ -364,9 +389,9 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             onChange={(value) => setValue('prompt', value)}
                             error={errors?.prompt?.message}
                         />
-                        <div style={{height: 20}}/>
+                        <div className={classes.block20}/>
                         <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
-                        <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.negativepromptinstructions)}</span></div>
+                        <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
                         <FieldEdit
                             variant="outlined"
                             InputProps={{
@@ -379,9 +404,9 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         />
                     </div>
                     <div className="col-4">
-                        <div style={{display: 'flex', alignItems: 'center'}}>
+                        <div className={classes.parameterContainer}>
                             <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
-                            <div style={{width:10}}/>
+                            <div className={classes.widthBlock10}/>
                             <FieldEdit
                                 type="number"
                                 variant="outlined"
@@ -392,13 +417,13 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 error={errors?.max_tokens?.message}
                             />
                         </div>
-                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.maxtokensdesc)}</span></div>
-                        <div style={{height: 20}}/>
-                        <div style={{display: 'flex', alignItems: 'center'}}>
+                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
+                        <div className={classes.block20}/>
+                        <div className={classes.parameterContainer}>
                             <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
-                            <div style={{width:10}}/>
+                            <div className={classes.widthBlock10}/>
                             <span>0 - 2.0</span>
-                            <div style={{width:10}}/>
+                            <div className={classes.widthBlock10}/>
                             <FieldEdit
                                 type="number"
                                 variant="outlined"
@@ -409,13 +434,13 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 error={errors?.temperature?.message}
                             />
                         </div>
-                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.temperaturedesc)}</span></div>
-                        <div style={{height: 20}}/>
-                        <div style={{display: 'flex', alignItems: 'center'}}>
+                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
+                        <div className={classes.block20}/>
+                        <div className={classes.parameterContainer}>
                             <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
-                            <div style={{width:10}}/>
+                            <div className={classes.widthBlock10}/>
                             <span>0 - 1.0</span>
-                            <div style={{width:10}}/>
+                            <div className={classes.widthBlock10}/>
                             <FieldEdit
                                 type="number"
                                 variant="outlined"
@@ -426,7 +451,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 error={errors?.top_p?.message}
                             />
                         </div>
-                        <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.toppdesc)}</span></div>
+                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
                     </div>
                 </div>
             </>
@@ -439,7 +464,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         <span className={classes.title}>
                             {t(langKeys.personality)}
                         </span>
-                        <div><span style={{fontSize: 16}}>{t(langKeys.selectpersonality)}</span></div>
+                        <div><span className={classes.text}>{t(langKeys.selectpersonality)}</span></div>
                         <div className={`row-zyx ${classes.cardsContainer}`} >
                             {cardData.map((card, index) => (
                                 <Grid item xs={2} md={1} lg={2} className={classes.grid} key={index}>
@@ -487,16 +512,16 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             {t(langKeys.personality)}
                                         </Button>
                                     </div>
-                                    <div style={{height:10}}/>
+                                    <div className={classes.block10}/>
                                 </>
                             )}
                             <span className={classes.title}>
                                 {selectedCardData?.title}
                             </span>
-                            <div style={{height: 10}}/>
+                            <div className={classes.block10}/>
                             <div className="col-4">
                                 <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
-                                <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.selectAILang)}</span></div>
+                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
                                 <FieldSelect
                                     label={t(langKeys.language)}
                                     data={languages}
@@ -508,7 +533,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                             <div className="col-4">
                                 <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
-                                <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.enterorgnametext)}</span></div>
+                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.enterorgnametext)}</span></div>
                                 <FieldEdit
                                     label={t(langKeys.organization)}
                                     valueDefault={selectedCardData?.organizationName}
@@ -517,7 +542,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                             <div className="col-4">
                                 <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
-                                <div style={{height:70}}><span style={{fontSize: 16}}>{t(langKeys.aireaction)}</span></div>
+                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
                                 <FieldSelect
                                     label={t(langKeys.queries)}
                                     data={(multiDataAux?.data?.[1]?.data||[])}
@@ -537,10 +562,10 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                             {unansweredQueries === 'Respuesta Sugerida' && (
                                 <>
-                                    <div style={{height: 20}}/>
+                                    <div className={classes.block20}/>
                                     <div>
                                         <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
-                                        <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.aianswer)}</span></div>
+                                        <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.aianswer)}</span></div>
                                         <FieldEdit
                                             variant="outlined"
                                             InputProps={{
@@ -557,7 +582,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                     <div className={`row-zyx ${classes.containerDetail2}`}>
                         <div className="col-8" style={{paddingRight:50}}>
                             <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
-                            <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.promptinstructions)}</span></div>
+                            <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
                             <FieldEdit
                                 variant="outlined"
                                 InputProps={{
@@ -566,9 +591,9 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 valueDefault={selectedCardData?.prompt}
                                 onChange={(value) => setValue('prompt', value)}
                             />
-                            <div style={{height: 20}}/>
+                            <div className={classes.block20}/>
                             <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
-                            <div style={{marginBottom:20}}><span style={{fontSize: 16}}>{t(langKeys.negativepromptinstructions)}</span></div>
+                            <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
                             <FieldEdit
                                 variant="outlined"
                                 InputProps={{
@@ -579,9 +604,9 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             />
                         </div>
                         <div className="col-4">
-                            <div style={{display: 'flex', alignItems: 'center'}}>
+                            <div className={classes.parameterContainer}>
                                 <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
-                                <div style={{width:10}}/>
+                                <div className={classes.widthBlock10}/>
                                 <FieldEdit
                                     type="number"
                                     variant="outlined"
@@ -591,13 +616,13 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     onChange={(value) => setValue('max_tokens', value)}
                                 />
                             </div>
-                            <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.maxtokensdesc)}</span></div>
-                            <div style={{height: 20}}/>
-                            <div style={{display: 'flex', alignItems: 'center'}}>
+                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
+                            <div className={classes.block20}/>
+                            <div className={classes.parameterContainer}>
                                 <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
-                                <div style={{width:10}}/>
+                                <div className={classes.widthBlock10}/>
                                 <span>0 - 2.0</span>
-                                <div style={{width:10}}/>
+                                <div className={classes.widthBlock10}/>
                                 <FieldEdit
                                     type="number"
                                     variant="outlined"
@@ -607,13 +632,13 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     onChange={(value) => setValue('temperature', value)}
                                 />
                             </div>
-                            <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.temperaturedesc)}</span></div>
-                            <div style={{height: 20}}/>
-                            <div style={{display: 'flex', alignItems: 'center'}}>
+                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
+                            <div className={classes.block20}/>
+                            <div className={classes.parameterContainer}>
                                 <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
-                                <div style={{width:10}}/>
+                                <div className={classes.widthBlock10}/>
                                 <span>0 - 1.0</span>
-                                <div style={{width:10}}/>
+                                <div className={classes.widthBlock10}/>
                                 <FieldEdit
                                     type="number"
                                     variant="outlined"
@@ -623,7 +648,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     onChange={(value) => setValue('top_p', value)}
                                 />
                             </div>
-                            <div style={{marginTop:15}}><span style={{fontSize: 16}}>{t(langKeys.toppdesc)}</span></div>
+                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
                         </div>
                     </div>
                 </>
