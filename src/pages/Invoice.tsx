@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Add, Close, FileCopy, GetApp, Refresh, Search } from "@material-ui/icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Dictionary, MultiData } from "@types";
@@ -563,7 +561,7 @@ const CostPerPeriod: React.FC<{
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: "4px" }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -600,12 +598,11 @@ const CostPerPeriod: React.FC<{
                                 orderbylabel={true}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                disabled={
-                                    (user?.roledesc ?? "")
-                                        .split(",")
-                                        .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
-                                }
-
+                                disabled={(user?.roledesc ?? "")
+                                    .split(",")
+                                    .some((v) =>
+                                        ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)
+                                    )}
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -1100,17 +1097,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("additionalservice01fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("additionalservice02fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("additionalservice03fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("agentactivequantity", {
@@ -1635,7 +1635,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             }
 
             if (dataArtificialIntelligence.length > 0) {
-                let duplicateCount =
+                const duplicateCount =
                     dataArtificialIntelligence.filter(
                         (value, index, self) =>
                             index ===
@@ -1874,7 +1874,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                     <KeyboardDatePicker
                                         defaultValue={getValues("billingstartdate")}
                                         disabled={!canEdit}
-                                        error={errors?.billingstartdate?.message}
+                                        error={errors?.billingstartdate?.message ? true : false}
                                         format="dd-MM-yyyy"
                                         invalidDateMessage={t(langKeys.invalid_date_format)}
                                         style={{ width: "100%" }}
@@ -3339,10 +3339,10 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
 
     function handleDateChange(e: any) {
         if (e !== "") {
-            let datetochange = new Date(e + "-02");
-            let mes = datetochange?.getMonth() + 1;
-            let year = datetochange?.getFullYear();
-            let datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
+            const datetochange = new Date(e + "-02");
+            const mes = datetochange?.getMonth() + 1;
+            const year = datetochange?.getFullYear();
+            const datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
             setdataMain((prev) => ({ ...prev, datetoshow, year, month: mes }));
         }
     }
@@ -3502,7 +3502,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
 
     const handleReportPdf = () => {
         if (dataReport) {
-            let intelligenceDetail: {}[] = [];
+            const intelligenceDetail: {}[] = [];
 
             if (dataReport.artificialintelligencedata) {
                 dataReport.artificialintelligencedata.forEach((element: any) => {
@@ -3511,13 +3511,13 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                             element.aiquantity <= element.freeinteractions
                                 ? ""
                                 : `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
-                                    element.additionalfee
-                                )}`,
+                                      element.additionalfee
+                                  )}`,
                         intelligenceaicost: `${dataReport.invoicecurrencysymbol}${formatNumber(element.aicost)}`,
                         intelligenceaiquantity: `${formatNumberNoDecimals(element.aiquantity)}`,
                         intelligencefreeinteractions: `${formatNumberNoDecimals(element.freeinteractions)}`,
                         intelligenceigv: `${dataReport.invoicecurrencysymbol}${formatNumber(
-                            element.aicost - (element.aicost / dataReport.exchangetax)
+                            element.aicost - element.aicost / dataReport.exchangetax
                         )}`,
                         intelligenceplan: element.plan,
                         intelligenceprovider: element.provider,
@@ -3529,7 +3529,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                 });
             }
 
-            let reportBody = {
+            const reportBody = {
                 dataonparameters: true,
                 key: "period-report",
                 method: "",
@@ -3569,8 +3569,8 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                     channeladditional: `${formatNumberNoDecimals(
                         Math.max(
                             dataReport.channelotherquantity -
-                            dataReport.channelothercontractedquantity +
-                            (dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity),
+                                dataReport.channelothercontractedquantity +
+                                (dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity),
                             0
                         )
                     )}`,
@@ -3614,19 +3614,19 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                     )}`,
                     conversationuserfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
                         dataReport.conversationuserservicetotalfee -
-                        dataReport.conversationuserservicetotalfee / dataReport.exchangetax
+                            dataReport.conversationuserservicetotalfee / dataReport.exchangetax
                     )}`,
                     conversationbusinessutilityfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
                         dataReport.conversationbusinessutilitytotalfee -
-                        dataReport.conversationbusinessutilitytotalfee / dataReport.exchangetax
+                            dataReport.conversationbusinessutilitytotalfee / dataReport.exchangetax
                     )}`,
                     conversationbusinessauthenticationfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
                         dataReport.conversationbusinessauthenticationtotalfee -
-                        dataReport.conversationbusinessauthenticationtotalfee / dataReport.exchangetax
+                            dataReport.conversationbusinessauthenticationtotalfee / dataReport.exchangetax
                     )}`,
                     conversationbusinessmarketingfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
                         dataReport.conversationbusinessmarketingtotalfee -
-                        dataReport.conversationbusinessmarketingtotalfee / dataReport.exchangetax
+                            dataReport.conversationbusinessmarketingtotalfee / dataReport.exchangetax
                     )}`,
                     conversationuserfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
                         dataReport.conversationuserservicetotalfee
@@ -3751,7 +3751,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                     )}`,
                     infrastructurefeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
                         dataReport.billinginfrastructurefee -
-                        dataReport.billinginfrastructurefee / dataReport.exchangetax
+                            dataReport.billinginfrastructurefee / dataReport.exchangetax
                     )}`,
                     infrastructurefee: `${dataReport.invoicecurrencysymbol}${formatNumber(
                         dataReport.billinginfrastructurefee
@@ -3896,8 +3896,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                         variant="outlined"
                         disabled={(user?.roledesc ?? "")
                             .split(",")
-                            .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))}
-
+                            .some((v) => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))}
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
@@ -3919,10 +3918,9 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                         label={t(langKeys.totalize)}
                         onChange={(value) => {
                             if (value?.value === 1) {
-                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0, orgid: 0 }))
-                            }
-                            else {
-                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0 }))
+                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0, orgid: 0 }));
+                            } else {
+                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0 }));
                             }
                         }}
                         optionDesc="description"
@@ -4080,17 +4078,20 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(
+                                                dataReport.billingplanfee / dataReport.exchangetax
+                                            )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(
+                                                dataReport.billingplanfee -
                                                     dataReport.billingplanfee / dataReport.exchangetax
-                                                )}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(
-                                                    dataReport.billingplanfee -
-                                                    dataReport.billingplanfee / dataReport.exchangetax
-                                                )}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(dataReport.billingplanfee)}`}</StyledTableCell>
+                                            )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(dataReport.billingplanfee)}`}</StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
                                             <StyledTableCell>
@@ -4124,7 +4125,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.agenttotalfee -
-                                                    dataReport.agenttotalfee / dataReport.exchangetax
+                                                        dataReport.agenttotalfee / dataReport.exchangetax
                                                 )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
@@ -4155,7 +4156,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                     {formatNumberNoDecimals(
                                                         Math.max(
                                                             dataReport.channelotherquantity -
-                                                            dataReport.channelothercontractedquantity,
+                                                                dataReport.channelothercontractedquantity,
                                                             0
                                                         )
                                                     )}
@@ -4169,7 +4170,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                     {formatNumberNoDecimals(
                                                         Math.max(
                                                             dataReport.channelwhatsappquantity -
-                                                            dataReport.channelwhatsappcontractedquantity,
+                                                                dataReport.channelwhatsappcontractedquantity,
                                                             0
                                                         )
                                                     )}
@@ -4178,9 +4179,9 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                     {formatNumberNoDecimals(
                                                         Math.max(
                                                             dataReport.channelotherquantity -
-                                                            dataReport.channelothercontractedquantity +
-                                                            (dataReport.channelwhatsappquantity -
-                                                                dataReport.channelwhatsappcontractedquantity),
+                                                                dataReport.channelothercontractedquantity +
+                                                                (dataReport.channelwhatsappquantity -
+                                                                    dataReport.channelwhatsappcontractedquantity),
                                                             0
                                                         )
                                                     )}
@@ -4216,7 +4217,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.channeltotalfee -
-                                                    dataReport.channeltotalfee / dataReport.exchangetax
+                                                        dataReport.channeltotalfee / dataReport.exchangetax
                                                 )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
@@ -4283,15 +4284,15 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.conversationbusinessutilitytotalfee /
-                                                    dataReport.exchangetax
+                                                        dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.conversationbusinessauthenticationtotalfee /
-                                                    dataReport.exchangetax
+                                                        dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.conversationbusinessmarketingtotalfee /
-                                                    dataReport.exchangetax
+                                                        dataReport.exchangetax
                                                 )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
@@ -4299,23 +4300,23 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.conversationuserservicetotalfee -
-                                                    dataReport.conversationuserservicetotalfee /
-                                                    dataReport.exchangetax
+                                                        dataReport.conversationuserservicetotalfee /
+                                                            dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.conversationbusinessutilitytotalfee -
-                                                    dataReport.conversationbusinessutilitytotalfee /
-                                                    dataReport.exchangetax
+                                                        dataReport.conversationbusinessutilitytotalfee /
+                                                            dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.conversationbusinessauthenticationtotalfee -
-                                                    dataReport.conversationbusinessauthenticationtotalfee /
-                                                    dataReport.exchangetax
+                                                        dataReport.conversationbusinessauthenticationtotalfee /
+                                                            dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.conversationbusinessmarketingtotalfee -
-                                                    dataReport.conversationbusinessmarketingtotalfee /
-                                                    dataReport.exchangetax
+                                                        dataReport.conversationbusinessmarketingtotalfee /
+                                                            dataReport.exchangetax
                                                 )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
@@ -4383,12 +4384,12 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.messagingsmstotalfee -
-                                                    dataReport.messagingsmstotalfee / dataReport.exchangetax
+                                                        dataReport.messagingsmstotalfee / dataReport.exchangetax
                                                 )}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.messagingmailtotalfee -
-                                                    dataReport.messagingmailtotalfee / dataReport.exchangetax
+                                                        dataReport.messagingmailtotalfee / dataReport.exchangetax
                                                 )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
@@ -4452,23 +4453,23 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.voicetelephonefee -
-                                                    dataReport.voicetelephonefee / dataReport.exchangetax
+                                                        dataReport.voicetelephonefee / dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.voicepstnfee -
-                                                    dataReport.voicepstnfee / dataReport.exchangetax
+                                                        dataReport.voicepstnfee / dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.voicevoipfee -
-                                                    dataReport.voicevoipfee / dataReport.exchangetax
+                                                        dataReport.voicevoipfee / dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.voicerecordingfee -
-                                                    dataReport.voicerecordingfee / dataReport.exchangetax
+                                                        dataReport.voicerecordingfee / dataReport.exchangetax
                                                 )}`}</div>
                                                 <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                     dataReport.voiceotherfee -
-                                                    dataReport.voiceotherfee / dataReport.exchangetax
+                                                        dataReport.voiceotherfee / dataReport.exchangetax
                                                 )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
@@ -4510,7 +4511,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                         {formatNumberNoDecimals(
                                                             Math.max(
                                                                 dataReport.contactuniquequantity -
-                                                                dataReport.contactuniquelimit,
+                                                                    dataReport.contactuniquelimit,
                                                                 0
                                                             )
                                                         )}
@@ -4520,10 +4521,11 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    <div>{`${dataReport.invoicecurrencysymbol
-                                                        }${formatNumberFourDecimals(
-                                                            dataReport.contactuniqueadditionalfee
-                                                        )}`}</div>
+                                                    <div>{`${
+                                                        dataReport.invoicecurrencysymbol
+                                                    }${formatNumberFourDecimals(
+                                                        dataReport.contactuniqueadditionalfee
+                                                    )}`}</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
@@ -4539,7 +4541,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                         dataReport.contactuniquefee -
-                                                        dataReport.contactuniquefee / dataReport.exchangetax
+                                                            dataReport.contactuniquefee / dataReport.exchangetax
                                                     )}`}</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
@@ -4570,14 +4572,16 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
-                                                    <div>{`${dataReport.invoicecurrencysymbol
-                                                        }${formatNumberFourDecimals(
-                                                            dataReport.contactotheradditionalfee
-                                                        )}`}</div>
-                                                    <div>{`${dataReport.invoicecurrencysymbol
-                                                        }${formatNumberFourDecimals(
-                                                            dataReport.contactwhatsappadditionalfee
-                                                        )}`}</div>
+                                                    <div>{`${
+                                                        dataReport.invoicecurrencysymbol
+                                                    }${formatNumberFourDecimals(
+                                                        dataReport.contactotheradditionalfee
+                                                    )}`}</div>
+                                                    <div>{`${
+                                                        dataReport.invoicecurrencysymbol
+                                                    }${formatNumberFourDecimals(
+                                                        dataReport.contactwhatsappadditionalfee
+                                                    )}`}</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
@@ -4592,11 +4596,11 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                     <div style={{ color: "transparent" }}>.</div>
                                                     <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                         dataReport.contactotherfee -
-                                                        dataReport.contactotherfee / dataReport.exchangetax
+                                                            dataReport.contactotherfee / dataReport.exchangetax
                                                     )}`}</div>
                                                     <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                         dataReport.contactwhatsappfee -
-                                                        dataReport.contactwhatsappfee / dataReport.exchangetax
+                                                            dataReport.contactwhatsappfee / dataReport.exchangetax
                                                     )}`}</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
@@ -4623,15 +4627,16 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <StyledTableCell align="right">
                                                     {dataIntelligence.aiquantity >
                                                         dataIntelligence.freeinteractions && (
-                                                            <div>{`${dataReport.invoicecurrencysymbol
-                                                                }${formatNumberFourDecimals(
-                                                                    dataIntelligence.additionalfee
-                                                                )}`}</div>
-                                                        )}
+                                                        <div>{`${
+                                                            dataReport.invoicecurrencysymbol
+                                                        }${formatNumberFourDecimals(
+                                                            dataIntelligence.additionalfee
+                                                        )}`}</div>
+                                                    )}
                                                     {dataIntelligence.aiquantity <=
                                                         dataIntelligence.freeinteractions && (
-                                                            <div style={{ color: "transparent" }}>.</div>
-                                                        )}
+                                                        <div style={{ color: "transparent" }}>.</div>
+                                                    )}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
@@ -4641,7 +4646,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <StyledTableCell align="right">
                                                     <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
                                                         dataIntelligence.aicost -
-                                                        dataIntelligence.aicost / dataReport.exchangetax
+                                                            dataIntelligence.aicost / dataReport.exchangetax
                                                     )}`}</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
@@ -4658,19 +4663,22 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 </StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.billinginfrastructurefee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.billinginfrastructurefee -
                                                         dataReport.billinginfrastructurefee / dataReport.exchangetax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
-                                                        dataReport.billinginfrastructurefee -
-                                                        dataReport.billinginfrastructurefee / dataReport.exchangetax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
-                                                        dataReport.billinginfrastructurefee
-                                                    )}`}</StyledTableCell>
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.billinginfrastructurefee
+                                                )}`}</StyledTableCell>
                                             </StyledTableRow>
                                         )}
                                         <StyledTableRow>
@@ -4679,17 +4687,20 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(
+                                                dataReport.billingsupportfee / dataReport.exchangetax
+                                            )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(
+                                                dataReport.billingsupportfee -
                                                     dataReport.billingsupportfee / dataReport.exchangetax
-                                                )}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(
-                                                    dataReport.billingsupportfee -
-                                                    dataReport.billingsupportfee / dataReport.exchangetax
-                                                )}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(dataReport.billingsupportfee)}`}</StyledTableCell>
+                                            )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(dataReport.billingsupportfee)}`}</StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
                                             <StyledTableCell>
@@ -4699,34 +4710,40 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 {formatNumberNoDecimals(dataReport.consultinghourquantity)}
                                             </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(
+                                                dataReport.consultingtotalfee / dataReport.exchangetax
+                                            )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(
+                                                dataReport.consultingtotalfee -
                                                     dataReport.consultingtotalfee / dataReport.exchangetax
-                                                )}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(
-                                                    dataReport.consultingtotalfee -
-                                                    dataReport.consultingtotalfee / dataReport.exchangetax
-                                                )}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(dataReport.consultingtotalfee)}`}</StyledTableCell>
+                                            )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(dataReport.consultingtotalfee)}`}</StyledTableCell>
                                         </StyledTableRow>
                                         {dataReport.additionalservice01 && (
                                             <StyledTableRow>
                                                 <StyledTableCell>{dataReport.additionalservice01}</StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.additionalservice01fee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.additionalservice01fee -
                                                         dataReport.additionalservice01fee / dataReport.exchangetax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
-                                                        dataReport.additionalservice01fee -
-                                                        dataReport.additionalservice01fee / dataReport.exchangetax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(dataReport.additionalservice01fee)}`}</StyledTableCell>
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.additionalservice01fee)}`}</StyledTableCell>
                                             </StyledTableRow>
                                         )}
                                         {dataReport.additionalservice02 && (
@@ -4734,17 +4751,20 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <StyledTableCell>{dataReport.additionalservice02}</StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.additionalservice02fee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.additionalservice02fee -
                                                         dataReport.additionalservice02fee / dataReport.exchangetax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
-                                                        dataReport.additionalservice02fee -
-                                                        dataReport.additionalservice02fee / dataReport.exchangetax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(dataReport.additionalservice02fee)}`}</StyledTableCell>
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.additionalservice02fee)}`}</StyledTableCell>
                                             </StyledTableRow>
                                         )}
                                         {dataReport.additionalservice03 && (
@@ -4752,17 +4772,20 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <StyledTableCell>{dataReport.additionalservice03}</StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.additionalservice03fee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.additionalservice03fee -
                                                         dataReport.additionalservice03fee / dataReport.exchangetax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(
-                                                        dataReport.additionalservice03fee -
-                                                        dataReport.additionalservice03fee / dataReport.exchangetax
-                                                    )}`}</StyledTableCell>
-                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                    }${formatNumber(dataReport.additionalservice03fee)}`}</StyledTableCell>
+                                                )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${
+                                                    dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.additionalservice03fee)}`}</StyledTableCell>
                                             </StyledTableRow>
                                         )}
                                         <StyledTableRow>
@@ -4771,12 +4794,15 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(dataReport.billingtotalfeenet)}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(dataReport.billingtotalfeetax)}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
-                                                }${formatNumber(dataReport.billingtotalfee)}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(dataReport.billingtotalfeenet)}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(dataReport.billingtotalfeetax)}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${
+                                                dataReport.invoicecurrencysymbol
+                                            }${formatNumber(dataReport.billingtotalfee)}`}</StyledTableCell>
                                         </StyledTableRow>
                                     </TableBody>
                                 </Table>
@@ -5037,7 +5063,12 @@ const Payments: React.FC<{
                         showPayButton = true;
                     }
 
-                    if (row.invoicestatus !== "INVOICED" && row.paymentstatus !== "PAID" && row.hasreport && user?.roledesc?.includes("SUPERADMIN")) {
+                    if (
+                        row.invoicestatus !== "INVOICED" &&
+                        row.paymentstatus !== "PAID" &&
+                        row.hasreport &&
+                        user?.roledesc?.includes("SUPERADMIN")
+                    ) {
                         showUpdateButton = true;
                     }
 
@@ -5221,7 +5252,7 @@ const Payments: React.FC<{
             <div style={{ width: "100%" }}>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: "4px" }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -5260,8 +5291,9 @@ const Payments: React.FC<{
                                 variant="outlined"
                                 disabled={(user?.roledesc ?? "")
                                     .split(",")
-                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
-                                }
+                                    .some((v) =>
+                                        ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)
+                                    )}
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -5442,7 +5474,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
         if (cardList) {
             if (cardList.data) {
                 if (cardList.data.length > 0) {
-                    let favoriteCard = cardList.data.find((o: { favorite: boolean }) => o.favorite === true);
+                    const favoriteCard = cardList.data.find((o: { favorite: boolean }) => o.favorite === true);
 
                     if (favoriteCard) {
                         setFavoriteCardCode(favoriteCard.cardcode);
@@ -5475,7 +5507,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
             if (!culqiResult.loading && culqiResult.data) {
                 dispatch(
                     showSnackbar({
-                        message: "" + t(culqiResult.message ?? langKeys.success),
+                        message: String(t(culqiResult.message ?? langKeys.success)),
                         severity: "success",
                         show: true,
                     })
@@ -5487,7 +5519,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
             } else if (culqiResult.error) {
                 dispatch(
                     showSnackbar({
-                        message: "" + t(culqiResult.message ?? langKeys.error_cos_unexpected),
+                        message: String(t(culqiResult.message ?? langKeys.error_cos_unexpected)),
                         severity: "error",
                         show: true,
                     })
@@ -5506,9 +5538,9 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 
                 if (mainResult.mainData.data) {
                     if (mainResult.mainData.data[0]) {
-                        let appsetting = mainResult.mainData.data[0];
-                        let country = data?.orgcountry || data?.corpcountry;
-                        let doctype = data?.orgdoctype || data?.corpdoctype;
+                        const appsetting = mainResult.mainData.data[0];
+                        const country = data?.orgcountry || data?.corpcountry;
+                        const doctype = data?.orgdoctype || data?.corpdoctype;
 
                         if (country && doctype) {
                             if (country === "PE" && doctype === "6") {
@@ -5524,7 +5556,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                             ((data?.totalamount || 0) -
                                                 (data?.totalamount || 0) * (appsetting.detraction || 0) +
                                                 Number.EPSILON) *
-                                            100
+                                                100
                                         ) / 100
                                     );
                                     setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
@@ -5841,8 +5873,8 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
     ];
 
     function isValidDate(dateString: string) {
-        let regEx = /^\d{4}-\d{2}-\d{2}$/;
-        return RegExp(regEx).exec(`${dateString}`) != null;
+        const regEx = /^\d{4}-\d{2}-\d{2}$/;
+        return RegExp(regEx).exec(`${dateString}`) !== null;
     }
 
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
@@ -5875,13 +5907,16 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
 
         return () => {
             dispatch(cleanMemoryTable());
-            dispatch(getMultiCollection([
-                getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
-                getMeasureUnit(),
-                getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                getAppsettingInvoiceSel()]));
-        }
-    }, [])
+            dispatch(
+                getMultiCollection([
+                    getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
+                    getMeasureUnit(),
+                    getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
+                    getAppsettingInvoiceSel(),
+                ])
+            );
+        };
+    }, []);
 
     useEffect(() => {
         setdisableSearch(dataMain.year === "");
@@ -6016,8 +6051,8 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                     const docnumber =
                         props.cell.row.original.serie && props.cell.row.original.correlative
                             ? props.cell.row.original.serie +
-                            "-" +
-                            props.cell.row.original.correlative.toString().padStart(8, "0")
+                              "-" +
+                              props.cell.row.original.correlative.toString().padStart(8, "0")
                             : null;
                     return (
                         <Fragment>
@@ -6198,17 +6233,17 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
             { value: "03", description: "BOLETA" },
         ];
 
-        let corplist =
+        const corplist =
             multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [];
 
-        let orglist =
+        const orglist =
             multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [];
 
         const data = [
             corplist.reduce((a, d) => ({ ...a, [d.corpid]: t(`${d.description}`) }), {}),
             orglist.reduce((a, d) => ({ ...a, [d.orgid]: t(`${d.orgdesc}`) }), {}),
             dataYears.reduce((a, d) => ({ ...a, [d?.value]: t(`${d?.value}`) }), {}),
-            dataMonths.reduce((a, d) => ({ ...a, [+d.val]: t(`${+d.val}`) }), {}),
+            dataMonths.reduce((a, d) => ({ ...a, [Number(d.val)]: t(`${Number(d.val)}`) }), {}),
             {},
             receiverdoctype.reduce((a, d) => ({ ...a, [d.value]: t(`${d.description}`) }), {}),
             {},
@@ -6288,7 +6323,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
         if (file) {
             const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === "UFN_CORP_SEL");
 
-            let corplist =
+            const corplist =
                 multiResult.data[indexCorp] && multiResult.data[indexCorp].success
                     ? multiResult.data[indexCorp].data
                     : [];
@@ -6583,7 +6618,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                 />
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: "4px" }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -6622,8 +6657,9 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                                 variant="outlined"
                                 disabled={(user?.roledesc ?? "")
                                     .split(",")
-                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
-                                }
+                                    .some((v) =>
+                                        ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)
+                                    )}
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -6772,7 +6808,7 @@ const InvoiceCommentModal: FC<{
             setContentValidation("");
             setReloadExit(false);
 
-            let partialFields = fields;
+            const partialFields = fields;
             partialFields.commentcaption = "";
             partialFields.commentcontent = "";
             partialFields.commenttype = "text";
@@ -6811,7 +6847,7 @@ const InvoiceCommentModal: FC<{
 
                 setDataInvoiceComment([]);
 
-                let partialFields = fields;
+                const partialFields = fields;
                 partialFields.commentcontent = "";
                 setFields(partialFields);
 
@@ -6860,7 +6896,7 @@ const InvoiceCommentModal: FC<{
     const handleCommentDelete = (data: any) => {
         if (fields && data) {
             const callback = () => {
-                let fieldTemporal = fields;
+                const fieldTemporal = fields;
 
                 fieldTemporal.commentcaption = data?.commentcaption;
                 fieldTemporal.commentcontent = data?.commentcontent;
@@ -6958,7 +6994,7 @@ const InvoiceCommentModal: FC<{
                         label={""}
                         valueDefault={fields.commentcontent}
                         onChange={(value) => {
-                            let partialf = fields;
+                            const partialf = fields;
                             partialf.commentcontent = value;
                             setFields(partialf);
                         }}
@@ -7021,7 +7057,7 @@ const BillingOperation: FC<DetailProps> = ({
 
         if (productList) {
             if (productList.data) {
-                let productInformationList: Partial<unknown>[] = [];
+                const productInformationList: Partial<unknown>[] = [];
 
                 productList.data.forEach(
                     (element: {
@@ -7099,8 +7135,8 @@ const BillingOperation: FC<DetailProps> = ({
     });
 
     React.useEffect(() => {
-        register("corpid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
-        register("invoiceid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register("corpid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
+        register("invoiceid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
         register("orgid");
 
         register("creditnotediscount", {
@@ -7108,15 +7144,16 @@ const BillingOperation: FC<DetailProps> = ({
                 regularize ||
                 getValues("creditnotetype") !== "04" ||
                 (value && value > 0 && value < data?.subtotal) ||
-                "" + t(langKeys.discountvalidmessage),
+                String(t(langKeys.discountvalidmessage)),
         });
 
         register("creditnotemotive", {
-            validate: (value) => regularize || (value && value.length > 10) || "" + t(langKeys.field_required_shorter),
+            validate: (value) =>
+                regularize || (value && value.length > 10) || String(t(langKeys.field_required_shorter)),
         });
 
         register("creditnotetype", {
-            validate: (value) => regularize || (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => regularize || (value && value.length > 0) || String(t(langKeys.field_required)),
         });
     }, [register]);
 
@@ -7308,9 +7345,9 @@ const BillingOperation: FC<DetailProps> = ({
                             </Button>
                         ) : null}
                         {data?.invoicestatus !== "INVOICED" &&
-                            data?.invoicestatus !== "ERROR" &&
-                            data?.invoicetype !== "07" &&
-                            data?.hasreport ? (
+                        data?.invoicestatus !== "ERROR" &&
+                        data?.invoicetype !== "07" &&
+                        data?.hasreport ? (
                             <Button
                                 className={classes.button}
                                 color="primary"
@@ -7337,9 +7374,9 @@ const BillingOperation: FC<DetailProps> = ({
                             </Button>
                         ) : null}
                         {data?.invoicestatus === "INVOICED" &&
-                            data?.paymentstatus !== "PAID" &&
-                            data?.invoicetype !== "07" &&
-                            regularize ? (
+                        data?.paymentstatus !== "PAID" &&
+                        data?.invoicetype !== "07" &&
+                        regularize ? (
                             <Button
                                 className={classes.button}
                                 color="primary"
@@ -7595,8 +7632,8 @@ const BillingOperation: FC<DetailProps> = ({
                                                             label={""}
                                                             value={formatNumber(
                                                                 (getValues(`productdetail.${i}.productsubtotal`) || 0) *
-                                                                (getValues(`productdetail.${i}.productquantity`) ||
-                                                                    0)
+                                                                    (getValues(`productdetail.${i}.productquantity`) ||
+                                                                        0)
                                                             )}
                                                         />
                                                     </TableCell>
@@ -7686,8 +7723,8 @@ const BillingOperation: FC<DetailProps> = ({
                                     value={
                                         data?.paymentdate
                                             ? toISOLocalString(new Date(data?.paymentdate))
-                                                .replace("T", " ")
-                                                .substring(0, 19)
+                                                  .replace("T", " ")
+                                                  .substring(0, 19)
                                             : t(langKeys.none)
                                     }
                                 />
@@ -7766,20 +7803,20 @@ const RegularizeModal: FC<{
     });
 
     React.useEffect(() => {
-        register("corpid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
-        register("invoiceid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register("corpid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
+        register("invoiceid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
         register("orgid");
 
         register("invoicepaymentcommentary", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicepaymentnote", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicereferencefile", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
     }, [register]);
 
@@ -7829,7 +7866,7 @@ const RegularizeModal: FC<{
         const file = files?.item(0);
         if (file) {
             setFileAttachment(file);
-            let fd = new FormData();
+            const fd = new FormData();
             fd.append("file", file, file.name);
             dispatch(uploadFile(fd));
             setWaitUploadFile(true);
@@ -7906,7 +7943,7 @@ const RegularizeModal: FC<{
                         <AttachFileIcon color="primary" />
                     </IconButton>
                 }
-                {!!getValues("invoicereferencefile") &&
+                {Boolean(getValues("invoicereferencefile")) &&
                     getValues("invoicereferencefile")
                         .split(",")
                         .map((f: string, i: number) => (
@@ -8117,7 +8154,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             setWaitOrg(false);
 
             if (data?.row) {
-                let organizationdata = orgList.data.find((x: { orgid: any }) => x.orgid === data.row.orgid);
+                const organizationdata = orgList.data.find((x: { orgid: any }) => x.orgid === data.row.orgid);
 
                 if (organizationdata) {
                     setSubmitData(organizationdata);
@@ -8134,7 +8171,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         if (data?.row) {
             if (productList) {
                 if (productList.data) {
-                    let productInformationList: Partial<unknown>[] = [];
+                    const productInformationList: Partial<unknown>[] = [];
 
                     productList.data.forEach(
                         (element: {
@@ -8288,46 +8325,46 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         register("clientcredittype");
         register("clientfiscaladdress");
         register("clientmail");
-        register("corpid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register("corpid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
         register("invoiceduedate");
-        register("month", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
-        register("year", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register("month", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
+        register("year", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
 
         register("clientbusinessname", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("clientdocnumber", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("clientdoctype", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicecomments", {
-            validate: (value) => value === "" || (value || "").length <= 150 || "" + t(langKeys.validation150char),
+            validate: (value) => value === "" || (value || "").length <= 150 || String(t(langKeys.validation150char)),
         });
 
         register("invoicecreatedate", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicecurrency", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicepurchaseorder", {
-            validate: (value) => value === "" || (value || "").length <= 15 || "" + t(langKeys.validation15char),
+            validate: (value) => value === "" || (value || "").length <= 15 || String(t(langKeys.validation15char)),
         });
 
         register("invoicetotalamount", {
-            validate: (value) => (value && value > 0) || "" + t(langKeys.billingamountvalidation),
+            validate: (value) => (value && value > 0) || String(t(langKeys.billingamountvalidation)),
         });
 
         register("orgid", {
             validate: (value) =>
-                getValues("billbyorg") === false || (value && value > 0) || "" + t(langKeys.field_required),
+                getValues("billbyorg") === false || (value && value > 0) || String(t(langKeys.field_required)),
         });
     }, [register]);
 
@@ -8377,7 +8414,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
         if (data?.doctype) {
             if (appsettingData?.data) {
-                let invoiceamount = getValues("invoicetotalamount");
+                const invoiceamount = getValues("invoicetotalamount");
 
                 if (data?.doctype === "0") {
                     setAmountTax(0);
@@ -8504,7 +8541,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     };
 
     const onProductChange = () => {
-        let productDetail = getValues("productdetail");
+        const productDetail = getValues("productdetail");
         let totalAmount = 0;
 
         if (productDetail) {
@@ -8545,20 +8582,20 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 question: showInsertMessage
                     ? t(langKeys.confirmation_save)
                     : `${t(langKeys.invoiceconfirmation01)}\n\n${t(langKeys.invoiceconfirmation02)}${getValues(
-                        "clientdocnumber"
-                    )}\n${t(langKeys.invoiceconfirmation03)}${getValues("clientbusinessname")}\n${t(
-                        langKeys.invoiceconfirmation04
-                    )}${getValues("year")}\n${t(langKeys.invoiceconfirmation05)}${getValues("month")}\n${t(
-                        langKeys.invoiceconfirmation06
-                    )}${t(
-                        getDocumentResult(getValues("clientcountry") || "", getValues("clientdoctype") || "")
-                    )}\n${t(langKeys.invoiceconfirmation07)}${t(getValues("clientcredittype"))}\n${t(
-                        langKeys.invoiceconfirmation08
-                    )}${getValues("invoicecurrency")}\n${t(langKeys.invoiceconfirmation09)}${formatNumber(
-                        getValues("invoicetotalamount") || 0
-                    )}\n${t(langKeys.invoiceconfirmation10)}${formatNumber(amountTax || 0)}\n${t(
-                        langKeys.invoiceconfirmation11
-                    )}${formatNumber(amountTotal || 0)}\n\n${t(langKeys.invoiceconfirmation12)}`,
+                          "clientdocnumber"
+                      )}\n${t(langKeys.invoiceconfirmation03)}${getValues("clientbusinessname")}\n${t(
+                          langKeys.invoiceconfirmation04
+                      )}${getValues("year")}\n${t(langKeys.invoiceconfirmation05)}${getValues("month")}\n${t(
+                          langKeys.invoiceconfirmation06
+                      )}${t(
+                          getDocumentResult(getValues("clientcountry") || "", getValues("clientdoctype") || "")
+                      )}\n${t(langKeys.invoiceconfirmation07)}${t(getValues("clientcredittype"))}\n${t(
+                          langKeys.invoiceconfirmation08
+                      )}${getValues("invoicecurrency")}\n${t(langKeys.invoiceconfirmation09)}${formatNumber(
+                          getValues("invoicetotalamount") || 0
+                      )}\n${t(langKeys.invoiceconfirmation10)}${formatNumber(amountTax || 0)}\n${t(
+                          langKeys.invoiceconfirmation11
+                      )}${formatNumber(amountTotal || 0)}\n\n${t(langKeys.invoiceconfirmation12)}`,
             })
         );
     });
@@ -8716,8 +8753,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 (getValues("corpid") && getValues("orgid")
                                     ? t(langKeys.organization)
                                     : getValues("corpid")
-                                        ? t(langKeys.corporation)
-                                        : "")
+                                    ? t(langKeys.corporation)
+                                    : "")
                             }
                         />
                     </div>
@@ -8986,7 +9023,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             onChange={(value) =>
                                                                 setValue(
                                                                     `productdetail.${i}.productdescription`,
-                                                                    "" + value
+                                                                    String(value)
                                                                 )
                                                             }
                                                             valueDefault={getValues(
@@ -9014,7 +9051,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             onChange={(value) =>
                                                                 setValue(
                                                                     `productdetail.${i}.productmeasure`,
-                                                                    "" + value?.code
+                                                                    String(value?.code)
                                                                 )
                                                             }
                                                             valueDefault={getValues(
@@ -9039,7 +9076,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             onChange={(value) => {
                                                                 setValue(
                                                                     `productdetail.${i}.productsubtotal`,
-                                                                    "" + value
+                                                                    String(value)
                                                                 );
                                                                 onProductChange();
                                                             }}
@@ -9064,7 +9101,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             onChange={(value) => {
                                                                 setValue(
                                                                     `productdetail.${i}.productquantity`,
-                                                                    "" + value
+                                                                    String(value)
                                                                 );
                                                                 onProductChange();
                                                             }}
@@ -9078,8 +9115,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             label={""}
                                                             value={formatNumber(
                                                                 (getValues(`productdetail.${i}.productsubtotal`) || 0) *
-                                                                (getValues(`productdetail.${i}.productquantity`) ||
-                                                                    0)
+                                                                    (getValues(`productdetail.${i}.productquantity`) ||
+                                                                        0)
                                                             )}
                                                         />
                                                     </TableCell>
@@ -9314,7 +9351,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
             <div style={{ width: "100%" }}>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: "4px" }}>
                             <FieldSelect
                                 className={classes.fieldsfilter}
                                 data={dataCorp}
@@ -9326,8 +9363,9 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                                 variant="outlined"
                                 disabled={(user?.roledesc ?? "")
                                     .split(",")
-                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
-                                }
+                                    .some((v) =>
+                                        ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)
+                                    )}
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -9531,7 +9569,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                 getCorpSel(
                     (user?.roledesc ?? "")
                         .split(",")
-                        .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
+                        .some((v) => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
                         ? user?.corpid ?? 0
                         : 0
                 ),
@@ -9630,7 +9668,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         if (cardList) {
             if (cardList.data) {
                 if (cardList.data.length > 0) {
-                    let favoriteCard = cardList.data.find((o: { favorite: boolean }) => o.favorite === true);
+                    const favoriteCard = cardList.data.find((o: { favorite: boolean }) => o.favorite === true);
 
                     if (favoriteCard) {
                         setFavoriteCardCode(favoriteCard.cardcode);
@@ -9695,7 +9733,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                 );
                 setPriceHsmAuthentication(
                     (messagingList.data[0].companystartauthenticationfee || 0) +
-                    (messagingList.data[0].vcacomission || 0)
+                        (messagingList.data[0].vcacomission || 0)
                 );
                 setPriceHsmMarketing(
                     (messagingList.data[0].companystartmarketingfee || 0) + (messagingList.data[0].vcacomission || 0)
@@ -9739,7 +9777,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 
                 if (mainResult.mainData.data) {
                     if (mainResult.mainData.data[0]) {
-                        let appsetting = mainResult.mainData.data[0];
+                        const appsetting = mainResult.mainData.data[0];
 
                         setPublicKey(appsetting.publickey);
                     }
@@ -9757,23 +9795,23 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     ) / 100
                 );
                 if (currentDoctype === "6") {
-                    let compareamount = (buyAmount || 0) * (exchangeResult?.exchangerate ?? 0);
+                    const compareamount = (buyAmount || 0) * (exchangeResult?.exchangerate ?? 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
                         setTotalPay(
                             Math.round(
                                 ((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0)) -
                                     (buyAmount || 0) *
-                                    (1 + (mainResult.mainData.data[0].igv || 0)) *
-                                    (mainResult.mainData.data[0].detraction || 0) +
+                                        (1 + (mainResult.mainData.data[0].igv || 0)) *
+                                        (mainResult.mainData.data[0].detraction || 0) +
                                     Number.EPSILON) *
-                                100
+                                    100
                             ) / 100
                         );
                         setDetractionAlert(true);
                         setDetractionAmount(
                             Math.round(((mainResult.mainData.data[0].detraction || 0) * 100 + Number.EPSILON) * 100) /
-                            100
+                                100
                         );
                         setPaymentTax(
                             Math.round(
@@ -9802,7 +9840,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     );
                     setPaymentTax(
                         Math.round(((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0) + Number.EPSILON) * 100) /
-                        100
+                            100
                     );
                 }
             } else {
@@ -9824,7 +9862,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         dispatch(getMultiCollectionAux([getOrgSel(0, value)]));
 
         if (value) {
-            let corporationdata = corpList.data.find((x: { corpid: any }) => x.corpid === value);
+            const corporationdata = corpList.data.find((x: { corpid: any }) => x.corpid === value);
 
             if (corporationdata) {
                 setCurrentBillbyorg(corporationdata?.billbyorg);
@@ -9842,7 +9880,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 
     const handleOrg = (value: any) => {
         if (value) {
-            let organizationdata = orgList.data.find((x: { orgid: any }) => x.orgid === value);
+            const organizationdata = orgList.data.find((x: { orgid: any }) => x.orgid === value);
 
             if (organizationdata) {
                 setBeforeAmount(organizationdata?.balance || 0);
@@ -10190,8 +10228,8 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                             data={
                                                 cardList.data
                                                     ? cardList.data.filter(
-                                                        (e: { favorite: boolean }) => e.favorite !== true
-                                                    )
+                                                          (e: { favorite: boolean }) => e.favorite !== true
+                                                      )
                                                     : []
                                             }
                                             onChange={(value) => {
@@ -10997,7 +11035,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                     countryCodeEditable={false}
                                     defaultCountry={"pe"}
                                     disabled={!edit}
-                                    error={!!errors?.phone}
+                                    error={Boolean(errors?.phone)}
                                     fullWidth
                                     helperText={errors?.phone?.message}
                                     label={t(langKeys.phone)}
@@ -11053,7 +11091,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                     className="col-9"
                                     defaultValue={getValues("cardnumber")}
                                     disabled={!edit}
-                                    error={!!errors.cardnumber}
+                                    error={Boolean(errors.cardnumber)}
                                     fullWidth
                                     helperText={errors.cardnumber?.message}
                                     label={t(langKeys.creditcard)}
@@ -11067,8 +11105,8 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                         maxLength: getValues("cardlimit"),
                                     }}
                                     onChange={(e) => {
-                                        let val = e.target.value.replace(/[^0-9]/g, "");
-                                        let spaces = Math.floor(val.length / 4);
+                                        const val = e.target.value.replace(/[^0-9]/g, "");
+                                        const spaces = Math.floor(val.length / 4);
                                         let partialvalue = val.slice(0, 4);
                                         for (let i = 1; i <= spaces; i++) {
                                             partialvalue += " " + val.slice(i * 4, (i + 1) * 4);
@@ -11183,7 +11221,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                     />
                                     <TextField
                                         className="col-6"
-                                        error={!!errors.expirationyear}
+                                        error={Boolean(errors.expirationyear)}
                                         fullWidth
                                         helperText={errors.expirationyear?.message}
                                         label={"YYYY"}
@@ -11203,7 +11241,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                             )}
                             {edit && (
                                 <TextField
-                                    error={!!errors.securitycode}
+                                    error={Boolean(errors.securitycode)}
                                     fullWidth
                                     helperText={errors.securitycode?.message}
                                     label={t(langKeys.securitycode)}
@@ -11292,7 +11330,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()]),
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()])
             );
         } else {
             dispatch(
@@ -11301,7 +11339,7 @@ const Invoice: FC = () => {
                     getOrgSelList(user?.corpid ?? 0),
                     getCorpSelVariant(user?.corpid ?? 0, user?.orgid ?? 0, user?.usr ?? ""),
                     getPaymentPlanSel(),
-                    currencySel()
+                    currencySel(),
                 ])
             );
         }
@@ -11374,7 +11412,7 @@ const Invoice: FC = () => {
             ) : (
                 (user?.roledesc ?? "")
                     .split(",")
-                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
+                    .some((v) => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
                     <div>
                         <Tabs
                             indicatorColor="primary"
@@ -11410,7 +11448,8 @@ const Invoice: FC = () => {
                             </div>
                         )}
                     </div>
-                ))}
+                )
+            )}
         </div>
     );
 };

@@ -1438,7 +1438,7 @@ export const langKeys = {
 
   no_reply_use_hsm: 'no_reply_use_hsm',
   no_reply_claro: 'no_reply_claro',
-  
+
   hello: 'hello',
   welcome_onboarding: 'welcome_onboarding',
   text1_onboarding: 'text1_onboarding',
@@ -5477,6 +5477,22 @@ export const langKeys = {
   end: 'end',
   trafficlight: 'trafficlight',
   trafficindividualconfig: 'trafficindividualconfig',
+  billingconfiguration: 'billingconfiguration',
+  billingconfiguration_new: 'billingconfiguration_new',
+  billingconfiguration_detail: 'billingconfiguration_detail',
+  billingconfiguration_location: 'billingconfiguration_location',
+  billingconfiguration_country: 'billingconfiguration_country',
+  billingconfiguration_businessname: 'billingconfiguration_businessname',
+  billingconfiguration_ruc: 'billingconfiguration_ruc',
+  billingconfiguration_tradename: 'billingconfiguration_tradename',
+  billingconfiguration_ubigeo: 'billingconfiguration_ubigeo',
+  billingconfiguration_fiscaladdress: 'billingconfiguration_fiscaladdress',
+  billingfield_billingsiigo: 'billingsiigo',
+  billingfield_billingopenpaycolombia: 'billingopenpaycolombia',
+  billingfield_billingvca: 'billingvca',
+  billingfield_billinglaraigocolombia: 'billinglaraigocolombia',
+  billingconfiguration_documenttype: 'billingconfiguration_documenttype',
+  billingconfiguration_documentnumber: 'billingconfiguration_documentnumber',
 };
 
 export type LangKeys = typeof langKeys;
