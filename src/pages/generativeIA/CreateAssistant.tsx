@@ -78,6 +78,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
+    const [registerError, setRegisterError] = useState(false);
 
     const newArrayBread = [
         ...arrayBread,
@@ -97,10 +98,15 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                if(registerError) {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.ERROR) }))
+                } else {
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+                }
                 fetchData();
                 setViewSelected('assistantdetail')
                 dispatch(showBackdrop(false));
+                setRegisterError(false)
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
@@ -149,13 +155,14 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('temperature');
         register('max_tokens')
         register('top_p');
+        register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
         register('status');
         register('operation');
     }, [register, setValue]);
 
-    const onMainSubmit = handleSubmit((data) => {
-        const callback = () => {
+    const onMainSubmit = handleSubmit(async (data) => {
+        const callback = async () => {
             dispatch(showBackdrop(true));
 
             let generalprompt = 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. Si te hablan en otro idioma que no sea ' + data.language +
@@ -168,8 +175,34 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                 generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere lo siguiente: ' + data.response
             }
 
-            dispatch(execute(insAssistantAi({...data, generalprompt: generalprompt})));
-            setWaitSave(true);
+            try {
+                const apiResponse = await fetch('https://documentgptapi.laraigo.com/assistants/new', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: data.name,
+                        instructions: generalprompt,
+                        basemodel: data.basemodel,
+                        apikey: data.apikey,
+                    }),
+                });
+    
+                if (!apiResponse.ok) {
+                    console.error('Error en la llamada a la API:', apiResponse.statusText);
+                    setRegisterError(true)
+                    setWaitSave(true);
+                    return;
+                }
+
+                dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt })));
+                setWaitSave(true);
+            } catch (error) {
+                console.error('Error en la llamada a la API:', error);
+                setRegisterError(true)
+                setWaitSave(true);
+            }
         };
         dispatch(
             manageConfirmation({
