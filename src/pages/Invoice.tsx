@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Divider, FormControlLabel, Grid, IconButton, InputAdornment, ListItem, Tabs, TextField } from "@material-ui/core";
-import { agentModeList, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray, billingPeriodArtificialIntelligenceSel, billingPeriodUpd, billingpersonreportsel, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billinguserreportsel, contactCalculateList, contactCountList, convertLocalDate, currencySel, dataCurrency, dataMonths, dateToLocalDate, dataYears, deleteInvoice, exportExcel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getAppsettingInvoiceSel, getBalanceSelSent, getBillingMessagingCurrent, getBillingPeriodCalcRefreshAll, getBillingPeriodSel, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getCorpSel, getCorpSelVariant, getInvoiceDetail, getMeasureUnit, getOrgSel, getOrgSelList, getPaymentPlanSel, getPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insInvoice, insInvoiceComment, invoiceRefresh, listPaymentCard, localesLaraigo, paymentCardInsert, planModeList, selBalanceData, selInvoice, selInvoiceClient, selInvoiceComment, templateMaker, timeSheetPeriodSel, uploadExcel } from "common/helpers";
+import { agentModeList, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray, billingPeriodArtificialIntelligenceSel, billingPeriodUpd, billingpersonreportsel, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billinguserreportsel, contactCalculateList, contactCountList, convertLocalDate, currencySel, dataCurrency, dataMonths, dateToLocalDate, dataYears, deleteInvoice, exportExcel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, appsettingInvoiceSel, getBalanceSelSent, getBillingMessagingCurrent, getBillingPeriodCalcRefreshAll, getBillingPeriodSel, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getCorpSel, getCorpSelVariant, getInvoiceDetail, getMeasureUnit, getOrgSel, getOrgSelList, getPaymentPlanSel, getPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insInvoice, insInvoiceComment, invoiceRefresh, listPaymentCard, localesLaraigo, paymentCardInsert, planModeList, selBalanceData, selInvoice, selInvoiceClient, selInvoiceComment, templateMaker, timeSheetPeriodSel, uploadExcel } from "common/helpers";
 import { AntTab, DialogZyx, FieldEdit, FieldEditArray, FieldEditMulti, FieldMultiSelect, FieldSelect, FieldView, IOSSwitch, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
 import { balance, cardCreate, cardDelete, charge, createCreditNote, createInvoice, emitInvoice, getExchangeRate, regularizeInvoice, reportPdf, resetBalance, resetCharge } from "store/culqi/actions";
 import { cleanMemoryTable, execute, exportData, getCollection, getCollectionAux, getCollectionAux2, getMultiCollection, getMultiCollectionAux, setMemoryTable, uploadFile } from "store/main/actions";
@@ -5276,7 +5276,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     };
 
     useEffect(() => {
-        dispatch(getCollection(getAppsettingInvoiceSel()));
+        dispatch(getCollection(appsettingInvoiceSel()));
         dispatch(getExchangeRate(null));
         dispatch(getMultiCollectionAux([listPaymentCard({ corpid: user?.corpid ?? 0, id: 0, orgid: 0 })]));
         dispatch(showBackdrop(true));
@@ -5739,7 +5739,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                     getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
                     getMeasureUnit(),
                     getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                    getAppsettingInvoiceSel(),
+                    appsettingInvoiceSel(),
                 ])
             );
         };
@@ -7927,7 +7927,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
                 getMeasureUnit(),
                 getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                getAppsettingInvoiceSel(),
+                appsettingInvoiceSel(),
             ])
         );
     }, []);
@@ -9406,7 +9406,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         );
 
         if (data?.row === null) {
-            dispatch(getCollection(getAppsettingInvoiceSel()));
+            dispatch(getCollection(appsettingInvoiceSel()));
             dispatch(getExchangeRate(null));
             dispatch(showBackdrop(true));
             setWaitSave(true);
