@@ -49,7 +49,7 @@ import {
     formatNumber,
     formatNumberFourDecimals,
     formatNumberNoDecimals,
-    getAppsettingInvoiceSel,
+    appsettingInvoiceSel,
     getBalanceSelSent,
     getBillingMessagingCurrent,
     getBillingPeriodCalcRefreshAll,
@@ -5449,7 +5449,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     };
 
     useEffect(() => {
-        dispatch(getCollection(getAppsettingInvoiceSel()));
+        dispatch(getCollection(appsettingInvoiceSel()));
         dispatch(getExchangeRate(null));
         dispatch(getMultiCollectionAux([listPaymentCard({ corpid: user?.corpid ?? 0, id: 0, orgid: 0 })]));
         dispatch(showBackdrop(true));
@@ -5912,7 +5912,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                     getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
                     getMeasureUnit(),
                     getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                    getAppsettingInvoiceSel(),
+                    appsettingInvoiceSel(),
                 ])
             );
         };
@@ -8100,7 +8100,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
                 getMeasureUnit(),
                 getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                getAppsettingInvoiceSel(),
+                appsettingInvoiceSel(),
             ])
         );
     }, []);
@@ -9579,7 +9579,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         );
 
         if (data?.row === null) {
-            dispatch(getCollection(getAppsettingInvoiceSel()));
+            dispatch(getCollection(appsettingInvoiceSel()));
             dispatch(getExchangeRate(null));
             dispatch(showBackdrop(true));
             setWaitSave(true);
