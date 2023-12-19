@@ -211,8 +211,8 @@ const translation: LangKeys = {
   notpermisionforaction: "You do not have permission to perform this action",
   changeplan: "Change plan",
   personinformation: 'Person',
-  default_credentials: "Default credentials",
-  private_mail: "Use private mail",
+  default_credentials: "Default Credentials",
+  private_mail: "Use Private E-Mail",
   ticketinformation: 'Ticket',
   minute: 'Minute',
   minute_plural: 'Minutes',
@@ -350,7 +350,7 @@ const translation: LangKeys = {
   endpoint: 'Endpoint',
   modelid: 'Model ID',
   showmore: "Show more",
-  timezone: "Time zone",
+  timezone: "Time Zone",
   apikey: 'API Key',
   provider: 'Supplier',
   sla: 'Service level agreement',
@@ -5582,6 +5582,7 @@ const translation: LangKeys = {
   billingconfiguration_documenttype: 'Document Type',
   billingconfiguration_documentnumber: 'Document Number',
   corporation_location: 'Location',
+  organization_location: 'Location',
 };
 
 const enResource: ResourceLanguage = {

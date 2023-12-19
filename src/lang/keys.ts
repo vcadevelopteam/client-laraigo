@@ -5494,6 +5494,7 @@ export const langKeys = {
   billingconfiguration_documenttype: 'billingconfiguration_documenttype',
   billingconfiguration_documentnumber: 'billingconfiguration_documentnumber',
   corporation_location: 'corporation_location',
+  organization_location: 'organization_location',
 };
 
 export type LangKeys = typeof langKeys;

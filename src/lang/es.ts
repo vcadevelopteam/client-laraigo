@@ -680,8 +680,8 @@ const translation: LangKeys = {
   securitycode: "Código de seguridad",
   finishregwarn: "Para validar los datos ingresados de la tarjeta se realizará, un cargo de S/ 1.00 (Un sol) o su equivalente en dólares a la tarjeta ingresada, monto que será extornado de manera inmediata despues de la validación.",
   finishregwarn2: "Esta pasarela de pago es soportada por Culqi para proteccion de datos",
-  default_credentials: "Credenciales predeterminadas",
-  private_mail: "Usar correo privado",
+  default_credentials: "Credenciales Predeterminadas",
+  private_mail: "Usar Correo Electrónico Privado",
   supportprice: "Costo de Soporte",
   businesshours: "Horario de atención",
   servicedesk: 'Mesa de servicio',
@@ -1267,7 +1267,7 @@ const translation: LangKeys = {
   column_at_least_required: 'Debe registrar al menos una columna.',
   report_designer: 'Diseñador de reportes',
   column_plural: 'Columnas',
-  timezone: "Zona horaria",
+  timezone: "Zona Horaria",
   new_report_designer: 'Nuevo reporte',
   designed_reports: 'Reportes personalizados',
   keywords: "Palabras clave",
@@ -5508,6 +5508,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingconfiguration_documenttype: 'Tipo de Documento',
   billingconfiguration_documentnumber: 'Número de Documento',
   corporation_location: 'Sede',
+  organization_location: 'Sede',
 };
 
 const esResource: ResourceLanguage = {

@@ -83,10 +83,6 @@ const Corporations: FC = () => {
                 Header: t(langKeys.type),
                 accessor: 'typedesc',
                 NoFilter: true,
-                // Cell: (props: any) => {
-                //     const { type } = props.cell.row.original;
-                //     return (t(`type_corp_${type}`.toLowerCase()) || "").toUpperCase()
-                // }
             },
             {
                 Header: t(langKeys.billingplan),
@@ -97,11 +93,6 @@ const Corporations: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'statusdesc',
                 NoFilter: true,
-                // prefixTranslation: 'status_',
-                // Cell: (props: any) => {
-                //     const { status } = props.cell.row.original;
-                //     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                // }
             }
         ],
         []
@@ -318,7 +309,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('automaticperiod');
         register('automaticinvoice');
         register('partner');
-        register('appsettingid', { validate: (value) => !billbyorg ? ((value && value > 0) || t(langKeys.field_required)) : true });
+        register('appsettingid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
     }, [register, billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
@@ -391,7 +382,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
 
         let val: { domaindesc: string }[];
         if (getValues("sunatcountry") === "PE") {
-            // FILTRAR NO DOMICILIARIO // OTROS
             val = dataDocType.filter(x => x.domainvalue !== "0") as any[];
         } else {
             val = dataDocType as any[];
@@ -452,7 +442,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 value={row?.description}
                                 className="col-6"
                             />}
-                        {!getValues('billbyorg') && <FieldSelect
+                        <FieldSelect
                             label={t(langKeys.corporation_location)}
                             className="col-6"
                             valueDefault={getValues("appsettingid")}
@@ -461,7 +451,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             error={errors?.appsettingid?.message}
                             optionDesc="tradename"
                             optionValue="appsettingid"
-                        />}
+                        />
                     </div>
                     <div className="row-zyx">
                         {edit ?
