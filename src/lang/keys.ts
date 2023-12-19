@@ -1503,6 +1503,8 @@ export const langKeys = {
 
   description: 'description',
   description_plural: 'description_plural',
+  intent_description: 'intent_description',
+  intent_examples: 'intent_examples',
   hsm_template: 'hsm_template',
   hsm_template_plural: 'hsm_template_plural',
 

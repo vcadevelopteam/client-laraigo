@@ -986,6 +986,8 @@ const translation: LangKeys = {
   description: 'Descripción',
   defaultanswer: "Respuesta predeterminada",
   description_plural: 'Descripciones',
+  intent_description: 'Descripción Intención',
+  intent_examples: 'Ejemplos Intención',
   return: "Regresar",
   active: 'Activo',
   inactive: 'Inactivo',
