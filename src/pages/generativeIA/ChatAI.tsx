@@ -185,7 +185,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     showSnackbar({
                         show: true,
                         severity: "success",
-                        message: t(langKeys.successful_delete),
+                        message: t(langKeys.successful_update),
                     })
                 );
                 fetchThreadsByAssistant()
@@ -200,6 +200,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             }
         }
     }, [executeResult, waitSave]);
+
+
+      
+
 
     const handleCreateChat = () => {
         setIsCreatingChat(true);
@@ -228,20 +232,44 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     });
 
     const handleSendMessage = () => {
-        dispatch(execute(insMessageAi({
-            assistantaiid: row?.assistantaiid,
-            threadid: selectedChat,
-            assistantaidocumentid: 0,
-            id: 0,
-            messagetext : messageText,
-            infosource: '',
-            type: 'USER',
-            status: 'ACTIVO',
-            operation: 'INSERT'
-        })));
-        setMessageText('')
-        fetchThreadMessages(selectedChat)
-    };
+        if (messageText.trim() !== '') { // Asegúrate de que el mensaje no esté vacío
+          dispatch(
+            execute(
+              insMessageAi({
+                assistantaiid: row?.assistantaiid,
+                threadid: selectedChat,
+                assistantaidocumentid: 0,
+                id: 0,
+                messagetext: messageText,
+                infosource: '',
+                type: 'USER',
+                status: 'ACTIVO',
+                operation: 'INSERT',
+              })
+            )
+          );
+          setMessageText('');
+          fetchThreadMessages(selectedChat);
+        }
+      };
+
+
+      useEffect(() => {
+        const handleKeyUp = (event: KeyboardEvent) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            handleSendMessage();
+          }
+        };
+      
+        document.addEventListener('keyup', handleKeyUp);
+      
+        return () => {
+          document.removeEventListener('keyup', handleKeyUp);
+        };
+      }, [handleSendMessage]);
+
+      
 
     const handleDeleteChat = (chat: Dictionary) => {
         const callback = () => {
@@ -431,34 +459,34 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 </div>
 
                 <div className={classes.chatInputContainer}>
-                    <div style={{width: '700px'}}>
+                    <div style={{ width: '700px' }}>
                         <FieldEdit
-                            label= {t(langKeys.typeamessage)}
-                            variant="outlined"
-                            onChange={(value) => setMessageText(value)}
-                            valueDefault={messageText}
-                            disabled={!selectedChat}
-                            InputProps={{
-                                multiline: true,
-                                maxRows: 2,
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <Button
-                                            variant="contained"
-                                            type="button"
-                                            startIcon={<SendIcon color="secondary" />}
-                                            disabled={!selectedChat}
-                                            className={classes.purpleButton}
-                                            onClick={() => handleSendMessage()}
-                                        >
-                                            {t(langKeys.send)}
-                                        </Button>
-                                    </InputAdornment>
-                                ),
-                            }}
+                        label={t(langKeys.typeamessage)}
+                        variant="outlined"
+                        onChange={(value) => setMessageText(value)}
+                        valueDefault={messageText}
+                        disabled={!selectedChat}
+                        InputProps={{
+                            multiline: true,
+                            maxRows: 2,
+                            endAdornment: (
+                            <InputAdornment position="end">
+                                <Button
+                                variant="contained"
+                                type="button"
+                                startIcon={<SendIcon color="secondary" />}
+                                disabled={!selectedChat || messageText.trim() === ''}
+                                className={classes.purpleButton}
+                                onClick={() => handleSendMessage()}
+                                >
+                                {t(langKeys.send)}
+                                </Button>
+                            </InputAdornment>
+                            ),
+                        }}
                         />
                     </div>
-                </div>
+                    </div>
             </div>
         </div>
     );
