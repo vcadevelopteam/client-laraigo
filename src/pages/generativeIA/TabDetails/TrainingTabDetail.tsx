@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
@@ -20,6 +20,8 @@ import { CellProps } from "react-table";
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import SaveIcon from "@material-ui/icons/Save";
 
 
 
@@ -163,6 +165,12 @@ const useStyles = makeStyles((theme) => ({
     block20: {
         height: 20
     },
+    errorModalContent: {
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        padding: '20px',
+        textAlign: 'center',
+    }
 }));
 
 interface TrainingTabDetailProps {
@@ -186,6 +194,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [isModalOpen, setModalOpen] = useState(false);
     const [documentUrl, setDocumentUrl] = useState("");
+    const [selectedDocumentUrl, setSelectedDocumentUrl] = useState<string | null>(null);
+
 
     useEffect(() => {
         fetchData();
@@ -281,10 +291,39 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         );
     };
 
-    const handleViewDocument = (url: string) => {
-        setDocumentUrl(url);
-        setModalOpen(true);
+
+    
+    const handleDownloadDocument = () => {
+        if (selectedDocumentUrl) {
+            const downloadLink = document.createElement('a');
+            const fileNameMatch = selectedDocumentUrl.match(/\/([^/]+)$/);
+            const fileName = fileNameMatch ? fileNameMatch[1] : 'downloaded_file';      
+            
+            downloadLink.download = fileName;      
+
+            document.body.appendChild(downloadLink);      
+            downloadLink.href = selectedDocumentUrl;    
+            downloadLink.click();      
+            document.body.removeChild(downloadLink);
+
+        } else {
+            console.error('Intento de descarga fallido. URL del documento no disponible.');
+        }
     };
+      
+    const handleViewDocument = (url: string) => {
+        const isPreviewableType = url.endsWith('.pdf') || url.endsWith('.txt');
+        
+        if (isPreviewableType) {
+            setDocumentUrl(url);
+            setModalOpen(true);
+        } else {
+            setDocumentUrl('');
+            setModalOpen(true);
+            setSelectedDocumentUrl(url);
+        }
+    };
+      
 
     const handleTrain = () => {
         console.log('trained')
@@ -428,22 +467,45 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         />
                     </div>
                 </div>
-                <Modal open={isModalOpen} >
-                    <div style={{ padding:'15vh 4%', alignItems: 'center', justifyContent: 'center', }}>
-                    <iframe title="Document Viewer" src={documentUrl} width="100%" height="700" />
-                        
-                        <Button
-                            style={{border: '1px solid #7721AD'}}
-                            className={classes.button}
-                            startIcon={<ArrowBackIcon />}
-                            onClick={() => setModalOpen(false)}
-                        >
-                            {t(langKeys.back)}
-                        </Button>
-                      
-                        
+                <Modal open={isModalOpen}>
+                    <div style={{ padding: '15vh 4%', alignItems: 'center', justifyContent: 'center'}}>
+                        <div className={!documentUrl ? classes.errorModalContent : ''}>
+                            {documentUrl && (
+                                <iframe title="Document Viewer" src={documentUrl} width="100%" height="700" />
+                            )}
+
+                            {!documentUrl && (
+                                <>
+                                    <p>{t(langKeys.error_previewing_file)}</p>
+                                    <p>{t(langKeys.download_file_instead)}</p>   
+                                                        
+                                    <Button
+                                        className={classes.button}
+                                        style={{ border: '1px solid #7721AD', marginRight: '1rem' }}
+                                        variant="contained"
+                                        onClick={() => handleDownloadDocument()}
+                                        startIcon={<CloudDownloadIcon />}
+                                        >
+                                        {t(langKeys.download)}
+                                    </Button>                            
+                                </>
+                            )}
+
+                            <Button
+                                style={{ border: '1px solid #7721AD' }}
+                                className={classes.button}
+                                variant="contained"                                
+                                startIcon={<ArrowBackIcon />}
+                                onClick={() => setModalOpen(false)}
+                            >
+                                {t(langKeys.back)}
+                            </Button>
+                        </div>
                     </div>
                 </Modal>
+
+
+
             </>
         );
     } else if(viewSelected === 'uploadFile') {
