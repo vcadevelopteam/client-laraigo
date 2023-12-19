@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Divider, FormControlLabel, Grid, IconButton, InputAdornment, ListItem, Tabs, TextField } from "@material-ui/core";
-import { agentModeList, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray, billingPeriodArtificialIntelligenceSel, billingPeriodUpd, billingpersonreportsel, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billinguserreportsel, contactCalculateList, contactCountList, convertLocalDate, currencySel, dataCurrency, dataMonths, dateToLocalDate, dataYears, deleteInvoice, exportExcel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getAppsettingInvoiceSel, getBalanceSelSent, getBillingMessagingCurrent, getBillingPeriodCalcRefreshAll, getBillingPeriodSel, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getCorpSel, getCorpSelVariant, getInvoiceDetail, getMeasureUnit, getOrgSel, getOrgSelList, getPaymentPlanSel, getPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insInvoice, insInvoiceComment, invoiceRefresh, listPaymentCard, localesLaraigo, paymentCardInsert, planModeList, selBalanceData, selInvoice, selInvoiceClient, selInvoiceComment, templateMaker, timeSheetPeriodSel, uploadExcel  } from "common/helpers"; 
+import { agentModeList, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray, billingPeriodArtificialIntelligenceSel, billingPeriodUpd, billingpersonreportsel, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billinguserreportsel, contactCalculateList, contactCountList, convertLocalDate, currencySel, dataCurrency, dataMonths, dateToLocalDate, dataYears, deleteInvoice, exportExcel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getAppsettingInvoiceSel, getBalanceSelSent, getBillingMessagingCurrent, getBillingPeriodCalcRefreshAll, getBillingPeriodSel, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getCorpSel, getCorpSelVariant, getInvoiceDetail, getMeasureUnit, getOrgSel, getOrgSelList, getPaymentPlanSel, getPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insInvoice, insInvoiceComment, invoiceRefresh, listPaymentCard, localesLaraigo, paymentCardInsert, planModeList, selBalanceData, selInvoice, selInvoiceClient, selInvoiceComment, templateMaker, timeSheetPeriodSel, uploadExcel } from "common/helpers";
 import { AntTab, DialogZyx, FieldEdit, FieldEditArray, FieldEditMulti, FieldMultiSelect, FieldSelect, FieldView, IOSSwitch, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
 import { balance, cardCreate, cardDelete, charge, createCreditNote, createInvoice, emitInvoice, getExchangeRate, regularizeInvoice, reportPdf, resetBalance, resetCharge } from "store/culqi/actions";
 import { cleanMemoryTable, execute, exportData, getCollection, getCollectionAux, getCollectionAux2, getMultiCollection, getMultiCollectionAux, setMemoryTable, uploadFile } from "store/main/actions";
@@ -111,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexWrap: "wrap",
         gap: 16,
-    }, 
+    },
     button: {
         fontSize: "14px",
         fontWeight: 500,
@@ -123,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         padding: 6,
         textTransform: "initial",
-    }, 
+    },
     containerDetail: {
         background: "#fff",
         marginTop: theme.spacing(2),
@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
     fieldsfilter: {
         width: 220,
     },
-   
+
     commentary: {
         fontStyle: "italic",
     },
@@ -337,7 +337,7 @@ const CostPerPeriod: React.FC<{
         []
     );
 
-    
+
     const fetchData = () => dispatch(getCollection(getBillingPeriodSel(dataMain)));
 
     useEffect(() => {
@@ -411,7 +411,7 @@ const CostPerPeriod: React.FC<{
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: "4px" }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -448,12 +448,11 @@ const CostPerPeriod: React.FC<{
                                 orderbylabel={true}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                disabled={
-                                    (user?.roledesc ?? "")
-                                        .split(",")
-                                        .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
-                                }
-
+                                disabled={(user?.roledesc ?? "")
+                                    .split(",")
+                                    .some((v) =>
+                                        ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)
+                                    )}
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -1483,7 +1482,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             }
 
             if (dataArtificialIntelligence.length > 0) {
-                let duplicateCount =
+                const duplicateCount =
                     dataArtificialIntelligence.filter(
                         (value, index, self) =>
                             index ===
@@ -1511,9 +1510,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                     });
                 }
 
-                
+
                 if (dataArtificialInsert.length > 0) {
-                    console.log('test') 
+                    console.log('test')
                     dispatch(
                         execute(
                             {
@@ -1530,7 +1529,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         )
                     );
                 } else {
-                    console.log('test') 
+                    console.log('test')
                     dispatch(execute(billingPeriodUpd(data)));
                 }
 
@@ -1618,7 +1617,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                             type="submit"
-                            onClick={()=>{
+                            onClick={() => {
                                 console.log(getValues("billingtotalfee"));
                                 console.log(getValues("billingtotalfeenet"));
                                 console.log(getValues("billingtotalfeetax"));
@@ -1730,7 +1729,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                     <KeyboardDatePicker
                                         defaultValue={getValues("billingstartdate")}
                                         disabled={!canEdit}
-                                        error={errors?.billingstartdate?.message}
+                                        error={errors?.billingstartdate?.message ? true : false}
                                         format="dd-MM-yyyy"
                                         invalidDateMessage={t(langKeys.invalid_date_format)}
                                         style={{ width: "100%" }}
@@ -3195,10 +3194,10 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
 
     function handleDateChange(e: any) {
         if (e !== "") {
-            let datetochange = new Date(e + "-02");
-            let mes = datetochange?.getMonth() + 1;
-            let year = datetochange?.getFullYear();
-            let datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
+            const datetochange = new Date(e + "-02");
+            const mes = datetochange?.getMonth() + 1;
+            const year = datetochange?.getFullYear();
+            const datetoshow = `${year}-${String(mes).padStart(2, "0")}`;
             setdataMain((prev) => ({ ...prev, datetoshow, year, month: mes }));
         }
     }
@@ -3358,7 +3357,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
 
     const handleReportPdf = () => {
         if (dataReport) {
-            let intelligenceDetail: {}[] = [];
+            const intelligenceDetail: {}[] = [];
 
             if (dataReport.artificialintelligencedata) {
                 dataReport.artificialintelligencedata.forEach((element: any) => {
@@ -3373,7 +3372,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                         intelligenceaiquantity: `${formatNumberNoDecimals(element.aiquantity)}`,
                         intelligencefreeinteractions: `${formatNumberNoDecimals(element.freeinteractions)}`,
                         intelligenceigv: `${dataReport.invoicecurrencysymbol}${formatNumber(
-                            element.aicost - (element.aicost / dataReport.exchangetax)
+                            element.aicost - element.aicost / dataReport.exchangetax
                         )}`,
                         intelligenceplan: element.plan,
                         intelligenceprovider: element.provider,
@@ -3385,7 +3384,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                 });
             }
 
-            let reportBody = {
+            const reportBody = {
                 dataonparameters: true,
                 key: "period-report",
                 method: "",
@@ -3752,8 +3751,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                         variant="outlined"
                         disabled={(user?.roledesc ?? "")
                             .split(",")
-                            .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))}
-
+                            .some((v) => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))}
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
@@ -3775,10 +3773,9 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                         label={t(langKeys.totalize)}
                         onChange={(value) => {
                             if (value?.value === 1) {
-                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0, orgid: 0 }))
-                            }
-                            else {
-                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0 }))
+                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0, orgid: 0 }));
+                            } else {
+                                setdataMain((prev) => ({ ...prev, totalize: value?.value || 0 }));
                             }
                         }}
                         optionDesc="description"
@@ -4893,7 +4890,12 @@ const Payments: React.FC<{
                         showPayButton = true;
                     }
 
-                    if (row.invoicestatus !== "INVOICED" && row.paymentstatus !== "PAID" && row.hasreport && user?.roledesc?.includes("SUPERADMIN")) {
+                    if (
+                        row.invoicestatus !== "INVOICED" &&
+                        row.paymentstatus !== "PAID" &&
+                        row.hasreport &&
+                        user?.roledesc?.includes("SUPERADMIN")
+                    ) {
                         showUpdateButton = true;
                     }
 
@@ -5077,7 +5079,7 @@ const Payments: React.FC<{
             <div style={{ width: "100%" }}>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: "4px" }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -5116,8 +5118,9 @@ const Payments: React.FC<{
                                 variant="outlined"
                                 disabled={(user?.roledesc ?? "")
                                     .split(",")
-                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
-                                }
+                                    .some((v) =>
+                                        ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)
+                                    )}
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -5298,7 +5301,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
         if (cardList) {
             if (cardList.data) {
                 if (cardList.data.length > 0) {
-                    let favoriteCard = cardList.data.find((o: { favorite: boolean }) => o.favorite === true);
+                    const favoriteCard = cardList.data.find((o: { favorite: boolean }) => o.favorite === true);
 
                     if (favoriteCard) {
                         setFavoriteCardCode(favoriteCard.cardcode);
@@ -5331,7 +5334,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
             if (!culqiResult.loading && culqiResult.data) {
                 dispatch(
                     showSnackbar({
-                        message: "" + t(culqiResult.message ?? langKeys.success),
+                        message: String(t(culqiResult.message ?? langKeys.success)),
                         severity: "success",
                         show: true,
                     })
@@ -5343,7 +5346,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
             } else if (culqiResult.error) {
                 dispatch(
                     showSnackbar({
-                        message: "" + t(culqiResult.message ?? langKeys.error_cos_unexpected),
+                        message: String(t(culqiResult.message ?? langKeys.error_cos_unexpected)),
                         severity: "error",
                         show: true,
                     })
@@ -5362,9 +5365,9 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 
                 if (mainResult.mainData.data) {
                     if (mainResult.mainData.data[0]) {
-                        let appsetting = mainResult.mainData.data[0];
-                        let country = data?.orgcountry || data?.corpcountry;
-                        let doctype = data?.orgdoctype || data?.corpdoctype;
+                        const appsetting = mainResult.mainData.data[0];
+                        const country = data?.orgcountry || data?.corpcountry;
+                        const doctype = data?.orgdoctype || data?.corpdoctype;
 
                         if (country && doctype) {
                             if (country === "PE" && doctype === "6") {
@@ -5697,8 +5700,8 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
     ];
 
     function isValidDate(dateString: string) {
-        let regEx = /^\d{4}-\d{2}-\d{2}$/;
-        return RegExp(regEx).exec(`${dateString}`) != null;
+        const regEx = /^\d{4}-\d{2}-\d{2}$/;
+        return RegExp(regEx).exec(`${dateString}`) !== null;
     }
 
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
@@ -5731,13 +5734,16 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
 
         return () => {
             dispatch(cleanMemoryTable());
-            dispatch(getMultiCollection([
-                getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
-                getMeasureUnit(),
-                getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                getAppsettingInvoiceSel()]));
-        }
-    }, [])
+            dispatch(
+                getMultiCollection([
+                    getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
+                    getMeasureUnit(),
+                    getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
+                    getAppsettingInvoiceSel(),
+                ])
+            );
+        };
+    }, []);
 
     useEffect(() => {
         setdisableSearch(dataMain.year === "");
@@ -6054,17 +6060,17 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
             { value: "03", description: "BOLETA" },
         ];
 
-        let corplist =
+        const corplist =
             multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [];
 
-        let orglist =
+        const orglist =
             multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [];
 
         const data = [
             corplist.reduce((a, d) => ({ ...a, [d.corpid]: t(`${d.description}`) }), {}),
             orglist.reduce((a, d) => ({ ...a, [d.orgid]: t(`${d.orgdesc}`) }), {}),
             dataYears.reduce((a, d) => ({ ...a, [d?.value]: t(`${d?.value}`) }), {}),
-            dataMonths.reduce((a, d) => ({ ...a, [+d.val]: t(`${+d.val}`) }), {}),
+            dataMonths.reduce((a, d) => ({ ...a, [Number(d.val)]: t(`${Number(d.val)}`) }), {}),
             {},
             receiverdoctype.reduce((a, d) => ({ ...a, [d.value]: t(`${d.description}`) }), {}),
             {},
@@ -6144,7 +6150,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
         if (file) {
             const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === "UFN_CORP_SEL");
 
-            let corplist =
+            const corplist =
                 multiResult.data[indexCorp] && multiResult.data[indexCorp].success
                     ? multiResult.data[indexCorp].data
                     : [];
@@ -6439,7 +6445,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                 />
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: "4px" }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -6478,8 +6484,9 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                                 variant="outlined"
                                 disabled={(user?.roledesc ?? "")
                                     .split(",")
-                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
-                                }
+                                    .some((v) =>
+                                        ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)
+                                    )}
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -6628,7 +6635,7 @@ const InvoiceCommentModal: FC<{
             setContentValidation("");
             setReloadExit(false);
 
-            let partialFields = fields;
+            const partialFields = fields;
             partialFields.commentcaption = "";
             partialFields.commentcontent = "";
             partialFields.commenttype = "text";
@@ -6667,7 +6674,7 @@ const InvoiceCommentModal: FC<{
 
                 setDataInvoiceComment([]);
 
-                let partialFields = fields;
+                const partialFields = fields;
                 partialFields.commentcontent = "";
                 setFields(partialFields);
 
@@ -6716,7 +6723,7 @@ const InvoiceCommentModal: FC<{
     const handleCommentDelete = (data: any) => {
         if (fields && data) {
             const callback = () => {
-                let fieldTemporal = fields;
+                const fieldTemporal = fields;
 
                 fieldTemporal.commentcaption = data?.commentcaption;
                 fieldTemporal.commentcontent = data?.commentcontent;
@@ -6814,7 +6821,7 @@ const InvoiceCommentModal: FC<{
                         label={""}
                         valueDefault={fields.commentcontent}
                         onChange={(value) => {
-                            let partialf = fields;
+                            const partialf = fields;
                             partialf.commentcontent = value;
                             setFields(partialf);
                         }}
@@ -6877,7 +6884,7 @@ const BillingOperation: FC<DetailProps> = ({
 
         if (productList) {
             if (productList.data) {
-                let productInformationList: Partial<unknown>[] = [];
+                const productInformationList: Partial<unknown>[] = [];
 
                 productList.data.forEach(
                     (element: {
@@ -6955,8 +6962,8 @@ const BillingOperation: FC<DetailProps> = ({
     });
 
     React.useEffect(() => {
-        register("corpid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
-        register("invoiceid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register("corpid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
+        register("invoiceid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
         register("orgid");
 
         register("creditnotediscount", {
@@ -6964,15 +6971,16 @@ const BillingOperation: FC<DetailProps> = ({
                 regularize ||
                 getValues("creditnotetype") !== "04" ||
                 (value && value > 0 && value < data?.subtotal) ||
-                "" + t(langKeys.discountvalidmessage),
+                String(t(langKeys.discountvalidmessage)),
         });
 
         register("creditnotemotive", {
-            validate: (value) => regularize || (value && value.length > 10) || "" + t(langKeys.field_required_shorter),
+            validate: (value) =>
+                regularize || (value && value.length > 10) || String(t(langKeys.field_required_shorter)),
         });
 
         register("creditnotetype", {
-            validate: (value) => regularize || (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => regularize || (value && value.length > 0) || String(t(langKeys.field_required)),
         });
     }, [register]);
 
@@ -7622,20 +7630,20 @@ const RegularizeModal: FC<{
     });
 
     React.useEffect(() => {
-        register("corpid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
-        register("invoiceid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register("corpid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
+        register("invoiceid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
         register("orgid");
 
         register("invoicepaymentcommentary", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicepaymentnote", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicereferencefile", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
     }, [register]);
 
@@ -7685,7 +7693,7 @@ const RegularizeModal: FC<{
         const file = files?.item(0);
         if (file) {
             setFileAttachment(file);
-            let fd = new FormData();
+            const fd = new FormData();
             fd.append("file", file, file.name);
             dispatch(uploadFile(fd));
             setWaitUploadFile(true);
@@ -7762,7 +7770,7 @@ const RegularizeModal: FC<{
                         <AttachFileIcon color="primary" />
                     </IconButton>
                 }
-                {!!getValues("invoicereferencefile") &&
+                {Boolean(getValues("invoicereferencefile")) &&
                     getValues("invoicereferencefile")
                         .split(",")
                         .map((f: string, i: number) => (
@@ -7973,7 +7981,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             setWaitOrg(false);
 
             if (data?.row) {
-                let organizationdata = orgList.data.find((x: { orgid: any }) => x.orgid === data.row.orgid);
+                const organizationdata = orgList.data.find((x: { orgid: any }) => x.orgid === data.row.orgid);
 
                 if (organizationdata) {
                     setSubmitData(organizationdata);
@@ -7990,7 +7998,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         if (data?.row) {
             if (productList) {
                 if (productList.data) {
-                    let productInformationList: Partial<unknown>[] = [];
+                    const productInformationList: Partial<unknown>[] = [];
 
                     productList.data.forEach(
                         (element: {
@@ -8144,46 +8152,46 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         register("clientcredittype");
         register("clientfiscaladdress");
         register("clientmail");
-        register("corpid", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register("corpid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
         register("invoiceduedate");
-        register("month", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
-        register("year", { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register("month", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
+        register("year", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
 
         register("clientbusinessname", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("clientdocnumber", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("clientdoctype", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicecomments", {
-            validate: (value) => value === "" || (value || "").length <= 150 || "" + t(langKeys.validation150char),
+            validate: (value) => value === "" || (value || "").length <= 150 || String(t(langKeys.validation150char)),
         });
 
         register("invoicecreatedate", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicecurrency", {
-            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+            validate: (value) => (value && value.length > 0) || String(t(langKeys.field_required)),
         });
 
         register("invoicepurchaseorder", {
-            validate: (value) => value === "" || (value || "").length <= 15 || "" + t(langKeys.validation15char),
+            validate: (value) => value === "" || (value || "").length <= 15 || String(t(langKeys.validation15char)),
         });
 
         register("invoicetotalamount", {
-            validate: (value) => (value && value > 0) || "" + t(langKeys.billingamountvalidation),
+            validate: (value) => (value && value > 0) || String(t(langKeys.billingamountvalidation)),
         });
 
         register("orgid", {
             validate: (value) =>
-                getValues("billbyorg") === false || (value && value > 0) || "" + t(langKeys.field_required),
+                getValues("billbyorg") === false || (value && value > 0) || String(t(langKeys.field_required)),
         });
     }, [register]);
 
@@ -8233,7 +8241,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
         if (data?.doctype) {
             if (appsettingData?.data) {
-                let invoiceamount = getValues("invoicetotalamount");
+                const invoiceamount = getValues("invoicetotalamount");
 
                 if (data?.doctype === "0") {
                     setAmountTax(0);
@@ -8360,7 +8368,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     };
 
     const onProductChange = () => {
-        let productDetail = getValues("productdetail");
+        const productDetail = getValues("productdetail");
         let totalAmount = 0;
 
         if (productDetail) {
@@ -8842,7 +8850,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             onChange={(value) =>
                                                                 setValue(
                                                                     `productdetail.${i}.productdescription`,
-                                                                    "" + value
+                                                                    String(value)
                                                                 )
                                                             }
                                                             valueDefault={getValues(
@@ -8870,7 +8878,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             onChange={(value) =>
                                                                 setValue(
                                                                     `productdetail.${i}.productmeasure`,
-                                                                    "" + value?.code
+                                                                    String(value?.code)
                                                                 )
                                                             }
                                                             valueDefault={getValues(
@@ -8895,7 +8903,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             onChange={(value) => {
                                                                 setValue(
                                                                     `productdetail.${i}.productsubtotal`,
-                                                                    "" + value
+                                                                    String(value)
                                                                 );
                                                                 onProductChange();
                                                             }}
@@ -8920,7 +8928,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                             onChange={(value) => {
                                                                 setValue(
                                                                     `productdetail.${i}.productquantity`,
-                                                                    "" + value
+                                                                    String(value)
                                                                 );
                                                                 onProductChange();
                                                             }}
@@ -9170,7 +9178,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
             <div style={{ width: "100%" }}>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: "4px" }}>
                             <FieldSelect
                                 className={classes.fieldsfilter}
                                 data={dataCorp}
@@ -9182,8 +9190,9 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                                 variant="outlined"
                                 disabled={(user?.roledesc ?? "")
                                     .split(",")
-                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
-                                }
+                                    .some((v) =>
+                                        ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)
+                                    )}
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -9387,7 +9396,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                 getCorpSel(
                     (user?.roledesc ?? "")
                         .split(",")
-                        .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
+                        .some((v) => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
                         ? user?.corpid ?? 0
                         : 0
                 ),
@@ -9486,7 +9495,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         if (cardList) {
             if (cardList.data) {
                 if (cardList.data.length > 0) {
-                    let favoriteCard = cardList.data.find((o: { favorite: boolean }) => o.favorite === true);
+                    const favoriteCard = cardList.data.find((o: { favorite: boolean }) => o.favorite === true);
 
                     if (favoriteCard) {
                         setFavoriteCardCode(favoriteCard.cardcode);
@@ -9595,7 +9604,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 
                 if (mainResult.mainData.data) {
                     if (mainResult.mainData.data[0]) {
-                        let appsetting = mainResult.mainData.data[0];
+                        const appsetting = mainResult.mainData.data[0];
 
                         setPublicKey(appsetting.publickey);
                     }
@@ -9613,7 +9622,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     ) / 100
                 );
                 if (currentDoctype === "6") {
-                    let compareamount = (buyAmount || 0) * (exchangeResult?.exchangerate ?? 0);
+                    const compareamount = (buyAmount || 0) * (exchangeResult?.exchangerate ?? 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
                         setTotalPay(
@@ -9680,7 +9689,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         dispatch(getMultiCollectionAux([getOrgSel(0, value)]));
 
         if (value) {
-            let corporationdata = corpList.data.find((x: { corpid: any }) => x.corpid === value);
+            const corporationdata = corpList.data.find((x: { corpid: any }) => x.corpid === value);
 
             if (corporationdata) {
                 setCurrentBillbyorg(corporationdata?.billbyorg);
@@ -9698,7 +9707,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 
     const handleOrg = (value: any) => {
         if (value) {
-            let organizationdata = orgList.data.find((x: { orgid: any }) => x.orgid === value);
+            const organizationdata = orgList.data.find((x: { orgid: any }) => x.orgid === value);
 
             if (organizationdata) {
                 setBeforeAmount(organizationdata?.balance || 0);
@@ -10741,7 +10750,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
         register("expirationyear", {
             validate: (value) => (value && value.length && value.length <= 4) || t(langKeys.field_required),
         });
-        
+
     }, [edit, register]);
 
     useEffect(() => {
@@ -10854,7 +10863,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                     countryCodeEditable={false}
                                     defaultCountry={"pe"}
                                     disabled={!edit}
-                                    error={!!errors?.phone}
+                                    error={Boolean(errors?.phone)}
                                     fullWidth
                                     helperText={errors?.phone?.message}
                                     label={t(langKeys.phone)}
@@ -10910,7 +10919,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                     className="col-9"
                                     defaultValue={getValues("cardnumber")}
                                     disabled={!edit}
-                                    error={!!errors.cardnumber}
+                                    error={Boolean(errors.cardnumber)}
                                     fullWidth
                                     helperText={errors.cardnumber?.message}
                                     label={t(langKeys.creditcard)}
@@ -10924,8 +10933,8 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                         maxLength: getValues("cardlimit"),
                                     }}
                                     onChange={(e) => {
-                                        let val = e.target.value.replace(/[^0-9]/g, "");
-                                        let spaces = Math.floor(val.length / 4);
+                                        const val = e.target.value.replace(/[^0-9]/g, "");
+                                        const spaces = Math.floor(val.length / 4);
                                         let partialvalue = val.slice(0, 4);
                                         for (let i = 1; i <= spaces; i++) {
                                             partialvalue += " " + val.slice(i * 4, (i + 1) * 4);
@@ -11040,7 +11049,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                                     />
                                     <TextField
                                         className="col-6"
-                                        error={!!errors.expirationyear}
+                                        error={Boolean(errors.expirationyear)}
                                         fullWidth
                                         helperText={errors.expirationyear?.message}
                                         label={"YYYY"}
@@ -11060,7 +11069,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                             )}
                             {edit && (
                                 <TextField
-                                    error={!!errors.securitycode}
+                                    error={Boolean(errors.securitycode)}
                                     fullWidth
                                     helperText={errors.securitycode?.message}
                                     label={t(langKeys.securitycode)}
@@ -11149,7 +11158,7 @@ const Invoice: FC = () => {
         dispatch(getCountryList());
         if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(
-                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()]),
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()])
             );
         } else {
             dispatch(
@@ -11158,7 +11167,7 @@ const Invoice: FC = () => {
                     getOrgSelList(user?.corpid ?? 0),
                     getCorpSelVariant(user?.corpid ?? 0, user?.orgid ?? 0, user?.usr ?? ""),
                     getPaymentPlanSel(),
-                    currencySel()
+                    currencySel(),
                 ])
             );
         }
@@ -11231,7 +11240,7 @@ const Invoice: FC = () => {
             ) : (
                 (user?.roledesc ?? "")
                     .split(",")
-                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
+                    .some((v) => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
                     <div>
                         <Tabs
                             indicatorColor="primary"
@@ -11267,7 +11276,8 @@ const Invoice: FC = () => {
                             </div>
                         )}
                     </div>
-                ))}
+                )
+            )}
         </div>
     );
 };
