@@ -5493,6 +5493,7 @@ export const langKeys = {
   billingfield_billinglaraigocolombia: 'billinglaraigocolombia',
   billingconfiguration_documenttype: 'billingconfiguration_documenttype',
   billingconfiguration_documentnumber: 'billingconfiguration_documentnumber',
+  corporation_location: 'corporation_location',
 };
 
 export type LangKeys = typeof langKeys;
