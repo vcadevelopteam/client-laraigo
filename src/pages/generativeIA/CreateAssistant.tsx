@@ -120,6 +120,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.assistantaiid || 0,
+            code: row?.code || '',
             name: row?.name || '',
             description: row?.description || '',
             basemodel: row?.basemodel || '',
@@ -142,6 +143,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     React.useEffect(() => {
         register('id');
+        register('code')
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('basemodel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -176,12 +178,23 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
 
             try {
-                const apiResponse = await fetch('https://documentgptapi.laraigo.com/assistants/new', {
+                const endpoint = edit
+                ? 'https://documentgptapi.laraigo.com/assistants/update'
+                : 'https://documentgptapi.laraigo.com/assistants/new';
+                const apiResponse = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
+                    body: edit
+                    ? JSON.stringify({
+                        assistant_id: data.code,
+                        name: data.name,
+                        instructions: generalprompt,
+                        basemodel: data.basemodel,
+                        apikey: data.apikey,
+                    })
+                    : JSON.stringify({
                         name: data.name,
                         instructions: generalprompt,
                         basemodel: data.basemodel,
@@ -196,7 +209,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     return;
                 }
 
-                dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt })));
+                const responseData = await apiResponse.json();
+                const assistantid = edit ? data.code : responseData.data.assistandid;
+
+                dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: assistantid })));
                 setWaitSave(true);
             } catch (error) {
                 console.error('Error en la llamada a la API:', error);

@@ -102,12 +102,41 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     }
 
     const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-          dispatch(
-            execute(insAssistantAi({ ...row, id: row.assistantaiid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
-          );
-          dispatch(showBackdrop(true));
-          setWaitSave(true);
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+
+            try {
+                const assistantDelete = await fetch('https://documentgptapi.laraigo.com/assistants/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        assistant_id: row.code,
+                        apikey: row.apikey,
+                    }),
+                });
+    
+                if (!assistantDelete.ok) {
+                    console.error('Error al eliminar el asistente:', assistantDelete.statusText);
+                    setWaitSave(true);
+                    return;
+                }
+
+                dispatch(
+                    execute(insAssistantAi({
+                        ...row,
+                        id: row.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+                setWaitSave(true);
+            } catch (error) {
+                console.error('Error en la llamada:', error);
+                setWaitSave(true);
+            }
         };
     
         dispatch(
