@@ -21,6 +21,8 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 
+
+
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -73,9 +75,13 @@ const useStyles = makeStyles((theme) => ({
         gap: '1rem',
         alignItems: 'center'
     },
-    purpleButton: {
+    button: {
         backgroundColor: '#ffff',
-        color: '#7721AD'
+        color: '#7721AD',
+        '&:hover': {
+            backgroundColor: '#EBEAED',
+            borderRadius: 4
+        }
     },
     logo: {
         height: 90,
@@ -422,17 +428,20 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         />
                     </div>
                 </div>
-                <Modal open={isModalOpen}>
-                    <div>
-                        <iframe title="Document Viewer" src={documentUrl} width="100%" height="500px" />
+                <Modal open={isModalOpen} >
+                    <div style={{ padding:'15vh 4%', alignItems: 'center', justifyContent: 'center', }}>
+                    <iframe title="Document Viewer" src={documentUrl} width="100%" height="700" />
+                        
                         <Button
                             style={{border: '1px solid #7721AD'}}
-                            className={classes.purpleButton}
+                            className={classes.button}
                             startIcon={<ArrowBackIcon />}
                             onClick={() => setModalOpen(false)}
                         >
                             {t(langKeys.back)}
                         </Button>
+                      
+                        
                     </div>
                 </Modal>
             </>
