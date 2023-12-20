@@ -4177,10 +4177,10 @@ export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) =
     parameters: { assistantaiid, id, all },
 });
 
-export const insAssistantAiDoc = ({ assistantaiid, id, description, url, type, status, operation }: Dictionary) => ({
+export const insAssistantAiDoc = ({ assistantaiid, id, description, url, lasttraining, type, status, operation }: Dictionary) => ({
     method: "UFN_ASSISTANTAIDOCUMENT_INS",
     key: "UFN_ASSISTANTAIDOCUMENT_INS",
-    parameters: { assistantaiid, id, description, url, type, status, operation },
+    parameters: { assistantaiid, id, description, url, lasttraining, type, status, operation },
 });
 
 export const threadSel = ({ assistantaiid, id, all }: Dictionary) => ({

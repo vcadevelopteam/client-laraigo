@@ -5507,6 +5507,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   toppdesc: "Selecciona tokens con probabilidades que sumen menos que este número. Un valor más alto significa un rango más amplio de posibles resultados aleatorios.",
   error_previewing_file: "Error al previsualizar archivo.",
   download_file_instead: "¿Desea descargar el archivo en su lugar?",
+  editingerror: 'Error al Editar - Problema con "retrieval" ',
 };
 
 const esResource: ResourceLanguage = {

@@ -207,6 +207,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             id: 0,
             description: '',
             url: '',
+            lasttraining: 0,
             type: 'FILE',
             status: 'ACTIVO',
             operation: 'INSERT',
@@ -378,7 +379,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             },           
             {
                 Header: t(langKeys.last_trainning),
-                accessor: 'last_trainning',
+                accessor: 'lasttraining',
                 width: "auto",
             },         
         ],

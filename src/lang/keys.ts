@@ -5495,6 +5495,7 @@ export const langKeys = {
   toppdesc: "toppdesc",
   error_previewing_file: "error_previewing_file",
   download_file_instead: "download_file_instead",
+  editingerror: 'editingerror',
 };
 
 export type LangKeys = typeof langKeys;

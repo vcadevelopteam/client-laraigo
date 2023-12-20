@@ -5580,6 +5580,8 @@ const translation: LangKeys = {
   toppdesc: "Select tokens with probabilities that add up to less than this number. A higher value means a wider range of possible random outcomes.",
   error_previewing_file: "Error previewing file.",
   download_file_instead: "Do you want to download the file instead?",
+  editingerror: 'Editing Error - Issue with "retrieval" ',
+
 };
 
 const enResource: ResourceLanguage = {
