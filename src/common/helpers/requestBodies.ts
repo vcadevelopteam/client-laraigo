@@ -3496,11 +3496,11 @@ export const conversationCallHold = ({ conversationid, holdtime }: Dictionary) =
     },
 });
 
-export const getInvoiceReportSummary = ({ year, currency = '' }: Dictionary): IRequestBody => ({
+export const getInvoiceReportSummary = ({ year, currency = '', location = '' }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_INVOICE_SUMMARY_SEL",
     key: "UFN_REPORT_INVOICE_SUMMARY_SEL",
     parameters: {
-        year, currency,
+        year, currency, location,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });

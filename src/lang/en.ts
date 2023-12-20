@@ -5583,6 +5583,8 @@ const translation: LangKeys = {
   billingconfiguration_documentnumber: 'Document Number',
   corporation_location: 'Location',
   organization_location: 'Location',
+  reportinvoice_location: 'Location',
+  invoice_location: 'Location',
 };
 
 const enResource: ResourceLanguage = {

@@ -5509,6 +5509,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingconfiguration_documentnumber: 'Número de Documento',
   corporation_location: 'Sede',
   organization_location: 'Sede',
+  reportinvoice_location: 'Sede',
+  invoice_location: 'Sede',
 };
 
 const esResource: ResourceLanguage = {

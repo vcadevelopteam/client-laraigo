@@ -40,7 +40,6 @@ import {
     contactCountList,
     convertLocalDate,
     currencySel,
-    dataCurrency,
     dataMonths,
     dateToLocalDate,
     dataYears,
@@ -80,9 +79,6 @@ import {
     templateMaker,
     timeSheetPeriodSel,
     uploadExcel,
-    partnerSel,
-    customerByPartnerSel,
-    customerPartnersByUserSel,
 } from "common/helpers";
 
 import {
@@ -170,6 +166,7 @@ interface DetailPropsPaymentMethod {
 interface DetailProps {
     creditNote?: boolean;
     data?: Dictionary | null;
+    dataAllCurrency?: any;
     fetchData: () => void;
     operationName?: string;
     regularize?: boolean;
@@ -1697,7 +1694,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
         }
     }, [allIndex, triggerSave]);
 
-    const onSubmit = handleSubmit((data) => {
+    const onSubmit = handleSubmit(() => {
         setTriggerSave(true);
         if (pageSelected === 7) {
             setAllIndex([]);
@@ -2993,7 +2990,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
                 const data = getValues();
                 if (allOk) {
                     updateRecords &&
-                        updateRecords((p: Dictionary[], itmp: number) => {
+                        updateRecords((p: Dictionary[]) => {
                             p[index] = { ...data, operation: p[index].operation === "INSERT" ? "INSERT" : "UPDATE" };
                             return p;
                         });
@@ -3112,7 +3109,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
         trigger("type");
 
         updateRecords &&
-            updateRecords((p: Dictionary[], itmp: number) => {
+            updateRecords((p: Dictionary[]) => {
                 p[index] = { ...p[index], corpid: value?.corpid, orgid: value?.orgid || 0 };
                 return p;
             });
@@ -4615,7 +4612,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableRow>
                                         )}
                                         {dataReport?.artificialintelligencedata?.map((dataIntelligence: any) => (
-                                            <StyledTableRow>
+                                            <StyledTableRow key={""}>
                                                 <StyledTableCell>
                                                     <div>
                                                         <b>{`${dataIntelligence.provider} ${dataIntelligence.type}: ${dataIntelligence.plan}`}</b>
@@ -4865,12 +4862,13 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
 
 const IDPAYMENTS = "IDPAYMENTS";
 const Payments: React.FC<{
+    dataAllCurrency: any;
     dataCorp: any;
     dataOrg: any;
     setCustomSearch(
         value: React.SetStateAction<{ year: number; month: number; corpid: number; orgid: number; totalize: number }>
     ): void;
-}> = ({ dataCorp, dataOrg, setCustomSearch }) => {
+}> = ({ dataAllCurrency, dataCorp, dataOrg, setCustomSearch }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -5313,11 +5311,11 @@ const Payments: React.FC<{
                             />
                             <FieldSelect
                                 className={classes.fieldsfilter}
-                                data={dataCurrency}
+                                data={dataAllCurrency ?? []}
                                 label={t(langKeys.currency)}
-                                onChange={(value) => setdataMain((prev) => ({ ...prev, currency: value?.value || "" }))}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, currency: value?.code || "" }))}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={dataMain.currency}
                                 variant="outlined"
@@ -5832,7 +5830,11 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 };
 
 const IDBILLING = "IDBILLING";
-const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg }) => {
+const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> = ({
+    dataAllCurrency,
+    dataCorp,
+    dataOrg,
+}) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -6002,6 +6004,10 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
             {
                 accessor: "invoiceid",
                 Header: t(langKeys.invoiceid),
+            },
+            {
+                accessor: "location",
+                Header: t(langKeys.invoice_location),
             },
             {
                 accessor: "corpdesc",
@@ -6263,7 +6269,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
             { CARD: "CARD", REGISTEREDCARD: "REGISTEREDCARD" },
             {},
             {},
-            dataCurrency.reduce((a, d) => ({ ...a, [d.value]: t(`${d.description}`) }), {}),
+            (dataAllCurrency ?? []).reduce((a, d) => ({ ...a, [d.code]: t(`${d.description}`) }), {}),
             {},
             {},
             {},
@@ -6422,7 +6428,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                     errorrow = errorcount;
                 }
 
-                if (!dataCurrency.find((data) => data.value === dataobject.currency)) {
+                if (!dataAllCurrency.find((data) => data.code === dataobject.currency)) {
                     errorcolumn = t(langKeys.currency);
                     errorrow = errorcount;
                 }
@@ -6476,7 +6482,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                         corplist.find((data) => data.corpid === d.corpid) &&
                         dataYears.find((data) => data.value === `${d.year}`) &&
                         dataMonths.find((data) => data.val === `${d.month}`.padStart(2, "0")) &&
-                        dataCurrency.find((data) => data.value === d.currency)
+                        dataAllCurrency.find((data) => data.code === d.currency)
                 );
 
                 if (data.length > 0) {
@@ -6679,11 +6685,11 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                             />
                             <FieldSelect
                                 className={classes.fieldsfilter}
-                                data={dataCurrency}
+                                data={dataAllCurrency ?? []}
                                 label={t(langKeys.currency)}
-                                onChange={(value) => setdataMain((prev) => ({ ...prev, currency: value?.value || "" }))}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, currency: value?.code || "" }))}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={dataMain.currency}
                                 variant="outlined"
@@ -6947,6 +6953,7 @@ const InvoiceCommentModal: FC<{
                             margin: "10px",
                             padding: "10px",
                         }}
+                        key={""}
                     >
                         <div style={{ display: "flex" }}>
                             <b style={{ width: "100%" }}>
@@ -7859,7 +7866,7 @@ const RegularizeModal: FC<{
 
     const onClickAttachment = useCallback(() => {
         const input = document.getElementById("attachmentInput");
-        input!.click();
+        input?.click();
     }, []);
 
     const onChangeAttachment = useCallback((files: any) => {
@@ -8053,7 +8060,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
     );
 };
 
-const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
+const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelected, fetchData }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -8928,13 +8935,13 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             <div className="row-zyx">
                                 <FieldSelect
                                     className="col-3"
-                                    data={dataCurrency}
+                                    data={dataAllCurrency ?? []}
                                     disabled={invoicehasreport}
                                     error={errors?.invoicecurrency?.message}
                                     label={t(langKeys.currency)}
-                                    onChange={(value) => setValue("invoicecurrency", value?.value)}
+                                    onChange={(value) => setValue("invoicecurrency", value?.code)}
                                     optionDesc="description"
-                                    optionValue="value"
+                                    optionValue="code"
                                     orderbylabel={true}
                                     valueDefault={getValues("invoicecurrency")}
                                 />
@@ -10372,7 +10379,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                     <TableBody>
                                         {balanceSent?.data?.map(function (file: any) {
                                             return (
-                                                <TableRow>
+                                                <TableRow key={""}>
                                                     <TableCell>
                                                         <FieldView label={""} value={t(file?.type || langKeys.none)} />
                                                     </TableCell>
@@ -11385,17 +11392,22 @@ const Invoice: FC = () => {
                     )}
                     {pageSelected === 2 && (
                         <div style={{ marginTop: 16 }}>
-                            <PartnerPeriodReport customSearch={customSearch} />
+                            <PartnerPeriodReport />
                         </div>
                     )}
                     {pageSelected === 3 && (
                         <div style={{ marginTop: 16 }}>
-                            <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
+                            <Payments
+                                dataAllCurrency={dataAllCurrency}
+                                dataCorp={dataCorp}
+                                dataOrg={dataOrg}
+                                setCustomSearch={setCustomSearch}
+                            />
                         </div>
                     )}
                     {pageSelected === 4 && (
                         <div style={{ marginTop: 16 }}>
-                            <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
+                            <Billing dataAllCurrency={dataAllCurrency} dataCorp={dataCorp} dataOrg={dataOrg} />
                         </div>
                     )}
                     {pageSelected === 5 && (
@@ -11434,7 +11446,12 @@ const Invoice: FC = () => {
                         )}
                         {pageSelected === 1 && (
                             <div style={{ marginTop: 16 }}>
-                                <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
+                                <Payments
+                                    dataAllCurrency={dataAllCurrency}
+                                    dataCorp={dataCorp}
+                                    dataOrg={dataOrg}
+                                    setCustomSearch={setCustomSearch}
+                                />
                             </div>
                         )}
                         {pageSelected === 2 && (
