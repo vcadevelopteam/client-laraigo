@@ -112,8 +112,7 @@ const useStyles = makeStyles((theme) => ({
     clipButton: {
         backgroundColor: '#ffff',
         color: 'blue',
-        border: '1px solid blue',
-        marginTop: 20,
+        border: '1px solid blue',      
     },
     clipButton2: {
         backgroundColor: '#ffff',
@@ -207,7 +206,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             id: 0,
             description: '',
             url: '',
-            lasttraining: 0,
             type: 'FILE',
             status: 'ACTIVO',
             operation: 'INSERT',
@@ -379,7 +377,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             },           
             {
                 Header: t(langKeys.last_trainning),
-                accessor: 'lasttraining',
+                accessor: 'last_trainning',
                 width: "auto",
             },         
         ],
@@ -617,8 +615,16 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         </div>                    
                     </div>
                     <div className={classes.block20}/>
-                    <div>
+                    <div className="row-zyx">
                         <FieldEdit
+                            className="col-12"
+                            variant="outlined"
+
+                            label={t(langKeys.name)}
+                        />
+                        <FieldEdit
+                            className="col-12"
+                            variant="outlined"
                             label={t(langKeys.website)}
                         />
                     </div>

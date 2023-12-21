@@ -5508,6 +5508,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   error_previewing_file: "Error al previsualizar archivo.",
   download_file_instead: "¿Desea descargar el archivo en su lugar?",
   editingerror: 'Error al Editar - Problema con "retrieval" ',
+  retrieval: 'Retrieval',
+  codeinterpreter: 'Code Interpreter',
 };
 
 const esResource: ResourceLanguage = {

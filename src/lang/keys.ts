@@ -5496,6 +5496,8 @@ export const langKeys = {
   error_previewing_file: "error_previewing_file",
   download_file_instead: "download_file_instead",
   editingerror: 'editingerror',
+  retrieval: 'retrieval',
+  codeinterpreter: 'codeinterpreter',
 };
 
 export type LangKeys = typeof langKeys;

@@ -135,6 +135,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
             apikey: row?.apikey || '',
+            retrieval: row?.retrieval || false,
+            codeinterpreter: row?.codeinterpreter || false,
             type: row?.type || '',
             status: row?.status || 'ACTIVO',
             operation: edit ? 'UPDATE' : 'INSERT',
@@ -158,6 +160,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('max_tokens')
         register('top_p');
         register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('retrieval');
+        register('codeinterpreter');
         register('type');
         register('status');
         register('operation');
@@ -192,12 +196,16 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                         name: data.name,
                         instructions: generalprompt,
                         basemodel: data.basemodel,
+                        retrieval: data.retrieval,
+                        codeinterpreter: data.codeinterpreter,
                         apikey: data.apikey,
                     })
                     : JSON.stringify({
                         name: data.name,
                         instructions: generalprompt,
                         basemodel: data.basemodel,
+                        retrieval: data.retrieval,
+                        codeinterpreter: data.codeinterpreter,
                         apikey: data.apikey,
                     }),
                 });

@@ -5581,6 +5581,8 @@ const translation: LangKeys = {
   error_previewing_file: "Error previewing file.",
   download_file_instead: "Do you want to download the file instead?",
   editingerror: 'Editing Error - Issue with "retrieval" ',
+  retrieval: 'Retrieval',
+  codeinterpreter: 'Code Interpreter',
 
 };
 

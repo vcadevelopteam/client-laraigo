@@ -2,18 +2,27 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { FieldEdit, FieldSelect } from "components";
+import { FieldEdit, FieldSelect, IOSSwitch } from "components";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { FieldErrors } from "react-hook-form";
+import { FormControlLabel, Tooltip } from "@material-ui/core";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: "#fff",
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+        marginLeft: 5
     },
 }));
 
@@ -40,6 +49,9 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const [isRetrieval, setIsRetrieval] = useState(false);
+    const [isCodeInterpreter, setIsCodeInterpreter] = useState(false);
+
 
     useEffect(() => {
         if (waitSave) {
@@ -112,6 +124,47 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     error={errors?.apikey?.message}
                     type="password"
                 />
+               <FormControlLabel
+                    style={{marginLeft:1}}
+                    control={
+                        <>
+                            <IOSSwitch
+                                checked={isCodeInterpreter}
+                                onChange={(event) => {
+                                    setIsCodeInterpreter(event.target.checked)
+                                    setValue('codeinterpreter', event.target.checked)
+                                }}
+                                color='primary'
+                            />
+                            <span style={{marginLeft:'0.6rem'}}>{t(langKeys.retrieval)}</span>
+                            <Tooltip title={t(langKeys.abandonmentEvent)} arrow placement="top" >
+                                <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
+                            </Tooltip>
+                        </>
+                    }                  
+                    className="col-6"
+                    label=""
+                />                
+                <FormControlLabel
+                    control={
+                        <>
+                            <IOSSwitch
+                                checked={isCodeInterpreter}
+                                onChange={(event) => {
+                                    setIsCodeInterpreter(event.target.checked)
+                                    setValue('codeinterpreter', event.target.checked)
+                                }}
+                                color='primary'
+                            />
+                            <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
+                            <Tooltip title={t(langKeys.abandonmentEvent)} arrow placement="top" >
+                                <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
+                            </Tooltip>
+                        </>
+                    }                  
+                    className="col-5"
+                    label=""
+                />                
             </div>
         </div>
     );

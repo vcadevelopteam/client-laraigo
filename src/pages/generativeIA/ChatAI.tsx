@@ -201,10 +201,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         }
     }, [executeResult, waitSave]);
 
-
-      
-
-
     const handleCreateChat = () => {
         setIsCreatingChat(true);
     };
@@ -214,11 +210,33 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         setValue('description', '');
     };
 
-    const handleConfirmCreateChat = handleSubmit((data) => {
-        const callback = () => {
+    const handleConfirmCreateChat = handleSubmit( async (data) => {
+        const callback = async () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insThread(data)));
-            setWaitSave(true);
+            try {
+                const insThreadAPI = await fetch ('https://documentgptapi.laraigo.com/threads', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        apikey: row?.apikey,
+                    })
+                })
+                if (!insThreadAPI.ok) {
+                    console.error('Error en la llamada a la API:', insThreadAPI.statusText);
+                    setWaitSave(true);
+                    return;
+                }
+                const responseData = await insThreadAPI.json();
+                const threadid = responseData.data.id;
+                dispatch(execute(insThread({...data,code:threadid})));
+                setWaitSave(true);
+            }        
+            catch (error) {
+                console.error('Error en la llamada a la API:', error);
+                setWaitSave(true);
+            }
         };
         dispatch(
             manageConfirmation({
@@ -272,12 +290,36 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
       
 
     const handleDeleteChat = (chat: Dictionary) => {
-        const callback = () => {
-            dispatch(
-              execute(insThread({ ...chat, id: chat.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
-            );
+        const callback = async () => {
             dispatch(showBackdrop(true));
-            setWaitSave(true);
+
+            try {
+                const threadDelete = await fetch('https://documentgptapi.laraigo.com/threads/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        thread_id: chat.code,
+                        apikey: row?.apikey,
+                    }),
+                });
+    
+                if (!threadDelete.ok) {
+                    console.error('Error al eliminar el thread:', threadDelete.statusText);
+                    setWaitSave(true);
+                    return;
+                }
+
+                dispatch(
+                    execute(insThread({ ...chat, id: chat.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
+                );
+                setWaitSave(true);
+
+            } catch (error) {
+                console.error('Error en la llamada:', error);
+                setWaitSave(true);
+            }          
           };
       
           dispatch(

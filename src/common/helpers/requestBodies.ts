@@ -4165,10 +4165,10 @@ export const assistantAiSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, type, status, operation }: Dictionary) => ({
+export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, operation }: Dictionary) => ({
     method: "UFN_ASSISTANTAI_INS",
     key: "UFN_ASSISTANTAI_INS",
-    parameters: { id, code, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, type, status, operation },
+    parameters: { id, code, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, operation },
 });
 
 export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) => ({
@@ -4177,10 +4177,10 @@ export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) =
     parameters: { assistantaiid, id, all },
 });
 
-export const insAssistantAiDoc = ({ assistantaiid, id, description, url, lasttraining, type, status, operation }: Dictionary) => ({
+export const insAssistantAiDoc = ({ assistantaiid, id, description, url, type, status, operation }: Dictionary) => ({
     method: "UFN_ASSISTANTAIDOCUMENT_INS",
     key: "UFN_ASSISTANTAIDOCUMENT_INS",
-    parameters: { assistantaiid, id, description, url, lasttraining, type, status, operation },
+    parameters: { assistantaiid, id, description, url, type, status, operation },
 });
 
 export const threadSel = ({ assistantaiid, id, all }: Dictionary) => ({
