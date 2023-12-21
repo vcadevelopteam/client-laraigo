@@ -324,16 +324,20 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     };
       
-    const handleViewDocument = (url: string) => {
-        const isPreviewableType = url.endsWith('.pdf') || url.endsWith('.txt');
-        
-        if (isPreviewableType) {
-            setDocumentUrl(url);
-            setModalOpen(true);
+    const handleViewDocument = (url: string, type: string) => {
+        if (type === "WEB") {
+            window.open(url, "_blank");
         } else {
-            setDocumentUrl('');
-            setModalOpen(true);
-            setSelectedDocumentUrl(url);
+            const isPreviewableType = url.endsWith('.pdf') || url.endsWith('.txt');
+            
+            if (isPreviewableType) {
+                setDocumentUrl(url);
+                setModalOpen(true);
+            } else {
+                setDocumentUrl('');
+                setModalOpen(true);
+                setSelectedDocumentUrl(url);
+            }
         }
     };
       
@@ -373,7 +377,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <IconButton onClick={() => handleViewDocument(row.url)}>
+                        <IconButton onClick={() => handleViewDocument(row.url, row.type)}>
                             <VisibilityIcon />
                         </IconButton>
                     );
