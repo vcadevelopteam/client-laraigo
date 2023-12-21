@@ -719,7 +719,7 @@ const ReportInvoice: FC = () => {
 
     useEffect(() => {
         if (!mainAux2.loading) {
-            setGridDataCurrencyList(Array.from(new Set((mainAux2?.data || []).map(item => item.currency && item.location))));
+            setGridDataCurrencyList(Array.from(new Set((mainAux2?.data || []).map(item => item.currency))));
             const initialmonth = [...Array.from(Array(12).keys())].reduce((acc, item) => ({ ...acc, [`month_${item + 1}`]: 0, [`color_${item + 1}`]: 'black' }), {})
             setGridData(
                 Object.values((mainAux2?.data || []).reduce((acc, item) => ({
@@ -735,6 +735,7 @@ const ReportInvoice: FC = () => {
                         corpid: item.corpid,
                         corpdesc: item.corpdesc,
                         currency: item.currency,
+                        location: item.location,
                         [`color_${item.month}`]: item.color,
                         year: item.year,
                         [`month_${item.month}`]: item.totalamount,
