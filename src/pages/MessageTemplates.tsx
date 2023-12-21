@@ -166,7 +166,7 @@ const MessageTemplates: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: "id",
+                accessor: "templateid",
                 isComponent: true,
                 minWidth: 60,
                 NoFilter: true,
@@ -194,15 +194,15 @@ const MessageTemplates: FC = () => {
             ...(showId
                 ? [
                       {
-                          accessor: "templateid",
+                          accessor: "id",
                           Header: t(langKeys.messagetemplateid),
                           type: "number",
                           Cell: (props: any) => {
                               const row = props.cell.row.original;
                               if (row.showid) {
-                                  return row.id;
+                                  return <div>{row.id}</div>;
                               } else {
-                                  return null;
+                                  return <div></div>;
                               }
                           },
                       },
@@ -824,22 +824,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         register("type");
         register("typeattachment");
 
-        unregister([
-            "body",
-            "header",
-            "name",
-            "namespace",
-            "footer",
-        ]);
-        
-        register('body', {
-            validate: (value) => {
-                if (type === 'HSM') return (value && (value || "").length <= 1024) || t(langKeys.field_required);
-                if (type === 'SMS') return (value && (value || "").length <= 160) || t(langKeys.field_required);
-                return true;
-            }
-        });
+        unregister(["body", "header", "name", "namespace", "footer"]);
 
+        register("body", {
+            validate: (value) => {
+                if (type === "HSM") return (value && (value || "").length <= 1024) || t(langKeys.field_required);
+                if (type === "SMS") return (value && (value || "").length <= 160) || t(langKeys.field_required);
+                return true;
+            },
+        });
 
         switch (type) {
             case "HSM":
@@ -939,7 +932,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [register, type, unregister]);
-
 
     useEffect(() => {
         import("@codemirror/lang-html").then((html) => {
