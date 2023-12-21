@@ -375,6 +375,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             case "VISOR SD":
                 if (activateSwitchBots) setValue("showbots", false)
                 setValue("type", "SUPERVISOR")
+                updatefield("type", "SUPERVISOR");
+                updatefield("showbots", false);
                 settypeSwitch(false)
                 setActivateSwitchBots(false)
                 break;
@@ -383,6 +385,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 if (value.slice(-1)[0].roldesc.includes("ASESOR")) {
                     if (activateSwitchBots) setValue("showbots", true)
                     setValue("type", "ASESOR")
+                    updatefield("type", "ASESOR");
+                    updatefield("showbots", true);
                     settypeSwitch(true)
                     setActivateSwitchBots(false)
                 } else {
@@ -391,6 +395,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                         setValue("showbots", false)
                     }
                     setValue("type", "SUPERVISOR")
+                    updatefield("type", "SUPERVISOR");
+                    updatefield("showbots", false);
                     settypeSwitch(false)
                 }
                 break;
