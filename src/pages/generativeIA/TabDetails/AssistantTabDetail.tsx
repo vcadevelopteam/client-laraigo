@@ -67,7 +67,6 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         }
     ];
 
-
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -94,6 +93,48 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     return (
         <div className={classes.containerDetail}>
              <div className="row-zyx">
+                <FormControlLabel
+                    style={{marginLeft:1}}
+                    control={
+                        <>
+                            <IOSSwitch
+                                checked={isRetrieval}
+                                onChange={(event) => {
+                                    setIsRetrieval(event.target.checked)
+                                    setValue('retrieval', event.target.checked)
+                                    setValue('basemodel', "")
+                                }}
+                                color='primary'
+                            />
+                            <span style={{marginLeft:'0.6rem'}}>{t(langKeys.retrieval)}</span>
+                            <Tooltip title={t(langKeys.retrievaldescription)} arrow placement="top" >
+                                <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
+                            </Tooltip>
+                        </>
+                    }                  
+                    className="col-6"
+                    label=""
+                />
+                <FormControlLabel
+                    control={
+                        <>
+                            <IOSSwitch
+                                checked={isCodeInterpreter}
+                                onChange={(event) => {
+                                    setIsCodeInterpreter(event.target.checked)
+                                    setValue('codeinterpreter', event.target.checked)
+                                }}
+                                color='primary'
+                            />
+                            <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
+                            <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
+                                <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
+                            </Tooltip>
+                        </>
+                    }                  
+                    className="col-5"
+                    label=""
+                />
                 <FieldEdit
                     className="col-6"
                     label={t(langKeys.name)}
@@ -121,7 +162,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                     className="col-6"
-                />        
+                />
                 <FieldSelect
                     className="col-6"
                     label={t(langKeys.status)}
@@ -139,48 +180,6 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     error={errors?.apikey?.message}
                     type="password"
                 />
-               <FormControlLabel
-                    style={{marginLeft:1}}
-                    control={
-                        <>
-                            <IOSSwitch
-                                checked={isRetrieval}
-                                onChange={(event) => {
-                                    setIsRetrieval(event.target.checked)
-                                    setValue('retrieval', event.target.checked)
-                                    setValue('basemodel', "")
-                                }}
-                                color='primary'
-                            />
-                            <span style={{marginLeft:'0.6rem'}}>{t(langKeys.retrieval)}</span>
-                            <Tooltip title={t(langKeys.retrievaldescription)} arrow placement="top" >
-                                <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
-                            </Tooltip>
-                        </>
-                    }                  
-                    className="col-6"
-                    label=""
-                />                
-                <FormControlLabel
-                    control={
-                        <>
-                            <IOSSwitch
-                                checked={isCodeInterpreter}
-                                onChange={(event) => {
-                                    setIsCodeInterpreter(event.target.checked)
-                                    setValue('codeinterpreter', event.target.checked)
-                                }}
-                                color='primary'
-                            />
-                            <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
-                            <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
-                                <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
-                            </Tooltip>
-                        </>
-                    }                  
-                    className="col-5"
-                    label=""
-                />                
             </div>
         </div>
     );

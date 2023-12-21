@@ -4206,3 +4206,9 @@ export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, i
     key: "UFN_MESSAGEAI_INS",
     parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation },
 });
+
+export const updateAssistantAiDocumentTraining = (assistantaiid: number, documentsid: string) => ({
+    method: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
+    key: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
+    parameters: { assistantaiid, documentsid },
+});

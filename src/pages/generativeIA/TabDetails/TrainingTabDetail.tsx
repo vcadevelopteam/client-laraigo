@@ -15,7 +15,7 @@ import { execute, uploadFile } from "store/main/actions";
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from "@types";
 import { useForm } from "react-hook-form";
-import { insAssistantAiDoc } from "common/helpers";
+import { insAssistantAiDoc, updateAssistantAiDocumentTraining } from "common/helpers";
 import { CellProps } from "react-table";
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -166,17 +166,23 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '8px',
         padding: '20px',
         textAlign: 'center',
-    }
+    },
+    purpleButton: {
+        backgroundColor: '#ffff',
+        color: '#7721AD'
+    },
 }));
 
 interface TrainingTabDetailProps {
     row: Dictionary | null;
     fetchData: () => void;
+    fetchAssistants: () => void;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     row,
-    fetchData
+    fetchData,
+    fetchAssistants
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -191,7 +197,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [isModalOpen, setModalOpen] = useState(false);
     const [documentUrl, setDocumentUrl] = useState("");
     const [selectedDocumentUrl, setSelectedDocumentUrl] = useState<string | null>(null);
-
 
     useEffect(() => {
         fetchData();
@@ -304,8 +309,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         );
     };
 
-
-    
     const handleDownloadDocument = () => {
         if (selectedDocumentUrl) {
             const downloadLink = document.createElement('a');
@@ -341,9 +344,21 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     };
       
+    const handleTrain = (doc: Dictionary) => {
+        dispatch(
+            execute(updateAssistantAiDocumentTraining(row?.assistantaiid, doc.assistantaidocumentid.toString()))
+        );
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
+    }
 
-    const handleTrain = () => {
-        console.log('trained')
+    const handleTrainAll = () => {
+        const docsIdsString = dataDocuments.data.map(doc => doc.assistantaidocumentid).join(',');  
+        dispatch(
+            execute(updateAssistantAiDocumentTraining(row?.assistantaiid, docsIdsString))
+        );
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
     }
 
     const columns = React.useMemo(
@@ -360,7 +375,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                   return (
                     <TemplateIcons
                       deleteFunction={() => handleDelete(row)}
-                      extraFunction={() => handleTrain()}
+                      extraFunction={() => handleTrain(row)}
                       extraOption={t(langKeys.train)}
                       ExtraICon={() => <AutorenewIcon width={28} style={{ fill: '#7721AD' }} />}
                     />
@@ -391,7 +406,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                width: "auto",
+                width: "10%",
             },
             {
                 Header: t(langKeys.upload),
@@ -400,7 +415,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             },           
             {
                 Header: t(langKeys.last_trainning),
-                accessor: 'last_trainning',
+                accessor: 'lasttraining',
                 width: "auto",
             },         
         ],
@@ -418,6 +433,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     })
                 );
                 fetchData()
+                fetchAssistants()
                 setViewSelected('main')
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
@@ -480,6 +496,17 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 </div>
                             </div>
                         </div>
+                        <div>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                className={classes.purpleButton}
+                                startIcon={<AutorenewIcon color="primary"/>}
+                                onClick={() => handleTrainAll()}
+                            >
+                                {t(langKeys.train)}
+                            </Button>
+                        </div>
                     </div>
                     <div className={classes.titleMargin}>
                         <TableZyx
@@ -525,9 +552,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         </div>
                     </div>
                 </Modal>
-
-
-
             </>
         );
     } else if(viewSelected === 'uploadFile') {

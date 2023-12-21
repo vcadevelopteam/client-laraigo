@@ -320,7 +320,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData}/>
                 </AntTabPanel>
             </form>
         </>

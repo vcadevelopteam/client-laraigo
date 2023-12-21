@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import { FieldEdit } from "components";
+import CachedIcon from '@material-ui/icons/Cached';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -129,6 +130,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center'
     },
+    loadingIndicator: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '10px',
+    },
 }));
 
 interface ChatAIProps {
@@ -143,11 +150,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [waitSave, setWaitSave] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
-    const [selectedChat, setSelectedChat] = useState<number | null>(null);
+    const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
     const dataThreads = useSelector(state => state.main.mainAux);
     const messages = useSelector(state => state.main.mainAux2);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [messageText, setMessageText] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
     const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
@@ -249,45 +257,84 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         setValue('description', '');
     });
 
-    const handleSendMessage = () => {
-        if (messageText.trim() !== '') { // Asegúrate de que el mensaje no esté vacío
-          dispatch(
+    const handleSendMessage = async () => {
+        setIsLoading(true);
+        dispatch(
             execute(
-              insMessageAi({
-                assistantaiid: row?.assistantaiid,
-                threadid: selectedChat,
-                assistantaidocumentid: 0,
-                id: 0,
-                messagetext: messageText,
-                infosource: '',
-                type: 'USER',
-                status: 'ACTIVO',
-                operation: 'INSERT',
-              })
+                insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: selectedChat?.threadid,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: messageText,
+                    infosource: '',
+                    type: 'USER',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })
             )
-          );
-          setMessageText('');
-          fetchThreadMessages(selectedChat);
+        );
+        const message = messageText
+        setMessageText('');
+        fetchThreadMessages(selectedChat?.threadid);
+        
+        try {
+            const sendMessage = await fetch ('https://documentgptapi.laraigo.com/assistants/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: message,
+                    assistant_id: row?.code,
+                    thread_id: selectedChat?.code,
+                    sources: true,
+                    apikey: row?.apikey,
+                })
+            })
+            if (!sendMessage.ok) {
+                console.error('Error en la llamada a la API:', sendMessage.statusText);
+                return;
+            }
+            const responseData = await sendMessage.json();
+            const botResponse = responseData.data.response;
+            dispatch(
+                execute(
+                    insMessageAi({
+                        assistantaiid: row?.assistantaiid,
+                        threadid: selectedChat?.threadid,
+                        assistantaidocumentid: 0,
+                        id: 0,
+                        messagetext: botResponse,
+                        infosource: '',
+                        type: 'BOT',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })
+                )
+            );
+            fetchThreadMessages(selectedChat?.threadid);
+        } catch (error) {
+            console.error('Error en la llamada a la API:', error);
+        } finally {
+            setIsLoading(false);
         }
-      };
+    };
 
-
-      useEffect(() => {
+    useEffect(() => {
         const handleKeyUp = (event: KeyboardEvent) => {
-          if (event.key === 'Enter' && !event.shiftKey) {
+            if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
             handleSendMessage();
-          }
+            }
         };
-      
+        
         document.addEventListener('keyup', handleKeyUp);
-      
+        
         return () => {
-          document.removeEventListener('keyup', handleKeyUp);
+            document.removeEventListener('keyup', handleKeyUp);
         };
-      }, [handleSendMessage]);
-
-      
+    }, [handleSendMessage]);
 
     const handleDeleteChat = (chat: Dictionary) => {
         const callback = async () => {
@@ -365,9 +412,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         handleCloseEdit()
     });
 
-    const handleChatClick = (chatId: number) => {
-        setSelectedChat(chatId);
-        fetchThreadMessages(chatId)
+    const handleChatClick = (chat: Dictionary) => {
+        setSelectedChat(chat);
+        fetchThreadMessages(chat.threadid)
     };
 
     return (
@@ -414,7 +461,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     </div>
                 )}
                 {dataThreads.data.map((chat) => (
-                    <div key={chat.threadid} onClick={() => handleChatClick(chat.threadid)} className={classes.threadContainer}>
+                    <div key={chat.threadid} onClick={() => handleChatClick(chat)} className={classes.threadContainer}>
                         <Typography>
                             {chat.createdate.split('.')[0]}
                         </Typography>
@@ -498,34 +545,40 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             )}
                         </>
                     )}
+                    {isLoading && (
+                        <div className={classes.loadingIndicator}>
+                            <CachedIcon color="primary" style={{marginRight: 8}}/>
+                            <span>Cargando respuesta...</span>
+                        </div>
+                    )}
                 </div>
 
                 <div className={classes.chatInputContainer}>
                     <div style={{ width: '700px' }}>
                         <FieldEdit
-                        label={t(langKeys.typeamessage)}
-                        variant="outlined"
-                        onChange={(value) => setMessageText(value)}
-                        valueDefault={messageText}
-                        disabled={!selectedChat}
-                        InputProps={{
-                            multiline: true,
-                            maxRows: 2,
-                            endAdornment: (
-                            <InputAdornment position="end">
-                                <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<SendIcon color="secondary" />}
-                                disabled={!selectedChat || messageText.trim() === ''}
-                                className={classes.purpleButton}
-                                onClick={() => handleSendMessage()}
-                                >
-                                {t(langKeys.send)}
-                                </Button>
-                            </InputAdornment>
-                            ),
-                        }}
+                            label={t(langKeys.typeamessage)}
+                            variant="outlined"
+                            onChange={(value) => setMessageText(value)}
+                            valueDefault={messageText}
+                            disabled={!selectedChat || isLoading}
+                            InputProps={{
+                                multiline: true,
+                                maxRows: 2,
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <Button
+                                            variant="contained"
+                                            type="button"
+                                            startIcon={<SendIcon color="secondary" />}
+                                            disabled={!selectedChat || messageText.trim() === '' || isLoading}
+                                            className={classes.purpleButton}
+                                            onClick={() => handleSendMessage()}
+                                        >
+                                            {t(langKeys.send)}
+                                        </Button>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                     </div>
                     </div>
