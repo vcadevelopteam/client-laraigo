@@ -256,7 +256,7 @@ export const PaymentOrderIzipay: FC = () => {
                         lastName: '${data.userlastname || "LARAIGO"}',
                         email: 'laraigo@laraigo.com',
                         phoneNumber: '51999999999',
-                        street: '${data.useraddress || "LARAIGO"}',
+                        street: 'LARAIGO',
                         city: '${data.usercity || "LIMA"}',
                         state: '${data.usercity || "LIMA"}',
                         country: 'PE',
