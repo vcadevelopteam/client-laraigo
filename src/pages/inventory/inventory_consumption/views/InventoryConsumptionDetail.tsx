@@ -98,6 +98,7 @@ const InventoryConsumptionDetail: React.FC<DetailProps> = ({
     } = useForm({
         defaultValues: {
             inventoryconsumptionid: row?.inventoryconsumptionid || 0,
+            inventoryconsumptionserial: row?.inventoryconsumptionserial || 1000,
             description: row?.description || "",
             ordernumber: row?.ordernumber || "",
             transactiontype: row?.transactiontype || "DESPACHO",
