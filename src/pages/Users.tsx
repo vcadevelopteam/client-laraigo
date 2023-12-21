@@ -462,6 +462,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                     onChange={(value) => {
                                         setValue('type', value ? "ASESOR" : "SUPERVISOR");
                                         settypeSwitch(value)
+                                        updatefield("type", value ? "ASESOR" : "SUPERVISOR");
                                     }} />
                                 {activateSwitchBots &&
 
@@ -470,7 +471,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                         helperText={t(langKeys.visualizationBotTooltip)}
                                         className="col-6"
                                         valueDefault={getValues("showbots")}
-                                        onChange={(value) => { setValue('showbots', value); }} />
+                                        onChange={(value) => { 
+                                            setValue('showbots', value); 
+                                            updatefield("showbots", value);
+                                        }} />
                                 }
 
                             </div>
