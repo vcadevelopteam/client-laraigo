@@ -5510,6 +5510,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   editingerror: 'Error al Editar - Problema con "retrieval" ',
   retrieval: 'Retrieval',
   codeinterpreter: 'Code Interpreter',
+  retrievaldescription: 'Si habilitas la recuperación para un Asistente específico, todos los archivos adjuntos serán indexados automáticamente y se te cobrarán los $0.20/GB por asistente por día. Puedes activar/desactivar la recuperación utilizando el punto final Modificar Asistente.',
+  codeinterpreterdescription: 'No pagas por los archivos adjuntos a un Asistente o Mensaje cuando se utiliza con Code Interpreter. Sólo se cobra por los archivos que se indexan para su recuperación, lo que ocurre automáticamente si la herramienta de recuperación está activada.',
 };
 
 const esResource: ResourceLanguage = {

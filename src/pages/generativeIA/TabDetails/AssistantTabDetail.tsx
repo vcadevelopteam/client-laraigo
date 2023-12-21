@@ -49,8 +49,23 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
-    const [isRetrieval, setIsRetrieval] = useState(false);
-    const [isCodeInterpreter, setIsCodeInterpreter] = useState(false);
+    const [isRetrieval, setIsRetrieval] = useState(row?.retrieval || false);
+    const [isCodeInterpreter, setIsCodeInterpreter] = useState(row?.codeinterpreter || false);
+    const allbasemodels = multiDataAux?.data?.[2]?.data||[];
+    const retrievalbasemodels = [
+        {
+            "domainid": 437605,
+            "domainvalue": "gpt-3.5-turbo-1106",
+            "domaindesc": "gpt-3.5-turbo-1106",
+            "bydefault": null
+        },
+        {
+            "domainid": 437612,
+            "domainvalue": "gpt-4-1106-preview",
+            "domaindesc": "gpt-4-1106-preview",
+            "bydefault": null
+        }
+    ];
 
 
     useEffect(() => {
@@ -99,7 +114,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 />
                 <FieldSelect
                     label={t(langKeys.basemodel)}
-                    data={(multiDataAux?.data?.[2]?.data||[])}
+                    data={isRetrieval ? retrievalbasemodels : allbasemodels}
                     valueDefault={getValues('basemodel')}
                     onChange={(value) => setValue('basemodel', value.domainvalue)}
                     error={errors?.basemodel?.message}
@@ -129,15 +144,16 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     control={
                         <>
                             <IOSSwitch
-                                checked={isCodeInterpreter}
+                                checked={isRetrieval}
                                 onChange={(event) => {
-                                    setIsCodeInterpreter(event.target.checked)
-                                    setValue('codeinterpreter', event.target.checked)
+                                    setIsRetrieval(event.target.checked)
+                                    setValue('retrieval', event.target.checked)
+                                    setValue('basemodel', "")
                                 }}
                                 color='primary'
                             />
                             <span style={{marginLeft:'0.6rem'}}>{t(langKeys.retrieval)}</span>
-                            <Tooltip title={t(langKeys.abandonmentEvent)} arrow placement="top" >
+                            <Tooltip title={t(langKeys.retrievaldescription)} arrow placement="top" >
                                 <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
                             </Tooltip>
                         </>
@@ -157,7 +173,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                                 color='primary'
                             />
                             <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
-                            <Tooltip title={t(langKeys.abandonmentEvent)} arrow placement="top" >
+                            <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
                                 <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
                             </Tooltip>
                         </>

@@ -5498,6 +5498,8 @@ export const langKeys = {
   editingerror: 'editingerror',
   retrieval: 'retrieval',
   codeinterpreter: 'codeinterpreter',
+  retrievaldescription: 'retrievaldescription',
+  codeinterpreterdescription: 'codeinterpreterdescription',
 };
 
 export type LangKeys = typeof langKeys;

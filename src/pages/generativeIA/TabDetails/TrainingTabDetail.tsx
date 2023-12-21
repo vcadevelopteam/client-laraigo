@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
@@ -21,9 +21,6 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import SaveIcon from "@material-ui/icons/Save";
-
-
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -254,6 +251,23 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         handleClearFile()
     });
 
+    const handleUploadURL = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(insAssistantAiDoc({...data, type:"WEB"})));
+            setWaitSave(true);
+        };
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback,
+            })
+        )
+        handleClearFile()
+    });
+
+
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
@@ -368,6 +382,11 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             {
                 Header: t(langKeys.name),
                 accessor: 'description',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'type',
                 width: "auto",
             },
             {
@@ -619,12 +638,13 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         <FieldEdit
                             className="col-12"
                             variant="outlined"
-
+                            onChange={(value)=> setValue("description", value)}
                             label={t(langKeys.name)}
                         />
                         <FieldEdit
                             className="col-12"
                             variant="outlined"
+                            onChange={(value)=> setValue("url", value)}
                             label={t(langKeys.website)}
                         />
                     </div>
@@ -633,6 +653,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         type="button"
                         startIcon={<AttachFileIcon />}
                         className={classes.clipButton}
+                        onClick={handleUploadURL}
                     >
                         {t(langKeys.import)}
                     </Button>

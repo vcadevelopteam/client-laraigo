@@ -5583,7 +5583,8 @@ const translation: LangKeys = {
   editingerror: 'Editing Error - Issue with "retrieval" ',
   retrieval: 'Retrieval',
   codeinterpreter: 'Code Interpreter',
-
+  retrievaldescription: 'If you enable retrieval for a specific Assistant, all the files attached will be automatically indexed and you will be charged the $0.20/GB per assistant per day. You can enabled/disable retrieval by using the Modify Assistant endpoint.',
+  codeinterpreterdescription: 'You do not pay for files attached to an Assistant or Message when used with Code Interpreter. You are only charged for files that are indexed for retrieval which happens automatically if the Retrieval tool is enabled.',
 };
 
 const enResource: ResourceLanguage = {
