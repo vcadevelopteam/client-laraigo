@@ -209,6 +209,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         }
     }, [executeResult, waitSave]);
 
+    useEffect(() => {
+        handleChatClick(dataThreads.data[dataThreads.data.length - 1]);
+    }, [dataThreads.data]);
+
     const handleCreateChat = () => {
         setIsCreatingChat(true);
     };
@@ -420,7 +424,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     return (
         <div className={classes.container}>
             <Paper className={classes.chatList}>
-                <div style={{marginBottom: 10}}>{row?.name}</div>
+                <div style={{marginBottom: 10, fontWeight: 'bold', textAlign: 'center'}}>{row?.name}</div>
                 <div className={classes.buttonscontainer}>
                     <Button
                         variant="contained"

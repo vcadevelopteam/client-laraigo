@@ -707,10 +707,12 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     </div>
                                 </Card>
                                 <div className={classes.block20}/>
-                                <div className={classes.loadingIndicator}>
-                                    <CachedIcon color="primary" style={{marginRight: 8}}/>
-                                    <span>Cargando respuesta...</span>
-                                </div>
+                                {getValues('url') === '' && (
+                                    <div className={classes.loadingIndicator}>
+                                        <CachedIcon color="primary" style={{marginRight: 8}}/>
+                                        <span>Cargando url del documento...</span>
+                                    </div>
+                                )}
                                 <FieldEdit
                                     variant="outlined"
                                     label="URL"
