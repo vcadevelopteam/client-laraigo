@@ -208,6 +208,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             id: 0,
             description: '',
             url: '',
+            fileid: '',
             type: 'FILE',
             status: 'ACTIVO',
             operation: 'INSERT',
@@ -219,6 +220,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         register('id');
         register('description');
         register('url');
+        register('fileid');
         register('type');
         register('status');
         register('operation');
@@ -240,12 +242,38 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [])
 
-    const handleUpload = handleSubmit((data) => {
-        const callback = () => {
+
+    const handleUpload = handleSubmit(async(data) => {
+        const callback = async () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insAssistantAiDoc(data)));
-            setWaitSave(true);
+            try {
+                const isDocumentAPI = await fetch ('https://documentgptapi.laraigo.com/files', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        file_url: data.url,
+                        file_name: data.description,
+                        apikey: row?.apikey,
+                    })
+                })
+                if (!isDocumentAPI.ok) {
+                    console.error('Error en cargar documento:', isDocumentAPI.statusText);
+                    setWaitSave(true);
+                    return;
+                }
+                const responseData = await isDocumentAPI.json();
+                const documentid = responseData.data.id;
+                dispatch(execute(insAssistantAiDoc({...data,fileid:documentid})));
+                setWaitSave(true);
+            }        
+            catch (error) {
+                console.error('Error en la llamada a la API:', error);
+                setWaitSave(true);
+            }          
         };
+
         dispatch(
             manageConfirmation({
                 visible: true,
@@ -291,15 +319,44 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         setValue('url', '')
     };
 
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-          dispatch(
-            execute(insAssistantAiDoc({ ...row, id: row.assistantaidocumentid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
-          );
-          dispatch(showBackdrop(true));
-          setWaitSave(true);
-        };
+    const handleDelete = (row2: Dictionary) => {
+        console.log(row2)
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+
+             try {
+                const filesDelete = await fetch('https://documentgptapi.laraigo.com/files/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        file_id: row2.fileid,
+                        apikey: row?.apikey,
+                    }),
+                });
     
+                if (!filesDelete.ok) {
+                    console.error('Error al eliminar documento:', filesDelete.statusText);
+                    setWaitSave(true);
+                    return;
+                }
+
+                dispatch(
+                    execute(insAssistantAiDoc({
+                        ...row2,
+                        id: row2.assistantaidocumentid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+                setWaitSave(true);
+            } catch (error) {
+                console.error('Error en la llamada:', error);
+                setWaitSave(true);
+            }           
+        };    
         dispatch(
           manageConfirmation({
             visible: true,
