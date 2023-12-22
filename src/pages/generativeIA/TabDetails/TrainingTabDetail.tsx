@@ -21,6 +21,8 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import CachedIcon from '@material-ui/icons/Cached';
+
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -171,6 +173,12 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#ffff',
         color: '#7721AD'
     },
+    loadingIndicator: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '10px',
+    },
 }));
 
 interface TrainingTabDetailProps {
@@ -197,6 +205,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [isModalOpen, setModalOpen] = useState(false);
     const [documentUrl, setDocumentUrl] = useState("");
     const [selectedDocumentUrl, setSelectedDocumentUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchData();
@@ -242,65 +251,74 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [])
 
-    const handleUpload = handleSubmit(async(data) => {
+    const handleUpload = handleSubmit(async (data) => {
         const callback = async () => {
-            dispatch(showBackdrop(true));
-            try {
-                const isDocumentAPI = await fetch ('https://documentgptapi.laraigo.com/files', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        file_url: data.url,
-                        file_name: data.description,
-                        apikey: row?.apikey,
-                    })
-                })
-                if (!isDocumentAPI.ok) {
-                    console.error('Error en cargar documento:', isDocumentAPI.statusText);
-                    setWaitSave(true);
-                    return;
-                }
-                const responseData = await isDocumentAPI.json();
-                const documentid = responseData.data.id;
-
-                const assistantFilesAPI = await fetch('https://documentgptapi.laraigo.com/assistants/files', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        assistant_id: row?.code,
-                        file_id: documentid,
-                        apikey: row?.apikey,
-                    }),
-                });
-        
-                if (!assistantFilesAPI.ok) {
-                    console.error('Error en la llamada al endpoint assistants/files:', assistantFilesAPI.statusText);
-                    setWaitSave(true);
-                    return;
-                }
-
-                dispatch(execute(insAssistantAiDoc({ ...data, fileid: documentid })));
-                setWaitSave(true);
-            }        
-            catch (error) {
-                console.error('Error en la llamada a la API:', error);
-                setWaitSave(true);
-            }          
+          setLoading(true);
+          dispatch(showBackdrop(true));
+      
+          try {
+            const isDocumentAPI = await fetch('https://documentgptapi.laraigo.com/files', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                file_url: data.url,
+                file_name: data.description,
+                apikey: row?.apikey,
+              }),
+            });
+      
+            if (!isDocumentAPI.ok) {
+              console.error('Error en cargar documento:', isDocumentAPI.statusText);
+              setWaitSave(true);
+              setLoading(false);
+              return;
+            }
+      
+            const responseData = await isDocumentAPI.json();
+            const documentid = responseData.data.id;
+      
+            const assistantFilesAPI = await fetch('https://documentgptapi.laraigo.com/assistants/files', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                assistant_id: row?.code,
+                file_id: documentid,
+                apikey: row?.apikey,
+              }),
+            });
+      
+            if (!assistantFilesAPI.ok) {
+              console.error('Error en la llamada al endpoint assistants/files:', assistantFilesAPI.statusText);
+              setWaitSave(true);
+              setLoading(false);
+              return;
+            }
+      
+            dispatch(execute(insAssistantAiDoc({ ...data, fileid: documentid })));
+            setWaitSave(true);
+          } catch (error) {
+            console.error('Error en la llamada a la API:', error);
+            setWaitSave(true);
+          } finally {
+            setLoading(false);
+          }
         };
-
+      
         dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback,
-            })
-        )
-        handleClearFile()
-    });
+          manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback,
+          })
+        );
+        handleClearFile();
+      });
+      
+      
 
     const handleUploadURL = handleSubmit((data) => {
         const callback = () => {
@@ -689,6 +707,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     </div>
                                 </Card>
                                 <div className={classes.block20}/>
+                                <div className={classes.loadingIndicator}>
+                                    <CachedIcon color="primary" style={{marginRight: 8}}/>
+                                    <span>Cargando respuesta...</span>
+                                </div>
                                 <FieldEdit
                                     variant="outlined"
                                     label="URL"
@@ -714,56 +736,92 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         );
     } else if(viewSelected === 'uploadURL') {
         return (
-            <>
-                <div className={classes.containerDetail}>
-                    <div className={classes.container2}>
-                        <div>
-                            <Button
-                                type="button"
-                                style={{color: '#7721AD'}}
-                                startIcon={<ArrowBackIcon />}
-                                onClick={() => setViewSelected('main')}
-                            >
-                                {t(langKeys.knowledge_base)}
-                            </Button>
-                        </div>
-                        <div className={classes.block10}/>
-                        <div>
-                            <span className={classes.title}>
-                                {t(langKeys.importWebsite)}
-                            </span>
-                            <div className={classes.titleMargin}>
-                                <span>{t(langKeys.uploadURLText)}</span>
-                            </div>
-                        </div>                    
-                    </div>
-                    <div className={classes.block20}/>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-12"
-                            variant="outlined"
-                            onChange={(value)=> setValue("description", value)}
-                            label={t(langKeys.name)}
-                        />
-                        <FieldEdit
-                            className="col-12"
-                            variant="outlined"
-                            onChange={(value)=> setValue("url", value)}
-                            label={t(langKeys.website)}
-                        />
-                    </div>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        startIcon={<AttachFileIcon />}
-                        className={classes.clipButton}
-                        onClick={handleUploadURL}
-                    >
-                        {t(langKeys.import)}
-                    </Button>
+            <div className={classes.containerDetail}>
+              <div className={classes.container2}>
+                <div>
+                  <Button
+                    type="button"
+                    style={{ color: '#7721AD' }}
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => setViewSelected('main')}
+                  >
+                    {t(langKeys.knowledge_base)}
+                  </Button>
                 </div>
-            </>
-        );
+                <div className={classes.block10} />
+                <div>
+                  <span className={classes.title}>
+                    {t(langKeys.importWebsite)}
+                  </span>
+                  <div className={classes.titleMargin}>
+                    <span>{t(langKeys.uploadURLText)}</span>
+                  </div>
+                </div>
+              </div>
+              <div className={classes.block20} />
+              <div className="row-zyx">
+                <FieldEdit
+                  className="col-12"
+                  variant="outlined"
+                  onChange={(value) => setValue("description", value)}
+                  label={t(langKeys.name)}
+                />
+                <FieldEdit
+                  className="col-12"
+                  variant="outlined"
+                  onChange={(value) => setValue("url", value)}
+                  label={t(langKeys.website)}
+                />
+              </div>
+              {fileAttachment && (
+                <>
+                  <Card className={classes.fileInfoCard}>
+                    <div className={classes.fileInfoCardContent}>
+                      <div className={classes.fileCardText}>
+                        <InsertDriveFileIcon style={{ marginRight: 10 }} />
+                        <Typography className={classes.fileCardName}>
+                          {fileAttachment.name}
+                        </Typography>
+                      </div>
+                      <IconButton onClick={handleClearFile}>
+                        <ClearIcon style={{ color: "#008439" }} />
+                      </IconButton>
+                    </div>
+                  </Card>
+                  <div className={classes.block20} />
+                  {loading ? (
+                    <div className={classes.loadingIndicator}>
+                      <CachedIcon color="primary" style={{ marginRight: 8 }} />
+                      <span>Cargando respuesta...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className={classes.loadingIndicator}>
+                        <CachedIcon color="primary" style={{ marginRight: 8 }} />
+                        <span>Cargado con éxito!</span>
+                      </div>
+                      <FieldEdit
+                        variant="outlined"
+                        label="URL"
+                        valueDefault={getValues('url')}
+                        style={{ flexGrow: 1 }}
+                        disabled={true}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+              <Button
+                variant="contained"
+                type="button"
+                startIcon={<AttachFileIcon />}
+                className={classes.clipButton}
+                onClick={handleUploadURL}
+              >
+                {t(langKeys.import)}
+              </Button>
+            </div>
+          );
     } else return null;
 };
 

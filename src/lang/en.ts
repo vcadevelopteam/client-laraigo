@@ -5578,7 +5578,7 @@ const translation: LangKeys = {
   maxtokensdesc: "Maximum number of tokens to generate. Do not set it higher than necessary, if you set it too high, the request will be truncated.",
   temperaturedesc: "Main factor to control the randomness of the answers, a higher value means greater randomness in the answers.",
   toppdesc: "Select tokens with probabilities that add up to less than this number. A higher value means a wider range of possible random outcomes.",
-  error_previewing_file: "Error previewing file.",
+  error_previewing_file: "No .docx or .ppt files can be previewed at the moment",
   download_file_instead: "Do you want to download the file instead?",
   editingerror: 'Editing Error - Issue with "retrieval" ',
   retrieval: 'Retrieval',

@@ -420,7 +420,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     return (
         <div className={classes.container}>
             <Paper className={classes.chatList}>
-                <div>{row?.name}</div>
+                <div style={{marginBottom: 10}}>{row?.name}</div>
                 <div className={classes.buttonscontainer}>
                     <Button
                         variant="contained"
