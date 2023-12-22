@@ -288,7 +288,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     text: message,
                     assistant_id: row?.code,
                     thread_id: selectedChat?.code,
-                    sources: true,
+                    sources: false,
                     apikey: row?.apikey,
                 })
             })
