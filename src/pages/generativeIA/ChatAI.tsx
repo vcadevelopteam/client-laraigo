@@ -298,7 +298,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             }
             const responseData = await sendMessage.json();
             const botResponse = responseData.data.response;
-            dispatch(
+            await dispatch(
                 execute(
                     insMessageAi({
                         assistantaiid: row?.assistantaiid,
@@ -313,10 +313,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     })
                 )
             );
-            fetchThreadMessages(selectedChat?.threadid);
         } catch (error) {
             console.error('Error en la llamada a la API:', error);
         } finally {
+            fetchThreadMessages(selectedChat?.threadid);
             setIsLoading(false);
         }
     };

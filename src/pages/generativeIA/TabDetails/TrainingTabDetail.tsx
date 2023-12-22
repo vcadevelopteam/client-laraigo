@@ -264,7 +264,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 }
                 const responseData = await isDocumentAPI.json();
                 const documentid = responseData.data.id;
-                
+
                 const assistantFilesAPI = await fetch('https://documentgptapi.laraigo.com/assistants/files', {
                     method: 'POST',
                     headers: {
@@ -694,6 +694,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     label="URL"
                                     valueDefault={getValues('url')}
                                     style={{ flexGrow: 1 }}
+                                    disabled={true}
                                 />
                             </>
                         )}
