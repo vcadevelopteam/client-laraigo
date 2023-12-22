@@ -242,7 +242,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [])
 
-
     const handleUpload = handleSubmit(async(data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
@@ -265,7 +264,26 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 }
                 const responseData = await isDocumentAPI.json();
                 const documentid = responseData.data.id;
-                dispatch(execute(insAssistantAiDoc({...data,fileid:documentid})));
+                
+                const assistantFilesAPI = await fetch('https://documentgptapi.laraigo.com/assistants/files', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        assistant_id: row?.code,
+                        file_id: documentid,
+                        apikey: row?.apikey,
+                    }),
+                });
+        
+                if (!assistantFilesAPI.ok) {
+                    console.error('Error en la llamada al endpoint assistants/files:', assistantFilesAPI.statusText);
+                    setWaitSave(true);
+                    return;
+                }
+
+                dispatch(execute(insAssistantAiDoc({ ...data, fileid: documentid })));
                 setWaitSave(true);
             }        
             catch (error) {
