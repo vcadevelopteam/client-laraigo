@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC } from "react";
+import React, { FC } from "react";
+
 import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
@@ -184,6 +184,22 @@ export const Privacy: FC = () => {
                             </li>
                         </ul>
                     </li>
+                    <li>
+                        <p>
+                            <b>{t(langKeys.privacypolicy88)}</b> {t(langKeys.privacypolicy89)}
+                        </p>
+                        <ul style={{ listStyleType: "none" }}>
+                            <li>
+                                <ul>
+                                    <li>{t(langKeys.privacypolicy90)}</li>
+                                    <li>{t(langKeys.privacypolicy91)}</li>
+                                    <li>{t(langKeys.privacypolicy92)}</li>
+                                    <li>{t(langKeys.privacypolicy93)}</li>
+                                </ul>
+                                <p>{t(langKeys.privacypolicy94)}</p>
+                            </li>
+                        </ul>
+                    </li>
                 </ol>
                 <p>
                     <b>{t(langKeys.privacypolicy55)}</b>
@@ -234,6 +250,11 @@ export const Privacy: FC = () => {
                     <b>{t(langKeys.privacypolicy82)}</b>
                 </p>
                 <p>{t(langKeys.privacypolicy83)}</p>
+                <p>{t(langKeys.privacypolicy85)}</p>
+                <ul>
+                    <li>{t(langKeys.privacypolicy86)}</li>
+                    <li>{t(langKeys.privacypolicy87)}</li>
+                </ul>
                 <p>{t(langKeys.privacypolicy84)}</p>
             </Box>
         </div>

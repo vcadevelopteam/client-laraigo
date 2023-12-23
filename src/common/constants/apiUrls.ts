@@ -272,6 +272,7 @@ export const apiUrls = {
     MAIN_URL_PAYMENTORDER: `${BASE_URL}/main/public/paymentorder`,
     MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,
     MAIN_URL_PAYMENTORDEROPENPAY: `${BASE_URL}/main/public/paymentorderopenpay`,
+    MAIN_URL_PAYMENTORDEROPENPAYCOLOMBIA: `${BASE_URL}/main/public/paymentorderopenpaycolombia`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,

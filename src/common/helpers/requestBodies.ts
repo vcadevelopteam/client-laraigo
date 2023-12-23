@@ -3081,6 +3081,12 @@ export const appsettingInvoiceSelCombo = () => ({
     parameters: {},
 });
 
+export const appsettingInvoiceSelSingle = (corpid: number, orgid: number) => ({
+    method: "UFN_APPSETTING_INVOICE_SEL_SINGLE",
+    key: "UFN_APPSETTING_INVOICE_SEL_SINGLE",
+    parameters: { corpid, orgid },
+});
+
 /**bloquear o desbloquear personas de forma masiva */
 export const personcommunicationchannelUpdateLockedArrayIns = (table: { personid: number, locked: boolean }[]) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",

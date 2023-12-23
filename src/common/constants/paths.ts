@@ -59,6 +59,10 @@ const paths = {
         path: "/paymentorderopenpay/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpay/${corpid}/${orgid}/${ordercode}`,
     },
+    OPENPAYCOLOMBIA_PAYMENTORDER: {
+        path: "/paymentorderopenpaycolombia/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpaycolombia/${corpid}/${orgid}/${ordercode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,

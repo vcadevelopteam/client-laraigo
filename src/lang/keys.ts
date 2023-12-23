@@ -5497,6 +5497,17 @@ export const langKeys = {
   organization_location: 'organization_location',
   reportinvoice_location: 'reportinvoice_location',
   invoice_location: 'invoice_location',
+  openpay_message09: 'openpay_message09',
+  privacypolicy85: "privacypolicy85",
+  privacypolicy86: "privacypolicy86",
+  privacypolicy87: "privacypolicy87",
+  privacypolicy88: "privacypolicy88",
+  privacypolicy89: "privacypolicy89",
+  privacypolicy90: "privacypolicy90",
+  privacypolicy91: "privacypolicy91",
+  privacypolicy92: "privacypolicy92",
+  privacypolicy93: "privacypolicy93",
+  privacypolicy94: "privacypolicy94",
 };
 
 export type LangKeys = typeof langKeys;
