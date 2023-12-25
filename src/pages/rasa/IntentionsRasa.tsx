@@ -518,13 +518,13 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                 
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.intent_description),
                 accessor: 'intent_description',
                 width: "auto",
                 NoFilter: true,
             },
             {
-                Header: t(langKeys.examples),
+                Header: t(langKeys.intent_examples),
                 accessor: 'intent_examples',
                 width: "auto",
                 NoFilter: true,
@@ -546,7 +546,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
             },                 
             {
                 Header: `${t(langKeys.examples)} ${t(langKeys.entities)}`,
-                accessor: 'entity_examples',
+                accessor: 'intent_with_examples',
                 width: "auto",
                 NoFilter: true,
                 Cell: (props: any) => {
@@ -554,7 +554,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                     return (
                         <label
                         >
-                            {row.entity_examples||"-"}
+                            {row.intent_with_examples||"-"}
                         </label>
                     )
                 }

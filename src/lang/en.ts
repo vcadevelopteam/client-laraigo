@@ -473,6 +473,8 @@ const translation: LangKeys = {
 
   description: 'Description',
   description_plural: 'Descriptions',
+  intent_description: 'Description Intent',
+  intent_examples: 'Examples Intent',
 
   active: 'Active',
   inactive: 'Inactive',
