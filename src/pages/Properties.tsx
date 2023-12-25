@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 
 import Accordion from '@material-ui/core/Accordion';
@@ -14,7 +13,6 @@ import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { Box, CircularProgress } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
 import { FieldEdit, FieldEditArray, FieldEditMulti, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
-
 import { getDistinctPropertySel, getPropertySel, getValuesFromDomain, insProperty, getCorpSel, getOrgSel, getChannelSel } from 'common/helpers';
 import { getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, execute, getCollectionAux2, resetMainAux2, getMultiCollectionAux2 } from 'store/main/actions';
 import { langKeys } from 'lang/keys';
@@ -30,9 +28,6 @@ const useStyles = makeStyles((theme) => ({
         background: '#fff',
         marginTop: theme.spacing(2),
         padding: theme.spacing(2)
-    },
-    containerDetail2: {
-        position: 'absolute'
     },
     button: {
         fontSize: '14px',
@@ -73,9 +68,7 @@ const Properties: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
 
     const classes = useStyles();
-
     const { t } = useTranslation();
-
     const dispatch = useDispatch();
     const arrayBread = [
         { id: "view-1", name: t(langKeys.property_plural) },
@@ -101,16 +94,7 @@ const Properties: FC = () => {
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description',
-                // Cell: (props: any) => {
-                //     return (
-                //         <div>
-                //             <span>
-                //                 {t(props.cell.row.original.description)}
-                //             </span>
-                //         </div>
-                //     );
-                // }
+                accessor: 'description',               
             },
             {
                 Header: t(langKeys.category),
