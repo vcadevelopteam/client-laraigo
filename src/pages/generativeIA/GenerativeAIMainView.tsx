@@ -69,6 +69,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     arrayBread,
 }) => {
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
     const { t } = useTranslation();
     const [viewSelectedTraining, setViewSelectedTraining] = useState("assistantdetail")
     const executeResult = useSelector(state => state.main.execute);
@@ -110,6 +111,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user?.token}`,
                     },
                     body: JSON.stringify({
                         assistant_id: row.code,

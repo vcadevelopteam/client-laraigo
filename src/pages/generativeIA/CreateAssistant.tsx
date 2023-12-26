@@ -75,6 +75,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
+    const user = useSelector(state => state.login.validateToken.user);
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
@@ -192,6 +193,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user?.token}`,
                     },
                     body: edit
                     ? JSON.stringify({

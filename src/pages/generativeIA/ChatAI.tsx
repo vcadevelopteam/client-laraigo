@@ -147,6 +147,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
@@ -230,6 +231,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user?.token}`,
                     },
                     body: JSON.stringify({
                         apikey: row?.apikey,
@@ -287,6 +289,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`,
                 },
                 body: JSON.stringify({
                     text: message,
@@ -349,6 +352,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user?.token}`,
                     },
                     body: JSON.stringify({
                         thread_id: chat.code,
@@ -418,7 +422,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
 
     const handleChatClick = (chat: Dictionary) => {
         setSelectedChat(chat);
-        fetchThreadMessages(chat.threadid)
+        fetchThreadMessages(chat?.threadid)
     };
 
     return (

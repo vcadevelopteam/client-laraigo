@@ -15,14 +15,12 @@ import { execute, uploadFile } from "store/main/actions";
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from "@types";
 import { useForm } from "react-hook-form";
-import { insAssistantAiDoc, updateAssistantAiDocumentTraining } from "common/helpers";
+import { insAssistantAiDoc } from "common/helpers";
 import { CellProps } from "react-table";
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import CachedIcon from '@material-ui/icons/Cached';
-
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -197,6 +195,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
     const [viewSelected, setViewSelected] = useState('main');
     const dataDocuments = useSelector(state => state.main.mainAux);
@@ -262,6 +261,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.token}`,
               },
               body: JSON.stringify({
                 file_url: data.url,
@@ -284,6 +284,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.token}`,
               },
               body: JSON.stringify({
                 assistant_id: row?.code,
@@ -363,6 +364,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user?.token}`,
                     },
                     body: JSON.stringify({
                         file_id: row2.fileid,
