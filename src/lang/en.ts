@@ -933,6 +933,7 @@ const translation: LangKeys = {
   finishtimecall: "Call end time",
   finish: "FINISH",
   documentlibrary: "Document library",
+  uploadedby: "Uploaded by",
   transfertimecall: "Transfer time",
   transfertimecall_tooltip: "Time since the agent dialed the 'Transfer call' option",
   lastadvisername: "Last adviser name",

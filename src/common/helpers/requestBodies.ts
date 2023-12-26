@@ -679,6 +679,14 @@ export const getDomainSel = (domainname: string): IRequestBody => ({
         all: true
     }
 })
+export const getDocumentLibrary = (): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_SEL",
+    key: "UFN_DOCUMENTLIBRARY_SEL",
+    parameters: {
+        id: 0,
+        all: true
+    }
+})
 export const getReportSchedulerSel = (id: number): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_SEL",
     key: "UFN_REPORTSCHEDULER_SEL",
