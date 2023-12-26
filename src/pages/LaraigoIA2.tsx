@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'; 
+//TODO: en conectares hay un tipo preguntar de donde sale
+
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -167,31 +169,7 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
 
                                         <div className="col-6" style={{width: "50%"}}>
                                             <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>{t(langKeys.intentions)}</div>
-                                            <div className={classes.containerInnertittle3}>{t(langKeys.intentionsandentitiesdescription)}</div>                                            
-                                            <Button
-                                                className={classes.button}
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={()=>setViewSelectedTraining("intentions")}
-                                                style={{ backgroundColor: "#55BD84" }}
-                                            >{t(langKeys.enter)}
-                                            </Button>
-                                        </div>
-                                        
-                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <IntencionesIALogo style={{ height: 220, width:"100%" }} />
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                                <Card style={{ position: 'relative', display:"flex" }}>
-                                    <div className={classes.containerInner}>
-
-                                        <div className="col-6" style={{width: "50%"}}>
-                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>{t(langKeys.entities)}</div>
+                                            <div className={classes.containerInnertittle2}>{t(langKeys.intentionsandentities)}</div>
                                             <div className={classes.containerInnertittle3}>{t(langKeys.intentionsandentitiesdescription)}</div>                                            
                                             <Button
                                                 className={classes.button}
@@ -524,14 +502,14 @@ const IATraining: React.FC = () => {
 
                                         <div className="col-6" style={{width: "50%"}}>
                                             <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>GENERATIVA</div>
+                                            <div className={classes.containerInnertittle2}>WIT IA</div>
                                             <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>                                            
                                             <Button
                                                 className={classes.button}
                                                 variant="contained"
                                                 color="primary"
                                                 style={{ backgroundColor: "#55BD84" }}
-                                                //onClick={()=>setViewSelectedTraining("witia")}
+                                                onClick={()=>setViewSelectedTraining("witia")}
                                             >{t(langKeys.enter)}
                                             </Button>
                                         </div>
@@ -548,7 +526,7 @@ const IATraining: React.FC = () => {
 
                                         <div className="col-6" style={{width: "50%"}}>
                                             <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>EMPRESARIAL</div>
+                                            <div className={classes.containerInnertittle2}>RASA IA</div>
                                             <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>                                            
                                             <Button
                                                 className={classes.button}
