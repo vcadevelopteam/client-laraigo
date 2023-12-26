@@ -178,6 +178,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         padding: '10px',
+        marginTop: 20
     },
 }));
 
@@ -706,20 +707,12 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                         </IconButton>
                                     </div>
                                 </Card>
-                                <div className={classes.block20}/>
                                 {getValues('url') === '' && (
                                     <div className={classes.loadingIndicator}>
                                         <CachedIcon color="primary" style={{marginRight: 8}}/>
-                                        <span>Cargando url del documento...</span>
+                                        <span>Cargando el documento...</span>
                                     </div>
                                 )}
-                                <FieldEdit
-                                    variant="outlined"
-                                    label="URL"
-                                    valueDefault={getValues('url')}
-                                    style={{ flexGrow: 1 }}
-                                    disabled={true}
-                                />
                             </>
                         )}
                         <Button
@@ -728,7 +721,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             startIcon={<AttachFileIcon />}
                             onClick={handleUpload}
                             className={classes.clipButton2}
-                            disabled={fileAttachment === null}
+                            disabled={fileAttachment === null || getValues('url') === ''}
                         >
                             {t(langKeys.import)}
                         </Button>

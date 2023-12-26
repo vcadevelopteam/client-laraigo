@@ -135,7 +135,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
             apikey: row?.apikey || '',
-            retrieval: row?.retrieval || false,
+            retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
             type: row?.type || '',
             status: row?.status || 'ACTIVO',
@@ -150,7 +150,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('basemodel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
-        register('organizationname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('organizationname');
         register('querywithoutanswer', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('response');
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -171,9 +171,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         const callback = async () => {
             dispatch(showBackdrop(true));
 
-            let generalprompt = 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. Si te hablan en otro idioma que no sea ' + data.language +
+            let generalprompt = data.organizationname !== '' ? 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. Si te hablan en otro idioma que no sea ' + data.language +
                 ', infórmales que solamente puedes comunicarte en ' + data.language + '.\n\nSolamente debes contestar o informar temas referidos a: ' + data.organizationname +
-                '.\n\n' + data.prompt + '\n\n' + 'Considera inapropiado o evita mencionar las siguientes ideas o temas:\n' + data.negativeprompt;
+                '.\n\n' + data.prompt + '\n\n' + 'Considera inapropiado o evita mencionar las siguientes ideas o temas:\n' + data.negativeprompt : 
+                'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. Si te hablan en otro idioma que no sea ' + data.language +
+                ', infórmales que solamente puedes comunicarte en ' + data.language + '.\n\n' + data.prompt + '\n\n' +
+                'Considera inapropiado o evita mencionar las siguientes ideas o temas:\n' + data.negativeprompt;
 
             if(data.querywithoutanswer === 'Mejor Sugerencia') {
                 generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.'

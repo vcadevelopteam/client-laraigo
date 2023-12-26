@@ -5583,8 +5583,8 @@ const translation: LangKeys = {
   editingerror: 'Editing Error - Issue with "retrieval" ',
   retrieval: 'Retrieval',
   codeinterpreter: 'Code Interpreter',
-  retrievaldescription: 'If you enable retrieval for a specific Assistant, all the files attached will be automatically indexed and you will be charged the $0.20/GB per assistant per day. You can enabled/disable retrieval by using the Modify Assistant endpoint.',
-  codeinterpreterdescription: 'You do not pay for files attached to an Assistant or Message when used with Code Interpreter. You are only charged for files that are indexed for retrieval which happens automatically if the Retrieval tool is enabled.',
+  retrievaldescription: 'Retrieval enhances the wizard with knowledge from outside its model, such as proprietary product information or user-supplied documents. Once a file is uploaded and passed to the wizard, OpenAI automatically indexes the documents, stores the embeds and uses vector search to retrieve relevant content that answers user queries.',
+  codeinterpreterdescription: 'The Code Interpreter allows API wizards to run and write Python code in an isolated execution environment. This interpreter can process files with various data and formats, generating files with data and graphics images. It allows your wizard to run code iteratively to solve challenging code and math problems. If the code written by the wizard does not execute correctly, you can iterate over this code by trying to run different versions until the execution succeeds.',
 };
 
 const enResource: ResourceLanguage = {

@@ -49,7 +49,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
-    const [isRetrieval, setIsRetrieval] = useState(row?.retrieval || false);
+    const [isRetrieval, setIsRetrieval] = useState(row?.retrieval || true);
     const [isCodeInterpreter, setIsCodeInterpreter] = useState(row?.codeinterpreter || false);
     const allbasemodels = multiDataAux?.data?.[2]?.data||[];
     const retrievalbasemodels = [
@@ -105,6 +105,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                                     setValue('basemodel', "")
                                 }}
                                 color='primary'
+                                disabled={true}
                             />
                             <span style={{marginLeft:'0.6rem'}}>{t(langKeys.retrieval)}</span>
                             <Tooltip title={t(langKeys.retrievaldescription)} arrow placement="top" >

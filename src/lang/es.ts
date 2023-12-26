@@ -5510,8 +5510,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   editingerror: 'Error al Editar - Problema con "retrieval" ',
   retrieval: 'Retrieval',
   codeinterpreter: 'Code Interpreter',
-  retrievaldescription: 'Si habilitas la recuperación para un Asistente específico, todos los archivos adjuntos serán indexados automáticamente y se te cobrarán los $0.20/GB por asistente por día. Puedes activar/desactivar la recuperación utilizando el punto final Modificar Asistente.',
-  codeinterpreterdescription: 'No pagas por los archivos adjuntos a un Asistente o Mensaje cuando se utiliza con Code Interpreter. Sólo se cobra por los archivos que se indexan para su recuperación, lo que ocurre automáticamente si la herramienta de recuperación está activada.',
+  retrievaldescription: 'La Recuperación (Retrieval) mejora al asistente con conocimiento proveniente de fuera de su modelo, como información de productos propietarios o documentos proporcionados por los usuarios. Una vez que se carga un archivo y se pasa al asistente, OpenAI indexa automáticamente los documentos, almacena las incrustaciones y utiliza la búsqueda vectorial para recuperar contenido relevante que responda a las consultas de los usuarios.',
+  codeinterpreterdescription: 'El Code Interpreter permite a los asistentes de la API ejecutar y escribir código Python en un entorno de ejecución aislado. Este intérprete puede procesar archivos con diversos datos y formatos, generando archivos con datos e imágenes de gráficos. Permite a tu asistente ejecutar código de manera iterativa para resolver problemas de código y matemáticas desafiantes. Si el código escrito por el asistente no se ejecuta correctamente, puede iterar sobre este código intentando ejecutar diferentes versiones hasta que la ejecución tenga éxito.',
 };
 
 const esResource: ResourceLanguage = {
