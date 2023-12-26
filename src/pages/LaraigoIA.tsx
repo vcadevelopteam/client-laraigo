@@ -98,7 +98,7 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
 
     const newArrayBread = [
         ...arrayBread,
-        { id: "rasaia", name:  "RASA IA" },
+        { id: "rasaia", name:  "EMPRESARIAL" },
     ];
     // const [mainData, setMainData] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
