@@ -6,14 +6,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, TemplateSwitch } from 'components';
-import { Dictionary, MultiData } from "@types";
+import { Dictionary, IFile, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Box } from '@material-ui/core';
-import { UploaderIcon } from '../components/uploaderComponent';
+import { ItemFile, UploaderIcon } from '../components/uploaderComponent';
+import { documentLibraryIns } from 'common/helpers/requestBodies';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -48,18 +49,21 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
-    const dataDomain = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const initialValueAttachments = row?.link;
+    const [files, setFiles] = useState<IFile[]>(
+        initialValueAttachments ? initialValueAttachments.split(",").map((url: string) => ({ url: row?.link })) : []
+    );
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.whitelistid : 0,
+            id: row?.documentlibraryid|| 0,
             title: row?.title||"",
             description: row?.description||"",
             groups: row?.groups||"",
             favorite: row?.favorite||false,
             category: row?.category||"",
+            operation: row ? "EDIT" : "INSERT",
             status: "ACTIVO",
         }
     });
@@ -92,7 +96,7 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            //dispatch(execute(insWhitelist(data)));
+            dispatch(execute(documentLibraryIns({...data, link: files?.[0]?.url||""})));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -187,8 +191,8 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
                     </div>                 
                     <div className="row-zyx">
                         <div className="col-12">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.files)}</Box>
-                            <UploaderIcon classes={classes} setFiles={setFiles} />
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.file)}</Box>
+                            <UploaderIcon classes={classes} setFiles={setFiles} type={"file"}/>
                             
                             {files.length > 0 &&
                                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
@@ -196,6 +200,7 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
                                 </div>
                             }
                         </div>                  
+                    </div>
                 </div>
             </form>
         </div>

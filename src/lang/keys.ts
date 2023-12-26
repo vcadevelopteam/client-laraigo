@@ -23,6 +23,7 @@ export const langKeys = {
   documentlibrary: "documentlibrary",
   uploadedby: "uploadedby",
   finish: "finish",
+  file: "file",
   automaticclosingtime: "automaticclosingtime",
   noteclosingtime: "noteclosingtime",
   successful_enablecirtualassistant: "successful_enablecirtualassistant",

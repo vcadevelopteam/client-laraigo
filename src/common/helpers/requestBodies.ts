@@ -706,6 +706,15 @@ export const reportSchedulerIns = ({ id, title, status, origin, origintype, repo
     }
 })
 
+export const documentLibraryIns = ({id, title, description, category, groups, link, favorite, status, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_INS",
+    key: "UFN_DOCUMENTLIBRARY_INS",
+    parameters: {
+        id, title, description, category, groups, link, favorite, status, operation,
+        type: "",
+    }
+})
+
 export const getDomainValueSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_VALUES_SEL",
     key: "UFN_DOMAIN_VALUES_SEL",
