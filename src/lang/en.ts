@@ -735,7 +735,7 @@ const translation: LangKeys = {
   aitraining: "Training AI",
   aitrainingdescription: "Train your AI service",
   sinonimsdescription: "Train synonyms referring to your created entity.",
-  modeldescription: "Check the models that have previously been trained",
+  modeldescription: "Check the models that have previously been trained.",
   insightsdescription: "Assess the degree of confidence of the training of your intentions",
   testmodel: "Test your model",
   testmodeldescription: "Test your model with the created intents and entities.",
