@@ -932,6 +932,7 @@ const translation: LangKeys = {
   automaticclosingtimehelpertext: "Set an automatic time for the conversation to close with the user.",
   finishtimecall: "Call end time",
   finish: "FINISH",
+  documentlibrary: "Document library",
   transfertimecall: "Transfer time",
   transfertimecall_tooltip: "Time since the agent dialed the 'Transfer call' option",
   lastadvisername: "Last adviser name",

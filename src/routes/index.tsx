@@ -315,6 +315,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.INVOICE} component={() => (<Layout mainClasses={classes.main}><Invoice /></Layout>)} />
 					<ProtectRoute exact path={paths.MESSAGE_INBOX} component={() => (<Layout><MessageInbox /></Layout>)} />
 					<ProtectRoute exact path={paths.PROPERTIES} component={() => <Layout mainClasses={classes.main}><Properties /></Layout>} />
+					<ProtectRoute exact path={paths.DOCUMENTLIBRARY} component={() => <Layout mainClasses={classes.main}><Properties /></Layout>} />
 					<ProtectRoute exact path={paths.USERS} component={() => <Layout mainClasses={classes.main}><Users /></Layout>} />
 					<ProtectRoute exact path={paths.QUICKREPLIES} component={() => <Layout mainClasses={classes.main}><Quickreplies /></Layout>} />
 					<ProtectRoute exact path={paths.GROUPCONFIG} component={() => <Layout mainClasses={classes.main}><Groupconfig /></Layout>} />

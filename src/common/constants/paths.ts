@@ -295,6 +295,7 @@ const paths = {
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
     PROPERTIES: '/extras/properties',
+    DOCUMENTLIBRARY: '/documentlibrary',
     QUICKREPLIES: '/extras/quickreplies',
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',

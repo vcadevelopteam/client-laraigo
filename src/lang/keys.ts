@@ -20,6 +20,7 @@ export const langKeys = {
   visualizationBotTooltip: "visualizationBotTooltip",
   orders: "orders",
   configure: "configure",
+  documentlibrary: "documentlibrary",
   finish: "finish",
   automaticclosingtime: "automaticclosingtime",
   noteclosingtime: "noteclosingtime",
