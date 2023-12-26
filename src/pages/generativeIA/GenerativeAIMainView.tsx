@@ -183,11 +183,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                 width: "auto",
             },
             {
-                Header: t(langKeys.last_trainning),
-                accessor: 'lasttraining',
-                width: "auto",
-            },
-            {
                 Header: t(langKeys.basemodel),
                 accessor: 'basemodel',
                 width: "auto",

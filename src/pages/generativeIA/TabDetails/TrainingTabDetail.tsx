@@ -317,10 +317,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
           })
         );
         handleClearFile();
-      });
+    });
       
-      
-
     const handleUploadURL = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
@@ -336,7 +334,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         )
         handleClearFile()
     });
-
 
     useEffect(() => {
         if (waitUploadFile) {
@@ -437,23 +434,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             }
         }
     };
-      
-    const handleTrain = (doc: Dictionary) => {
-        dispatch(
-            execute(updateAssistantAiDocumentTraining(row?.assistantaiid, doc.assistantaidocumentid.toString()))
-        );
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
-    }
-
-    const handleTrainAll = () => {
-        const docsIdsString = dataDocuments.data.map(doc => doc.assistantaidocumentid).join(',');  
-        dispatch(
-            execute(updateAssistantAiDocumentTraining(row?.assistantaiid, docsIdsString))
-        );
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
-    }
 
     const columns = React.useMemo(
         () => [
@@ -469,9 +449,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                   return (
                     <TemplateIcons
                       deleteFunction={() => handleDelete(row)}
-                      extraFunction={() => handleTrain(row)}
-                      extraOption={t(langKeys.train)}
-                      ExtraICon={() => <AutorenewIcon width={28} style={{ fill: '#7721AD' }} />}
                     />
                   );
                 },
@@ -506,12 +483,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 Header: t(langKeys.upload),
                 accessor: 'createdate',
                 width: "auto",
-            },           
-            {
-                Header: t(langKeys.last_trainning),
-                accessor: 'lasttraining',
-                width: "auto",
-            },         
+            },      
         ],
         []
     );
@@ -589,17 +561,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     <span>{t(langKeys.saved_documents_description)}</span>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <Button
-                                variant="contained"
-                                type="button"
-                                className={classes.purpleButton}
-                                startIcon={<AutorenewIcon color="primary"/>}
-                                onClick={() => handleTrainAll()}
-                            >
-                                {t(langKeys.train)}
-                            </Button>
                         </div>
                     </div>
                     <div className={classes.titleMargin}>
