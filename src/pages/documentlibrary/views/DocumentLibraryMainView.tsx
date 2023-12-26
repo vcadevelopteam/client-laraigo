@@ -2,13 +2,14 @@ import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons } from 'components';
-import { insDomain } from 'common/helpers';
+import { documentLibraryIns } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import TableZyx from 'components/fields/table-simple';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -27,6 +28,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [waitSave, setWaitSave] = useState(false);
+    const [openModalPreview, setOpenModalPreview] = useState("");
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
 
@@ -87,6 +89,15 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
                 accessor: 'changeby',
                 NoFilter: true
             },
+            {
+                Header: "",
+                accessor: 'link',
+                NoFilter: true,                
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <VisibilityIcon style={{cursor: "pointer"}} onClick={()=>setOpenModalPreview(row?.link||"")}/>
+                }
+            },
         ],
         []
     );
@@ -119,7 +130,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(documentLibraryIns({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
