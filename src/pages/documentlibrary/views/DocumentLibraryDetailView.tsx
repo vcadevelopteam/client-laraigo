@@ -12,6 +12,8 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { Box } from '@material-ui/core';
+import { UploaderIcon } from '../components/uploaderComponent';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -182,7 +184,18 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
                             valueDefault={row?.favorite||false}
                             label={t(langKeys.favorite)}
                         />
-                    </div>                    
+                    </div>                 
+                    <div className="row-zyx">
+                        <div className="col-12">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.files)}</Box>
+                            <UploaderIcon classes={classes} setFiles={setFiles} />
+                            
+                            {files.length > 0 &&
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
+                                    {files.map((item: IFile) => <ItemFile key={item.id} item={item} setFiles={setFiles} />)}
+                                </div>
+                            }
+                        </div>                  
                 </div>
             </form>
         </div>
