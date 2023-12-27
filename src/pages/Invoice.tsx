@@ -48,7 +48,6 @@ import {
     formatNumber,
     formatNumberFourDecimals,
     formatNumberNoDecimals,
-    appsettingInvoiceSel,
     getBalanceSelSent,
     getBillingMessagingCurrent,
     getBillingPeriodCalcRefreshAll,
@@ -5378,7 +5377,6 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     const classes = useStyles();
     const culqiResult = useSelector((state) => state.culqi.request);
     const exchangeResult = useSelector((state) => state.culqi.requestGetExchangeRate);
-    const mainResult = useSelector((state) => state.main);
     const multiResult = useSelector((state) => state.main.multiDataAux);
     const user = useSelector((state) => state.login.validateToken.user);
 
@@ -5447,8 +5445,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     };
 
     useEffect(() => {
-        dispatch(getCollection(appsettingInvoiceSel()));
-        dispatch(getExchangeRate(null));
+        dispatch(getExchangeRate({ code: data?.currency || null }));
         dispatch(getMultiCollectionAux([listPaymentCard({ corpid: user?.corpid ?? 0, id: 0, orgid: 0 })]));
         dispatch(showBackdrop(true));
         setWaitSave(true);
@@ -5531,57 +5528,55 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 
     useEffect(() => {
         if (waitSave) {
-            if (!mainResult.mainData.loading && !exchangeResult.loading) {
+            if (!exchangeResult.loading) {
                 dispatch(showBackdrop(false));
+                setWaitSave(false);
 
-                if (mainResult.mainData.data) {
-                    if (mainResult.mainData.data[0]) {
-                        const appsetting = mainResult.mainData.data[0];
-                        const country = data?.orgcountry || data?.corpcountry;
-                        const doctype = data?.orgdoctype || data?.corpdoctype;
+                const country = data?.orgcountry || data?.corpcountry;
+                const doctype = data?.orgdoctype || data?.corpdoctype;
 
-                        if (country && doctype) {
-                            if (country === "PE" && doctype === "6") {
-                                let compareamount = data?.totalamount || 0;
+                if (country && doctype) {
+                    if (country === "PE" && doctype === "6") {
+                        let compareamount = data?.totalamount || 0;
 
-                                if (data?.currency === "USD") {
-                                    compareamount = compareamount * (exchangeResult?.exchangerate ?? 0);
-                                }
-
-                                if (compareamount > appsetting.detractionminimum) {
-                                    setTotalPay(
-                                        Math.round(
-                                            ((data?.totalamount || 0) -
-                                                (data?.totalamount || 0) * (appsetting.detraction || 0) +
-                                                Number.EPSILON) *
-                                                100
-                                        ) / 100
-                                    );
-                                    setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
-                                    setOverride(true);
-                                    setShowCulqi(true);
-                                    setDetractionAlert(true);
-                                    setDetractionAmount(
-                                        Math.round(((appsetting.detraction || 0) * 100 + Number.EPSILON) * 100) / 100
-                                    );
-                                } else {
-                                    setTotalPay(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
-                                    setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
-                                    setShowCulqi(true);
-                                }
-                            } else {
-                                setTotalPay(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
-                                setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
-                                setShowCulqi(true);
-                            }
+                        if (data?.currency !== "PEN") {
+                            compareamount =
+                                (compareamount / (exchangeResult?.exchangerate ?? 0)) *
+                                (exchangeResult?.exchangeratesol ?? 0);
                         }
 
-                        setPublicKey(appsetting.publickey);
+                        if (compareamount > data?.detractionminimum) {
+                            setTotalPay(
+                                Math.round(
+                                    ((data?.totalamount || 0) -
+                                        (data?.totalamount || 0) * (data?.detraction || 0) +
+                                        Number.EPSILON) *
+                                        100
+                                ) / 100
+                            );
+                            setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
+                            setOverride(true);
+                            setShowCulqi(true);
+                            setDetractionAlert(true);
+                            setDetractionAmount(
+                                Math.round(((data?.detraction || 0) * 100 + Number.EPSILON) * 100) / 100
+                            );
+                        } else {
+                            setTotalPay(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
+                            setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
+                            setShowCulqi(true);
+                        }
+                    } else {
+                        setTotalPay(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
+                        setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
+                        setShowCulqi(true);
                     }
                 }
+
+                setPublicKey(data?.publickey);
             }
         }
-    }, [mainResult, exchangeResult, waitSave]);
+    }, [exchangeResult, waitSave]);
 
     const handleCulqiSuccess = () => {
         setViewSelected("view-1");
@@ -5749,12 +5744,12 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                         <FieldView
                             className="col-4"
                             label={t(langKeys.totalamount)}
-                            value={(data?.currency === "USD" ? "$" : "S/") + formatNumber(totalAmount || 0)}
+                            value={data?.symbol + formatNumber(totalAmount || 0)}
                         />
                         <FieldView
                             className="col-4"
                             label={t(langKeys.totaltopay)}
-                            value={(data?.currency === "USD" ? "$" : "S/") + formatNumber(totalPay || 0)}
+                            value={data?.symbol + formatNumber(totalPay || 0)}
                         />
                     </div>
                     {detractionAlert && (
@@ -5914,7 +5909,6 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                     getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
                     getMeasureUnit(),
                     getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                    appsettingInvoiceSel(),
                 ])
             );
         };
@@ -8074,9 +8068,9 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
 
     const [amountTax, setAmountTax] = useState(0);
     const [amountTotal, setAmountTotal] = useState(0);
-    const [appsettingData, setAppsettingData] = useState<any>([]);
     const [corpList, setCorpList] = useState<any>([]);
     const [creditTypeList, setCreditTypeList] = useState<any>([]);
+    const [igv, setIgv] = useState(0);
     const [measureList, setMeasureList] = useState<any>([]);
     const [orgList, setOrgList] = useState<any>([]);
     const [pageSelected, setPageSelected] = useState(0);
@@ -8107,7 +8101,6 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
                 getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
                 getMeasureUnit(),
                 getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                appsettingInvoiceSel(),
             ])
         );
     }, []);
@@ -8268,18 +8261,6 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
                         : [],
             });
         }
-
-        const indexAppsetting = multiResult.data.findIndex((x: MultiData) => x.key === "UFN_APPSETTING_INVOICE_SEL");
-
-        if (indexAppsetting > -1) {
-            setAppsettingData({
-                loading: false,
-                data:
-                    multiResult.data[indexAppsetting] && multiResult.data[indexAppsetting].success
-                        ? multiResult.data[indexAppsetting].data
-                        : [],
-            });
-        }
     }, [multiResult]);
 
     const {
@@ -8304,7 +8285,7 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
             corpid: 0,
             invoicecomments: "",
             invoicecreatedate: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString().split("T")[0],
-            invoicecurrency: "USD",
+            invoicecurrency: "",
             invoiceduedate: "",
             invoiceid: data?.row ? data.row.invoiceid : 0,
             invoicepurchaseorder: "",
@@ -8420,16 +8401,16 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
         }
 
         if (data?.doctype) {
-            if (appsettingData?.data) {
-                const invoiceamount = getValues("invoicetotalamount");
+            const invoiceamount = getValues("invoicetotalamount");
 
-                if (data?.doctype === "0") {
-                    setAmountTax(0);
-                    setAmountTotal(invoiceamount || 0);
-                } else {
-                    setAmountTax((invoiceamount || 0) * appsettingData.data[0].igv);
-                    setAmountTotal((invoiceamount || 0) + (invoiceamount || 0) * appsettingData.data[0].igv);
-                }
+            if (data?.doctype === "0") {
+                setAmountTax(0);
+                setAmountTotal(invoiceamount || 0);
+            } else {
+                setAmountTax((invoiceamount || 0) * (data?.igv || 0));
+                setAmountTotal((invoiceamount || 0) + (invoiceamount || 0) * (data?.igv || 0));
+
+                setIgv(data?.igv || 0);
             }
         }
 
@@ -8559,16 +8540,12 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
             });
         }
 
-        if (appsettingData) {
-            if (appsettingData.data) {
-                if (getValues("clientdoctype") === "0") {
-                    setAmountTax(0);
-                    setAmountTotal(totalAmount);
-                } else {
-                    setAmountTax(totalAmount * appsettingData.data[0].igv);
-                    setAmountTotal(totalAmount + totalAmount * appsettingData.data[0].igv);
-                }
-            }
+        if (getValues("clientdoctype") === "0") {
+            setAmountTax(0);
+            setAmountTotal(totalAmount);
+        } else {
+            setAmountTax(totalAmount * igv);
+            setAmountTotal(totalAmount + totalAmount * igv);
         }
 
         setValue("invoicetotalamount", totalAmount);
@@ -9466,7 +9443,6 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const classes = useStyles();
     const culqiResult = useSelector((state) => state.culqi.request);
     const exchangeResult = useSelector((state) => state.culqi.requestGetExchangeRate);
-    const mainResult = useSelector((state) => state.main);
     const multiResult = useSelector((state) => state.main.multiDataAux);
     const user = useSelector((state) => state.login.validateToken.user);
 
@@ -9485,6 +9461,9 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [currentBillbyorg, setCurrentBillbyorg] = useState(false);
     const [currentCountry, setCurrentCountry] = useState("");
     const [currentDoctype, setCurrentDoctype] = useState("");
+    const [currentIgv, setCurrentIgv] = useState(0);
+    const [currentDetraction, setCurrentDetraction] = useState(0);
+    const [currentDetractionMinimum, setCurrentDetractionMinimum] = useState(0);
     const [detractionAlert, setDetractionAlert] = useState(false);
     const [detractionAmount, setDetractionAmount] = useState(0);
     const [disableInput, setDisableInput] = useState(data?.row ? true : false);
@@ -9586,8 +9565,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         );
 
         if (data?.row === null) {
-            dispatch(getCollection(appsettingInvoiceSel()));
-            dispatch(getExchangeRate(null));
+            dispatch(getExchangeRate({ code: "USD" }));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         } else {
@@ -9779,76 +9757,45 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 
     useEffect(() => {
         if (waitSave) {
-            if (!mainResult.mainData.loading && !exchangeResult.loading) {
+            if (!exchangeResult.loading) {
                 dispatch(showBackdrop(false));
-
-                if (mainResult.mainData.data) {
-                    if (mainResult.mainData.data[0]) {
-                        const appsetting = mainResult.mainData.data[0];
-
-                        setPublicKey(appsetting.publickey);
-                    }
-                }
+                setWaitSave(false);
             }
         }
-    }, [mainResult, exchangeResult, waitSave]);
+    }, [exchangeResult, waitSave]);
 
     const updateTotalPay = (buyAmount: number) => {
         if (currentCountry && currentDoctype) {
             if (currentCountry === "PE") {
-                setTotalAmount(
-                    Math.round(
-                        ((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100
-                    ) / 100
-                );
+                setTotalAmount(Math.round(((buyAmount || 0) * (1 + (currentIgv || 0)) + Number.EPSILON) * 100) / 100);
                 if (currentDoctype === "6") {
-                    const compareamount = (buyAmount || 0) * (exchangeResult?.exchangerate ?? 0);
+                    const compareamount =
+                        ((buyAmount || 0) / (exchangeResult?.exchangerate ?? 0)) *
+                        (exchangeResult?.exchangeratesol ?? 0);
 
-                    if (compareamount > mainResult.mainData.data[0].detractionminimum) {
+                    if (compareamount > currentDetractionMinimum) {
                         setTotalPay(
                             Math.round(
-                                ((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0)) -
-                                    (buyAmount || 0) *
-                                        (1 + (mainResult.mainData.data[0].igv || 0)) *
-                                        (mainResult.mainData.data[0].detraction || 0) +
+                                ((buyAmount || 0) * (1 + (currentIgv || 0)) -
+                                    (buyAmount || 0) * (1 + (currentIgv || 0)) * (currentDetraction || 0) +
                                     Number.EPSILON) *
                                     100
                             ) / 100
                         );
                         setDetractionAlert(true);
-                        setDetractionAmount(
-                            Math.round(((mainResult.mainData.data[0].detraction || 0) * 100 + Number.EPSILON) * 100) /
-                                100
-                        );
-                        setPaymentTax(
-                            Math.round(
-                                ((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0) + Number.EPSILON) * 100
-                            ) / 100
-                        );
+                        setDetractionAmount(Math.round(((currentDetraction || 0) * 100 + Number.EPSILON) * 100) / 100);
+                        setPaymentTax(Math.round(((buyAmount || 0) * (currentIgv || 0) + Number.EPSILON) * 100) / 100);
                     } else {
                         setDetractionAlert(false);
                         setTotalPay(
-                            Math.round(
-                                ((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100
-                            ) / 100
+                            Math.round(((buyAmount || 0) * (1 + (currentIgv || 0)) + Number.EPSILON) * 100) / 100
                         );
-                        setPaymentTax(
-                            Math.round(
-                                ((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0) + Number.EPSILON) * 100
-                            ) / 100
-                        );
+                        setPaymentTax(Math.round(((buyAmount || 0) * (currentIgv || 0) + Number.EPSILON) * 100) / 100);
                     }
                 } else {
                     setDetractionAlert(false);
-                    setTotalPay(
-                        Math.round(
-                            ((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100
-                        ) / 100
-                    );
-                    setPaymentTax(
-                        Math.round(((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0) + Number.EPSILON) * 100) /
-                            100
-                    );
+                    setTotalPay(Math.round(((buyAmount || 0) * (1 + (currentIgv || 0)) + Number.EPSILON) * 100) / 100);
+                    setPaymentTax(Math.round(((buyAmount || 0) * (currentIgv || 0) + Number.EPSILON) * 100) / 100);
                 }
             } else {
                 setTotalAmount(Math.round(((buyAmount || 0) + Number.EPSILON) * 100) / 100);
@@ -9877,6 +9824,11 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                 if (corporationdata.billbyorg === false) {
                     setCurrentCountry(corporationdata?.sunatcountry);
                     setCurrentDoctype(corporationdata?.doctype);
+                    setCurrentIgv(corporationdata?.igv);
+                    setCurrentDetraction(corporationdata?.detraction);
+                    setCurrentDetractionMinimum(corporationdata?.detractionminimum);
+
+                    setPublicKey(corporationdata?.publickey);
                 }
             }
         }
@@ -9896,6 +9848,11 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                 if (currentBillbyorg) {
                     setCurrentCountry(organizationdata?.sunatcountry);
                     setCurrentDoctype(organizationdata?.doctype);
+                    setCurrentIgv(organizationdata?.igv);
+                    setCurrentDetraction(organizationdata?.detraction);
+                    setCurrentDetractionMinimum(organizationdata?.detractionminimum);
+
+                    setPublicKey(organizationdata?.publickey);
                 }
             }
         } else {

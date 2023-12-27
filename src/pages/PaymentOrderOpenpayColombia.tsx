@@ -227,8 +227,6 @@ export const PaymentOrderOpenpayColombia: FC = () => {
             OpenPay.setApiKey('${authCredentials.publicKey}');
             OpenPay.setSandboxMode(${authCredentials.sandbox});
 
-            var deviceSessionId = OpenPay.deviceData.setup("payment-form", "deviceIdHiddenFieldName");
-
             $('#pay-button').on('click', function(event) {
                 event.preventDefault();
                 $("#pay-button").prop("disabled", true);
@@ -241,7 +239,6 @@ export const PaymentOrderOpenpayColombia: FC = () => {
                 let transactiondata = {
                     transactionresponse: response,
                     formdata: formdata,
-                    devicesessionid: deviceSessionId,
                     corpid: ${data.corpid},
                     orgid: ${data.orgid},
                     paymentorderid: ${data.paymentorderid},
@@ -276,7 +273,6 @@ export const PaymentOrderOpenpayColombia: FC = () => {
                     setPaymentData(resultGetPaymentOrder.data);
                     importUrlScript('https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js');
                     importUrlScript('https://resources.openpay.co/openpay.v1.min.js');
-                    importUrlScript('https://openpay.s3.amazonaws.com/openpay-data.v1.min.js');
                 }
             } else if (resultGetPaymentOrder.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(resultGetPaymentOrder.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))

@@ -2376,7 +2376,7 @@ export const getColumnsSDSel = (id: number, lost: boolean = false): IRequestBody
     parameters: {
         id: id,
         all: true,
-        lost: false
+        lost: lost,
     }
 })
 
@@ -3079,12 +3079,6 @@ export const appsettingInvoiceSelCombo = () => ({
     method: "UFN_APPSETTING_INVOICE_SEL_COMBO",
     key: "UFN_APPSETTING_INVOICE_SEL_COMBO",
     parameters: {},
-});
-
-export const appsettingInvoiceSelSingle = (corpid: number, orgid: number) => ({
-    method: "UFN_APPSETTING_INVOICE_SEL_SINGLE",
-    key: "UFN_APPSETTING_INVOICE_SEL_SINGLE",
-    parameters: { corpid, orgid },
 });
 
 /**bloquear o desbloquear personas de forma masiva */

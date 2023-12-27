@@ -6,6 +6,7 @@ import actionTypes from "./actionTypes";
 interface culqiResponse {
     code: string,
     exchangerate: number,
+    exchangeratesol: number,
     id: string,
     message: string,
     object: string,
@@ -16,6 +17,7 @@ export interface IRequest extends ITemplate {
     datacard?: any | null;
     datareport?: any | null;
     exchangerate?: number | null;
+    exchangeratesol?: number | null;
     msg?: string | null;
 }
 
@@ -38,7 +40,7 @@ export const initialState: IState = {
     requestCreateInvoice: { ...initialCommon, data: null, loading: false, error: false },
     requestCreateCreditNote: { ...initialCommon, data: null, loading: false, error: false },
     requestRegularizeInvoice: { ...initialCommon, data: null, loading: false, error: false },
-    requestGetExchangeRate: { ...initialCommon, data: null, loading: false, error: false, exchangerate: 0 },
+    requestGetExchangeRate: { ...initialCommon, data: null, loading: false, error: false, exchangerate: 0, exchangeratesol: 0 },
     requestCardCreate: { ...initialCommon, data: null, loading: false, error: false },
     requestCardDelete: { ...initialCommon, data: null, loading: false, error: false },
     requestCardGet: { ...initialCommon, data: null, loading: false, error: false },

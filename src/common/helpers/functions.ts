@@ -24,6 +24,7 @@ export const planModeList = [
 ];
 
 export const dataCurrency = [
+    { value: "COP", description: "COP" },
     { value: "PEN", description: "PEN" },
     { value: "USD", description: "USD" },
 ];
