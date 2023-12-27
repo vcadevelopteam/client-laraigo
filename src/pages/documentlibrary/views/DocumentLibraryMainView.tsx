@@ -10,6 +10,8 @@ import { execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import TableZyx from 'components/fields/table-simple';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import ModalDocPreview from '../modal/ModalDocPreview';
+import { IconButton } from '@material-ui/core';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -28,7 +30,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [waitSave, setWaitSave] = useState(false);
-    const [openModalPreview, setOpenModalPreview] = useState("");
+    const [openModalPreview, setOpenModalPreview] = useState<any>(null);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
 
@@ -92,10 +94,36 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
             {
                 Header: "",
                 accessor: 'link',
-                NoFilter: true,                
+                NoFilter: true,   
+                isComponent: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <VisibilityIcon style={{cursor: "pointer"}} onClick={()=>setOpenModalPreview(row?.link||"")}/>
+                    return (
+                    <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
+                        
+                        <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            size="small"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if(row?.link?.endsWith("pdf")){
+                                    setOpenModalPreview({
+                                        link: row?.link||"",
+                                        title: row?.title || "",})
+                                }else{
+                                    window.open(row?.link, "_blank");
+                                }
+                            }}
+                            style={{ display: 'block' }}
+                        >
+                            <VisibilityIcon style={{ color: '#B6B4BA' }} />
+                        </IconButton>
+
+                    </div>)
+                    
+                    
                 }
             },
         ],
@@ -130,7 +158,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(documentLibraryIns({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(documentLibraryIns({ ...row, id: row?.documentlibraryid||"", operation: 'DELETE', status: 'ELIMINADO' })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -153,6 +181,10 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
                 loading={mainResult.mainData.loading}
                 register={superadmin}
                 handleRegister={handleRegister}
+            />
+            <ModalDocPreview
+                openModal={openModalPreview}
+                setOpenModal={setOpenModalPreview}
             />
         </div>
     )
