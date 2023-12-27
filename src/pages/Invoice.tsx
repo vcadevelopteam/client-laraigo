@@ -219,20 +219,6 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: "wrap",
         gap: 16,
     },
-    containerField: {
-        border: "1px solid #e1e1e1",
-        borderRadius: theme.spacing(2),
-        display: "flex",
-        flex: "0 0 300px",
-        flexDirection: "column",
-        flexWrap: "wrap",
-        gap: 16,
-        padding: theme.spacing(2),
-    },
-    titleCard: {
-        fontSize: 16,
-        fontWeight: "bold",
-    },
     button: {
         fontSize: "14px",
         fontWeight: 500,
@@ -245,30 +231,6 @@ const useStyles = makeStyles((theme) => ({
         padding: 6,
         textTransform: "initial",
     },
-    text: {
-        fontSize: 15,
-        fontWeight: 500,
-    },
-    imgContainer: {
-        alignItems: "center",
-        backgroundColor: "white",
-        borderRadius: 20,
-        display: "flex",
-        height: 200,
-        justifyContent: "center",
-        width: 300,
-    },
-    img: {
-        height: "100%",
-        paddingTop: 10,
-        width: "auto",
-    },
-    icon: {
-        "&:hover": {
-            color: theme.palette.primary.main,
-            cursor: "pointer",
-        },
-    },
     containerDetail: {
         background: "#fff",
         marginTop: theme.spacing(2),
@@ -277,9 +239,7 @@ const useStyles = makeStyles((theme) => ({
     fieldsfilter: {
         width: 220,
     },
-    transparent: {
-        color: "transparent",
-    },
+
     commentary: {
         fontStyle: "italic",
     },
@@ -1156,17 +1116,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("billingtotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("billingtotalfeenet", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("billingtotalfeetax", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("billingtotalfeetaxrate", {
@@ -1660,6 +1623,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 }
 
                 if (dataArtificialInsert.length > 0) {
+                    console.log("test");
                     dispatch(
                         execute(
                             {
@@ -1676,6 +1640,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         )
                     );
                 } else {
+                    console.log("test");
                     dispatch(execute(billingPeriodUpd(data)));
                 }
 
@@ -1763,6 +1728,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                             type="submit"
+                            onClick={() => {
+                                console.log(getValues("billingtotalfee"));
+                                console.log(getValues("billingtotalfeenet"));
+                                console.log(getValues("billingtotalfeetax"));
+                            }}
                             variant="contained"
                         >
                             {t(langKeys.save)}

@@ -473,6 +473,8 @@ const translation: LangKeys = {
 
   description: 'Description',
   description_plural: 'Descriptions',
+  intent_description: 'Description Intent',
+  intent_examples: 'Examples Intent',
 
   active: 'Active',
   inactive: 'Inactive',
@@ -642,7 +644,7 @@ const translation: LangKeys = {
   aitraining: "Training AI",
   aitrainingdescription: "Train your AI service",
   sinonimsdescription: "Train synonyms referring to your created entity.",
-  modeldescription: "Check the models that have previously been trained in RASA",
+  modeldescription: "Check the models that have previously been trained",
   insightsdescription: "Assess the degree of confidence of the training of your intentions",
   testmodel: "Test your model",
   testmodeldescription: "Test your model with the created intents and entities.",
