@@ -171,7 +171,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const PaymentOrderOpenpay: FC = () => {
+export const PaymentOrderOpenpayColombia: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -194,7 +194,7 @@ export const PaymentOrderOpenpay: FC = () => {
     }
 
     const fetchData = () => {
-        dispatch(openpayGetPaymentOrder({ corpid: corpid, orgid: orgid, ordercode: ordercode }));
+        dispatch(openpayGetPaymentOrder({ corpid: corpid, orgid: orgid, ordercode: ordercode, colombia: true }));
         setWaitData(true);
     }
 
@@ -226,13 +226,11 @@ export const PaymentOrderOpenpay: FC = () => {
             OpenPay.setId('${authCredentials.merchantId}');
             OpenPay.setApiKey('${authCredentials.publicKey}');
             OpenPay.setSandboxMode(${authCredentials.sandbox});
-            
-            var deviceSessionId = OpenPay.deviceData.setup("payment-form", "deviceIdHiddenFieldName");
 
             $('#pay-button').on('click', function(event) {
                 event.preventDefault();
                 $("#pay-button").prop("disabled", true);
-                OpenPay.token.extractFormAndCreate('payment-form', sucess_callbak, error_callbak);                
+                OpenPay.token.extractFormAndCreate($("#payment-form"), sucess_callbak, error_callbak);                
             });
 
             var sucess_callbak = function(response) {
@@ -241,10 +239,10 @@ export const PaymentOrderOpenpay: FC = () => {
                 let transactiondata = {
                     transactionresponse: response,
                     formdata: formdata,
-                    devicesessionid: deviceSessionId,
                     corpid: ${data.corpid},
                     orgid: ${data.orgid},
                     paymentorderid: ${data.paymentorderid},
+                    colombia: true,
                 }
                 document.getElementById('send-form-data').innerHTML = JSON.stringify(transactiondata);
                 document.getElementById("send-form").click();
@@ -274,8 +272,7 @@ export const PaymentOrderOpenpay: FC = () => {
                 if (resultGetPaymentOrder.data) {
                     setPaymentData(resultGetPaymentOrder.data);
                     importUrlScript('https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js');
-                    importUrlScript('https://js.openpay.pe/openpay.v1.min.js');
-                    importUrlScript('https://js.openpay.pe/openpay-data.v1.min.js');
+                    importUrlScript('https://resources.openpay.co/openpay.v1.min.js');
                 }
             } else if (resultGetPaymentOrder.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(resultGetPaymentOrder.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
@@ -609,4 +606,4 @@ export const PaymentOrderOpenpay: FC = () => {
     }
 }
 
-export default PaymentOrderOpenpay;
+export default PaymentOrderOpenpayColombia;

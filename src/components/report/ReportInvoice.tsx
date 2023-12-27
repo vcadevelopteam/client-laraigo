@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -10,7 +8,7 @@ import { getCollectionAux2, getMultiCollection, getMultiCollectionAux2, resetMul
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, } from "@material-ui/core";
-import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList, formatCurrency, selInvoiceComment, insInvoiceComment, convertLocalDate } from 'common/helpers';
+import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList, formatCurrency, selInvoiceComment, insInvoiceComment, convertLocalDate, getValuesFromDomainCorp } from 'common/helpers';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { FieldSelect } from "components/fields/templates";
 import { Dictionary } from "@types";
@@ -113,7 +111,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
             getInvoiceReportDetail({
                 corpid: row?.corpid || 0,
                 year: row?.year || 0,
-                month: columnid?.includes('month_') ? +columnid.replace('month_', '') : 0,
+                month: columnid?.includes('month_') ? Number(columnid.replace('month_', '')) : 0,
                 currency: row?.currency || ""
             })
         ]))
@@ -216,6 +214,16 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
             {
                 Header: t(langKeys.currency),
                 accessor: 'currency',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
+                },
+            },
+            {
+                Header: t(langKeys.reportinvoice_location),
+                accessor: 'location',
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -372,7 +380,6 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                     loading={searchState && multiDataAux2.loading}
                     register={false}
                     filterGeneral={false}
-                // fetchData={fetchData}
                 />
             </div>
         </div>
@@ -424,7 +431,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
             setContentValidation('');
             setReloadExit(false);
 
-            let partialFields = fields;
+            const partialFields = fields;
             partialFields.corpid = data?.corpid;
             partialFields.orgid = data?.orgid;
             partialFields.invoiceid = data?.invoiceid;
@@ -463,7 +470,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
 
                 setDataInvoiceComment([]);
 
-                let partialFields = fields;
+                const partialFields = fields;
                 partialFields.commentcontent = '';
                 setFields(partialFields);
 
@@ -504,7 +511,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
     const handleCommentDelete = (data: any) => {
         if (fields && data) {
             const callback = () => {
-                var fieldTemporal = fields;
+                const fieldTemporal = fields;
 
                 fieldTemporal.corpid = data?.corpid;
                 fieldTemporal.orgid = data?.orgid;
@@ -538,8 +545,8 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
             handleClickButton1={() => { setOpenModal(false); if (reloadExit) { onTrigger(); } }}
         >
             <div style={{ overflowY: 'auto' }}>
-                {dataInvoiceComment.map((item, index) => (
-                    <div style={{ borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "10px", margin: "10px" }}>
+                {dataInvoiceComment.map((item) => (
+                    <div key={''} style={{ borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "10px", margin: "10px" }}>
                         <div style={{ display: 'flex' }}>
                             <b style={{ width: '100%' }}>{item.createby} {t(langKeys.invoiceat)} {convertLocalDate(item.createdate || '').toLocaleString()}</b>
                             <Button
@@ -579,7 +586,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
                         valueDefault={fields.commentcontent}
                         error={contentValidation}
                         onChange={(value) => {
-                            let partialf = fields;
+                            const partialf = fields;
                             partialf.commentcontent = value;
                             setFields(partialf);
                         }}
@@ -600,9 +607,11 @@ const ReportInvoice: FC = () => {
     const classes = useStyles()
     const [year, setYear] = useState(`${new Date().getFullYear()}`);
     const [currency, setCurrency] = useState("");
+    const [location, setLocation] = useState("");
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, columnid: null, edit: false });
     const [currencyList, setCurrencyList] = useState<any[]>([]);
+    const [locationList, setLocationList] = useState<any[]>([]);
     const [gridDataCurrencyList, setGridDataCurrencyList] = useState<string[]>([]);
     const [gridData, setGridData] = useState<any>({});
 
@@ -612,7 +621,7 @@ const ReportInvoice: FC = () => {
                 Header: t(langKeys.client),
                 accessor: 'corpdesc',
                 NoFilter: true,
-                Footer: (props: any) => {
+                Footer: () => {
                     return <>TOTAL</>
                 },
             },
@@ -621,8 +630,13 @@ const ReportInvoice: FC = () => {
                 accessor: 'currency',
                 NoFilter: true,
             },
+            {
+                Header: t(langKeys.reportinvoice_location),
+                accessor: 'location',
+                NoFilter: true,
+            },
             ...([...Array.from(Array(12).keys())].map((c, i) => ({
-                Header: t((langKeys as any)[`month_${('' + (i + 1)).padStart(2, '0')}`]),
+                Header: t((langKeys as any)[`month_${(String(i + 1)).padStart(2, '0')}`]),
                 accessor: `month_${i + 1}`,
                 type: 'number',
                 sortType: 'number',
@@ -630,7 +644,7 @@ const ReportInvoice: FC = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    let color = row[`color_${i + 1}`] || "gray"
+                    const color = row[`color_${i + 1}`] || "gray"
                     return <span style={{ color: color }}>{formatCurrencyNoDecimals(row[column])}</span>
                 },
                 Footer: (props: any) => {
@@ -667,13 +681,14 @@ const ReportInvoice: FC = () => {
     );
 
     const search = () => {
-        if (!!year) {
+        if (year) {
             dispatch(showBackdrop(true))
             dispatch(getCollectionAux2(
                 getInvoiceReportSummary(
                     {
                         year: year,
-                        currency: currency
+                        currency: currency,
+                        location: location,
                     }
                 )
             ))
@@ -690,7 +705,8 @@ const ReportInvoice: FC = () => {
     useEffect(() => {
         dispatch(showBackdrop(true));
         dispatch(getMultiCollection([
-            getCurrencyList()
+            getCurrencyList(),
+            getValuesFromDomainCorp("BILLINGLOCATION", "_LOCATION", 1, 0),
         ]))
         dispatch(setMemoryTable({
             id: IDREPORTINVOICE
@@ -719,6 +735,7 @@ const ReportInvoice: FC = () => {
                         corpid: item.corpid,
                         corpdesc: item.corpdesc,
                         currency: item.currency,
+                        location: item.location,
                         [`color_${item.month}`]: item.color,
                         year: item.year,
                         [`month_${item.month}`]: item.totalamount,
@@ -736,6 +753,7 @@ const ReportInvoice: FC = () => {
     useEffect(() => {
         if (!multiData.loading) {
             setCurrencyList((multiData.data[0]?.data || []));
+            setLocationList((multiData.data[1]?.data || []));
             dispatch(showBackdrop(false))
         }
     }, [multiData])
@@ -762,6 +780,19 @@ const ReportInvoice: FC = () => {
                             optionValue="value"
                         />
                         <FieldSelect
+                            label={t(langKeys.reportinvoice_location)}
+                            style={{ width: 200 }}
+                            variant="outlined"
+                            valueDefault={location}
+                            onChange={(value) => setLocation(value?.domainvalue)}
+                            data={locationList}
+                            optionValue="domainvalue"
+                            optionDesc="domaindesc"
+                            orderbylabel={true}
+                            prefixTranslation="billingfield_"
+                            uset={true}
+                        />
+                        <FieldSelect
                             label={t(langKeys.currency)}
                             style={{ width: 140 }}
                             variant="outlined"
@@ -784,7 +815,6 @@ const ReportInvoice: FC = () => {
                         </div>
                     </div>
                 </div>
-
                 {gridDataCurrencyList.map(crcy => {
                     return (
                         <TableZyx

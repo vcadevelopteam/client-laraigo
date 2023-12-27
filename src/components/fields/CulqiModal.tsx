@@ -1,11 +1,11 @@
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import React, { FC, useEffect, useState } from 'react';
 
 import { apiUrls } from 'common/constants';
 import { Button } from '@material-ui/core';
 import { charge, resetCharge, subscribe, resetSubscribe, balance, resetBalance, paymentOrder, resetPaymentOrder } from 'store/culqi/actions'
 import { CulqiProvider, Culqi } from 'react-culqi';
 import { Dictionary } from '@types';
-import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -141,7 +141,7 @@ const CulqiModal: FC<CulqiModalProps> = ({ amount, buttontitle, buyamount, callb
         }
     }
 
-    const onError = (error: any) => {
+    const onError = () => {
         switch (type) {
             case 'BALANCE':
                 dispatch(resetBalance());
@@ -199,7 +199,6 @@ const CulqiModal: FC<CulqiModalProps> = ({ amount, buttontitle, buyamount, callb
                 resetRequest && resetRequest();
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [culqiSelector, waitPay]);
 
     return (
