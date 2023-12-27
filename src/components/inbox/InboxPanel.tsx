@@ -37,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
     interactionAgent: {
         marginLeft: 'auto'
     },
+    interactionAgentEmail: {
+        width: '100%'
+    },
     groupInteractionAgent: {
         marginLeft: 'auto',
         display: 'flex'

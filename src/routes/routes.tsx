@@ -540,6 +540,15 @@ export const routes: RouteConfig[] = [
         initialSubroute: paths.IATRAINING,
         icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
     },
+    {
+        key: paths.IATRAINING2,
+        description: <Trans i18nKey={langKeys.training} />,
+        tooltip: <Trans i18nKey={langKeys.trainingwithai} />,
+        subroute: true,
+        path: paths.IATRAINING2,
+        initialSubroute: paths.IATRAINING2,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
 ];
 
 export const subroutes: RouteConfig[] = [

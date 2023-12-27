@@ -9,8 +9,8 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Tooltip from '@material-ui/core/Tooltip';
 import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket } from 'store/inbox/actions';
-import { getMultiCollection, resetAllMain } from 'store/main/actions';
-import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel } from 'common/helpers';
+import { getCollectionAux2, getMultiCollection, resetAllMain } from 'store/main/actions';
+import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getTimeWaiting } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import memoize from 'memoize-one';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 
 interface Dimensions {
     height: number;
@@ -104,6 +105,10 @@ const useStyles = makeStyles((theme) => ({
     itemSelected: {
         backgroundColor: 'rgb(235, 234, 237, 0.50)'
     },
+    itemDisabled: {
+        opacity: .6,
+        backgroundColor: '#ededed'
+    },
     title: {
         fontSize: '22px',
         lineHeight: '48px',
@@ -124,10 +129,20 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const CountTicket: FC<{ label: string, count: number, color: string }> = ({ label, count, color }) => (
+const CountTicket: FC<{ label: string, count: number | string, color: string }> = ({ label, count, color }) => (
     <div style={{ position: 'relative' }}>
         <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{ fontWeight: 'bold' }}>{count}</span></div>
         <div style={{ backgroundColor: color, width: '100%', height: '24px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
+    </div>
+)
+
+const TimeTicket: FC<{ label: string, count: number | string, color: string }> = ({ label, count, color }) => (
+    <div style={{ position: 'relative' }}>
+        <div style={{ color: color, padding: '4px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#7721AD" }}><AccessTimeIcon fontSize='small' style={{ width: 15, height: 15 }} /> {label}</div>
+            <div style={{ fontWeight: 'bold', textAlign: "center", marginTop: 4 }}>{count}</div>
+        </div>
+        <div style={{ backgroundColor: color, width: '100%', height: 43, opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
     </div>
 )
 
@@ -162,51 +177,119 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const mainAux2 = useSelector(state => state.main.mainAux2);
+    const [extraInfo, setextraInfo] = useState({ avgtimewaiting: "00:00:00", maxtimewaiting: "00:00:00", mintimewaiting: "00:00:00" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
-    const handlerSelectAgent = () => dispatch(selectAgent(agent));
+    
+    const handlerSelectAgent = () => {
+        if (agent.showinfo) {
+            dispatch(selectAgent(agent));
+        } else {
+            dispatch(getCollectionAux2(getTimeWaiting(agent?.userid ?? 0)))
+        }
+    };
+
+    useEffect(() => {
+        if (!agent.showinfo) {
+            setextraInfo({
+                avgtimewaiting: agent.avgtimewaiting ?? "",
+                maxtimewaiting: agent.maxtimewaiting ?? "",
+                mintimewaiting: agent.mintimewaiting ?? "",
+            })
+        }
+    }, [agent])
+
+    useEffect(() => {
+        if (!mainAux2.loading && !mainAux2.error) {
+            if (mainAux2.key === `UFN_TIME_WAITING_SEL_${agent?.userid}`) {
+                const { avgtimewaiting, mintimewaiting, maxtimewaiting } = mainAux2.data.length > 0 ? mainAux2.data[0] : { avgtimewaiting: "00:00:00", maxtimewaiting: "00:00:00", mintimewaiting: "00:00:00" };
+                console.log("avgtimewaiting, mintimewaiting, maxtimewaiting", avgtimewaiting, mintimewaiting, maxtimewaiting)
+                setextraInfo({
+                    avgtimewaiting,
+                    maxtimewaiting,
+                    mintimewaiting,
+                })
+            }
+        }
+    }, [mainAux2])
 
     return (
-        <div className={clsx(classes.containerItemAgent, { [classes.itemSelected]: (agentSelected?.userid === userid) })} onClick={handlerSelectAgent}>
+        <div
+            className={clsx(classes.containerItemAgent,
+                {
+                    [classes.itemSelected]: (agentSelected?.userid === userid),
+                    [classes.itemDisabled]: (!agent.showinfo),
+                }
+            )}
+            onClick={handlerSelectAgent}
+        >
             <div className={classes.agentUp}>
-                <BadgeGo
-                    overlap="circular"
-                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO" && motivetype) ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
-                    variant="dot"
-                >
-                    <Tooltip title={motivetype ?? ""}>
-                        <Avatar src={image ?? undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
-                    </Tooltip>
-                </BadgeGo>
+                {agent.showinfo && (
+                    <BadgeGo
+                        overlap="circular"
+                        colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO" && motivetype) ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        variant="dot"
+                    >
+                        <Tooltip title={motivetype ?? ""}>
+                            <Avatar
+                                src={image ?? undefined}
+                            >
+                                {name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}
+                            </Avatar>
+                        </Tooltip>
+                    </BadgeGo>
+                )}
                 <div>
                     <div className={classes.agentName} title={name}>{name}</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                        {channels.slice(0, 10).map((channel, index) => {
-                            const [channelType, color, channelName] = channel.split('#');
-                            return <ChannelTicket key={index} channelName={channelName} channelType={channelType} color={color} />
-                        })}
-                        {channels.length > 10 && (
-                            <Tooltip title={<div style={{ whiteSpace: 'pre-wrap' }}>{channels.slice(10, channels.length).reduce((acc, channel) => acc + "\n• " + channel.split('#')[2], "")}</div>}>
-                                <div className={classes.tooManyChannels}>
-                                    <span>{channels.length - 10 < 10 ? channels.length - 10 : "+9"}</span>
-                                </div>
-                            </Tooltip>
-                        )}
-                    </div>
+                    {agent.showinfo && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                            {channels.slice(0, 10).map((channel, index) => {
+                                const [channelType, color, channelName] = channel.split('#');
+                                return <ChannelTicket key={index} channelName={channelName} channelType={channelType} color={color} />
+                            })}
+                            {channels.length > 10 && (
+                                <Tooltip title={<div style={{ whiteSpace: 'pre-wrap' }}>{channels.slice(10, channels.length).reduce((acc, channel) => acc + "\n• " + channel.split('#')[2], "")}</div>}>
+                                    <div className={classes.tooManyChannels}>
+                                        <span>{channels.length - 10 < 10 ? channels.length - 10 : "+9"}</span>
+                                    </div>
+                                </Tooltip>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
             <div className={classes.counterCount}>
-                {(userid === 2 || userid === 3) &&
+                {!agent.showinfo && (
+                    <>
+                        <TimeTicket
+                            label={t(langKeys.function_average)}
+                            count={extraInfo.avgtimewaiting ?? "00:00:00"}
+                            color="#000"
+                        />
+                        <TimeTicket
+                            label={t(langKeys.function_minimum)}
+                            count={extraInfo.mintimewaiting ?? "00:00:00"}
+                            color="#000"
+                        />
+                        <TimeTicket
+                            label={t(langKeys.function_maximum)}
+                            count={extraInfo.maxtimewaiting ?? "00:00:00"}
+                            color="#000"
+                        />
+                    </>
+                )}
+                {([2, 3].includes(userid)) &&
                     <CountTicket
                         label={t(langKeys.active) + "s"}
                         count={countAnswered + (countNotAnswered ?? 0)}
                         color="#55BD84"
                     />
                 }
-                {userid !== 2 && userid !== 3 &&
+                {![2, 3].includes(userid) &&
                     <>
                         <CountTicket
                             label={t(langKeys.attending)}

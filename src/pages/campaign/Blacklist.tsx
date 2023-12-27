@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate, getBlacklistExport, getBlacklistPaginated, insarrayBlacklist, insBlacklist, uploadExcel } from 'common/helpers';
@@ -14,6 +13,7 @@ import TablePaginated from 'components/fields/table-paginated';
 import { Button } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { Add as AddIcon } from '@material-ui/icons';
+import { CellProps } from 'react-table';
 
 interface DetailProps {
     setViewSelected: (view: string) => void;
@@ -24,12 +24,7 @@ const arrayBread = [
     { id: "view-2", name: "Campaign blacklist" }
 ];
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        // marginTop: theme.spacing(2),
-        // padding: theme.spacing(2),
-        // background: '#fff',
-    },
+const useStyles = makeStyles(() => ({   
     button: {
         padding: 12,
         fontWeight: 500,
@@ -66,7 +61,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -89,7 +84,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 Header: t(langKeys.creationdate),
                 accessor: 'createdate',
                 type: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <div>{convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})}</div>
@@ -113,11 +108,15 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     };
 
     const triggerExportData = ({ filters, sorts }: IFetchData) => {
+        const columnsExport = columns.map(x => ({
+            key: x.accessor,
+            alias: x.Header,
+        }));
         dispatch(exportData(getBlacklistExport(
-            {
-                filters,
+            {              
                 sorts,
-            })));
+                filters: filters,
+            }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
@@ -259,7 +258,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </Button>
                 </div>
             </div>
-            <div className={classes.containerDetail}>
+            <div>
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}
