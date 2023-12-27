@@ -824,12 +824,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         register("type");
         register("typeattachment");
 
-        unregister(["body", "header", "name", "namespace", "footer"]);
-
         register("body", {
             validate: (value) => {
                 if (type === "HSM") return (value && (value || "").length <= 1024) || t(langKeys.field_required);
                 if (type === "SMS") return (value && (value || "").length <= 160) || t(langKeys.field_required);
+                return true;
+            },
+        });
+
+        register("namespace", {
+            validate: (value) => {
+                if (type === "HSM") return (value && value.length) || t(langKeys.field_required);
                 return true;
             },
         });
@@ -843,9 +848,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     validate: (value) =>
                         (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
                 });
-                register("namespace", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
+                // register("namespace", {
+                //     validate: (value) => (value && value.length) || t(langKeys.field_required),
+                // });
                 if (getValues("headerenabled")) {
                     register("header", {
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -894,9 +899,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
             });
 
-            register("namespace", {
-                validate: (value) => (value && value.length) || t(langKeys.field_required),
-            });
+            // register("namespace", {
+            //     validate: (value) => (value && value.length) || t(langKeys.field_required),
+            // });
 
             if (row?.headerenabled) {
                 register("header", {
@@ -916,7 +921,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 validate: (value) => (value && value.length) || t(langKeys.field_required),
             });
 
-            register("namespace");
+            // register("namespace");
 
             if (type === "SMS") {
                 // register("body", {
@@ -931,7 +936,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 });
             }
         }
-    }, [register, type, unregister]);
+    }, [register, type]);
 
     useEffect(() => {
         import("@codemirror/lang-html").then((html) => {
