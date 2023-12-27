@@ -1,8 +1,10 @@
-import Container from "@material-ui/core/Container";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import React, { FC, useEffect, useState } from "react";
 
 import { apiUrls } from "common/constants";
 import { balance, charge, resetBalance, resetCharge } from "store/culqi/actions";
+import { Button } from "@material-ui/core";
+import { DialogZyx } from "components";
 import { Dictionary } from "@types";
 import { langKeys } from "lang/keys";
 import { makeStyles } from "@material-ui/core";
@@ -24,18 +26,6 @@ const useStyles = makeStyles(() => ({
         padding: "10px",
         fontSize: "14px",
         fontWeight: "bold",
-    },
-    containerMainPayment: {
-        display: "flex",
-    },
-    "main-container": {
-        maxWidth: "1200px",
-        width: "100%",
-        margin: "0 auto",
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        transform: "translate(-50%, -50%)",
     },
     "method-card": {
         borderRadius: "16px",
@@ -164,6 +154,7 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
 
     const [initializeScript, setInitializeScript] = useState(true);
     const [initializePayment, setInitializePayment] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const [waitPay, setWaitPay] = useState(false);
 
     const importUrlScript = (url: string) => {
@@ -310,6 +301,8 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                 dispatch(showBackdrop(false));
                 setWaitPay(false);
 
+                setOpenModal(false);
+
                 resetRequest && resetRequest();
                 callbackOnSuccess && callbackOnSuccess();
             } else if (culqiSelector.error) {
@@ -329,8 +322,15 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
     }, [culqiSelector, waitPay]);
 
     return (
-        <Container component="main" maxWidth="xs" className={classes.containerMainPayment}>
-            <div className={classes["main-container"]}>
+        <div style={{ width: "100%" }}>
+            <DialogZyx
+                button2Type="button"
+                buttonText1={t(langKeys.cancel)}
+                handleClickButton1={() => setOpenModal(false)}
+                open={openModal}
+                title={""}
+                showClose={false}
+            >
                 <form
                     onSubmit={(e: any) => {
                         e.preventDefault();
@@ -361,6 +361,9 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                             ></img>
                         </div>
                         <p className={classes["method-card__description"]}>{t(langKeys.openpay_message01)}</p>
+                        <p>
+                            <b style={{ marginBottom: "10px" }}>{description}</b>
+                        </p>
                         <div className={classes["method-card__inputs"]}>
                             <input type="hidden" name="token_id" id="token_id"></input>
                             <input
@@ -416,18 +419,18 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                                 ></img>
                             </div>
                             <div
-                                style={{ flex: "50%", display: "flex", justifyContent: "flex-end", marginTop: "12px" }}
+                                style={{
+                                    flex: "50%",
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                    marginTop: "12px",
+                                }}
                             >
                                 <button
                                     className={classes["method-card__button"]}
-                                    onClick={(e: any) => {
-                                        e.preventDefault();
-                                        callbackOnClose && callbackOnClose();
-                                    }}
+                                    id="pay-button"
+                                    disabled={disabled || waitPay}
                                 >
-                                    {t(langKeys.openpay_message07)}
-                                </button>
-                                <button className={classes["method-card__button"]} id="pay-button" disabled={disabled || waitPay}>
                                     {buttontitle ? buttontitle : t(langKeys.openpay_message06)}
                                 </button>
                             </div>
@@ -450,8 +453,22 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                         ></div>
                     </div>
                 </form>
-            </div>
-        </Container>
+            </DialogZyx>
+            <Button
+                color="primary"
+                disabled={disabled || waitPay}
+                startIcon={<AttachMoneyIcon color="secondary" />}
+                style={{ backgroundColor: "#55BD84" }}
+                type="button"
+                variant="contained"
+                onClick={() => {
+                    setOpenModal(true);
+                    callbackOnClose && callbackOnClose();
+                }}
+            >
+                {buttontitle ? buttontitle : t(langKeys.pay)}
+            </Button>
+        </div>
     );
 };
 
