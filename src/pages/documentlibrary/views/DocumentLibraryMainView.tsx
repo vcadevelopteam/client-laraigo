@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons } from 'components';
-import { documentLibraryIns, exportExcel, templateMaker } from 'common/helpers';
+import { documentLibraryIns, documentLibraryInsArray, exportExcel, templateMaker, uploadExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -18,6 +18,14 @@ import ListAltIcon from "@material-ui/icons/ListAlt";
 interface RowSelected {
     row: Dictionary | null;
     edit: boolean;
+}
+
+interface DocumentLibraryData {
+  title:string;
+  description:string;
+  groups:string;
+  linkfile:string;
+  category:string;
 }
 
 interface DocumentLibraryMainViewProps {
@@ -37,7 +45,10 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
     const [openModalPreview, setOpenModalPreview] = useState<any>(null);
     const user = useSelector(state => state.login.validateToken.user);
     const [selectedRows, setSelectedRows] = useState<any>({});
+    const [waitUpload, setWaitUpload] = useState(false);  
+    const [waitDelete, setWaitDelete] = useState(false);  
     const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
+    const importRes = useSelector((state) => state.main.execute);
 
     const columns = React.useMemo(
         () => [
@@ -201,6 +212,130 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     };
+    useEffect(() => {
+      if (waitUpload) {
+        if (!importRes.loading && !importRes.error) {
+          if(importRes?.data?.[0]?.p_messagetype==="ERROR"){
+            dispatch(
+              showSnackbar({
+                show: true,
+                severity: "error",
+                message: t(langKeys.error_already_exists_record,{module:t(langKeys.documentlibrary)}),
+              })
+            );
+  
+          }else{
+            dispatch(
+              showSnackbar({
+                show: true,
+                severity: "success",
+                message: t(langKeys.successful_import),
+              })
+            );
+          }
+          dispatch(showBackdrop(false));
+          setWaitUpload(false);
+          fetchData();
+        } else if (importRes.error) {
+          dispatch(
+            showSnackbar({
+              show: true,
+              severity: "error",
+              message: t(importRes.code || "error_unexpected_error"),
+            })
+          );
+          dispatch(showBackdrop(false));
+          setWaitUpload(false);
+        }
+      }
+    }, [importRes, waitUpload]);
+    useEffect(() => {
+      if (waitDelete) {
+        if (!importRes.loading && !importRes.error) {
+          if(importRes?.data?.[0]?.p_messagetype==="ERROR"){
+            dispatch(
+              showSnackbar({
+                show: true,
+                severity: "error",
+                message: t(langKeys.error_already_exists_record,{module:t(langKeys.documentlibrary)}),
+              })
+            );
+  
+          }else{
+            dispatch(
+              showSnackbar({
+                show: true,
+                severity: "success",
+                message: t(langKeys.successful_delete),
+              })
+            );
+          }
+          dispatch(showBackdrop(false));
+          setWaitDelete(false);
+          fetchData();
+        } else if (importRes.error) {
+          dispatch(
+            showSnackbar({
+              show: true,
+              severity: "error",
+              message: t(importRes.code || "error_unexpected_error"),
+            })
+          );
+          dispatch(showBackdrop(false));
+          setWaitDelete(false);
+        }
+      }
+    }, [importRes, waitDelete]);
+
+    const isValidData = (element:DocumentLibraryData) => {
+      return (
+        typeof element.title === 'string' && element.title.length > 0 &&
+        typeof element.description === 'string' && element.description.length <= 256 &&
+        typeof element.groups === 'string' && element.groups.length > 0 &&
+        typeof element.linkfile === 'string' && element.linkfile.length > 0 &&
+        typeof element.category === 'string' && element.category.length > 0  
+      );
+    };
+  
+    const handleUpload = async (files: any) => {
+      const file = files?.item(0);
+      if (file) {
+        const data: DocumentLibraryData[] = (await uploadExcel(file, undefined)) as DocumentLibraryData[];
+        if (data.length > 0) {
+          const error = data.some((element) => !isValidData(element));
+          if(!error){
+            const dataToSend = data.map((x: any) => ({
+              ...x,
+              id: 0,
+              link: x.linkfile,
+              favorite: false,
+              operation: "INSERT",
+              type: "NINGUNO",
+              status: "ACTIVO",
+            }));
+            dispatch(showBackdrop(true));
+            dispatch(execute(documentLibraryInsArray(JSON.stringify(dataToSend))));
+            setWaitUpload(true);
+          }else{                 
+            dispatch(
+              showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+            );
+          }
+        }
+      }
+    };
+    const deletefiles = async () => {
+        const selectedRows2=mainResult.mainData.data.filter(x=>Object.keys(selectedRows).includes(String(x.documentlibraryid)))
+        const dataToSend = selectedRows2.map((x: any) => ({
+          ...x,
+          id: x.documentlibraryid,
+          operation: "DELETE",
+          status: "ELIMINADO",
+        }));
+        dispatch(showBackdrop(true));
+        dispatch(execute(documentLibraryInsArray(JSON.stringify(dataToSend))));
+        setWaitDelete(true);
+    };
 
     return (
         <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -217,13 +352,14 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
                 loading={mainResult.mainData.loading}
                 register={superadmin}
                 handleRegister={handleRegister}
+                importCSV={handleUpload}
                 ButtonsElement={() => (
                     <>
                         <Button
                             color="primary"
                             disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0}
                             onClick={() => {
-                                debugger
+                                deletefiles()
                             }}
                             startIcon={<ClearIcon style={{ color: 'white' }} />}
                             variant="contained"

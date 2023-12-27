@@ -714,6 +714,13 @@ export const documentLibraryIns = ({id, title, description, category, groups, li
         type: "",
     }
 })
+export const documentLibraryInsArray = (table: string): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_INS_ARRAY",
+    key: "UFN_DOCUMENTLIBRARY_INS_ARRAY",
+    parameters: {
+        table
+    }
+})
 
 export const getDomainValueSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_VALUES_SEL",
