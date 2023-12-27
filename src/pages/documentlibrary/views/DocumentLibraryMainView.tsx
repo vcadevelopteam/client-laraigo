@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons } from 'components';
-import { documentLibraryIns } from 'common/helpers';
+import { documentLibraryIns, exportExcel, templateMaker } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -11,7 +11,9 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import TableZyx from 'components/fields/table-simple';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import ModalDocPreview from '../modal/ModalDocPreview';
-import { IconButton } from '@material-ui/core';
+import { Button, IconButton } from '@material-ui/core';
+import ClearIcon from '@material-ui/icons/Clear';
+import ListAltIcon from "@material-ui/icons/ListAlt";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -24,6 +26,8 @@ interface DocumentLibraryMainViewProps {
     fetchData: () => void;
 }
 
+const selectionKey = 'documentlibraryid';
+
 const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelected, setRowSelected, fetchData}) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -32,6 +36,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
     const [waitSave, setWaitSave] = useState(false);
     const [openModalPreview, setOpenModalPreview] = useState<any>(null);
     const user = useSelector(state => state.login.validateToken.user);
+    const [selectedRows, setSelectedRows] = useState<any>({});
     const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
 
     const columns = React.useMemo(
@@ -54,47 +59,56 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
             {
                 Header: t(langKeys.title),
                 accessor: 'title',
-                NoFilter: true
+                NoFilter: true,
+                width: '15%',
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: true
+                NoFilter: true,
+                width: '15%',
             },
             {
                 Header: t(langKeys.category),
                 accessor: 'category',
-                NoFilter: true
+                NoFilter: true,
+                width: '15%',
             },
             {
                 Header: t(langKeys.group_plural),
                 accessor: 'groups',
                 NoFilter: true,
+                width: '15%',
             },
             {
                 Header: t(langKeys.registrationdate),
                 accessor: 'createdate',
                 NoFilter: true,
+                width: '15%',
             },
             {
                 Header: t(langKeys.changeDate),
                 accessor: 'changedate',
-                NoFilter: true
+                NoFilter: true,
+                width: '15%',
             },
             {
                 Header: t(langKeys.uploadedby),
                 accessor: 'createby',
-                NoFilter: true
+                NoFilter: true,
+                width: '15%',
             },
             {
                 Header: t(langKeys.change_by),
                 accessor: 'changeby',
-                NoFilter: true
+                NoFilter: true,
+                width: '15%',
             },
             {
                 Header: "",
                 accessor: 'link',
-                NoFilter: true,   
+                NoFilter: true,
+                width: '15%',  
                 isComponent: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -170,17 +184,64 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
         }))
     }
 
+    const handleTemplate = () => {
+        const data = [
+            {},
+            {},
+            (mainResult?.multiData?.data?.[0]?.data || [])?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            {},
+            {},
+        ];
+        const header = [
+            "title",
+            "description",
+            "groups",
+            "linkfile",
+            "category",
+        ];
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
+    };
+
     return (
         <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.documentlibrary)}
+                helperText={t(langKeys.documentlibraryhelperText)}
                 data={mainResult.mainData.data}
                 download={true}
+                useSelection={true}
+                selectionKey={selectionKey}
                 onClickRow={handleEdit}
+                setSelectedRows={setSelectedRows}
                 loading={mainResult.mainData.loading}
                 register={superadmin}
                 handleRegister={handleRegister}
+                ButtonsElement={() => (
+                    <>
+                        <Button
+                            color="primary"
+                            disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0}
+                            onClick={() => {
+                                debugger
+                            }}
+                            startIcon={<ClearIcon style={{ color: 'white' }} />}
+                            variant="contained"
+                            style={{ backgroundColor: !(mainResult.mainData.loading || Object.keys(selectedRows).length === 0)?"#FB5F5F":"#dbdbdc" }}
+                        >{t(langKeys.delete)}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainResult.loading}
+                            startIcon={<ListAltIcon color="secondary" />}
+                            onClick={handleTemplate}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >
+                            {`${t(langKeys.template)}  ${t(langKeys.import)}`}
+                        </Button>
+                    </>
+                )}
             />
             <ModalDocPreview
                 openModal={openModalPreview}

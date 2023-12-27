@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, TemplateSwitch } from 'components';
+import { TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, TemplateSwitch, FieldMultiSelect } from 'components';
 import { Dictionary, IFile, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -163,11 +163,11 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
                         />
                     </div>                    
                     <div className="row-zyx">
-                        <FieldSelect
+                        <FieldMultiSelect
                             label={t(langKeys.group_plural)}
                             className="col-6"
                             valueDefault={row?.groups||""}
-                            onChange={(value) => setValue('groups', value ? value.domainvalue : '')}
+                            onChange={(value) => {setValue('groups', value.map(obj => obj.domainvalue).join(', '))}}
                             error={errors?.groups?.message}
                             data={multiData?.[0]?.data || []}
                             optionDesc="domaindesc"

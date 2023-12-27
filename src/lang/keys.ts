@@ -21,6 +21,7 @@ export const langKeys = {
   orders: "orders",
   configure: "configure",
   documentlibrary: "documentlibrary",
+  documentlibraryhelperText: "documentlibraryhelperText",
   uploadedby: "uploadedby",
   finish: "finish",
   file: "file",

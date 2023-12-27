@@ -934,6 +934,7 @@ const translation: LangKeys = {
   finish: "FINISH",
   file: "File",
   documentlibrary: "Document library",
+  documentlibraryhelperText: "To control the sending any file that you want to share to the client, activate the property 'BLOCKSENDINGDOCUMENTS' to disable any user from sharing documents that are not in the document library.",
   uploadedby: "Uploaded by",
   transfertimecall: "Transfer time",
   transfertimecall_tooltip: "Time since the agent dialed the 'Transfer call' option",
