@@ -135,6 +135,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MuiPhoneNumber from "material-ui-phone-number";
+import OpenpayModal from "components/fields/OpenpayModal";
 import Paper from "@material-ui/core/Paper";
 import PaymentIcon from "@material-ui/icons/Payment";
 import React, { FC, Fragment, useCallback, useEffect, useMemo, useState } from "react";
@@ -5617,27 +5618,55 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             paymentType === "CULQI" &&
                             publicKey &&
                             showCulqi && (
-                                <CulqiModal
-                                    amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
-                                    buttontitle={t(langKeys.proceedpayment)}
-                                    comments={comments}
-                                    corpid={data?.corpid}
-                                    currency={data?.currency}
-                                    description={data?.productdescription}
-                                    disabled={paymentDisabled}
-                                    invoiceid={data?.invoiceid}
-                                    orgid={data?.orgid}
-                                    override={override}
-                                    publickey={publicKey}
-                                    purchaseorder={purchaseOrder}
-                                    successmessage={t(langKeys.culqipaysuccess)}
-                                    title={data?.description}
-                                    totalpay={totalPay}
-                                    type="CHARGE"
-                                    callbackOnSuccess={() => {
-                                        handleCulqiSuccess();
-                                    }}
-                                ></CulqiModal>
+                                <>
+                                    {data?.paymentprovider === "CULQI" && (
+                                        <CulqiModal
+                                            amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                            buttontitle={t(langKeys.proceedpayment)}
+                                            comments={comments}
+                                            corpid={data?.corpid}
+                                            currency={data?.currency}
+                                            description={data?.productdescription}
+                                            disabled={paymentDisabled}
+                                            invoiceid={data?.invoiceid}
+                                            orgid={data?.orgid}
+                                            override={override}
+                                            publickey={publicKey}
+                                            purchaseorder={purchaseOrder}
+                                            successmessage={t(langKeys.culqipaysuccess)}
+                                            title={data?.description}
+                                            totalpay={totalPay}
+                                            type="CHARGE"
+                                            callbackOnSuccess={() => {
+                                                handleCulqiSuccess();
+                                            }}
+                                        ></CulqiModal>
+                                    )}
+                                    {data?.paymentprovider === "OPENPAY COLOMBIA" && (
+                                        <OpenpayModal
+                                            amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                            buttontitle={t(langKeys.proceedpayment)}
+                                            comments={comments}
+                                            corpid={data?.corpid}
+                                            currency={data?.currency}
+                                            description={data?.productdescription}
+                                            disabled={paymentDisabled}
+                                            invoiceid={data?.invoiceid}
+                                            merchantid={data?.culqiurl}
+                                            orgid={data?.orgid}
+                                            override={override}
+                                            publickey={publicKey}
+                                            purchaseorder={purchaseOrder}
+                                            successmessage={t(langKeys.culqipaysuccess)}
+                                            title={data?.description}
+                                            totalpay={totalPay}
+                                            type="CHARGE"
+                                            callbackOnSuccess={() => {
+                                                handleCulqiSuccess();
+                                            }}
+                                        ></OpenpayModal>
+                                    )}
+                                </>
                             )}
                         {data?.paymentstatus === "PENDING" &&
                             (data?.invoicestatus === "INVOICED" || data?.invoicestatus === "DRAFT") &&

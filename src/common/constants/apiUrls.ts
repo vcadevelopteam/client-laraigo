@@ -21,6 +21,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -41,6 +42,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/testing-form.min.js',
         USELARAIGO: false,
         BODEGAACME: true,
+        OPENPAYSANDBOX: true,
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -61,6 +63,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     MARKETING: {
         API: 'https://apimarketing.laraigo.com/api',
@@ -81,6 +84,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     INCREMENTAL_PROD: {
         API: 'https://api-historical-publico.laraigo.com/api',
@@ -101,6 +105,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     INCREMENTAL_CLARO: {
         API: 'https://api-historical-claro.laraigo.com/api',
@@ -121,6 +126,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
@@ -141,6 +147,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     CLAROHISTORICAL: {
         API: 'http://10.240.65.10:6066/api',
@@ -159,6 +166,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
@@ -179,6 +187,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -199,6 +208,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -221,6 +231,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     }
 }
 
@@ -242,6 +253,7 @@ const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 const APIKEY_GMAPS = APIS_URL[ENV].APIKEY_GMAPS
 const USELARAIGO = APIS_URL[ENV].USELARAIGO
 const BODEGAACME = APIS_URL[ENV].BODEGAACME
+const OPENPAYSANDBOX = APIS_URL[ENV].OPENPAYSANDBOX
 
 export const apiUrls = {
     WS_URL,
@@ -260,6 +272,7 @@ export const apiUrls = {
     APIKEY_GMAPS,
     USELARAIGO,
     BODEGAACME,
+    OPENPAYSANDBOX,
 
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
