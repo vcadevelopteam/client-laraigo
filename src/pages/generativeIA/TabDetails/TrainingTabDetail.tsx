@@ -61,7 +61,8 @@ const useStyles = makeStyles((theme) => ({
     },
     cardTitle: {
         fontWeight: 'bold',
-        paddingBottom:'1rem'
+        paddingBottom:'1rem',
+        fontSize: '20px'
     },
     header: {
         display: 'flex',
@@ -131,10 +132,10 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 10
     },
     cardText: {
-        textAlign: 'left',
+        fontSize: '15px',
     },
     gridWidth: {
-        minWidth: 330
+        minWidth: 500
     },
     block10: {
         height: 10
@@ -477,11 +478,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 width: "auto",
             },
             {
-                Header: t(langKeys.type),
-                accessor: 'type',
-                width: "10%",
-            },
-            {
                 Header: t(langKeys.upload),
                 accessor: 'createdate',
                 width: "auto",
@@ -537,15 +533,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                         <BackupIcon className={classes.logo} style={{color:'green'}} />
                                         <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
                                         <div className={classes.cardText}>{t(langKeys.upload_document_description)}</div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
-                                <Card className={classes.card} onClick={() => setViewSelected('uploadURL')}>
-                                    <div className={classes.cardContent}>
-                                        <AttachFileIcon className={classes.logo} style={{color: 'blue'}} />
-                                        <div className={classes.cardTitle}>{t(langKeys.import_web_page)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.import_web_page_description)}</div>
                                     </div>
                                 </Card>
                             </Grid>
