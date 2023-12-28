@@ -40,7 +40,10 @@ const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.em
 
 const channelsWhatsapp = ["WHAT", "WHAD", "WHAP", "WHAG", "WHAM"];
 
-const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void, initfile?: any, setfileimage?: (param: any) => void }> = ({ classes, setFiles, type, initfile, setfileimage }) => {
+const UploaderIcon: React.FC<{
+    classes: any,
+    setFiles: (param: any) => void, initfile?: any, setfileimage?: (param: any) => void
+}> = ({ classes, setFiles, initfile, setfileimage }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -89,21 +92,15 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
         <>
             <input
                 name="file"
-                accept={type === "image" ? "image/*" : undefined}
-                id={`laraigo-upload-${type}`}
+                id={`laraigo-upload-file`}
                 type="file"
                 value={valuefile}
                 style={{ display: "none" }}
                 onChange={(e) => onSelectImage(e.target.files)}
             />
-            <label htmlFor={`laraigo-upload-${type}`}>
-                <IconButton color="primary" aria-label="upload picture" component="span">
-                    {type === 'image' &&
-                        <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
-                    }
-                    {type !== 'image' &&
-                        <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
-                    }
+            <label htmlFor={`laraigo-upload-file`}>
+                <IconButton color="primary" aria-label="upload picture" component="span" size='small'>
+                    <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
                 </IconButton>
             </label>
         </>
@@ -840,9 +837,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                         </div>
                                     }
                                 >
-                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                    <UploaderIcon type="file" classes={classes} setFiles={setFiles}
+                                    <UploaderIcon  classes={classes} setFiles={setFiles}
                                     />
                                 </RichText>
                                 {openDialogHotKey && (
@@ -962,10 +958,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                                 <QuickReplyIcon classes={classes} setText={setText} />
                                 <TmpRichResponseIcon classes={classes} setText={setText} />
-                                <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
+                                <UploaderIcon classes={classes} setFiles={setFiles} />
                                 <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                                 <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => { (lastSelection < (text || '').length - 1) ? setText(p => p.substring(0, lastSelection) + e.native + p.substring(lastSelection)) : setText(p => p + e.native) }} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
-                                <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                             </div>
                             <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                                 <SendIcon />
