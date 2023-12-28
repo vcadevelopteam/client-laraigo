@@ -1,7 +1,6 @@
 import { Box, FormControlLabel, Tabs, TextField } from "@material-ui/core";
 import { Dictionary, MultiData } from "@types";
 import { getCountryList } from "store/signup/actions";
-import { getExchangeRate } from "store/culqi/actions";
 import { langKeys } from "lang/keys";
 import { makeStyles } from "@material-ui/core/styles";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
@@ -4533,7 +4532,6 @@ const BillingSetup: FC = () => {
     useEffect(() => {
         setSentFirstInfo(true);
         dispatch(getCountryList());
-        dispatch(getExchangeRate(null));
         dispatch(
             getMultiCollection([
                 getPlanSel(),
