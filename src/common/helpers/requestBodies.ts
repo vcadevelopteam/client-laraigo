@@ -4399,7 +4399,7 @@ export const insProductDealer = ({ productcompanyid, p_tableid, manufacturerid, 
     method: "UFN_PRODUCTMANUFACTURER_INS",
     key: "UFN_PRODUCTMANUFACTURER_INS",
     parameters: {
-        productcompanyid, p_tableid, manufacturerid, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid, operation
+        productcompanyid, p_tableid, manufacturerid: manufacturerid||0, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid: distributorid||0, operation
     }
 })
 export const getProductManufacturer = (productid:number): IRequestBody => ({
