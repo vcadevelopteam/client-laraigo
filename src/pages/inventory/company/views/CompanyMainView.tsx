@@ -260,10 +260,11 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
       (a, d) => ({ ...a, [d.domainid]: true }),
       {}
     );
+    debugger
     return (
       ((element.ispaymentdelivery === 'true')||(element.ispaymentdelivery === 'false')) &&
       validDomainTaxes[element.taxeid] &&
-      (element?.clientenumbers? element.clientenumbers?.length <= 136:true) &&
+      (element?.clientenumbers? String(element.clientenumbers)?.length <= 136:true) &&
       (element?.beginpage? element.beginpage?.length <= 136:true) &&
       validDomainCurrency[element.currencyid] &&
       validDomainTypeManufacturer[element.typemanufacterid] &&

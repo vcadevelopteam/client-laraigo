@@ -167,7 +167,7 @@ const CompanyDetail: React.FC<DetailProps> = ({ data: { row, edit, duplicated },
                             }}
                         />
                         <TitleDetail
-                            title={row? "Empresas" : `${t(langKeys.new)} Empresa`}
+                            title={row? "Empresas" : `Nueva Empresa`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
