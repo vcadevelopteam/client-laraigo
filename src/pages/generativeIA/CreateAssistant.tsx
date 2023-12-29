@@ -168,9 +168,44 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('operation');
     }, [register, setValue]);
 
+    function encrypt(plaintext, key) {
+        let ciphertext = '';
+        for (let i = 0; i < plaintext.length; i++) {
+            const charCode = plaintext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+            ciphertext += String.fromCharCode(charCode);
+        }
+        return btoa(ciphertext);
+    }
+
+    function decrypt(ciphertext, key) {
+        ciphertext = atob(ciphertext);
+        let plaintext = '';
+        for (let i = 0; i < ciphertext.length; i++) {
+            const charCode = ciphertext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+            plaintext += String.fromCharCode(charCode);
+        }
+        return plaintext;
+    }
+
     const onMainSubmit = handleSubmit(async (data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
+
+            const publicKeyPEM = `-----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuULTMU5pukx8MCE+wvAn
+            efM7GHdNGtQ1qcsmeqzeEfT/O34vvgxSmQ9gSCQ6p2MR4d1V9PUaYP4Zs5J/UzZc
+            ASfn3zT/EQpWmJ97UQpEb77hT2SQGwGI3vB3fA/Kzn7DNR0dEe/7BIOTakapNtNC
+            fuj9EIHorDtFIT8zaT+VbJ3anXblC9uYP6VfCebCpOmoNxRye6xsqfJv3ZwSFNT+
+            7ggtTBsoHgrYc1AkGFxZpuMn73ytvw/MOi+txQc1wFrwjRjFtX4EBF90j4MIhycB
+            fPzL5tQDiwqsnJpMJs+SfDJ7ChWCu8tox69E5UjjOpBHDg6dKppDNtjdlPqthWoW
+            rwIDAQAB
+            -----END PUBLIC KEY-----`;
+
+            const encryptedApikey = encrypt(data.apikey, publicKeyPEM);
+            console.log(encryptedApikey)
+
+            const decryptedApikey = decrypt(encryptedApikey, publicKeyPEM);
+            console.log('Decrypted apikey:', decryptedApikey);
 
             let generalprompt = data.organizationname !== '' ? 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. Si te hablan en otro idioma que no sea ' + data.language +
                 ', infórmales que solamente puedes comunicarte en ' + data.language + '.\n\nSolamente debes contestar o informar temas referidos a: ' + data.organizationname +
@@ -203,7 +238,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                         basemodel: data.basemodel,
                         retrieval: data.retrieval,
                         codeinterpreter: data.codeinterpreter,
-                        apikey: data.apikey,
+                        apikey: encryptedApikey,
                     })
                     : JSON.stringify({
                         name: data.name,
@@ -211,7 +246,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                         basemodel: data.basemodel,
                         retrieval: data.retrieval,
                         codeinterpreter: data.codeinterpreter,
-                        apikey: data.apikey,
+                        apikey: encryptedApikey,
                     }),
                 });
     
@@ -225,7 +260,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                 const responseData = await apiResponse.json();
                 const assistantid = edit ? data.code : responseData.data.assistandid;
 
-                dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: assistantid })));
+                dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: assistantid, apikey: encryptedApikey })));
                 setWaitSave(true);
             } catch (error) {
                 console.error('Error en la llamada a la API:', error);
