@@ -211,7 +211,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [executeResult, waitSave]);
 
     useEffect(() => {
-        handleChatClick(dataThreads.data[dataThreads.data.length - 1]);
+        handleChatClick(dataThreads.data[0]);
     }, [dataThreads.data]);
 
     const handleCreateChat = () => {

@@ -492,7 +492,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     showSnackbar({
                         show: true,
                         severity: "success",
-                        message: t(langKeys.successful_delete),
+                        message: t(langKeys.successful_register),
                     })
                 );
                 fetchData()
