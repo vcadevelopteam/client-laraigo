@@ -228,7 +228,6 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
             charge({
                 comments,
                 corpid,
-                form: JSON.parse(document.getElementById("send-form-data")?.innerHTML || "{}"),
                 invoiceid,
                 metadata,
                 openpay: true,
@@ -236,6 +235,7 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                 override,
                 purchaseorder,
                 settings: { amount, currency, description, title },
+                transaction: JSON.parse(document.getElementById("send-form-data")?.innerHTML || "{}"),
             })
         );
         dispatch(showBackdrop(true));
@@ -248,7 +248,6 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                 buyamount,
                 comments,
                 corpid,
-                form: JSON.parse(document.getElementById("send-form-data")?.innerHTML || "{}"),
                 invoiceid,
                 metadata,
                 openpay: true,
@@ -258,6 +257,7 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                 settings: { amount, currency, description, title },
                 totalamount,
                 totalpay,
+                transaction: JSON.parse(document.getElementById("send-form-data")?.innerHTML || "{}"),
             })
         );
         dispatch(showBackdrop(true));
