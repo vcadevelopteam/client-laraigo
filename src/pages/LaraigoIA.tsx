@@ -17,6 +17,7 @@ import { SynonimsRasa } from './rasa/SynonimsRasa';
 import TestModelDialog from 'components/inbox/TestModelDialog';
 import { rasaModelSel } from 'common/helpers';
 import { ModelsRasa } from './rasa/ModelsRasa';
+import GenerativeAIMainView from './generativeIA/GenerativeAIMainView';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -359,11 +360,7 @@ const WitIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}
     }, [executeResult, waitSave])
 
     useEffect(() => {
-        // setMainData(mainResult.mainData.data.map(x => ({
-        //     ...x,
-        //     typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
-        //     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
-        // })))
+        // setMainData(mainResult.mainData.data.map        
     }, [mainResult.mainData.data])
 
 
@@ -433,6 +430,7 @@ const WitIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}
                                     </div>
                                 </Card>
                             </Grid>
+                            
                         </Grid>
                     </div>
                 </div>
@@ -471,6 +469,7 @@ const IATraining: React.FC = () => {
     
     const functionChange = (change:string) => {
         if(change==="view-0"){
+            //empty
         }else{
             setViewSelectedTraining(change);
         }
@@ -504,7 +503,6 @@ const IATraining: React.FC = () => {
         //     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
         // })))
     }, [mainResult.mainData.data])
-
 
     if (viewSelectedTraining === "view-1") {
         return (
@@ -542,6 +540,7 @@ const IATraining: React.FC = () => {
                                     </div>
                                 </Card>
                             </Grid>
+
                             <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
                                 <Card style={{ position: 'relative', display:"flex" }}>
                                     <div className={classes.containerInner}>
@@ -566,6 +565,30 @@ const IATraining: React.FC = () => {
                                     </div>
                                 </Card>
                             </Grid>
+
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%"}}>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>{t(langKeys.generativeia)}</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.generativeidescription)}</div>                                            
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ backgroundColor: "#55BD84" }}
+                                                onClick={()=>setViewSelectedTraining("generativeia")}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Grid>
                         </Grid>
                     </div>
                 </div>
@@ -583,9 +606,15 @@ const IATraining: React.FC = () => {
             arrayBread={arrayBread}
             />
         )
+    }else if (viewSelectedTraining === "generativeia") {
+        return (
+            <GenerativeAIMainView 
+            setViewSelected={functionChange}
+            arrayBread={arrayBread}
+            />
+        )
     } else
         return null;
-
 }
 
 export default IATraining;
