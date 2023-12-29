@@ -169,12 +169,11 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
 
     useEffect(() => {
         if (initializePayment) {
-            setInitializePayment(false);
-
             const script = document.createElement("script");
 
             script.setAttribute("type", "module");
 
+            script.defer = true;
             script.async = true;
             script.text = `
             OpenPay.setId('${merchantid}');
@@ -219,7 +218,6 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
             importUrlScript("https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js");
             importUrlScript("https://resources.openpay.co/openpay.v1.min.js");
             setInitializeScript(false);
-            setInitializePayment(true);
         }
     }, [initializeScript]);
 
@@ -430,6 +428,7 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                                     className={classes["method-card__button"]}
                                     id="pay-button"
                                     disabled={disabled || waitPay}
+                                    type="button"
                                 >
                                     {buttontitle ? buttontitle : t(langKeys.openpay_message06)}
                                 </button>
@@ -463,6 +462,7 @@ const OpenpayModal: FC<OpenpayModalProps> = ({
                 variant="contained"
                 onClick={() => {
                     setOpenModal(true);
+                    setInitializePayment(true);
                     callbackOnClose && callbackOnClose();
                 }}
             >
