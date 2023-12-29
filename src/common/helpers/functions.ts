@@ -1164,3 +1164,23 @@ export const validateIsUrl = (text: string) => {
     const replaces = matches?.reduce((acc, item, index) => acc.replace(item, `<a href="###${index}###" target="_BLANK">###${index}###</a>`), text) || text
     return matches?.reduce((acc, item, index) => acc.replace(new RegExp(`###${index}###`, 'g'), item), replaces) || text
 }
+
+
+export function encrypt(plaintext:string, key:string) {
+    let ciphertext = '';
+    for (let i = 0; i < plaintext.length; i++) {
+        const charCode = plaintext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+        ciphertext += String.fromCharCode(charCode);
+    }
+    return btoa(ciphertext);
+}
+
+export function decrypt(ciphertext:string, key:string) {
+    ciphertext = atob(ciphertext);
+    let plaintext = '';
+    for (let i = 0; i < ciphertext.length; i++) {
+        const charCode = ciphertext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+        plaintext += String.fromCharCode(charCode);
+    }
+    return plaintext;
+}

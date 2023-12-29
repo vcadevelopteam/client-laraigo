@@ -356,7 +356,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     };
 
     const handleDelete = (row2: Dictionary) => {
-        console.log(row2)
         const callback = async () => {
             dispatch(showBackdrop(true));
 
