@@ -35,6 +35,10 @@ import { RichText, renderToString, toElement } from 'components/fields/RichText'
 import { emojis } from "common/constants/emojis";
 import DragDropFile from 'components/fields/DragDropFile';
 import MailRecipients from './MailRecipients';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { ListItemIcon } from '@material-ui/core';
+import { LibraryBooks, Publish } from '@material-ui/icons';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -44,10 +48,12 @@ const UploaderIcon: React.FC<{
     classes: any,
     setFiles: (param: any) => void, initfile?: any, setfileimage?: (param: any) => void
 }> = ({ classes, setFiles, initfile, setfileimage }) => {
+    const { t } = useTranslation();
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const { t } = useTranslation();
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [idUpload, setIdUpload] = useState('');
 
@@ -83,26 +89,61 @@ const UploaderIcon: React.FC<{
         fd.append('file', selectedFile, selectedFile.name);
         setvaluefile('')
         setIdUpload(idd);
-        setFiles((x: IFile[]) => [...x, { id: idd, url: '', type }]);
+        setFiles((x: IFile[]) => [...x, { id: idd, url: '' }]);
         dispatch(uploadFile(fd));
         setWaitSave(true)
     }
 
     return (
         <>
-            <input
-                name="file"
-                id={`laraigo-upload-file`}
-                type="file"
-                value={valuefile}
-                style={{ display: "none" }}
-                onChange={(e) => onSelectImage(e.target.files)}
-            />
-            <label htmlFor={`laraigo-upload-file`}>
-                <IconButton color="primary" aria-label="upload picture" component="span" size='small'>
-                    <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
-                </IconButton>
-            </label>
+            <IconButton color="primary" onClick={(e) => setAnchorEl(e.currentTarget)}>
+                <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+            >
+                <input
+                    name="file"
+                    id={`laraigo-upload-file`}
+                    type="file"
+                    value={valuefile}
+                    style={{ display: "none" }}
+                    onChange={(e) => onSelectImage(e.target.files)}
+                />
+                <label htmlFor={`laraigo-upload-file`}>
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null)
+
+                    }}>
+                        <ListItemIcon>
+                            <Publish width={18} style={{ fill: '#2E2C34' }} />
+                        </ListItemIcon>
+                        {"Subir archivos desde el ordenador"}
+                    </MenuItem>
+                </label>
+
+                <MenuItem onClick={() => {
+                    setAnchorEl(null)
+                }}>
+                    <ListItemIcon>
+                        <LibraryBooks width={18} style={{ fill: '#2E2C34' }} />
+                    </ListItemIcon>
+                    {"Elegir desde la biblioteca de archivos"}
+                </MenuItem>
+            </Menu>
+
         </>
     );
 }
@@ -838,7 +879,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     }
                                 >
                                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                    <UploaderIcon  classes={classes} setFiles={setFiles}
+                                    <UploaderIcon classes={classes} setFiles={setFiles}
                                     />
                                 </RichText>
                                 {openDialogHotKey && (
