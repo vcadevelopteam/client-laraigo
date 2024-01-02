@@ -111,7 +111,7 @@ const Corporations: FC = () => {
             getValuesFromDomain("TYPECREDIT"),
             getValuesFromDomain("TYPEPARTNER"),
             appsettingInvoiceSelCombo(),
-            getCityBillingList,
+            getCityBillingList(),
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -270,9 +270,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
 
             let msg = "";
             switch (doctype) {
-                case "0": // OTROS o NO DOMICILIARIO
-                    msg = t(langKeys.doctype_others_non_home_error);
-                    return docnum.length > 15 ? msg : undefined;
                 case "1": // DNI
                     msg = t(langKeys.doctype_dni_error);
                     return docnum.length !== 8 ? msg : undefined;
@@ -285,8 +282,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                 case "7": // PASAPORTE
                     msg = t(langKeys.doctype_passport_error);
                     return docnum.length > 12 ? msg : undefined;
-                case "11": // PART. DE NACIMIENTO-IDENTIDAD
-                default: return t(langKeys.doctype_unknown_error);
+                default: // DEFAULT
+                    return undefined;
             }
         }
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });

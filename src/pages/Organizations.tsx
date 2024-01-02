@@ -209,11 +209,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('docnum', {
             validate: {
-                needsvalidation: (value: any) => (doctype !== "0") ? ((value && value.length) || t(langKeys.field_required)) : true,
                 dnivalidation: (value: any) => (doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
                 cevalidation: (value: any) => (doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
                 rucvalidation: (value: any) => (doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
                 passportvalidation: (value: any) => (doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true,
+                needsvalidation: (value: any) => (doctype !== "1" && doctype !== "4" && doctype !== "6" && doctype !== "7") ? ((value && value.length) || t(langKeys.field_required)) : true,
             }
         });
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
