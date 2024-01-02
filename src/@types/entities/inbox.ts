@@ -127,3 +127,11 @@ export interface ICallGo {
     onholddate?: string;
     transfer?: ITransfer;
 }
+
+export interface ILibrary {
+    documentlibraryid: number;
+    type: string;
+    link: string;
+    title: string;
+    category: string;
+}

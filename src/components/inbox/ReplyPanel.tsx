@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { ImageIcon, QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon } from 'icons';
-import { styled } from '@material-ui/core/styles';
+import { makeStyles, styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
-import { Dictionary, IFile } from '@types';
+import { Dictionary, IFile, ILibrary } from '@types';
 import { useDispatch } from 'react-redux';
 import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
-import { EmojiPickerZyx, GifPickerZyx } from 'components'
+import { DialogZyx, EmojiPickerZyx, FieldSelect, GifPickerZyx, SearchField } from 'components'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -39,13 +39,160 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { ListItemIcon } from '@material-ui/core';
 import { LibraryBooks, Publish } from '@material-ui/icons';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
+
+
+const useStylesInteraction = makeStyles(() => ({
+    textFileLibrary: {
+        padding: '0px .5rem',
+        width: 80,
+        wordBreak: "break-word",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        textAlign: "center"
+    },
+    containerFiles: {
+        display: "flex",
+        gap: '1rem',
+        flexWrap: "wrap",
+        marginTop: 16,
+        maxHeight: 400,
+        overflowY: 'auto'
+    }, 
+    containerFileLibrary: {
+        cursor: "pointer",
+        '&:hover': {
+            backgroundColor: 'rgb(235, 234, 237, 0.18)'
+        },
+    },
+    inputPlaceholder: {
+        padding: "2rem",
+        '&::placeholder': {
+            fontSize: "1rem",
+            fontWeight: 500,
+            color: '#84818A',
+        },
+    },
+}));
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
 const channelsWhatsapp = ["WHAT", "WHAD", "WHAP", "WHAG", "WHAM"];
 
+const DialogSearchLibrary: React.FC<{
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    setFiles: (param: any) => void;
+}> = ({ setOpenModal, openModal, setFiles }) => {
+    const { t } = useTranslation();
+    const classes = useStylesInteraction();
+    const libraryList = useSelector(state => state.inbox.libraryList);
+    const [categoryList, setCategoryList] = useState<Dictionary[]>([]);
+    const [libraryToShow, setLibraryToShow] = useState<ILibrary[]>([]);
+
+    const onSelectFile = (file: ILibrary) => {
+        const iid = new Date().toISOString();
+        setFiles((x: IFile[]) => [...x, { id: iid, url: file.link, type: file.type }]);
+        setOpenModal(false)
+    }
+
+    useEffect(() => {
+        if (openModal) {
+            setCategoryList(Array.from(new Set(libraryList.map(x => x.category))).filter(x => x).map(x => ({ option: x })));
+            setLibraryToShow(libraryList);
+        }
+    }, [openModal])
+
+    const applyFilter = (value: string) => {
+        if (value) {
+            setLibraryToShow(libraryToShow.filter(x => x.title.includes(value)))
+        } else {
+            setLibraryToShow(libraryList);
+        }
+    }
+
+    const applyFilterCategory = (value: string | undefined) => {
+        if (value) {
+            setLibraryToShow(libraryToShow.filter(x => x.category === value))
+        } else {
+            setLibraryToShow(libraryList);
+        }
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={"Biblioteca de documentos"}
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={() => setOpenModal(false)}
+            button2Type="submit"
+        >
+            <div>
+                <div style={{ display: "flex", gap: 16 }}>
+                    <div style={{ width: 200 }}>
+                        <FieldSelect
+                            label={t(langKeys.category)}
+                            className="col-4"
+                            onChange={(value) => applyFilterCategory(value?.option)}
+                            data={categoryList}
+                            variant='outlined'
+                            optionDesc="option"
+                            optionValue="option"
+                        />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <SearchField
+                            style={{ fontSize: "1rem" }}
+                            className='col-8'
+                            colorPlaceHolder='#FFF'
+                            inputProps={{ className: classes.inputPlaceholder }}
+                            handleChangeOther={applyFilter}
+                            lazy
+                        />
+
+                    </div>
+                </div>
+                <div className={classes.containerFiles}>
+                    {libraryToShow.map(x => {
+                        const extension = x.link.split('.').pop()
+
+                        return (
+                            <div
+                                key={x.documentlibraryid}
+                                className={classes.containerFileLibrary}
+                                onClick={() => onSelectFile(x)}
+                            >
+                                {x.type === "image" ? (
+                                    <div style={{ padding: 10, width: "80px", height: "80px" }}>
+                                        <img style={{ objectFit: 'cover' }} src={x.link} width={"100%"} height={"100%"} />
+                                    </div>
+                                ) : extension === "pdf" ? (
+                                    <PdfIcon width="80" height="80" />
+                                ) : (extension === "doc" || extension === "docx") ? (
+                                    <DocIcon width="80" height="80" />
+                                ) : (["xls", "xlsx", "csv"].includes(`${extension}`)) ? (
+                                    <XlsIcon width="80" height="80" />
+                                ) : (extension === "ppt" || extension === "pptx") ? (
+                                    <PptIcon width="80" height="80" />
+                                ) : (extension === "text" || extension === "txt") ? (
+                                    <TxtIcon width="80" height="80" />
+                                ) : (extension === "zip" || extension === "rar") ? (
+                                    <ZipIcon width="80" height="80" />
+                                ) : <FileIcon width="80" height="80" />
+                                }
+                                <div className={classes.textFileLibrary}>{x.title}</div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+        </DialogZyx>)
+}
+
 const UploaderIcon: React.FC<{
-    classes: any,
+    classes: ClassNameMap,
     setFiles: (param: any) => void, initfile?: any, setfileimage?: (param: any) => void
 }> = ({ classes, setFiles, initfile, setfileimage }) => {
     const { t } = useTranslation();
@@ -55,6 +202,7 @@ const UploaderIcon: React.FC<{
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const uploadResult = useSelector(state => state.main.uploadFile);
+    const [openModal, setOpenModal] = useState(false)
     const [idUpload, setIdUpload] = useState('');
 
     useEffect(() => {
@@ -64,7 +212,6 @@ const UploaderIcon: React.FC<{
                 setfileimage(null)
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initfile])
 
     useEffect(() => {
@@ -96,7 +243,7 @@ const UploaderIcon: React.FC<{
 
     return (
         <>
-            <IconButton color="primary" onClick={(e) => setAnchorEl(e.currentTarget)}>
+            <IconButton color="primary"  size="small" onClick={(e) => setAnchorEl(e.currentTarget)}>
                 <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
             </IconButton>
             <Menu
@@ -136,6 +283,7 @@ const UploaderIcon: React.FC<{
 
                 <MenuItem onClick={() => {
                     setAnchorEl(null)
+                    setOpenModal(true)
                 }}>
                     <ListItemIcon>
                         <LibraryBooks width={18} style={{ fill: '#2E2C34' }} />
@@ -143,32 +291,53 @@ const UploaderIcon: React.FC<{
                     {"Elegir desde la biblioteca de archivos"}
                 </MenuItem>
             </Menu>
-
+            <DialogSearchLibrary
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                setFiles={setFiles}
+            />
         </>
     );
 }
 
-const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ item, setFiles }) => (
-    <div style={{ position: 'relative' }}>
-        <div key={item.id} style={{ width: 70, height: 70, border: '1px solid #e1e1e1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            {item.url ?
-                (item.type === 'image' ?
-                    <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%', maxHeight: 70 }} /> :
-                    <img width="30" height="30" alt="loaded" src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/1631292621392file-trans.png" />) :
-                <CircularProgress color="inherit" />
-            }
-        </div>
-        <IconButton
-            onClick={() => setFiles((x: IFile[]) => x.filter(y => y.id !== item.id))}
-            size="small"
-            style={{ position: 'absolute', top: -16, right: -14 }}
-        >
-            <CloseIcon fontSize="small" />
-        </IconButton>
-    </div>
-)
+const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ item, setFiles }) => {
+    const extension = item.url.split('.').pop()
 
-const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
+    return (
+        <div style={{ position: 'relative' }}>
+            <div key={item.id} style={{ width: 70, height: 70, border: '1px solid #e1e1e1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {item.url ?
+                    (item.type === 'image' ?
+                        <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%', maxHeight: 70 }} /> :
+                        (extension === "pdf" ? (
+                            <PdfIcon width="70" height="70" />
+                        ) : (extension === "doc" || extension === "docx") ? (
+                            <DocIcon width="70" height="70" />
+                        ) : (["xls", "xlsx", "csv"].includes(`${extension}`)) ? (
+                            <XlsIcon width="70" height="70" />
+                        ) : (extension === "ppt" || extension === "pptx") ? (
+                            <PptIcon width="70" height="70" />
+                        ) : (extension === "text" || extension === "txt") ? (
+                            <TxtIcon width="70" height="70" />
+                        ) : (extension === "zip" || extension === "rar") ? (
+                            <ZipIcon width="70" height="70" />
+                        ) : <FileIcon width="70" height="70" />
+                        )) :
+                    <CircularProgress color="inherit" />
+                }
+            </div>
+            <IconButton
+                onClick={() => setFiles((x: IFile[]) => x.filter(y => y.id !== item.id))}
+                size="small"
+                style={{ position: 'absolute', top: -16, right: -14 }}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </div>
+    )
+}
+
+const QuickReplyIcon: React.FC<{ classes: ClassNameMap, setText: (param: string) => void }> = ({ classes, setText }) => {
     const [open, setOpen] = React.useState(false);
     const quickReplies = useSelector(state => state.inbox.quickreplies);
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
@@ -218,7 +387,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: 'flex' }}>
-                <Tooltip title={t(langKeys.send_quickreply) + ""} arrow placement="top">
+                <Tooltip title={t(langKeys.send_quickreply)} arrow placement="top">
                     <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
                 </Tooltip>
                 {open && (
@@ -283,7 +452,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     )
 }
 
-const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
+const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap, setText: (param: string) => void }> = ({ classes, setText }) => {
     const [open, setOpen] = React.useState(false);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -354,7 +523,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: 'flex' }}>
-                <Tooltip title={t(langKeys.send_enrich_response) + ""} arrow placement="top">
+                <Tooltip title={t(langKeys.send_enrich_response)} arrow placement="top">
                     <RichResponseIcon className={classes.iconResponse} onClick={handleClick} style={{ width: 22, height: 22 }} />
                 </Tooltip>
                 {open && (
@@ -417,7 +586,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
     )
 }
 
-const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
+const SmallAvatar = styled(Avatar)(() => ({
     width: 22,
     backgroundColor: '#0ac630',
     height: 22,
@@ -439,7 +608,6 @@ const BottomGoToUnder: React.FC = () => {
             else
                 setCountNewMessage(countNewMessage + 1)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [triggerNewMessageClient])
 
 
@@ -448,7 +616,6 @@ const BottomGoToUnder: React.FC = () => {
             dispatch(showGoToBottom(false));
             setCountNewMessage(0);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOnBottom])
 
     if (!boolShowGoToBottom || isOnBottom)
@@ -474,7 +641,7 @@ const BottomGoToUnder: React.FC = () => {
     )
 }
 
-const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
+const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -642,7 +809,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
                     textCleaned = ("Re: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
 
-                    let fileobj = files.reduce((acc, item, i) => ({ ...acc, [String(item.url.split('/').pop() === "tenor.gif" ? "tenor" + i + ".gif" : item.url.split('/').pop())]: item.url }), {})
+                    const fileobj = files.reduce((acc, item, i) => ({ ...acc, [String(item.url.split('/').pop() === "tenor.gif" ? "tenor" + i + ".gif" : item.url.split('/').pop())]: item.url }), {})
                     textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
                     setFiles([])
                 }
@@ -712,15 +879,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
-            setemojiNoShow(multiData?.data?.[10]?.data.filter(x => (!!x.restricted)).map(x => x.emojihex) || [])
-            setemojiFavorite(multiData?.data?.[10]?.data.filter(x => (!!x.favorite)).map(x => x.emojihex) || [])
+            setemojiNoShow(multiData?.data?.[10]?.data.filter(x => (x.restricted)).map(x => x.emojihex) || [])
+            setemojiFavorite(multiData?.data?.[10]?.data.filter(x => (x.favorite)).map(x => x.emojihex) || [])
             setinnappropiatewordsList(multiData?.data?.[11]?.data || [])
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
     }, [multiData])
 
     useEffect(() => {
-        setquickRepliesToShow(quickReplies?.data?.filter(x => !!x.favorite) || [])
+        setquickRepliesToShow(quickReplies?.data?.filter(x => x.favorite) || [])
     }, [quickReplies])
 
     useEffect(() => {
@@ -729,7 +896,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
             if (textToSearch === "")
-                setquickRepliesToShow(quickReplies.data.filter(x => !!x.favorite))
+                setquickRepliesToShow(quickReplies.data.filter(x => x.favorite))
             else
                 setquickRepliesToShow(quickReplies.data.filter(x => x.description.toLowerCase().includes(textToSearch.toLowerCase())))
         } else if (text.substring(0, 2).toLowerCase() === "\\r") {
@@ -743,14 +910,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         } else {
             setOpenDialogHotKey(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [text])
 
     const selectQuickReply = (value: string) => {
         const variablesList = value.match(/({{)(.*?)(}})/g) || [];
         let myquickreply = value
-            .replace("{{numticket}}", "" + ticketSelected?.ticketnum)
-            .replace("{{client_name}}", "" + ticketSelected?.displayname)
+            .replace("{{numticket}}", `${ticketSelected?.ticketnum}`)
+            .replace("{{client_name}}", `${ticketSelected?.displayname}`)
             .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
             .replace("{{user_group}}", ticketSelected?.usergroup || "")
 

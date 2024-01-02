@@ -687,6 +687,11 @@ export const getDocumentLibrary = (): IRequestBody => ({
         all: true
     }
 })
+export const getDocumentLibraryByUser = (): IRequestBody => ({
+    method: "QUERY_DOCUMENTLIBRARY_BY_USER",
+    key: "QUERY_DOCUMENTLIBRARY_BY_USER",
+    parameters: { }
+})
 export const getReportSchedulerSel = (id: number): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_SEL",
     key: "UFN_REPORTSCHEDULER_SEL",

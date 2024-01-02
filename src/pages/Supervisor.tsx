@@ -8,15 +8,15 @@ import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Tooltip from '@material-ui/core/Tooltip';
-import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket } from 'store/inbox/actions';
+import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket, setLibraryByUser } from 'store/inbox/actions';
 import { getCollectionAux2, getMultiCollection, resetAllMain } from 'store/main/actions';
-import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getTimeWaiting } from 'common/helpers';
+import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getTimeWaiting, getDocumentLibraryByUser } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { AntTab, BadgeGo, ListItemSkeleton, GetIcon } from 'components';
 import { SearchIcon } from 'icons';
-import { Dictionary, IAgent } from "@types";
+import { Dictionary, IAgent, ILibrary } from "@types";
 import clsx from 'clsx';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -495,8 +495,12 @@ const Supervisor: FC = () => {
     const firstLoad = React.useRef(true);
 
     useEffect(() => {
-        if (multiData?.data[1])
-            dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
+        if (!multiData.loading && !multiData.error) {
+            if (multiData?.data[1])
+                dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
+            const dataLibrary = multiData.data.find(x => x.key === "QUERY_DOCUMENTLIBRARY_BY_USER")
+            dispatch(setLibraryByUser((dataLibrary?.data as ILibrary[]) ?? []))
+        }
     }, [multiData])
 
     useEffect(() => {
@@ -520,6 +524,7 @@ const Supervisor: FC = () => {
             getUserChannelSel(),
             getPropertySelByName("ASESORDELEGACION", "ASESORDELEGACION"),
             getPropertySelByName("ASESORSUSPENDE", "ASESORSUSPENDE"),
+            getDocumentLibraryByUser()
         ]))
         return () => {
             dispatch(resetAllMain());
