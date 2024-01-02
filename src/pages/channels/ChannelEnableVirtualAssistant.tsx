@@ -116,7 +116,7 @@ const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({co
     }, []);
 
     useEffect(() => {
-        register('chatblockid', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
+        register('chatblockid');
         register("communicationchannelid")
         register("prop_value")
     }, [register])
@@ -147,10 +147,14 @@ const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({co
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(showBackdrop(true));
-            dispatch(execute(templatesChatflowClone(data)));
-
-            setWaitSave(true);
+            if(data.chatblockid){
+                dispatch(showBackdrop(true));
+                dispatch(execute(templatesChatflowClone(data)));
+    
+                setWaitSave(true);
+            }else{
+                history.push(paths.CHANNELS);
+            }
         };
         dispatch(
             manageConfirmation({
