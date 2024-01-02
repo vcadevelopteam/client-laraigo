@@ -389,6 +389,13 @@ export const routes: RouteConfig[] = [
         icon: (className) => <ConfigPropertiesIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
+        key: paths.DOCUMENTLIBRARY,
+        description: <Trans i18nKey={langKeys.documentlibrary} count={2} />,
+        tooltip: "",
+        path: paths.DOCUMENTLIBRARY,
+        icon: (className) => <ConfigPropertiesIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+    },
+    {
         key: paths.EXTRASLOCATION,
         description: <Trans i18nKey={langKeys.locations} count={2} />,
         tooltip: "",
