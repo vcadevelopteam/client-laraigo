@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useDispatch } from 'react-redux';
 import { TemplateIcons } from 'components';
@@ -8,6 +7,7 @@ import TableZyx from 'components/fields/table-simple';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection } from 'store/main/actions';
+import { CellProps } from 'react-table';
 
 const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({mainResult,handleEdit}) => {
     const dispatch = useDispatch();
@@ -23,7 +23,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -47,16 +47,6 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                     let formatteddate = formatDate(row, {withTime: false})
                     return formatteddate
                 }
-            },
-            {
-                Header: t(langKeys.channel),
-                accessor: 'channel',
-                NoFilter: true
-            },
-            {
-                Header: `N° ${t(langKeys.ticket_numeroticket)}`,
-                accessor: 'ticketnum',
-                NoFilter: true,
             },
             {
                 Header: t(langKeys.client),
@@ -89,14 +79,32 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 NoFilter: true
             },
             {
+                Header: "Tipo Comprobante",
+                accessor: 'var_tipocomprobante', //falta traer esto
+                NoFilter: true
+            },
+            {
                 Header: "Fecha programada entrega",
                 accessor: 'var_horaentrega',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { var_fechaentrega, var_horaentrega } = props.cell.row.original;
                     return `${var_fechaentrega} ${var_horaentrega}`
                 }
             },
+            /*
+            {
+                Header: t(langKeys.channel),
+                accessor: 'channel',
+                NoFilter: true
+            },
+            {
+                Header: `N° ${t(langKeys.ticket_numeroticket)}`,
+                accessor: 'ticketnum',
+                NoFilter: true,
+            },     
+            */    
+
         ],
         []
     );
@@ -122,7 +130,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 titlemodule={""}
                 onClickRow={handleEdit}
                 data={mainData}
-                download={false}
+                download={true}
                 loading={mainResult.loading}
             />
         </div>)
