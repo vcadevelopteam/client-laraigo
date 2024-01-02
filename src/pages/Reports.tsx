@@ -823,6 +823,8 @@ const Reports: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = user?.roledesc?.includes("SUPERADMIN")
 
+    console.log(user?.roledesc)
+
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
         dispatch(getCollectionAux(getReportTemplateSel()))
@@ -1185,7 +1187,7 @@ const Reports: FC = () => {
                     </Grid>
                 )
             case 'UNIQUECONTACTS':
-                if (user?.roledesc?.includes("SUPERADMIN")) {
+                if (user?.roledesc?.includes("SUPERADMIN") || user?.roledesc?.includes("SUPERVISOR")  || user?.roledesc?.includes("ADMINISTRADOR")) {
                     return (
                         <Grid item key={"uniquecontactsreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                             <Card >

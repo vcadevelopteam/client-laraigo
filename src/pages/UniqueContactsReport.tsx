@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { AntTab, DialogZyx, FieldMultiSelect, FieldSelect} from 'components';
-import { convertLocalDate, dateToLocalDate, getUniqueContactsConversationExport, getUniqueContactsExport, getUniqueContactsSel, getValuesFromDomain, selOrgSimpleList, selUniqueContactsConversation, selUniqueContactsPcc } from 'common/helpers';
+import { convertLocalDate, dateToLocalDate, getDomainChannelTypeList, getUniqueContactsConversationExport, getUniqueContactsExport, getUniqueContactsSel, getValuesFromDomain, selOrgSimpleList, selUniqueContactsConversation, selUniqueContactsPcc } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -1368,7 +1368,8 @@ const UniqueContactsReport: FC = () => {
     useEffect(() => {
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("TIPOCANAL"),
-            selOrgSimpleList()
+            selOrgSimpleList(),
+            getDomainChannelTypeList()
         ]))
         dispatch(setMemoryTable({
             id: UNIQUECONTACTS
@@ -1411,7 +1412,7 @@ const UniqueContactsReport: FC = () => {
                         onChange={(value) => {setChannelType(value.map((o: Dictionary) => o.domainvalue).join())}}
                         valueDefault={channelType}
                         variant="outlined"
-                        data={multiData?.data?.[0]?.data||[]}
+                        data={multiData?.data?.[2]?.data||[]}
                         loading={multiData.loading}
                         optionDesc={"domaindesc"}
                         optionValue={"domainvalue"}
