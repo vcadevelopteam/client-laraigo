@@ -823,8 +823,6 @@ const Reports: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = user?.roledesc?.includes("SUPERADMIN")
 
-    console.log(user?.roledesc)
-
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
         dispatch(getCollectionAux(getReportTemplateSel()))
