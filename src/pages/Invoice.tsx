@@ -5929,6 +5929,32 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                 return "billingfield_billingruc";
             case "7":
                 return "billingfield_billingpass";
+            case "13":
+                return "billingfield_colombiacedciud";
+            case "22":
+                return "billingfield_colombiacedext";
+            case "43":
+                return "billingfield_colombiadian";
+            case "42":
+                return "billingfield_colombiadie";
+            case "31":
+                return "billingfield_colombianit";
+            case "50":
+                return "billingfield_colombianitother";
+            case "R-00-PN":
+                return "billingfield_colombianorutpn";
+            case "91":
+                return "billingfield_colombianuip";
+            case "41":
+                return "billingfield_colombiapass";
+            case "47":
+                return "billingfield_colombiapep";
+            case "11":
+                return "billingfield_colombiaregciv";
+            case "21":
+                return "billingfield_colombiatarext";
+            case "12":
+                return "billingfield_colombiataride";
             default:
                 return "pendingpayment";
         }
@@ -7211,6 +7237,32 @@ const BillingOperation: FC<DetailProps> = ({
                 return "billingfield_billingruc";
             case "7":
                 return "billingfield_billingpass";
+            case "13":
+                return "billingfield_colombiacedciud";
+            case "22":
+                return "billingfield_colombiacedext";
+            case "43":
+                return "billingfield_colombiadian";
+            case "42":
+                return "billingfield_colombiadie";
+            case "31":
+                return "billingfield_colombianit";
+            case "50":
+                return "billingfield_colombianitother";
+            case "R-00-PN":
+                return "billingfield_colombianorutpn";
+            case "91":
+                return "billingfield_colombianuip";
+            case "41":
+                return "billingfield_colombiapass";
+            case "47":
+                return "billingfield_colombiapep";
+            case "11":
+                return "billingfield_colombiaregciv";
+            case "21":
+                return "billingfield_colombiatarext";
+            case "12":
+                return "billingfield_colombiataride";
             default:
                 return "";
         }
@@ -8481,6 +8533,32 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
                 return "billingfield_billingruc";
             case "7":
                 return "billingfield_billingpass";
+            case "13":
+                return "billingfield_colombiacedciud";
+            case "22":
+                return "billingfield_colombiacedext";
+            case "43":
+                return "billingfield_colombiadian";
+            case "42":
+                return "billingfield_colombiadie";
+            case "31":
+                return "billingfield_colombianit";
+            case "50":
+                return "billingfield_colombianitother";
+            case "R-00-PN":
+                return "billingfield_colombianorutpn";
+            case "91":
+                return "billingfield_colombianuip";
+            case "41":
+                return "billingfield_colombiapass";
+            case "47":
+                return "billingfield_colombiapep";
+            case "11":
+                return "billingfield_colombiaregciv";
+            case "21":
+                return "billingfield_colombiatarext";
+            case "12":
+                return "billingfield_colombiataride";
             default:
                 return "";
         }
