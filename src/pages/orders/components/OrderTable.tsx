@@ -48,7 +48,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 }
             },
             {
-                Header: t(langKeys.clientname),
+                Header: t(langKeys.client),
                 accessor: 'name',
                 NoFilter: true
             },
@@ -56,7 +56,12 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 Header: t(langKeys.phone),
                 accessor: 'phone',
                 NoFilter: true
-            },           
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+                NoFilter: true
+            },
             {
                 Header: t(langKeys.totalamount),
                 accessor: 'amount',
@@ -64,7 +69,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             },
             {
                 Header: t(langKeys.orderstatus),
-                accessor: 'status',
+                accessor: 'orderstatus',
                 NoFilter: true
             },
             {
