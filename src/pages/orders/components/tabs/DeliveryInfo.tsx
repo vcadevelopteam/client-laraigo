@@ -6,10 +6,11 @@ import { langKeys } from 'lang/keys';
 import MapLeaflet from 'components/fields/MapLeaflet';
 import { FieldEdit } from 'components';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     container: {
-        width: '100%',
-        color: "#2E2C34",
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+        background: "#fff",
     },
 }));
 interface MultiData {
@@ -27,35 +28,33 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row, multiData }) => {
 
     return (    
         <div className={classes.container} >
-            <div className="row-zyx" style={{paddingTop: 20}}>
-                <div className="row-zyx" style={{paddingTop: 20}}>
-                    <FieldEdit
-                        label={t(langKeys.deliverytype)}
-                        className="col-6"
-                        valueDefault={row?.deliverytype || "-"}                           
-                        disabled={true}              
-                    />
-                    <FieldEdit
-                        label={t(langKeys.deliverydate)}
-                        className="col-6"
-                        valueDefault={row?.deliverydate || "-"}                           
-                        disabled={true}              
-                    />
-                </div>
-                <div className="row-zyx" style={{paddingTop: 20}}>
-                    <FieldEdit
-                        label={t(langKeys.deliveryaddress)}
-                        className="col-6"
-                        valueDefault={row?.deliveryaddress || "-"}                           
-                        disabled={true}              
-                    />
-                    <FieldEdit
-                        label={t(langKeys.transactionreference)}
-                        className="col-6"
-                        valueDefault={row?.transactionreference || "-"}                           
-                        disabled={true}              
-                    />
-                </div>               
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.deliverytype)}
+                    className="col-6"
+                    valueDefault={row?.deliverytype || "-"}                           
+                    disabled={true}              
+                />
+                <FieldEdit
+                    label={t(langKeys.deliverydate)}
+                    className="col-6"
+                    valueDefault={row?.deliverydate || "-"}                           
+                    disabled={true}              
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.deliveryaddress)}
+                    className="col-6"
+                    valueDefault={row?.deliveryaddress || "-"}                           
+                    disabled={true}              
+                />
+                <FieldEdit
+                    label={t(langKeys.transactionreference)}
+                    className="col-6"
+                    valueDefault={row?.transactionreference || "-"}                           
+                    disabled={true}              
+                />
             </div>
             <div className="col-12">
                 <MapLeaflet

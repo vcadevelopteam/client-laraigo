@@ -16,24 +16,21 @@ const useStyles = makeStyles((theme) => ({
     },    
 }));
 
-interface OrderData {
-  description: string;
-  currency: string;
-  unitprice: number;
-  quantity: number;
-  measureunit: number;
-  amount: number;
+interface MultiData {
+    data: Dictionary[];
+    success: boolean;
 }
 
-interface OrderListProps {  
+interface OrderListProps {
     row: Dictionary | null;
-    dataorders: OrderData[];
+    multiData: MultiData[];
 }
 
-const OrderList: React.FC<OrderListProps> = ({ row, dataorders }) => {
+const OrderList: React.FC<OrderListProps> = ({ row, multiData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
+    const dataOrders = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     const columns = React.useMemo(
         () => [           
@@ -104,22 +101,18 @@ const OrderList: React.FC<OrderListProps> = ({ row, dataorders }) => {
     return (     
         <>
             <div className={classes.containerDetail}>
-                <div className="row-zyx">
-                    <TableZyx
-                        columns={columns}
-                        titlemodule={t(langKeys.orderlist)}
-                        data={dataorders}
-                        download={false}
-                        loading={mainResult.multiData.loading}
-                        toolsFooter={true}
-                        filterGeneral={false}                        
-                    />
+                <TableZyx
+                    columns={columns}
+                    data={dataOrders}
+                    download={false}
+                    loading={mainResult.multiData.loading}
+                    toolsFooter={true}
+                    filterGeneral={false}                        
+                />
+                <div style={{ width: "100%", textAlign: 'right'}}>
+                    <div style={{ fontSize: "1.1em", fontWeight: "bold", paddingRight: 20}}>{t(langKeys.totalamount)}: {row?.currency === "PEN" ? "S/ " : "$ "}{formatNumber(dataOrders.reduce((acc, x) => acc + x.amount, 0))}</div>
                 </div>
             </div>
-            <div style={{ width: "97%", display: "flex", justifyContent: "space-between", padding: 15 }}>
-                <div style={{ fontSize: "1.2em" }}></div>
-                <div style={{ fontSize: "1.1em", fontWeight: "bold"}}>{t(langKeys.total)}: {row?.currency === "PEN" ? "S/ " : "$ "}{formatNumber(dataorders.reduce((acc, x) => acc + x.amount, 0))}</div>
-            </div>          
         </>
     );
 }
