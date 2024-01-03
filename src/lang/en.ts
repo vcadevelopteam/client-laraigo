@@ -5567,6 +5567,16 @@ const translation: LangKeys = {
   end: 'End',
   trafficlight: 'Traffic light',
   trafficindividualconfig: 'Traffic light individual configuration',
+  dateorder: 'Date order',
+  deliverytype: 'Delivery Type',
+  billingtype: 'Billing Type',
+  schedule_delivery_date: 'Scheduled delivery date',
+  orderlists: "orderlists",
+  deliveryinfo: "Delivery Information",
+  deliverydate: "Delivery date",
+  deliveryaddress: "Delivery address",
+  paymentamount: "Payment amount",
+  paymentreceipt: "Payment Receipt",
 };
 
 const enResource: ResourceLanguage = {

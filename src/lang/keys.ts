@@ -5479,6 +5479,17 @@ export const langKeys = {
   end: 'end',
   trafficlight: 'trafficlight',
   trafficindividualconfig: 'trafficindividualconfig',
+  dateorder: 'dateorder',
+  deliverytype: 'deliverytype',
+  billingtype: 'billingtype',
+  schedule_delivery_date: 'schedule_delivery_date',
+  orderlists: "orderlists",
+  deliveryinfo: "deliveryinfo",
+  deliverydate: "deliverydate",
+  deliveryaddress: "deliveryaddress",
+  paymentamount: "paymentamount",
+  paymentreceipt: "paymentreceipt",
+
 };
 
 export type LangKeys = typeof langKeys;

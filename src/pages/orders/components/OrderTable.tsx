@@ -12,7 +12,6 @@ import { CellProps } from 'react-table';
 const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({mainResult,handleEdit}) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
     const [mainData, setMainData] = useState<any>([]);
 
     const columns = React.useMemo(
@@ -39,17 +38,17 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 NoFilter: true,          
             },
             {
-                Header: t(langKeys.date),
+                Header: t(langKeys.dateorder),
                 accessor: 'createdate',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original.createdate;
-                    let formatteddate = formatDate(row, {withTime: false})
+                    const formatteddate = formatDate(row, {withTime: false})
                     return formatteddate
                 }
             },
             {
-                Header: t(langKeys.client),
+                Header: t(langKeys.clientname),
                 accessor: 'name',
                 NoFilter: true
             },
@@ -57,14 +56,9 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 Header: t(langKeys.phone),
                 accessor: 'phone',
                 NoFilter: true
-            },
+            },           
             {
-                Header: t(langKeys.currency),
-                accessor: 'currency',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.total),
+                Header: t(langKeys.totalamount),
                 accessor: 'amount',
                 NoFilter: true
             },
@@ -74,37 +68,24 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 NoFilter: true
             },
             {
-                Header: "Tipo entrega",
+                Header: t(langKeys.deliverytype),
                 accessor: 'var_tipoentrega',
                 NoFilter: true
             },
             {
-                Header: "Tipo Comprobante",
-                accessor: 'var_tipocomprobante', //falta traer esto
+                Header: t(langKeys.billingtype),
+                accessor: 'var_tipocomprobante',
                 NoFilter: true
             },
             {
-                Header: "Fecha programada entrega",
+                Header: t(langKeys.deliverytype),
                 accessor: 'var_horaentrega',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
                     const { var_fechaentrega, var_horaentrega } = props.cell.row.original;
                     return `${var_fechaentrega} ${var_horaentrega}`
                 }
-            },
-            /*
-            {
-                Header: t(langKeys.channel),
-                accessor: 'channel',
-                NoFilter: true
-            },
-            {
-                Header: `N° ${t(langKeys.ticket_numeroticket)}`,
-                accessor: 'ticketnum',
-                NoFilter: true,
-            },     
-            */    
-
+            }         
         ],
         []
     );
@@ -134,7 +115,6 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 loading={mainResult.loading}
             />
         </div>)
-
 }
 
 export default OrderTable;
