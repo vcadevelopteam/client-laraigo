@@ -13,7 +13,16 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
-    },    
+    },
+    amountDiv: {
+        width: "100%",
+        textAlign: 'right'
+    },
+    amountText: {
+        fontSize: "1.1em",
+        fontWeight: "bold",
+        paddingRight: 20
+    },
 }));
 
 interface MultiData {
@@ -109,8 +118,8 @@ const OrderList: React.FC<OrderListProps> = ({ row, multiData }) => {
                     toolsFooter={true}
                     filterGeneral={false}                        
                 />
-                <div style={{ width: "100%", textAlign: 'right'}}>
-                    <div style={{ fontSize: "1.1em", fontWeight: "bold", paddingRight: 20}}>{t(langKeys.totalamount)}: {row?.currency === "PEN" ? "S/ " : "$ "}{formatNumber(dataOrders.reduce((acc, x) => acc + x.amount, 0))}</div>
+                <div className={classes.amountDiv}>
+                    <div className={classes.amountText}>{t(langKeys.totalamount)}: {row?.currency === "PEN" ? "S/ " : "$ "}{formatNumber(dataOrders.reduce((acc, x) => acc + x.amount, 0))}</div>
                 </div>
             </div>
         </>
