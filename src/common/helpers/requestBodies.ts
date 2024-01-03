@@ -3178,6 +3178,16 @@ export const getBillingPeriodCalcRefreshAll = (year: number, month: number, corp
     },
 });
 
+export const getBillingPeriodPartnerCalc = (partnerid: number, year: number, month: number): IRequestBody => ({
+    method: "UFN_BILLINGPERIODPARTNER_CALC",
+    key: "UFN_BILLINGPERIODPARTNER_CALC",
+    parameters: {
+        partnerid,
+        year,
+        month,
+    },
+});
+
 export const getTableOrigin = (): IRequestBody => ({
     method: "UFN_REPORT_PERSONALIZED_ORIGIN_SEL",
     key: "UFN_REPORT_PERSONALIZED_ORIGIN_SEL",
