@@ -129,12 +129,14 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
 import ClearIcon from "@material-ui/icons/Clear";
 import CulqiModal from "components/fields/CulqiModal";
 import DateFnsUtils from "@date-io/date-fns";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MuiPhoneNumber from "material-ui-phone-number";
+import OpenpayModal from "components/fields/OpenpayModal";
 import Paper from "@material-ui/core/Paper";
 import PaymentIcon from "@material-ui/icons/Payment";
 import React, { FC, Fragment, useCallback, useEffect, useMemo, useState } from "react";
@@ -5367,6 +5369,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     const [purchaseOrder, setPurchaseOrder] = useState("");
     const [purchaseOrderError, setPurchaseOrderError] = useState("");
     const [showCulqi, setShowCulqi] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
     const [totalAmount, setTotalAmount] = useState(0);
     const [totalPay, setTotalPay] = useState(0);
     const [waitPay, setWaitPay] = useState(false);
@@ -5548,6 +5551,10 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
         }
     }, [exchangeResult, waitSave]);
 
+    const openprivacypolicies = () => {
+        window.open("/privacy", "_blank");
+    };
+
     const handleCulqiSuccess = () => {
         setViewSelected("view-1");
         fetchData && fetchData();
@@ -5617,34 +5624,62 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             paymentType === "CULQI" &&
                             publicKey &&
                             showCulqi && (
-                                <CulqiModal
-                                    amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
-                                    buttontitle={t(langKeys.proceedpayment)}
-                                    comments={comments}
-                                    corpid={data?.corpid}
-                                    currency={data?.currency}
-                                    description={data?.productdescription}
-                                    disabled={paymentDisabled}
-                                    invoiceid={data?.invoiceid}
-                                    orgid={data?.orgid}
-                                    override={override}
-                                    publickey={publicKey}
-                                    purchaseorder={purchaseOrder}
-                                    successmessage={t(langKeys.culqipaysuccess)}
-                                    title={data?.description}
-                                    totalpay={totalPay}
-                                    type="CHARGE"
-                                    callbackOnSuccess={() => {
-                                        handleCulqiSuccess();
-                                    }}
-                                ></CulqiModal>
+                                <>
+                                    {data?.paymentprovider === "CULQI" && (
+                                        <CulqiModal
+                                            amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                            buttontitle={t(langKeys.proceedpayment)}
+                                            comments={comments}
+                                            corpid={data?.corpid}
+                                            currency={data?.currency}
+                                            description={data?.productdescription}
+                                            disabled={paymentDisabled || !termsAccepted}
+                                            invoiceid={data?.invoiceid}
+                                            orgid={data?.orgid}
+                                            override={override}
+                                            publickey={publicKey}
+                                            purchaseorder={purchaseOrder}
+                                            successmessage={t(langKeys.culqipaysuccess)}
+                                            title={data?.description}
+                                            totalpay={totalPay}
+                                            type="CHARGE"
+                                            callbackOnSuccess={() => {
+                                                handleCulqiSuccess();
+                                            }}
+                                        ></CulqiModal>
+                                    )}
+                                    {data?.paymentprovider === "OPENPAY COLOMBIA" && (
+                                        <OpenpayModal
+                                            amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                            buttontitle={t(langKeys.proceedpayment)}
+                                            comments={comments}
+                                            corpid={data?.corpid}
+                                            currency={data?.currency}
+                                            description={data?.productdescription}
+                                            disabled={paymentDisabled || !termsAccepted}
+                                            invoiceid={data?.invoiceid}
+                                            merchantid={data?.culqiurl}
+                                            orgid={data?.orgid}
+                                            override={override}
+                                            publickey={publicKey}
+                                            purchaseorder={purchaseOrder}
+                                            successmessage={t(langKeys.culqipaysuccess)}
+                                            title={data?.description}
+                                            totalpay={totalPay}
+                                            type="CHARGE"
+                                            callbackOnSuccess={() => {
+                                                handleCulqiSuccess();
+                                            }}
+                                        ></OpenpayModal>
+                                    )}
+                                </>
                             )}
                         {data?.paymentstatus === "PENDING" &&
                             (data?.invoicestatus === "INVOICED" || data?.invoicestatus === "DRAFT") &&
                             (paymentType === "FAVORITE" || paymentType === "CARD") && (
                                 <Button
                                     color="primary"
-                                    disabled={paymentDisabled || !paymentCardId || !paymentCardCode}
+                                    disabled={paymentDisabled || !paymentCardId || !paymentCardCode || !termsAccepted}
                                     onClick={handlePay}
                                     startIcon={<AttachMoneyIcon color="secondary" />}
                                     style={{ backgroundColor: "#55BD84" }}
@@ -5657,6 +5692,42 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                     </div>
                 </div>
                 <div style={{ backgroundColor: "white", padding: 16 }}>
+                    <div className="row-zyx">
+                        <FieldView className={classes.section} label={""} value={t(langKeys.termsofservicetitle)} />
+                    </div>
+                    <div style={{ width: "100%" }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={termsAccepted}
+                                    color="primary"
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setTermsAccepted(true);
+                                        } else {
+                                            setTermsAccepted(false);
+                                        }
+                                    }}
+                                />
+                            }
+                            label={
+                                <div style={{ display: "inline-flex", alignItems: "center" }}>
+                                    <span>
+                                        {t(langKeys.paymentorder_termandconditions)}
+                                        <b
+                                            style={{ color: "#7721AD" }}
+                                            onClick={(e: any) => {
+                                                e.preventDefault();
+                                                openprivacypolicies();
+                                            }}
+                                        >
+                                            {t(langKeys.paymentorder_termandconditionsnext)}
+                                        </b>
+                                    </span>
+                                </div>
+                            }
+                        />
+                    </div>
                     <div className="row-zyx">
                         <FieldView className={classes.section} label={""} value={t(langKeys.paymentmethod)} />
                     </div>
@@ -9434,6 +9505,8 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [currentIgv, setCurrentIgv] = useState(0);
     const [currentDetraction, setCurrentDetraction] = useState(0);
     const [currentDetractionMinimum, setCurrentDetractionMinimum] = useState(0);
+    const [currentPaymentProvider, setCurrentPaymentProvider] = useState("");
+    const [currentMerchantId, setCurrentMerchantId] = useState("");
     const [detractionAlert, setDetractionAlert] = useState(false);
     const [detractionAmount, setDetractionAmount] = useState(0);
     const [disableInput, setDisableInput] = useState(data?.row ? true : false);
@@ -9460,6 +9533,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [reference, setReference] = useState("");
     const [referenceError, setReferenceError] = useState("");
     const [showCulqi, setShowCulqi] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
     const [totalAmount, setTotalAmount] = useState(0);
     const [totalPay, setTotalPay] = useState(0);
     const [waitPay, setWaitPay] = useState(false);
@@ -9470,6 +9544,10 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         { val: "CARD", description: t(langKeys.paymentcard) },
         { val: "CULQI", description: t(langKeys.paymentculqi) },
     ];
+
+    const openprivacypolicies = () => {
+        window.open("/privacy", "_blank");
+    };
 
     const handlePay = () => {
         const callback = () => {
@@ -9797,6 +9875,8 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     setCurrentIgv(corporationdata?.igv);
                     setCurrentDetraction(corporationdata?.detraction);
                     setCurrentDetractionMinimum(corporationdata?.detractionminimum);
+                    setCurrentPaymentProvider(corporationdata?.paymentprovider);
+                    setCurrentMerchantId(corporationdata?.culqiurl);
 
                     setPublicKey(corporationdata?.publickey);
                 }
@@ -9821,6 +9901,8 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     setCurrentIgv(organizationdata?.igv);
                     setCurrentDetraction(organizationdata?.detraction);
                     setCurrentDetractionMinimum(organizationdata?.detractionminimum);
+                    setCurrentPaymentProvider(organizationdata?.paymentprovider);
+                    setCurrentMerchantId(organizationdata?.culqiurl);
 
                     setPublicKey(organizationdata?.publickey);
                 }
@@ -9926,34 +10008,64 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             </Button>
                         )}
                         {paymentType === "CULQI" && publicKey && showCulqi && (
-                            <CulqiModal
-                                amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
-                                buttontitle={t(langKeys.proceedpayment)}
-                                buyamount={buyAmount}
-                                comments={comments}
-                                corpid={corp}
-                                currency={"USD"}
-                                description={reference}
-                                disabled={paymentDisabled}
-                                invoiceid={0}
-                                orgid={org}
-                                publickey={publicKey}
-                                purchaseorder={purchaseOrder}
-                                reference={reference}
-                                successmessage={t(langKeys.culqipaysuccess)}
-                                title={reference}
-                                totalamount={totalAmount}
-                                totalpay={totalPay}
-                                type="BALANCE"
-                                callbackOnSuccess={() => {
-                                    handleCulqiSuccess();
-                                }}
-                            ></CulqiModal>
+                            <>
+                                {currentPaymentProvider === "CULQI" && (
+                                    <CulqiModal
+                                        amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                        buttontitle={t(langKeys.proceedpayment)}
+                                        buyamount={buyAmount}
+                                        comments={comments}
+                                        corpid={corp}
+                                        currency={"USD"}
+                                        description={reference}
+                                        disabled={paymentDisabled || !termsAccepted}
+                                        invoiceid={0}
+                                        orgid={org}
+                                        publickey={publicKey}
+                                        purchaseorder={purchaseOrder}
+                                        reference={reference}
+                                        successmessage={t(langKeys.culqipaysuccess)}
+                                        title={reference}
+                                        totalamount={totalAmount}
+                                        totalpay={totalPay}
+                                        type="BALANCE"
+                                        callbackOnSuccess={() => {
+                                            handleCulqiSuccess();
+                                        }}
+                                    ></CulqiModal>
+                                )}
+                                {currentPaymentProvider === "OPENPAY COLOMBIA" && (
+                                    <OpenpayModal
+                                        amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                        buttontitle={t(langKeys.proceedpayment)}
+                                        buyamount={buyAmount}
+                                        comments={comments}
+                                        corpid={corp}
+                                        currency={"USD"}
+                                        description={reference}
+                                        disabled={paymentDisabled || !termsAccepted}
+                                        invoiceid={0}
+                                        merchantid={currentMerchantId}
+                                        orgid={org}
+                                        publickey={publicKey}
+                                        purchaseorder={purchaseOrder}
+                                        reference={reference}
+                                        successmessage={t(langKeys.culqipaysuccess)}
+                                        title={reference}
+                                        totalamount={totalAmount}
+                                        totalpay={totalPay}
+                                        type="BALANCE"
+                                        callbackOnSuccess={() => {
+                                            handleCulqiSuccess();
+                                        }}
+                                    ></OpenpayModal>
+                                )}
+                            </>
                         )}
                         {(paymentType === "FAVORITE" || paymentType === "CARD") && showCulqi && (
                             <Button
                                 color="primary"
-                                disabled={paymentDisabled || !paymentCardId || !paymentCardCode}
+                                disabled={paymentDisabled || !paymentCardId || !paymentCardCode || !termsAccepted}
                                 onClick={handlePay}
                                 startIcon={<AttachMoneyIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
@@ -10127,6 +10239,50 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     )}
                     {disableInput && (
                         <div>
+                            {data?.edit && (
+                                <>
+                                    <div className="row-zyx">
+                                        <FieldView
+                                            className={classes.section}
+                                            label={""}
+                                            value={t(langKeys.termsofservicetitle)}
+                                        />
+                                    </div>
+                                    <div style={{ width: "100%" }}>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={termsAccepted}
+                                                    color="primary"
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setTermsAccepted(true);
+                                                        } else {
+                                                            setTermsAccepted(false);
+                                                        }
+                                                    }}
+                                                />
+                                            }
+                                            label={
+                                                <div style={{ display: "inline-flex", alignItems: "center" }}>
+                                                    <span>
+                                                        {t(langKeys.paymentorder_termandconditions)}
+                                                        <b
+                                                            style={{ color: "#7721AD" }}
+                                                            onClick={(e: any) => {
+                                                                e.preventDefault();
+                                                                openprivacypolicies();
+                                                            }}
+                                                        >
+                                                            {t(langKeys.paymentorder_termandconditionsnext)}
+                                                        </b>
+                                                    </span>
+                                                </div>
+                                            }
+                                        />
+                                    </div>
+                                </>
+                            )}
                             {data?.edit && (
                                 <div className="row-zyx">
                                     <FieldView

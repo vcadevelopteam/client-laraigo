@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, IOSSwitch } from 'components';
-import { appsettingInvoiceSelCombo, getCorpSel, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
+import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -173,6 +173,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             voximplantrechargefixed: row?.voximplantrechargefixed || 0.00,
             voximplantadditionalperchannel: row ? (row?.voximplantadditionalperchannel || 0.00) : (parseFloat(defaultChannel[0]?.propertyvalue) || 0),
             appsettingid: row ? row.appsettingid : null,
+            citybillingid: row ? row.citybillingid : null,
         }
     });
 
@@ -183,6 +184,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const timezoneList = multiData[5] && multiData[5].success ? multiData[5]?.data : [];
     const locationList = multiData[10] && multiData[10].success ? multiData[10].data : [];
+    const cityList = multiData[11] && multiData[11].success ? multiData[11].data : [];
 
     const [chargeAmount, setChargeAmount] = useState(0.00);
     const [rangeAmount, setRangeAmount] = useState(row?.voximplantrechargerange || 0.00);
@@ -207,11 +209,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('docnum', {
             validate: {
-                needsvalidation: (value: any) => (doctype !== "0") ? ((value && value.length) || t(langKeys.field_required)) : true,
                 dnivalidation: (value: any) => (doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
                 cevalidation: (value: any) => (doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
                 rucvalidation: (value: any) => (doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
                 passportvalidation: (value: any) => (doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true,
+                needsvalidation: (value: any) => (doctype !== "1" && doctype !== "4" && doctype !== "6" && doctype !== "7") ? ((value && value.length) || t(langKeys.field_required)) : true,
             }
         });
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
@@ -237,6 +239,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('voximplantrechargefixed', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('voximplantadditionalperchannel', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
         register('appsettingid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('citybillingid');
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
@@ -714,12 +717,24 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     onChange={(value: any) => setValue('docnum', value)}
                                     error={errors?.docnum?.message}
                                 />
+                            </div>
+                            <div className="row-zyx">
                                 <FieldEdit
                                     label={t(langKeys.businessname)}
                                     className="col-6"
                                     valueDefault={getValues('businessname')}
                                     onChange={(value) => setValue('businessname', value)}
                                     error={errors?.businessname?.message}
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.citybilling)}
+                                    className="col-6"
+                                    valueDefault={getValues("citybillingid")}
+                                    onChange={(value) => setValue('citybillingid', value?.citybillingid || null)}
+                                    data={cityList}
+                                    error={errors?.citybillingid?.message}
+                                    optionDesc="locationdescription"
+                                    optionValue="citybillingid"
                                 />
                             </div>
                             <div className="row-zyx">
@@ -1305,6 +1320,7 @@ const Organizations: FC = () => {
             getPropertySelByNameOrg("VOXIMPLANTRECHARGEPERCENTAGE", 0, "_PERCENTAGE"),
             getPropertySelByNameOrg("VOXIMPLANTADDITIONALPERCHANNEL", 0, "_CHANNEL"),
             appsettingInvoiceSelCombo(),
+            getCityBillingList(),
         ]));
         return () => {
             dispatch(resetAllMain());

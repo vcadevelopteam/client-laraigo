@@ -5718,6 +5718,20 @@ export const langKeys = {
   codeinterpreter: 'codeinterpreter',
   retrievaldescription: 'retrievaldescription',
   codeinterpreterdescription: 'codeinterpreterdescription',
+  billingfield_colombiacedciud: "billingfield_colombiacedciud",
+  billingfield_colombianit: "billingfield_colombianit",
+  billingfield_colombiacedext: "billingfield_colombiacedext",
+  billingfield_colombiadie: "billingfield_colombiadie",
+  billingfield_colombianitother: "billingfield_colombianitother",
+  billingfield_colombianorutpn: "billingfield_colombianorutpn",
+  billingfield_colombianuip: "billingfield_colombianuip",
+  billingfield_colombiapass: "billingfield_colombiapass",
+  billingfield_colombiapep: "billingfield_colombiapep",
+  billingfield_colombiaregciv: "billingfield_colombiaregciv",
+  billingfield_colombiadian: "billingfield_colombiadian",
+  billingfield_colombiatarext: "billingfield_colombiatarext",
+  billingfield_colombiataride: "billingfield_colombiataride",
+  citybilling: 'citybilling',
 };
 
 export type LangKeys = typeof langKeys;

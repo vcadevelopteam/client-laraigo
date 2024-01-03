@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { appsettingInvoiceSelCombo, getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
+import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -111,6 +111,7 @@ const Corporations: FC = () => {
             getValuesFromDomain("TYPECREDIT"),
             getValuesFromDomain("TYPEPARTNER"),
             appsettingInvoiceSelCombo(),
+            getCityBillingList(),
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -257,6 +258,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             companysize: null,
             partner: row?.partner || "",
             appsettingid: row ? row.appsettingid : null,
+            citybillingid: row ? row.citybillingid : null,
         }
     });
 
@@ -268,9 +270,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
 
             let msg = "";
             switch (doctype) {
-                case "0": // OTROS o NO DOMICILIARIO
-                    msg = t(langKeys.doctype_others_non_home_error);
-                    return docnum.length > 15 ? msg : undefined;
                 case "1": // DNI
                     msg = t(langKeys.doctype_dni_error);
                     return docnum.length !== 8 ? msg : undefined;
@@ -283,8 +282,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                 case "7": // PASAPORTE
                     msg = t(langKeys.doctype_passport_error);
                     return docnum.length > 12 ? msg : undefined;
-                case "11": // PART. DE NACIMIENTO-IDENTIDAD
-                default: return t(langKeys.doctype_unknown_error);
+                default: // DEFAULT
+                    return undefined;
             }
         }
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -310,6 +309,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('automaticinvoice');
         register('partner');
         register('appsettingid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('citybillingid');
     }, [register, billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
@@ -507,30 +507,28 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             optionValue="paymentplanid"
                         />
                     </div>
-                    <div className="row-zyx">
-                        {user?.roledesc?.includes("SUPERADMIN") && <div className="row-zyx">
-                            <FieldSelect
-                                label={t(langKeys.paymentmethod)}
-                                className="col-6"
-                                valueDefault={getValues("paymentmethod")}
-                                onChange={(value) => setValue('paymentmethod', value?.value || "")}
-                                data={[{ name: t(langKeys.prepaid), value: "PREPAGO" }, { name: t(langKeys.postpaid), value: "POSTPAGO" }]}
-                                error={errors?.paymentmethod?.message}
-                                optionDesc="name"
-                                optionValue="value"
-                            />
-                            <TemplateSwitch
-                                label={t(langKeys.billbyorg)}
-                                className="col-6"
-                                valueDefault={getValues('billbyorg')}
-                                onChange={(value) => {
-                                    setValue('billbyorg', value);
-                                    setbillbyorg(value);
-                                    trigger('billbyorg');
-                                }}
-                            />
-                        </div>}
-                    </div>
+                    {user?.roledesc?.includes("SUPERADMIN") && <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.paymentmethod)}
+                            className="col-6"
+                            valueDefault={getValues("paymentmethod")}
+                            onChange={(value) => setValue('paymentmethod', value?.value || "")}
+                            data={[{ name: t(langKeys.prepaid), value: "PREPAGO" }, { name: t(langKeys.postpaid), value: "POSTPAGO" }]}
+                            error={errors?.paymentmethod?.message}
+                            optionDesc="name"
+                            optionValue="value"
+                        />
+                        <TemplateSwitch
+                            label={t(langKeys.billbyorg)}
+                            className="col-6"
+                            valueDefault={getValues('billbyorg')}
+                            onChange={(value) => {
+                                setValue('billbyorg', value);
+                                setbillbyorg(value);
+                                trigger('billbyorg');
+                            }}
+                        />
+                    </div>}
                     {!getValues('billbyorg') && (<><div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.country)}
@@ -588,12 +586,15 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={(value) => setValue('businessname', value)}
                                 error={errors?.businessname?.message}
                             />
-                            <FieldEdit
-                                label={t(langKeys.billingmail)}
+                            <FieldSelect
+                                label={t(langKeys.citybilling)}
                                 className="col-6"
-                                valueDefault={getValues('contactemail')}
-                                onChange={(value) => setValue('contactemail', value)}
-                                error={errors?.contactemail?.message}
+                                valueDefault={getValues("citybillingid")}
+                                onChange={(value) => setValue('citybillingid', value?.citybillingid || null)}
+                                data={locationList}
+                                error={errors?.citybillingid?.message}
+                                optionDesc="locationdescription"
+                                optionValue="citybillingid"
                             />
                         </div>
                         <div className="row-zyx">
@@ -604,12 +605,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={(value) => setValue('contact', value)}
                                 error={errors?.contact?.message}
                             />
-                            <TemplateSwitch
-                                label={t(langKeys.autosendinvoice)}
+                            <FieldEdit
+                                label={t(langKeys.billingmail)}
                                 className="col-6"
-                                valueDefault={getValues('autosendinvoice')}
-                                onChange={(value) => setValue('autosendinvoice', value)}
-                                disabled={!user?.roledesc?.includes("SUPERADMIN")}
+                                valueDefault={getValues('contactemail')}
+                                onChange={(value) => setValue('contactemail', value)}
+                                error={errors?.contactemail?.message}
                             />
                         </div>
                         <div className="row-zyx">
@@ -626,10 +627,10 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 optionValue="domainvalue"
                             />
                             <TemplateSwitch
-                                label={t(langKeys.automaticperiod)}
+                                label={t(langKeys.autosendinvoice)}
                                 className="col-6"
-                                valueDefault={getValues('automaticperiod')}
-                                onChange={(value) => setValue('automaticperiod', value)}
+                                valueDefault={getValues('autosendinvoice')}
+                                onChange={(value) => setValue('autosendinvoice', value)}
                                 disabled={!user?.roledesc?.includes("SUPERADMIN")}
                             />
                         </div>
@@ -641,6 +642,16 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={(value) => setValue('automaticpayment', value)}
                                 disabled={!user?.roledesc?.includes("SUPERADMIN")}
                             />
+                            <TemplateSwitch
+                                label={t(langKeys.automaticperiod)}
+                                className="col-6"
+                                valueDefault={getValues('automaticperiod')}
+                                onChange={(value) => setValue('automaticperiod', value)}
+                                disabled={!user?.roledesc?.includes("SUPERADMIN")}
+                            />
+
+                        </div>
+                        <div className="row-zyx">
                             <TemplateSwitch
                                 label={t(langKeys.automaticinvoice)}
                                 className="col-6"
