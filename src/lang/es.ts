@@ -49,7 +49,7 @@ const translation: LangKeys = {
   trainingwithai: "Entrenamiento IA",
   trainingwithaidescription: "Entrena tu servicio de inteligencia artifical",
   sinonimsdescription: "Entrena sinónimos referentes a tu entidad creada.",
-  modeldescription: "Revisa los modelos que previamente se ha entrenado",
+  modeldescription: "Revisa los modelos que previamente se ha entrenado en RASA.",
   insightsdescription: "Evalúa el grado de confianza del entrenamiento de tus intenciones",
   testmodel: "Prueba tu Modelo",
   testmodeldescription: "Testea tu modelo con las intenciones y entidades creadas.",
