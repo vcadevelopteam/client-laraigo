@@ -356,6 +356,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><IntelligentModels /></Layout>)} />
 					<ProtectRoute exact path={paths.IACONFIGURATION} component={() => (<Layout mainClasses={classes.main}><IAConfiguration /></Layout>)} />
 					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
+					<ProtectRoute exact path={paths.IATRAINING2} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />
 					</Route>

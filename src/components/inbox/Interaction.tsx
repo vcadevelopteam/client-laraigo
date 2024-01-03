@@ -837,7 +837,8 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
                     {interactions.map((item: IInteraction, index: number) => (
                         <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
                             [classes.interactionAgent]: usertype !== "client",
-                            [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA"
+                            [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
+                            [classes.interactionAgentEmail]: usertype !== 'client' && item.interactiontype === 'email'
                         })}>
                             {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
                                 <Avatar src={item.avatar + "" || undefined} />

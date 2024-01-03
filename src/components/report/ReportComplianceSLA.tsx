@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -30,7 +29,6 @@ const ReportComplianceSLA: FC = () => {
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     const columns = React.useMemo(

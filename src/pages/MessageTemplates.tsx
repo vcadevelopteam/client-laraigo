@@ -166,7 +166,7 @@ const MessageTemplates: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: "id",
+                accessor: "templateid",
                 isComponent: true,
                 minWidth: 60,
                 NoFilter: true,
@@ -193,20 +193,20 @@ const MessageTemplates: FC = () => {
             },
             ...(showId
                 ? [
-                      {
-                          accessor: "templateid",
-                          Header: t(langKeys.messagetemplateid),
-                          type: "number",
-                          Cell: (props: any) => {
-                              const row = props.cell.row.original;
-                              if (row.showid) {
-                                  return row.id;
-                              } else {
-                                  return null;
-                              }
-                          },
-                      },
-                  ]
+                    {
+                        accessor: "id",
+                        Header: t(langKeys.messagetemplateid),
+                        type: "number",
+                        Cell: (props: any) => {
+                            const row = props.cell.row.original;
+                            if (row.showid) {
+                                return <div>{row.id}</div>;
+                            } else {
+                                return <div></div>;
+                            }
+                        },
+                    },
+                ]
                 : []),
             {
                 accessor: "type",
@@ -416,8 +416,8 @@ const MessageTemplates: FC = () => {
                 callback,
                 question: channel
                     ? t(langKeys.messagetemplate_synchronize_alert01) +
-                      `${channel.communicationchanneldesc} (${channel.phone})` +
-                      t(langKeys.messagetemplate_synchronize_alert02)
+                    `${channel.communicationchanneldesc} (${channel.phone})` +
+                    t(langKeys.messagetemplate_synchronize_alert02)
                     : t(langKeys.messagetemplate_synchronize_alert03),
                 visible: true,
             })
@@ -824,22 +824,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         register("type");
         register("typeattachment");
 
-        unregister([
-            "body",
-            "header",
-            "name",
-            "namespace",
-            "footer",
-        ]);
-        
-        register('body', {
+        register("body", {
             validate: (value) => {
-                if (type === 'HSM') return (value && (value || "").length <= 1024) || t(langKeys.field_required);
-                if (type === 'SMS') return (value && (value || "").length <= 160) || t(langKeys.field_required);
+                if (type === "HSM") return (value && (value || "").length <= 1024) || t(langKeys.field_required);
+                if (type === "SMS") return (value && (value || "").length <= 160) || t(langKeys.field_required);
                 return true;
-            }
+            },
         });
 
+        register("namespace", {
+            validate: (value) => {
+                if (type === "HSM") return (value && value.length) || t(langKeys.field_required);
+                return true;
+            },
+        });
 
         switch (type) {
             case "HSM":
@@ -850,9 +848,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     validate: (value) =>
                         (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
                 });
-                register("namespace", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
+                // register("namespace", {
+                //     validate: (value) => (value && value.length) || t(langKeys.field_required),
+                // });
                 if (getValues("headerenabled")) {
                     register("header", {
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -901,9 +899,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
             });
 
-            register("namespace", {
-                validate: (value) => (value && value.length) || t(langKeys.field_required),
-            });
+            // register("namespace", {
+            //     validate: (value) => (value && value.length) || t(langKeys.field_required),
+            // });
 
             if (row?.headerenabled) {
                 register("header", {
@@ -923,7 +921,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 validate: (value) => (value && value.length) || t(langKeys.field_required),
             });
 
-            register("namespace");
+            // register("namespace");
 
             if (type === "SMS") {
                 // register("body", {
@@ -938,8 +936,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 });
             }
         }
-    }, [register, type, unregister]);
-
+    }, [register, type]);
 
     useEffect(() => {
         import("@codemirror/lang-html").then((html) => {
