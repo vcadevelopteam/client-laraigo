@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     amountText: {
         fontSize: "1.1em",
         fontWeight: "bold",
-        paddingRight: 20
+        paddingRight: 40
     },
 }));
 

@@ -31,55 +31,55 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ row, multiData }) => {
                 <FieldEdit
                     label={t(langKeys.paymentreceipt)}
                     className="col-4"
-                    valueDefault={row?.paymentreceipt || "-"}                           
+                    valueDefault={row?.paymentreceipt}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.documenttype)}
                     className="col-4"
-                    valueDefault={row?.documenttype || "-"}                           
+                    valueDefault={row?.documenttype}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.ticket_dni)}
                     className="col-4"
-                    valueDefault={row?.ticket_dni || "-"}                           
+                    valueDefault={row?.ticket_dni}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.businessname)}
                     className="col-4"
-                    valueDefault={row?.businessname || "-"}                           
+                    valueDefault={row?.businessname}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.fiscaladdress)}
                     className="col-4"
-                    valueDefault={row?.fiscaladdress || "-"}                           
+                    valueDefault={row?.fiscaladdress}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.paymentdate)}
                     className="col-4"
-                    valueDefault={row?.paymentdate || "-"}                           
+                    valueDefault={row?.paymentdate}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.paymentmethod)}
                     className="col-4"
-                    valueDefault={row?.paymentmethod || "-"}                           
+                    valueDefault={row?.paymentmethod}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.paymentamount)}
                     className="col-4"
-                    valueDefault={row?.paymentamount || "-"}                           
+                    valueDefault={row?.paymentamount}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.attached)}
                     className="col-4"
-                    valueDefault={row?.attached || "-"}
+                    valueDefault={row?.attached}
                     disabled={true}              
                 />
             </div>

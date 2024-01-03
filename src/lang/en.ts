@@ -5577,6 +5577,10 @@ const translation: LangKeys = {
   deliveryaddress: "Delivery address",
   paymentamount: "Payment amount",
   paymentreceipt: "Payment Receipt",
+  newordertxt: "Customer enters order",
+  preparedordertxt: "Order ready for shipment",
+  dispatchedordertxt: "Order shipped",
+  deliveredordertxt: "Order delivered to customer",
 };
 
 const enResource: ResourceLanguage = {

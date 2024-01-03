@@ -5489,7 +5489,10 @@ export const langKeys = {
   deliveryaddress: "deliveryaddress",
   paymentamount: "paymentamount",
   paymentreceipt: "paymentreceipt",
-
+  newordertxt: "newordertxt",
+  preparedordertxt: "preparedordertxt",
+  dispatchedordertxt: "dispatchedordertxt",
+  deliveredordertxt: "deliveredordertxt",
 };
 
 export type LangKeys = typeof langKeys;

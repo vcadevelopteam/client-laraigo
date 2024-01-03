@@ -5639,7 +5639,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   deliveryaddress: "Dirección de entrega",
   paymentamount: "Importe de pago",
   paymentreceipt: "Comprobante de pago",
-
+  newordertxt: "Cliente ingresa pedido",
+  preparedordertxt: "Pedido listo para despacho",
+  dispatchedordertxt: "Pedido despachado",
+  deliveredordertxt: "Pedido entregado al cliente",
 };
 
 const esResource: ResourceLanguage = {

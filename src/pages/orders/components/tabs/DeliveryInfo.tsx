@@ -28,32 +28,34 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row, multiData }) => {
 
     return (    
         <div className={classes.container} >
-            <div className="row-zyx" style={{marginBottom: 0}}>
-                <FieldEdit
-                    label={t(langKeys.deliverytype)}
-                    className="col-6"
-                    valueDefault={row?.deliverytype || "-"}                           
-                    disabled={true}              
-                />
-                <FieldEdit
-                    label={t(langKeys.deliverydate)}
-                    className="col-6"
-                    valueDefault={row?.deliverydate || "-"}                           
-                    disabled={true}              
-                />
-                <FieldEdit
-                    label={t(langKeys.deliveryaddress)}
-                    className="col-6"
-                    valueDefault={row?.deliveryaddress || "-"}                           
-                    disabled={true}              
-                />
-                <FieldEdit
-                    label={t(langKeys.transactionreference)}
-                    className="col-6"
-                    valueDefault={row?.transactionreference || "-"}                           
-                    disabled={true}              
-                />
-                <div>
+            <div style={{ display: 'flex', flexDirection: 'row'}}>
+                <div className='row-zyx' style={{ flex: 7, marginBottom: 0, paddingRight: 20 }}>
+                    <FieldEdit
+                        label={t(langKeys.deliverytype)}
+                        valueDefault={row?.deliverytype}
+                        disabled={true}
+                        className='col-6'
+                    />
+                    <FieldEdit
+                        label={t(langKeys.deliverydate)}
+                        valueDefault={row?.deliverydate}
+                        disabled={true}
+                        className='col-6'
+                    />
+                    <FieldEdit
+                        label={t(langKeys.deliveryaddress)}
+                        valueDefault={row?.deliveryaddress}
+                        disabled={true}
+                        className='col-6'
+                    />
+                    <FieldEdit
+                        label={t(langKeys.transactionreference)}
+                        valueDefault={row?.transactionreference}
+                        disabled={true}
+                        className='col-6'
+                    />
+                </div>
+                <div style={{ flex: 5 }}>
                     <MapLeaflet
                         height={300}
                         /*marker={row && { lat: parseFloat(row?.longitude || 0), lng: parseFloat(row?.latitude || 0) }}*/
