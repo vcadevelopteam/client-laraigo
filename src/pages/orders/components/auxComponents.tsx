@@ -173,14 +173,10 @@ const useLeadColumnStyles = makeStyles(theme => ({
 export const DraggableOrderColumn: FC<OrderColumnProps> = ({
     children,
     provided,
-    columnid,
-    titleOnChange,
     total_revenue,
-    onAddCard,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const user = useSelector(state => state.login.validateToken.user);
 
     return (
@@ -200,7 +196,7 @@ interface LeadColumnListProps extends BoxProps {
     itemCount: number;
 }
 
-const useLeadColumnListStyles = makeStyles(theme => ({
+const useLeadColumnListStyles = makeStyles(({
     root: {
         width: 275,
         maxWidth: 275,
@@ -390,8 +386,7 @@ const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
 }
 
 
-
-const useTabPanelStyles = makeStyles(theme => ({
+const useTabPanelStyles = makeStyles(({
     root: {
         border: '#A59F9F 1px solid',
         borderRadius: 6,

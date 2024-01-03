@@ -78,7 +78,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 NoFilter: true
             },
             {
-                Header: t(langKeys.deliverytype),
+                Header: t(langKeys.deliverydate),
                 accessor: 'var_horaentrega',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
