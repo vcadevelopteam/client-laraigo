@@ -5746,6 +5746,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingfield_colombiatarext: "(Colombia) Tarjeta de Extranjería",
   billingfield_colombiataride: "(Colombia) Tarjeta de Identidad",
   citybilling: 'Lugar de Facturación',
+  generic_payment_error: 'Hubo un error al procesar la transacción. Valide sus datos de pago y pruebe nuevamente',
 };
 
 const esResource: ResourceLanguage = {

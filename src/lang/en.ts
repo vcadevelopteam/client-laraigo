@@ -5820,6 +5820,7 @@ const translation: LangKeys = {
   billingfield_colombiatarext: "(Colombia) Immigration Card",
   billingfield_colombiataride: "(Colombia) Identity Card",
   citybilling: 'Billing Location',
+  generic_payment_error: 'There was an error while processing the transaction. Check your payment information and try again',
 };
 
 const enResource: ResourceLanguage = {

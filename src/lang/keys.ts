@@ -5732,6 +5732,7 @@ export const langKeys = {
   billingfield_colombiatarext: "billingfield_colombiatarext",
   billingfield_colombiataride: "billingfield_colombiataride",
   citybilling: 'citybilling',
+  generic_payment_error: 'generic_payment_error',
 };
 
 export type LangKeys = typeof langKeys;
