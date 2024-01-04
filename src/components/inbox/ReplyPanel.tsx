@@ -60,7 +60,7 @@ const useStylesInteraction = makeStyles(() => ({
         marginTop: 16,
         maxHeight: 400,
         overflowY: 'auto'
-    }, 
+    },
     containerFileLibrary: {
         cursor: "pointer",
         '&:hover': {
@@ -202,6 +202,8 @@ const UploaderIcon: React.FC<{
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const uploadResult = useSelector(state => state.main.uploadFile);
+    const lock_send_file_pc = useSelector(state => state.login.validateToken.user?.properties?.lock_send_file_pc);
+
     const [openModal, setOpenModal] = useState(false)
     const [idUpload, setIdUpload] = useState('');
 
@@ -243,7 +245,7 @@ const UploaderIcon: React.FC<{
 
     return (
         <>
-            <IconButton color="primary"  size="small" onClick={(e) => setAnchorEl(e.currentTarget)}>
+            <IconButton color="primary" size="small" onClick={(e) => setAnchorEl(e.currentTarget)}>
                 <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
             </IconButton>
             <Menu
@@ -261,26 +263,29 @@ const UploaderIcon: React.FC<{
                 open={Boolean(anchorEl)}
                 onClose={() => setAnchorEl(null)}
             >
-                <input
-                    name="file"
-                    id={`laraigo-upload-file`}
-                    type="file"
-                    value={valuefile}
-                    style={{ display: "none" }}
-                    onChange={(e) => onSelectImage(e.target.files)}
-                />
-                <label htmlFor={`laraigo-upload-file`}>
-                    <MenuItem onClick={() => {
-                        setAnchorEl(null)
+                {!lock_send_file_pc && (
+                    <>
+                        <input
+                            name="file"
+                            id={`laraigo-upload-file`}
+                            type="file"
+                            value={valuefile}
+                            style={{ display: "none" }}
+                            onChange={(e) => onSelectImage(e.target.files)}
+                        />
+                        <label htmlFor={`laraigo-upload-file`}>
+                            <MenuItem onClick={() => {
+                                setAnchorEl(null)
 
-                    }}>
-                        <ListItemIcon>
-                            <Publish width={18} style={{ fill: '#2E2C34' }} />
-                        </ListItemIcon>
-                        {"Subir archivos desde el ordenador"}
-                    </MenuItem>
-                </label>
-
+                            }}>
+                                <ListItemIcon>
+                                    <Publish width={18} style={{ fill: '#2E2C34' }} />
+                                </ListItemIcon>
+                                {"Subir archivos desde el ordenador"}
+                            </MenuItem>
+                        </label>
+                    </>
+                )}
                 <MenuItem onClick={() => {
                     setAnchorEl(null)
                     setOpenModal(true)
@@ -373,14 +378,13 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap, setText: (param: string)
             .replace("{{user_group}}", ticketSelected?.usergroup)
 
         variablesList.forEach((x: any) => {
-            let variableData = variablecontext?.[x.substring(2, x.length - 2)]
-            if (!!variableData) {
+            const variableData = variablecontext?.[x.substring(2, x.length - 2)]
+            if (variableData) {
                 myquickreply = myquickreply.replaceAll(x, variableData)
             } else {
                 myquickreply = myquickreply.replaceAll(x, "")
             }
         })
-
         setText(myquickreply)
     }
 
@@ -673,6 +677,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
+    const lock_send_file_pc = useSelector(state => state.login.validateToken.user?.properties?.lock_send_file_pc);
     const [refresh, setrefresh] = useState(1)
     const [flagundo, setflagundo] = useState(false)
     const [flagredo, setflagredo] = useState(false)
@@ -1038,7 +1043,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                     collapsed={true}
                                     endinput={
                                         <div style={{ display: 'block' }}>
-                                            <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
+                                            <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => x.url).length > 0) })} onClick={triggerReplyMessage}>
                                                 <SendIcon />
                                             </div>
                                         </div>
@@ -1101,7 +1106,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     } else return (
         <>
             {showReply && (
-                <DragDropFile setFiles={setFiles} setfileimage={setfileimage}>
+                <DragDropFile setFiles={setFiles} disabled={lock_send_file_pc}>
                     <div className={classes.containerResponse}>
                         {files.length > 0 &&
                             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
