@@ -232,6 +232,7 @@ const UploaderIcon: React.FC<{
     }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     const onSelectImage = (files: any) => {
+        console.log("ewqewqewqqw1111111111")
         const selectedFile = files[0];
         const idd = new Date().toISOString()
         const fd = new FormData();
@@ -248,6 +249,14 @@ const UploaderIcon: React.FC<{
             <IconButton color="primary" size="small" onClick={(e) => setAnchorEl(e.currentTarget)}>
                 <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
             </IconButton>
+            <input
+                name="file"
+                id={`laraigo-upload-file-x`}
+                type="file"
+                value={valuefile}
+                style={{ display: "none" }}
+                onChange={(e) => onSelectImage(e.target.files)}
+            />
             <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -264,27 +273,16 @@ const UploaderIcon: React.FC<{
                 onClose={() => setAnchorEl(null)}
             >
                 {!lock_send_file_pc && (
-                    <>
-                        <input
-                            name="file"
-                            id={`laraigo-upload-file`}
-                            type="file"
-                            value={valuefile}
-                            style={{ display: "none" }}
-                            onChange={(e) => onSelectImage(e.target.files)}
-                        />
-                        <label htmlFor={`laraigo-upload-file`}>
-                            <MenuItem onClick={() => {
-                                setAnchorEl(null)
-
-                            }}>
-                                <ListItemIcon>
-                                    <Publish width={18} style={{ fill: '#2E2C34' }} />
-                                </ListItemIcon>
-                                {"Subir archivos desde el ordenador"}
-                            </MenuItem>
-                        </label>
-                    </>
+                    <label htmlFor={`laraigo-upload-file-x`}>
+                        <MenuItem onClick={() => {
+                            setAnchorEl(null)
+                        }}>
+                            <ListItemIcon>
+                                <Publish width={18} style={{ fill: '#2E2C34' }} />
+                            </ListItemIcon>
+                            {"Subir archivos desde el ordenador"}
+                        </MenuItem>
+                    </label>
                 )}
                 <MenuItem onClick={() => {
                     setAnchorEl(null)
