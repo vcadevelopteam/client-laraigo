@@ -98,7 +98,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
                 width: '15%',
             },
             {
-                Header: t(langKeys.changeDate),
+                Header: t(langKeys.change_date),
                 accessor: 'changedate',
                 NoFilter: true,
                 width: '15%',
