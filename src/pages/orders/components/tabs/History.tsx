@@ -55,13 +55,18 @@ const useStyles = makeStyles((theme) => ({
     },
     line: {
         width: '2px',
-        height: '30px',  // Ajusta la altura de la raya vertical
-        backgroundColor: 'blue',  // Ajusta el color de la raya vertical
+        height: '30px',
+        backgroundColor: 'blue',
     },
 }));
 
+interface MultiData {
+    data: HistoryItem[];
+    success: boolean; 
+}
+
 interface HistoryProps {
-  multiData: any;
+  multiData: MultiData[];
 }
 
 interface HistoryItem {

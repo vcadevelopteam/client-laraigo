@@ -181,10 +181,10 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
                 <OrderList row={row} multiData={multiData} />
             </AntTabPanel>
             <AntTabPanel index={1} currentIndex={pageSelected}>
-                <DeliveryInfo row={row} multiData={multiData} />
+                <DeliveryInfo row={row} />
             </AntTabPanel>
             <AntTabPanel index={2} currentIndex={pageSelected}>
-                <PaymentInfo row={row} multiData={multiData} />
+                <PaymentInfo row={row} />
             </AntTabPanel>   
             <AntTabPanel index={3} currentIndex={pageSelected}>
                 <History multiData={multiData} />

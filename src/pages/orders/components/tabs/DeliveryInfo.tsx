@@ -12,24 +12,29 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: "#fff",
     },
+    rowContainer: {
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    inputContainer: {
+        flex: 7,
+        marginBottom: 0,
+        paddingRight: 20
+    },
 }));
-interface MultiData {
-    data: Dictionary[];
-    success: boolean; 
-}
+
 interface DeliveryInfoProps {  
-    row: Dictionary | null,
-    multiData: MultiData[];
+    row: Dictionary | null
 }
 
-const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row, multiData }) => {
+const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row }) => {
     const classes = useStyles();
     const { t } = useTranslation();
 
     return (    
         <div className={classes.container} >
-            <div style={{ display: 'flex', flexDirection: 'row'}}>
-                <div className='row-zyx' style={{ flex: 7, marginBottom: 0, paddingRight: 20 }}>
+            <div className={classes.rowContainer}>
+                <div className={`row-zyx ${classes.inputContainer}`}>
                     <FieldEdit
                         label={t(langKeys.deliverytype)}
                         valueDefault={row?.deliverytype}

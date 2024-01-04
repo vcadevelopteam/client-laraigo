@@ -12,16 +12,12 @@ const useStyles = makeStyles((theme) => ({
         background: "#fff",
     },
 }));
-interface MultiData {
-    data: Dictionary[];
-    success: boolean; 
-}
+
 interface PaymentInfoProps {  
-    row: Dictionary | null,
-    multiData: MultiData[];
+    row: Dictionary | null
 }
 
-const PaymentInfo: React.FC<PaymentInfoProps> = ({ row, multiData }) => {
+const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
     const classes = useStyles();
     const { t } = useTranslation();
 
