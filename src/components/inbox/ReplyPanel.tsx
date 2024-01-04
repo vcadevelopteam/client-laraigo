@@ -124,7 +124,7 @@ const DialogSearchLibrary: React.FC<{
     return (
         <DialogZyx
             open={openModal}
-            title={"Biblioteca de documentos"}
+            title={t(langKeys.documentlibrary)}
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenModal(false)}
             button2Type="submit"
