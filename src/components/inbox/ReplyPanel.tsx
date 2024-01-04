@@ -232,14 +232,14 @@ const UploaderIcon: React.FC<{
     }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     const onSelectImage = (files: any) => {
-        console.log("ewqewqewqqw1111111111")
         const selectedFile = files[0];
         const idd = new Date().toISOString()
         const fd = new FormData();
         fd.append('file', selectedFile, selectedFile.name);
         setvaluefile('')
         setIdUpload(idd);
-        setFiles((x: IFile[]) => [...x, { id: idd, url: '' }]);
+        const type = selectedFile.type.match('image.*') ? "image" : "file";
+        setFiles((x: IFile[]) => [...x, { id: idd, url: '', type }]);
         dispatch(uploadFile(fd));
         setWaitSave(true)
     }
