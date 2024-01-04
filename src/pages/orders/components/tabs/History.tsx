@@ -39,13 +39,24 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     icon: {
-        height: 60,
-        width: 60,
+        height: 50,
+        width: 50,
         padding: 10,
         borderRadius: 30,
         color: 'white',
         backgroundColor: 'blue',
-        marginRight: 20,
+    },
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        marginRight: 15,
+    },
+    line: {
+        width: '2px',
+        height: '30px',  // Ajusta la altura de la raya vertical
+        backgroundColor: 'blue',  // Ajusta el color de la raya vertical
     },
 }));
 
@@ -71,9 +82,12 @@ const History: React.FC<HistoryProps> = ({ multiData }) => {
   return (
     <div className={classes.containerDetail}>
         {datahistory.map((historyItem: HistoryItem, index: number) => (
-            <div key={historyItem.orderhistoryid} className={classes.timelineItem} style={{ marginBottom: index < datahistory.length - 1 ? 20 : 0 }}>
-                <InsertDriveFileIcon className={classes.icon} />
-                <div className={classes.item}>
+            <div key={historyItem.orderhistoryid} className={classes.timelineItem}>
+                <div className={classes.container}>
+                    <InsertDriveFileIcon className={classes.icon} />
+                    {index < datahistory.length - 1 && <div className={classes.line} />}
+                </div>
+                <div className={classes.item} style={{ marginBottom: index < datahistory.length - 1 ? 10 : 0 }}>
                     <div className={classes.descriptionContainer}>
                         <div className={classes.description}>
                             {t(historyItem.description.toLowerCase())}
