@@ -71,56 +71,53 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
                 Header: t(langKeys.title),
                 accessor: 'title',
                 NoFilter: true,
-                width: '15%',
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
                 NoFilter: true,
-                width: '15%',
             },
             {
                 Header: t(langKeys.category),
                 accessor: 'category',
                 NoFilter: true,
-                width: '15%',
             },
             {
                 Header: t(langKeys.group_plural),
                 accessor: 'groups',
                 NoFilter: true,
-                width: '15%',
             },
             {
                 Header: t(langKeys.registrationdate),
                 accessor: 'createdate',
                 NoFilter: true,
-                width: '15%',
+                minWidth: 250,
             },
             {
                 Header: t(langKeys.change_date),
                 accessor: 'changedate',
                 NoFilter: true,
-                width: '15%',
+                minWidth: 250,
             },
             {
                 Header: t(langKeys.uploadedby),
                 accessor: 'createby',
                 NoFilter: true,
-                width: '15%',
+                minWidth: 250,
             },
             {
                 Header: t(langKeys.change_by),
                 accessor: 'changeby',
                 NoFilter: true,
-                width: '15%',
+                minWidth: 250,
             },
             {
                 Header: "",
                 accessor: 'link',
-                NoFilter: true,
-                width: '15%',  
+                NoFilter: true,  
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
