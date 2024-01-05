@@ -1491,6 +1491,7 @@ const translation: LangKeys = {
   confirmation_exit: 'Do you want to exit the application without saving?',
   confirmation_reschedule: 'Your current appointment {{current_event}} will be rescheduled for {{new_event}}. Do you wish to continue?',
   confirmation_delete: 'Are you sure that you want to delete the record?',
+  confirmation_delete_all: 'Are you sure that you want to delete all the selected records?',
   confirmation_stop: 'Are you sure that you want to stop the operation?',
   confirmation_duplicate: 'Are you sure that you want to duplicate the record?',
   confirmation_delete_data: 'Are you sure that you want to delete all data?',

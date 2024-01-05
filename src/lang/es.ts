@@ -1691,6 +1691,7 @@ const translation: LangKeys = {
   confirmation_exit: '¿Desea salir de la aplicación sin guardar?',
   confirmation_reschedule: 'Se va a proceder con la reprogramación de su cita actual {{current_event}} para {{new_event}}. ¿Desea continuar?',
   confirmation_delete: '¿Está seguro que desea eliminar el registro?',
+  confirmation_delete_all: '¿Está seguro que desea eliminar todos los registros seleccionados?',
   confirmation_stop: '¿Está seguro que desea detener la operación?',
   confirmation_duplicate: '¿Está seguro que desea duplicar el registro?',
   confirmation_delete_data: '¿Está seguro que desea eliminar toda la data?',
