@@ -5,9 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import MapLeaflet from 'components/fields/MapLeaflet';
 import { FieldEdit } from 'components';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-
-
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -33,19 +30,6 @@ interface DeliveryInfoProps {
 const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-
-    const mapStyles = {
-        height: '300px',
-        width: '100%',
-    };
-
-    const defaultCenter = {
-        lat: parseFloat(row?.latitude || 0),
-        lng: parseFloat(row?.longitude || 0),
-    };
-
-   
-
 
     return (    
         <div className={classes.container} >
@@ -77,35 +61,16 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row }) => {
                     />
                 </div>
                 <div style={{ flex: 5 }}>
-                    <LoadScript
-                        googleMapsApiKey="AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"
-                    >
-                        <GoogleMap
-                            mapContainerStyle={mapStyles}
-                            zoom={18}
-                            center={defaultCenter}
-                            mapTypeId="hybrid" 
-                            options={{
-                                mapTypeControl: false, 
-                                streetViewControl: false, 
-                            }}
-                        >
-                            {row && (
-                                <Marker
-                                    position={{ lat: parseFloat(row.latitude || 0), lng: parseFloat(row.longitude || 0) }}
-                                />
-                            )}
-                        </GoogleMap>
-                    </LoadScript>
-                    {/*
-                      <MapLeaflet
-                        height={300}
-                        marker={row && { lat: parseFloat(row?.latitude || 0), lng: parseFloat(row?.longitude || 0) }}           
-                        />   
-                    */}
+                <MapLeaflet
+                    height={300}
+                    marker={ { lat: parseFloat(row?.latitude || 0), lng: parseFloat(row?.longitude || 0) }}           
+                />   
+                   
+                    
                                  
                 </div>               
-            </div>           
+            </div>      
+            
         </div>            
     );
 }
