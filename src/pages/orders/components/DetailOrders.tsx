@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react'; // we need this to make JSX compile
+import React, { ChangeEvent, useState } from 'react'; 
 import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel, FieldEdit } from 'components';
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -99,43 +99,43 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
                     <FieldEdit
                         label={t(langKeys.ordernumber)}
                         className="col-3"
-                        valueDefault={row?.orderid || "-"}   
+                        valueDefault={row?.orderid}   
                         disabled={true}              
                     />
                     <FieldEdit
                         label={t(langKeys.dateorder)}
                         className="col-3"
-                        valueDefault={formatDate(row?.createdate, { withTime: false }) || "-"}
+                        valueDefault={formatDate(row?.createdate, { withTime: false })}
                         disabled={true}              
                     />
                     <FieldEdit
                         label={t(langKeys.ticket)}
                         className="col-3"
-                        valueDefault={row?.ticketnum || "-"}   
+                        valueDefault={row?.ticketnum}   
                         disabled={true}            
                     />
                     <FieldEdit
                         label={t(langKeys.channel)}
                         className="col-3"
-                        valueDefault={row?.channel || "-"}     
+                        valueDefault={row?.channel}     
                         disabled={true}            
                     />
                     <FieldEdit
                         label={t(langKeys.client)}
                         className="col-4"
-                        valueDefault={row?.name || "-"}   
+                        valueDefault={row?.name}   
                         disabled={true}              
                     />
                     <FieldEdit
                         label={t(langKeys.phone)}
                         className="col-4"
-                        valueDefault={row?.phone || "-"}   
+                        valueDefault={row?.phone}   
                         disabled={true}              
                     />
                     <FieldEdit
                         label={t(langKeys.email)}
                         className="col-4"
-                        valueDefault={row?.email || "@laraigo.com"}   
+                        valueDefault={row?.email}   
                         disabled={true}            
                     />
                 </div>

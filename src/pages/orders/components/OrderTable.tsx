@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react'; 
 import { useDispatch } from 'react-redux';
 import { TemplateIcons } from 'components';
-import { formatDate, getOrderSel } from 'common/helpers';
+import { exportExcel, formatDate, getOrderSel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import { useTranslation } from 'react-i18next';
@@ -95,6 +95,121 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
         []
     );
 
+    const columnsExcel = React.useMemo(
+        () => [         
+            {
+                Header: t(langKeys.ordernumber),
+                accessor: 'orderid',
+                NoFilter: true,          
+            },
+            {
+                Header: t(langKeys.dateorder),
+                accessor: 'createdate',
+                NoFilter: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original.createdate;
+                    const formatteddate = formatDate(row, {withTime: false})
+                    return formatteddate
+                }
+            },
+            {
+                Header: t(langKeys.ticket),
+                accessor: 'ticket',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.channel),
+                accessor: 'channel',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.client),
+                accessor: 'name',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'phone',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.email),
+                accessor: 'email',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.documenttype),
+                accessor: 'documenttype',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.deliverytype),
+                accessor: 'var_tipoentrega',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.deliverydate),
+                accessor: 'var_fechaentrega',
+                NoFilter: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { var_fechaentrega, var_horaentrega } = props.cell.row.original;
+                    return `${var_fechaentrega} ${var_horaentrega}`
+                }
+            },
+            {
+                Header: t(langKeys.deliveryaddress),
+                accessor: 'deliveryaddress',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.addressReference),
+                accessor: 'addressReference',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.paymentreceipt),
+                accessor: 'payment_receipt',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.businessname),
+                accessor: 'businessname',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.fiscaladdress),
+                accessor: 'fiscaladdress',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.paymentdate),
+                accessor: 'paymentdate',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.paymentmethod),
+                accessor: 'paymentmethod',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.product_plural),
+                accessor: 'product_plural',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.totalamount),
+                accessor: 'amount',
+                NoFilter: true
+            },              
+        ],
+        []
+    );
+
     const fetchData = () => dispatch(getCollection(getOrderSel()));
 
     useEffect(() => {
@@ -109,6 +224,10 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
         })))
     }, [mainResult.data])
 
+    const triggerExportData = () => {      
+        exportExcel('Reporte Pedido', mainData, columnsExcel)
+    }
+
     return (
         <div style={{ width: "100%" }}>
             <TableZyx
@@ -116,6 +235,8 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 titlemodule={""}
                 onClickRow={handleEdit}
                 data={mainData}
+                triggerExportPersonalized={true}
+                exportPersonalized={triggerExportData}
                 download={true}
                 loading={mainResult.loading}
             />

@@ -49,13 +49,13 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row }) => {
                     />
                     <FieldEdit
                         label={t(langKeys.deliveryaddress)}
-                        valueDefault={row?.deliveryaddress}
+                        valueDefault={row?.address}
                         disabled={true}
                         className='col-6'
                     />
                     <FieldEdit
                         label={t(langKeys.transactionreference)}
-                        valueDefault={row?.transactionreference}
+                        valueDefault={row?.deliveryadressreference}
                         disabled={true}
                         className='col-6'
                     />
@@ -63,8 +63,8 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row }) => {
                 <div style={{ flex: 5 }}>
                     <MapLeaflet
                         height={300}
-                        /*marker={row && { lat: parseFloat(row?.longitude || 0), lng: parseFloat(row?.latitude || 0) }}*/
-                        marker={{lat: 0, lng: 0}}                    
+                        marker={row && { lat: parseFloat(row?.longitude || 0), lng: parseFloat(row?.latitude || 0) }}
+                                        
                     />
                 </div>
             </div>

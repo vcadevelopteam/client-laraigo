@@ -16,15 +16,15 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     description: {
-        fontSize: '1.4rem',
-        color: 'blue',
+        fontSize: '1.3rem',
+        color: '#7721AD',
         marginRight: theme.spacing(2),
     },
     createdAt: {
         fontSize: '1rem',
     },
     actionBy: {
-        fontSize: '1rem',
+        fontSize: '0.9rem',
     },
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 10,
         borderRadius: 30,
         color: 'white',
-        backgroundColor: 'blue',
+        backgroundColor: '#7721AD',
     },
     container: {
         display: 'flex',
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     line: {
         width: '2px',
         height: '30px',
-        backgroundColor: 'blue',
+        backgroundColor: '#7721AD',
     },
 }));
 

@@ -27,37 +27,37 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
                 <FieldEdit
                     label={t(langKeys.paymentreceipt)}
                     className="col-4"
-                    valueDefault={row?.paymentreceipt}                           
+                    valueDefault={row?.payment_receipt}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.documenttype)}
                     className="col-4"
-                    valueDefault={row?.documenttype}                           
+                    valueDefault={row?.payment_document_type}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.ticket_dni)}
                     className="col-4"
-                    valueDefault={row?.ticket_dni}                           
+                    valueDefault={row?.payment_document_number}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.businessname)}
                     className="col-4"
-                    valueDefault={row?.businessname}                           
+                    valueDefault={row?.payment_businessname}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.fiscaladdress)}
                     className="col-4"
-                    valueDefault={row?.fiscaladdress}                           
+                    valueDefault={row?.payment_fiscal_address}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.paymentdate)}
                     className="col-4"
-                    valueDefault={row?.paymentdate}                           
+                    valueDefault={row?.payment_date}                           
                     disabled={true}              
                 />
                 <FieldEdit
@@ -69,13 +69,13 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
                 <FieldEdit
                     label={t(langKeys.paymentamount)}
                     className="col-4"
-                    valueDefault={row?.paymentamount}                           
+                    valueDefault={row?.payment_amount}                           
                     disabled={true}              
                 />
                 <FieldEdit
                     label={t(langKeys.attached)}
                     className="col-4"
-                    valueDefault={row?.attached}
+                    valueDefault={row?.payment_attachment}
                     disabled={true}              
                 />
             </div>
