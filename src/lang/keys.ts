@@ -2149,6 +2149,7 @@ export const langKeys = {
   confirmation_exit: 'confirmation_exit',
   confirmation_reschedule: 'confirmation_reschedule',
   confirmation_delete: 'confirmation_delete',
+  confirmation_delete_all: 'confirmation_delete_all',
   confirmation_stop: 'confirmation_stop',
   confirmation_duplicate: 'confirmation_duplicate',
   confirmation_delete_data: 'confirmation_delete_data',

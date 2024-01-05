@@ -11,6 +11,7 @@ import { Button } from "@material-ui/core";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ForumIcon from '@material-ui/icons/Forum';
 import AddIcon from '@material-ui/icons/Add';
+import { Delete } from "@material-ui/icons";
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
 import { execute, getCollection } from "store/main/actions";
@@ -79,6 +80,9 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         edit: false,
     });
     const main = useSelector((state) => state.main.mainData);
+    const selectionKey = "assistantaiid";
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
 
     const newArrayBread = [
         ...arrayBread,
@@ -86,6 +90,19 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     ];
 
     const [waitSave, setWaitSave] = useState(false);
+
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            setRowWithDataSelected((p) =>
+                Object.keys(selectedRows).map(
+                    (x) =>
+                        main?.data.find((y) => y.assistantaiid === parseInt(x)) ??
+                        p.find((y) => y.assistantaiid === parseInt(x)) ??
+                        {}
+                )
+            );
+        }
+    }, [selectedRows]);
 
     const handleRegister = () => {
         setViewSelectedTraining("createassistant")
@@ -149,6 +166,59 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
           })
         );
     };
+    
+    const handleDeleteSelection = async (dataSelected: Dictionary[]) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+
+            try {
+                const deletePromises = dataSelected.map(async (row) => {
+                    const assistantDelete = await fetch('https://documentgptapi.laraigo.com/assistants/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${user?.token}`,
+                        },
+                        body: JSON.stringify({
+                            assistant_id: row.code,
+                            apikey: row.apikey,
+                        }),
+                    });
+
+                    if (!assistantDelete.ok) {
+                        console.error('Error al eliminar el asistente:', assistantDelete.statusText);
+                        return Promise.reject('Error en assistantDelete');
+                    }
+
+                    dispatch(
+                        execute(insAssistantAi({
+                            ...row,
+                            id: row.assistantaiid,
+                            operation: "DELETE",
+                            status: "ELIMINADO",
+                            type: "NINGUNO" 
+                        }))
+                    );
+
+                    return row;
+                });
+                const deletedRows = await Promise.all(deletePromises);
+                setWaitSave(true);
+            } catch (error) {
+                console.error('Error en la llamada:', error);
+                setWaitSave(true);
+            }
+        }
+
+        dispatch(
+            manageConfirmation({
+              visible: true,
+              question: t(langKeys.confirmation_delete_all),
+              callback,
+            })
+        );
+    };
+    
 
     const columnsGenerativeIA = React.useMemo(
         () => [
@@ -238,6 +308,18 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     {t(langKeys.download)}
                 </Button>
                 <Button
+                    color="primary"
+                    disabled={Object.keys(selectedRows).length === 0}
+                    startIcon={<Delete style={{ color: "white" }} />}
+                    variant="contained"
+                    style={{marginLeft: 9}}
+                    onClick={() => {
+                        handleDeleteSelection(rowWithDataSelected);
+                    }}
+                >
+                    {t(langKeys.delete)}
+                </Button>
+                <Button
                     variant="contained"
                     type="button"
                     color="primary"
@@ -292,6 +374,9 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     filterGeneral={false}
                     ButtonsElement={ButtonsElement}
                     onClickRow={handleEdit}
+                    selectionKey={selectionKey}
+                    setSelectedRows={setSelectedRows}
+                    useSelection={true}
                 />
             </div>
         )
