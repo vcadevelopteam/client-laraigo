@@ -5734,6 +5734,20 @@ export const langKeys = {
   billingfield_colombiataride: "billingfield_colombiataride",
   citybilling: 'citybilling',
   generic_payment_error: 'generic_payment_error',
+  dateorder: 'dateorder',
+  deliverytype: 'deliverytype',
+  billingtype: 'billingtype',
+  schedule_delivery_date: 'schedule_delivery_date',
+  orderlists: "orderlists",
+  deliveryinfo: "deliveryinfo",
+  deliverydate: "deliverydate",
+  deliveryaddress: "deliveryaddress",
+  paymentamount: "paymentamount",
+  paymentreceipt: "paymentreceipt",
+  newordertxt: "newordertxt",
+  preparedordertxt: "preparedordertxt",
+  dispatchedordertxt: "dispatchedordertxt",
+  deliveredordertxt: "deliveredordertxt",
 };
 
 export type LangKeys = typeof langKeys;

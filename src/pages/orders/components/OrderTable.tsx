@@ -1,18 +1,17 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react'; 
 import { useDispatch } from 'react-redux';
 import { TemplateIcons } from 'components';
-import { formatDate, getOrderSel } from 'common/helpers';
+import { exportExcel, formatDate, getOrderSel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection } from 'store/main/actions';
+import { CellProps } from 'react-table';
 
 const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({mainResult,handleEdit}) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
     const [mainData, setMainData] = useState<any>([]);
 
     const columns = React.useMemo(
@@ -23,7 +22,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -39,24 +38,14 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 NoFilter: true,          
             },
             {
-                Header: t(langKeys.date),
+                Header: t(langKeys.dateorder),
                 accessor: 'createdate',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original.createdate;
-                    let formatteddate = formatDate(row, {withTime: false})
+                    const formatteddate = formatDate(row, {withTime: false})
                     return formatteddate
                 }
-            },
-            {
-                Header: t(langKeys.channel),
-                accessor: 'channel',
-                NoFilter: true
-            },
-            {
-                Header: `N° ${t(langKeys.ticket_numeroticket)}`,
-                accessor: 'ticketnum',
-                NoFilter: true,
             },
             {
                 Header: t(langKeys.client),
@@ -74,29 +63,149 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 NoFilter: true
             },
             {
-                Header: t(langKeys.total),
+                Header: t(langKeys.totalamount),
                 accessor: 'amount',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.orderstatus),
-                accessor: 'status',
+                accessor: 'orderstatus',
                 NoFilter: true
             },
             {
-                Header: "Tipo entrega",
+                Header: t(langKeys.deliverytype),
                 accessor: 'var_tipoentrega',
                 NoFilter: true
             },
             {
-                Header: "Fecha programada entrega",
+                Header: t(langKeys.billingtype),
+                accessor: 'var_tipocomprobante',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.deliverydate),
                 accessor: 'var_horaentrega',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { var_fechaentrega, var_horaentrega } = props.cell.row.original;
+                    return `${var_fechaentrega} ${var_horaentrega}`
+                }
+            }         
+        ],
+        []
+    );
+
+    const columnsExcel = React.useMemo(
+        () => [         
+            {
+                Header: t(langKeys.ordernumber),
+                accessor: 'orderid',
+                NoFilter: true,          
+            },
+            {
+                Header: t(langKeys.dateorder),
+                accessor: 'createdate',
+                NoFilter: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original.createdate;
+                    const formatteddate = formatDate(row, {withTime: false})
+                    return formatteddate
+                }
+            },
+            {
+                Header: t(langKeys.ticket),
+                accessor: 'ticket',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.channel),
+                accessor: 'channel',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.client),
+                accessor: 'name',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'phone',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.email),
+                accessor: 'email',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.documenttype),
+                accessor: 'documenttype',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.deliverytype),
+                accessor: 'var_tipoentrega',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.deliverydate),
+                accessor: 'var_fechaentrega',
+                NoFilter: true,
+                Cell: (props: CellProps<Dictionary>) => {
                     const { var_fechaentrega, var_horaentrega } = props.cell.row.original;
                     return `${var_fechaentrega} ${var_horaentrega}`
                 }
             },
+            {
+                Header: t(langKeys.deliveryaddress),
+                accessor: 'deliveryaddress',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.addressReference),
+                accessor: 'addressReference',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.paymentreceipt),
+                accessor: 'payment_receipt',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.businessname),
+                accessor: 'businessname',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.fiscaladdress),
+                accessor: 'fiscaladdress',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.paymentdate),
+                accessor: 'paymentdate',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.paymentmethod),
+                accessor: 'paymentmethod',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.product_plural),
+                accessor: 'product_plural',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.totalamount),
+                accessor: 'amount',
+                NoFilter: true
+            },              
         ],
         []
     );
@@ -115,6 +224,10 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
         })))
     }, [mainResult.data])
 
+    const triggerExportData = () => {      
+        exportExcel('Reporte Pedido', mainData, columnsExcel)
+    }
+
     return (
         <div style={{ width: "100%" }}>
             <TableZyx
@@ -122,11 +235,12 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 titlemodule={""}
                 onClickRow={handleEdit}
                 data={mainData}
-                download={false}
+                triggerExportPersonalized={true}
+                exportPersonalized={triggerExportData}
+                download={true}
                 loading={mainResult.loading}
             />
         </div>)
-
 }
 
 export default OrderTable;

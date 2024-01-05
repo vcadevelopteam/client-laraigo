@@ -5822,6 +5822,20 @@ const translation: LangKeys = {
   billingfield_colombiataride: "(Colombia) Identity Card",
   citybilling: 'Billing Location',
   generic_payment_error: 'There was an error while processing the transaction. Check your payment information and try again',
+  dateorder: 'Date order',
+  deliverytype: 'Delivery Type',
+  billingtype: 'Billing Type',
+  schedule_delivery_date: 'Scheduled delivery date',
+  orderlists: "orderlists",
+  deliveryinfo: "Delivery Information",
+  deliverydate: "Delivery date",
+  deliveryaddress: "Delivery address",
+  paymentamount: "Payment amount",
+  paymentreceipt: "Payment Receipt",
+  newordertxt: "Customer enters order",
+  preparedordertxt: "Order ready for shipment",
+  dispatchedordertxt: "Order shipped",
+  deliveredordertxt: "Order delivered to customer",
 };
 
 const enResource: ResourceLanguage = {
