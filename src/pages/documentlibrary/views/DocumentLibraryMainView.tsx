@@ -103,13 +103,13 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
                 Header: t(langKeys.uploadedby),
                 accessor: 'createby',
                 NoFilter: true,
-                minWidth: 250,
+                minWidth: 350,
             },
             {
                 Header: t(langKeys.change_by),
                 accessor: 'changeby',
                 NoFilter: true,
-                minWidth: 250,
+                minWidth: 350,
             },
             {
                 Header: "",
