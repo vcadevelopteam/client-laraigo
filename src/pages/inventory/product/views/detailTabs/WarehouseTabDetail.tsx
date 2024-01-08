@@ -114,12 +114,19 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
         Header: t(langKeys.standard_cost),
         accessor: "standarcost",
         width: "auto",
-        type:"number"
+        Cell: (props: any) => {
+            const { priceunit, typecostdispatchdescription } = props.cell.row.original;
+            return typecostdispatchdescription === "ESTANDAR" ? parseFloat(priceunit) : "-"
+        }
       },
       {
         Header: t(langKeys.average_cost),
         accessor: "averagecost",
         width: "auto",
+        Cell: (props: any) => {
+            const { priceunit, typecostdispatchdescription } = props.cell.row.original;
+            return typecostdispatchdescription !== "ESTANDAR" ? parseFloat(priceunit) : "-"
+        }
       },
       {
         Header: t(langKeys.current_balance),
