@@ -7107,6 +7107,11 @@ const BillingOperation: FC<DetailProps> = ({
         { value: "04", description: t(langKeys.billingcreditnote04) },
     ];
 
+    const dataPaymentMethod = [
+        { value: "Tarjeta Crédito", description: t(langKeys.billig_creditcard) },
+        { value: "Tarjeta Débito", description: t(langKeys.billig_debitcard) },
+    ];
+
     useEffect(() => {
         if (!data) {
             setViewSelected("view-1");
@@ -7193,6 +7198,7 @@ const BillingOperation: FC<DetailProps> = ({
             invoiceid: data?.invoiceid,
             invoicestatus: data?.invoicestatus,
             orgid: data?.orgid,
+            paymentmethod: "",
             productdetail: [],
         },
     });
@@ -7628,7 +7634,7 @@ const BillingOperation: FC<DetailProps> = ({
                             {creditNote ? (
                                 <div className="row-zyx">
                                     <FieldSelect
-                                        className="col-3"
+                                        className="col-6"
                                         data={datacreditnote}
                                         error={errors?.creditnotetype?.message}
                                         label={t(langKeys.creditnotetype)}
@@ -7661,6 +7667,21 @@ const BillingOperation: FC<DetailProps> = ({
                                     ) : null}
                                 </div>
                             ) : null}
+                            <div className="row-zyx">
+                                <FieldSelect
+                                    className="col-6"
+                                    data={dataPaymentMethod}
+                                    error={errors?.paymentmethod?.message}
+                                    label={t(langKeys.billig_paymentmethod)}
+                                    optionDesc="description"
+                                    optionValue="value"
+                                    orderbylabel={true}
+                                    valueDefault={getValues("paymentmethod")}
+                                    onChange={(value) => {
+                                        setValue("paymentmethod", value?.value);
+                                    }}
+                                />
+                            </div>
                             <div className="row-zyx">
                                 <TableContainer>
                                     <Table>
@@ -8182,6 +8203,11 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
         { id: "view-3", name: t(langKeys.billinggeneration) },
     ];
 
+    const dataPaymentMethod = [
+        { value: "Tarjeta Crédito", description: t(langKeys.billig_creditcard) },
+        { value: "Tarjeta Débito", description: t(langKeys.billig_debitcard) },
+    ];
+
     useEffect(() => {
         setCreditTypeList({ loading: true, data: [] });
         setCorpList({ loading: true, data: [] });
@@ -8386,6 +8412,7 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
             month: data?.row ? data.row.month : 0,
             onlyinsert: false,
             orgid: 0,
+            paymentmethod: "",
             productdetail: [],
             year: data?.row ? data.row.year : 0,
         },
@@ -8409,6 +8436,7 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
         register("corpid", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
         register("invoiceduedate");
         register("month", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
+        register("paymentmethod");
         register("year", { validate: (value) => (value && value > 0) || String(t(langKeys.field_required)) });
 
         register("clientbusinessname", {
@@ -9057,6 +9085,21 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
                                     className="col-3"
                                     label={t(langKeys.totalamount)}
                                     value={formatNumber(amountTotal || 0)}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldSelect
+                                    className="col-6"
+                                    data={dataPaymentMethod}
+                                    error={errors?.paymentmethod?.message}
+                                    label={t(langKeys.billig_paymentmethod)}
+                                    optionDesc="description"
+                                    optionValue="value"
+                                    orderbylabel={true}
+                                    valueDefault={getValues("paymentmethod")}
+                                    onChange={(value) => {
+                                        setValue("paymentmethod", value?.value);
+                                    }}
                                 />
                             </div>
                             <div className="row-zyx">

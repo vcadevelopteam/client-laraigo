@@ -5525,6 +5525,9 @@ export const langKeys = {
   billingfield_colombiataride: "billingfield_colombiataride",
   citybilling: 'citybilling',
   generic_payment_error: 'generic_payment_error',
+  billig_paymentmethod: 'billig_paymentmethod',
+  billig_creditcard: 'billig_creditcard',
+  billig_debitcard: 'billig_debitcard',
 };
 
 export type LangKeys = typeof langKeys;
