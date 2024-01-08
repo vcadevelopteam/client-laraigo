@@ -152,6 +152,10 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
         Header: t(langKeys.last_order_date),
         accessor: "lastorderdate",
         width: "auto",
+        Cell: (props: any) => {
+            const { lastorderdate } = props.cell.row.original;
+            return lastorderdate? new Date(lastorderdate).toLocaleDateString('en-GB'): ""
+        }
       },
       {
         Header: t(langKeys.purchase_unit),

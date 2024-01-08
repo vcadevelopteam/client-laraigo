@@ -110,13 +110,13 @@ const ImportDialog: React.FC<{
     return (
       element?.description?.toString()?.length <= 256 &&
       element?.productcode?.toString()?.length <= 20 &&
-      element?.descriptionlarge?.toString()?.length <= 10000 &&
+      (!element?.descriptionlarge || element?.descriptionlarge?.toString()?.length <= 10000) &&
       validDomainProductType[element?.producttype] &&
-      validDomainFamily[element?.familyid] &&
-      validDomainSubFamily[element?.subfamilyid] &&
-      validDomainUnitBuy[element?.unitbuyid] &&
-      validDomainUnitDispatch[element?.unitdispatchid] &&
-      validDomainLote[element?.loteid] &&
+      (!element?.familyid || validDomainFamily[element?.familyid]) &&
+      (!element?.subfamilyid || validDomainSubFamily[element?.subfamilyid]) &&
+      (!element?.unitbuyid || validDomainUnitBuy[element?.unitbuyid]) &&
+      (!element?.unitdispatchid || validDomainUnitDispatch[element?.unitdispatchid]) &&
+      (!element?.loteid || validDomainLote[element?.loteid]) &&
       validDomainStatus[element?.status] &&
       element?.description?.toString()?.length > 0
     );
