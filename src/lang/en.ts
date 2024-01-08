@@ -5836,6 +5836,9 @@ const translation: LangKeys = {
   preparedordertxt: "Order ready for shipment",
   dispatchedordertxt: "Order shipped",
   deliveredordertxt: "Order delivered to customer",
+  billig_paymentmethod: 'Payment Method',
+  billig_creditcard: 'Credit Card',
+  billig_debitcard: 'Debit Card',
 };
 
 const enResource: ResourceLanguage = {

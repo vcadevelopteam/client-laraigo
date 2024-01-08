@@ -5748,6 +5748,9 @@ export const langKeys = {
   preparedordertxt: "preparedordertxt",
   dispatchedordertxt: "dispatchedordertxt",
   deliveredordertxt: "deliveredordertxt",
+  billig_paymentmethod: 'billig_paymentmethod',
+  billig_creditcard: 'billig_creditcard',
+  billig_debitcard: 'billig_debitcard',
 };
 
 export type LangKeys = typeof langKeys;
