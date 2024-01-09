@@ -1,4 +1,3 @@
-//TODO: en conectares hay un tipo preguntar de donde sale
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -10,7 +9,7 @@ import { langKeys } from 'lang/keys';
 import { getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import {Box, Card, Grid } from '@material-ui/core';
-import { EntrenamientoIALogo, IntencionesIALogo, EntidadesIALogo, SynonimsRasaLogo, ModelsRasaLogo, TestModelRasa } from 'icons';
+import { IntencionesIALogo, EntidadesIALogo, SynonimsRasaLogo, ModelsRasaLogo, TestModelRasa, RASATrainingIcon, GenerativeAIIcon, WitIcon } from 'icons';
 import { Intentions } from './assistant/Intentions';
 import { Entities } from './assistant/Entities';
 import { IntentionsRasa } from './rasa/IntentionsRasa';
@@ -102,7 +101,6 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
         ...arrayBread,
         { id: "rasaia", name:  "RASA IA" },
     ];
-    // const [mainData, setMainData] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
 
     const fetchData = () => dispatch(getCollectionAux(rasaModelSel()))
@@ -512,7 +510,7 @@ const IATraining: React.FC = () => {
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
+                                            <WitIcon style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -537,7 +535,7 @@ const IATraining: React.FC = () => {
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
+                                            <RASATrainingIcon style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -561,7 +559,7 @@ const IATraining: React.FC = () => {
                                             </Button>
                                         </div>
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
+                                            <GenerativeAIIcon style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
