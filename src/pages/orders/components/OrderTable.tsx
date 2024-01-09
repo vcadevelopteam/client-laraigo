@@ -99,7 +99,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
         () => [         
             {
                 Header: t(langKeys.ordernumber),
-                accessor: 'orderid',
+                accessor: 'ordernumber',
                 NoFilter: true,          
             },
             {
@@ -114,7 +114,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             },
             {
                 Header: t(langKeys.ticket),
-                accessor: 'ticket',
+                accessor: 'ticketnum',
                 NoFilter: true
             },
             {
@@ -139,21 +139,22 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             },
             {
                 Header: t(langKeys.documenttype),
-                accessor: 'documenttype',
+                accessor: 'payment_document_type',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.deliverytype),
-                accessor: 'var_tipoentrega',
+                accessor: 'deliverytype',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.deliverydate),
-                accessor: 'var_fechaentrega',
+                accessor: 'deliverydate',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { var_fechaentrega, var_horaentrega } = props.cell.row.original;
-                    return `${var_fechaentrega} ${var_horaentrega}`
+                    const row = props.cell.row.original.deliverydate;
+                    const formatteddate = formatDate(row, {withTime: false})
+                    return formatteddate
                 }
             },
             {
@@ -173,17 +174,17 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             },
             {
                 Header: t(langKeys.businessname),
-                accessor: 'businessname',
+                accessor: 'payment_businessname',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.fiscaladdress),
-                accessor: 'fiscaladdress',
+                accessor: 'payment_fiscal_address',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.paymentdate),
-                accessor: 'paymentdate',
+                accessor: 'payment_date',
                 NoFilter: true
             },
             {
