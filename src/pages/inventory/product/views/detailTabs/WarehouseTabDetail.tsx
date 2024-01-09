@@ -116,7 +116,7 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
         width: "auto",
         Cell: (props: any) => {
             const { priceunit, typecostdispatchdescription } = props.cell.row.original;
-            return typecostdispatchdescription === "ESTANDAR" ? parseFloat(priceunit) : "-"
+            return typecostdispatchdescription === "ESTANDAR" ? parseFloat(priceunit).toFixed(2) : "0.00"
         }
       },
       {
@@ -125,13 +125,17 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
         width: "auto",
         Cell: (props: any) => {
             const { priceunit, typecostdispatchdescription } = props.cell.row.original;
-            return typecostdispatchdescription !== "ESTANDAR" ? parseFloat(priceunit) : "-"
+            return typecostdispatchdescription !== "ESTANDAR" ? parseFloat(priceunit).toFixed(2) : "0.00"
         }
       },
       {
         Header: t(langKeys.current_balance),
         accessor: "currentbalance",
         width: "auto",
+        Cell: (props: any) => {
+            const { currentbalance} = props.cell.row.original;
+            return parseFloat(currentbalance).toFixed(2)
+        }
       },
       {
         Header: t(langKeys.batch),
