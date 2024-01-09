@@ -11,7 +11,7 @@ import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { execute } from "store/main/actions";
-import { insProductDealer } from "common/helpers";
+import { formatDate, insProductDealer } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -154,7 +154,7 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
         width: "auto",
         Cell: (props: any) => {
             const { lastorderdate } = props.cell.row.original;
-            return lastorderdate? new Date(lastorderdate).toLocaleDateString('en-GB'): ""
+            return lastorderdate? formatDate(lastorderdate, { withTime: false }): ""
         }
       },
       {
