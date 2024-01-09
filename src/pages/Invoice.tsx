@@ -6817,7 +6817,14 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
             />
         );
     } else {
-        return <BillingRegister data={rowSelected} fetchData={fetchData} setViewSelected={setViewSelected} />;
+        return (
+            <BillingRegister
+                data={rowSelected}
+                dataAllCurrency={dataAllCurrency}
+                fetchData={fetchData}
+                setViewSelected={setViewSelected}
+            />
+        );
     }
 };
 
