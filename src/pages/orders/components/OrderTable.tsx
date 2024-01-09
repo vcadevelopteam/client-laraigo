@@ -74,12 +74,12 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             },
             {
                 Header: t(langKeys.deliverytype),
-                accessor: 'var_tipoentrega',
+                accessor: 'deliverytype',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.billingtype),
-                accessor: 'var_tipocomprobante',
+                accessor: 'payment_document_type',
                 NoFilter: true
             },
             {
@@ -87,8 +87,8 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 accessor: 'var_horaentrega',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { var_fechaentrega, var_horaentrega } = props.cell.row.original;
-                    return `${var_fechaentrega} ${var_horaentrega}`
+                    const { deliverydate } = props.cell.row.original;
+                    return `${formatDate(deliverydate, { withTime: false })}`
                 }
             }         
         ],

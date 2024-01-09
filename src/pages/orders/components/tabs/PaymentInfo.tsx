@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldEdit } from 'components';
+import { formatDate } from 'common/helpers';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -57,7 +58,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
                 <FieldEdit
                     label={t(langKeys.paymentdate)}
                     className="col-4"
-                    valueDefault={row?.payment_date}                           
+                    valueDefault={formatDate(row?.payment_date, { withTime: false })}                     
                     disabled={true}              
                 />
                 <FieldEdit
