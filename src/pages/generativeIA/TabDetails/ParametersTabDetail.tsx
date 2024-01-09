@@ -35,8 +35,13 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         width: '100%',
         padding:"2.2rem 1rem",
-        backgroundColor: '#F7F7F7'
+        backgroundColor: '#F7F7F7',
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#EBEAED',            
+        }
     },
+    
     cardContent: {
         textAlign: 'center',
         alignContent: 'center',
