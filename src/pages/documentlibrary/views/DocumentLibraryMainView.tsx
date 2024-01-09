@@ -196,7 +196,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
         const data = [
             {},
             {},
-            (mainResult?.multiData?.data?.[0]?.data || [])?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            {},
             {},
             {},
         ];
@@ -287,7 +287,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
     const isValidData = (element:DocumentLibraryData) => {
       return (
         typeof element.title === 'string' && element.title.length > 0 &&
-        typeof element.description === 'string' && element.description.length <= 256 &&
+        (!element.description || (typeof element.description === 'string' && element.description.length <= 256)) &&
         typeof element.groups === 'string' && element.groups.length > 0 &&
         typeof element.linkfile === 'string' && element.linkfile.length > 0 &&
         typeof element.category === 'string' && element.category.length > 0  
