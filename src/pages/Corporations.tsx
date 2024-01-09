@@ -217,7 +217,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
-    const [doctype, setdoctype] = useState(row?.doctype || ((row?.sunatcountry) === "PE" ? "1" : "0"))
+    const [doctype, setdoctype] = useState(row?.doctype || "")
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
@@ -381,12 +381,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const docTypes = useMemo(() => {
         if (!dataDocType || dataDocType.length === 0) return [];
 
-        let val: { domaindesc: string }[];
-        if (getValues("sunatcountry") === "PE") {
-            val = dataDocType.filter(x => x.domainvalue !== "0") as any[];
-        } else {
-            val = dataDocType as any[];
-        }
+        const val = dataDocType as any[];
 
         return val.sort((a, b) => {
             return a.domaindesc.localeCompare(b.domaindesc);
@@ -537,9 +532,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             valueDefault={getValues("sunatcountry")}
                             onChange={(value) => {
                                 setValue("sunatcountry", value?.code || "");
-
-                                setValue("doctype", value?.code === "PE" ? "1" : "0");
-                                setdoctype(value?.code === "PE" ? "1" : "0");
                             }}
                             error={errors?.sunatcountry?.message}
                             data={countries}
@@ -561,7 +553,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 label={t(langKeys.docType)}
                                 className="col-6"
                                 valueDefault={doctype}
-                                disabled={getValues("sunatcountry") !== "PE"}
                                 onChange={(value) => {
                                     setValue("doctype", value?.domainvalue || "");
                                     setdoctype(value?.domainvalue || "");

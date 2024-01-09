@@ -118,7 +118,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const updateScenarioResult = useSelector(state => state.voximplant.requestUpdateScenario);
     const getConsumptionResult = useSelector(state => state.voximplant.requestGetMaximumConsumption);
     const transferBalanceResult = useSelector(state => state.voximplant.requestTransferAccountBalance);
-    const [doctype, setdoctype] = useState(row?.doctype || ((row?.sunatcountry) === "PE" ? "1" : "0"))
+    const [doctype, setdoctype] = useState(row?.doctype || "");
     const [idUpload, setIdUpload] = useState('');
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
@@ -209,11 +209,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('docnum', {
             validate: {
-                dnivalidation: (value: any) => getValues('billbyorg')?((doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true):true,
-                cevalidation: (value: any) => getValues('billbyorg')?((doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true):true,
-                rucvalidation: (value: any) => getValues('billbyorg')?((doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true):true,
-                passportvalidation: (value: any) => getValues('billbyorg')?((doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true):true,
-                needsvalidation: (value: any) => getValues('billbyorg')?((doctype !== "1" && doctype !== "4" && doctype !== "6" && doctype !== "7") ? ((value && value.length) || t(langKeys.field_required)) : true):true,
+                dnivalidation: (value: any) => getValues('billbyorg') ? ((doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true) : true,
+                cevalidation: (value: any) => getValues('billbyorg') ? ((doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true) : true,
+                rucvalidation: (value: any) => getValues('billbyorg') ? ((doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true) : true,
+                passportvalidation: (value: any) => getValues('billbyorg') ? ((doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true) : true,
+                needsvalidation: (value: any) => getValues('billbyorg') ? ((doctype !== "1" && doctype !== "4" && doctype !== "6" && doctype !== "7") ? ((value && value.length) || t(langKeys.field_required)) : true) : true,
             }
         });
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
@@ -479,12 +479,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const docTypes = useMemo(() => {
         if (!dataDocType || dataDocType.length === 0) return [];
 
-        let val: { domaindesc: string }[];
-        if (getValues("sunatcountry") === "PE") {
-            val = dataDocType.filter(x => x.domainvalue !== "0") as any[];
-        } else {
-            val = dataDocType as any[];
-        }
+        const val = dataDocType as any[];
 
         return val.sort((a, b) => {
             return a.domaindesc.localeCompare(b.domaindesc);
@@ -527,7 +522,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 variant="contained"
                                 color="primary"
                                 type="submit"
-                                onClick={()=>{
+                                onClick={() => {
                                     console.log(errors)
                                 }}
                                 startIcon={<SaveIcon color="secondary" />}
@@ -679,9 +674,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     valueDefault={getValues("sunatcountry")}
                                     onChange={(value) => {
                                         setValue("sunatcountry", value?.code || "");
-
-                                        setValue("doctype", value?.code === "PE" ? "1" : "0");
-                                        setdoctype(value?.code === "PE" ? "1" : "0");
                                     }}
                                     error={errors?.sunatcountry?.message}
                                     data={countries}
@@ -703,7 +695,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     label={t(langKeys.docType)}
                                     className="col-6"
                                     valueDefault={doctype}
-                                    disabled={getValues("sunatcountry") !== "PE"}
                                     onChange={(value) => {
                                         setValue("doctype", value?.domainvalue || "");
                                         setdoctype(value?.domainvalue || "");
