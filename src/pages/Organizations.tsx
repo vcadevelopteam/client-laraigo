@@ -209,11 +209,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('docnum', {
             validate: {
-                dnivalidation: (value: any) => (doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
-                cevalidation: (value: any) => (doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
-                rucvalidation: (value: any) => (doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
-                passportvalidation: (value: any) => (doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true,
-                needsvalidation: (value: any) => (doctype !== "1" && doctype !== "4" && doctype !== "6" && doctype !== "7") ? ((value && value.length) || t(langKeys.field_required)) : true,
+                dnivalidation: (value: any) => getValues('billbyorg')?((doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true):true,
+                cevalidation: (value: any) => getValues('billbyorg')?((doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true):true,
+                rucvalidation: (value: any) => getValues('billbyorg')?((doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true):true,
+                passportvalidation: (value: any) => getValues('billbyorg')?((doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true):true,
+                needsvalidation: (value: any) => getValues('billbyorg')?((doctype !== "1" && doctype !== "4" && doctype !== "6" && doctype !== "7") ? ((value && value.length) || t(langKeys.field_required)) : true):true,
             }
         });
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
@@ -527,6 +527,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 variant="contained"
                                 color="primary"
                                 type="submit"
+                                onClick={()=>{
+                                    console.log(errors)
+                                }}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                             >{t(langKeys.save)}
