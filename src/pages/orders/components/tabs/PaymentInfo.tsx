@@ -5,26 +5,57 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldEdit } from 'components';
 import { formatDate } from 'common/helpers';
+import { PDFRedIcon, ImageIcon } from 'icons';
 
 const useStyles = makeStyles((theme) => ({
-    container: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: "#fff",
-    },
+  container: {
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(2),
+    background: "#fff",
+  },
 }));
 
-interface PaymentInfoProps {  
-    row: Dictionary | null
+interface PaymentInfoProps {
+  row: Dictionary | null;
 }
 
 const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
-    const classes = useStyles();
-    const { t } = useTranslation();
+  const classes = useStyles();
+  const { t } = useTranslation();
 
-    return (    
-        <div className={classes.container}>
-            <div className='row-zyx' style={{marginBottom: 0}}>
+  if (!row) {
+    return null;
+  }
+
+  const renderAttachments = (attachments: string | undefined) => {
+    if (!attachments) {
+      return null;
+    }
+
+    const files = attachments.split(',');
+
+    return (
+      <div>
+        {files.map((file: string, index: number) => {
+          const fileName = file.substring(file.lastIndexOf('/') + 1);
+          const fileType = fileName.split('.').pop()?.toLowerCase();
+
+          return (
+            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+              {fileType === 'pdf' ? <PDFRedIcon /> : <ImageIcon />}
+              <div style={{ marginLeft: '5px' }}>
+                {fileName}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div className={classes.container}>
+        <div className='row-zyx' style={{marginBottom: 0}}>
                 <FieldEdit
                     label={t(langKeys.paymentreceipt)}
                     className="col-4"
@@ -67,7 +98,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
                     valueDefault={row?.paymentmethod}                           
                     disabled={true}              
                 />
-                <FieldEdit
+                <FieldEdit                   
                     label={t(langKeys.paymentamount)}
                     className="col-4"
                     valueDefault={row?.payment_amount}                           
@@ -76,12 +107,13 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
                 <FieldEdit
                     label={t(langKeys.attached)}
                     className="col-4"
-                    valueDefault={row?.payment_attachment}
-                    disabled={true}              
+                    valueDefault={row.payment_attachment}
+                    disabled={true}
                 />
+                {renderAttachments(row.payment_attachment)}
             </div>
-        </div>            
-    );
-}
+    </div>
+  );
+};
 
 export default PaymentInfo;

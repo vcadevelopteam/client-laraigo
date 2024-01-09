@@ -17,7 +17,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'ordernumber',
+                accessor: 'orderid',
                 NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
@@ -34,7 +34,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             },
             {
                 Header: t(langKeys.ordernumber),
-                accessor: 'orderid',
+                accessor: 'ordernumber',
                 NoFilter: true,          
             },
             {

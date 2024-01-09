@@ -304,3 +304,5 @@ export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.s
 export { ReactComponent as IAEntrenamientoIcon } from './Ai_laraigo_new.svg';
 
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
+export {ReactComponent as PDFRedIcon} from './pdf-red-20dp.svg';
+
