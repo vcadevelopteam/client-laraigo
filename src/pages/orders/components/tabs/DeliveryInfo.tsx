@@ -50,7 +50,7 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row }) => {
                     />
                     <FieldEdit
                         label={t(langKeys.deliveryaddress)}
-                        valueDefault={row?.address}
+                        valueDefault={row?.deliveryaddress}
                         disabled={true}
                         className='col-5'
                     />
