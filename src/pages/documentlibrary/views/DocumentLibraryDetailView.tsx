@@ -167,7 +167,7 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
                             label={t(langKeys.group_plural)}
                             className="col-6"
                             valueDefault={row?.groups||""}
-                            onChange={(value) => {setValue('groups', value.map(obj => obj.domainvalue).join(', '))}}
+                            onChange={(value) => {setValue('groups', value.map(obj => obj.domainvalue).join(','))}}
                             error={errors?.groups?.message}
                             data={multiData?.[0]?.data || []}
                             optionDesc="domaindesc"
