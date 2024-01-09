@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import MapLeaflet from 'components/fields/MapLeaflet';
 import { FieldEdit } from 'components';
+import { formatDate } from 'common/helpers';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -39,28 +40,28 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row }) => {
                         label={t(langKeys.deliverytype)}
                         valueDefault={row?.deliverytype}
                         disabled={true}
-                        className='col-6'
+                        className='col-5'
                     />
                     <FieldEdit
                         label={t(langKeys.deliverydate)}
-                        valueDefault={row?.deliverydate}
+                        valueDefault={formatDate(row?.deliverydate, { withTime: false })}                     
                         disabled={true}
-                        className='col-6'
+                        className='col-5'
                     />
                     <FieldEdit
                         label={t(langKeys.deliveryaddress)}
                         valueDefault={row?.address}
                         disabled={true}
-                        className='col-6'
+                        className='col-5'
                     />
                     <FieldEdit
                         label={t(langKeys.transactionreference)}
                         valueDefault={row?.deliveryadressreference}
                         disabled={true}
-                        className='col-6'
+                        className='col-5'
                     />
                 </div>
-                <div style={{ flex: 5 }}>
+                <div style={{ flex: 6 }}>
                 <MapLeaflet
                     height={300}
                     marker={ { lat: parseFloat(row?.latitude || 0), lng: parseFloat(row?.longitude || 0) }}           
