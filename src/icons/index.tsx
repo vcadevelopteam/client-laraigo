@@ -303,6 +303,20 @@ export { ReactComponent as IARouteIcon } from './IA_route.svg';
 export { ReactComponent as SalesRouteIcon } from './sales_route.svg';
 export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg';
 export { ReactComponent as IAEntrenamientoIcon } from './Ai_laraigo_new.svg';
+export { ReactComponent as WitIcon } from './wit.svg';
+export { ReactComponent as RASATrainingIcon } from './rasa.svg';
+export { ReactComponent as GenerativeAIIcon } from './gpt-llama.svg';
+
+export { ReactComponent as BaseAIPersonalityIcon } from './baseAi_blue_24dp 1.svg';
+export { ReactComponent as SalesPersonalityIcon } from './experto_ventas_orange_24dp 1.svg';
+export { ReactComponent as HelpDeskPersonalityIcon } from './mesa_ayuda_lightblue_24dp 1.svg';
+export { ReactComponent as PersonalizedPersonalityIcon } from './modo_personalizado_red_24dp 1.svg';
+export { ReactComponent as ClientServicePersonalityIcon } from './servicio_cliente_yellow_24dp 1.svg';
+export { ReactComponent as TechSupportPersonalityIcon } from './support_tecnico-lila_24dp 1.svg';
+export { ReactComponent as UploadFileIcon } from './upload_file_verde_24dp.svg';
+export { ReactComponent as LaraigoChatProfileIcon } from './go-chat.svg';
+export { ReactComponent as SendMesageIcon } from './bot enviar.svg';
+
 
 export { ReactComponent as ProductMasterIcon } from './maestro-productos.svg';
 export { ReactComponent as WarehouseIcon } from './almacenes.svg';

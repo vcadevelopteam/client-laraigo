@@ -21,6 +21,7 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import CachedIcon from '@material-ui/icons/Cached';
+import { UploadFileIcon } from "icons";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -84,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     logo: {
-        height: 90,
+        height: 80,
         width:"100%",
         justifyContent: 'center',
         marginBottom: 5,
@@ -142,9 +143,12 @@ const useStyles = makeStyles((theme) => ({
     },
     uploadIcon: {
         height: 80,
-        width:"100%",
+        width: 80,
+        padding: 10,
         justifyContent: 'center',
-        color: 'green'
+        color: 'green',
+        backgroundColor: '#D3F9DD',
+        borderRadius: '300px'
     },
     uploadTitle: {
         textDecoration: 'underline',
@@ -529,7 +533,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
                                 <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
                                     <div className={classes.cardContent}>
-                                        <BackupIcon className={classes.logo} style={{color:'green'}} />
+                                        <UploadFileIcon className={classes.logo} />
                                         <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
                                         <div className={classes.cardText}>{t(langKeys.upload_document_description)}</div>
                                     </div>
@@ -633,7 +637,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         { waitUploadFile || fileAttachment === null && (
                             <Card className={classes.uploadCard} onClick={onClickAttachment}>
                                 <div className={classes.uploadCardContent}>
-                                    <BackupIcon className={classes.uploadIcon}/>
+                                    <UploadFileIcon className={classes.uploadIcon}/>
                                     <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
                                     <div>{t(langKeys.maximun10files)}</div>
                                 </div>

@@ -6,7 +6,7 @@ import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { Button, Card, Grid } from "@material-ui/core";
-import { SynonimsRasaLogo } from "icons";
+import { BaseAIPersonalityIcon, ClientServicePersonalityIcon, HelpDeskPersonalityIcon, PersonalizedPersonalityIcon, SalesPersonalityIcon, TechSupportPersonalityIcon } from "icons";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { FieldEdit, FieldSelect } from "components";
 import { Dictionary } from "@types";
@@ -34,15 +34,18 @@ const useStyles = makeStyles((theme) => ({
     card: {
         position: 'relative',
         width: '100%',
-        padding:"1rem",
+        padding:"2.2rem 1rem",
         backgroundColor: '#F7F7F7'
     },
     cardContent: {
         textAlign: 'center',
-        alignContent: 'center'
+        alignContent: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
     },
     logo: {
-        height: 100,
+        height: 60,
         width:"100%",
         justifyContent: 'center'
     },
@@ -69,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     },
     cardText: {
         textAlign: 'left',
-        marginBottom:30
+        marginBottom: 0
     },
     detailTitle: {
         fontWeight:'bold',
@@ -165,7 +168,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [unansweredQueries, setUnansweredQueries] = useState<string | null>(row?.querywithoutanswer || null);
-    const [selected, setSelected] = useState(edit);
 
     useEffect(() => {
         if (waitSave) {
@@ -282,13 +284,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         },
     ];
 
-    const handleSeeMoreClick = (cardIndex: number) => {
-        setSelectedCardData(cardData[cardIndex]);
-        setViewSelected('detail');
-    };
-
-    const handleSelectCard = (cardIndex: number) => {
-        setSelected(true)
+    const handleSelectCard = (cardIndex: number) => {  
         setSelectedCardData(cardData[cardIndex])
         setValue('language', cardData[cardIndex].language)
         setValue('organizationname', cardData[cardIndex].organizationName)
@@ -300,6 +296,20 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('max_tokens', cardData[cardIndex].max_tokens)
         setValue('top_p', cardData[cardIndex].top_p)
         setViewSelected('detail');
+    }
+
+    const handleBackCard = () => {  
+        setSelectedCardData(null)
+        setValue('language', '')
+        setValue('organizationname', '')
+        setValue('querywithoutanswer', '')
+        setValue('response', '')
+        setValue('prompt', '')
+        setValue('negativeprompt', '')
+        setValue('temperature', 0)
+        setValue('max_tokens', 0)
+        setValue('top_p', 0)
+        setViewSelected('main');
     }
 
     if(edit) {
@@ -468,25 +478,17 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         <div className={`row-zyx ${classes.cardsContainer}`} >
                             {cardData.map((card, index) => (
                                 <Grid item xs={2} md={1} lg={2} className={classes.grid} key={index}>
-                                    <Card className={classes.card}>
-                                        <div className={classes.cardContent}>
-                                            <SynonimsRasaLogo className={classes.logo} />
+                                    <Card className={classes.card} onClick={() => handleSelectCard(index)}>
+                                        <div className={classes.cardContent}>             
+                                            {card.title=== t(langKeys.help_desk_clerk) ? (<HelpDeskPersonalityIcon className={classes.logo} />) 
+                                            : card.title=== t(langKeys.customer_service) ? (<ClientServicePersonalityIcon className={classes.logo} />) 
+                                            : card.title=== t(langKeys.sales_expert) ? (<SalesPersonalityIcon className={classes.logo} />)
+                                            : card.title=== t(langKeys.technical_support) ? (<TechSupportPersonalityIcon className={classes.logo} />)
+                                            : card.title=== t(langKeys.ai_base) ? (<BaseAIPersonalityIcon className={classes.logo} />)
+                                            : (<PersonalizedPersonalityIcon className={classes.logo} />)                                        
+                                        }                               
                                             <div className={classes.cardTitle}>{card.title}</div>
-                                            <div className={classes.cardText}>{card.description}</div>
-                                            <div className={classes.cardActions}>
-                                                <div
-                                                    className={classes.actionButton}
-                                                    onClick={() => handleSelectCard(index)}
-                                                >
-                                                    Seleccionar
-                                                </div>
-                                                <div
-                                                    className={classes.actionButton}
-                                                    onClick={() => handleSeeMoreClick(index)}
-                                                >
-                                                    {t(langKeys.seeMore)}
-                                                </div>
-                                            </div>
+                                            <div className={classes.cardText}>{card.description}</div>                                         
                                         </div>
                                     </Card>
                                 </Grid>
@@ -500,21 +502,17 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                 <>
                     <div className={classes.containerDetail}>
                         <div className="row-zyx" style={{marginBottom:0}}>
-                            { !selected && (
-                                <>
-                                    <div>
-                                        <Button
-                                            type="button"
-                                            style={{color: '#7721AD'}}
-                                            startIcon={<ArrowBackIcon />}
-                                            onClick={() => setViewSelected('main')}
-                                        >
-                                            {t(langKeys.personality)}
-                                        </Button>
-                                    </div>
-                                    <div className={classes.block10}/>
-                                </>
-                            )}
+                            <div>
+                                <Button
+                                    type="button"
+                                    style={{color: '#7721AD'}}
+                                    startIcon={<ArrowBackIcon />}
+                                    onClick={handleBackCard}
+                                >
+                                    {t(langKeys.personality)}
+                                </Button>
+                            </div>
+                            <div className={classes.block10}/>
                             <span className={classes.title}>
                                 {selectedCardData?.title}
                             </span>

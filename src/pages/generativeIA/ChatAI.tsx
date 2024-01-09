@@ -5,7 +5,6 @@ import { execute, getCollectionAux, getCollectionAux2 } from 'store/main/actions
 import { langKeys } from "lang/keys";
 import { Button, IconButton, Paper, Typography } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
-import SendIcon from '@material-ui/icons/Send';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -22,6 +21,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import { FieldEdit } from "components";
 import CachedIcon from '@material-ui/icons/Cached';
+import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -64,6 +64,10 @@ const useStyles = makeStyles((theme) => ({
     purpleButton: {
         backgroundColor: '#7721AD',
         color: '#fff'
+    },
+    sendicon: {
+        backgroundColor: 'none',
+
     },
     newChatContainer: {
         backgroundColor: '#F4EDF8',
@@ -118,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
     },
     messageAvatar: {
         marginRight: 10,
-        alignSelf: 'flex-start'
+        alignSelf: 'flex-start',        
     },
     textContainer: {
         display: 'flex',
@@ -529,10 +533,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                                 </div>
                                                 <div className={classes.messageText}>
                                                     <div className={classes.messageAvatar}>
-                                                        <Avatar
-                                                            src={message.type === 'USER' ? 'https://cdn-icons-png.flaticon.com/512/2919/2919600.png' : 'https://play-lh.googleusercontent.com/YZxZDkJuvqZByRtcFe6PNjfOdl9oUgEXIqpQ_0WlEonqw93AT-3CvVcT76-iU82a-Q=w240-h480-rw'}
+                                                       {message.type==='USER'?( <Avatar
+                                                            src={'https://cdn-icons-png.flaticon.com/512/2919/2919600.png'}
                                                             alt="User Avatar"
-                                                        />
+                                                        />):(<LaraigoChatProfileIcon/>)}
                                                     </div>
                                                     <div className={classes.textContainer}>
                                                         <Typography variant="body1">
@@ -574,16 +578,13 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 maxRows: 2,
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <Button
-                                            variant="contained"
-                                            type="button"
-                                            startIcon={<SendIcon color="secondary" />}
-                                            disabled={!selectedChat || messageText.trim() === '' || isLoading}
-                                            className={classes.purpleButton}
+                                        <IconButton                                           
+                                            className={classes.sendicon}
                                             onClick={() => handleSendMessage()}
+                                            disabled={!selectedChat || messageText.trim() === '' || isLoading}
                                         >
-                                            {t(langKeys.send)}
-                                        </Button>
+                                          <SendMesageIcon color="secondary" />
+                                        </IconButton>
                                     </InputAdornment>
                                 ),
                             }}
