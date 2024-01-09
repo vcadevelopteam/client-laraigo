@@ -230,6 +230,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const partnerType = multiData[5] && multiData[5].success ? multiData[5].data : [];
     const locationList = multiData[6] && multiData[6].success ? multiData[6].data : [];
+    const cityList = multiData[7] && multiData[7].success ? multiData[7].data : [];
 
     const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -591,7 +592,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 className="col-6"
                                 valueDefault={getValues("citybillingid")}
                                 onChange={(value) => setValue('citybillingid', value?.citybillingid || null)}
-                                data={locationList}
+                                data={cityList}
                                 error={errors?.citybillingid?.message}
                                 optionDesc="locationdescription"
                                 optionValue="citybillingid"
