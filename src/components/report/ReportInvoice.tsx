@@ -719,16 +719,16 @@ const ReportInvoice: FC = () => {
 
     useEffect(() => {
         if (!mainAux2.loading) {
-            setGridDataCurrencyList(Array.from(new Set((mainAux2?.data || []).map(item => item.currency))));
+            setGridDataCurrencyList(Array.from(new Set((mainAux2?.data || []).map(item => item.currencylocation))));
             const initialmonth = [...Array.from(Array(12).keys())].reduce((acc, item) => ({ ...acc, [`month_${item + 1}`]: 0, [`color_${item + 1}`]: 'black' }), {})
             setGridData(
                 Object.values((mainAux2?.data || []).reduce((acc, item) => ({
                     ...acc,
-                    [`corp_${item.corpid}_${item.currency}`]: acc[`corp_${item.corpid}_${item.currency}`] ? {
-                        ...acc[`corp_${item.corpid}_${item.currency}`],
+                    [`corp_${item.corpid}_${item.currencylocation}`]: acc[`corp_${item.corpid}_${item.currencylocation}`] ? {
+                        ...acc[`corp_${item.corpid}_${item.currencylocation}`],
                         [`color_${item.month}`]: item.color,
                         [`month_${item.month}`]: item.totalamount,
-                        total: acc[`corp_${item.corpid}_${item.currency}`].total + item.totalamount,
+                        total: acc[`corp_${item.corpid}_${item.currencylocation}`].total + item.totalamount,
 
                     } : {
                         ...initialmonth,
@@ -736,6 +736,7 @@ const ReportInvoice: FC = () => {
                         corpdesc: item.corpdesc,
                         currency: item.currency,
                         location: item.location,
+                        currencylocation: item.currencylocation,
                         [`color_${item.month}`]: item.color,
                         year: item.year,
                         [`month_${item.month}`]: item.totalamount,
@@ -743,7 +744,7 @@ const ReportInvoice: FC = () => {
                     }
                 }), {})).reduce((acc, item) => ({
                     ...acc,
-                    [item.currency]: [...(acc[item.currency] || []), item]
+                    [item.currencylocation]: [...(acc[item.currencylocation] || []), item]
                 }), {})
             )
             dispatch(showBackdrop(false));
