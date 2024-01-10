@@ -2020,7 +2020,7 @@ const translation: LangKeys = {
   successfully_scheduled: "Ha programado el evento con éxito",
   confirmed: "Confirmado",
   enter_details: "Ingrese los detalles",  
-  warehouse: "Almacen",
+  warehouse: "Almacén",
   warehouses: "Almacenes",
   standard_cost:"Costo estándar",
   average_cost:"Costo promedio",
