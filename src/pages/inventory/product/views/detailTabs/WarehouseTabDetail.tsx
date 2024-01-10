@@ -100,6 +100,16 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
         width: "auto",
       },
       {
+        Header: t(langKeys.warehouse),
+        accessor: "warehousename",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.description),
+        accessor: "warehousedescription",
+        width: "auto",
+      },
+      {
         Header: t(langKeys.default),
         accessor: "ispredeterminate",
         width: "auto",
