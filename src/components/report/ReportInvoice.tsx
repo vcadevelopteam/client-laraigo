@@ -816,24 +816,26 @@ const ReportInvoice: FC = () => {
                         </div>
                     </div>
                 </div>
-                {gridDataCurrencyList.map(crcy => {
-                    return (
-                        <TableZyx
-                            key={crcy}
-                            onClickRow={handleView}
-                            columns={columns}
-                            data={gridData[crcy]}
-                            download={true}
-                            filterGeneral={false}
-                            loading={multiData.loading}
-                            register={false}
-                            useFooter={true}
-                            pageSizeDefault={IDREPORTINVOICE === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                            initialPageIndex={IDREPORTINVOICE === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                            initialStateFilter={IDREPORTINVOICE === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
-                        />
-                    )
-                })}
+                <div>
+                    {gridDataCurrencyList.map(crcy => {
+                        return (
+                            <TableZyx
+                                key={crcy}
+                                onClickRow={handleView}
+                                columns={columns}
+                                data={gridData[crcy]}
+                                download={true}
+                                filterGeneral={false}
+                                loading={multiData.loading}
+                                register={false}
+                                useFooter={true}
+                                pageSizeDefault={IDREPORTINVOICE === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                                initialPageIndex={IDREPORTINVOICE === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                                initialStateFilter={IDREPORTINVOICE === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                            />
+                        )
+                    })}
+                </div>
             </React.Fragment>
         )
     }
