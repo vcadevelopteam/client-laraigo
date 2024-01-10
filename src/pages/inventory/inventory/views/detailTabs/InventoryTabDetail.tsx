@@ -353,7 +353,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.current_balance)}
-                            valueDefault={row?.currentbalance}
+                            valueDefault={parseFloat(row?.currentbalance).toFixed(2)}
                             className="col-6"
                             onChange={(value) => setValue('address', value)}
                             disabled={true}
