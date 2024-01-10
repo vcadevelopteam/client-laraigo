@@ -573,12 +573,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                         <div className="row-zyx">
                             <FieldEdit
                                 label={t(langKeys.businessname)}
-                                className="col-6"
+                                className={!(['0', '1', '4', '6', '7', ''].includes(doctype || '')) ? "col-6" : "col-12"}
                                 valueDefault={getValues('businessname')}
                                 onChange={(value) => setValue('businessname', value)}
                                 error={errors?.businessname?.message}
                             />
-                            <FieldSelect
+                            {!(['0', '1', '4', '6', '7', ''].includes(doctype || '')) && <FieldSelect
                                 label={t(langKeys.citybilling)}
                                 className="col-6"
                                 valueDefault={getValues("citybillingid")}
@@ -587,7 +587,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 error={errors?.citybillingid?.message}
                                 optionDesc="locationdescription"
                                 optionValue="citybillingid"
-                            />
+                            />}
                         </div>
                         <div className="row-zyx">
                             <FieldEdit
@@ -641,7 +641,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={(value) => setValue('automaticperiod', value)}
                                 disabled={!user?.roledesc?.includes("SUPERADMIN")}
                             />
-
                         </div>
                         <div className="row-zyx">
                             <TemplateSwitch
