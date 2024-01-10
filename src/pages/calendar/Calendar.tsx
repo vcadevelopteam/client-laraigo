@@ -201,6 +201,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             rescheduletemplateidhsm: row?.rescheduletemplateidhsm || 0,
             rescheduletype: row?.rescheduletype || "",
             rescheduletemplateidemail: row?.rescheduletemplateidemail || 0,
+
+            eventsendtype: row?.eventsendtype || "",
+            eventsendtemplateid: row?.eventsendtemplateid || 0,
         }
     });
 
@@ -409,7 +412,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                         </Button>
                     }
                 </div>
-
             </div>
             <Tabs
                 value={tabIndex}
@@ -461,6 +463,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     showError={showError}
                     bodyobject={bodyobject}
                     setBodyobject={setBodyobject}
+                    dataTemplates={dataTemplates}
                 />
             </AntTabPanel>
             <AntTabPanel index={1} currentIndex={tabIndex}>

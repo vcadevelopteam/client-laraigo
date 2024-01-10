@@ -1,21 +1,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import { FieldEdit, FieldSelect, ColorInput, FieldView } from 'components';
+import { FieldEdit, FieldSelect, ColorInput, FieldView, FieldEditMulti } from 'components';
 import { Dictionary } from "@types";
 import { withStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { Box, IconButton, TextField, Typography } from '@material-ui/core';
+import { Box, Grid, IconButton, Paper, TextField, Typography } from '@material-ui/core';
 import { RichText } from 'components/fields/RichText';
 import { Descendant } from 'slate';
 import { ColorChangeHandler } from 'react-color';
 import { ICalendarFormFields } from './ICalendar';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import Tooltip from '@material-ui/core/Tooltip';
+import InfoIcon from '@material-ui/icons/Info';
 import EventPreview from 'images/event_preview.jpg';
 const isIncremental = window.location.href.includes("incremental")
+
+
+const sendEventTypes = [
+    { value: "LINKBUTTON", description: "BOTON LINK" },
+    { value: "TEXT", description: "TEXTO" },
+]
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -35,15 +42,28 @@ const useStyles = makeStyles((theme) => ({
     containerDescriptionSubtitle: {
         fontSize: 14,
         fontWeight: 500
+    },
+    eventsendtypeContainer: {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '1rem',
+        '& > div': {
+            padding: '1rem'
+        }
+    },
+    calendarInput: {
+        '& input': {
+            padding: '0.5rem'
+        }
     }
 }));
 
 const PreviewTooltip = withStyles((theme: Theme) => ({
     tooltip: {
-      backgroundColor: '#f5f5f9',
-      color: 'rgba(0, 0, 0, 0.87)',
-      fontSize: theme.typography.pxToRem(12),
-      border: '1px solid #dadde9',
+        backgroundColor: '#f5f5f9',
+        color: 'rgba(0, 0, 0, 0.87)',
+        fontSize: theme.typography.pxToRem(12),
+        border: '1px solid #dadde9',
     },
 }))(Tooltip);
 
@@ -61,11 +81,49 @@ interface CalendarGeneralProps {
     showError: boolean;
     bodyobject: Descendant[];
     setBodyobject: (value: Descendant[]) => void;
+    dataTemplates: Dictionary[];
+}
+
+interface ILangKeys {
+    [key: string]: string
+}
+
+interface SendEventTemplateButton {
+    payload: string;
+    title: string;
+    type: string;
+}
+
+interface SendEventTemplate {
+    createdate: string;
+    id: number;
+    description: string;
+    type: string;
+    name: string;
+    namespace: string;
+    status: string;
+    category: string;
+    language: string;
+    templatetype: string;
+    headerenabled: boolean;
+    headertype?: string;
+    header?: string;
+    body: string;
+    bodyobject?: string;
+    footerenabled: boolean;
+    footer: string;
+    buttonsenabled: boolean;
+    buttons?: SendEventTemplateButton[];
+    priority?: string;
+    attachment?: string;
+    fromprovider: boolean;
+    externalid: string;
+    externalstatus: string;
 }
 
 const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
     row,
-    
+
     dataStatus,
 
     setValue,
@@ -77,18 +135,37 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
     showError,
     bodyobject,
     setBodyobject,
+    dataTemplates
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    
+
     const user = useSelector(state => state.login.validateToken.user);
-    
+
     const [eventURL, setEventUrl] = useState(new URL(`events/${user?.orgid}/${generalstate.eventcode}`, window.location.origin));
     const [color, setColor] = useState(row?.color || "#aa53e0");
+    const [sendEventType, setSendEventType] = useState<string>('')
+    const [eventsendtemplateid, setEventsendtemplateid] = useState<number | null>(null)
+    const [templates, setTemplates] = useState((dataTemplates as SendEventTemplate[]).filter((template: SendEventTemplate) => template.buttons?.length && template.buttons.some((button: SendEventTemplateButton) => button.type === 'url')) || [])
+    const [templateSelected, setTemplateSelected] = useState<SendEventTemplate | null>(null)
+    // const [sendEventTemplate, setSendEventTemplate] = useState<SendEventTemplate[] | null>(dataTemplates.filter((x: SendEventTemplate) => x.type === 'SMS'));
+
+    useEffect(() => {
+        console.log('dataTemplates', dataTemplates)
+    }, [])
+
+    useEffect(() => {
+        setSendEventType(row?.eventsendtype || "");
+    }, [row])
 
     const handleColorChange: ColorChangeHandler = (e) => {
         setColor(e.hex);
         setValue('color', e.hex);
+    }
+
+    const handleTemplateSelect = (value: SendEventTemplate) => {
+        setTemplateSelected(value)
+        console.log({ value })
     }
 
     return (
@@ -156,7 +233,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                         spellCheck
                         image={false}
                     />
-                </React.Fragment>            
+                </React.Fragment>
             </div>
             <FieldEdit
                 label={''}
@@ -194,7 +271,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             textDecoration: "none",
                         }}
                     >
-                        <IconButton 
+                        <IconButton
                             color="primary"
                             title={t(langKeys.seeagendapage)}
                         >
@@ -208,7 +285,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                 <div className="col-6">
                     <React.Fragment>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.color)}</Box>
-                        <ColorInput hex={color} onChange={handleColorChange} disabled={isIncremental}/>
+                        <ColorInput hex={color} onChange={handleColorChange} disabled={isIncremental} />
                     </React.Fragment>
                 </div>
                 <FieldSelect
@@ -225,6 +302,221 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                     optionValue="domainvalue"
                 />
             </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.eventsendtype)}
+                    className="col-6"
+                    valueDefault={row?.eventsendtype || ""}
+                    onChange={(value) => {
+                        setValue('eventsendtype', (value ? value.value : ""))
+                        setSendEventType(value?.value || "")
+                    }}
+                    error={errors?.eventsendtype?.message}
+                    data={sendEventTypes}
+                    uset={true}
+                    optionDesc="description"
+                    optionValue="value"
+                />
+            </div>
+            {sendEventType && (
+                <div className={classes.eventsendtypeContainer}>
+                    {sendEventType === 'LINKBUTTON' && (
+                        <Paper variant='outlined' elevation={0}>
+                            <Box style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'auto 1fr',
+                                alignItems: 'end',
+                                gap: '2.3rem 1rem'
+                            }}>
+                                <Box className="col-4" fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex", margin: 0, paddingRight: '1rem' }}>
+                                    {t(langKeys.template)}
+                                </Box>
+                                <FieldSelect
+                                    className="col-8"
+                                    style={{ margin: 0 }}
+                                    valueDefault={row?.eventsendtemplateid || ""}
+                                    onChange={(value) => {
+                                        setValue('eventsendtemplateid', (value ? value.value : ""))
+                                        handleTemplateSelect(value)
+                                        setEventsendtemplateid(value?.id || null)
+                                    }}
+                                    error={errors?.eventsendtemplateid?.message}
+                                    data={templates}
+                                    uset={true}
+                                    optionDesc="name"
+                                    optionValue="id"
+                                />
+                                {eventsendtemplateid && (
+                                    <>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex", margin: 0 }}>
+                                            {t(langKeys.header)}
+                                        </Box>
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'flex-end',
+                                            gap: '1rem'
+                                        }}>
+                                            <Typography style={{ padding: '0 8px' }}>
+                                                {t((langKeys as ILangKeys)[templateSelected?.headertype || ''])}
+                                            </Typography>
+                                            <div style={{ flex: 1 }}>
+                                                <FieldEdit
+                                                    label={''}
+                                                    valueDefault={templateSelected?.header || ''}
+                                                    disabled={true}
+                                                />
+                                            </div>
+                                        </div>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex", margin: 0, alignSelf: 'center' }}>
+                                            {t(langKeys.body)}
+                                        </Box>
+                                        <FieldEditMulti
+                                            disabled={true}
+                                            className="col-12"
+                                            valueDefault={templateSelected?.body || ''}
+                                        />
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex", margin: 0 }}>
+                                            {t(langKeys.footer)}
+                                        </Box>
+                                        <FieldEdit
+                                            label={''}
+                                            valueDefault={templateSelected?.footer || ''}
+                                            disabled={true}
+                                        />
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex", margin: 0, alignSelf: 'center' }}>
+                                            {t(langKeys.buttons)}
+                                        </Box>
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'auto 1fr',
+                                            gap: '1rem',
+                                            marginTop: '1rem',
+                                        }}>
+                                            <Typography>
+                                                {t(langKeys.title)}
+                                            </Typography>
+                                            <FieldEdit
+                                                label={''}
+                                                valueDefault={templateSelected?.buttons?.[0].title || ''}
+                                                disabled={true}
+                                            />
+                                            <Typography>
+                                                {t(langKeys.type)}
+                                            </Typography>
+                                            <FieldEdit
+                                                label={''}
+                                                valueDefault={templateSelected?.buttons?.[0].type || ''}
+                                                disabled={true}
+                                            />
+                                            <Typography>
+                                                {t(langKeys.payload)}
+                                            </Typography>
+                                            <FieldEdit
+                                                label={''}
+                                                valueDefault={templateSelected?.buttons?.[0].payload || ''}
+                                                disabled={true}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                            </Box>
+                        </Paper>
+                    )}
+                    <Paper variant='outlined' elevation={0}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
+                            {t(langKeys.information_message)}
+                            <Tooltip title={`${t(langKeys.calendar_informativemessage_tooltip)}`} placement="top-start" style={{ cursor: 'pointer' }}>
+                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                            </Tooltip>
+                        </Box>
+                        <FieldEditMulti
+                            disabled={false}
+                            className="col-12"
+                            valueDefault={templateSelected?.body || ''}
+                        />
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'auto 1fr',
+                            padding: '0 1rem',
+                            gap: '1rem',
+                            alignItems: 'center',
+                            marginTop: '1rem',
+                        }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
+                                {t(langKeys.calendar_eventdate_variable)}
+                            </Box>
+                            <FieldEdit
+                                label={''}
+                                valueDefault={templateSelected?.footer || ''}
+                                disabled={true}
+                                variant='outlined'
+                                className={classes.calendarInput}
+                            />
+
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
+                                {t(langKeys.calendar_eventtime_variable)}
+                            </Box>
+                            <FieldEdit
+                                label={''}
+                                valueDefault={templateSelected?.footer || ''}
+                                disabled={true}
+                                variant='outlined'
+                                className={classes.calendarInput}
+                            />
+
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
+                                {t(langKeys.calendar_eventname_variable)}
+                            </Box>
+                            <FieldEdit
+                                label={''}
+                                valueDefault={templateSelected?.footer || ''}
+                                disabled={true}
+                                variant='outlined'
+                                className={classes.calendarInput}
+                            />
+
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
+                                {t(langKeys.calendar_eventcode_variable)}
+                            </Box>
+                            <FieldEdit
+                                label={''}
+                                valueDefault={templateSelected?.footer || ''}
+                                disabled={true}
+                                variant='outlined'
+                                className={classes.calendarInput}
+                            />
+
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
+                                {t(langKeys.calendar_eventlinkcode_variable)}
+                            </Box>
+                            <FieldEdit
+                                label={''}
+                                valueDefault={templateSelected?.footer || ''}
+                                disabled={true}
+                                variant='outlined'
+                                className={classes.calendarInput}
+                            />
+
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
+                                {t(langKeys.calendar_eventlink_variable)}
+                            </Box>
+                            <FieldEdit
+                                label={''}
+                                valueDefault={templateSelected?.footer || ''}
+                                disabled={true}
+                                variant='outlined'
+                                className={classes.calendarInput}
+                            />
+                        </div>
+                        <div>
+                            <ul>
+                                <li><Typography>{t(langKeys.calendar_informativemessage_info)}</Typography></li>
+                                <li><Typography>{t(langKeys.calendar_informativemessage_info2)}</Typography></li>
+                            </ul>
+                        </div>
+                    </Paper>
+                </div>
+            )}
         </div>
     )
 }
