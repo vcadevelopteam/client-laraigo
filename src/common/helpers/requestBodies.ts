@@ -4406,7 +4406,7 @@ export const getProductStatusHistory = (productid:number): IRequestBody => ({
     }
 });
 export const importProducts = (data:any): IRequestBody => ({
-    method: "npm",
+    method: "UFN_PRODUCT_MAS",
     key: "UFN_PRODUCT_MAS",
     parameters: {
         json: JSON.stringify(data)
