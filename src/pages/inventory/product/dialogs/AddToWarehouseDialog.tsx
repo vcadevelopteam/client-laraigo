@@ -78,7 +78,7 @@ const AddToWarehouseDialog: React.FC<{
       unitbuyid: row?.unitbuyid || 0,
       currentbalance: 0,
       lotecode: "",
-      status: "ACTIVO",
+      status: row?.status||"ACTIVO",
       type: "NINGUNO",
       operation: "INSERT",
     },
