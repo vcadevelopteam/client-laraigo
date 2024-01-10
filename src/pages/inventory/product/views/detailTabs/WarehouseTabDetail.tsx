@@ -75,21 +75,6 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
   const columns = React.useMemo(
     () => [
       {
-        accessor: 'warehouseid',
-        NoFilter: true,
-        isComponent: true,
-        minWidth: 60,
-        width: '1%',
-        Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return (
-                <TemplateIcons
-                    deleteFunction={() => handleDelete(row)}
-                />
-            )
-        }
-      },
-      {
         Header: t(langKeys.product),
         accessor: "productcode",
         width: "auto",
