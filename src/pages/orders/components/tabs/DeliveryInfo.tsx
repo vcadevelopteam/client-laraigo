@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
     inputContainer: {
         flex: 7,
         marginBottom: 0,
-        paddingRight: 20
+        paddingRight: 20,
+        gap: '0 4rem',
     },
 }));
 
@@ -40,7 +41,7 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({ row }) => {
                         label={t(langKeys.deliverytype)}
                         valueDefault={row?.deliverytype}
                         disabled={true}
-                        className='col-5'
+                        className='col-5'                                    
                     />
                     <FieldEdit
                         label={t(langKeys.deliverydate)}
