@@ -163,27 +163,6 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
   const columns = React.useMemo(
     () => [
       {
-        accessor: "inventoryid",
-        NoFilter: true,
-        isComponent: true,
-        minWidth: 60,
-        width: "1%",
-        Cell: (props: any) => {
-          const row = props.cell.row.original;
-          return (
-            <TemplateIcons
-              deleteFunction={() => handleDelete(row)}
-              editFunction={() => handleEdit(row)}
-              extraFunction={() => handleDuplicate(row)}
-              ExtraICon={() => (
-                <DuplicateIcon width={28} style={{ fill: "#7721AD" }} />
-              )}
-              extraOption={t(langKeys.duplicate)}
-            />
-          );
-        },
-      },
-      {
         Header: t(langKeys.product),
         accessor: "productcode",
         width: "auto",
