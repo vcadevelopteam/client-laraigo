@@ -1281,6 +1281,10 @@ const Reports: FC = () => {
                                             setRowReportSelected({ row: null, edit: true });
                                         }}
                                         style={{ backgroundColor: "#55BD84" }}
+                                        disabled={!(user?.roledesc ?? "")
+                                            .split(",")
+                                            .some(v => ["ADMINISTRADOR", "SUPERADMIN", "SUPERADMINISTRADOR SOCIOS"].includes(v))
+                                        }
                                     >{t(langKeys.create_custom_report)}
                                     </Button>
                                 }
@@ -1427,6 +1431,10 @@ const Reports: FC = () => {
                                                         setRowReportSelected({ row: report, edit: true });
                                                         setAnchorEl(e.currentTarget)
                                                     }}
+                                                    disabled={!(user?.roledesc ?? "")
+                                                        .split(",")
+                                                        .some(v => ["ADMINISTRADOR", "SUPERADMIN", "SUPERADMINISTRADOR SOCIOS"].includes(v))
+                                                    }
                                                 >
                                                     <MoreVertIcon />
                                                 </IconButton>
