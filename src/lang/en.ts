@@ -1996,6 +1996,7 @@ const translation: LangKeys = {
   newrequest: "New request",
   warningnotestatechange: "You must register a note to record the status change",
   set_your_weekly: "Set your weekly hours",
+  connected_since: "Connected since",
   unavailable: "Unavailable",
   more_times: "More Times",
   select_date_time: "Select date and time",
