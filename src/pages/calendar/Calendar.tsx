@@ -131,6 +131,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     // Handle Submit
     const [waitSave, setWaitSave] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [showTemplateError, setShowTemplateError] = useState(false);
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.descriptionobject || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dateinterval, setdateinterval] = useState(row?.daterange || 'DAYS');
@@ -202,8 +203,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             rescheduletype: row?.rescheduletype || "",
             rescheduletemplateidemail: row?.rescheduletemplateidemail || 0,
 
-            eventsendtype: row?.eventsendtype || "",
-            eventsendtemplateid: row?.eventsendtemplateid || 0,
+            sendeventtype: {
+                type: row?.sendeventtype?.type || "",
+                eventsendtemplateid: row?.sendeventtype?.eventsendtemplateid || 0,
+                information_message: row?.sendeventtype?.information_message || "",
+            }
         }
     });
 
@@ -300,6 +304,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     })
 
     const onSubmit = handleSubmit((data) => {
+        if (data.sendeventtype.type === 'LINKBUTTON' && !data.sendeventtype.eventsendtemplateid) {
+            setShowTemplateError(true);
+            return
+        }
+        
         data.description = renderToString(toElement(bodyobject));
         if (data.description === `<div data-reactroot=""><p><span></span></p></div>`) {
             setShowError(true);
@@ -347,6 +356,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     enddate: (dateinterval === "DAYS") ? new Date(new Date().setHours(10,0,0,0) + diffDays * 86400000) : dateRangeCreateDate.endDate,
                     daysduration: diffDays,
                     increments: "00:30",
+                    sendeventtype: (data.sendeventtype.type !== '') ? data.sendeventtype : {},
                 }
                 dispatch(execute(insCalendar(datatosend)));
                 dispatch(showBackdrop(true));
@@ -461,6 +471,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     generalstate={generalstate}
                     setgeneralstate={setgeneralstate}
                     showError={showError}
+                    showTemplateError={showTemplateError}
                     bodyobject={bodyobject}
                     setBodyobject={setBodyobject}
                     dataTemplates={dataTemplates}

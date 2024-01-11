@@ -82,6 +82,7 @@ interface CalendarGeneralProps {
     bodyobject: Descendant[];
     setBodyobject: (value: Descendant[]) => void;
     dataTemplates: Dictionary[];
+    showTemplateError: boolean;
 }
 
 interface ILangKeys {
@@ -135,7 +136,8 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
     showError,
     bodyobject,
     setBodyobject,
-    dataTemplates
+    dataTemplates,
+    showTemplateError
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -151,11 +153,9 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
     // const [sendEventTemplate, setSendEventTemplate] = useState<SendEventTemplate[] | null>(dataTemplates.filter((x: SendEventTemplate) => x.type === 'SMS'));
 
     useEffect(() => {
-        console.log('dataTemplates', dataTemplates)
-    }, [])
-
-    useEffect(() => {
-        setSendEventType(row?.eventsendtype || "");
+        setSendEventType(row?.sendeventtype?.type || "");
+        setEventsendtemplateid(row?.sendeventtype?.eventsendtemplateid || null)
+        setTemplateSelected((dataTemplates as SendEventTemplate[]).find((x: SendEventTemplate) => x.id === row?.sendeventtype?.eventsendtemplateid) || null)
     }, [row])
 
     const handleColorChange: ColorChangeHandler = (e) => {
@@ -165,11 +165,10 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
 
     const handleTemplateSelect = (value: SendEventTemplate) => {
         setTemplateSelected(value)
-        console.log({ value })
     }
 
     return (
-        <div className={classes.containerDetail}>
+        <div className={classes.containerDetail} style={{ marginBottom: '100px' }}>
             <div className="row-zyx">
                 <div className={classes.containerDescription}>
                     <Typography className={classes.containerDescriptionTitle} color="primary">
@@ -306,12 +305,11 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                 <FieldSelect
                     label={t(langKeys.eventsendtype)}
                     className="col-6"
-                    valueDefault={row?.eventsendtype || ""}
+                    valueDefault={row?.sendeventtype?.type || ""}
                     onChange={(value) => {
-                        setValue('eventsendtype', (value ? value.value : ""))
+                        setValue('sendeventtype.type', (value ? value.value : ""))
                         setSendEventType(value?.value || "")
                     }}
-                    error={errors?.eventsendtype?.message}
                     data={sendEventTypes}
                     uset={true}
                     optionDesc="description"
@@ -334,13 +332,13 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                                 <FieldSelect
                                     className="col-8"
                                     style={{ margin: 0 }}
-                                    valueDefault={row?.eventsendtemplateid || ""}
+                                    valueDefault={row?.sendeventtype?.eventsendtemplateid || ""}
                                     onChange={(value) => {
-                                        setValue('eventsendtemplateid', (value ? value.value : ""))
+                                        setValue('sendeventtype.eventsendtemplateid', (value ? value.id : 0))
                                         handleTemplateSelect(value)
                                         setEventsendtemplateid(value?.id || null)
                                     }}
-                                    error={errors?.eventsendtemplateid?.message}
+                                    error={showTemplateError ? t(langKeys.field_required) : ''}
                                     data={templates}
                                     uset={true}
                                     optionDesc="name"
@@ -425,14 +423,15 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                     <Paper variant='outlined' elevation={0}>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
                             {t(langKeys.information_message)}
-                            <Tooltip title={`${t(langKeys.calendar_informativemessage_tooltip)}`} placement="top-start" style={{ cursor: 'pointer' }}>
-                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                            <Tooltip title={`${t(langKeys.calendar_informativemessage_tooltip)}`} placement="top-start">
+                                <InfoIcon style={{ padding: "5px 0 0 5px", cursor: 'pointer' }} />
                             </Tooltip>
                         </Box>
                         <FieldEditMulti
                             disabled={false}
                             className="col-12"
-                            valueDefault={templateSelected?.body || ''}
+                            valueDefault={row?.sendeventtype?.information_message || ''}
+                            onChange={(value) => setValue('sendeventtype.information_message', value)}
                         />
                         <div style={{
                             display: 'grid',
@@ -447,7 +446,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={templateSelected?.footer || ''}
+                                valueDefault={'event_date'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -458,7 +457,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={templateSelected?.footer || ''}
+                                valueDefault={'event_time'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -469,7 +468,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={templateSelected?.footer || ''}
+                                valueDefault={'event_name'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -480,7 +479,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={templateSelected?.footer || ''}
+                                valueDefault={'event_code'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -491,7 +490,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={templateSelected?.footer || ''}
+                                valueDefault={'event_linkcode'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -502,7 +501,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={templateSelected?.footer || ''}
+                                valueDefault={'event_link'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}

@@ -3352,7 +3352,8 @@ export const insCalendar = ({
     operation, reminderperiod, reminderfrecuency, reminderhsmmessage, notificationmessageemail, messagetemplateidemail,
     communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid,
     rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
-    canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
+    canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid,
+    sendeventtype
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
@@ -3372,7 +3373,8 @@ export const insCalendar = ({
         notificationmessageemail: notificationmessageemail,
         messagetemplateidemail,
         rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
-        canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
+        canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid,
+        sendeventtype
     }
 });
 
