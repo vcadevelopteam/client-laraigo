@@ -17,6 +17,7 @@ export const langKeys = {
   edit_date: "edit_date",
   edit_all: "edit_all",
   set_your_weekly: "set_your_weekly",
+  connected_since: "connected_since",
   visualizationBotTooltip: "visualizationBotTooltip",
   orders: "orders",
   configure: "configure",

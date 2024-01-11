@@ -2022,6 +2022,7 @@ const translation: LangKeys = {
   edit_date: "Editar fecha(s)",
   edit_all: " Editar todo ",
   set_your_weekly: "Establece tus horas semanales",
+  connected_since: "Conectado desde",
   unavailable: "Indisponible",
   more_times: "Mas veces",
   select_date_time: " Selecciona un fecha y hora",
