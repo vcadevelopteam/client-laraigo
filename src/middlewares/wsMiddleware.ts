@@ -52,6 +52,16 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
                 });
             });
         }
+        
+        socket.emit("pong", {});
+
+        socket.on("ping", (datatmp) => {
+            console.log("ping-socket", datatmp);
+            setTimeout(() => {
+                socket.emit("pong", {});
+            }, 60000);
+        });
+
         socket?.on("connect", () => {
             console.log("connect connected", socket.connected, socket.id)
             if (socket.connected) {
