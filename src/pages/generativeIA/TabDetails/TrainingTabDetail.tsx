@@ -304,7 +304,35 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
               setLoading(false);
               return;
             }
-      
+
+            const docListEndpoint = await fetch ('https://documentgptapi.laraigo.com/assistants/files/list', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${user?.token}`,
+                },
+                body: JSON.stringify({
+                  assistant_id: row?.code,                
+                  apikey: row?.apikey,                  
+                }),
+            })
+            if (!docListEndpoint.ok) {
+                console.error('Error en el nuevo endpoint:', docListEndpoint.statusText);
+                setWaitSave(true);
+                setLoading(false);
+                return;
+            }      
+
+            const docListData = await docListEndpoint.json();
+            const list = docListData.data.data;
+            const matchingFile = list.find((file: Dictionary) => file.id===documentid);
+            if(!matchingFile){
+                console.error('No se encontró un archivo con el ID deseado.');
+                setWaitSave(true);
+                setLoading(false);
+                return;
+            }
+
             dispatch(execute(insAssistantAiDoc({ ...data, fileid: documentid })));
             setWaitSave(true);
           } catch (error) {
