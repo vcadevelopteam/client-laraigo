@@ -514,6 +514,16 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeResult, waitSave]);
 
+    const handleDrop = (event) => {
+        event.preventDefault();
+        const files = event.dataTransfer.files;
+        onChangeAttachment(files);
+    };
+    
+    const handleDragOver = (event) => {
+        event.preventDefault();
+    };
+
     if(viewSelected === 'main') {
         return (
             <>
@@ -635,7 +645,13 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             onChange={(e) => onChangeAttachment(e.target.files)}
                         />
                         { waitUploadFile || fileAttachment === null && (
-                            <Card className={classes.uploadCard} onClick={onClickAttachment}>
+                            <Card
+                                className={classes.uploadCard}
+                                onClick={onClickAttachment}
+                                onDrop={(e) => handleDrop(e)}
+                                onDragOver={(e) => handleDragOver(e)}
+                                draggable
+                            >
                                 <div className={classes.uploadCardContent}>
                                     <UploadFileIcon className={classes.uploadIcon}/>
                                     <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
