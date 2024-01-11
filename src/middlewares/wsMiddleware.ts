@@ -21,7 +21,7 @@ const eventsListeners = [
     { event: 'updateQuickreply',  type: typesInbox.UPD_QUICKREPLIES, extra: {} }
 ]
 
-const socket = io(apiUrls.WS_URL, {
+const socket = io(`${apiUrls.WS_URL}`, {
     autoConnect: false
 });
 declare module 'socket.io-client' {
@@ -56,7 +56,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         socket.emit("pong", {});
 
         socket.on("ping", (datatmp) => {
-            console.log("ping-socket", datatmp);
+            dispatch({ type: typesLogin.UPDATE_CONNECTION, payload: datatmp })
             setTimeout(() => {
                 socket.emit("pong", {});
             }, 60000);
