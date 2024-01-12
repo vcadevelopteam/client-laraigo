@@ -194,11 +194,11 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
 
     const handleTemplate = () => {
         const data = [
-            {},
-            {},
-            {},
-            {},
-            {},
+            {"# Obligatorio": "# Obligatorio"},
+            {"# Opcional": "# Opcional"},
+            {"# Obligatorio": "# Obligatorio"},
+            {"# Obligatorio": "# Obligatorio"},
+            {"# Obligatorio": "# Obligatorio"},
         ];
         const header = [
             "title",
