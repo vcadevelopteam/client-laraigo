@@ -308,6 +308,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             setShowTemplateError(true);
             return
         }
+
+        if (data.sendeventtype.type === 'TEXT') {
+            data.sendeventtype.eventsendtemplateid = undefined
+        }
         
         data.description = renderToString(toElement(bodyobject));
         if (data.description === `<div data-reactroot=""><p><span></span></p></div>`) {
