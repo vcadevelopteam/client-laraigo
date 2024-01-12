@@ -986,7 +986,7 @@ const TableZyx = React.memo(({
                                     style={{ overflowX: 'hidden' }}
                                     direction="vertical"
                                     width="auto"
-                                    height={window.innerHeight - 470}
+                                    height={page.length*43}
                                     itemCount={page.length}
                                     itemSize={heightWithCheck}
                                 >
