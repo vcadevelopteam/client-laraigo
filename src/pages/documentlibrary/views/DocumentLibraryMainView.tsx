@@ -194,11 +194,11 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({setViewSelec
 
     const handleTemplate = () => {
         const data = [
-            {"# Obligatorio | Titulo": "# Obligatorio | Titulo"},
-            {"# Opcional | Descripcion": "# Opcional | Descripcion"},
-            {"# Obligatorio | Grupos": "# Obligatorio | Grupos"},
-            {"# Obligatorio | Link": "# Obligatorio | Link"},
-            {"# Obligatorio | Categoria": "# Obligatorio | Categoria"},
+            {"# Obligatorio |Titulo del registro del archivo.": "# Obligatorio |Titulo del registro del archivo."},
+            {"# Opcional |Descripcion del registro del archivo.": "# Opcional |Descripcion del registro del archivo."},
+            {"# Obligatorio |Grupos que tendran permiso al acceso del archivo. Se puede indicar varios grupos colocando ',' entre cada uno de ellos. Ejemplo: GR01,GR02": "# Obligatorio |Grupos que tendran permiso al acceso del archivo. Se puede indicar varios grupos colocando ',' entre cada uno de ellos. Ejemplo: GR01,GR02"},
+            {"# Obligatorio |Link donde se encuentra almacenado el archivo que se requiere subir. Ejemplo: https://laraigo.com/wp-content/uploads/2023/11/Laraigo.svg": "# Obligatorio |Link donde se encuentra almacenado el archivo que se requiere subir. Ejemplo: https://laraigo.com/wp-content/uploads/2023/11/Laraigo.svg"},
+            {"# Obligatorio |Categoría del registro del archivo. Puedes asignarle cualquier categoría. Ejemplo: Saludo": "# Obligatorio |Categoría del registro del archivo. Puedes asignarle cualquier categoría. Ejemplo: Saludo"},
         ];
         const header = [
             "title",
