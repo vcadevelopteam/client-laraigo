@@ -41,7 +41,7 @@ import { ListItemIcon } from '@material-ui/core';
 import { LibraryBooks, Publish } from '@material-ui/icons';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
-
+import StarRateIcon from '@material-ui/icons/StarRate';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -58,7 +58,7 @@ const useStylesInteraction = makeStyles(() => ({
         gap: '1rem',
         flexWrap: "wrap",
         marginTop: 16,
-        maxHeight: 400,
+        maxHeight: 300,
         overflowY: 'auto'
     },
     containerFileLibrary: {
@@ -115,7 +115,7 @@ const DialogSearchLibrary: React.FC<{
 
     const applyFilterCategory = (value: string | undefined) => {
         if (value) {
-            setLibraryToShow(libraryToShow.filter(x => x.category === value))
+            setLibraryToShow(libraryList.filter(x => x.category === value))
         } else {
             setLibraryToShow(libraryList);
         }
@@ -154,6 +154,52 @@ const DialogSearchLibrary: React.FC<{
 
                     </div>
                 </div>
+                {libraryList.some(x => x.favorite) && (
+                    <>
+                        <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 16, marginLeft: 4 }}>
+                            <StarRateIcon fontSize='small' color='primary' />
+                            <div style={{ fontWeight: 500, fontSize: 16, color: "#7721AD" }}>{t(langKeys.favorites)}</div>
+
+                        </div>
+                        <div className={classes.containerFiles}>
+                            {libraryToShow.map(x => {
+                                if (!x.favorite) {
+                                    return null
+                                }
+                                const extension = x.link.split('.').pop()
+
+                                return (
+                                    <div
+                                        key={x.documentlibraryid}
+                                        className={classes.containerFileLibrary}
+                                        onClick={() => onSelectFile(x)}
+                                    >
+                                        {x.type === "image" ? (
+                                            <div style={{ padding: 10, width: "80px", height: "80px" }}>
+                                                <img style={{ objectFit: 'cover' }} src={x.link} width={"100%"} height={"100%"} />
+                                            </div>
+                                        ) : extension === "pdf" ? (
+                                            <PdfIcon width="80" height="80" />
+                                        ) : (extension === "doc" || extension === "docx") ? (
+                                            <DocIcon width="80" height="80" />
+                                        ) : (["xls", "xlsx", "csv"].includes(`${extension}`)) ? (
+                                            <XlsIcon width="80" height="80" />
+                                        ) : (extension === "ppt" || extension === "pptx") ? (
+                                            <PptIcon width="80" height="80" />
+                                        ) : (extension === "text" || extension === "txt") ? (
+                                            <TxtIcon width="80" height="80" />
+                                        ) : (extension === "zip" || extension === "rar") ? (
+                                            <ZipIcon width="80" height="80" />
+                                        ) : <FileIcon width="80" height="80" />
+                                        }
+                                        <div className={classes.textFileLibrary}>{x.title}</div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </>
+                )}
+                <div style={{ marginTop: 24, marginLeft: 4, fontWeight: 500, fontSize: 16, color: "#7721AD" }}>{t(langKeys.others)}</div>
                 <div className={classes.containerFiles}>
                     {libraryToShow.map(x => {
                         const extension = x.link.split('.').pop()
@@ -232,7 +278,6 @@ const UploaderIcon: React.FC<{
     }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     const onSelectImage = (files: any) => {
-        console.log("ewqewqewqqw1111111111")
         const selectedFile = files[0];
         const idd = new Date().toISOString()
         const fd = new FormData();
