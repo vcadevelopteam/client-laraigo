@@ -90,6 +90,8 @@ const DialogSearchLibrary: React.FC<{
     const classes = useStylesInteraction();
     const libraryList = useSelector(state => state.inbox.libraryList);
     const [categoryList, setCategoryList] = useState<Dictionary[]>([]);
+    const [categoryFilter, setCategoryFilter] = useState("");
+    const [generalFilter, setGeneralFilter] = useState("");
     const [libraryToShow, setLibraryToShow] = useState<ILibrary[]>([]);
 
     const onSelectFile = (file: ILibrary) => {
@@ -106,18 +108,20 @@ const DialogSearchLibrary: React.FC<{
     }, [openModal])
 
     const applyFilter = (value: string) => {
+        setGeneralFilter(value??"")
         if (value) {
-            setLibraryToShow(libraryToShow.filter(x => x.title.includes(value)))
+            setLibraryToShow(libraryList.filter(x => x.category === categoryFilter).filter(x => x.title.includes(value)))
         } else {
-            setLibraryToShow(libraryList);
+            setLibraryToShow(libraryList.filter(x => x.category === categoryFilter));
         }
     }
 
     const applyFilterCategory = (value: string | undefined) => {
+        setCategoryFilter(value??"")
         if (value) {
-            setLibraryToShow(libraryToShow.filter(x => x.category === value))
+            setLibraryToShow(libraryList.filter(x => x.category === value).filter(x => x.title.includes(generalFilter)))
         } else {
-            setLibraryToShow(libraryList);
+            setLibraryToShow(libraryList.filter(x => x.title.includes(generalFilter)));
         }
     }
 
@@ -135,6 +139,7 @@ const DialogSearchLibrary: React.FC<{
                         <FieldSelect
                             label={t(langKeys.category)}
                             className="col-4"
+                            valueDefault={categoryFilter}
                             onChange={(value) => applyFilterCategory(value?.option)}
                             data={categoryList}
                             variant='outlined'
