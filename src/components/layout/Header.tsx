@@ -219,6 +219,16 @@ const ContainerCalls: React.FC = () => {
     )
 }
 
+const TimeConnected: React.FC = () => {
+    const { t } = useTranslation();
+
+    const lastConnection = useSelector(state => state.login.validateToken.lastConnection);
+
+    return (
+        <div style={{ fontSize: 10, position: 'absolute', bottom: 0, left: 4, color: '#898989' }}>{t(langKeys.connected_since)} {new Date(`${lastConnection}`).toLocaleTimeString()}</div>
+    )
+}
+
 const Header = ({ classes }: IProps) => {
     const dispatch = useDispatch();
     const myClasses = useToolbarStyles();
@@ -230,6 +240,7 @@ const Header = ({ classes }: IProps) => {
             position="fixed"
             className={clsx(classes.appBar, classes.appBarShift2)}
         >
+            <TimeConnected />
             <Toolbar className={myClasses.toolbar}>
                 <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
                     <Menu />
