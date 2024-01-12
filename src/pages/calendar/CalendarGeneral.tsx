@@ -167,6 +167,15 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
         setTemplateSelected(value)
     }
 
+    const handleSendtypeChange = (value: {description: string, value: string}) => {
+        setValue('sendeventtype.type', (value ? value.value : ""))
+        if (value?.value === 'TEXT' && !row?.sendeventtype?.eventsendtemplateid) {
+            setTemplateSelected(null)
+            setValue('sendeventtype.eventsendtemplateid', undefined)
+        }
+        setSendEventType(value?.value || "")
+    }
+
     return (
         <div className={classes.containerDetail} style={{ marginBottom: '100px' }}>
             <div className="row-zyx">
@@ -306,10 +315,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                     label={t(langKeys.eventsendtype)}
                     className="col-6"
                     valueDefault={row?.sendeventtype?.type || ""}
-                    onChange={(value) => {
-                        setValue('sendeventtype.type', (value ? value.value : ""))
-                        setSendEventType(value?.value || "")
-                    }}
+                    onChange={handleSendtypeChange}
                     data={sendEventTypes}
                     uset={true}
                     optionDesc="description"
@@ -446,7 +452,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={'event_date'}
+                                valueDefault={'eventdate'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -457,7 +463,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={'event_time'}
+                                valueDefault={'eventtime'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -468,7 +474,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={'event_name'}
+                                valueDefault={'eventname'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -479,7 +485,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={'event_code'}
+                                valueDefault={'eventcode'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -490,7 +496,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={'event_linkcode'}
+                                valueDefault={'eventlinkcode'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
@@ -501,7 +507,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                             </Box>
                             <FieldEdit
                                 label={''}
-                                valueDefault={'event_link'}
+                                valueDefault={'eventlink'}
                                 disabled={true}
                                 variant='outlined'
                                 className={classes.calendarInput}
