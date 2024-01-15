@@ -100,12 +100,15 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        if(files?.length){
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }else{
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.document_library_save) }))
+        }
     });
 
     return (

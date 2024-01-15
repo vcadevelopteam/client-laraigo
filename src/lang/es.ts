@@ -289,6 +289,7 @@ const translation: LangKeys = {
   send_gif: 'Enviar gif',
   send_emoji: 'Enviar emoji',
   add_cc_email: 'Añadir destinatarios a CC',
+  document_library_save: "Debe subir un archivo para poder guardar el registro",
   add_cco_email: 'Añadir destinatarios a CCO',
 
   addressReference: 'Ref. dirección',
