@@ -3879,6 +3879,7 @@ export const langKeys = {
   propertyhabilitarcard_cita: 'propertyhabilitarcard_cita',
   propertyhabilitarcard_comercioelectronico: 'propertyhabilitarcard_comercioelectronico',
   propertyhabilitarcard_contacto: 'propertyhabilitarcard_contacto',
+  document_library_save: "document_library_save",
   propertyhabilitarcard_derivar: 'propertyhabilitarcard_derivar',
   propertyhabilitarcard_email: 'propertyhabilitarcard_email',
   propertyhabilitarcard_entradadatos: 'propertyhabilitarcard_entradadatos',

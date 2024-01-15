@@ -3907,6 +3907,7 @@ const translation: LangKeys = {
   propertyhabilitarcard_archivo: 'Enables the use of the card',
   propertyhabilitarcard_atributo: 'Enables the use of the card',
   propertyhabilitarcard_audio: 'Enables the use of the card',
+  document_library_save: "A file must be uploaded",
   propertyhabilitarcard_botoninteractivo: 'Enables the use of the card',
   propertyhabilitarcard_carrusel: 'Enables the use of the card',
   propertyhabilitarcard_cerrar: 'Enables the use of the card',
