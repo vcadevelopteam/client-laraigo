@@ -70,8 +70,19 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             {
                 Header: t(langKeys.orderstatus),
                 accessor: 'orderstatus',
-                NoFilter: true
-            },
+                NoFilter: true,
+                Cell: ({ row }) => {
+                  const orderStatusMap: Record<string, string> = {
+                    new: t(langKeys.new),
+                    prepared: t(langKeys.prepared),
+                    dispatched: t(langKeys.dispatched),
+                    delivered: t(langKeys.delivered),
+                  };
+              
+                  const status = row.values.orderstatus.toLowerCase();
+                  return orderStatusMap[status];
+                },
+            },              
             {
                 Header: t(langKeys.deliverytype),
                 accessor: 'deliverytype',

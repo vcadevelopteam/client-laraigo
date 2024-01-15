@@ -55,6 +55,10 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
     return null;
   }
 
+  const openFile = (link: string) => {
+    window.open(link, '_blank');
+  };
+
   return (
     <div className={classes.container}>
         <div className='row-zyx' style={{marginBottom: 0}}>
@@ -114,9 +118,9 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ row }) => {
                             InputProps={{                           
                                 startAdornment:(
                                     [row?.payment_attachment?.split(',').map( (file: string, index: number)=>(
-                                    <div key={index} className={classes.attachedElement}>
-                                            {file.split('.').pop()?.toLowerCase() === 'pdf' ? <PDFRedIcon className={classes.attachedIcon}/> : <ImageIcon className={classes.attachedIcon}/>}
-                                            <span className={classes.attachedText2}>{file}</span> 
+                                    <div style={{cursor:'pointer'}} key={index} className={classes.attachedElement} onClick={()=>openFile(file)}>
+                                      {file.split('.').pop()?.toLowerCase() === 'pdf' ? <PDFRedIcon className={classes.attachedIcon}/> : <ImageIcon className={classes.attachedIcon}/>}
+                                      <span className={classes.attachedText2}>{file}</span> 
                                     </div>
                                     ))]                            
                                 )
