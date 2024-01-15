@@ -86,33 +86,35 @@ const History: React.FC<HistoryProps> = ({ multiData }) => {
 
   return (
     <div className={classes.containerDetail}>
-        {datahistory.map((historyItem: HistoryItem, index: number) => (
-            <div key={historyItem.orderhistoryid} className={classes.timelineItem}>
-                <div className={classes.container}>
-                    <InsertDriveFileIcon className={classes.icon} />
-                    {index < datahistory.length - 1 && <div className={classes.line} />}
-                </div>
-                <div className={classes.item} style={{ marginBottom: index < datahistory.length - 1 ? 10 : 0 }}>
-                    <div className={classes.descriptionContainer}>
-                        <div className={classes.description}>
-                            {t(historyItem.description.toLowerCase())}
+        {datahistory
+            .filter((historyItem: HistoryItem) => historyItem.description.toLowerCase() !== 'new items')
+            .map((historyItem: HistoryItem, index: number, filteredHistory: HistoryItem[]) => (
+                <div key={historyItem.orderhistoryid} className={classes.timelineItem}>
+                    <div className={classes.container}>
+                        <InsertDriveFileIcon className={classes.icon} />
+                        {index < filteredHistory.length - 1 && <div className={classes.line} />}
+                    </div>
+                    <div className={classes.item} style={{ marginBottom: index < filteredHistory.length - 1 ? 10 : 0 }}>
+                        <div className={classes.descriptionContainer}>
+                            <div className={classes.description}>
+                                {t(historyItem.description.toLowerCase())}
+                            </div>
+                            <div className={classes.createdAt}>
+                                {convertLocalDate(historyItem.createdate).toLocaleString()}
+                            </div>
                         </div>
-                        <div className={classes.createdAt}>
-                            {convertLocalDate(historyItem.createdate).toLocaleString()}
+                        <div className={classes.actionBy}>
+                            {historyItem.description.toLowerCase() === 'new'
+                                ? t(langKeys.newordertxt)
+                                : historyItem.description.toLowerCase() === 'prepared'
+                                ? t(langKeys.preparedordertxt)
+                                : historyItem.description.toLowerCase() === 'dispatched'
+                                ? t(langKeys.dispatchedordertxt)
+                                : t(langKeys.deliveredordertxt)}.&nbsp;&nbsp;&nbsp;({historyItem.createby})
                         </div>
                     </div>
-                    <div className={classes.actionBy}>
-                        {historyItem.description.toLowerCase() === 'new' 
-                            ? t(langKeys.newordertxt)
-                            : historyItem.description.toLowerCase() === 'prepared'
-                            ? t(langKeys.preparedordertxt)
-                            : historyItem.description.toLowerCase() === 'dispatched'
-                            ? t(langKeys.dispatchedordertxt)
-                            : t(langKeys.deliveredordertxt)}.&nbsp;&nbsp;&nbsp;({historyItem.createby})
-                    </div>
                 </div>
-            </div>
-        ))}
+            ))}
     </div>
   );
 };
