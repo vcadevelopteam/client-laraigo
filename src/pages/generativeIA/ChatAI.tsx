@@ -535,7 +535,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                                 <div className={classes.messageText}>
                                                     <div className={classes.messageAvatar}>
                                                        {message.type==='USER'?( <Avatar
-                                                            src={'https://cdn-icons-png.flaticon.com/512/2919/2919600.png'}
+                                                            src={user?.image + "" || undefined}
                                                             alt="User Avatar"
                                                         />):(<LaraigoChatProfileIcon/>)}
                                                     </div>

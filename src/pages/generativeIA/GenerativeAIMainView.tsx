@@ -15,7 +15,7 @@ import { Delete } from "@material-ui/icons";
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
 import { execute, getCollection } from "store/main/actions";
-import { assistantAiSel, insAssistantAi } from "common/helpers";
+import { assistantAiSel, exportExcel, insAssistantAi } from "common/helpers";
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
 
@@ -290,6 +290,42 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         []
     );
 
+    const columnsToExport = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.name),
+                accessor: 'name',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.basemodel),
+                accessor: 'basemodel',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.prompt),
+                accessor: 'generalprompt',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.language),
+                accessor: 'language',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                width: "auto",
+            },
+        ],
+        []
+    );
+
     const fetchData = () => dispatch(getCollection(assistantAiSel({id: 0, all: true})));
 
     useEffect(() => {
@@ -304,6 +340,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     type="button"
                     startIcon={<GetAppIcon color="primary" />}
                     className={classes.purpleButton}
+                    onClick={() => exportExcel('Asistentes IA', main.data, columnsToExport)}
                 >
                     {t(langKeys.download)}
                 </Button>
