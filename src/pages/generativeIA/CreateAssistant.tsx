@@ -176,17 +176,17 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
             const encryptedApikey = encrypt(data.apikey, PUBLICKEYPEM);
 
-            let generalprompt = data.organizationname !== '' ? data.prompt + '\n\n' + 'Considera inapropiado o evita mencionar las siguientes ideas o temas:\n' + data.negativeprompt + '\n\n' +
-            'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. Si te hablan en otro idioma que no sea ' + data.language +
-            ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname: 
-            data.prompt + '\n\n' + 'Considera inapropiado o evita mencionar las siguientes ideas o temas:\n' + data.negativeprompt + '\n\n' +
-            'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. Si te hablan en otro idioma que no sea ' + data.language +
+            let generalprompt = data.organizationname !== '' ? data.prompt + '\n\n' + 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n' +
+            'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+            ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname : 
+            data.prompt + '\n\n' + 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n' +
+            'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
             ', infórmales que solamente puedes comunicarte en ' + data.language;
 
             if(data.querywithoutanswer === 'Mejor Sugerencia') {
                 generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.'
             } else if(data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere lo siguiente: ' + data.response
+                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response
             }
 
             try {
