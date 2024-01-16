@@ -593,6 +593,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 }}
                                 valueDefault={selectedCardData?.prompt}
                                 onChange={(value) => setValue('prompt', value)}
+                                error={errors?.prompt?.message}
                             />
                             <div className={classes.block20}/>
                             <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
