@@ -81,6 +81,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
     const [registerError, setRegisterError] = useState(false);
+    const dataDocuments = useSelector(state => state.main.mainAux);
 
     const newArrayBread = [
         ...arrayBread,
@@ -189,6 +190,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                 generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response
             }
 
+            const filesIds = dataDocuments.data.map(item => item.fileid);
+
             try {
                 const endpoint = edit
                 ? 'https://documentgptapi.laraigo.com/assistants/update'
@@ -208,6 +211,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                         retrieval: data.retrieval,
                         codeinterpreter: data.codeinterpreter,
                         apikey: encryptedApikey,
+                        file_ids: filesIds,
                     })
                     : JSON.stringify({
                         name: data.name,
