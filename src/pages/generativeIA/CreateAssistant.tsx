@@ -159,9 +159,9 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('negativeprompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('generalprompt');
-        register('temperature');
-        register('max_tokens')
-        register('top_p');
+        register('temperature', { validate: (value) => (value && value.length) || t(langKeys.required) });
+        register('max_tokens', { validate: (value) => (value && value.length) || t(langKeys.required) })
+        register('top_p', { validate: (value) => (value && value.length) || t(langKeys.required) });
         register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('retrieval');
         register('codeinterpreter');
