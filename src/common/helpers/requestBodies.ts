@@ -685,6 +685,19 @@ export const getDomainSel = (domainname: string): IRequestBody => ({
         all: true
     }
 })
+export const getDocumentLibrary = (): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_SEL",
+    key: "UFN_DOCUMENTLIBRARY_SEL",
+    parameters: {
+        id: 0,
+        all: true
+    }
+})
+export const getDocumentLibraryByUser = (): IRequestBody => ({
+    method: "QUERY_DOCUMENTLIBRARY_BY_USER",
+    key: "QUERY_DOCUMENTLIBRARY_BY_USER",
+    parameters: { }
+})
 export const getReportSchedulerSel = (id: number): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_SEL",
     key: "UFN_REPORTSCHEDULER_SEL",
@@ -701,6 +714,22 @@ export const reportSchedulerIns = ({ id, title, status, origin, origintype, repo
         mailbodyobject: JSON.stringify(mailbodyobject),
         description: "",
         type: "",
+    }
+})
+
+export const documentLibraryIns = ({id, title, description, category, groups, link, favorite, status, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_INS",
+    key: "UFN_DOCUMENTLIBRARY_INS",
+    parameters: {
+        id, title, description, category, groups, link, favorite, status, operation,
+        type: "",
+    }
+})
+export const documentLibraryInsArray = (table: string): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_INS_ARRAY",
+    key: "UFN_DOCUMENTLIBRARY_INS_ARRAY",
+    parameters: {
+        table
     }
 })
 

@@ -1,4 +1,4 @@
-import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary, IObjectState, IInteraction, IListState } from "@types";
+import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary, IObjectState, IInteraction, IListState, ILibrary } from "@types";
 import { createReducer, initialListPaginatedState, initialListState, initialObjectState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -27,6 +27,7 @@ export interface IState {
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
     interactionBaseList: IInteraction[];
+    libraryList: ILibrary[];
     agentToReassignList: Dictionary[];
     interactionExtraList: IListStatePaginated<IGroupInteraction>;
     configurationVariables: IListStatePaginated<Dictionary>;
@@ -75,6 +76,7 @@ export const initialState: IState = {
     ticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
     interactionBaseList: [],
+    libraryList: [],
     agentToReassignList: [],
     interactionList: initialListPaginatedState,
     richResponseList: initialListPaginatedState,
@@ -265,4 +267,6 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,
     [actionTypes.SET_DATA_USER]: caseFunctions.setDataUser,
     [actionTypes.UPDATE_CLASSIFICATION_PERSON]: caseFunctions.updatePersonClassification,
+    
+    [actionTypes.SET_LIBRARY]: caseFunctions.setLibraryByUser,
 });
