@@ -170,6 +170,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('operation');
     }, [register, setValue]);
 
+    const filesIds = dataDocuments.data.map(item => item.fileid);
 
     const onMainSubmit = handleSubmit(async (data) => {
         const callback = async () => {
@@ -189,8 +190,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             } else if(data.querywithoutanswer === 'Respuesta Sugerida') {
                 generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response
             }
-
-            const filesIds = dataDocuments.data.map(item => item.fileid);
 
             try {
                 const endpoint = edit
