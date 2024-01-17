@@ -22,6 +22,7 @@ const CatalogMaster = lazy(() => import('pages/CatalogMaster'));
 const Orders = lazy(() => import('pages/orders/Orders'));
 const SignIn = lazy(() => import('pages/SignIn'));
 const Properties = lazy(() => import('pages/Properties'));
+const DocumentLibrary = lazy(() => import('pages/documentlibrary/DocumentLibrary'));
 const Quickreplies = lazy(() => import('pages/Quickreplies'));
 const Groupconfig = lazy(() => import('pages/GroupConfig'));
 const Whitelist = lazy(() => import('pages/Whitelist'));
@@ -315,6 +316,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.INVOICE} component={() => (<Layout mainClasses={classes.main}><Invoice /></Layout>)} />
 					<ProtectRoute exact path={paths.MESSAGE_INBOX} component={() => (<Layout><MessageInbox /></Layout>)} />
 					<ProtectRoute exact path={paths.PROPERTIES} component={() => <Layout mainClasses={classes.main}><Properties /></Layout>} />
+					<ProtectRoute exact path={paths.DOCUMENTLIBRARY} component={() => <Layout mainClasses={classes.main}><DocumentLibrary /></Layout>} />
 					<ProtectRoute exact path={paths.USERS} component={() => <Layout mainClasses={classes.main}><Users /></Layout>} />
 					<ProtectRoute exact path={paths.QUICKREPLIES} component={() => <Layout mainClasses={classes.main}><Quickreplies /></Layout>} />
 					<ProtectRoute exact path={paths.GROUPCONFIG} component={() => <Layout mainClasses={classes.main}><Groupconfig /></Layout>} />

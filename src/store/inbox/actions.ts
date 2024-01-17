@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary, ILibrary } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply } from 'common/helpers';
@@ -311,6 +311,8 @@ export const newTicketCall = (payload: any): IActionCall => ({ type: actionTypes
 export const setDataUser = (payload: { holdingBySupervisor: "CANAL" | "GRUPO", userGroup: string, role: string }): IActionCall => ({ type: actionTypes.SET_DATA_USER, payload });
 
 export const updateClassificationPerson = (payload: boolean): IActionCall => ({ type: actionTypes.UPDATE_CLASSIFICATION_PERSON, payload });
+
+export const setLibraryByUser = (payload: ILibrary[]): IActionCall => ({ type: actionTypes.SET_LIBRARY, payload });
 
 export const triggerBlock = (parameters: Dictionary): IActionCall => ({
     callAPI: () => InboxService.triggerBlock(parameters),

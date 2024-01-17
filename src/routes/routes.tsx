@@ -42,6 +42,7 @@ import {
     ConectivityIARouteIcon,
     IAEntrenamientoIcon,
     SLAIcon,
+    DocumentLibraryIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -382,6 +383,13 @@ export const routes: RouteConfig[] = [
         tooltip: "",
         path: paths.PROPERTIES,
         icon: (className) => <ConfigPropertiesIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+    },
+    {
+        key: paths.DOCUMENTLIBRARY,
+        description: <Trans i18nKey={langKeys.documentlibrary} count={2} />,
+        tooltip: "",
+        path: paths.DOCUMENTLIBRARY,
+        icon: (className) => <DocumentLibraryIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.EXTRASLOCATION,
