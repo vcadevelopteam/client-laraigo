@@ -170,6 +170,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('operation');
     }, [register, setValue]);
 
+    const fetchDocumentsByAssistant = () => dispatch(getCollectionAux(assistantAiDocumentSel({assistantaiid: getValues('id'), id: 0, all: true})));
+
+    useEffect(() => {
+        fetchDocumentsByAssistant();
+    }, [])
+
     const filesIds = dataDocuments.data.map(item => item.fileid);
 
     const onMainSubmit = handleSubmit(async (data) => {
@@ -257,8 +263,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             })
         );
     });
-
-    const fetchDocumentsByAssistant = () => dispatch(getCollectionAux(assistantAiDocumentSel({assistantaiid: getValues('id'), id: 0, all: true})));
 
 	const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
         setTabIndex(newIndex);
