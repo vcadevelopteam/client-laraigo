@@ -1075,7 +1075,7 @@ const translation: LangKeys = {
   calendar_eventlinkcode_variable: 'Calendar event link code variable',
   calendar_eventlink_variable: 'Calendar event link variable',
   calendar_informativemessage_info: 'For the shortened link the body is: https://tinyurl.com/',
-  calendar_informativemessage_info2: 'For the link not shortened the body is: https://laraigo.com/Pher-12345-HGdf/',
+  calendar_informativemessage_info2: 'For the link not shortened the body is:',
   calendar_eventlocation: 'Event location',
   calendar_eventlink: 'Event link',
   noavailabletemplates: "You don't have any template available for the selected type",

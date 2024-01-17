@@ -1411,7 +1411,7 @@ const translation: LangKeys = {
   calendar_eventlinkcode_variable: 'Variable código link del evento',
   calendar_eventlink_variable: 'Variable link del evento',
   calendar_informativemessage_info: 'Para el link acortado el cuerpo es: https://tinyurl.com/',
-  calendar_informativemessage_info2: 'Para el link no acortado el cuerpo es: https://laraigo.com/Pher-12345-HGdf/',
+  calendar_informativemessage_info2: 'Para el link no acortado el cuerpo es:',
   calendar_eventlocation: 'Ubicacion del evento',
   noavailabletemplates: 'Usted no tiene ninguna plantilla disponible para el tipo seleccionado',
   calendar_eventlink: 'Link del evento',
