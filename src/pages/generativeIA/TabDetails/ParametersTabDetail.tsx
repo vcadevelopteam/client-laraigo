@@ -618,6 +618,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     width={80}
                                     valueDefault={selectedCardData?.max_tokens}
                                     onChange={(value) => setValue('max_tokens', value)}
+                                    error={errors?.max_tokens?.message}
                                 />
                             </div>
                             <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
@@ -634,6 +635,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     width={80}
                                     valueDefault={selectedCardData?.temperature}
                                     onChange={(value) => setValue('temperature', value)}
+                                    error={errors?.temperature?.message}
                                 />
                             </div>
                             <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
@@ -650,6 +652,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     width={80}
                                     valueDefault={selectedCardData?.top_p}
                                     onChange={(value) => setValue('top_p', value)}
+                                    error={errors?.top_p?.message}
                                 />
                             </div>
                             <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
