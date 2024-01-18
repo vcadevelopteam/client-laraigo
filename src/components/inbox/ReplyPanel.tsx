@@ -724,14 +724,29 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState<boolean | null>(true);
-    const [fileimage, setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
     const lock_send_file_pc = useSelector(state => state.login.validateToken.user?.properties?.lock_send_file_pc);
     const [refresh, setrefresh] = useState(1)
     const [flagundo, setflagundo] = useState(false)
+    const [waitSave, setWaitSave] = useState(false)
+    const [idUpload, setIdUpload] = useState("")
     const [flagredo, setflagredo] = useState(false)
     const [undotext, setundotext] = useState<any>([])
     const [redotext, setredotext] = useState<any>([])
+    const uploadResult = useSelector(state => state.main.uploadFile);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult?.url||"" } : item))
+                setWaitSave(false);
+                dispatch(resetUploadFile());
+            } else if (uploadResult.error) {
+                setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult?.url||"", error: true } : item))
+                setWaitSave(false);
+            }
+        }
+    }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     useEffect(() => {
         if ((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
@@ -1054,10 +1069,18 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }
 
     function onPasteTextbar(e: any) {
-        if (e.clipboardData.files.length) {
+        if (!lock_send_file_pc && e.clipboardData.files.length) {
             e.preventDefault()
             if (e.clipboardData.files[0].type.includes("image")) {
-                setfileimage(e.clipboardData.files)
+                const selectedFile = e.clipboardData.files[0];
+                const idd = new Date().toISOString()
+                const fd = new FormData();
+                fd.append('file', selectedFile, selectedFile.name);
+                setIdUpload(idd);
+                const type = "image";
+                setFiles((x: IFile[]) => [...x, { id: idd, url: '', type }]);
+                dispatch(uploadFile(fd));
+                setWaitSave(true)
             }
         }
     }
