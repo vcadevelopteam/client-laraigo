@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel, AntTabPanelAux } from 'components';
 import { getValuesFromDomain, insCalendar, selCalendar, getMessageTemplateLst, getCommChannelLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
@@ -131,6 +131,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     // Handle Submit
     const [waitSave, setWaitSave] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [showTemplateError, setShowTemplateError] = useState(false);
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.descriptionobject || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dateinterval, setdateinterval] = useState(row?.daterange || 'DAYS');
@@ -201,6 +202,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             rescheduletemplateidhsm: row?.rescheduletemplateidhsm || 0,
             rescheduletype: row?.rescheduletype || "",
             rescheduletemplateidemail: row?.rescheduletemplateidemail || 0,
+
+            sendeventtype: {
+                type: row?.sendeventtype?.type || "",
+                eventsendtemplateid: row?.sendeventtype?.eventsendtemplateid || 0,
+                information_message: row?.sendeventtype?.information_message || "",
+            }
         }
     });
 
@@ -297,6 +304,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     })
 
     const onSubmit = handleSubmit((data) => {
+        if (data.sendeventtype.type === 'LINKBUTTON' && !data.sendeventtype.eventsendtemplateid) {
+            setShowTemplateError(true);
+            return
+        }
+
+        if (data.sendeventtype.type === 'TEXT') {
+            data.sendeventtype.eventsendtemplateid = undefined
+        }
+        
         data.description = renderToString(toElement(bodyobject));
         if (data.description === `<div data-reactroot=""><p><span></span></p></div>`) {
             setShowError(true);
@@ -344,6 +360,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     enddate: (dateinterval === "DAYS") ? new Date(new Date().setHours(10,0,0,0) + diffDays * 86400000) : dateRangeCreateDate.endDate,
                     daysduration: diffDays,
                     increments: "00:30",
+                    sendeventtype: (data.sendeventtype.type !== '') ? data.sendeventtype : {},
                 }
                 dispatch(execute(insCalendar(datatosend)));
                 dispatch(showBackdrop(true));
@@ -409,7 +426,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                         </Button>
                     }
                 </div>
-
             </div>
             <Tabs
                 value={tabIndex}
@@ -449,7 +465,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                 />}
             </Tabs>
 
-            <AntTabPanel index={0} currentIndex={tabIndex}>
+            <AntTabPanelAux index={0} currentIndex={tabIndex} >
                 <CalendarGeneral
                     row={row}
                     dataStatus={dataStatus}
@@ -459,11 +475,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     generalstate={generalstate}
                     setgeneralstate={setgeneralstate}
                     showError={showError}
+                    showTemplateError={showTemplateError}
                     bodyobject={bodyobject}
                     setBodyobject={setBodyobject}
+                    dataTemplates={dataTemplates}
                 />
-            </AntTabPanel>
-            <AntTabPanel index={1} currentIndex={tabIndex}>
+            </AntTabPanelAux>
+            <AntTabPanelAux index={1} currentIndex={tabIndex}>
                 <CalendarSchedule
                     row={row}
                     control={control}
@@ -480,8 +498,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     dateRangeCreateDate = {dateRangeCreateDate}
                     setDateRangeCreateDate={setDateRangeCreateDate}
                 />
-            </AntTabPanel>
-            <AntTabPanel index={2} currentIndex={tabIndex}>
+            </AntTabPanelAux>
+            <AntTabPanelAux index={2} currentIndex={tabIndex}>
                 <CalendarReminders
                     row={row}
                     dataVariables={dataVariables}
@@ -530,9 +548,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     bodyMessageRescheduleEmail={bodyMessageRescheduleEmail}
                     setBodyMessageRescheduleEmail={setBodyMessageRescheduleEmail}
                     />
-            </AntTabPanel>
+            </AntTabPanelAux>
             {operation === "EDIT" &&
-                <AntTabPanel index={3} currentIndex={tabIndex}>
+                <AntTabPanelAux index={3} currentIndex={tabIndex}>
                     <CalendarConnections
                         row={row}
                         dataGrid={dataGrid}
@@ -540,7 +558,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                         calendarGoogleActive={calendarGoogleActive}
                         setCalendarGoogleActive={setCalendarGoogleActive}
                     />
-                </AntTabPanel>
+                </AntTabPanelAux>
             }
         </form>
     );
