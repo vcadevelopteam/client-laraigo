@@ -1054,9 +1054,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }
 
     function onPasteTextbar(e: any) {
-        if (e.clipboardData.files.length) {
+        if (!lock_send_file_pc && e.clipboardData.files.length) {
             e.preventDefault()
             if (e.clipboardData.files[0].type.includes("image")) {
+                //uploadFile
                 setfileimage(e.clipboardData.files)
             }
         }
