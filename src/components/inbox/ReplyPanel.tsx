@@ -108,7 +108,7 @@ const DialogSearchLibrary: React.FC<{
     }, [openModal])
 
     const applyFilter = (value: string) => {
-        setGeneralFilter(value??"")
+        setGeneralFilter(value ?? "")
         if (value) {
             setLibraryToShow(libraryList.filter(x => x.category === categoryFilter).filter(x => x.title.includes(value)))
         } else {
@@ -117,7 +117,7 @@ const DialogSearchLibrary: React.FC<{
     }
 
     const applyFilterCategory = (value: string | undefined) => {
-        setCategoryFilter(value??"")
+        setCategoryFilter(value ?? "")
         if (value) {
             setLibraryToShow(libraryList.filter(x => x.category === value).filter(x => x.title.includes(generalFilter)))
         } else {
@@ -1099,8 +1099,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                     }
                                 >
                                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                    <UploaderIcon classes={classes} setFiles={setFiles}
-                                    />
+                                    <UploaderIcon classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                                 </RichText>
                                 {openDialogHotKey && (
                                     <div style={{
@@ -1219,7 +1218,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                                 <QuickReplyIcon classes={classes} setText={setText} />
                                 <TmpRichResponseIcon classes={classes} setText={setText} />
-                                <UploaderIcon classes={classes} setFiles={setFiles} />
+                                <UploaderIcon classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                                 <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                                 <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => { (lastSelection < (text || '').length - 1) ? setText(p => p.substring(0, lastSelection) + e.native + p.substring(lastSelection)) : setText(p => p + e.native) }} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
                             </div>
