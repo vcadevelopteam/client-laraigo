@@ -289,7 +289,8 @@ const UploaderIcon: React.FC<{
         fd.append('file', selectedFile, selectedFile.name);
         setvaluefile('')
         setIdUpload(idd);
-        setFiles((x: IFile[]) => [...x, { id: idd, url: '' }]);
+        const type = selectedFile.type.match('image.*') ? "image" : "file";
+        setFiles((x: IFile[]) => [...x, { id: idd, url: '', type }]);
         dispatch(uploadFile(fd));
         setWaitSave(true)
     }
