@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel, AntTabPanelAux } from 'components';
 import { getValuesFromDomain, insCalendar, selCalendar, getMessageTemplateLst, getCommChannelLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
@@ -465,7 +465,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                 />}
             </Tabs>
 
-            <AntTabPanel index={0} currentIndex={tabIndex}>
+            <AntTabPanelAux index={0} currentIndex={tabIndex} >
                 <CalendarGeneral
                     row={row}
                     dataStatus={dataStatus}
@@ -480,8 +480,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     setBodyobject={setBodyobject}
                     dataTemplates={dataTemplates}
                 />
-            </AntTabPanel>
-            <AntTabPanel index={1} currentIndex={tabIndex}>
+            </AntTabPanelAux>
+            <AntTabPanelAux index={1} currentIndex={tabIndex}>
                 <CalendarSchedule
                     row={row}
                     control={control}
@@ -498,8 +498,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     dateRangeCreateDate = {dateRangeCreateDate}
                     setDateRangeCreateDate={setDateRangeCreateDate}
                 />
-            </AntTabPanel>
-            <AntTabPanel index={2} currentIndex={tabIndex}>
+            </AntTabPanelAux>
+            <AntTabPanelAux index={2} currentIndex={tabIndex}>
                 <CalendarReminders
                     row={row}
                     dataVariables={dataVariables}
@@ -548,9 +548,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     bodyMessageRescheduleEmail={bodyMessageRescheduleEmail}
                     setBodyMessageRescheduleEmail={setBodyMessageRescheduleEmail}
                     />
-            </AntTabPanel>
+            </AntTabPanelAux>
             {operation === "EDIT" &&
-                <AntTabPanel index={3} currentIndex={tabIndex}>
+                <AntTabPanelAux index={3} currentIndex={tabIndex}>
                     <CalendarConnections
                         row={row}
                         dataGrid={dataGrid}
@@ -558,7 +558,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                         calendarGoogleActive={calendarGoogleActive}
                         setCalendarGoogleActive={setCalendarGoogleActive}
                     />
-                </AntTabPanel>
+                </AntTabPanelAux>
             }
         </form>
     );
