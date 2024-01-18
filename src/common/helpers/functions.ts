@@ -1221,3 +1221,23 @@ export const loadScripts = (scripts: string[]) => {
 
     return { scriptPlatform, scriptRecaptcha, clarityScript, gtmScript }
 }
+
+
+export function encrypt(plaintext:string, key:string) {
+    let ciphertext = '';
+    for (let i = 0; i < plaintext.length; i++) {
+        const charCode = plaintext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+        ciphertext += String.fromCharCode(charCode);
+    }
+    return btoa(ciphertext);
+}
+
+export function decrypt(ciphertext:string, key:string) {
+    ciphertext = atob(ciphertext);
+    let plaintext = '';
+    for (let i = 0; i < ciphertext.length; i++) {
+        const charCode = ciphertext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+        plaintext += String.fromCharCode(charCode);
+    }
+    return plaintext;
+}
