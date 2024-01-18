@@ -1334,6 +1334,14 @@ export const AntTabPanel: FC<AntTabPanelProps> = ({ index, currentIndex, childre
     );
 }
 
+export const AntTabPanelAux: FC<AntTabPanelProps> = ({ index, currentIndex, children }) => {
+    return (
+        <div role="tabpanel" style={{ display: index === currentIndex ? 'block' : 'none' }}>
+            {children}
+        </div>
+    );
+}
+
 export const ListItemSkeleton: React.FC = () => (
     <ListItem style={{ display: 'flex', paddingLeft: 0, paddingRight: 0, paddingBottom: 8 }}>
         <Box style={{ padding: 20, backgroundColor: 'white', display: 'flex', flexDirection: 'column', flexGrow: 1, }}>
