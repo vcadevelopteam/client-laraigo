@@ -243,7 +243,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 },
             },
             {
-                Header: "IGV",
+                Header: t(langKeys.billing_iva),
                 accessor: 'taxes',
                 NoFilter: true,
                 type: 'number',

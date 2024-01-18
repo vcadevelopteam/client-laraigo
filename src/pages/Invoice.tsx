@@ -7117,6 +7117,8 @@ const BillingOperation: FC<DetailProps> = ({
     const dataPaymentMethod = [
         { value: "Tarjeta Crédito", description: t(langKeys.billig_creditcard) },
         { value: "Tarjeta Débito", description: t(langKeys.billig_debitcard) },
+        { value: "Transferencia", description: t(langKeys.billig_transfer) },
+        { value: "Efectivo", description: t(langKeys.billig_cash) },
     ];
 
     useEffect(() => {
@@ -7205,7 +7207,7 @@ const BillingOperation: FC<DetailProps> = ({
             invoiceid: data?.invoiceid,
             invoicestatus: data?.invoicestatus,
             orgid: data?.orgid,
-            paymentmethod: "",
+            paymentmethod: data?.paymentmethod || "",
             productdetail: [],
         },
     });
@@ -8213,6 +8215,8 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
     const dataPaymentMethod = [
         { value: "Tarjeta Crédito", description: t(langKeys.billig_creditcard) },
         { value: "Tarjeta Débito", description: t(langKeys.billig_debitcard) },
+        { value: "Transferencia", description: t(langKeys.billig_transfer) },
+        { value: "Efectivo", description: t(langKeys.billig_cash) },
     ];
 
     useEffect(() => {
@@ -8419,7 +8423,7 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
             month: data?.row ? data.row.month : 0,
             onlyinsert: false,
             orgid: 0,
-            paymentmethod: "",
+            paymentmethod: data?.row ? data.row.paymentmethod || "" : "",
             productdetail: [],
             year: data?.row ? data.row.year : 0,
         },
