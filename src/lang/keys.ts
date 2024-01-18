@@ -5764,6 +5764,9 @@ export const langKeys = {
   billig_paymentmethod: 'billig_paymentmethod',
   billig_creditcard: 'billig_creditcard',
   billig_debitcard: 'billig_debitcard',
+  billig_transfer: 'billig_transfer',
+  billig_cash: 'billig_cash',
+  billing_iva: 'billing_iva',
 };
 
 export type LangKeys = typeof langKeys;
