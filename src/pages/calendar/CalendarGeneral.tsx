@@ -518,7 +518,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                                 <li><Typography>{t(langKeys.calendar_informativemessage_info)}</Typography></li>
                                 <li>
                                     <Typography>
-                                        {`${t(langKeys.calendar_informativemessage_info2)} ${window.location.origin}/events/${row?.calendareventid || '{{eventid}}'}`}
+                                        {`${t(langKeys.calendar_informativemessage_info2)} ${eventURL}`}
                                     </Typography>
                                 </li>
                             </ul>
