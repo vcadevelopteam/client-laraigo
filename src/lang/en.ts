@@ -5789,7 +5789,7 @@ const translation: LangKeys = {
   uploadURLText: "It will allow importing a web page with which AI can be trained.",
   importWebsite: "Import Website",
   clicktouploadfiles: "Click to upload files or drag and drop",
-  maximun10files: "Maximum 10 files can be PDF, Word, PPT, TXT.",
+  maximun10files: "You can upload a PDF, Word, PPT, TXT.",
   generativeailow: "Generative AI",
   howCanIHelpYouToday: "How can I help you today?",
   typeamessage: "Type a message...",
