@@ -252,8 +252,8 @@ export const PaymentOrderIzipay: FC = () => {
                         pan: '',
                     },
                     billing: {
-                        firstName: '${data.userfirstname || "LARAIGO"}',
-                        lastName: '${data.userlastname || "LARAIGO"}',
+                        firstName: '${(data.userfirstname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")}',
+                        lastName: '${(data.userlastname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")}',
                         email: 'laraigo@laraigo.com',
                         phoneNumber: '51999999999',
                         street: 'LARAIGO',
