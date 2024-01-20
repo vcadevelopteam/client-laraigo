@@ -170,6 +170,7 @@ export const langKeys = {
   transfertime_tooltip: "transfertime_tooltip",
   listview: "listview",
   limit20char: "limit20char",
+  limit50char: "limit50char",
   limit75char: "limit75char",
   entitynametooltip: "entitynametooltip",
   entitykeywordtooltip: "entitykeywordtooltip",
