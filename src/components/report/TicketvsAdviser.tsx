@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -28,7 +27,6 @@ const TicketvsAdviser: FC = () => {
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     const columns = React.useMemo(
@@ -223,13 +221,13 @@ const TicketvsAdviser: FC = () => {
                 totalrow={totalrow}
                 loading={mainPaginated.loading}
                 pageCount={pageCount}
+                FiltersElement={<></>}
                 filterrange={true}
                 download={true}
                 fetchData={fetchData}
                 filterGeneral={false}
                 exportPersonalized={triggerExportData}
-                register={false}
-            // fetchData={fetchData}
+                register={false}         
             />
             
         </React.Fragment>

@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Add, Close, FileCopy, GetApp, Refresh, Search } from "@material-ui/icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Dictionary, MultiData } from "@types";
@@ -13,123 +11,11 @@ import { Skeleton } from "@material-ui/lab";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-
-import {
-    Box,
-    CircularProgress,
-    Divider,
-    FormControlLabel,
-    Grid,
-    IconButton,
-    InputAdornment,
-    ListItem,
-    Tabs,
-    TextField,
-} from "@material-ui/core";
-
-import {
-    agentModeList,
-    billingArtificialIntelligenceSel,
-    billingPeriodArtificialIntelligenceInsArray,
-    billingPeriodArtificialIntelligenceSel,
-    billingPeriodUpd,
-    billingpersonreportsel,
-    billingReportConsulting,
-    billingReportConversationWhatsApp,
-    billingReportHsmHistory,
-    billinguserreportsel,
-    contactCalculateList,
-    contactCountList,
-    convertLocalDate,
-    currencySel,
-    dataCurrency,
-    dataMonths,
-    dateToLocalDate,
-    dataYears,
-    deleteInvoice,
-    exportExcel,
-    formatNumber,
-    formatNumberFourDecimals,
-    formatNumberNoDecimals,
-    getAppsettingInvoiceSel,
-    getBalanceSelSent,
-    getBillingMessagingCurrent,
-    getBillingPeriodCalcRefreshAll,
-    getBillingPeriodSel,
-    getBillingPeriodSummarySel,
-    getBillingPeriodSummarySelCorp,
-    getCorpSel,
-    getCorpSelVariant,
-    getInvoiceDetail,
-    getMeasureUnit,
-    getOrgSel,
-    getOrgSelList,
-    getPaymentPlanSel,
-    getPlanSel,
-    getValuesFromDomain,
-    getValuesFromDomainCorp,
-    insInvoice,
-    insInvoiceComment,
-    invoiceRefresh,
-    listPaymentCard,
-    localesLaraigo,
-    paymentCardInsert,
-    planModeList,
-    selBalanceData,
-    selInvoice,
-    selInvoiceClient,
-    selInvoiceComment,
-    templateMaker,
-    timeSheetPeriodSel,
-    uploadExcel,
-    partnerSel,
-    customerByPartnerSel,
-    customerPartnersByUserSel,
-} from "common/helpers";
-
-import {
-    AntTab,
-    DialogZyx,
-    FieldEdit,
-    FieldEditArray,
-    FieldEditMulti,
-    FieldMultiSelect,
-    FieldSelect,
-    FieldView,
-    IOSSwitch,
-    TemplateBreadcrumbs,
-    TemplateIcons,
-    TitleDetail,
-} from "components";
-
-import {
-    balance,
-    cardCreate,
-    cardDelete,
-    charge,
-    createCreditNote,
-    createInvoice,
-    emitInvoice,
-    getExchangeRate,
-    regularizeInvoice,
-    reportPdf,
-    resetBalance,
-    resetCharge,
-} from "store/culqi/actions";
-
-import {
-    cleanMemoryTable,
-    execute,
-    exportData,
-    getCollection,
-    getCollectionAux,
-    getCollectionAux2,
-    getMultiCollection,
-    getMultiCollectionAux,
-    setMemoryTable,
-    uploadFile,
-} from "store/main/actions";
-
+import { Box, CircularProgress, Divider, FormControlLabel, Grid, IconButton, InputAdornment, ListItem, Tabs, TextField } from "@material-ui/core";
+import { agentModeList, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray, billingPeriodArtificialIntelligenceSel, billingPeriodUpd, billingpersonreportsel, billingReportConsulting, billingReportConversationWhatsApp, billingReportHsmHistory, billinguserreportsel, contactCalculateList, contactCountList, convertLocalDate, currencySel, dataCurrency, dataMonths, dateToLocalDate, dataYears, deleteInvoice, exportExcel, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals, getAppsettingInvoiceSel, getBalanceSelSent, getBillingMessagingCurrent, getBillingPeriodCalcRefreshAll, getBillingPeriodSel, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getCorpSel, getCorpSelVariant, getInvoiceDetail, getMeasureUnit, getOrgSel, getOrgSelList, getPaymentPlanSel, getPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insInvoice, insInvoiceComment, invoiceRefresh, listPaymentCard, localesLaraigo, paymentCardInsert, planModeList, selBalanceData, selInvoice, selInvoiceClient, selInvoiceComment, templateMaker, timeSheetPeriodSel, uploadExcel  } from "common/helpers"; 
+import { AntTab, DialogZyx, FieldEdit, FieldEditArray, FieldEditMulti, FieldMultiSelect, FieldSelect, FieldView, IOSSwitch, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
+import { balance, cardCreate, cardDelete, charge, createCreditNote, createInvoice, emitInvoice, getExchangeRate, regularizeInvoice, reportPdf, resetBalance, resetCharge } from "store/culqi/actions";
+import { cleanMemoryTable, execute, exportData, getCollection, getCollectionAux, getCollectionAux2, getMultiCollection, getMultiCollectionAux, setMemoryTable, uploadFile } from "store/main/actions";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -157,6 +43,7 @@ import Typography from "@material-ui/core/Typography";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import PartnerPeriodReport from "./PartnerPeriodReport";
+import { subMinutes } from "date-fns";
 
 interface RowSelected {
     edit: boolean;
@@ -224,21 +111,7 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexWrap: "wrap",
         gap: 16,
-    },
-    containerField: {
-        border: "1px solid #e1e1e1",
-        borderRadius: theme.spacing(2),
-        display: "flex",
-        flex: "0 0 300px",
-        flexDirection: "column",
-        flexWrap: "wrap",
-        gap: 16,
-        padding: theme.spacing(2),
-    },
-    titleCard: {
-        fontSize: 16,
-        fontWeight: "bold",
-    },
+    }, 
     button: {
         fontSize: "14px",
         fontWeight: 500,
@@ -250,31 +123,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         padding: 6,
         textTransform: "initial",
-    },
-    text: {
-        fontSize: 15,
-        fontWeight: 500,
-    },
-    imgContainer: {
-        alignItems: "center",
-        backgroundColor: "white",
-        borderRadius: 20,
-        display: "flex",
-        height: 200,
-        justifyContent: "center",
-        width: 300,
-    },
-    img: {
-        height: "100%",
-        paddingTop: 10,
-        width: "auto",
-    },
-    icon: {
-        "&:hover": {
-            color: theme.palette.primary.main,
-            cursor: "pointer",
-        },
-    },
+    }, 
     containerDetail: {
         background: "#fff",
         marginTop: theme.spacing(2),
@@ -283,9 +132,7 @@ const useStyles = makeStyles((theme) => ({
     fieldsfilter: {
         width: 220,
     },
-    transparent: {
-        color: "transparent",
-    },
+   
     commentary: {
         fontStyle: "italic",
     },
@@ -490,6 +337,7 @@ const CostPerPeriod: React.FC<{
         []
     );
 
+    
     const fetchData = () => dispatch(getCollection(getBillingPeriodSel(dataMain)));
 
     useEffect(() => {
@@ -563,7 +411,7 @@ const CostPerPeriod: React.FC<{
             <Fragment>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -1100,17 +948,17 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("additionalservice01fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+            ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
         });
 
         register("additionalservice02fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+            ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
         });
 
         register("additionalservice03fee", {
             validate: (value) =>
-                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
+            ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
         });
 
         register("agentactivequantity", {
@@ -1160,17 +1008,17 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("billingtotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+            ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
         });
 
         register("billingtotalfeenet", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+            ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
         });
 
         register("billingtotalfeetax", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+            ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) || t(langKeys.field_required),
         });
 
         register("billingtotalfeetaxrate", {
@@ -1663,7 +1511,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                     });
                 }
 
+                
                 if (dataArtificialInsert.length > 0) {
+                    console.log('test') 
                     dispatch(
                         execute(
                             {
@@ -1680,6 +1530,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         )
                     );
                 } else {
+                    console.log('test') 
                     dispatch(execute(billingPeriodUpd(data)));
                 }
 
@@ -1767,6 +1618,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                             type="submit"
+                            onClick={()=>{
+                                console.log(getValues("billingtotalfee"));
+                                console.log(getValues("billingtotalfeenet"));
+                                console.log(getValues("billingtotalfeetax"));
+                            }}
                             variant="contained"
                         >
                             {t(langKeys.save)}
@@ -3513,17 +3369,17 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                 : `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
                                     element.additionalfee
                                 )}`,
-                        intelligenceaicost: `${dataReport.invoicecurrencysymbol}${formatNumber(element.additionalfee)}`,
+                        intelligenceaicost: `${dataReport.invoicecurrencysymbol}${formatNumber(element.aicost)}`,
                         intelligenceaiquantity: `${formatNumberNoDecimals(element.aiquantity)}`,
                         intelligencefreeinteractions: `${formatNumberNoDecimals(element.freeinteractions)}`,
                         intelligenceigv: `${dataReport.invoicecurrencysymbol}${formatNumber(
-                            element.additionalfee - element.additionalfee / dataReport.exchangetax
+                            element.aicost - (element.aicost / dataReport.exchangetax)
                         )}`,
                         intelligenceplan: element.plan,
                         intelligenceprovider: element.provider,
                         intelligenceservice: element.type,
                         intelligencetaxableamount: `${dataReport.invoicecurrencysymbol}${formatNumber(
-                            element.additionalfee / dataReport.exchangetax
+                            element.aicost / dataReport.exchangetax
                         )}`,
                     });
                 });
@@ -5221,7 +5077,7 @@ const Payments: React.FC<{
             <div style={{ width: "100%" }}>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -6583,7 +6439,7 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                 />
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 data={dataYears}
                                 label={t(langKeys.year)}
@@ -9314,7 +9170,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
             <div style={{ width: "100%" }}>
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: '4px' }}>
                             <FieldSelect
                                 className={classes.fieldsfilter}
                                 data={dataCorp}
@@ -10885,6 +10741,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
         register("expirationyear", {
             validate: (value) => (value && value.length && value.length <= 4) || t(langKeys.field_required),
         });
+        
     }, [edit, register]);
 
     useEffect(() => {

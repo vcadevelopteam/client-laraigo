@@ -27,6 +27,7 @@ const paths = {
     IACONECTORS: '/iaconectors',
     IACONFIGURATION: '/iaconfigurations',
     IATRAINING: '/iatraining',
+    IATRAINING2: '/iatraining2',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUPBASIC: "/sign-up/BASIC",
@@ -59,6 +60,10 @@ const paths = {
         path: "/paymentorderopenpay/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpay/${corpid}/${orgid}/${ordercode}`,
     },
+    IZIPAY_PAYMENTORDER: {
+        path: "/paymentorderizipay/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderizipay/${corpid}/${orgid}/${ordercode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,
@@ -71,6 +76,7 @@ const paths = {
         resolve: (token: string) => `/activateuser/${token}`
     },
     CHANNELS: '/channels',
+    CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_FACEBOOK: {
         path: '/channels/:id/add/facebook',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/facebook`,
@@ -135,9 +141,12 @@ const paths = {
         path: '/channels/:id/add/ChannelAddIos',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddIos`,
     },
-    CHANNELS_ADD: '/channels/add',
-    CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
-    CHANNELS_ADD_WEBFORM: '/channels/add/webform',
+    CHANNELS_ADD_CHATWEB: {
+        path: '/channels/add/chatweb',
+    },
+    CHANNELS_ADD_WEBFORM: {
+        path: '/channels/add/webform',
+    },
     CHANNELS_ADD_TIKTOK: {
         path: '/channels/:id/add/ChannelAddTikTok',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddTikTok`,
@@ -178,6 +187,70 @@ const paths = {
         path: '/channels/edit/:id',
         resolve: (channelId: string | number) => `/channels/edit/${channelId}`,
     },
+    CHANNELS_EDIT_FACEBOOK: {
+        path: '/channels/edit/:id/facebook',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/facebook`,
+    },
+    CHANNELS_EDIT_FACEBOOK_LEAD: {
+        path: '/channels/edit/:id/facebooklead',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/facebooklead`,
+    },
+    CHANNELS_EDIT_FACEBOOKWORKPLACE: {
+        path: '/channels/edit/:id/facebookworkplace',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/facebookworkplace`,
+    },
+    CHANNELS_EDIT_FACEBOOKDM: {
+        path: '/channels/edit/:id/facebookdm',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/facebookdm`,
+    },
+    CHANNELS_EDIT_MESSENGER: {
+        path: '/channels/edit/:id/messenger',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/messenger`,
+    },
+    CHANNELS_EDIT_INSTAGRAM: {
+        path: '/channels/edit/:id/instagram',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/instagram`,
+    },
+    CHANNELS_EDIT_INSTAGRAMDM: {
+        path: '/channels/edit/:id/instagramdm',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/instagramdm`,
+    },
+    CHANNELS_EDIT_WHATSAPP: {
+        path: '/channels/edit/:id/whatsapp',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/whatsapp`,
+    },
+    CHANNELS_EDIT_TELEGRAM: {
+        path: '/channels/edit/:id/telegram',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/telegram`,
+    },
+    CHANNELS_EDIT_TWITTER: {
+        path: '/channels/edit/:id/twitter',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/twitter`,
+    },
+    CHANNELS_EDIT_TWITTERDM: {
+        path: '/channels/edit/:id/twitterdm',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/twitterdm`,
+    },
+    CHANNELS_EDIT_SMS: {
+        path: '/channels/edit/:id/sms',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/sms`,
+    },
+    CHANNELS_EDIT_PHONE: {
+        path: '/channels/edit/:id/phone',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/phone`,
+    },
+    CHANNELS_EDIT_EMAIL: {
+        path: '/channels/edit/:id/email',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/email`,
+    },
+    CHANNELS_EDIT_ANDROID: {
+        path: '/channels/edit/:id/ChannelAddAndroid',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddAndroid`,
+    },
+    CHANNELS_EDIT_IOS: {
+        path: '/channels/edit/:id/ChannelAddIos',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddIos`,
+    },
     CHANNELS_EDIT_CHATWEB: {
         path: '/channels/edit/:id/chatweb',
         resolve: (channelId: string | number) => `/channels/edit/${channelId}/chatweb`,
@@ -186,15 +259,48 @@ const paths = {
         path: '/channels/edit/:id/webform',
         resolve: (channelId: string | number) => `/channels/edit/${channelId}/webform`,
     },
-    CHANNELS_EDIT_WHATSAPP: {
-        path: '/channels/edit/:id/whatsapp',
-        resolve: (channelId: string | number) => `/channels/edit/${channelId}/whatsapp`,
+    CHANNELS_EDIT_TIKTOK: {
+        path: '/channels/edit/:id/ChannelAddTikTok',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddTikTok`,
+    },
+    CHANNELS_EDIT_YOUTUBE: {
+        path: '/channels/edit/:id/ChannelAddYouTube',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddYouTube`,
+    },
+    CHANNELS_EDIT_BUSINESS: {
+        path: '/channels/edit/:id/ChannelAddBusiness',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddBusiness`,
+    },
+    CHANNELS_EDIT_PLAYSTORE: {
+        path: '/channels/edit/:id/ChannelAddPlayStore',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddPlayStore`,
+    },
+    CHANNELS_EDIT_APPSTORE: {
+        path: '/channels/edit/:id/ChannelAddAppStore',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddAppStore`,
+    },
+    CHANNELS_EDIT_LINKEDIN: {
+        path: '/channels/edit/:id/ChannelAddLinkedIn',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddLinkedIn`,
+    },
+    CHANNELS_EDIT_TEAMS: {
+        path: '/channels/edit/:id/ChannelAddTeams',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddTeams`,
+    },
+    CHANNELS_EDIT_BLOGGER: {
+        path: '/channels/edit/:id/ChannelAddBlogger',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddBlogger`,
+    },
+    CHANNELS_EDIT_WHATSAPPONBOARDING: {
+        path: '/channels/edit/:id/ChannelAddWhatsAppOnboarding',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/ChannelAddWhatsAppOnboarding`,
     },
     BILLING_SETUPS: '/billing_setups',
     TIMESHEET: '/timesheet',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
     PROPERTIES: '/extras/properties',
+    DOCUMENTLIBRARY: '/documentlibrary',
     QUICKREPLIES: '/extras/quickreplies',
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',

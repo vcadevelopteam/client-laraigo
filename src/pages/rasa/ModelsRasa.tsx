@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +11,8 @@ import { convertLocalDate } from 'common/helpers';
 import { resetAllMain } from 'store/main/actions'
 import { downloadmodelrasaia, downloadrasaia, modellistrasaia } from 'store/rasaia/actions';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import { CellProps } from 'react-table';
+import { Dictionary } from '@types';
 
 interface IntentionProps {
     setExternalViewSelected?: (view: string) => void;
@@ -122,7 +123,7 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <IconButton
@@ -151,7 +152,7 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 accessor: 'createdate',
                 width: "auto",
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return convertLocalDate(row.createdate).toLocaleString()
                 }
@@ -162,7 +163,7 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 NoFilter: true,
                 prefixTranslation: 'status_',
                 width: "auto",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }

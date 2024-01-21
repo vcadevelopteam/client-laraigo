@@ -17,6 +17,8 @@ import { CircularProgress } from '@material-ui/core';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
 import ListIcon from '@material-ui/icons/List';
 import SettingsIcon from '@material-ui/icons/Settings';
+import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -185,6 +187,25 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
         endDate: new Date(`${daterange.endDate} 10:00:00`),
         key: 'selection'
     });
+
+    const [maxSummary, setMaxSummary] = useState<number>(0);
+
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 10;
+
+    const slicedData = dataGraphic.slice(
+        currentPage * itemsPerPage,
+        (currentPage + 1) * itemsPerPage
+    );
+
+    useEffect(() => {
+        if (dataGraphic.length > 0) {
+            const newMaxSummary = Math.max(...dataGraphic.map(item => item.summary), 0) + 10;
+            setMaxSummary(newMaxSummary);
+        }
+        setCurrentPage(0)
+    }, [dataGraphic]);
+
     const mainGraphicRes = useSelector(state => state.main.mainGraphic);
     useEffect(() => {
         if (data) {
@@ -298,9 +319,28 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             ) : (graphicType === "BAR" ? (
                 <div style={{ display: 'flex' }}>
                     <div style={{ flex: '0 0 70%', height: 500 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
+                            <Button
+                                color="primary"
+                                onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
+                                disabled={currentPage === 0}
+                            >
+                                <KeyboardArrowLeftIcon />
+                            </Button>
+                            <div>
+                            {`${currentPage + 1} de ${Math.ceil(dataGraphic.length / itemsPerPage)}`}
+                            </div>
+                            <Button
+                                color="primary"
+                                onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                                disabled={(currentPage + 1) * itemsPerPage >= dataGraphic.length}
+                            >
+                                <KeyboardArrowRightIcon />
+                            </Button>
+                        </div>
                         <ResponsiveContainer aspect={4.0 / 2}>
                             <BarChart
-                                data={dataGraphic}
+                                data={slicedData}
                                 margin={{
                                     top: 20,
                                     right: 30,
@@ -311,7 +351,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
 
-                                <YAxis />
+                                <YAxis domain={[0, maxSummary]}/>
                                 <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
                                 <Bar dataKey="summary" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" >
                                     <LabelList dataKey="summary" position="top" />

@@ -34,6 +34,7 @@ interface Properties {
     environment: string;
     ringer_volume: number;
     origin_label: boolean;
+    lock_send_file_pc: boolean;
     range_date_filter: number | undefined;
 }
 
@@ -66,6 +67,7 @@ export interface IUser {
     userid: number;
     corpid: number;
     orgid: number;
+    newChannels: boolean;
     menu: IApplicationsRecord;
     image: string | null;
     domains: Domains;

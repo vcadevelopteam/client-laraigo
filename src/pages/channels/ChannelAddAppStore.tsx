@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+import React, { FC, useEffect, useState } from "react";
 import { ChannelAppStore } from "icons";
-import { FC, useEffect, useState } from "react";
 import { FieldEdit, FieldEditMulti, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
@@ -10,16 +9,18 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { IChannel } from "@types";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
+import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 
-interface whatsAppData {
+interface WhatsAppData {
+    row?: unknown;
     typeWhatsApp?: string;
-    row?: any;
 }
 
-const useChannelAddStyles = makeStyles((theme) => ({
+const useChannelAddStyles = makeStyles(() => ({
     button: {
         fontSize: "14px",
         fontWeight: 500,
@@ -29,20 +30,29 @@ const useChannelAddStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ChannelAddAppStore: FC = () => {
-    const dispatch = useDispatch();
-
+export const ChannelAddAppStore: FC<{ edit: boolean }> = ({ edit }) => {
     const { t } = useTranslation();
 
     const [channelreg, setChannelreg] = useState(true);
-    const [coloricon, setcoloricon] = useState("#20A1F2");
+    const [coloricon, setColoricon] = useState("#20A1F2");
     const [nextbutton, setNextbutton] = useState(true);
-    const [setins, setsetins] = useState(false);
+    const [setins, setSetins] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
 
+    const dispatch = useDispatch();
+    const classes = useChannelAddStyles();
+    const executeResult = useSelector((state) => state.channel.successinsert);
+    const history = useHistory();
+    const location = useLocation<WhatsAppData>();
+    const mainResult = useSelector((state) => state.channel.channelList);
+    const whatsAppData = location.state as WhatsAppData | null;
+
+    const channel = whatsAppData?.row as IChannel | null;
+
     const [fields, setFields] = useState({
         method: "UFN_COMMUNICATIONCHANNEL_INS",
+        type: "APPSTORE",
         parameters: {
             apikey: "",
             chatflowenabled: true,
@@ -53,7 +63,7 @@ export const ChannelAddAppStore: FC = () => {
             description: "",
             form: "",
             icons: "",
-            id: 0,
+            id: edit && channel ? channel.communicationchannelid : 0,
             integrationid: "",
             other: "",
             type: "",
@@ -64,18 +74,10 @@ export const ChannelAddAppStore: FC = () => {
             keyid: "",
             secretkey: "",
         },
-        type: "APPSTORE",
     });
 
-    const classes = useChannelAddStyles();
-    const executeResult = useSelector((state) => state.channel.successinsert);
-    const history = useHistory();
-    const location = useLocation<whatsAppData>();
-    const mainResult = useSelector((state) => state.channel.channelList);
-    const whatsAppData = location.state as whatsAppData | null;
-
     async function finishreg() {
-        setsetins(true);
+        setSetins(true);
         dispatch(insertChannel(fields));
         setWaitSave(true);
         setViewSelected("main");
@@ -84,13 +86,13 @@ export const ChannelAddAppStore: FC = () => {
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false);
+                setSetins(false);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS);
+                setViewSelected("enable-virtual-assistant")
             } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", {
+                const errormessage = t(mainResult.code ?? "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
@@ -107,11 +109,15 @@ export const ChannelAddAppStore: FC = () => {
         }
     }, [mainResult]);
 
-    function setnameField(value: any) {
+    function setnameField(value: string) {
         setChannelreg(value === "");
-        let partialf = fields;
+        const partialf = fields;
         partialf.parameters.description = value;
         setFields(partialf);
+    }
+
+    if (edit && !channel) {
+        return <div />;
     }
 
     if (viewSelected === "view1") {
@@ -124,7 +130,9 @@ export const ChannelAddAppStore: FC = () => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            history.push(paths.CHANNELS_ADD, whatsAppData);
+                            channel?.status === "INACTIVO"
+                                ? history.push(paths.CHANNELS, whatsAppData)
+                                : history.push(paths.CHANNELS_ADD, whatsAppData);
                         }}
                     >
                         {t(langKeys.previoustext)}
@@ -155,7 +163,7 @@ export const ChannelAddAppStore: FC = () => {
                                 setNextbutton(
                                     value === "" || fields.service.keyid === "" || fields.service.secretkey === ""
                                 );
-                                let partialf = fields;
+                                const partialf = fields;
                                 partialf.service.issuerid = value;
                                 setFields(partialf);
                             }}
@@ -171,7 +179,7 @@ export const ChannelAddAppStore: FC = () => {
                                 setNextbutton(
                                     value === "" || fields.service.issuerid === "" || fields.service.secretkey === ""
                                 );
-                                let partialf = fields;
+                                const partialf = fields;
                                 partialf.service.keyid = value;
                                 setFields(partialf);
                             }}
@@ -187,7 +195,7 @@ export const ChannelAddAppStore: FC = () => {
                                 setNextbutton(
                                     value === "" || fields.service.issuerid === "" || fields.service.keyid === ""
                                 );
-                                let partialf = fields;
+                                const partialf = fields;
                                 partialf.service.secretkey = value;
                                 setFields(partialf);
                             }}
@@ -212,7 +220,12 @@ export const ChannelAddAppStore: FC = () => {
                 </div>
             </div>
         );
-    } else {
+    } else if(viewSelected==="enable-virtual-assistant"){
+        return <ChannelEnableVirtualAssistant
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+        />
+    }
+    else {
         return (
             <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
@@ -257,7 +270,14 @@ export const ChannelAddAppStore: FC = () => {
                             <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                            <div
+                                style={{
+                                    alignItems: "center",
+                                    display: "flex",
+                                    justifyContent: "space-around",
+                                    marginTop: "20px",
+                                }}
+                            >
                                 <ChannelAppStore style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
@@ -266,7 +286,7 @@ export const ChannelAddAppStore: FC = () => {
                                             ...prev,
                                             parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
                                         }));
-                                        setcoloricon(e.hex);
+                                        setColoricon(e.hex);
                                     }}
                                 />
                             </div>

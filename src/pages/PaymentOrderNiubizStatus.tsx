@@ -3,6 +3,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Popus from 'components/layout/Popus';
 
+import { apiUrls } from 'common/constants';
 import { Dictionary } from '@types';
 import { FC, useEffect, useState } from 'react';
 import { formatNumber } from 'common/helpers';
@@ -76,8 +77,8 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
     },
     textTitle: {
-        border: '1px solid #7721AD',
-        background: '#7721AD',
+        border: apiUrls.BODEGAACME ? '1px solid #6127B1' : '1px solid #7721AD',
+        background: apiUrls.BODEGAACME ? '#6127B1' : '#7721AD',
         padding: '8px',
         fontWeight: 'bold',
         color: 'white',
@@ -125,15 +126,37 @@ export const PaymentOrderNiubizStatus: FC = () => {
                 setWaitData(false);
 
                 if (resultSessionToken.data) {
-                    setPaymentData(resultSessionToken.data);
+                    if (apiUrls.BODEGAACME) {
+                        if (resultSessionToken.data.paymentstatus === "PAID") {
+                            window.open("https://wa.me/51994204479", '_blank');
+                            window.open("about:blank", "_self");
+                            window.close();
+                        }
+                        else {
+                            setPaymentData(resultSessionToken.data);
 
-                    if (resultSessionToken.data.chargejson) {
-                        setResultData(resultSessionToken.data.chargejson);
-                        setShowSuccess(true);
+                            if (resultSessionToken.data.chargejson) {
+                                setResultData(resultSessionToken.data.chargejson);
+                                setShowSuccess(true);
+                            }
+                            else {
+                                if (resultSessionToken.data.lastdata) {
+                                    setResultData(JSON.parse(resultSessionToken.data.lastdata));
+                                }
+                            }
+                        }
                     }
                     else {
-                        if (resultSessionToken.data.lastdata) {
-                            setResultData(JSON.parse(resultSessionToken.data.lastdata));
+                        setPaymentData(resultSessionToken.data);
+
+                        if (resultSessionToken.data.chargejson) {
+                            setResultData(resultSessionToken.data.chargejson);
+                            setShowSuccess(true);
+                        }
+                        else {
+                            if (resultSessionToken.data.lastdata) {
+                                setResultData(JSON.parse(resultSessionToken.data.lastdata));
+                            }
                         }
                     }
                 }
@@ -160,7 +183,8 @@ export const PaymentOrderNiubizStatus: FC = () => {
                         <div className={classes.back}>
                             <div className={classes.containerSuccess}>
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <LaraigoLogo style={{ height: 120, margin: '20px' }} />
+                                    {!apiUrls.BODEGAACME && <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />}
+                                    {apiUrls.BODEGAACME && <img src={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/BODEGA%20ACME/40016109-be7d-4aa7-9287-743d35fcc05d/470e9a59-bbaa-4742-ba5b-e4aa1c21d865_waifu2x_art_noise3_scale.png'} style={{ height: 120, margin: '20px' }} />}
                                 </div>
                                 <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_payconstancy)}</div>
                                 {showSuccess && <>

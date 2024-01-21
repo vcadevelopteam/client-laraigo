@@ -1185,7 +1185,7 @@ const Reports: FC = () => {
                     </Grid>
                 )
             case 'UNIQUECONTACTS':
-                if (user?.roledesc?.includes("SUPERADMIN")) {
+                if (user?.roledesc?.includes("SUPERADMIN") || user?.roledesc?.includes("SUPERVISOR")  || user?.roledesc?.includes("ADMINISTRADOR")) {
                     return (
                         <Grid item key={"uniquecontactsreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                             <Card >
@@ -1281,6 +1281,11 @@ const Reports: FC = () => {
                                             setRowReportSelected({ row: null, edit: true });
                                         }}
                                         style={{ backgroundColor: "#55BD84" }}
+                                        disabled={!(user?.roledesc ?? "")
+                                            .split(",")
+                                            .some(v => ["ADMINISTRADOR", "SUPERADMIN", "SUPERADMINISTRADOR SOCIOS"].includes(v))
+                                            && user?.properties.environment === "CLARO"
+                                        }
                                     >{t(langKeys.create_custom_report)}
                                     </Button>
                                 }
@@ -1426,7 +1431,12 @@ const Reports: FC = () => {
                                                     onClick={(e) => {
                                                         setRowReportSelected({ row: report, edit: true });
                                                         setAnchorEl(e.currentTarget)
-                                                    }}
+                                                    }}                                                    
+                                                    disabled={!(user?.roledesc ?? "")
+                                                        .split(",")
+                                                        .some(v => ["ADMINISTRADOR", "SUPERADMIN", "SUPERADMINISTRADOR SOCIOS"].includes(v))
+                                                        && user?.properties.environment === "CLARO"
+                                                    }
                                                 >
                                                     <MoreVertIcon />
                                                 </IconButton>

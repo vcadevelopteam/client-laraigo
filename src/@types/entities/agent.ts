@@ -14,4 +14,8 @@ export interface IAgent {
     image: string | null;
     channels: string[];
     isConnected?: boolean;
+    showinfo?: boolean;
+    avgtimewaiting?: string,
+    maxtimewaiting?: string,
+    mintimewaiting?: string,
 }

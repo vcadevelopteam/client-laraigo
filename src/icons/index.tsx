@@ -138,6 +138,7 @@ export { ReactComponent as ForbiddenWordsIcon } from './forbidden-words.svg';
 export { ReactComponent as OrganizationsIcon } from './organization.svg';
 export { ReactComponent as QuickReplyIcon } from './quick-reply.svg';
 export { ReactComponent as ConfigPropertiesIcon } from './properties.svg';
+export { ReactComponent as DocumentLibraryIcon } from './biblio-docs.svg';
 
 export { ReactComponent as BotDesignerIcon } from './bot-designer.svg';
 export { ReactComponent as Corporation2Icon } from './corporation.svg';
@@ -318,3 +319,5 @@ export { ReactComponent as SendMesageIcon } from './bot enviar.svg';
 
 
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
+export {ReactComponent as PDFRedIcon} from './pdf-red-20dp.svg';
+
