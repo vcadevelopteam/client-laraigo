@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { TemplateBreadcrumbs, AntTabPanelAux, AntTabPanel, TitleDetail  } from "components";
+import { TemplateBreadcrumbs, AntTab, AntTabPanelAux, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
 import { execute, getCollectionAux, getMultiCollectionAux } from 'store/main/actions';
 import { langKeys } from "lang/keys";
@@ -502,21 +502,21 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     indicatorColor="primary"
                     variant="fullWidth"
                 >
-                    <AntTabPanelAux
+                    <AntTab
                         label={
                             <div>
                                 <Trans i18nKey={langKeys.assistant_singular} />
                             </div>
                         }
                     />
-                    <AntTabPanelAux
+                    <AntTab
                         label={
                             <div>
                                 <Trans i18nKey={langKeys.parameters} />
                             </div>
                         }
                     />
-                    <AntTabPanelAux
+                    <AntTab
                         label={
                             <div>
                                 <Trans i18nKey={langKeys.training} />
@@ -524,15 +524,15 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                         }
                     />
                 </Tabs>
-                <AntTabPanel index={0} currentIndex={tabIndex}>
+                <AntTabPanelAux index={0} currentIndex={tabIndex}>
                     <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
-                </AntTabPanel>
-                <AntTabPanel index={1} currentIndex={tabIndex}>
+                </AntTabPanelAux>
+                <AntTabPanelAux index={1} currentIndex={tabIndex}>
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
-                </AntTabPanel>
-                <AntTabPanel index={2} currentIndex={tabIndex}>
+                </AntTabPanelAux>
+                <AntTabPanelAux index={2} currentIndex={tabIndex}>
                     <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
-                </AntTabPanel>
+                </AntTabPanelAux>
             </form>
         </>
     )
