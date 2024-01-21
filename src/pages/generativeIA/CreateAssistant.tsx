@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
+import { TemplateBreadcrumbs, AntTabPanelAux, AntTabPanel, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
 import { execute, getCollectionAux, getMultiCollectionAux } from 'store/main/actions';
 import { langKeys } from "lang/keys";
@@ -502,21 +502,21 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     indicatorColor="primary"
                     variant="fullWidth"
                 >
-                    <AntTab
+                    <AntTabPanelAux
                         label={
                             <div>
                                 <Trans i18nKey={langKeys.assistant_singular} />
                             </div>
                         }
                     />
-                    <AntTab
+                    <AntTabPanelAux
                         label={
                             <div>
                                 <Trans i18nKey={langKeys.parameters} />
                             </div>
                         }
                     />
-                    <AntTab
+                    <AntTabPanelAux
                         label={
                             <div>
                                 <Trans i18nKey={langKeys.training} />
