@@ -265,7 +265,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('querywithoutanswer', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('response');
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('negativeprompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('negativeprompt');
         register('generalprompt');
         register('temperature', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2.0) || t(langKeys.required) });
         register('max_tokens', { validate: (value) => (value && value > 0) || t(langKeys.required) });
