@@ -110,7 +110,8 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 16
     },
     subTextContainer: {
-        height: 70
+        height: 80,
+        marginBottom: 35
     },
     block10: {
         height: 10

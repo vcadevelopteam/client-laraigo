@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { TemplateBreadcrumbs, AntTab, AntTabPanel, TitleDetail  } from "components";
+import { TemplateBreadcrumbs, AntTab, AntTabPanelAux, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
 import { execute, getCollectionAux, getMultiCollectionAux } from 'store/main/actions';
 import { langKeys } from "lang/keys";
@@ -15,7 +15,7 @@ import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
 import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
 import { useForm } from "react-hook-form";
 import { Dictionary } from "@types";
-import { assistantAiDocumentSel, decrypt, encrypt, getValuesFromDomain, insAssistantAi } from "common/helpers";
+import { assistantAiDocumentSel, decrypt, encrypt, getValuesFromDomain, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 
 const useStyles = makeStyles(() => ({
@@ -76,12 +76,18 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSaveInsFile, setWaitSaveInsFile] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
     const [registerError, setRegisterError] = useState(false);
     const dataDocuments = useSelector(state => state.main.mainAux);
+    const [cosFile, setCosFile] = useState({
+        name: '',
+        url: ''
+    });
+    const [assistantaiid, setAssistantaiid] = useState('');
 
     const newArrayBread = [
         ...arrayBread,
@@ -120,6 +126,108 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         }
     }, [executeResult, waitSave])
 
+    useEffect(() => {
+        if(waitSaveInsFile){
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveInsFile(false);
+                InsFile()
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSaveInsFile(false);
+            }
+        }
+    }, [executeResult, waitSaveInsFile])
+
+    const InsFile = async () => {
+        const encryptedApikey = encrypt(getValues('apikey'), PUBLICKEYPEM);
+        try {
+            const isDocumentAPI = await fetch('https://documentgptapi.laraigo.com/files', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.token}`,
+              },
+              body: JSON.stringify({
+                file_url: cosFile.url,
+                file_name: cosFile.name,
+                apikey: encryptedApikey,
+              }),
+            });
+      
+            if (!isDocumentAPI.ok) {
+              console.error('Error en cargar documento:', isDocumentAPI.statusText);
+              setWaitSave(true);
+              return;
+            }
+      
+            const responseData = await isDocumentAPI.json();
+            const documentid = responseData.data.id;
+            
+            const assistantFilesAPI = await fetch('https://documentgptapi.laraigo.com/assistants/files', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.token}`,
+              },
+              body: JSON.stringify({
+                assistant_id: assistantaiid,
+                file_id: documentid,
+                apikey: encryptedApikey,
+              }),
+            });
+      
+            if (!assistantFilesAPI.ok) {
+              console.error('Error en la llamada al endpoint assistants/files:', assistantFilesAPI.statusText);
+              setWaitSave(true);
+              return;
+            }
+
+            const docListEndpoint = await fetch ('https://documentgptapi.laraigo.com/assistants/files/list', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${user?.token}`,
+                },
+                body: JSON.stringify({
+                  assistant_id: assistantaiid,                
+                  apikey: encryptedApikey,                  
+                }),
+            })
+            if (!docListEndpoint.ok) {
+                console.error('Error en el nuevo endpoint:', docListEndpoint.statusText);
+                setWaitSave(true);
+                return;
+            }      
+
+            const docListData = await docListEndpoint.json();
+            const list = docListData.data.data;
+            const matchingFile = list.find((file: Dictionary) => file.id===documentid);
+            if(!matchingFile){
+                console.error('No se encontró un archivo con el ID deseado.');
+                setWaitSave(true);
+                return;
+            }            
+
+            dispatch(execute(insAssistantAiDoc({
+                assistantaiid: executeResult.data[0].p_assistantaiid,
+                id: 0,
+                description: cosFile.name,
+                url: cosFile.url,
+                fileid: documentid,
+                type: 'FILE',
+                status: 'ACTIVO',
+                operation: 'INSERT',
+            })));
+            
+            setWaitSave(true);
+          } catch (error) {
+            console.error('Error en la llamada a la API:', error);
+            setWaitSave(true);
+          }
+    }
+
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.assistantaiid || 0,
@@ -157,7 +265,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('querywithoutanswer', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('response');
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('negativeprompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('negativeprompt');
         register('generalprompt');
         register('temperature', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2.0) || t(langKeys.required) });
         register('max_tokens', { validate: (value) => (value && value > 0) || t(langKeys.required) });
@@ -247,8 +355,86 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     return;
                 }
                 const assistantid = edit ? data.code : responseData.data.assistandid;
+                
                 dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: assistantid, apikey: encryptedApikey })));
                 setWaitSave(true);
+            } catch (error) {
+                console.error('Error en la llamada a la API:', error);
+                setRegisterError(true)
+                setWaitSave(true);
+            }
+        };
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback,
+            })
+        );
+    });
+
+    const onMainSubmitWithoutFiles = handleSubmit(async (data) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));           
+
+            const encryptedApikey = encrypt(data.apikey, PUBLICKEYPEM);
+
+            let generalprompt = data.organizationname !== '' ? data.prompt + '\n\n' + 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n' +
+            'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+            ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname : 
+            data.prompt + '\n\n' + 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n' +
+            'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+            ', infórmales que solamente puedes comunicarte en ' + data.language;
+
+            if(data.querywithoutanswer === 'Mejor Sugerencia') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.'
+            } else if(data.querywithoutanswer === 'Respuesta Sugerida') {
+                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response
+            }
+
+            try {
+                const endpoint = 'https://documentgptapi.laraigo.com/assistants/new';
+                const apiResponse = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user?.token}`,
+                    },
+                    body: JSON.stringify({
+                        name: data.name,
+                        instructions: generalprompt,
+                        basemodel: data.basemodel,
+                        retrieval: data.retrieval,
+                        codeinterpreter: data.codeinterpreter,
+                        apikey: encryptedApikey,
+                    }),
+                });
+    
+                if (!apiResponse.ok) {
+                    console.error('Error en la llamada a la API:', apiResponse.statusText);
+                    setRegisterError(true)
+                    setWaitSave(true);
+                    return;
+                }
+
+                const responseData = await apiResponse.json();
+
+                if (
+                    responseData.data &&
+                    responseData.data.error &&
+                    responseData.data.error.code === 'invalid_api_key'
+                ) {
+                    console.error('Error: API key inválida. No se insertará en la base de datos.');
+                    setRegisterError(true);
+                    setWaitSave(true);
+                    return;
+                }
+                const assistantid = edit ? data.code : responseData.data.assistandid;
+                setAssistantaiid(assistantid);
+
+                dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: assistantid, apikey: encryptedApikey })));
+
+                setWaitSaveInsFile(true);
             } catch (error) {
                 console.error('Error en la llamada a la API:', error);
                 setRegisterError(true)
@@ -270,7 +456,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     return (
         <>
-            <form onSubmit={onMainSubmit} className={classes.formcontainer}>
+            <form onSubmit={cosFile.name === '' && cosFile.url === '' ? onMainSubmit : onMainSubmitWithoutFiles} className={classes.formcontainer}>
                 <div style={{ width: "100%" }}>
                     <div className={classes.titleandcrumbs}>
                         <div style={{ flexGrow: 1 }}>
@@ -338,15 +524,15 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                         }
                     />
                 </Tabs>
-                <AntTabPanel index={0} currentIndex={tabIndex}>
+                <AntTabPanelAux index={0} currentIndex={tabIndex}>
                     <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
-                </AntTabPanel>
-                <AntTabPanel index={1} currentIndex={tabIndex}>
+                </AntTabPanelAux>
+                <AntTabPanelAux index={1} currentIndex={tabIndex}>
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
-                </AntTabPanel>
-                <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData}/>
-                </AntTabPanel>
+                </AntTabPanelAux>
+                <AntTabPanelAux index={2} currentIndex={tabIndex}>
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
+                </AntTabPanelAux>
             </form>
         </>
     )
