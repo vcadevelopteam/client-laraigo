@@ -154,6 +154,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSaveCreateThread, setWaitSaveCreateThread] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
     const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
@@ -216,6 +217,22 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [executeResult, waitSave]);
 
     useEffect(() => {
+        if (waitSaveCreateThread) {
+            if (!executeResult.loading && !executeResult.error) {
+                fetchThreadsByAssistant()
+                dispatch(showBackdrop(false));
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateThread(false);
+            }
+        }
+    }, [executeResult, waitSaveCreateThread]);
+
+    useEffect(() => {
         handleChatClick(dataThreads.data[0]);
     }, [dataThreads.data]);
 
@@ -244,17 +261,17 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 })
                 if (!insThreadAPI.ok) {
                     console.error('Error en la llamada a la API:', insThreadAPI.statusText);
-                    setWaitSave(true);
+                    setWaitSaveCreateThread(true);
                     return;
                 }
                 const responseData = await insThreadAPI.json();
                 const threadid = responseData.data.id;
                 dispatch(execute(insThread({...data,code:threadid})));
-                setWaitSave(true);
+                setWaitSaveCreateThread(true);
             }        
             catch (error) {
                 console.error('Error en la llamada a la API:', error);
-                setWaitSave(true);
+                setWaitSaveCreateThread(true);
             }
         };
         dispatch(
@@ -367,18 +384,18 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     
                 if (!threadDelete.ok) {
                     console.error('Error al eliminar el thread:', threadDelete.statusText);
-                    setWaitSave(true);
+                    setWaitSaveCreateThread(true);
                     return;
                 }
 
                 dispatch(
                     execute(insThread({ ...chat, id: chat.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
                 );
-                setWaitSave(true);
+                setWaitSaveCreateThread(true);
 
             } catch (error) {
                 console.error('Error en la llamada:', error);
-                setWaitSave(true);
+                setWaitSaveCreateThread(true);
             }          
           };
       
@@ -413,7 +430,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         const callback = () => {
             dispatch(showBackdrop(true));
             dispatch(execute(insThread({...data, operation: 'UPDATE'})));
-            setWaitSave(true);
+            setWaitSaveCreateThread(true);
         };
         dispatch(
             manageConfirmation({

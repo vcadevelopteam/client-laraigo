@@ -189,12 +189,16 @@ interface TrainingTabDetailProps {
     row: Dictionary | null;
     fetchData: () => void;
     fetchAssistants: () => void;
+    edit: boolean;
+    setFile: (data: {name: string, url: string}) => void;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     row,
     fetchData,
-    fetchAssistants
+    fetchAssistants,
+    edit,
+    setFile
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -385,6 +389,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         setFileAttachment(null);
         setWaitUploadFile(false);
         setValue('url', '')
+        setFile({name: '', url: ''})
+        setValue('description', '')
     };
 
     const handleDelete = (row2: Dictionary) => {
@@ -512,7 +518,23 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 Header: t(langKeys.upload),
                 accessor: 'createdate',
                 width: "auto",
-            },      
+            },
+        ],
+        []
+    );
+
+    const columns2 = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.name),
+                accessor: 'description',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.upload),
+                accessor: 'createdate',
+                width: "auto",
+            },
         ],
         []
     );
@@ -595,8 +617,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     </div>
                     <div className={classes.titleMargin}>
                         <TableZyx
-                            columns={columns}
-                            data={dataDocuments.data}
+                            columns={edit ? columns : columns2}
+                            data={edit ? dataDocuments.data : [{description: getValues('description'), createdate: getValues('url') === '' ? '' : 'Por subir'}]}
                             filterGeneral={false}
                         />
                     </div>
@@ -716,7 +738,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             variant="contained"
                             type="button"
                             startIcon={<AttachFileIcon />}
-                            onClick={handleUpload}
+                            onClick={edit ? handleUpload : ()=>{
+                                setViewSelected('main')
+                                setFile({name: getValues('description'), url: getValues('url')})
+                            }}
                             className={classes.clipButton2}
                             disabled={fileAttachment === null || getValues('url') === ''}
                         >

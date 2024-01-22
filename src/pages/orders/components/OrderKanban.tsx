@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import { FC, useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { updateOrderStatus } from 'common/helpers';
