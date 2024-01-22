@@ -194,7 +194,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         register('id');
         register('title', { validate: {
             noempty: (value) => (value && value.length) || t(langKeys.field_required),
-            limit: (value) => (getValues("type") === "CATEGORIA")? ((value && value.length && value.length<= 20) || t(langKeys.limit20char)): true,
+            limit: (value) => (getValues("type") === "CATEGORIA")? ((value && value.length && value.length<= 50) || t(langKeys.limit50char)): true,
         }});
         register('description', { validate: {
             noempty: (value) => (value && value.length) || t(langKeys.field_required),
@@ -723,20 +723,20 @@ const Tipifications: FC = () => {
         }))
     }
 
-    const importCSV = async (files: any[]) => {
+    const importCSV = async (files: Dictionary[]) => {
         const file = files[0];
         if (file) {
-            let data: any = (await uploadExcel(file, undefined) as any[])
-            data=data.filter((d: any) => !['', null, undefined].includes(d.classification)
+            let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
+            data=data.filter((d: Dictionary) => !['', null, undefined].includes(d.classification)                                                                                       
                     && !['', null, undefined].includes(d.channels)    
-                    && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent))
+                    && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + String(d.parent)))
                 );
                 
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
                     header: null,
-                    detail: data.map((x: any) => insClassification({
+                    detail: data.map((x: Dictionary) => insClassification({
                         ...x,
                         title: x.classification,
                         description: x.description,
@@ -782,23 +782,32 @@ const Tipifications: FC = () => {
         { dat: "Request" }
     ]
 
+    const dataType = [
+        { dat: "Categoria" },
+        { dat: "Clasificación" },       
+    ]
+
     const handleTemplate = () => {
         const data = [
-            {},
-            {},
-            filteredChannels.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
-            {},
-            mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
-            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {}),
-            {},
-            dataTypeAction.reduce((a,d) => ({...a, [d.dat]: d.dat}), {}),
-            {},
-            {},
-            {},
-        ];
-        const header = ['classification', 'description', 'channels', 'tag', 'parent', 'status', 'action', 'type', 'variable', 'endpoint', 'data'];
+          {},
+          {},
+          dataType.reduce((a, d) => ({ ...a, [d.dat]: d.dat }), {}),
+          filteredChannels.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+          {},
+          mainResult.multiData.data[3].data.reduce((a, d) => ({ ...a, [d.classificationid]: d.description }), { 0: '' }),
+          mainResult.multiData.data[0].data.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {}),
+          {},
+          dataTypeAction.reduce((a, d) => ({ ...a, [d.dat]: d.dat }), {}),
+          {},
+          {},
+          {},
+        ];    
+        
+        const header = ['classification', 'description', 'type', 'channels', 'tag', 'parent', 'status', 'action', 'action plan type', 'variable', 'endpoint', 'data'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
+      
+      
 
     if (viewSelected === "view-1") {
 
