@@ -782,11 +782,16 @@ const Tipifications: FC = () => {
         { dat: "Request" }
     ]
 
+    const dataType = [
+        { dat: "Categoria" },
+        { dat: "Clasificación" },       
+    ]
+
     const handleTemplate = () => {
         const data = [
           {},
           {},
-          ['Category', 'Classification'], 
+          dataType.reduce((a, d) => ({ ...a, [d.dat]: d.dat }), {}),
           filteredChannels.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
           {},
           mainResult.multiData.data[3].data.reduce((a, d) => ({ ...a, [d.classificationid]: d.description }), { 0: '' }),
@@ -796,16 +801,8 @@ const Tipifications: FC = () => {
           {},
           {},
           {},
-        ];      
-      
-        data[2] = data[2].map((value: string[] | string) => {
-            if (Array.isArray(value)) {
-                return value.map(subValue => subValue.replace(/-/, ''));
-            } else {
-                return value;
-            }
-        });
-                
+        ];    
+        
         const header = ['classification', 'description', 'type', 'channels', 'tag', 'parent', 'status', 'action', 'action plan type', 'variable', 'endpoint', 'data'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
