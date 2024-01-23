@@ -420,4 +420,10 @@ export const apiUrls = {
     GPT_ASSISTANT_NEW: `${BASE_URL}/gpt/assistants/new`,
     GPT_MESSAGES: `${BASE_URL}/gpt/assistants/messages`,
     GPT_FILE_DELETE: `${BASE_URL}/gpt/files/delete`,
+
+    GPT_FILES: `${BASE_URL}/gpt/files`,
+    GPT_ASSISTANTS_FILES: `${BASE_URL}/gpt/assistants/files`,
+    GPT_ASSISTANTS_FILES_LIST: `${BASE_URL}/gpt/assistants/files/list`,
+    GPT_ASSISTANTS_UPDATE: `${BASE_URL}/gpt/assistants/update`,
+    GPT_ASSISTANTS_DELETE: `${BASE_URL}/gpt/assistants/delete`,
 };
