@@ -3886,6 +3886,8 @@ const translation: LangKeys = {
   tooltipintegrationname: "The name of the table will appear in the URL, therefore special characters, capital letters and spaces cannot be added.",
   tooltipintegrationurl: "The URL will be displayed after saving the table.",
 
+  propertyenviodehsmformulario: 'Enable and Disable the HSM sending functionality with contact details.',
+  propertyplantillahsmformulario: 'Template associated with HSM',
   propertyambiente: 'Allows for environment customization',
   propertygrupofacturacion: 'Enables billing group',
   propertycierreautomaticocampaña: 'Enables automatic closing of unanswered campaigns and the end of the working hours',

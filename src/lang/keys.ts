@@ -3852,6 +3852,8 @@ export const langKeys = {
   successful_import: 'successful_import',
   detractionminimum: 'detractionminimum',
 
+  propertyenviodehsmformulario: 'propertyenviodehsmformulario',
+  propertyplantillahsmformulario: 'propertyplantillahsmformulario',
   propertyambiente: 'propertyambiente',
   propertygrupofacturacion: 'propertygrupofacturacion',
   propertycierreautomaticocampaña: 'propertycierreautomaticocampaña',
