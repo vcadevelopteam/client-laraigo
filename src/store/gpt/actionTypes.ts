@@ -38,7 +38,7 @@ const actionTypes = {
     VERIFY_FILE: 'gpt/verify_file',
     VERIFY_FILE_SUCCESS: 'gpt/verify_file_success',
     VERIFY_FILE_FAILURE: 'gpt/verify_file_failure',
-    MVERIFY_FILE_RESET: 'gpt/verify_file_reset',
+    VERIFY_FILE_RESET: 'gpt/verify_file_reset',
 
     UPDATE_ASSISTANT: 'gpt/update_assistant',
     UPDATE_ASSISTANT_SUCCESS: 'gpt/update_assistant_success',

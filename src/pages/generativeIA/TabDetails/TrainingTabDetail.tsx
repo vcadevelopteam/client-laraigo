@@ -8,7 +8,6 @@ import { useDispatch } from "react-redux";
 import { Button, Card, Grid, IconButton, Modal, Typography } from "@material-ui/core";
 import TableZyx from "components/fields/table-simple";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import BackupIcon from '@material-ui/icons/Backup';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { FieldEdit, TemplateIcons } from "components";
 import { execute, uploadFile } from "store/main/actions";
@@ -23,6 +22,8 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import CachedIcon from '@material-ui/icons/Cached';
 import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
+import { addFile, assignFile, verifyFile } from "store/gpt/actions";
+
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -217,9 +218,13 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [documentUrl, setDocumentUrl] = useState("");
     const [selectedDocumentUrl, setSelectedDocumentUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const executeFiles = useSelector((state) => state.gpt.gptthreadresult);
     const [rowAux, setRowAux] = useState<Dictionary | null>(null);
+    const [waitSaveAddFile, setWaitSaveAddFile] = useState(false);
+    const [waitSaveAssignFile, setWaitSaveAssignFile] = useState(false);
+    const executeFiles = useSelector((state) => state.gpt.gptResult);
+  
 
+    
     useEffect(() => {
         fetchData();
     }, [])
@@ -264,91 +269,56 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [])
 
+    useEffect(() => {
+        if (waitSaveAssignFile) {
+            if (!executeFiles.loading && !executeFiles.error) {
+                setWaitSaveAssignFile(false);                
+                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
+                setWaitSave(true);
+                dispatch(showBackdrop(false));
+            } else if (executeFiles.error) {
+                const errormessage = t(executeFiles.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveAssignFile(false);
+            }
+        }
+    }, [executeFiles, waitSaveAssignFile]);
+
+    useEffect(() => {
+        if (waitSaveAddFile) {
+            if (!executeFiles.loading && !executeFiles.error) {
+                setWaitSaveAddFile(false);                 
+                const documentid = executeFiles.data.id;
+                dispatch(assignFile({
+                    assistant_id: row?.code,
+                    file_id: documentid,
+                    apikey: row?.apikey,
+                }))
+                setWaitSaveAssignFile(true);
+                dispatch(showBackdrop(false));
+            } else if (executeFiles.error) {
+                const errormessage = t(executeFiles.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveAddFile(false);
+            }
+        }
+    }, [executeFiles, waitSaveAddFile]);
+
     const handleUpload = handleSubmit(async (data) => {
-        const callback = async () => {
-          setLoading(true);
+        const callback = async () => {      
           dispatch(showBackdrop(true));
-      
-          try {
-            const isDocumentAPI = await fetch('https://documentgptapi.laraigo.com/files', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.token}`,
-              },
-              body: JSON.stringify({
-                file_url: data.url,
-                file_name: data.description,
-                apikey: row?.apikey,
-              }),
-            });
-      
-            if (!isDocumentAPI.ok) {
-              console.error('Error en cargar documento:', isDocumentAPI.statusText);
-              setWaitSave(true);
-              setLoading(false);
-              return;
-            }
-      
-            const responseData = await isDocumentAPI.json();
-            const documentid = responseData.data.id;
-      
-            const assistantFilesAPI = await fetch('https://documentgptapi.laraigo.com/assistants/files', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.token}`,
-              },
-              body: JSON.stringify({
-                assistant_id: row?.code,
-                file_id: documentid,
-                apikey: row?.apikey,
-              }),
-            });
-      
-            if (!assistantFilesAPI.ok) {
-              console.error('Error en la llamada al endpoint assistants/files:', assistantFilesAPI.statusText);
-              setWaitSave(true);
-              setLoading(false);
-              return;
-            }
-
-            const docListEndpoint = await fetch ('https://documentgptapi.laraigo.com/assistants/files/list', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${user?.token}`,
-                },
-                body: JSON.stringify({
-                  assistant_id: row?.code,                
-                  apikey: row?.apikey,                  
-                }),
-            })
-            if (!docListEndpoint.ok) {
-                console.error('Error en el nuevo endpoint:', docListEndpoint.statusText);
-                setWaitSave(true);
-                setLoading(false);
-                return;
-            }      
-
-            const docListData = await docListEndpoint.json();
-            const list = docListData.data.data;
-            const matchingFile = list.find((file: Dictionary) => file.id===documentid);
-            if(!matchingFile){
-                console.error('No se encontró un archivo con el ID deseado.');
-                setWaitSave(true);
-                setLoading(false);
-                return;
-            }
-
-            dispatch(execute(insAssistantAiDoc({ ...data, fileid: documentid })));
-            setWaitSave(true);
-          } catch (error) {
-            console.error('Error en la llamada a la API:', error);
-            setWaitSave(true);
-          } finally {
-            setLoading(false);
-          }
+          dispatch(addFile({
+            file_url: data.url,
+            file_name: data.description,
+            apikey: row?.apikey,
+          }))
+          setWaitSaveAddFile(true);      
         };
       
         dispatch(
@@ -373,8 +343,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 question: t(langKeys.confirmation_save),
                 callback,
             })
-        )
-        handleClearFile()
+        )        
     });
 
     useEffect(() => {
@@ -528,6 +497,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 fetchData()
                 fetchAssistants()
                 setViewSelected('main')
+                handleClearFile()
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {

@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, getValuesFromDomain, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
+import { addFile, assignFile, verifyFile, createAssistant, updateAssistant, deleteAssistant } from "store/gpt/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -228,7 +229,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
           }
     }
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({        
         defaultValues: {
             id: row?.assistantaiid || 0,
             code: row?.code || '',
