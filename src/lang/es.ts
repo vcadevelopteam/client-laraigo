@@ -3778,6 +3778,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   successful_import: 'Se importó exitosamente',
   detractionminimum: 'Monto Limite de Detracción (Soles)',
 
+  propertyenviodehsmformulario: 'Activa y Desactiva la funcionalidad de envío de HSM con datos de contacto.',
+  propertyplantillahsmformulario: 'Plantilla asociada al HSM',
   propertyambiente: 'Permite setear cierta personalización por ambiente',
   propertygrupofacturacion: 'Habilita el grupo de facturación',
   propertycierreautomaticocampaña: 'Flag para el cierre automático de campañas no respondidas en el cierre de jornada',
