@@ -22,6 +22,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { FieldEdit } from "components";
 import CachedIcon from '@material-ui/icons/Cached';
 import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
+import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -155,7 +156,11 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveCreateThread, setWaitSaveCreateThread] = useState(false);
+    const [waitSaveThread, setWaitSaveThread] = useState(false);
+    const [waitSaveThreadDelete, setWaitSaveThreadDelete] = useState(false);
+    const [waitSaveMessage, setWaitSaveMessage] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
+    const executeThreads = useSelector((state) => state.gpt.gptthreadresult);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
     const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
     const dataThreads = useSelector(state => state.main.mainAux);
@@ -163,6 +168,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [messageText, setMessageText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [cardDelete, setCardDelete] = useState<Dictionary | null>(null);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
     const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
@@ -233,6 +239,75 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [executeResult, waitSaveCreateThread]);
 
     useEffect(() => {
+        if (waitSaveThread) {
+            if (!executeThreads.loading && !executeThreads.error) {
+                setWaitSaveThread(false);
+                const data = getValues()
+                dispatch(execute(insThread({...data, code: executeThreads.data.id})));
+                setValue('description', '');
+                setWaitSaveCreateThread(true);
+                dispatch(showBackdrop(false));
+            } else if (executeThreads.error) {
+                const errormessage = t(executeThreads.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveThread(false);
+            }
+        }
+    }, [executeThreads, waitSaveThread]);
+
+    useEffect(() => {
+        if (waitSaveThreadDelete) {
+            if (!executeThreads.loading && !executeThreads.error) {
+                setWaitSaveThreadDelete(false);
+                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                setWaitSaveCreateThread(true);
+                setCardDelete(null);
+                dispatch(showBackdrop(false));
+            } else if (executeThreads.error) {
+                const errormessage = t(executeThreads.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveThreadDelete(false);
+            }
+        }
+    }, [executeThreads, waitSaveThreadDelete]);
+
+    useEffect(() => {
+        if (waitSaveMessage) {
+            if (!executeThreads.loading && !executeThreads.error) {
+                setWaitSaveMessage(false);
+                dispatch(execute(insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: selectedChat?.threadid,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: executeThreads.data.response,
+                    infosource: '',
+                    type: 'BOT',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })))
+                setIsLoading(false);
+                fetchThreadMessages(selectedChat?.threadid);
+
+                dispatch(showBackdrop(false));
+            } else if (executeThreads.error) {
+                const errormessage = t(executeThreads.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveMessage(false);
+            }
+        }
+    }, [executeThreads, waitSaveMessage]);
+
+    useEffect(() => {
         handleChatClick(dataThreads.data[0]);
     }, [dataThreads.data]);
 
@@ -245,34 +320,13 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         setValue('description', '');
     };
 
-    const handleConfirmCreateChat = handleSubmit( async (data) => {
+    const handleConfirmCreateChat = handleSubmit( async () => {
         const callback = async () => {
             dispatch(showBackdrop(true));
-            try {
-                const insThreadAPI = await fetch ('https://documentgptapi.laraigo.com/threads', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user?.token}`,
-                    },
-                    body: JSON.stringify({
-                        apikey: row?.apikey,
-                    })
-                })
-                if (!insThreadAPI.ok) {
-                    console.error('Error en la llamada a la API:', insThreadAPI.statusText);
-                    setWaitSaveCreateThread(true);
-                    return;
-                }
-                const responseData = await insThreadAPI.json();
-                const threadid = responseData.data.id;
-                dispatch(execute(insThread({...data,code:threadid})));
-                setWaitSaveCreateThread(true);
-            }        
-            catch (error) {
-                console.error('Error en la llamada a la API:', error);
-                setWaitSaveCreateThread(true);
-            }
+            dispatch(createThread({
+                apikey: row?.apikey,
+            }))
+            setWaitSaveThread(true);
         };
         dispatch(
             manageConfirmation({
@@ -282,7 +336,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             })
         )
         setIsCreatingChat(false);
-        setValue('description', '');
     });
 
     const handleSendMessage = async () => {
@@ -305,49 +358,14 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         const message = messageText
         setMessageText('');
         fetchThreadMessages(selectedChat?.threadid);
-        
-        try {
-            const sendMessage = await fetch ('https://documentgptapi.laraigo.com/assistants/messages', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user?.token}`,
-                },
-                body: JSON.stringify({
-                    text: message,
-                    assistant_id: row?.code,
-                    thread_id: selectedChat?.code,
-                    sources: false,
-                    apikey: row?.apikey,
-                })
-            })
-            if (!sendMessage.ok) {
-                console.error('Error en la llamada a la API:', sendMessage.statusText);
-                return;
-            }
-            const responseData = await sendMessage.json();
-            const botResponse = responseData.data.response;
-            await dispatch(
-                execute(
-                    insMessageAi({
-                        assistantaiid: row?.assistantaiid,
-                        threadid: selectedChat?.threadid,
-                        assistantaidocumentid: 0,
-                        id: 0,
-                        messagetext: botResponse,
-                        infosource: '',
-                        type: 'BOT',
-                        status: 'ACTIVO',
-                        operation: 'INSERT',
-                    })
-                )
-            );
-        } catch (error) {
-            console.error('Error en la llamada a la API:', error);
-        } finally {
-            fetchThreadMessages(selectedChat?.threadid);
-            setIsLoading(false);
-        }
+        dispatch(sendMessages({
+            text: message,
+            assistant_id: row?.code,
+            thread_id: selectedChat?.code,
+            sources: false,
+            apikey: row?.apikey,
+        }))
+        setWaitSaveMessage(true)
     };
 
     useEffect(() => {
@@ -368,35 +386,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleDeleteChat = (chat: Dictionary) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
-
-            try {
-                const threadDelete = await fetch('https://documentgptapi.laraigo.com/threads/delete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user?.token}`,
-                    },
-                    body: JSON.stringify({
-                        thread_id: chat.code,
-                        apikey: row?.apikey,
-                    }),
-                });
-    
-                if (!threadDelete.ok) {
-                    console.error('Error al eliminar el thread:', threadDelete.statusText);
-                    setWaitSaveCreateThread(true);
-                    return;
-                }
-
-                dispatch(
-                    execute(insThread({ ...chat, id: chat.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
-                );
-                setWaitSaveCreateThread(true);
-
-            } catch (error) {
-                console.error('Error en la llamada:', error);
-                setWaitSaveCreateThread(true);
-            }          
+            dispatch(deleteThread({
+                thread_id: chat.code,
+                apikey: row?.apikey,
+            }))
+            setCardDelete(chat)
+            setWaitSaveThreadDelete(true);     
           };
       
           dispatch(

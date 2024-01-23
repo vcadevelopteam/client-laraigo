@@ -414,4 +414,10 @@ export const apiUrls = {
 
     PAYMENTORDER_IZIPAY_GETPAYMENTORDER: `${BASE_URL}/paymentizipay/getpaymentorder`,
     PAYMENTORDER_IZIPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentizipay/processtransaction`,
+
+    GPT_THREADS: `${BASE_URL}/gpt/threads`,
+    GPT_THREADS_DELETE: `${BASE_URL}/gpt/threads/delete`,
+    GPT_ASSISTANT_NEW: `${BASE_URL}/gpt/assistants/new`,
+    GPT_MESSAGES: `${BASE_URL}/gpt/assistants/messages`,
+    GPT_FILE_DELETE: `${BASE_URL}/gpt/files/delete`,
 };

@@ -22,6 +22,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import CachedIcon from '@material-ui/icons/Cached';
 import { UploadFileIcon } from "icons";
+import { deleteFile } from "store/gpt/actions";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -206,6 +207,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSaveFileDelete, setWaitSaveFileDelete] = useState(false);
     const [viewSelected, setViewSelected] = useState('main');
     const dataDocuments = useSelector(state => state.main.mainAux);
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
@@ -215,6 +217,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [documentUrl, setDocumentUrl] = useState("");
     const [selectedDocumentUrl, setSelectedDocumentUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const executeFiles = useSelector((state) => state.gpt.gptthreadresult);
+    const [rowAux, setRowAux] = useState<Dictionary | null>(null);
 
     useEffect(() => {
         fetchData();
@@ -396,40 +400,12 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const handleDelete = (row2: Dictionary) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
-
-             try {
-                const filesDelete = await fetch('https://documentgptapi.laraigo.com/files/delete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user?.token}`,
-                    },
-                    body: JSON.stringify({
-                        file_id: row2.fileid,
-                        apikey: row?.apikey,
-                    }),
-                });
-    
-                if (!filesDelete.ok) {
-                    console.error('Error al eliminar documento:', filesDelete.statusText);
-                    setWaitSave(true);
-                    return;
-                }
-
-                dispatch(
-                    execute(insAssistantAiDoc({
-                        ...row2,
-                        id: row2.assistantaidocumentid,
-                        operation: "DELETE",
-                        status: "ELIMINADO",
-                        type: "NINGUNO" 
-                    }))
-                );
-                setWaitSave(true);
-            } catch (error) {
-                console.error('Error en la llamada:', error);
-                setWaitSave(true);
-            }           
+            dispatch(deleteFile({
+                file_id: row2.fileid,
+                apikey: row?.apikey,
+            }))
+            setRowAux(row2)
+            setWaitSaveFileDelete(true)
         };    
         dispatch(
           manageConfirmation({
@@ -563,6 +539,31 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             }
         }
     }, [executeResult, waitSave]);
+
+    useEffect(() => {
+        if (waitSaveFileDelete) {
+            if (!executeFiles.loading && !executeFiles.error) {
+                setWaitSaveFileDelete(false);
+                dispatch(execute(insAssistantAiDoc({
+                    ...rowAux,
+                    id: rowAux?.assistantaidocumentid,
+                    operation: "DELETE",
+                    status: "ELIMINADO",
+                    type: "NINGUNO" 
+                })));
+                setWaitSave(true);
+                setRowAux(null)
+                dispatch(showBackdrop(false));
+            } else if (executeFiles.error) {
+                const errormessage = t(executeFiles.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveFileDelete(false);
+            }
+        }
+    }, [executeFiles, waitSaveFileDelete]);
 
     const handleDrop = (event) => {
         event.preventDefault();
