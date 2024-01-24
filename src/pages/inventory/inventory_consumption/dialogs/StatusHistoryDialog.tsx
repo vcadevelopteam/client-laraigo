@@ -4,7 +4,7 @@ import { DialogZyx, AntTab, AntTabPanel } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import { getInventoryMovement } from "common/helpers";
+import { dateToLocalDate, getInventoryMovement } from "common/helpers";
 import { getCollectionAux2 } from "store/main/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -37,36 +37,34 @@ const StatusHistoryDialog : React.FC<{
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
   const [tabIndex, setTabIndex] = useState(0);
-  const data = useSelector(state => state.main.mainAux2);
+  const data = useSelector((state) => state.main.mainAux);
+  console.log(data)
 
 
 const columns = React.useMemo(
   () => [
     {
-      accessor: 'globalid',
-      NoFilter: true,
-      isComponent: true,
-      minWidth: 60,
-      width: '1%',
-    },
-    {
       Header: t(langKeys.status),
-      accessor: "inventorymovementid",
+      accessor: "status",
       width: "auto",
     },
     {
       Header: t(langKeys.modificationDate),
-      accessor: "movementtype",
+      accessor: "changedate",
       width: "auto",
+      Cell: (props: any) => {
+          const row = props.cell.row.original;
+          return <div>{dateToLocalDate(row.changedate)}</div>;
+      },
     },
     {
       Header: t(langKeys.modifiedBy),
-      accessor: "realdate",
+      accessor: "changeby",
       width: "auto",
     },
     {
       Header: t(langKeys.ticket_comment),
-      accessor: "transactiondate",
+      accessor: "comment",
       width: "auto",
     },
   ],
@@ -77,7 +75,8 @@ const columns = React.useMemo(
     <DialogZyx open={openModal} title={t(langKeys.seestatushistory)} maxWidth="md">
       <TableZyx
         columns={columns}
-        data={[]}
+        data={data?.data}
+        loading={data.loading}
         download={false}
         filterGeneral={false}
         register={false}

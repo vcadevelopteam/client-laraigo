@@ -336,7 +336,7 @@ const DialogInteractionsUniqueReports: React.FC<{ ticket: Dictionary | null, ope
                     document.body.appendChild(gg);
                     const pdf = new jsPDF.jsPDF('p', 'mm');
                     if (pdf) {
-                        DomToImage.toPng(gg)
+                        DomToImage.toPng(gg, { cacheBust: true })
                             .then(imgData => {
                                 var imgWidth = 200;
                                 var pageHeight = 297;

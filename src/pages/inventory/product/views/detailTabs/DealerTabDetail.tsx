@@ -11,7 +11,7 @@ import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { execute } from "store/main/actions";
-import { insProductDealer } from "common/helpers";
+import { formatDate, insProductDealer } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -78,8 +78,10 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
   const handleDelete = (row: Dictionary, i:number) => {
     if(edit){
       const callback = () => {
+        console.log(row)
+        debugger
         dispatch(
-          execute(insProductDealer({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+          execute(insProductDealer({ ...row, p_tableid: row.productid, operation: "DELETE", status: "ELIMINADO" }))
         );
         dispatch(showBackdrop(true));
         setWaitSave(true);
@@ -150,6 +152,10 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
         Header: t(langKeys.last_order_date),
         accessor: "lastorderdate",
         width: "auto",
+        Cell: (props: any) => {
+            const { lastorderdate } = props.cell.row.original;
+            return lastorderdate? formatDate(lastorderdate, { withTime: false }): ""
+        }
       },
       {
         Header: t(langKeys.purchase_unit),

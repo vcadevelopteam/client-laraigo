@@ -108,17 +108,17 @@ const ImportDialog: React.FC<{
     );
 
     return (
-      element.description.toString().length <= 256 &&
-      element.productcode.toString().length <= 20 &&
-      element.descriptionlarge.toString().length <= 10000 &&
-      validDomainProductType[element.producttype] &&
-      validDomainFamily[element.familyid] &&
-      validDomainSubFamily[element.subfamilyid] &&
-      validDomainUnitBuy[element.unitbuyid] &&
-      validDomainUnitDispatch[element.unitdispatchid] &&
-      validDomainLote[element.loteid] &&
-      validDomainStatus[element.status] &&
-      element.description.toString().length > 0
+      element?.description?.toString()?.length <= 256 &&
+      element?.productcode?.toString()?.length <= 20 &&
+      (!element?.descriptionlarge || element?.descriptionlarge?.toString()?.length <= 10000) &&
+      validDomainProductType[element?.producttype] &&
+      (!element?.familyid || validDomainFamily[element?.familyid]) &&
+      (!element?.subfamilyid || validDomainSubFamily[element?.subfamilyid]) &&
+      (!element?.unitbuyid || validDomainUnitBuy[element?.unitbuyid]) &&
+      (!element?.unitdispatchid || validDomainUnitDispatch[element?.unitdispatchid]) &&
+      (!element?.loteid || validDomainLote[element?.loteid]) &&
+      validDomainStatus[element?.status] &&
+      element?.description?.toString()?.length > 0
     );
   };
 
@@ -169,13 +169,13 @@ const ImportDialog: React.FC<{
       {}
     );
     return (
-      validDomainProduct[element.productid] &&
-      validDomainWarehouse[element.warehouseid] &&
-      typeof element.priceunit === 'number' && element.priceunit > 0 &&
-      ((element.ispredeterminate === 'true')||(element.ispredeterminate === 'false')) &&
-      validDomainTypeCostDispatch[element.typecostdispatch]&&
-      validDomainUnitDispatch[element.unitdispatchid] &&
-      validDomainUnitBuy[element.unitbuyid]
+      validDomainProduct[element?.productid] &&
+      validDomainWarehouse[element?.warehouseid] &&
+      typeof element?.priceunit === 'number' && element?.priceunit > 0 &&
+      ((element?.ispredeterminate === 'true')||(element?.ispredeterminate === 'false')) &&
+      validDomainTypeCostDispatch[element?.typecostdispatch]&&
+      validDomainUnitDispatch[element?.unitdispatchid] &&
+      validDomainUnitBuy[element?.unitbuyid]
     );
   };
 
@@ -225,18 +225,18 @@ const ImportDialog: React.FC<{
     );
 
     return (
-      validDomainProduct[element.productid] &&
-      validDomainManufacturer[element.manufacturerid] &&
-      validDomainManufacturer[element.distributorid] &&
-      element.model.toString().length <=256 &&
-      element.catalognumber.toString().length <=256 &&
-      element.webpage.toString().length <=256 &&
-      validDomainTaxe[element.taxeid] &&
-      ((element.isstockistdefault === 'true')||(element.isstockistdefault === 'false')) &&
-      typeof element.averagedeliverytime === 'number' && element.averagedeliverytime > 0 &&
-      typeof element.lastprice === 'number' && element.lastprice > 0 &&
-      element.lastorderdate.toString().length >0 &&
-      validDomainUnitBuy[element.unitbuy]
+      validDomainProduct[element?.productid] &&
+      validDomainManufacturer[element?.manufacturerid] &&
+      validDomainManufacturer[element?.distributorid] &&
+      element?.model?.toString()?.length <=256 &&
+      element?.catalognumber?.toString()?.length <=256 &&
+      element?.webpage?.toString()?.length <=256 &&
+      validDomainTaxe[element?.taxeid] &&
+      ((element?.isstockistdefault === 'true')||(element?.isstockistdefault === 'false')) &&
+      typeof element?.averagedeliverytime === 'number' && element?.averagedeliverytime > 0 &&
+      typeof element?.lastprice === 'number' && element?.lastprice > 0 &&
+      element?.lastorderdate?.toString()?.length >0 &&
+      validDomainUnitBuy[element?.unitbuy]
     );
   };
   
@@ -276,10 +276,10 @@ const ImportDialog: React.FC<{
       {}
     );
     return (
-      validDomainProduct[element.productid] &&
-      element.attributeid.toString().length <=56 &&
-      element.value.toString().length <=9 &&
-      validDomainUnitBuy[element.unitmeasureid]
+      validDomainProduct[element?.productid] &&
+      element?.attributeid?.toString()?.length <=56 &&
+      element?.value?.toString()?.length <=9 &&
+      validDomainUnitBuy[element?.unitmeasureid]
     );
   };
   

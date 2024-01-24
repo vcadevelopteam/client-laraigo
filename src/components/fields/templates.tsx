@@ -1323,6 +1323,18 @@ interface AntTabPanelProps {
 }
 
 export const AntTabPanel: FC<AntTabPanelProps> = ({ index, currentIndex, children }) => {
+    if (index !== currentIndex) {
+        return null
+    }
+    
+    return (
+        <div role="tabpanel" >
+            {children}
+        </div>
+    );
+}
+
+export const AntTabPanelAux: FC<AntTabPanelProps> = ({ index, currentIndex, children }) => {
     return (
         <div role="tabpanel" style={{ display: index === currentIndex ? 'block' : 'none' }}>
             {children}
@@ -1388,7 +1400,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
                 {icon?.(handleClick) || <Tooltip title={String(t(langKeys.send_emoji))} arrow placement="top">
-                    <IconButton onClick={handleClick}>
+                    <IconButton onClick={handleClick} size='small'>
                         <EmojiICon className={classes.root}/>
                     </IconButton>
                 </Tooltip>}
@@ -1464,7 +1476,7 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style || undefined}>
                 <Tooltip title={String(t(langKeys.send_gif))} arrow placement="top">
-                    <IconButton onClick={handleClick}>
+                    <IconButton onClick={handleClick} size='small'>
                         <GifIcon className={classes.root} />
                     </IconButton>
                 </Tooltip>

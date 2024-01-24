@@ -58,4 +58,11 @@ export type ICalendarFormFields = {
     rescheduletemplateidhsm: number,
     reschedulenotificationhsm: any,
     reschedulehsmtemplatename: any,
+    sendeventtype: ICalendarSendEventType,
+}
+
+export type ICalendarSendEventType = {
+    type?: string,
+    eventsendtemplateid?: number,
+    information_message?: string
 }

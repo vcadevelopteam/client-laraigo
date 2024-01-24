@@ -6,9 +6,9 @@ export const charge = (state: IState, action: IAction): IState => ({
     request: {
         ...state.request,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const chargeFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -17,9 +17,9 @@ export const chargeFailure = (state: IState, action: IAction): IState => ({
         loading: false,
         error: true,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const chargeSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -29,23 +29,23 @@ export const chargeSuccess = (state: IState, action: IAction): IState => ({
         error: false,
         data: action.payload.data,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const chargeReset = (state: IState): IState => ({
     ...state,
-    request: initialState.request
-})
+    request: initialState.request,
+});
 
 export const balance = (state: IState, action: IAction): IState => ({
     ...state,
     request: {
         ...state.request,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const balanceFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -54,9 +54,9 @@ export const balanceFailure = (state: IState, action: IAction): IState => ({
         loading: false,
         error: true,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const balanceSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -66,23 +66,23 @@ export const balanceSuccess = (state: IState, action: IAction): IState => ({
         error: false,
         data: action.payload.data,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const balanceReset = (state: IState): IState => ({
     ...state,
-    request: initialState.request
-})
+    request: initialState.request,
+});
 
 export const paymentOrder = (state: IState, action: IAction): IState => ({
     ...state,
     request: {
         ...state.request,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const paymentOrderFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -91,9 +91,9 @@ export const paymentOrderFailure = (state: IState, action: IAction): IState => (
         loading: false,
         error: true,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const paymentOrderSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -102,23 +102,23 @@ export const paymentOrderSuccess = (state: IState, action: IAction): IState => (
         loading: false,
         error: false,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const paymentOrderReset = (state: IState): IState => ({
     ...state,
-    request: initialState.request
-})
+    request: initialState.request,
+});
 
 export const createInvoice = (state: IState, action: IAction): IState => ({
     ...state,
     requestCreateInvoice: {
         ...state.requestCreateInvoice,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const createInvoiceFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -127,9 +127,9 @@ export const createInvoiceFailure = (state: IState, action: IAction): IState => 
         loading: false,
         error: true,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const createInvoiceSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -139,23 +139,23 @@ export const createInvoiceSuccess = (state: IState, action: IAction): IState => 
         error: false,
         data: action.payload.data,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const createInvoiceReset = (state: IState): IState => ({
     ...state,
-    requestCreateInvoice: initialState.requestCreateInvoice
-})
+    requestCreateInvoice: initialState.requestCreateInvoice,
+});
 
 export const subscribe = (state: IState, action: IAction): IState => ({
     ...state,
     request: {
         ...state.request,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const subscribeFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -164,9 +164,9 @@ export const subscribeFailure = (state: IState, action: IAction): IState => ({
         loading: false,
         error: true,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const subscribeSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -176,23 +176,23 @@ export const subscribeSuccess = (state: IState, action: IAction): IState => ({
         error: false,
         data: action.payload.data,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const subscribeReset = (state: IState): IState => ({
     ...state,
-    request: initialState.request
-})
+    request: initialState.request,
+});
 
 export const unsubscribe = (state: IState, action: IAction): IState => ({
     ...state,
     request: {
         ...state.request,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const unsubscribeFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -201,9 +201,9 @@ export const unsubscribeFailure = (state: IState, action: IAction): IState => ({
         loading: false,
         error: true,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const unsubscribeSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -213,24 +213,23 @@ export const unsubscribeSuccess = (state: IState, action: IAction): IState => ({
         error: false,
         data: action.payload.data,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const unsubscribeReset = (state: IState): IState => ({
     ...state,
-    request: initialState.request
-})
-
+    request: initialState.request,
+});
 
 export const sendInvoice = (state: IState, action: IAction): IState => ({
     ...state,
     request: {
         ...state.request,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const sendInvoiceFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -238,10 +237,10 @@ export const sendInvoiceFailure = (state: IState, action: IAction): IState => ({
         ...state.request,
         loading: false,
         error: true,
-        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
-        message: action.payload.message
-    }
-})
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : "error_unexpected_error",
+        message: action.payload.message,
+    },
+});
 
 export const sendInvoiceSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -251,23 +250,23 @@ export const sendInvoiceSuccess = (state: IState, action: IAction): IState => ({
         error: false,
         data: action.payload.data,
         code: action.payload.code,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const sendInvoiceReset = (state: IState): IState => ({
     ...state,
-    request: initialState.request
-})
+    request: initialState.request,
+});
 
 export const createCreditNote = (state: IState, action: IAction): IState => ({
     ...state,
     requestCreateCreditNote: {
         ...state.requestCreateCreditNote,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const createCreditNoteFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -276,9 +275,9 @@ export const createCreditNoteFailure = (state: IState, action: IAction): IState 
         loading: false,
         error: true,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const createCreditNoteSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -288,23 +287,23 @@ export const createCreditNoteSuccess = (state: IState, action: IAction): IState 
         error: false,
         data: action.payload.data,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const createCreditNoteReset = (state: IState): IState => ({
     ...state,
-    requestCreateCreditNote: initialState.requestCreateCreditNote
-})
+    requestCreateCreditNote: initialState.requestCreateCreditNote,
+});
 
 export const regularizeInvoice = (state: IState, action: IAction): IState => ({
     ...state,
     requestRegularizeInvoice: {
         ...state.requestRegularizeInvoice,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const regularizeInvoiceFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -313,9 +312,9 @@ export const regularizeInvoiceFailure = (state: IState, action: IAction): IState
         loading: false,
         error: true,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const regularizeInvoiceSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -325,23 +324,23 @@ export const regularizeInvoiceSuccess = (state: IState, action: IAction): IState
         error: false,
         data: action.payload.data,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const regularizeInvoiceReset = (state: IState): IState => ({
     ...state,
-    requestRegularizeInvoice: initialState.requestRegularizeInvoice
-})
+    requestRegularizeInvoice: initialState.requestRegularizeInvoice,
+});
 
 export const getExchangeRate = (state: IState, action: IAction): IState => ({
     ...state,
     requestGetExchangeRate: {
         ...state.requestGetExchangeRate,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const getExchangeRateFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -350,9 +349,9 @@ export const getExchangeRateFailure = (state: IState, action: IAction): IState =
         loading: false,
         error: true,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const getExchangeRateSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -361,24 +360,25 @@ export const getExchangeRateSuccess = (state: IState, action: IAction): IState =
         loading: false,
         error: false,
         exchangerate: action.payload.exchangerate,
+        exchangeratesol: action.payload.exchangeratesol,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const getExchangeRateReset = (state: IState): IState => ({
     ...state,
-    requestGetExchangeRate: initialState.requestGetExchangeRate
-})
+    requestGetExchangeRate: initialState.requestGetExchangeRate,
+});
 
 export const emitInvoice = (state: IState, action: IAction): IState => ({
     ...state,
     requestEmitInvoice: {
         ...state.requestEmitInvoice,
         loading: true,
-        error: false
-    }
-})
+        error: false,
+    },
+});
 
 export const emitInvoiceFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -387,9 +387,9 @@ export const emitInvoiceFailure = (state: IState, action: IAction): IState => ({
         loading: false,
         error: true,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const emitInvoiceSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -399,14 +399,14 @@ export const emitInvoiceSuccess = (state: IState, action: IAction): IState => ({
         error: false,
         data: action.payload.data,
         code: action.payload.code ? action.payload.code : action.payload.message,
-        message: action.payload.message
-    }
-})
+        message: action.payload.message,
+    },
+});
 
 export const emitInvoiceReset = (state: IState): IState => ({
     ...state,
-    requestEmitInvoice: initialState.requestEmitInvoice
-})
+    requestEmitInvoice: initialState.requestEmitInvoice,
+});
 
 export const cardCreate = (state: IState, action: IAction): IState => ({
     ...state,
@@ -414,8 +414,8 @@ export const cardCreate = (state: IState, action: IAction): IState => ({
         ...state.requestCardCreate,
         error: false,
         loading: true,
-    }
-})
+    },
+});
 
 export const cardCreateFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -424,9 +424,9 @@ export const cardCreateFailure = (state: IState, action: IAction): IState => ({
         code: action?.payload?.code,
         error: action?.payload?.success ? false : true,
         loading: false,
-        msg: action?.payload?.message || 'error_unexpected_error',
-    }
-})
+        msg: action?.payload?.message || "error_unexpected_error",
+    },
+});
 
 export const cardCreateSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -436,13 +436,13 @@ export const cardCreateSuccess = (state: IState, action: IAction): IState => ({
         error: action?.payload?.success ? false : true,
         loading: false,
         msg: action?.payload?.message,
-    }
-})
+    },
+});
 
 export const cardCreateReset = (state: IState): IState => ({
     ...state,
     requestCardCreate: initialState.requestCardCreate,
-})
+});
 
 export const cardDelete = (state: IState, action: IAction): IState => ({
     ...state,
@@ -450,8 +450,8 @@ export const cardDelete = (state: IState, action: IAction): IState => ({
         ...state.requestCardDelete,
         error: false,
         loading: true,
-    }
-})
+    },
+});
 
 export const cardDeleteFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -460,9 +460,9 @@ export const cardDeleteFailure = (state: IState, action: IAction): IState => ({
         code: action?.payload?.code,
         error: action?.payload?.success ? false : true,
         loading: false,
-        msg: action?.payload?.message || 'error_unexpected_error',
-    }
-})
+        msg: action?.payload?.message || "error_unexpected_error",
+    },
+});
 
 export const cardDeleteSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -472,50 +472,13 @@ export const cardDeleteSuccess = (state: IState, action: IAction): IState => ({
         error: action?.payload?.success ? false : true,
         loading: false,
         msg: action?.payload?.message,
-    }
-})
+    },
+});
 
 export const cardDeleteReset = (state: IState): IState => ({
     ...state,
     requestCardDelete: initialState.requestCardDelete,
-})
-
-export const cardGet = (state: IState, action: IAction): IState => ({
-    ...state,
-    requestCardGet: {
-        ...state.requestCardGet,
-        error: false,
-        loading: true,
-    }
-})
-
-export const cardGetFailure = (state: IState, action: IAction): IState => ({
-    ...state,
-    requestCardGet: {
-        ...state.requestCardGet,
-        code: action?.payload?.code,
-        error: action?.payload?.success ? false : true,
-        loading: false,
-        msg: action?.payload?.message || 'error_unexpected_error',
-    }
-})
-
-export const cardGetSuccess = (state: IState, action: IAction): IState => ({
-    ...state,
-    requestCardGet: {
-        ...state.requestCardGet,
-        datacard: action?.payload?.data,
-        code: action?.payload?.code,
-        error: action?.payload?.success ? false : true,
-        loading: false,
-        msg: action?.payload?.message,
-    }
-})
-
-export const cardGetReset = (state: IState): IState => ({
-    ...state,
-    requestCardGet: initialState.requestCardGet,
-})
+});
 
 export const reportPdf = (state: IState, action: IAction): IState => ({
     ...state,
@@ -523,8 +486,8 @@ export const reportPdf = (state: IState, action: IAction): IState => ({
         ...state.requestReportPdf,
         error: false,
         loading: true,
-    }
-})
+    },
+});
 
 export const reportPdfFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -533,9 +496,9 @@ export const reportPdfFailure = (state: IState, action: IAction): IState => ({
         code: action?.payload?.code,
         error: action?.payload?.success ? false : true,
         loading: false,
-        msg: action?.payload?.message || 'error_unexpected_error',
-    }
-})
+        msg: action?.payload?.message || "error_unexpected_error",
+    },
+});
 
 export const reportPdfSuccess = (state: IState, action: IAction): IState => ({
     ...state,
@@ -546,10 +509,10 @@ export const reportPdfSuccess = (state: IState, action: IAction): IState => ({
         error: action?.payload?.success ? false : true,
         loading: false,
         msg: action?.payload?.message,
-    }
-})
+    },
+});
 
 export const reportPdfReset = (state: IState): IState => ({
     ...state,
     requestReportPdf: initialState.requestReportPdf,
-})
+});

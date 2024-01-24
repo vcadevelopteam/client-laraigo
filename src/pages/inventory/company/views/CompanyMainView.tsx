@@ -16,7 +16,7 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, getCompanyExport, importManufacturer, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
+import { exportExcel, getCompanyExport, importManufacturer, insCompany, insWarehouse, templateMaker, uploadExcel } from "common/helpers";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
 import TablePaginated from "components/fields/table-paginated";
@@ -106,7 +106,7 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
-        execute(insWarehouse({ ...row, operation: "DELETE", status: "ELIMINADO" }))
+        execute(insCompany({ ...row, operation: "DELETE", status: "ELIMINADO" }))
       );
       dispatch(showBackdrop(true));
       setWaitSave(true);
@@ -263,7 +263,7 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
     return (
       ((element.ispaymentdelivery === 'true')||(element.ispaymentdelivery === 'false')) &&
       validDomainTaxes[element.taxeid] &&
-      (element?.clientenumbers? element.clientenumbers?.length <= 136:true) &&
+      (element?.clientenumbers? String(element.clientenumbers)?.length <= 136:true) &&
       (element?.beginpage? element.beginpage?.length <= 136:true) &&
       validDomainCurrency[element.currencyid] &&
       validDomainTypeManufacturer[element.typemanufacterid] &&
@@ -280,8 +280,9 @@ const CompanyMainView: FC<CompanyMainViewProps> = ({
       if (data.length > 0) {
         const error = data.some((element) => !isValidData(element));
         if(!error){
-          let dataToSend = data.map((x: any) => ({
+          const dataToSend = data.map((x: any) => ({
             ...x,
+            ispaymentdelivery: x.ispaymentdelivery==="true",
             manufacturerid: 0,
             operation: "INSERT",
             type: "NINGUNO",

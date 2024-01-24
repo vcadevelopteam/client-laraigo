@@ -192,7 +192,7 @@ const GenericPdfDownloader: React.FC<{ downloadFileName: string; el: null | HTML
                 document.body.appendChild(gg);
                 const pdf = new jsPDF.jsPDF('l', 'mm');
                 if (pdf) {
-                    DomToImage.toPng(gg)
+                    DomToImage.toPng(gg, { cacheBust: true })
                         .then(imgData => {
                             const imgWidth = 280;
                             const pageHeight = 210;
@@ -482,7 +482,7 @@ const DashboardKPIMonthly: FC = () => {
                 </div>
             </div>
             <div ref={el} style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
-                <div className={classes.replacerowzyx} style={{  }}>
+                <div className={classes.replacerowzyx} style={{}}>
                     <Box
                         className={classes.columnCard2}
                     >

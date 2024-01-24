@@ -114,7 +114,7 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({ value, setValue
         }
     };
 
-    const handleOnBlur = (evt) => {
+    const handleOnBlur = (evt: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => {
         const value = evt.target.value;
         if (isValid(value)) {
             setValue((prevValue) => [...prevValue, value]);
@@ -124,7 +124,7 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({ value, setValue
         }
     };
 
-    const handleInputChange = (event, newInputValue) => {
+    const handleInputChange = (newInputValue: string) => {
         setInputValue(newInputValue);
     };
 
@@ -156,7 +156,7 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({ value, setValue
                 onPaste={handlePaste}
                 options={[]}
                 inputValue={inputValue}
-                onInputChange={handleInputChange}
+                onInputChange={(_, newValue: string) => handleInputChange(newValue)}
                 renderTags={(value: string[], getTagProps) =>
                     value.map((option: string, index: number) => (
                         <Chip
@@ -243,6 +243,9 @@ const MailRecipients: React.FC<MailRecipientsProps> = ({ setCopyEmails }) => {
             const copyEmails = interactionList.data[0].emailcopy.split(';')
             setEmailCopy(copyEmails)
             setCopySelected(preV => ({...preV, cc: true}))
+        } else {
+            setEmailCopy([])
+            setCopySelected(preV => ({...preV, cc: false}))
         }
     }, [ticketSelected]);
 

@@ -121,7 +121,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
             unitbuyid: row?.unitbuyid || 0,
             unitdispatchid: row?.unitdispatchid || 0,
             status: row?.status || "ACTIVO",
-            operation: edit ? "EDIT" : "INSERT",
+            operation: (edit||duplicated) ? "EDIT" : "INSERT",
             productcode: edit ? row?.productcode : "",
             subfamilyid: row?.subfamilyid || 0,
             loteid: row?.loteid || 0,
@@ -190,6 +190,13 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
 
         dispatch(resetMainAux());
     }, [register]);
+
+    const handleKeyPress = (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent the default form submission
+        // Add your custom logic here if needed
+      }
+    };
 
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
@@ -262,7 +269,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({
     }
 
     return (
-        <form onSubmit={onMainSubmit} style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+        <form onSubmit={onMainSubmit} style={{ display: "flex", flexDirection: "column", width: "100%" }} onKeyPress={handleKeyPress}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
                     <TemplateBreadcrumbs

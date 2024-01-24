@@ -1,18 +1,18 @@
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import React, { FC, useEffect, useState } from "react";
 
-import { apiUrls } from 'common/constants';
-import { Button } from '@material-ui/core';
-import { charge, resetCharge, subscribe, resetSubscribe, balance, resetBalance, paymentOrder, resetPaymentOrder } from 'store/culqi/actions'
-import { CulqiProvider, Culqi } from 'react-culqi';
-import { Dictionary } from '@types';
-import { FC, useEffect, useState } from 'react';
-import { langKeys } from 'lang/keys';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'hooks';
-import { useTranslation } from 'react-i18next';
+import { apiUrls } from "common/constants";
+import { balance, charge, paymentOrder, resetBalance, resetCharge, resetPaymentOrder } from "store/culqi/actions";
+import { Button } from "@material-ui/core";
+import { Culqi, CulqiProvider } from "react-culqi";
+import { Dictionary } from "@types";
+import { langKeys } from "lang/keys";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { useDispatch } from "react-redux";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
 
-const globalpublickey = apiUrls.CULQIKEY;
+const alternatepublickey = apiUrls.CULQIKEY;
 
 interface CulqiOptionsProps {
     buttontext?: string;
@@ -32,15 +32,12 @@ interface CulqiModalProps {
     currency: string;
     description: string;
     disabled?: boolean;
-    interval?: string;
-    interval_count?: number;
     invoiceid?: number;
-    paymentorderid?: number;
-    limit?: number;
     metadata?: Dictionary;
     options?: CulqiOptionsProps;
     orgid?: number;
     override?: boolean;
+    paymentorderid?: number;
     publickey?: string;
     purchaseorder?: string;
     reference?: string;
@@ -48,158 +45,173 @@ interface CulqiModalProps {
     title: string;
     totalamount?: number;
     totalpay?: number;
-    type?: "CHARGE" | "SUBSCRIPTION" | "BALANCE" | "PAYMENTORDER",
+    type?: "CHARGE" | "BALANCE" | "PAYMENTORDER";
 }
 
-const CulqiModal: FC<CulqiModalProps> = ({ amount, buttontitle, buyamount, callbackOnSuccess, comments, corpid = 0, currency = "USD", description, disabled = false, interval, interval_count, invoiceid, paymentorderid, limit, metadata, options = {}, orgid = 0, override, publickey, purchaseorder, reference, successmessage, title, totalamount, totalpay, type = "CHARGE" }) => {
+const CulqiModal: FC<CulqiModalProps> = ({
+    amount,
+    buttontitle,
+    buyamount,
+    callbackOnSuccess,
+    comments,
+    corpid = 0,
+    currency = "USD",
+    description,
+    disabled = false,
+    invoiceid,
+    metadata,
+    options = {},
+    orgid = 0,
+    override,
+    paymentorderid,
+    publickey,
+    purchaseorder,
+    reference,
+    successmessage,
+    title,
+    totalamount,
+    totalpay,
+    type = "CHARGE",
+}) => {
     const { t } = useTranslation();
 
     const dispatch = useDispatch();
 
-    const culqiSelector = useSelector(state => state.culqi.request);
+    const culqiSelector = useSelector((state) => state.culqi.request);
 
     const [waitPay, setWaitPay] = useState(false);
 
     const createCharge = (token: any) => {
+        dispatch(
+            charge({
+                comments,
+                corpid,
+                invoiceid,
+                metadata,
+                orgid,
+                override,
+                purchaseorder,
+                settings: { amount, currency, description, title },
+                token,
+            })
+        );
         dispatch(showBackdrop(true));
-        dispatch(charge({
-            comments,
-            corpid,
-            invoiceid,
-            metadata,
-            orgid,
-            override,
-            purchaseorder,
-            settings: { title, description, currency, amount },
-            token,
-        }));
         setWaitPay(true);
-    }
+    };
 
     const createBalance = (token: any) => {
+        dispatch(
+            balance({
+                buyamount,
+                comments,
+                corpid,
+                invoiceid,
+                metadata,
+                orgid,
+                purchaseorder,
+                reference,
+                settings: { amount, currency, description, title },
+                token,
+                totalamount,
+                totalpay,
+            })
+        );
         dispatch(showBackdrop(true));
-        dispatch(balance({
-            buyamount,
-            comments,
-            corpid,
-            invoiceid,
-            metadata,
-            orgid,
-            purchaseorder,
-            reference,
-            settings: { title, description, currency, amount },
-            token,
-            totalamount,
-            totalpay,
-        }));
         setWaitPay(true);
-    }
+    };
 
     const createPaymentOrder = (token: any) => {
+        dispatch(
+            paymentOrder({
+                corpid,
+                metadata,
+                orgid,
+                paymentorderid,
+                settings: { amount, currency, description, title },
+                token,
+            })
+        );
         dispatch(showBackdrop(true));
-        dispatch(paymentOrder({
-            corpid,
-            metadata,
-            orgid,
-            paymentorderid,
-            settings: { title, description, currency, amount },
-            token,
-        }));
         setWaitPay(true);
-    }
-
-    const createSubscription = (token: any) => {
-        dispatch(showBackdrop(true));
-        dispatch(subscribe({
-            metadata,
-            settings: { title, description, currency, amount, interval, interval_count, limit },
-            token,
-        }));
-        setWaitPay(true);
-    }
+    };
 
     const onToken = (token: any) => {
         switch (type) {
-            case 'BALANCE':
+            case "BALANCE":
                 createBalance(token);
                 break;
 
-            case 'CHARGE':
+            case "CHARGE":
                 createCharge(token);
                 break;
 
-            case 'PAYMENTORDER':
+            case "PAYMENTORDER":
                 createPaymentOrder(token);
                 break;
-
-            case 'SUBSCRIPTION':
-                createSubscription(token);
-                break;
-
-            default:
-                break;
         }
-    }
+    };
 
-    const onError = (error: any) => {
+    const onError = () => {
         switch (type) {
-            case 'BALANCE':
+            case "BALANCE":
                 dispatch(resetBalance());
                 break;
 
-            case 'CHARGE':
+            case "CHARGE":
                 dispatch(resetCharge());
                 break;
 
-            case 'PAYMENTORDER':
+            case "PAYMENTORDER":
                 dispatch(resetPaymentOrder());
                 break;
-
-            case 'SUBSCRIPTION':
-                dispatch(resetSubscribe());
-                break;
         }
-    }
+    };
 
     const resetRequest = () => {
         switch (type) {
-            case 'BALANCE':
+            case "BALANCE":
                 dispatch(resetBalance());
                 break;
 
-            case 'CHARGE':
+            case "CHARGE":
                 dispatch(resetCharge());
                 break;
 
-            case 'PAYMENTORDER':
+            case "PAYMENTORDER":
                 dispatch(resetPaymentOrder());
                 break;
-
-            case 'SUBSCRIPTION':
-                dispatch(resetSubscribe());
-                break;
         }
-    }
+    };
 
     useEffect(() => {
         if (waitPay) {
             if (!culqiSelector.loading && !culqiSelector.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: `${successmessage ? successmessage : culqiSelector.message}` }))
+                dispatch(
+                    showSnackbar({
+                        message: `${successmessage ? successmessage : culqiSelector.message}`,
+                        severity: "success",
+                        show: true,
+                    })
+                );
                 dispatch(showBackdrop(false));
                 setWaitPay(false);
 
                 resetRequest && resetRequest();
                 callbackOnSuccess && callbackOnSuccess();
-            }
-            else if (culqiSelector.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: `${culqiSelector.message ? culqiSelector.message : t("error_unexpected_error")}` }))
+            } else if (culqiSelector.error) {
+                dispatch(
+                    showSnackbar({
+                        message: `${culqiSelector.message ? culqiSelector.message : t("error_unexpected_error")}`,
+                        severity: "error",
+                        show: true,
+                    })
+                );
                 dispatch(showBackdrop(false));
                 setWaitPay(false);
 
                 resetRequest && resetRequest();
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [culqiSelector, waitPay]);
 
     return (
@@ -209,16 +221,16 @@ const CulqiModal: FC<CulqiModalProps> = ({ amount, buttontitle, buyamount, callb
             description={description}
             onError={onError}
             onToken={onToken}
+            publicKey={publickey || alternatepublickey}
+            title={title}
             options={{
                 style: {
-                    maincolor: "#7721AD",
                     buttontext: "#FFFFFF",
+                    maincolor: "#7721AD",
                     maintext: "#7721AD",
-                    ...options
-                }
+                    ...options,
+                },
             }}
-            publicKey={publickey || globalpublickey}
-            title={title}
         >
             <Culqi>
                 {({ openCulqi }: any) => {
@@ -234,7 +246,7 @@ const CulqiModal: FC<CulqiModalProps> = ({ amount, buttontitle, buyamount, callb
                         >
                             {buttontitle ? buttontitle : t(langKeys.pay)}
                         </Button>
-                    )
+                    );
                 }}
             </Culqi>
         </CulqiProvider>

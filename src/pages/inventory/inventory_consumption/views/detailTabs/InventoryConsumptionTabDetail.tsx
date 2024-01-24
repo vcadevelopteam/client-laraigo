@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { Button, IconButton } from "@material-ui/core";
 import { Dictionary } from "@types";
@@ -7,17 +7,17 @@ import { Add } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { FieldEdit, FieldSelect, PhoneFieldEdit, TemplateIcons, TitleDetail } from 'components';
+import { FieldEdit, FieldSelect, TemplateIcons, TitleDetail } from 'components';
 import { useSelector } from 'hooks';
 import TableZyx from 'components/fields/table-simple';
 import AddInventoryConsumptionLineDialog from '../../dialogs/AddInventoryConsumptionLineDialog';
 import TableSelectionDialog from '../../dialogs/TableSelectionDialog';
-import { execute, getCollection, getMultiCollection, getMultiCollectionAux2 } from 'store/main/actions';
-import { manageConfirmation, showBackdrop } from 'store/popus/actions';
+import { getMultiCollection } from 'store/main/actions';
 import SelectReservedProductsDialog from '../../dialogs/SelectReservedProductsDialog';
 import SelectProductsForReturnDialog from '../../dialogs/SelectProductsForReturnDialog';
-import { getInventoryConsumptionDetail, getWarehouseProducts, reservationswarehouseSel } from 'common/helpers';
+import { getWarehouseProducts, inventoryconsumptionsbywarehouseSel, reservationswarehouseSel } from 'common/helpers';
 import { useDispatch } from 'react-redux';
+import AddInventoryConsumptionTransferLineDialog from '../../dialogs/AddInventoryConsumptionTransferLineDialog';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -82,6 +82,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     const multiData = useSelector(state => state.main.multiData);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [openModal, setOpenModal] = useState(false);
+    const [openModalTransfer, setOpenModalTransfer] = useState(false);
     const [openModalWarehouse, setOpenModalWarehouse] = useState(false);
     const [openModalReservedProducts, setOpenModalReservedProducts] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary|null>(null);
@@ -116,6 +117,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             dispatch(getMultiCollection([
                 getWarehouseProducts(selectedWarehouse?.warehouseid||0),
                 reservationswarehouseSel(selectedWarehouse?.warehouseid||0),
+                inventoryconsumptionsbywarehouseSel(selectedWarehouse?.warehouseid||0),
             ]))
         }
     }, [selectedWarehouse]);
@@ -126,12 +128,20 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
     }
 
     const handleEdit = (rowSelected: Dictionary) => {
-        setOpenModal(true)
+        if(getValues("transactiontype") === "DESPACHO"){
+            setOpenModal(true)
+        }else{
+            setOpenModalTransfer(true)
+        }
         setRowSelected({ row: rowSelected, edit: true })
     }
 
     const handleRegister = () => {
-        setOpenModal(true)
+        if(getValues("transactiontype") === "DESPACHO"){
+            setOpenModal(true)
+        }else{
+            setOpenModalTransfer(true)
+        }
         setRowSelected({ row: null, edit: false });
     }
 
@@ -220,7 +230,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             <div className="row-zyx">
                 <FieldEdit
                     label={"N° " + t(langKeys.inventory_consumption)}
-                    valueDefault={getValues("inventoryconsumptionid")}
+                    valueDefault={getValues("inventoryconsumptionserial")}
                     className="col-3"
                     disabled
                 />
@@ -293,7 +303,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                                     color="primary"
                                     style={{ backgroundColor: "#55BD84" }}
                                     onClick={handleOpenModalReturnProducts}
-                                    disabled={!edit}
+                                    disabled={edit || !selectedWarehouse || typeOperation !== "DEVOLUCION"}
                                     variant="contained"
                                 >
                                     {t(langKeys.selectproductsforreturn)}
@@ -331,6 +341,17 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
                 transactiontype={getValues("transactiontype")}
                 editRow={Boolean(row)}
             />
+            <AddInventoryConsumptionTransferLineDialog
+                openModal={openModalTransfer}
+                setOpenModal={setOpenModalTransfer}
+                updateRecords={setDataDetail}
+                rowSelected={rowSelected}
+                warehouseProducts={warehouseProducts}
+                row={row}
+                edit={edit}
+                transactiontype={getValues("transactiontype")}
+                editRow={Boolean(row)}
+            />
             <TableSelectionDialog
                 openModal={openModalWarehouse}
                 setOpenModal={setOpenModalWarehouse}
@@ -347,6 +368,7 @@ const InventoryConsumptionTabDetail: React.FC<WarehouseTabDetailProps> = ({
             <SelectProductsForReturnDialog
                 openModal={openModalReturnProducts}
                 setOpenModal={setOpenModalReturnProducts}
+                updateRecords={setDataDetail}
             />
         </div>
     );

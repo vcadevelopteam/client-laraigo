@@ -47,6 +47,7 @@ import {
     CompaniesIcon,
     InventoryConsumptionIcon,
     InventoryIcon,
+    DocumentLibraryIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -389,6 +390,13 @@ export const routes: RouteConfig[] = [
         icon: (className) => <ConfigPropertiesIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
+        key: paths.DOCUMENTLIBRARY,
+        description: <Trans i18nKey={langKeys.documentlibrary} count={2} />,
+        tooltip: "",
+        path: paths.DOCUMENTLIBRARY,
+        icon: (className) => <DocumentLibraryIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+    },
+    {
         key: paths.EXTRASLOCATION,
         description: <Trans i18nKey={langKeys.locations} count={2} />,
         tooltip: "",
@@ -589,6 +597,15 @@ export const routes: RouteConfig[] = [
         path: paths.INVENTORYCONSUMPTION,
         initialSubroute: paths.INVENTORYCONSUMPTION,
         icon: (className) => <InventoryConsumptionIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.IATRAINING2,
+        description: <Trans i18nKey={langKeys.training} />,
+        tooltip: <Trans i18nKey={langKeys.trainingwithai} />,
+        subroute: true,
+        path: paths.IATRAINING2,
+        initialSubroute: paths.IATRAINING2,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
     },
 ];
 

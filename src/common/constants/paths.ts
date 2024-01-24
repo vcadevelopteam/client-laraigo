@@ -30,6 +30,7 @@ const paths = {
     IACONECTORS: '/iaconectors',
     IACONFIGURATION: '/iaconfigurations',
     IATRAINING: '/iatraining',
+    IATRAINING2: '/iatraining2',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUPBASIC: "/sign-up/BASIC",
@@ -61,6 +62,14 @@ const paths = {
     OPENPAY_PAYMENTORDER: {
         path: "/paymentorderopenpay/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpay/${corpid}/${orgid}/${ordercode}`,
+    },
+    IZIPAY_PAYMENTORDER: {
+        path: "/paymentorderizipay/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderizipay/${corpid}/${orgid}/${ordercode}`,
+    },
+    OPENPAYCOLOMBIA_PAYMENTORDER: {
+        path: "/paymentorderopenpaycolombia/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpaycolombia/${corpid}/${orgid}/${ordercode}`,
     },
     LOCATION: {
         path: "/getLocations/:token",
@@ -298,6 +307,7 @@ const paths = {
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
     PROPERTIES: '/extras/properties',
+    DOCUMENTLIBRARY: '/documentlibrary',
     QUICKREPLIES: '/extras/quickreplies',
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',

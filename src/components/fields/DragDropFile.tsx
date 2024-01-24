@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }));
 
-const DragDropFile: FC<{ setFiles: (param: any) => void, setfileimage?: (param: any) => void }> = ({ children, setFiles, setfileimage }) => {
+const DragDropFile: FC<{ setFiles: (param: any) => void, disabled?: false }> = ({ children, setFiles, disabled = false }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const uploadResult = useSelector(state => state.main.uploadFile);
@@ -52,6 +52,8 @@ const DragDropFile: FC<{ setFiles: (param: any) => void, setfileimage?: (param: 
     const [idUpload, setIdUpload] = useState('');
 
     const handleDrag = (e: any) => {
+        if (disabled)
+            return;
         e.preventDefault();
         e.stopPropagation();
         if (waitSave) {
@@ -66,6 +68,8 @@ const DragDropFile: FC<{ setFiles: (param: any) => void, setfileimage?: (param: 
 
     // triggers when file is dropped
     const handleDrop = (e: any) => {
+        if (disabled)
+            return;
         e.preventDefault();
         e.stopPropagation();
         setDragActive(false);

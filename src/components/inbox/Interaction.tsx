@@ -521,8 +521,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     </iframe>
                     {(files && files !== "{}") &&
                         Object.keys(JSON.parse(files)).map((file: any) => {
-                            let hreffile = JSON.parse(files)[file]
-                            let extension = file.split('.').pop()
+                            const hreffile = JSON.parse(files)[file]
+                            const extension = file.split('.').pop()
                             return (
                                 <a key={file} download rel="noreferrer" target="_blank" href={hreffile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4, maxWidth: 200, border: "1px solid #e1e1e1", borderRadius: 5, marginBottom: 5, paddingRight: 5 }}>
                                     {extension === "pdf" ? (
@@ -837,7 +837,8 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
                     {interactions.map((item: IInteraction, index: number) => (
                         <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
                             [classes.interactionAgent]: usertype !== "client",
-                            [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA"
+                            [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
+                            [classes.interactionAgentEmail]: usertype !== 'client' && item.interactiontype === 'email'
                         })}>
                             {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
                                 <Avatar src={item.avatar + "" || undefined} />

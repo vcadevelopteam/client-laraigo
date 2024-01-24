@@ -156,7 +156,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data.filter(x=>x.type===type) : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    
+
     const filteredChannels = datachannels
     .filter((channel) => channel && channel.domaindesc)     
     .reduce((filteredChannels, channel) => {
@@ -171,8 +171,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
       }  
       return filteredChannels;
     }, [] as Dictionary[]);
-  
-
 
     const datamastercatalog = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -196,7 +194,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         register('id');
         register('title', { validate: {
             noempty: (value) => (value && value.length) || t(langKeys.field_required),
-            limit: (value) => (getValues("type") === "CATEGORIA")? ((value && value.length && value.length<= 20) || t(langKeys.limit20char)): true,
+            limit: (value) => (getValues("type") === "CATEGORIA")? ((value && value.length && value.length<= 50) || t(langKeys.limit50char)): true,
         }});
         register('description', { validate: {
             noempty: (value) => (value && value.length) || t(langKeys.field_required),
@@ -398,8 +396,19 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             label={t(langKeys.channel_plural)}
                             className="col-6"
                             onChange={(value) => {
-                                setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())
-                                seauxVariables({...auxVariables, communicationchannel: value.map((o: Dictionary) => o.domainvalue).join()})
+                                const selectedChannels = value.map((o: Dictionary) => o.domainvalue);
+                                const selectedDescriptions = value.map((o: Dictionary) => o.domaindesc);
+                        
+                                // Buscar otros domainvalue con la misma descripción
+                                const additionalChannels = datachannels
+                                    .filter((channel) => selectedDescriptions.includes(channel.domaindesc) && !selectedChannels.includes(channel.domainvalue))
+                                    .map((channel) => channel.domainvalue);
+                        
+                                // Combinar todos los domainvalue seleccionados
+                                const allSelectedChannels = [...selectedChannels, ...additionalChannels];
+                        
+                                setValue('communicationchannel', allSelectedChannels.join());
+                                seauxVariables({...auxVariables, communicationchannel: allSelectedChannels.join()});
                             }}
                             valueDefault={auxVariables.communicationchannel}
                             error={errors?.communicationchannel?.message}
@@ -625,15 +634,8 @@ const Tipifications: FC = () => {
             },
             {
                 Header: t(langKeys.app_productcatalog),
-                accessor: 'metacatalogid',
+                accessor: 'catalogname',
                 NoFilter: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { metacatalogid } = props.cell.row.original;
-                    let catalog = metacatalogid
-                    if(metacatalogid <= 0) catalog = null
-            
-                    return catalog;
-                }
             },
             {
                 Header: t(langKeys.parent),
@@ -643,7 +645,12 @@ const Tipifications: FC = () => {
             {
                 Header: t(langKeys.order),
                 accessor: 'order',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    if(row.type === 'CATEGORIA') return row.order
+                    else return ''
+                }
             },
             {
                 Header: t(langKeys.tag),
@@ -716,25 +723,25 @@ const Tipifications: FC = () => {
         }))
     }
 
-
-    const importCSV = async (files: any[]) => {
+    const importCSV = async (files: Dictionary[]) => {
         const file = files[0];
         if (file) {
-            let data: any = (await uploadExcel(file, undefined) as any[])
-            data=data.filter((d: any) => !['', null, undefined].includes(d.classification)
+            let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
+            data=data.filter((d: Dictionary) => !['', null, undefined].includes(d.classification)                                                                                       
                     && !['', null, undefined].includes(d.channels)    
-                    && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent))
+                    && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + String(d.parent)))
                 );
                 
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
                     header: null,
-                    detail: data.map((x: any) => insClassification({
+                    detail: data.map((x: Dictionary) => insClassification({
                         ...x,
                         title: x.classification,
                         description: x.description,
                         communicationchannel: x.channels,
+                        jobplan: JSON.stringify([{action: x.action, type: x.type, variable: x.variable, endpoint: x.endpoint, data: x.data}]),
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
@@ -752,23 +759,55 @@ const Tipifications: FC = () => {
         }
     }
 
+    const datachannels = mainResult?.multiData?.data?.[2]?.data || [];
+
+    const filteredChannels = datachannels
+    .filter((channel) => channel && channel.domaindesc)     
+    .reduce((filteredChannels, channel) => {
+      let isUnique = true;
+      filteredChannels.forEach((uniqueChannel: Dictionary) => {
+        if (uniqueChannel.domaindesc === channel.domaindesc) {
+          isUnique = false;
+        }
+      });  
+      if (isUnique) {
+        filteredChannels.push(channel);
+      }  
+      return filteredChannels;
+    }, [] as Dictionary[]);
+
+    const dataTypeAction = [
+        { dat: "Simple" },
+        { dat: "Variable" },
+        { dat: "Request" }
+    ]
+
+    const dataType = [
+        { dat: "Categoria" },
+        { dat: "Clasificación" },       
+    ]
+
     const handleTemplate = () => {
         const data = [
-            {},
-            {},
-            mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
-            {},
-            mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
-            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {}),
-            {},
-            {},
-            {},
-            {},
-            {},
-        ];
-        const header = ['Clasificación', 'Descripción', 'Canales', 'Tag', 'Padre', 'Estado', 'Acción', 'Tipo', 'Variable', 'Endpoint', 'Data'];
+          {},
+          {},
+          dataType.reduce((a, d) => ({ ...a, [d.dat]: d.dat }), {}),
+          filteredChannels.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+          {},
+          mainResult.multiData.data[3].data.reduce((a, d) => ({ ...a, [d.classificationid]: d.description }), { 0: '' }),
+          mainResult.multiData.data[0].data.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {}),
+          {},
+          dataTypeAction.reduce((a, d) => ({ ...a, [d.dat]: d.dat }), {}),
+          {},
+          {},
+          {},
+        ];    
+        
+        const header = ['classification', 'description', 'type', 'channels', 'tag', 'parent', 'status', 'action', 'action plan type', 'variable', 'endpoint', 'data'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
+      
+      
 
     if (viewSelected === "view-1") {
 
@@ -783,7 +822,7 @@ const Tipifications: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.tipification, { count: 2 })}
-                        data={mainResult.mainData.data.map(x => {if(x.type === 'TIPIFICACION') {return {...x, order: null}} return x})}
+                        data={mainResult.mainData.data}
                         loading={mainResult.mainData.loading}
                         download={true}
                         register={true}

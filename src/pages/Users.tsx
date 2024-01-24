@@ -1,42 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from "react"; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from "react"; 
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
-import {
-    DialogZyx,
-    TemplateIcons,
-    TemplateBreadcrumbs,
-    TitleDetail,
-    FieldEdit,
-    FieldSelect,
-    FieldMultiSelect,
-    TemplateSwitch,
-    TemplateSwitchYesNo,
-} from "components";
-import {
-    getOrgUserSel,
-    getUserSel,
-    getValuesFromDomain,
-    getOrgsByCorp,
-    getRolesByOrg,
-    getSupervisors,
-    getChannelsByOrg,
-    getApplicationsByRole,
-    insUser,
-    insOrgUser,
-    randomText,
-    templateMaker,
-    exportExcel,
-    uploadExcel,
-    array_trimmer,
-    checkUserPaymentPlan,
-    getSecurityRules,
-    validateNumbersEqualsConsecutive,
-    validateDomainCharacters,
-    validateDomainCharactersSpecials,
-    getPropertySelByName,
-} from "common/helpers";
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo,} from "components";
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName} from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -49,14 +16,7 @@ import Avatar from "@material-ui/core/Avatar";
 import { uploadFile } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import clsx from "clsx";
-import {
-    getCollection,
-    resetAllMain,
-    getMultiCollection,
-    getCollectionAux,
-    resetMainAux,
-    getMultiCollectionAux,
-} from "store/main/actions";
+import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux} from "store/main/actions";
 import { saveUser, delUser } from "store/activationuser/actions";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
@@ -75,6 +35,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { DuplicateIcon } from "icons";
+import { CellProps } from "react-table";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -103,8 +64,7 @@ interface ModalProps {
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        marginTop: theme.spacing(2),
-        // maxWidth: '80%',
+        marginTop: theme.spacing(2),       
         padding: theme.spacing(2),
         background: "#fff",
     },
@@ -181,13 +141,15 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const resFromOrg = useSelector((state) => state.main.multiDataAux);
-
-    // const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
-    // const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
+  
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
     const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
+    const rolesArray = (row?.roledesc || '').split(',').map((role: string) => role.trim());
 
+    const [activateSwitchBots, setActivateSwitchBots] = useState(propertyBots?.[0]?.propertyvalue === "1" &&
+        !rolesArray.some((role: any) => ["GESTOR DE SEGURIDAD", "GESTOR DE CAMPAÑAS", "VISOR SD", "ASESOR"].includes(role)))
+    const [typeSwitch, settypeSwitch] = useState(row?.type === "ASESOR")
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({
         loading: false,
         data: [],
@@ -293,9 +255,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             let tempdata =
                 resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success
                     ? resFromOrg.data[indexApplications].data.map((x) => ({
-                          ...x,
-                          description: (t(`app_${x.description}`.toLowerCase()) || "").toUpperCase(),
-                      }))
+                        ...x,
+                        description: (t(`app_${x.description}`.toLowerCase()) || "").toUpperCase(),
+                    }))
                     : [];
             tempdata.sort(function (a, b) {
                 if (a.description < b.description) {
@@ -318,26 +280,26 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         reset({
             orgid: row ? row.orgid : dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0,
             rolegroups: row ? row.rolegroups : "",
-            roledesc: row ? row.roledesc : "", //for table
-            orgdesc: row ? row.orgdesc : "", //for table
-            supervisordesc: row ? row.supervisordesc : "", //for table
-            channelsdesc: row ? row.channelsdesc : "", //for table
-            supervisor: row ? row.supervisor : "",
-            type: row?.type || "",
-            channels: row?.channels || "",
-            redirect: row?.redirect || "",
-            groups: row?.groups || "",
-            labels: row?.labels || "",
-            status: "DESCONECTADO",
-            showbots: row?.showbots || false,
+            roledesc: row ? row.roledesc : '', //for table
+            orgdesc: row ? row.orgdesc : '', //for table
+            supervisordesc: row ? row.supervisordesc : '', //for table
+            channelsdesc: row ? row.channelsdesc : '', //for table
+            supervisor: row ? row.supervisor : '',
+            type: row?.type || '',
+            showbots: activateSwitchBots ? (row?.showbots || false) : true,
+            channels: row?.channels || '',
+            redirect: row?.redirect || '',
+            groups: row?.groups || '',
+            labels: row?.labels || '',
+            status: 'DESCONECTADO',
             bydefault: row?.bydefault || false,
         });
 
-        register("orgid", { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-        register("rolegroups", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register("type");
-        register("supervisor");
-        // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('rolegroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type');
+        register('showbots');
+        register('supervisor');
         register("channels");
         register("redirect", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("groups");
@@ -371,6 +333,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 updateRecords((p: Dictionary[]) =>
                     p.map((x) => (x.orgid === row ? { ...x, ...data, operation: x.operation || "UPDATE" } : x))
                 );
+
+        setActivateSwitchBots(propertyBots?.[0]?.propertyvalue === "1")
         // setOpenModal(false)
     });
 
@@ -405,6 +369,38 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         setValue("roledesc", value.map((o: Dictionary) => o.roledesc).join());
         setValue("redirect", "");
         updatefield("redirect", "");
+        switch (value.slice(-1)[0].roldesc) {
+            case "GESTOR DE SEGURIDAD":
+            case "GESTOR DE CAMPAÑAS":
+            case "VISOR SD":
+                if (activateSwitchBots) setValue("showbots", false)
+                setValue("type", "SUPERVISOR")
+                updatefield("type", "SUPERVISOR");
+                updatefield("showbots", false);
+                settypeSwitch(false)
+                setActivateSwitchBots(false)
+                break;
+            default:
+
+                if (value.slice(-1)[0].roldesc.includes("ASESOR")) {
+                    if (activateSwitchBots) setValue("showbots", true)
+                    setValue("type", "ASESOR")
+                    updatefield("type", "ASESOR");
+                    updatefield("showbots", true);
+                    settypeSwitch(true)
+                    setActivateSwitchBots(false)
+                } else {
+                    if (propertyBots?.[0]?.propertyvalue === "1") {
+                        setActivateSwitchBots(true)
+                        setValue("showbots", false)
+                    }
+                    setValue("type", "SUPERVISOR")
+                    updatefield("type", "SUPERVISOR");
+                    updatefield("showbots", false);
+                    settypeSwitch(false)
+                }
+                break;
+        }
 
         updateRecords &&
             updateRecords((p: Dictionary[], itmp: number) => {
@@ -415,7 +411,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 };
                 return p;
             });
-        if (!!value.length) {
+        if (value.length) {
             setDataApplications({ loading: true, data: [] });
             dispatch(
                 getMultiCollectionAux([getApplicationsByRole(value.map((o: Dictionary) => o.roleid).join(), index + 1)])
@@ -468,16 +464,23 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 <TemplateSwitchYesNo
                                     label={"Balanceo"}
                                     className="col-6"
-                                    valueDefault={getValues("type") === "ASESOR"}
-                                    onChange={(value) => { setValue('type', value ? "ASESOR" : "SUPERVISOR"); }} />
-                                {String(propertyBots?.[0]?.propertyvalue) ==="1" &&
+                                    valueDefault={typeSwitch}
+                                    onChange={(value) => {
+                                        setValue('type', value ? "ASESOR" : "SUPERVISOR");
+                                        settypeSwitch(value)
+                                        updatefield("type", value ? "ASESOR" : "SUPERVISOR");
+                                    }} />
+                                {activateSwitchBots &&
 
                                     <TemplateSwitchYesNo
                                         label={"Visualización Bots"}
                                         helperText={t(langKeys.visualizationBotTooltip)}
                                         className="col-6"
                                         valueDefault={getValues("showbots")}
-                                        onChange={(value) => { setValue('showbots', value); }} />
+                                        onChange={(value) => { 
+                                            setValue('showbots', value); 
+                                            updatefield("showbots", value);
+                                        }} />
                                 }
 
                             </div>
@@ -586,14 +589,14 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
     const mainMultiResult = useSelector((state) => state.main.multiData);
     const securityRules = mainMultiResult.data.filter((x) => x.key === "UFN_SECURITYRULES_SEL")?.[0];
     const [passwordConditions, setpasswordConditions] = useState({
-        samepassword: !!data?.password,
+        samepassword: Boolean(data?.password),
         mincharacters: (data?.password || "").length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
         maxcharacters: (data?.password || "").length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
         consecutivecharacters: validateNumbersEqualsConsecutive(
             data?.password || "",
             securityRules?.data?.[0]?.numequalconsecutivecharacterspwd ||
-                securityRules?.data?.[0]?.maxcharacterspwd ||
-                0
+            securityRules?.data?.[0]?.maxcharacterspwd ||
+            0
         ),
         lowercaseletters: validateDomainCharacters(
             data?.password || "",
@@ -673,14 +676,14 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         clearErrors();
         setpasswordConditions({
             ...passwordConditions,
-            samepassword: !!data?.password,
+            samepassword: Boolean(data?.password),
             mincharacters: (data?.password || "").length >= (securityRules?.data?.[0]?.mincharacterspwd || 0),
             maxcharacters: (data?.password || "").length <= (securityRules?.data?.[0]?.maxcharacterspwd || 0),
             consecutivecharacters: validateNumbersEqualsConsecutive(
                 data?.password || "",
                 securityRules?.data?.[0]?.numequalconsecutivecharacterspwd ||
-                    securityRules?.data?.[0]?.maxcharacterspwd ||
-                    0
+                securityRules?.data?.[0]?.maxcharacterspwd ||
+                0
             ),
             lowercaseletters: validateDomainCharacters(
                 data?.password || "",
@@ -703,9 +706,10 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
             ),
         });
     };
+    //
 
     const onSubmitPassword = handleSubmit((data) => {
-        if (!!Object.values(passwordConditions).reduce((acc, x) => acc * +x, 1)) {
+        if (!!Object.values(passwordConditions).reduce((acc, x) => acc * Number(x), 1)) {
             parentSetValue("password", data.password);
             parentSetValue("send_password_by_email", data.send_password_by_email);
             parentSetValue("pwdchangefirstlogin", data.change_password_on_login);
@@ -759,8 +763,8 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                             consecutivecharacters: validateNumbersEqualsConsecutive(
                                 value,
                                 securityRules?.data?.[0]?.numequalconsecutivecharacterspwd ||
-                                    securityRules?.data?.[0]?.maxcharacterspwd ||
-                                    0
+                                securityRules?.data?.[0]?.maxcharacterspwd ||
+                                0
                             ),
                             lowercaseletters: validateDomainCharacters(
                                 value,
@@ -1482,10 +1486,13 @@ const Users: FC = () => {
     const [waitCheck, setWaitCheck] = useState(false);
     const [operation, setOperation] = useState("REGISTER");
     const [fileToUpload, setFileToUpload] = useState(null);
-    const mainAuxResult = useSelector((state) => state.main.mainAux);
-    const [messageError, setMessageError] = useState("");
-    const [importCount, setImportCount] = useState(0);
-    const arrayBread = [{ id: "view-1", name: t(langKeys.user_plural) }];
+    const mainAuxResult = useSelector(state => state.main.mainAux);
+    const [messageError, setMessageError] = useState('');
+    const [importCount, setImportCount] = useState(0)
+    const propertyBots = mainMultiResult?.data?.[12] && mainMultiResult?.data?.[12].success ? mainMultiResult?.data?.[12].data : []
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.user_plural) },
+    ];
     function redirectFunc(view: string) {
         setViewSelected(view);
     }
@@ -1498,7 +1505,7 @@ const Users: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: "1%",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -1546,7 +1553,7 @@ const Users: FC = () => {
                 accessor: "status",
                 NoFilter: true,
                 prefixTranslation: "status_",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                 },
@@ -1608,9 +1615,13 @@ const Users: FC = () => {
             "role",
             "channels",
             "groups",
-            "balance",
+            "balanced",
             'showbots',
         ];
+        if (mainMultiResult.data[12].data[0].propertyvalue !== "1") {
+            data.pop();
+            header.pop();
+        }
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     };
     const handleTemplateDrop = () => {
@@ -1788,13 +1799,14 @@ const Users: FC = () => {
                         ).includes(String(f.status))) &&
                     (f.pwdchangefirstlogin === undefined ||
                         ["true", "false"].includes(String(f.pwdchangefirstlogin))) &&
-                    (f.balance === undefined ||
-                        ["true", "false"].includes(String(f.balance))) &&
+                    (f.balanced === undefined ||
+                        ["true", "false"].includes(String(f.balanced))) &&
                     (f.role === undefined ||
-                        String(f.role).split(",").every((role:string) => {
+                        (String(f.role) || '').split(",").every((role: string) => {
                             const roleId = parseInt(role.trim(), 10);
                             return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
-                        }))&& (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                        }))
+                    && (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                 );
             });
             const messageerrors = datainit
@@ -1850,18 +1862,19 @@ const Users: FC = () => {
                             ["true", "false"].includes(String(f.pwdchangefirstlogin))
                         ) ||
                         !(
-                            f.balance === undefined ||
-                            ["true", "false"].includes(String(f.balance))
+                            f.balanced === undefined ||
+                            ["true", "false"].includes(String(f.balanced))
                         ) ||
                         !(
                             f.role === undefined ||
-                            String(f.role)
+                            (String(f.role) || '')
                                 .split(",")
                                 .every((role: string) => {
                                     const roleId = parseInt(role.trim(), 10);
                                     return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
                                 })
-                        )|| !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                        )
+                        || !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                     );
                 })
                 .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, "");
@@ -1879,7 +1892,7 @@ const Users: FC = () => {
                     const channelError: Dictionary[] = [];
                     data.forEach((x) => {
                         const pattern = /^(\d+(,\s*\d+)*)?$/;
-                        if(x.channels || x?.channels?.length>0){
+                        if (x.channels || x?.channels?.length > 0) {
                             if (!pattern.test(x.channels)) {
                                 channelError.push(x.email);
                             }
@@ -1887,42 +1900,65 @@ const Users: FC = () => {
                     });
                     if (channelError.length === 0) {
                         const table: Dictionary = data.reduce(
-                            (a: any, d) => ({
-                                ...a,
-                                [`${d.user}_${d.docnum}`]: {
-                                    id: 0,
-                                    usr: String(d.user || d.email),
-                                    doctype: d.doctype,
-                                    docnum: String(d.docnum),
-                                    password: String(d.password),
-                                    firstname: String(d.firstname),
-                                    lastname: String(d.lastname),
-                                    email: String(d.email),
-                                    showbots: Boolean(d.showbots),
-                                    pwdchangefirstlogin: d.pwdchangefirstlogin==="true",
-                                    type: "NINGUNO",
-                                    status: d.status,
-                                    operation: "INSERT",
-                                    company: d.company,
-                                    twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                                    registercode: String(d.registercode),
-                                    billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
-                                    image: d?.image || "",
-                                    detail: {
-                                        rolegroups: d.role,
-                                        orgid: user?.orgid,
-                                        bydefault: true,
-                                        labels: "",
-                                        groups: d.groups || "",
-                                        channels: d.channels || "",
-                                        status: "DESCONECTADO",
-                                        type: d.balance==="true"? "ASESOR" : "SUPERVISOR",
-                                        supervisor: "",
+                            (a: any, d) => {
+                                const roleids = (String(d?.role) || '').split(",") || []
+                                let roles = domains?.value?.roles?.filter(x => roleids.includes(String(x.roleid))) || []
+                                let type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
+                                let showbots = d.showbots === "true"
+                                if (propertyBots?.[0]?.propertyvalue === "1") {
+                                    if (roles.filter(x => x.roldesc.includes("ASESOR")).length) {
+                                        type = "ASESOR"
+                                        showbots = false
+                                        roles = roles.filter(x => !x.roldesc.includes("ASESOR"))
+                                    }
+                                    if (roles.filter(x => x.roldesc.includes("GESTOR DE SEGURIDAD")).length || roles.filter(x => x.roldesc.includes("GESTOR DE CAMPAÑAS")).length || roles.filter(x => x.roldesc.includes("VISOR SD")).length) {
+                                        type = "SUPERVISOR"
+                                        showbots = false
+                                        roles = roles.filter(x => !x.roldesc.includes("GESTOR DE SEGURIDAD") && !x.roldesc.includes("GESTOR DE CAMPAÑAS") && !x.roldesc.includes("VISOR SD"))
+                                    }
+                                    if (roles.length) {
+                                        type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
+                                        showbots = d.showbots === "true"
+                                    }
+                                }                                
+                                return ({
+                                    ...a,
+                                    [`${d.user}_${d.docnum}`]: {
+                                        id: 0,
+                                        usr: String(d.user || d.email),
+                                        doctype: d.doctype,
+                                        docnum: String(d.docnum),
+                                        password: String(d.password),
+                                        firstname: String(d.firstname),
+                                        lastname: String(d.lastname),
+                                        email: String(d.email),
+                                        showbots: Boolean(d.showbots),
+                                        pwdchangefirstlogin: d.pwdchangefirstlogin === "true",
+                                        type: "NINGUNO",
+                                        status: d.status,
                                         operation: "INSERT",
-                                        redirect: "/usersettings",
+                                        company: d.company,
+                                        twofactorauthentication: d.twofactorauthentication === "ACTIVO",
+                                        registercode: String(d.registercode),
+                                        billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
+                                        image: d?.image || "",
+                                        detail: {
+                                            showbots: Boolean(showbots),
+                                            rolegroups: d.role,
+                                            orgid: user?.orgid,
+                                            bydefault: true,
+                                            labels: "",
+                                            groups: d.groups || "",
+                                            channels: d.channels || "",
+                                            status: "DESCONECTADO",
+                                            type: type,
+                                            supervisor: "",
+                                            operation: "INSERT",
+                                            redirect: "/usersettings",
+                                        },
                                     },
-                                },
-                            }),
+                                })
+                            },
                             {}
                         );
                         Object.values(table).forEach((p) => {

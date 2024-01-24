@@ -157,7 +157,7 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
                             valueDefault={getValues('subfamilyid')}
                             onChange={(value) => setValue('subfamilyid', value?.domainid||0)}
                             error={(errors?.subfamilyid?.message??"")  as string}
-                            data={multiData.data[2].data}
+                            data={multiData?.data?.[2]?.data||[]}
                             optionDesc="domaindesc"
                             optionValue="domainid"
                         />

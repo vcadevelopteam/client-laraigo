@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -6,9 +5,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Popus from 'components/layout/Popus';
+import React, { FC, useEffect, useState } from 'react';
 
 import { Dictionary } from '@types';
-import { FC, useEffect, useState } from 'react';
 import { formatNumber } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import { LaraigoLogo } from 'icons';
@@ -112,7 +111,7 @@ const useStyles = makeStyles(theme => ({
         border: '1px solid #989898',
         display: 'flex',
         flexDirection: 'column',
-        padding: '80px 32px 40px',
+        padding: '40px 32px 40px',
     },
     "method-card__images": {
         width: '100%',
@@ -157,8 +156,7 @@ const useStyles = makeStyles(theme => ({
         },
     },
     "method-card__button": {
-        marginLeft: 'auto',
-        marginTop: '12px',
+        marginLeft: '8px',
         cursor: 'pointer',
         backgroundColor: '#004481',
         fontWeight: 'bold',
@@ -228,11 +226,12 @@ export const PaymentOrderOpenpay: FC = () => {
             OpenPay.setId('${authCredentials.merchantId}');
             OpenPay.setApiKey('${authCredentials.publicKey}');
             OpenPay.setSandboxMode(${authCredentials.sandbox});
+            
             var deviceSessionId = OpenPay.deviceData.setup("payment-form", "deviceIdHiddenFieldName");
 
             $('#pay-button').on('click', function(event) {
                 event.preventDefault();
-                $("#pay-button").prop( "disabled", true);
+                $("#pay-button").prop("disabled", true);
                 OpenPay.token.extractFormAndCreate('payment-form', sucess_callbak, error_callbak);                
             });
 
@@ -503,10 +502,10 @@ export const PaymentOrderOpenpay: FC = () => {
                                     <form onSubmit={(e: any) => { e.preventDefault(); }} id="payment-form">
                                         <div className={classes['method-card']} id="method-card">
                                             <div className={classes['method-card__images']}>
-                                                <img src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/1d0f3590-1228-4e73-a94c-29af63be3a74/visa.svg" alt="visa"></img>
-                                                <img src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/51184f3d-428b-4cf0-887c-ce5c7d56a82b/mastercard.svg" alt="mastercard"></img>
-                                                <img src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/f3ebaeb1-ec99-4500-9719-29d35a06c67b/american-express.svg" alt="american-express"></img>
-                                                <img src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/275c91e5-88b7-49b7-9b03-d2be16a9ecd1/diners.svg" alt="diners"></img>
+                                                <img src="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/611f7c74-1c05-483c-b34c-fc30aef59c88/visa.png" alt="visa" style={{ maxHeight: '60px' }}></img>
+                                                <img src="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/8d013c95-fd0d-48a8-82dc-1101d1dbd6b0/masterCard.png" alt="mastercard" style={{ maxHeight: '60px' }}></img>
+                                                <img src="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/bc097df4-2a25-40a3-a5d8-bdbc12707ebd/americanExpress.png" alt="american-express" style={{ maxHeight: '60px' }}></img>
+                                                <img src="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/daf82ef6-13c7-4cc9-8134-ff61ad1cc09a/carnet.png" alt="diners" style={{ maxHeight: '60px' }}></img>
                                             </div>
                                             <p className={classes['method-card__description']}>
                                                 {t(langKeys.openpay_message01)}
@@ -554,17 +553,28 @@ export const PaymentOrderOpenpay: FC = () => {
                                                     id="cvv2"
                                                 ></input>
                                             </div>
-                                            <button className={classes['method-card__button']} id='pay-button'>
-                                                {t(langKeys.openpay_message06)}
-                                            </button>
-                                            <button className={classes['method-card__button']} onClick={(e: any) => { e.preventDefault(); setShowPayment(false); }}>
-                                                {t(langKeys.openpay_message07)}
-                                            </button>
-                                            <div className={classes.hidden} id='send-form-data'>
+                                            <div style={{ marginTop: '12px' }}>
+                                                <b>{t(langKeys.openpay_message09)}</b>
                                             </div>
-                                            <button className={classes.hidden} onClick={(e: any) => { e.preventDefault(); processTransaction(); }} id='send-form'>
-                                                {t(langKeys.openpay_message07)}
-                                            </button>
+                                            <div style={{ display: 'flex' }}>
+                                                <div style={{ flex: '50%', marginTop: '12px' }}>
+                                                    <img src="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/404c8823-6754-4622-9ea6-4dc2ddf980ef/LogotipoOpenpay-01.jpg" alt="diners" style={{ maxHeight: '60px' }}></img>
+                                                </div>
+                                                <div style={{ flex: '50%', display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
+                                                    <button className={classes['method-card__button']} onClick={(e: any) => { e.preventDefault(); setShowPayment(false); }}>
+                                                        {t(langKeys.openpay_message07)}
+                                                    </button>
+                                                    <button className={classes['method-card__button']} id='pay-button'>
+                                                        {t(langKeys.openpay_message06)}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className={classes.hidden} id='send-form-data'>
+                                                </div>
+                                                <button className={classes.hidden} onClick={(e: any) => { e.preventDefault(); processTransaction(); }} id='send-form'>
+                                                </button>
+                                            </div>
                                             <div className={classes.alertDiv} style={{ marginTop: '20px', display: 'none' }} id='paymentalert'></div>
                                         </div>
                                     </form>

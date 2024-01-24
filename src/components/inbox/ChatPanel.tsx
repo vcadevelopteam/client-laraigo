@@ -882,7 +882,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
         setWaitTipify(true)
     });
-
+    
     return (
         <DialogZyx
             open={openModal}
@@ -895,12 +895,15 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={`${t(langKeys.a)} ${t(langKeys.level)} 1`}
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 1`}
                     className="col-12"
                     valueDefault={getValues('classificationid1')}
                     onChange={onChangeTipificationLevel1}
                     error={errors?.classificationid1?.message}
-                    data={multiData?.data[2] && multiData?.data[2].data}
+                    data={multiData?.data[2] && multiData?.data[2].data.filter(obj => {
+                        const channelsInMultiData = obj.communicationchannel.split(',').map((channel: string) => channel.trim());
+                        return channelsInMultiData.includes(ticketSelected?.communicationchanneltype);
+                    })}
                     optionDesc="path"
                     optionValue="classificationid"
                 />
@@ -1010,7 +1013,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         <>
             <div className={classes.containerButtonsChat}>
                 {(!voxiConnection.error && userConnected && ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
-                    <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
+                    <Tooltip title={t(langKeys.make_call)} arrow placement="top">
                         <IconButton onClick={() => voxiConnection.error ? dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.nochannelvoiceassociated) })) : dispatch(setModalCall(true))}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
@@ -1021,27 +1024,27 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         <IOSSwitch checked={hideLogs} onChange={handlerShowLogs} name="checkedB" />
                     </div>
                 </Tooltip>
-                <Tooltip title={t(langKeys.search_ticket) + ""} arrow placement="top">
+                <Tooltip title={t(langKeys.search_ticket)} arrow placement="top">
                     <IconButton onClick={() => setShowSearcher(true)}>
                         <SearchIcon width={24} height={24} fill="#8F92A1" />
                     </IconButton>
                 </Tooltip>
                 {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
-                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                    <Tooltip title={t(langKeys.close_ticket)} arrow placement="top">
                         <IconButton onClick={() => closeTicket("CERRADO")}>
                             <CloseTicketIcon width={24} height={24} fill={person.data?.haveclassification ? "#b41a1a" : "#8F92A1"} />
                         </IconButton>
                     </Tooltip>
                 }
-                {(!!propertyAsesorSuspende && (ticketSelected?.status === 'SUSPENDIDO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
-                    <Tooltip title={t(langKeys.activate_ticket) + ""} arrow placement="top">
+                {(propertyAsesorSuspende && (ticketSelected?.status === 'SUSPENDIDO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
+                    <Tooltip title={t(langKeys.activate_ticket)} arrow placement="top">
                         <IconButton onClick={() => closeTicket("ASIGNADO")}>
                             <PlayArrowIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
                 }
-                {(!!propertyAsesorSuspende && (ticketSelected?.status === 'ASIGNADO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
-                    <Tooltip title={t(langKeys.suspend_ticket) + ""} arrow placement="top">
+                {(propertyAsesorSuspende && (ticketSelected?.status === 'ASIGNADO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
+                    <Tooltip title={t(langKeys.suspend_ticket)} arrow placement="top">
                         <IconButton onClick={() => closeTicket("SUSPENDIDO")}>
                             <PauseIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>

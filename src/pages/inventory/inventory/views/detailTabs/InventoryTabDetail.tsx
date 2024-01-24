@@ -289,7 +289,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                         <div className='row-zyx'>
                             <FieldEdit
                                 label={t(langKeys.current_balance)}
-                                valueDefault={row?.currentbalance}
+                                valueDefault={parseFloat(row?.currentbalance).toFixed(2)}
                                 className="col-6"
                                 disabled={true}
                             />
@@ -353,7 +353,7 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.current_balance)}
-                            valueDefault={row?.currentbalance}
+                            valueDefault={parseFloat(row?.currentbalance).toFixed(2)}
                             className="col-6"
                             onChange={(value) => setValue('address', value)}
                             disabled={true}
@@ -438,13 +438,13 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                 <div className='row-zyx'>
                     <FieldEdit
                         label={t(langKeys.standard_cost)}
-                        valueDefault={row?.standarcost}
+                        valueDefault={row?.typecostdispatch === "ESTANDAR"? parseFloat(row?.priceunit).toFixed(2):"0.00"}
                         className="col-4"
                         disabled={true}
                     />
                     <FieldEdit
                         label={t(langKeys.average_cost)}
-                        valueDefault={row?.averagecost}
+                        valueDefault={row?.typecostdispatch !== "ESTANDAR"? parseFloat(row?.priceunit).toFixed(2):"0.00"}
                         className="col-4"
                         disabled={true}
                     />

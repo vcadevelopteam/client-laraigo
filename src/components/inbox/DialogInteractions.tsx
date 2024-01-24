@@ -311,7 +311,7 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
     const interactionExtraList = useSelector(state => state.inbox.interactionExtraList);
     const [interactionsToShow, setinteractionsToShow] = React.useState<IGroupInteraction[]>([])
     const el = React.useRef<null | HTMLDivElement>(null);
-    
+
     useEffect(() => {
         if (ticket && openModal)
             dispatch(getInteractions(ticket?.conversationid, false, 0));
@@ -336,7 +336,7 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
                     document.body.appendChild(gg);
                     const pdf = new jsPDF.jsPDF('p', 'mm');
                     if (pdf) {
-                        DomToImage.toPng(gg)
+                        DomToImage.toPng(gg, { cacheBust: true })
                             .then(imgData => {
                                 const imgWidth = 200;
                                 const pageHeight = 297;

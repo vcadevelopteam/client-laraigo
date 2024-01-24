@@ -103,6 +103,14 @@ export const newNotification = (state: IState, action: IAction): IState => ({
     }
 });
 
+export const updateConnection = (state: IState, action: IAction): IState => ({
+    ...state,
+    validateToken: {
+        ...state.validateToken,
+        lastConnection: action.payload
+    }
+});
+
 
 
 

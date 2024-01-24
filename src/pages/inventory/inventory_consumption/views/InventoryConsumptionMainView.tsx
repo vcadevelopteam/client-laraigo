@@ -185,7 +185,7 @@ const InventoryConsumptionMainView: FC<WarehouseMainViewProps> = ({
       },
       {
         Header: t(langKeys.inventory_consumption),
-        accessor: "inventoryconsumptionid",
+        accessor: "inventoryconsumptionserial",
         width: "auto",
         type: "number",
         sortType: 'number',

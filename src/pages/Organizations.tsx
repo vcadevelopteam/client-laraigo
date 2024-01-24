@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, IOSSwitch } from 'components';
-import { getCorpSel, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
+import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -119,8 +118,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const updateScenarioResult = useSelector(state => state.voximplant.requestUpdateScenario);
     const getConsumptionResult = useSelector(state => state.voximplant.requestGetMaximumConsumption);
     const transferBalanceResult = useSelector(state => state.voximplant.requestTransferAccountBalance);
-    // const [valuefile, setvaluefile] = useState('')
-    const [doctype, setdoctype] = useState(row?.doctype || ((row?.sunatcountry) === "PE" ? "1" : "0"))
+    const [doctype, setdoctype] = useState(row?.doctype || "");
     const [idUpload, setIdUpload] = useState('');
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
@@ -161,10 +159,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
             automaticpayment: row?.automaticpayment || false,
-            automaticperiod: row?.billbyorg ? (row?.automaticperiod || false) : true,
-            automaticinvoice: row?.billbyorg ? (row?.automaticinvoice || false) : true,
-            //automaticperiod: row?.automaticperiod || false,
-            //automaticinvoice: row?.automaticinvoice || false,
+            automaticperiod: row?.billbyorg ? (row ? row?.automaticperiod || false : true) : true,
+            automaticinvoice: row?.billbyorg ? (row ? row?.automaticinvoice || false : true) : true,
             iconbot: row?.iconbot || "",
             iconadvisor: row?.iconadvisor || "",
             iconclient: row?.iconclient || "",
@@ -176,6 +172,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             voximplantrechargepercentage: row ? (row?.voximplantrechargepercentage || 0.00) : (parseFloat(defaultPercentage[0]?.propertyvalue) || 0),
             voximplantrechargefixed: row?.voximplantrechargefixed || 0.00,
             voximplantadditionalperchannel: row ? (row?.voximplantadditionalperchannel || 0.00) : (parseFloat(defaultChannel[0]?.propertyvalue) || 0),
+            appsettingid: row ? row.appsettingid : null,
+            citybillingid: row ? row.citybillingid : null,
         }
     });
 
@@ -185,6 +183,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const timezoneList = multiData[5] && multiData[5].success ? multiData[5]?.data : [];
+    const locationList = multiData[10] && multiData[10].success ? multiData[10].data : [];
+    const cityList = multiData[11] && multiData[11].success ? multiData[11].data : [];
 
     const [chargeAmount, setChargeAmount] = useState(0.00);
     const [rangeAmount, setRangeAmount] = useState(row?.voximplantrechargerange || 0.00);
@@ -209,11 +209,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('docnum', {
             validate: {
-                needsvalidation: (value: any) => (doctype !== "0") ? ((value && value.length) || t(langKeys.field_required)) : true,
-                dnivalidation: (value: any) => (doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
-                cevalidation: (value: any) => (doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
-                rucvalidation: (value: any) => (doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
-                passportvalidation: (value: any) => (doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true,
+                dnivalidation: (value: any) => getValues('billbyorg') ? ((doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true) : true,
+                cevalidation: (value: any) => getValues('billbyorg') ? ((doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true) : true,
+                rucvalidation: (value: any) => getValues('billbyorg') ? ((doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true) : true,
+                passportvalidation: (value: any) => getValues('billbyorg') ? ((doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true) : true,
+                needsvalidation: (value: any) => getValues('billbyorg') ? ((doctype !== "1" && doctype !== "4" && doctype !== "6" && doctype !== "7") ? ((value && value.length) || t(langKeys.field_required)) : true) : true,
             }
         });
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
@@ -222,7 +222,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('contactemail', {
             validate: {
                 hasvalue: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true,
-                isemail: (value) => getValues('billbyorg') ? ((/\S+@\S+\.\S+/.test(value)) || t(langKeys.emailverification) + "") : true
+                isemail: (value) => getValues('billbyorg') ? ((/\S+@\S+\.\S+/.test(value)) || String(t(langKeys.emailverification))) : true
             }
         });
         register('sunatcountry', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
@@ -238,6 +238,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('voximplantrechargepercentage', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
         register('voximplantrechargefixed', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('voximplantadditionalperchannel', { validate: (value) => roledesc?.includes("SUPERADMIN") ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
+        register('appsettingid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('citybillingid');
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
@@ -391,9 +393,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         dispatch(showBackdrop(true));
         seticonupload(id)
         const idd = new Date().toISOString()
-        var fd = new FormData();
+        const fd = new FormData();
         fd.append('file', files, files.name);
-        // setvaluefile('')
         setIdUpload(idd);
         dispatch(uploadFile(fd));
         setWaitSaveUpload(true)
@@ -423,17 +424,17 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const handleChatBtnClick = () => {
 
         const input = document.getElementById('chatBtnInput');
-        input!.click();
+        input?.click();
     }
 
     const handleHeaderBtnClick = () => {
         const input = document.getElementById('headerBtnInput');
-        input!.click();
+        input?.click();
     }
 
     const handleBotBtnClick = () => {
         const input = document.getElementById('botBtnInput');
-        input!.click();
+        input?.click();
     }
 
     const handleCleanChatInput = () => {
@@ -478,13 +479,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const docTypes = useMemo(() => {
         if (!dataDocType || dataDocType.length === 0) return [];
 
-        let val: { domaindesc: string }[];
-        if (getValues("sunatcountry") === "PE") {
-            // FILTRAR NO DOMICILIARIO // OTROS
-            val = dataDocType.filter(x => x.domainvalue !== "0") as any[];
-        } else {
-            val = dataDocType as any[];
-        }
+        const val = dataDocType as any[];
 
         return val.sort((a, b) => {
             return a.domaindesc.localeCompare(b.domaindesc);
@@ -527,6 +522,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 variant="contained"
                                 color="primary"
                                 type="submit"
+                                onClick={() => {
+                                    console.log(errors)
+                                }}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                             >{t(langKeys.save)}
@@ -590,24 +588,16 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                uset={true}
-                                label={t(langKeys.type)}
-                                className="col-6"
-                                valueDefault={getValues('type')}
-                                onChange={(value) => setValue('type', value.domainvalue)}
-                                error={errors?.type?.message}
-                                data={dataType}
-                                prefixTranslation="type_org_"
-                                optionDesc="domainvalue"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.type)}
-                                value={row ? (row.type || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.corporation_location)}
+                            className="col-6"
+                            valueDefault={getValues("appsettingid")}
+                            onChange={(value) => setValue('appsettingid', value?.appsettingid || null)}
+                            data={locationList}
+                            error={errors?.appsettingid?.message}
+                            optionDesc="tradename"
+                            optionValue="appsettingid"
+                        />
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.status)}
@@ -630,14 +620,30 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
+                                uset={true}
+                                label={t(langKeys.type)}
+                                className="col-6"
+                                valueDefault={getValues('type')}
+                                onChange={(value) => setValue('type', value.domainvalue)}
+                                error={errors?.type?.message}
+                                data={dataType}
+                                prefixTranslation="type_org_"
+                                optionDesc="domainvalue"
+                                optionValue="domainvalue"
+                            />
+                            : <FieldView
+                                label={t(langKeys.type)}
+                                value={row ? (row.type || "") : ""}
+                                className="col-6"
+                            />}
+                        {edit ?
+                            <FieldSelect
                                 label={t(langKeys.currency)}
                                 className="col-6"
                                 valueDefault={getValues('currency')}
                                 onChange={(value) => setValue('currency', value ? value.code : '')}
                                 error={errors?.currency?.message}
                                 data={dataCurrency}
-                                //uset={true}
-                                //prefixTranslation="status_"
                                 optionDesc="description"
                                 optionValue="code"
                             />
@@ -646,6 +652,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 value={row ? (row.currency || "") : ""}
                                 className="col-6"
                             />}
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.timezone)}
                             className="col-6"
@@ -653,8 +661,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             onChange={(value) => { setValue('timezone', value?.description || ''); setValue('timezoneoffset', value?.houroffset || '') }}
                             error={errors?.timezone?.message}
                             data={timezoneList.map(x => { return { ...x, textimezone: `(${x.houroffsettext}) ${x.description}` } })}
-                            //uset={true}
-                            //prefixTranslation="status_"
                             optionDesc="textimezone"
                             optionValue="description"
                         />
@@ -668,9 +674,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     valueDefault={getValues("sunatcountry")}
                                     onChange={(value) => {
                                         setValue("sunatcountry", value?.code || "");
-
-                                        setValue("doctype", value?.code === "PE" ? "1" : "0");
-                                        setdoctype(value?.code === "PE" ? "1" : "0");
                                     }}
                                     error={errors?.sunatcountry?.message}
                                     data={countries}
@@ -692,7 +695,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     label={t(langKeys.docType)}
                                     className="col-6"
                                     valueDefault={doctype}
-                                    disabled={getValues("sunatcountry") !== "PE"}
                                     onChange={(value) => {
                                         setValue("doctype", value?.domainvalue || "");
                                         setdoctype(value?.domainvalue || "");
@@ -704,20 +706,30 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 />
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
-                                    className={clsx("col-6", {
-                                        // [classes.notdisplay]: doctype === "0",
-                                    })}
+                                    className="col-6"
                                     valueDefault={getValues('docnum')}
                                     onChange={(value: any) => setValue('docnum', value)}
                                     error={errors?.docnum?.message}
                                 />
+                            </div>
+                            <div className="row-zyx">
                                 <FieldEdit
                                     label={t(langKeys.businessname)}
-                                    className="col-6"
+                                    className={!(['0', '1', '4', '6', '7', ''].includes(doctype || '')) ? "col-6" : "col-12"}
                                     valueDefault={getValues('businessname')}
                                     onChange={(value) => setValue('businessname', value)}
                                     error={errors?.businessname?.message}
                                 />
+                                {!(['0', '1', '4', '6', '7', ''].includes(doctype || '')) && <FieldSelect
+                                    label={t(langKeys.citybilling)}
+                                    className="col-6"
+                                    valueDefault={getValues("citybillingid")}
+                                    onChange={(value) => setValue('citybillingid', value?.citybillingid || null)}
+                                    data={cityList}
+                                    error={errors?.citybillingid?.message}
+                                    optionDesc="locationdescription"
+                                    optionValue="citybillingid"
+                                />}
                             </div>
                             <div className="row-zyx">
                                 <FieldEdit
@@ -806,7 +818,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             <div className="row-zyx">
                                 {edit ?
                                     <FieldEdit
-                                        label={t(langKeys.email)} //transformar a multiselect
+                                        label={t(langKeys.email)}
                                         className="col-6"
                                         fregister={{
                                             ...register("email", { validate: emailRequired, value: '' })
@@ -822,7 +834,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     />}
                                 {edit ?
                                     <FieldEdit
-                                        label={t(langKeys.port)} //transformar a multiselect
+                                        label={t(langKeys.port)}
                                         className="col-6"
                                         type="number"
                                         fregister={{
@@ -849,9 +861,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                         onChange={(value) => setValue('password', value)}
                                         valueDefault={getValues("password")}
                                         fregister={{
-                                            ...register("password"
-                                                //,{ validate: (value) => (value && value.length) || t(langKeys.field_required)}
-                                            )
+                                            ...register("password")
                                         }}
                                         error={errors?.password?.message}
                                         InputProps={{
@@ -1281,11 +1291,6 @@ const Organizations: FC = () => {
                 Header: t(langKeys.currency),
                 accessor: 'currency',
                 NoFilter: true,
-                /*prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }*/
             },
         ],
         []
@@ -1308,6 +1313,8 @@ const Organizations: FC = () => {
             getPropertySelByNameOrg("VOXIMPLANTRECHARGERANGE", 0, "_RANGE"),
             getPropertySelByNameOrg("VOXIMPLANTRECHARGEPERCENTAGE", 0, "_PERCENTAGE"),
             getPropertySelByNameOrg("VOXIMPLANTADDITIONALPERCHANNEL", 0, "_CHANNEL"),
+            appsettingInvoiceSelCombo(),
+            getCityBillingList(),
         ]));
         return () => {
             dispatch(resetAllMain());

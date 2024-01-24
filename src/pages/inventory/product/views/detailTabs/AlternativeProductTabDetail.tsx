@@ -108,12 +108,12 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
       },
       {
         Header: t(langKeys.product),
-        accessor: "productdescription",
+        accessor: "productcode",
         width: "auto",
       },
       {
         Header: t(langKeys.description),
-        accessor: "productdescriptionlarge",
+        accessor: "productdescription",
         width: "auto",
       },
       {

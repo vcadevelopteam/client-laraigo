@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, IconButton, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldEdit, FieldSelect, FieldView } from "components";
 import { langKeys } from "lang/keys";
@@ -73,6 +72,9 @@ const AddInventoryConsumptionLineDialog: React.FC<{
             type: rowSelected?.row?.type || "NINGUNO",
             productcode: rowSelected?.row?.productcode || "",
             operation: editRow ? "EDIT" : "INSERT",
+            warehouseto: 0,
+            rackcodeto: "",
+            lotecodeto: ""
         },
     });
 
@@ -100,6 +102,9 @@ const AddInventoryConsumptionLineDialog: React.FC<{
                 type: rowSelected?.row?.type || "NINGUNO",
                 productcode: rowSelected?.row?.productcode || "",
                 operation: editRow ? "EDIT" : "INSERT",
+                warehouseto: 0,
+                rackcodeto: "",
+                lotecodeto: ""
             });
         }
     }, [openModal]);
@@ -133,6 +138,9 @@ const AddInventoryConsumptionLineDialog: React.FC<{
         register("inventoryconsumptiondetailid");
         register("p_tableid");
         register("line");
+        register("warehouseto");
+        register("rackcodeto");
+        register("lotecodeto");
         register("productid", { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register("description");
         register("fromshelf");

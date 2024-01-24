@@ -38,6 +38,7 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
   const dispatch = useDispatch();
   const [waitSave, setWaitSave] = useState(false);
   const executeRes = useSelector(state => state.main.execute);
+  const multiData = useSelector((state) => state.main.multiDataAux);
 
   useEffect(() => {
     if(tabIndex === 1){
@@ -74,21 +75,6 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
   const columns = React.useMemo(
     () => [
       {
-        accessor: 'warehouseid',
-        NoFilter: true,
-        isComponent: true,
-        minWidth: 60,
-        width: '1%',
-        Cell: (props: any) => {
-            const row = props.cell.row.original;
-            return (
-                <TemplateIcons
-                    deleteFunction={() => handleDelete(row)}
-                />
-            )
-        }
-      },
-      {
         Header: t(langKeys.product),
         accessor: "productcode",
         width: "auto",
@@ -96,6 +82,16 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
       {
         Header: t(langKeys.description),
         accessor: "productdescription",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.warehouse),
+        accessor: "warehousename",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.description),
+        accessor: "warehousedescription",
         width: "auto",
       },
       {
@@ -113,17 +109,28 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
         Header: t(langKeys.standard_cost),
         accessor: "standarcost",
         width: "auto",
-        type:"number"
+        Cell: (props: any) => {
+            const { priceunit, typecostdispatchdescription } = props.cell.row.original;
+            return typecostdispatchdescription === "ESTANDAR" ? parseFloat(priceunit).toFixed(2) : "0.00"
+        }
       },
       {
         Header: t(langKeys.average_cost),
         accessor: "averagecost",
         width: "auto",
+        Cell: (props: any) => {
+            const { priceunit, typecostdispatchdescription } = props.cell.row.original;
+            return typecostdispatchdescription !== "ESTANDAR" ? parseFloat(priceunit).toFixed(2) : "0.00"
+        }
       },
       {
         Header: t(langKeys.current_balance),
         accessor: "currentbalance",
         width: "auto",
+        Cell: (props: any) => {
+            const { currentbalance} = props.cell.row.original;
+            return parseFloat(currentbalance).toFixed(2)
+        }
       },
       {
         Header: t(langKeys.batch),
@@ -132,13 +139,12 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
       },
       {
         Header: t(langKeys.dispatch_unit),
-        accessor: "unitdipatchid",
+        accessor: "unitdipatchdesc",
         width: "auto",
       },
       {
         Header: t(langKeys.purchase_unit),
-        accessor: "unitbuyid",
-        width: "auto",
+        accessor: "unitbuydesc",
       },
     ],
     []
@@ -148,7 +154,9 @@ const WarehouseTab: React.FC<WarehouseTabProps> = ({tabIndex,row,fetchData}) => 
       <div className="row-zyx">
         <TableZyx
           columns={columns}
-          data={dataWarehouse.data}
+          data={dataWarehouse?.data?.map(y=>({...y, unitdipatchdesc: multiData.data[4].data.filter(x=>x.domainid===y?.unitdipatchid)?.[0]?.domainvalue,
+            unitbuydesc: multiData.data[3].data.filter(x=>x.domainid===y?.unitbuyid)?.[0]?.domainvalue
+          }))}
           download={false}
           filterGeneral={false}
           register={false}

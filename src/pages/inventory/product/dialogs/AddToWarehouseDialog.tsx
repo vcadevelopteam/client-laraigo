@@ -78,7 +78,7 @@ const AddToWarehouseDialog: React.FC<{
       unitbuyid: row?.unitbuyid || 0,
       currentbalance: 0,
       lotecode: "",
-      status: "ACTIVO",
+      status: row?.status||"ACTIVO",
       type: "NINGUNO",
       operation: "INSERT",
     },
@@ -101,7 +101,7 @@ const AddToWarehouseDialog: React.FC<{
       }
     });
     register('unitdispatchid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-    register('lotecode', { validate: (value) => multiData.data[6].data.filter(x=>x.domainid === row.loteid)[0].domainvalue !== "LOTE" || ((value && value.length>0) || t(langKeys.field_required)) });
+    register('lotecode', { validate: (value) => multiData.data[6].data.filter(x=>x.domainid === row.loteid)?.[0]?.domainvalue !== "LOTE" || ((value && value.length>0) || t(langKeys.field_required)) });
     register('unitbuyid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
     register("ispredeterminate");
     register("rackcode");

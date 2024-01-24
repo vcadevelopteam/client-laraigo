@@ -92,10 +92,12 @@ const ChangeStatusDialog: React.FC<{
         if(massive){
           const datatosend = Object.keys(selectedRows).reduce((acc, x) => {
             //[...acc, mainPaginated.data.find(y => y.productid === Number(x))][...acc, mainPaginated.data.find(y => y.productid === Number(x))]
-            return [...acc, {...mainPaginated.data.find(y => y.productid === Number(x)),
-              ...data,
-              productid: 0,
-              operation: "INSERT",
+            return [...acc, {
+              status: data.status,
+              comment: data.comment,
+              statusid: data.statusid,
+              ismoveinventory: data.ismoveinventory,
+              productid: x,
               type: "NINGUNO",
             }]
           }, []);
@@ -111,12 +113,11 @@ const ChangeStatusDialog: React.FC<{
         callback
     }))
 });
-console.log(multiData?.data?.[5]?.data)
+
   return (
     <DialogZyx open={openModal} title={t(langKeys.change_status)}>
       <form onSubmit={onMainSubmit}>
       {!massive && (
-        <>
           <div className="row-zyx">
             <FieldView
               label={t(langKeys.code)}
@@ -129,7 +130,6 @@ console.log(multiData?.data?.[5]?.data)
               value= {row?.description || ""}
             />
           </div>
-        </>
       )}
       <div className="row-zyx">
         {!massive && (

@@ -22,6 +22,7 @@ const CatalogMaster = lazy(() => import('pages/CatalogMaster'));
 const Orders = lazy(() => import('pages/orders/Orders'));
 const SignIn = lazy(() => import('pages/SignIn'));
 const Properties = lazy(() => import('pages/Properties'));
+const DocumentLibrary = lazy(() => import('pages/documentlibrary/DocumentLibrary'));
 const Quickreplies = lazy(() => import('pages/Quickreplies'));
 const Groupconfig = lazy(() => import('pages/GroupConfig'));
 const Whitelist = lazy(() => import('pages/Whitelist'));
@@ -108,6 +109,8 @@ const PaymentOrder = lazy(() => import('pages/PaymentOrder'));
 const PaymentOrderNiubiz = lazy(() => import('pages/PaymentOrderNiubiz'));
 const PaymentOrderNiubizStatus = lazy(() => import('pages/PaymentOrderNiubizStatus'));
 const PaymentOrderOpenpay = lazy(() => import('pages/PaymentOrderOpenpay'));
+const PaymentOrderIzipay = lazy(() => import('pages/PaymentOrderIzipay'));
+const PaymentOrderOpenpayColombia = lazy(() => import('pages/PaymentOrderOpenpayColombia'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
 const SecurityRules = lazy(() => import('pages/SecurityRules'));
@@ -225,7 +228,6 @@ const RouterApp: FC = () => {
 		removeAuthorizationToken()
 	}, [dispatch]));
 
-
 	return (
 		<Router basename={import.meta.env.BASE_URL}>
 			<React.Suspense fallback={(
@@ -244,6 +246,8 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.NIUBIZ_PAYMENTORDER.path} render={() => <PaymentOrderNiubiz />} />
 					<Route exact path={paths.NIUBIZ_PAYMENTORDERSTATUS.path} render={() => <PaymentOrderNiubizStatus />} />
 					<Route exact path={paths.OPENPAY_PAYMENTORDER.path} render={() => <PaymentOrderOpenpay />} />
+					<Route exact path={paths.IZIPAY_PAYMENTORDER.path} render={() => <PaymentOrderIzipay />} />
+					<Route exact path={paths.OPENPAYCOLOMBIA_PAYMENTORDER.path} render={() => <PaymentOrderOpenpayColombia />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
 					<Route exact path={paths.TERMSOFSERVICE} render={() => <TermsOfService />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
@@ -320,6 +324,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.INVOICE} component={() => (<Layout mainClasses={classes.main}><Invoice /></Layout>)} />
 					<ProtectRoute exact path={paths.MESSAGE_INBOX} component={() => (<Layout><MessageInbox /></Layout>)} />
 					<ProtectRoute exact path={paths.PROPERTIES} component={() => <Layout mainClasses={classes.main}><Properties /></Layout>} />
+					<ProtectRoute exact path={paths.DOCUMENTLIBRARY} component={() => <Layout mainClasses={classes.main}><DocumentLibrary /></Layout>} />
 					<ProtectRoute exact path={paths.USERS} component={() => <Layout mainClasses={classes.main}><Users /></Layout>} />
 					<ProtectRoute exact path={paths.QUICKREPLIES} component={() => <Layout mainClasses={classes.main}><Quickreplies /></Layout>} />
 					<ProtectRoute exact path={paths.GROUPCONFIG} component={() => <Layout mainClasses={classes.main}><Groupconfig /></Layout>} />
@@ -366,6 +371,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.INVENTORY} component={() => (<Layout mainClasses={classes.main}><Inventory /></Layout>)} />
 					<ProtectRoute exact path={paths.COMPANIES} component={() => (<Layout mainClasses={classes.main}><Company /></Layout>)} />
 					<ProtectRoute exact path={paths.INVENTORYCONSUMPTION} component={() => (<Layout mainClasses={classes.main}><InventoryConsumption /></Layout>)} />
+					<ProtectRoute exact path={paths.IATRAINING2} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />
 					</Route>

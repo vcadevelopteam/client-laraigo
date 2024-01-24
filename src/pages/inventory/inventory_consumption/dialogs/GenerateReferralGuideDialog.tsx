@@ -9,7 +9,7 @@ import { useSelector } from "hooks";
 import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
 import { getMultiCollectionAux2 } from "store/main/actions";
-import { formatDate, generateguiaremisionSel, generateguiaremisiondetailSel } from "common/helpers";
+import { formatDate, generateguiaremisionSel, generateguiaremisiondetailSel, getStatusHistoryInventoryConsumption } from "common/helpers";
 import DomToImage from "dom-to-image";
 import { showBackdrop } from "store/popus/actions";
 
