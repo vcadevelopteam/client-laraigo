@@ -18,7 +18,7 @@ import { execute, getCollection } from "store/main/actions";
 import { assistantAiSel, exportExcel, insAssistantAi } from "common/helpers";
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
-import { deleteAssistant } from "store/gpt/actions";
+import { deleteAssistant, deleteMassiveAssistant } from "store/gpt/actions";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -170,45 +170,25 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     
     const handleDeleteSelection = async (dataSelected: Dictionary[]) => {
         const callback = async () => {
-            dispatch(showBackdrop(true));
+            dispatch(showBackdrop(true));  
+            const codes = dataSelected.map(obj=> obj.code)
+            dispatch(deleteMassiveAssistant({
+                ids: codes,
+                apikey: dataSelected[0].apikey,            
+            }))    
 
-            try {
-                const deletePromises = dataSelected.map(async (row) => {
-                    const assistantDelete = await fetch('https://documentgptapi.laraigo.com/assistants/delete', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${user?.token}`,
-                        },
-                        body: JSON.stringify({
-                            assistant_id: row.code,
-                            apikey: row.apikey,
-                        }),
-                    });
-
-                    if (!assistantDelete.ok) {
-                        console.error('Error al eliminar el asistente:', assistantDelete.statusText);
-                        return Promise.reject('Error en assistantDelete');
-                    }
-
-                    dispatch(
-                        execute(insAssistantAi({
-                            ...row,
-                            id: row.assistantaiid,
-                            operation: "DELETE",
-                            status: "ELIMINADO",
-                            type: "NINGUNO" 
-                        }))
-                    );
-
-                    return row;
-                });
-                const deletedRows = await Promise.all(deletePromises);
-                setWaitSave(true);
-            } catch (error) {
-                console.error('Error en la llamada:', error);
-                setWaitSave(true);
-            }
+            dataSelected.map(async (row) => {          
+                dispatch(
+                    execute(insAssistantAi({
+                        ...row,
+                        id: row.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+            });
+            setWaitSave(true);
         }
 
         dispatch(
@@ -220,7 +200,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         );
     };
     
-
     const columnsGenerativeIA = React.useMemo(
         () => [
             {

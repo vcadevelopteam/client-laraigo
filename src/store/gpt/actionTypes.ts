@@ -49,6 +49,11 @@ const actionTypes = {
     DELETE_ASSISTANT_SUCCESS: 'gpt/delete_assistant_success',
     DELETE_ASSISTANT_FAILURE: 'gpt/delete_assistant_failure',
     DELETE_ASSISTANT_RESET: 'gpt/delete_assistant_reset',
+
+    DELETE_MASSIVE_ASSISTANT: 'gpt/delete_assistant',
+    DELETE_MASSIVE_ASSISTANT_SUCCESS: 'gpt/delete_assistant_success',
+    DELETE_MASSIVE_ASSISTANT_FAILURE: 'gpt/delete_assistant_failure',
+    DELETE_MASSIVE_ASSISTANT_RESET: 'gpt/delete_assistant_reset',
 }
 
 export default actionTypes;

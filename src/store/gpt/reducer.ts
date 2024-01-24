@@ -68,4 +68,9 @@ export default createReducer<IState>(initialState, {
     [actionType.DELETE_ASSISTANT_FAILURE]: caseFunctions.gptFailure,
     [actionType.DELETE_ASSISTANT_RESET]: caseFunctions.gptReset,
 
+    [actionType.DELETE_MASSIVE_ASSISTANT]: caseFunctions.gptLoading,
+    [actionType.DELETE_MASSIVE_ASSISTANT_SUCCESS]: caseFunctions.gptSuccess,
+    [actionType.DELETE_MASSIVE_ASSISTANT_FAILURE]: caseFunctions.gptFailure,
+    [actionType.DELETE_MASSIVE_ASSISTANT_RESET]: caseFunctions.gptReset,
+
 });

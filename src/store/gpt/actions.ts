@@ -102,4 +102,14 @@ export const deleteAssistant = (requestBody: any): IActionCall => ({
     type: null,
 });
 
+export const deleteMassiveAssistant = (requestBody: any): IActionCall => ({
+    callAPI: () => GptService.deleteMassiveAssistant(requestBody),
+    types: {
+        loading: actionTypes.DELETE_MASSIVE_ASSISTANT,
+        success: actionTypes.DELETE_MASSIVE_ASSISTANT_SUCCESS,
+        failure: actionTypes.DELETE_MASSIVE_ASSISTANT_FAILURE,
+    },
+    type: null,
+});
+
 export const resetGptThread = (): IActionCall => ({type: actionTypes.THREAD_RESET});

@@ -41,3 +41,7 @@ export function updateAssistant(data: any) {
 export function deleteAssistant(data: any) {
     return APIManager.post(apiUrls.GPT_ASSISTANTS_DELETE, { data }, true);
 }
+
+export function deleteMassiveAssistant(data: any) {
+    return APIManager.post(apiUrls.GPT_ASSISTANTS_DELETE_MASSIVE, { data }, true);
+}
