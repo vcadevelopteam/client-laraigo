@@ -223,8 +223,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [waitSaveAssignFile, setWaitSaveAssignFile] = useState(false);
     const executeFiles = useSelector((state) => state.gpt.gptResult);
   
-
-    
     useEffect(() => {
         fetchData();
     }, [])
@@ -275,7 +273,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 setWaitSaveAssignFile(false);                
                 dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
                 setWaitSave(true);
-                dispatch(showBackdrop(false));
             } else if (executeFiles.error) {
                 const errormessage = t(executeFiles.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
@@ -298,7 +295,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     apikey: row?.apikey,
                 }))
                 setWaitSaveAssignFile(true);
-                dispatch(showBackdrop(false));
             } else if (executeFiles.error) {
                 const errormessage = t(executeFiles.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
@@ -311,14 +307,14 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     }, [executeFiles, waitSaveAddFile]);
 
     const handleUpload = handleSubmit(async (data) => {
-        const callback = async () => {      
-          dispatch(showBackdrop(true));
-          dispatch(addFile({
-            file_url: data.url,
-            file_name: data.description,
-            apikey: row?.apikey,
-          }))
-          setWaitSaveAddFile(true);      
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(addFile({
+                file_url: data.url,
+                file_name: data.description,
+                apikey: row?.apikey,
+            }))
+            setWaitSaveAddFile(true);
         };
       
         dispatch(
@@ -328,7 +324,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             callback,
           })
         );
-        handleClearFile();
     });
       
     const handleUploadURL = handleSubmit((data) => {
@@ -343,7 +338,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 question: t(langKeys.confirmation_save),
                 callback,
             })
-        )        
+        )
     });
 
     useEffect(() => {
@@ -523,7 +518,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 })));
                 setWaitSave(true);
                 setRowAux(null)
-                dispatch(showBackdrop(false));
             } else if (executeFiles.error) {
                 const errormessage = t(executeFiles.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),

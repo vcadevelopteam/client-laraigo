@@ -160,7 +160,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [waitSaveThreadDelete, setWaitSaveThreadDelete] = useState(false);
     const [waitSaveMessage, setWaitSaveMessage] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
-    const executeThreads = useSelector((state) => state.gpt.gptthreadresult);
+    const executeThreads = useSelector((state) => state.gpt.gptResult);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
     const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
     const dataThreads = useSelector(state => state.main.mainAux);
