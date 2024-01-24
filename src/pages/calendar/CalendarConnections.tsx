@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
-        background: '#fff',
     },
     containerDescription: {
         display: 'flex',
@@ -44,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         alignItems: "center",
         gap: '10px 64px',
+        background: '#fff',
+        padding: '20px',
+        marginBottom: '20px',
     },
     integrationItem: {
         flexGrow: 1,
@@ -163,7 +165,7 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
     
     return (
         <div className={classes.containerDetail}>
-            <div className="row-zyx">
+            <div className="row-zyx" style={{ background: '#fff', marginBottom: 0}}>
                 <div className={classes.containerDescription}>
                     <Typography className={classes.containerDescriptionTitle} color="primary">
                         {t(langKeys.calendar_connections_title)}
@@ -213,6 +215,36 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                                 />
                             </GoogleOAuthProvider>
                         }
+                    </div>
+                }
+            </div>
+            <div className={classes.integrationRow}>
+                <div className={classes.integrationItem}>
+                    <div>
+                        <GoogleCalendarIcon className={classes.integrationIcon} />
+                    </div>
+                    <div className={classes.integrationText}>
+                        <div className={classes.integrationTitle}>
+                            Google Calendar
+                        </div>
+                        <div className={classes.integrationDescription}>
+                            Gmail - G Suite
+                        </div>
+                    </div>
+                </div>
+                {!isIncremental &&
+                    <div>
+                        <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CALENDAR}>
+                            <GoogleLogIn
+                                label="Conectar"
+                                scope={'https://www.googleapis.com/auth/calendar.readonly'}
+                                googleDispatch={(e) => {
+                                    dispatch(calendarGoogleLogIn({ ...e, id: row?.calendareventid }))
+                                    setWaitGoogleLogIn(true);
+                                }}
+                                data={{id: row?.calendareventid, data_code: row?.code }}
+                            />
+                        </GoogleOAuthProvider>
                     </div>
                 }
             </div>
