@@ -615,6 +615,7 @@ const translation: LangKeys = {
   enable: "Habilitado",
   disabled: "Desabilitado",
   productivitybyhour: 'Tickets atendidos por hora',
+  error_campaign_date: "Las fechas de inicio y final de las campañas no deben ser mayor a un año de la fecha actual.",
   error_alternativeemail_exists: "El correo electrónico alternativo ya ha sido registrado",
   error_alternativephone_exists: "El teléfono alternativo ya ha sido registrado",
   error_email_exists: "El correo electrónico ya ha sido registrado",

@@ -443,6 +443,7 @@ export const langKeys = {
   numericalcharacterspwd: "numericalcharacterspwd",
   uppercaseletterspwd: "uppercaseletterspwd",
   lowercaseletterspwd: "lowercaseletterspwd",
+  error_campaign_date: "error_campaign_date",
   error_alternativeemail_exists: "error_alternativeemail_exists",
   error_alternativephone_exists: "error_alternativephone_exists",
   error_email_exists: "error_email_exists",
