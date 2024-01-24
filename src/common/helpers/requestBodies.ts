@@ -3357,6 +3357,12 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
+export const selBookingIntegrationSel = (calendareventid: number) => ({
+    method: "UFN_CALENDAREVENT_INTEGRATION_SEL",
+    key: "UFN_CALENDAREVENT_INTEGRATION_SEL",
+    parameters: { calendareventid },
+});
+
 export const calendarBookingCancel = ({ calendareventid, id, phone, name, username, email, canceltype, cancelcomment, corpid, orgid, userid, otros }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
