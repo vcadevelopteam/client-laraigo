@@ -12,7 +12,7 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { execute, getCancelEventBooking, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
-import { Box, IconButton, ListItemIcon, Menu, MenuItem } from '@material-ui/core';
+import { Box, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import Dialog from '@material-ui/core/Dialog';
@@ -51,6 +51,15 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '1.1rem',
         padding: '5px',
     },
+    integrationInformation: {
+        minWidth: '250px',
+        '& > p': {
+            fontWeight: 'bold'
+        },
+        '& > p > span': {
+            fontWeight: 'normal'
+        }
+    }
 }));
 
 const DialogBooking: React.FC<{
@@ -143,15 +152,13 @@ const DialogBooking: React.FC<{
                             className={classes.colInput}
                         />
                     </div>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 20 }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={t(langKeys.email)}
                                 value={booking?.personmail}
                                 className={classes.colInput}
                             />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
@@ -161,21 +168,41 @@ const DialogBooking: React.FC<{
                             />
                         </div>
                     </div>
-                    <div style={{ display: 'flex', flex: 1, width: '100%', paddingTop: 16 }}>
-                        <FieldView
-                            label={t(langKeys.event)}
-                            value={event?.name}
-                            className={classes.colInput}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', flex: 1, width: '100%' }}>
-                        <div className={classes.colInput}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                {t(langKeys.description)}
-                            </Box>
-                            <Box lineHeight="20px" fontSize={15} color="textPrimary">
-                                <div dangerouslySetInnerHTML={{ __html: event?.description }} />
-                            </Box>
+                    <div style={{ display: 'flex', gap: 20 }}>
+                        <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column'}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <FieldView
+                                    label={t(langKeys.event)}
+                                    value={event?.name}
+                                    className={classes.colInput}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <div className={classes.colInput}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                        {t(langKeys.description)}
+                                    </Box>
+                                    <Box lineHeight="20 px" fontSize={15} color="textPrimary">
+                                        <div dangerouslySetInnerHTML={{ __html: event?.description }} />
+                                    </Box>
+                                </div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column'}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <FieldView
+                                    label={`${t(langKeys.agent)} ${t(langKeys.email)}`}
+                                    value={booking?.email}
+                                    className={classes.colInput}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <FieldView
+                                    label={t(langKeys.assignedTo)}
+                                    value={booking?.person_name}
+                                    className={classes.colInput}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div style={{ display: 'flex', flex: 1, width: '100%' }}>
@@ -482,6 +509,18 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                                             <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
                                             <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                                        </div>
+                                        <div className={classes.integrationInformation}>
+                                            {x.person_name && (
+                                                <Typography>
+                                                    {t(langKeys.assignedTo)}: <span>{x.person_name}</span>
+                                                </Typography>
+                                            )}
+                                            {x.email && (
+                                                <Typography>
+                                                    {t(langKeys.email)}: <span>{x.email}</span>
+                                                </Typography>
+                                            )}
                                         </div>
                                         <div>
                                             <div>{x?.personname}</div>
