@@ -15,6 +15,7 @@ import personReducer, { IState as IPerson } from './person/reducer';
 import settingReducer, { IState as ISetting } from './setting/reducer';
 import activationUserReducer, { IState as IActivationUser } from './activationuser/reducer';
 import leadReducer, { IState as ILead } from './lead/reducer';
+import gptReducer, { IState as IGpt } from './gpt/reducer';
 import servicedeskReducer, { IState as IServiceDesk } from './servicedesk/reducer';
 import culqiReducer, { IState as ICulqi } from './culqi/reducer';
 import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
@@ -51,6 +52,7 @@ export interface IRootState {
     subscription: ISubscription;
     voximplant: IVoximplant;
     google: IGoogle;
+    gpt: IGpt;
     witai: IWitai;
     calendar: ICalendar;
     product: IProduct;
@@ -86,6 +88,7 @@ const rootReducer = combineReducers<IRootState>({
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,
     google: googleReducer,
+    gpt: gptReducer,
     witai: witaiReducer,
     product: productReducer,
     postHistory: postHistoryReducer,
