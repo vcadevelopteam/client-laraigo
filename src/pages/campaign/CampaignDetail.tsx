@@ -465,11 +465,27 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             setSave('PARENT');
             saveCampaign(detaildata);
         }
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        let errormessage = false
+        if(detaildata.operation ==="UPDATE"){
+            if(row?.startdate !== detaildata.startdate){
+                if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+            }
+            if(row?.enddate !== detaildata.enddate){
+                if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+            }
+        }else{            
+            if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+            if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+        }
+        if(errormessage){
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }))
+        }else{
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }
     };
 
     useEffect(() => {
