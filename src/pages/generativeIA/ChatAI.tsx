@@ -371,12 +371,14 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     useEffect(() => {
         const handleKeyUp = (event: KeyboardEvent) => {
             if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            handleSendMessage();
+                event.preventDefault();
+                handleSendMessage();
             }
         };
         
-        document.addEventListener('keyup', handleKeyUp);
+        if(selectedChat && messageText.trim() !== '' && !isLoading) {
+            document.addEventListener('keyup', handleKeyUp);
+        }
         
         return () => {
             document.removeEventListener('keyup', handleKeyUp);
