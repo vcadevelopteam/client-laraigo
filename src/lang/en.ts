@@ -3533,6 +3533,8 @@ const translation: LangKeys = {
   saleprice: "Sale Price",
   imagelink: "Image Link",
   unnasigned: "Unnasigned",
+  assigned_agent: 'Assigned agent',
+  agent_email: 'Email agent',
   additionalimagelink: "Additional Image Link",
   keyword: "Keyword",
   catalogname: "Catalog Name",

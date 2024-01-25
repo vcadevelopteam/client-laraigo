@@ -2409,6 +2409,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   report_userproductivityhours_filter_adviser: 'Agente',
   unnasigned: "Sin asignar",
+  assigned_agent: 'Agente asignado',
+  agent_email: 'Agente correo',
   report_userproductivityhours_filter_channels: 'Canal',
   report_userproductivityhours_filter_hours: 'Hora',
 
