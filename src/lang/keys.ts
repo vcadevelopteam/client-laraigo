@@ -56,6 +56,8 @@ export const langKeys = {
   reschedule_appointment: "reschedule_appointment",
   appointment_cancellation: "appointment_cancellation",
   unnasigned: "unnasigned",
+  assigned_agent: 'assigned_agent',
+  agent_email: 'agent_email',
   downloadhtmlform: "downloadhtmlform",
   tooltipintegrationname: "tooltipintegrationname",
   tooltipintegrationurl: "tooltipintegrationurl",

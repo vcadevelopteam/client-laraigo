@@ -191,15 +191,15 @@ const DialogBooking: React.FC<{
                         <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column'}}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                                 <FieldView
-                                    label={`${t(langKeys.agent)} ${t(langKeys.email)}`}
-                                    value={booking?.email}
+                                    label={t(langKeys.assigned_agent)}
+                                    value={booking?.person_name}
                                     className={classes.colInput}
                                 />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                                 <FieldView
-                                    label={t(langKeys.assignedTo)}
-                                    value={booking?.person_name}
+                                    label={`${t(langKeys.agent_email)}`}
+                                    value={booking?.email}
                                     className={classes.colInput}
                                 />
                             </div>
@@ -513,12 +513,12 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                         <div className={classes.integrationInformation}>
                                             {x.person_name && (
                                                 <Typography>
-                                                    {t(langKeys.assignedTo)}: <span>{x.person_name}</span>
+                                                    {t(langKeys.assigned_agent)}: <span>{x.person_name}</span>
                                                 </Typography>
                                             )}
                                             {x.email && (
                                                 <Typography>
-                                                    {t(langKeys.email)}: <span>{x.email}</span>
+                                                    {t(langKeys.agent_email)}: <span>{x.email}</span>
                                                 </Typography>
                                             )}
                                         </div>

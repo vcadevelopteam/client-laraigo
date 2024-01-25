@@ -226,11 +226,11 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                             <div className={classes.integrationInformation}>
                                 {item.person_name && (
                                     <Typography>
-                                        {t(langKeys.assignedTo)}: <span>{item.person_name}</span>
+                                        {t(langKeys.assigned_agent)}: <span>{item.person_name}</span>
                                     </Typography>
                                 )}
                                 <Typography>
-                                    {t(langKeys.email)}: <span>{item.email}</span>
+                                    {t(langKeys.agent_email)}: <span>{item.email}</span>
                                 </Typography>
                             </div>
                         </div>
