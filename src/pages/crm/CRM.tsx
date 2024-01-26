@@ -15,8 +15,9 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
-import { Button, IconButton, Tooltip } from "@material-ui/core";
+import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon, CloseOutlined } from '@material-ui/icons';
+import TuneIcon from '@material-ui/icons/Tune';
+import { Button, IconButton, Modal, Tooltip, Typography } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -26,6 +27,8 @@ import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 const isIncremental = window.location.href.includes("incremental")
+import { MoreVert as MoreVertIcon, Traffic } from "@material-ui/icons";
+import { TrafficIndividualConfigurationModal, TrafficLightConfigurationModal } from "./Modals";
 
 interface dataBackend {
   columnid: number,
@@ -70,6 +73,25 @@ const useStyles = makeStyles((theme) => ({
     gap: '1em',
     alignItems: 'center',
     flexWrap: 'wrap',
+  },
+  button: {
+    backgroundColor: '#ffff',
+    color: '#7721AD',
+    '&:hover': {
+        backgroundColor: '#EBEAED',
+        borderRadius: 4
+    }
+  },
+  errorModalContent: {
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    padding: '20px',
+    textAlign: 'center',
+  },
+  text: {
+    alignSelf: "center",
+    marginLeft: '25px',
+    fontSize: 16
   },
 }));
 
@@ -785,7 +807,6 @@ const CRM: FC = () => {
         }
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [voxiConnection, callOnLine]
   );
 
@@ -809,7 +830,6 @@ const CRM: FC = () => {
       setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
       settotalrow(mainPaginated.count);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainPaginated]);
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
@@ -852,21 +872,18 @@ const CRM: FC = () => {
         setWaitExport(false);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resExportData, waitExport]);
 
   useEffect(() => {
     if (!(Object.keys(selectedRows).length === 0 && personsSelected.length === 0)) {
       setPersonsSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.leadid === parseInt(x)) || p.find(y => y.leadid === parseInt(x)) || {}))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRows])
 
   useEffect(() => {
     const p = new URLSearchParams(location.search);
     p.set('display', display);
     history.push({ search: p.toString() });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [display, history]);
 
   const campaigns = useMemo(() => {
@@ -874,7 +891,6 @@ const CRM: FC = () => {
     return (mainMulti.data[4].data as ICampaignLst[]).sort((a, b) => {
       return a.description.localeCompare(b.description);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[4]]);
 
   const tags = useMemo(() => {
@@ -882,7 +898,6 @@ const CRM: FC = () => {
     return (mainMulti.data[6].data as any[]).sort((a, b) => {
       return a.tags?.localeCompare(b.tags || '') || 0;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[6]]);
 
   const channels = useMemo(() => {
@@ -890,16 +905,19 @@ const CRM: FC = () => {
     return (mainMulti.data[3].data as IChannel[]).sort((a, b) => {
       return a.communicationchanneldesc.localeCompare(b.communicationchanneldesc);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[3]]);
 
   const userType = useMemo(() => {
     if (!mainMulti.data[7]?.data || mainMulti.data[7]?.key !== "UFN_DOMAIN_LST_VALORES") return [];
     return (mainMulti.data[7].data);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[7]]);
 
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+
   const filtersElement = useMemo(() => (
+    
     <>
       {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
         variant="outlined"
@@ -945,13 +963,25 @@ const CRM: FC = () => {
         optionValue="domainvalue"
       />
     </>
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [user, allParameters, classes, mainMulti, t]);
 
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+
       <div style={{ marginBottom: '34px' }}>
-        <div style={{ position: 'fixed', right: '20px' }}>
+        <div style={{ position: 'fixed', right: '25px', display: "flex", paddingBottom: '20px' }}>   
+          <Tooltip title={t(langKeys.filters) + ""} arrow placement="top">
+            <IconButton
+              color="default"
+              onClick={() => setModalOpen(true)}
+              style={{ padding: '5px' }}
+            >
+              <TuneIcon />
+            </IconButton>
+          </Tooltip>
+
+          <div style={{ height: '20px', borderRight: '1px solid #ccc', margin: '6px 7px' }}></div>
+
           <Tooltip title={t(langKeys.kanbanview) + ""} arrow placement="top">
             <IconButton
               color="default"
@@ -971,87 +1001,65 @@ const CRM: FC = () => {
             >
               <ViewListIcon />
             </IconButton>
-          </Tooltip>
+          </Tooltip>         
         </div>
       </div>
-      {display === 'BOARD' &&
-        <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
+
+      {display === 'BOARD' &&     
+
+        <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>     
+
           <div className={classes.canvasFiltersHeader}>
-            {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
-              variant="outlined"
-              label={t(langKeys.agent)}
-              className={classes.filterComponent}
-              valueDefault={boardFilter.asesorid}
-              onChange={(value) => setBoardFilter(prev => ({ ...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }))}
-              data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-              optionDesc={'fullname'}
-              optionValue={'userid'}
-              disabled={!!user?.roledesc?.includes("ASESOR") || false}
-            />}
-            <FieldSelect
-              variant="outlined"
-              label={t(langKeys.campaign)}
-              className={classes.filterComponent}
-              valueDefault={boardFilter.campaign}
-              onChange={(v: ICampaignLst) => setBoardFilter(prev => ({ ...prev, campaign: v?.id || 0 }))}
-              data={campaigns}
-              loading={mainMulti.loading}
-              optionDesc="description"
-              optionValue="id"
-            />
-            <FieldMultiSelect
-              variant="outlined"
-              label={t(langKeys.product, { count: 2 })}
-              className={classes.filterComponent}
-              valueDefault={boardFilter.products}
-              onChange={(v) => {
-                const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-                setBoardFilter(prev => ({ ...prev, products }));
-              }}
-              data={mainMulti.data[5]?.data || []}
-              loading={mainMulti.loading}
-              optionDesc="domaindesc"
-              optionValue="domainvalue"
-            />
-            <FieldMultiSelect
-              variant="outlined"
-              label={t(langKeys.tag, { count: 2 })}
-              className={classes.filterComponent}
-              valueDefault={boardFilter.tags}
-              onChange={(v) => {
-                const tags = v?.map((o: any) => o.tags).join(',') || '';
-                setBoardFilter(prev => ({ ...prev, tags }));
-              }}
-              data={tags}
-              loading={mainMulti.loading}
-              optionDesc="tags"
-              optionValue="tags"
-            />
-            <FieldEdit
-              size="small"
-              variant="outlined"
-              valueDefault={boardFilter.customer}
-              label={t(langKeys.customer)}
-              className={classes.filterComponent}
-              disabled={mainMulti.loading}
-              onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
-            />
-            <FieldMultiSelect
-              variant="outlined"
-              label={t(langKeys.personType, { count: 2 })}
-              className={classes.filterComponent}
-              valueDefault={boardFilter.persontype}
-              onChange={(v) => {
-                const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-                setBoardFilter(prev => ({ ...prev, persontype }));
-              }}
-              data={mainMulti.data[7]?.data || []}
-              loading={mainMulti.loading}
-              optionDesc="domainvalue"
-              optionValue="domainvalue"
-            />
             <div style={{ flexGrow: 1 }} />
-            {!isIncremental &&
+            <div style={{ display: 'flex', gap:'1rem' }}>
+              <div className={classes.text}>
+                <Typography/>{t(langKeys.orderby)}
+              </div>				
+              <FieldSelect
+                variant="outlined"
+                label={t(langKeys.type)}
+                valueDefault={sortParams.type}
+                data={[]}
+                className={classes.filterComponent}
+                optionDesc="domaindesc"
+                optionValue="domainvalue"
+                onChange={(value) => {
+                    if(value?.domainvalue) {
+                        setSortParams({...sortParams, type: value.domainvalue})
+                    } else {
+                        setSortParams({...sortParams, type: ""})
+                    }
+                }}
+              />
+              <FieldSelect
+                variant="outlined"
+                label={t(langKeys.order)}
+                valueDefault={sortParams.order}
+                data={[]}
+                className={classes.filterComponent}
+                optionDesc="domaindesc"
+                optionValue="domainvalue"
+                onChange={(value) => {
+                    if (value?.domainvalue) {
+                        setSortParams({ ...sortParams, order: value.domainvalue });
+                    } else {
+                        setSortParams({ ...sortParams, order: '' });
+                    }
+                }}
+              />
+
+            </div>
+
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Traffic color="secondary" />}
+              style={{ backgroundColor: "#55BD84", marginLeft:'1rem' }}
+              onClick={() => setOpenModal(true)}
+            >
+              <Trans i18nKey={langKeys.configuration} />
+            </Button>              
+            {!isIncremental &&            
               <Button
                 variant="contained"
                 color="primary"
@@ -1061,7 +1069,8 @@ const CRM: FC = () => {
                 style={{ backgroundColor: "#55BD84" }}
               >
                 <Trans i18nKey={langKeys.register} />
-              </Button>}
+              </Button>
+            }
             <Button
               variant="contained"
               color="primary"
@@ -1071,9 +1080,131 @@ const CRM: FC = () => {
               disabled={mainMulti.loading}
             >
               <Trans i18nKey={langKeys.search} />
-            </Button>
+            </Button>    
+
+               <Modal open={isModalOpen}>
+              <div style={{ padding: '15vh 25%', alignItems: 'center', justifyContent: 'center' }}>
+                <div className={classes.errorModalContent}>
+                  <div className="row-zyx">
+                    {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
+                      variant="outlined"
+                      label={t(langKeys.agent)}
+                      className="col-6"                   
+                      valueDefault={boardFilter.asesorid}
+                      onChange={(value) => setBoardFilter(prev => ({ ...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }))}
+                      data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+                      optionDesc={'fullname'}
+                      optionValue={'userid'}
+                      disabled={!!user?.roledesc?.includes("ASESOR") || false}
+                    />}
+                      <FieldSelect
+                      variant="outlined"
+                      label={t(langKeys.campaign)}
+                      className="col-6"                   
+                      valueDefault={boardFilter.campaign}
+                      onChange={(v: ICampaignLst) => setBoardFilter(prev => ({ ...prev, campaign: v?.id || 0 }))}
+                      data={campaigns}
+                      loading={mainMulti.loading}
+                      optionDesc="description"
+                      optionValue="id"
+                    />
+                  </div>
+
+                  <div className="row-zyx">
+                  <FieldMultiSelect
+                      variant="outlined"
+                      label={t(langKeys.product, { count: 2 })}
+                      className="col-6"                   
+                      valueDefault={boardFilter.products}
+                      onChange={(v) => {
+                        const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                        setBoardFilter(prev => ({ ...prev, products }));
+                      }}
+                      data={mainMulti.data[5]?.data || []}
+                      loading={mainMulti.loading}
+                      optionDesc="domaindesc"
+                      optionValue="domainvalue"
+                    />
+                     <FieldMultiSelect
+                      variant="outlined"
+                      label={t(langKeys.tag, { count: 2 })}
+                      className="col-6"                   
+                      valueDefault={boardFilter.tags}
+                      onChange={(v) => {
+                        const tags = v?.map((o: any) => o.tags).join(',') || '';
+                        setBoardFilter(prev => ({ ...prev, tags }));
+                      }}
+                      data={tags}
+                      loading={mainMulti.loading}
+                      optionDesc="tags"
+                      optionValue="tags"
+                    />
+                  </div>              
+                  
+                  <div className="row-zyx">
+                  <FieldEdit
+                      size="small"
+                      variant="outlined"
+                      valueDefault={boardFilter.customer}
+                      label={t(langKeys.customer)}
+                      className="col-6"                   
+                      disabled={mainMulti.loading}
+                      onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
+                    />
+                       <FieldMultiSelect
+                      variant="outlined"
+                      label={t(langKeys.personType, { count: 2 })}
+                      className="col-6"                   
+                      valueDefault={boardFilter.persontype}
+                      onChange={(v) => {
+                        const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                        setBoardFilter(prev => ({ ...prev, persontype }));
+                      }}
+                      data={mainMulti.data[7]?.data || []}
+                      loading={mainMulti.loading}
+                      optionDesc="domainvalue"
+                      optionValue="domainvalue"
+                    />
+                  </div>           
+ 
+                  <div style={{ textAlign: 'right' }}>
+                    <Button
+                      style={{ border: '1px solid #7721AD', marginRight: '1rem' }}
+                      className={classes.button}
+                      variant="contained"
+                      startIcon={<CloseOutlined />}
+                      onClick={() => setModalOpen(false)}
+                    >
+                      {t(langKeys.close)}
+                    </Button>
+
+                    <Button
+                      style={{ border: '1px solid #7721AD' }}
+                      className={classes.button}
+                      variant="contained"
+                      startIcon={<TuneIcon />}
+                      onClick={fetchBoardLeadsWithFilter}
+                      disabled={mainMulti.loading}
+                    >
+                      {t(langKeys.apply) + " " + t(langKeys.filters)}
+                    </Button>
+                  </div>
+
+                </div>
+              </div>
+            </Modal>       
           </div>
-          {!isIncremental && <AddColumnTemplate onSubmit={(data) => { handleInsert(data, dataColumn, setDataColumn) }} updateSortParams={updateSortParams} passConfiguration={passConfiguration} ordertype={mainMulti?.data[8]?.data} orderby={mainMulti?.data[9]?.data} />}
+  
+          {!isIncremental && 
+            <AddColumnTemplate onSubmit={(data) => { 
+                handleInsert(data, dataColumn, setDataColumn) 
+              }} 
+              updateSortParams={updateSortParams} 
+              passConfiguration={passConfiguration} 
+              ordertype={mainMulti?.data[8]?.data} 
+              orderby={mainMulti?.data[9]?.data} 
+            />
+          }
           <div style={{ display: "flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold" }}>
             <div style={{ minWidth: 280, maxWidth: 280, backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column", }}>{t(langKeys.new)}</div>
             <div style={{
@@ -1089,6 +1220,7 @@ const CRM: FC = () => {
               maxWidth: 280 * dataColumn.filter((x: any) => x.type === "WON").length + 10 * (dataColumn.filter((x: any) => x.type === "WON").length - 1), backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
             }}>{t(langKeys.won)}</div>
           </div>
+         
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
               {(provided) => (
@@ -1104,6 +1236,7 @@ const CRM: FC = () => {
               )}
             </Droppable>
           </DragDropContext>
+          
           <DialogZyx3Opt
             open={openDialog}
             title={t(langKeys.confirmation)}
@@ -1121,6 +1254,7 @@ const CRM: FC = () => {
           </DialogZyx3Opt>
         </div>
       }
+
       {display === 'GRID' &&
         <div style={{ width: 'inherit' }}>
           <div className={classes.containerFilter}>
