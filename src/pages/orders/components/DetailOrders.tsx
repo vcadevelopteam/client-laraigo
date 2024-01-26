@@ -1,18 +1,17 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'; // we need this to make JSX compile
-import { useSelector } from 'hooks';
-import { TemplateBreadcrumbs, TitleDetail, AntTab } from 'components';
-import { convertLocalDate, formatNumber } from 'common/helpers';
+import React, { ChangeEvent, useState } from 'react'; 
+import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel, FieldEdit } from 'components';
 import { Dictionary } from "@types";
-import TableZyx from 'components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import Button from '@material-ui/core/Button';
-import ClearIcon from '@material-ui/icons/Clear';
-import { Avatar } from '@material-ui/core';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Tabs from '@material-ui/core/Tabs';
-import MapLeaflet from 'components/fields/MapLeaflet';
+import History from './tabs/History';
+import OrderList from './tabs/OrderList';
+import DeliveryInfo from './tabs/DeliveryInfo';
+import { formatDate } from 'common/helpers';
+import PaymentInfo from './tabs/PaymentInfo';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -24,16 +23,35 @@ interface MultiData {
 }
 
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
+    tab: {
+        display: 'flex',
+        gap: 8,
+        alignItems: 'center'
     },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
+    tabs: {
+        color: '#989898',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        width: 'inherit',
+    },
+    titleandcrumbs: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    formcontainer: {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        paddingTop: 8
+    },
+    inputsContainer: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        padding: theme.spacing(2),
+        background: "#fff",
     },
 }));
 
@@ -46,205 +64,131 @@ interface DetailOrdersProps {
 const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiData, setViewSelected }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
     const [pageSelected, setPageSelected] = useState(0);
-    const dataorders = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataHistory = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.picture),
-                accessor: 'imagelink',
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return <Avatar alt={row.title} src={row.imagelink} variant="square" style={{ margin: "6px 24px 6px 16px" }} />
-
-                }
-            },
-            {
-                Header: t(langKeys.description),
-                accessor: 'description',
-                type: 'text',
-                sortType: 'text',
-                Cell: (props: any) => {
-                    const { description } = props.cell.row.original;
-                    return <div style={{ paddingLeft: 16 }}>{description}</div>
-                }
-            },
-            {
-                Header: t(langKeys.quantity),
-                accessor: 'quantity',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { quantity } = props.cell.row.original;
-                    return <div style={{ paddingRight: 24 }}>{quantity}</div>
-                }
-            },
-            {
-                Header: t(langKeys.currency),
-                accessor: 'currency',
-                type: 'text',
-                sortType: 'text',
-                Cell: (props: any) => {
-                    const { currency } = props.cell.row.original;
-                    return <div style={{ paddingLeft: 16 }}>{currency}</div>
-                }
-            },
-            {
-                Header: t(langKeys.unitaryprice),
-                accessor: 'unitprice',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { unitprice } = props.cell.row.original;
-                    return <div style={{ paddingRight: 24 }}>{formatNumber(unitprice || 0)}</div>
-                }
-            },
-            {
-                Header: t(langKeys.subtotal),
-                accessor: 'amount',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { amount } = props.cell.row.original;
-                    return <div style={{ paddingRight: 24 }}>{formatNumber(amount || 0)}</div>
-                }
-            },
-        ],
-        []
-    );
-
-    const columnsHistory = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.description),
-                accessor: 'col_description',
-                Cell: (props: any) => {
-                    const { description } = props.cell.row.original;
-                    return <div style={{ padding: 16 }}>{t(description.toLowerCase())}</div>
-                }
-            },
-            {
-                Header: t(langKeys.createdBy),
-                accessor: 'createby',
-                Cell: (props: any) => {
-                    const { createby } = props.cell.row.original;
-                    return <div style={{ padding: 16 }}>{createby}</div>
-                }
-            },
-            {
-                Header: t(langKeys.date),
-                accessor: 'changedate',
-                type: 'date',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return convertLocalDate(row.createdate).toLocaleString()
-                }
-            },
-        ],
-        []
-    );
+  
+    const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
+        setPageSelected(newIndex);
+    };
 
     return (
-        <div style={{ width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={[{ id: "GRID", name: t(langKeys.orders) }, { id: "DETAIL", name: t(langKeys.ordersdetail) }]}
-                        handleClick={setViewSelected}
-                    />
-                    <TitleDetail
-                        title={`${t(langKeys.ordernumber)}: ${row?.orderid}`}
-                    />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className={classes.formcontainer}>
+            <div style={{ width: '100%' }}>
+                <div className={classes.titleandcrumbs}>
+                    <div style={{ flexGrow: 1}}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={[{ id: "GRID", name: t(langKeys.orders) }, { id: "DETAIL", name: t(langKeys.ordersdetail) }]}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={`${t(langKeys.ordernumber)}: ${row?.orderid}`}
+                        />
+                    </div>
                     <Button
                         variant="contained"
                         type="button"
                         color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
+                        startIcon={<ArrowBackIcon color="secondary" />}
                         onClick={() => setViewSelected("GRID")}
-                    >{t(langKeys.back)}</Button>
+                    >
+                        {t(langKeys.back)}
+                    </Button>
                 </div>
             </div>
-
+            <div className={classes.inputsContainer}>
+                <div className="row-zyx" style={{marginBottom: 0}}>
+                    <FieldEdit
+                        label={t(langKeys.ordernumber)}
+                        className="col-3"
+                        valueDefault={row?.orderid}   
+                        disabled={true}              
+                    />
+                    <FieldEdit
+                        label={t(langKeys.dateorder)}
+                        className="col-3"
+                        valueDefault={formatDate(row?.createdate, { withTime: false })}
+                        disabled={true}              
+                    />
+                    <FieldEdit
+                        label={t(langKeys.ticket)}
+                        className="col-3"
+                        valueDefault={row?.ticketnum}   
+                        disabled={true}            
+                    />
+                    <FieldEdit
+                        label={t(langKeys.channel)}
+                        className="col-3"
+                        valueDefault={row?.channel}     
+                        disabled={true}            
+                    />
+                    <FieldEdit
+                        label={t(langKeys.client)}
+                        className="col-4"
+                        valueDefault={row?.name}   
+                        disabled={true}              
+                    />
+                    <FieldEdit
+                        label={t(langKeys.phone)}
+                        className="col-4"
+                        valueDefault={row?.phone}   
+                        disabled={true}              
+                    />
+                    <FieldEdit
+                        label={t(langKeys.email)}
+                        className="col-4"
+                        valueDefault={row?.email}   
+                        disabled={true}            
+                    />
+                </div>
+            </div>
             <Tabs
                 value={pageSelected}
+                onChange={handleChangeTab}
+                className={classes.tabs}
+                textColor="primary"
                 indicatorColor="primary"
                 variant="fullWidth"
-                style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                textColor="primary"
-                onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label={t(langKeys.information)} />
-                <AntTab label={t(langKeys.history)} />
+                <AntTab
+                    label={(
+                        <div className={classes.tab}>
+                            <Trans i18nKey={langKeys.orderlists} />
+                        </div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div className={classes.tab}>
+                            <Trans i18nKey={langKeys.deliveryinfo}/>
+                        </div>
+                    )}
+                />
+                    <AntTab
+                    label={(
+                        <div className={classes.tab}>
+                            <Trans i18nKey={langKeys.payment_information} />
+                        </div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div className={classes.tab}>
+                            <Trans i18nKey={langKeys.history}/>
+                        </div>
+                    )}
+                />
             </Tabs>
-            {pageSelected === 0 && (
-                <>
-                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: 10 }}>
-                        <div style={{ fontSize: "1.2em" }}>{t(langKeys.client)}: {row?.name}</div>
-                        <div style={{ fontSize: "1.2em" }}>{t(langKeys.phone)}: {row?.phone}</div>
-                        <div style={{ fontSize: "1.2em" }}>{t(langKeys.channel)}: {row?.channel}</div>
-                        <div style={{ fontSize: "1.2em" }}>{t(langKeys.ticket_numeroticket)}: {row?.ticketnum}</div>
-                    </div>
-                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: 10 }}>
-                        <div style={{ fontSize: "1.2em" }}>{"Tipo entrega"}: {row?.var_tipoentrega}</div>
-                        <div style={{ fontSize: "1.2em" }}>{"Fecha programada entrega"}: {row?.var_fechaentrega} {row?.var_horaentrega}</div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: 10 }}>
-                        <div style={{ fontSize: "1.2em" }}>{t(langKeys.address)}: {row?.address}</div>
-                    </div>
-                    <div className="row-zyx">
-                        <div>
-                            <div style={{ width: "100%" }}>
-                                <MapLeaflet
-                                    height={200}
-                                    marker={row && { lat: parseFloat(row?.longitude || 0), lng: parseFloat(row?.latitude || 0) }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    </div>
-                    <div className={classes.containerDetail}>
-                        <div className="row-zyx">
-                            <TableZyx
-                                columns={columns}
-                                titlemodule={t(langKeys.orderlist)}
-                                data={dataorders}
-                                download={true}
-                                loading={mainResult.multiData.loading}
-                                toolsFooter={false}
-                                filterGeneral={false}
-                            />
-                        </div>
-                    </div>
-                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: 15 }}>
-                        <div style={{ fontSize: "1.2em" }}></div>
-                        <div style={{ fontSize: "1.2em", fontWeight: "bold" }}>{t(langKeys.total)}: {row?.currency === "PEN" ? "S/ " : "$ "}{formatNumber(dataorders.reduce((acc, x) => acc + x.amount, 0))}</div>
-                    </div>
-                </>
-            )}
-            {pageSelected === 1 && (
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <TableZyx
-                            columns={columnsHistory}
-                            titlemodule={""}
-                            data={dataHistory}
-                            download={false}
-                            loading={mainResult.multiData.loading}
-                            toolsFooter={false}
-                            filterGeneral={false}
-                        />
-                    </div>
-                </div>
-            )}
+            <AntTabPanel index={0} currentIndex={pageSelected}>
+                <OrderList row={row} multiData={multiData} />
+            </AntTabPanel>
+            <AntTabPanel index={1} currentIndex={pageSelected}>
+                <DeliveryInfo row={row} />
+            </AntTabPanel>
+            <AntTabPanel index={2} currentIndex={pageSelected}>
+                <PaymentInfo row={row} />
+            </AntTabPanel>   
+            <AntTabPanel index={3} currentIndex={pageSelected}>
+                <History multiData={multiData} />
+            </AntTabPanel>                      
         </div>
     );
 }

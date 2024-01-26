@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'hooks';
-import { selectTicket, setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent, resetSelectTicket } from 'store/inbox/actions';
+import { selectTicket, setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent, resetSelectTicket, setLibraryByUser } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, getMultiCollectionAux2, resetAllMain } from 'store/main/actions';
-import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getPropertiesIncludingName } from 'common/helpers';
+import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getPropertiesIncludingName, getDocumentLibraryByUser } from 'common/helpers';
+import { ILibrary } from '@types';
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
@@ -51,8 +52,12 @@ const MessageInbox: React.FC = () => {
     }, [aNewMessage])
 
     useEffect(() => {
-        if (multiData?.data[1])
-            dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
+        if (!multiData.loading && !multiData.error) {
+            if (multiData?.data[1])
+                dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
+            const dataLibrary = multiData.data.find(x => x.key === "QUERY_DOCUMENTLIBRARY_BY_USER")
+            dispatch(setLibraryByUser((dataLibrary?.data as ILibrary[]) ?? []))
+        }
     }, [multiData])
 
     useEffect(() => {
@@ -87,8 +92,9 @@ const MessageInbox: React.FC = () => {
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
             getPropertiesIncludingName("WAITINGTIMECUSTOMER"),
-            getPropertySelByName("ASESORDELEGACION","ASESORDELEGACION"),
-            getPropertySelByName("ASESORSUSPENDE","ASESORSUSPENDE"),
+            getPropertySelByName("ASESORDELEGACION", "ASESORDELEGACION"),
+            getPropertySelByName("ASESORSUSPENDE", "ASESORSUSPENDE"),
+            getDocumentLibraryByUser()
         ]))
         dispatch(getMultiCollectionAux2([
             getValuesFromDomainLight("MOTIVOCIERRE"),

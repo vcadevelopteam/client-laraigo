@@ -1178,6 +1178,19 @@ export const getTipificationLevel2Failure = (state: IState, action: IAction): IS
     },
 });
 
+export const setLibraryByUser = (state: IState, action: IAction): IState => ({
+    ...state,
+    libraryList: action.payload.map(x => {
+        const extension = x.link.split('.').pop().toLocaleLowerCase()
+        const type = ["png", "jpg", "jpeg", "gif"].includes(extension) ? "image" :
+                        (["avi", "mp4", "mov", "flv", "rm", "rmvb", "mkv", "3gp", "mpg"].includes(extension) ? "video" : "file")
+        return {
+            ...x,
+            type
+        }
+    })
+});
+
 export const getTipificationLevel2Reset = (state: IState): IState => ({
     ...state,
     tipificationsLevel2: initialState.tipificationsLevel2,

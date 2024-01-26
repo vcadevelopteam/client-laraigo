@@ -148,3 +148,77 @@ export const openpayProcessTransactionReset = (state: IState): IState => ({
     ...state,
     requestOpenpayProcessTransaction: initialState.requestOpenpayProcessTransaction,
 })
+
+export const izipayGetPaymentOrder = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestIzipayGetPaymentOrder: {
+        ...state.requestIzipayGetPaymentOrder,
+        error: false,
+        loading: true,
+    }
+})
+
+export const izipayGetPaymentOrderFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestIzipayGetPaymentOrder: {
+        ...state.requestIzipayGetPaymentOrder,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const izipayGetPaymentOrderSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestIzipayGetPaymentOrder: {
+        ...state.requestIzipayGetPaymentOrder,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const izipayGetPaymentOrderReset = (state: IState): IState => ({
+    ...state,
+    requestIzipayGetPaymentOrder: initialState.requestIzipayGetPaymentOrder,
+})
+
+export const izipayProcessTransaction = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestIzipayProcessTransaction: {
+        ...state.requestIzipayProcessTransaction,
+        error: false,
+        loading: true,
+    }
+})
+
+export const izipayProcessTransactionFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestIzipayProcessTransaction: {
+        ...state.requestIzipayProcessTransaction,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const izipayProcessTransactionSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestIzipayProcessTransaction: {
+        ...state.requestIzipayProcessTransaction,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const izipayProcessTransactionReset = (state: IState): IState => ({
+    ...state,
+    requestIzipayProcessTransaction: initialState.requestIzipayProcessTransaction,
+})

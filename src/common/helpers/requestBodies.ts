@@ -685,6 +685,19 @@ export const getDomainSel = (domainname: string): IRequestBody => ({
         all: true
     }
 })
+export const getDocumentLibrary = (): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_SEL",
+    key: "UFN_DOCUMENTLIBRARY_SEL",
+    parameters: {
+        id: 0,
+        all: true
+    }
+})
+export const getDocumentLibraryByUser = (): IRequestBody => ({
+    method: "QUERY_DOCUMENTLIBRARY_BY_USER",
+    key: "QUERY_DOCUMENTLIBRARY_BY_USER",
+    parameters: { }
+})
 export const getReportSchedulerSel = (id: number): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_SEL",
     key: "UFN_REPORTSCHEDULER_SEL",
@@ -701,6 +714,22 @@ export const reportSchedulerIns = ({ id, title, status, origin, origintype, repo
         mailbodyobject: JSON.stringify(mailbodyobject),
         description: "",
         type: "",
+    }
+})
+
+export const documentLibraryIns = ({id, title, description, category, groups, link, favorite, status, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_INS",
+    key: "UFN_DOCUMENTLIBRARY_INS",
+    parameters: {
+        id, title, description, category, groups, link, favorite, status, operation,
+        type: "",
+    }
+})
+export const documentLibraryInsArray = (table: string): IRequestBody => ({
+    method: "UFN_DOCUMENTLIBRARY_INS_ARRAY",
+    key: "UFN_DOCUMENTLIBRARY_INS_ARRAY",
+    parameters: {
+        table
     }
 })
 
@@ -3352,7 +3381,8 @@ export const insCalendar = ({
     operation, reminderperiod, reminderfrecuency, reminderhsmmessage, notificationmessageemail, messagetemplateidemail,
     communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid,
     rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
-    canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
+    canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid,
+    sendeventtype
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
@@ -3372,7 +3402,8 @@ export const insCalendar = ({
         notificationmessageemail: notificationmessageemail,
         messagetemplateidemail,
         rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
-        canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
+        canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid,
+        sendeventtype
     }
 });
 
@@ -4195,4 +4226,58 @@ export const insLeadConfig = ({ id, maxgreen, maxyellow }: Dictionary): IRequest
     method: "UFN_LEAD_CONFIG_INS",
     key: "UFN_LEAD_CONFIG_INS",
     parameters: { id, maxgreen, maxyellow }
+});
+
+export const assistantAiSel = ({ id, all }: Dictionary) => ({
+    method: "UFN_ASSISTANTAI_SEL",
+    key: "UFN_ASSISTANTAI_SEL",
+    parameters: { id, all },
+});
+
+export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, operation }: Dictionary) => ({
+    method: "UFN_ASSISTANTAI_INS",
+    key: "UFN_ASSISTANTAI_INS",
+    parameters: { id, code, name, description, basemodel, language, organizationname, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, operation },
+});
+
+export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) => ({
+    method: "UFN_ASSISTANTAIDOCUMENT_SEL",
+    key: "UFN_ASSISTANTAIDOCUMENT_SEL",
+    parameters: { assistantaiid, id, all },
+});
+
+export const insAssistantAiDoc = ({ assistantaiid, id, description, url, fileid, type, status, operation }: Dictionary) => ({
+    method: "UFN_ASSISTANTAIDOCUMENT_INS",
+    key: "UFN_ASSISTANTAIDOCUMENT_INS",
+    parameters: { assistantaiid, id, description, url, fileid, type, status, operation },
+});
+
+export const threadSel = ({ assistantaiid, id, all }: Dictionary) => ({
+    method: "UFN_THREAD_SEL",
+    key: "UFN_THREAD_SEL",
+    parameters: { assistantaiid, id, all },
+});
+
+export const insThread = ({ assistantaiid, id, code, description, type, status, operation }: Dictionary) => ({
+    method: "UFN_THREAD_INS",
+    key: "UFN_THREAD_INS",
+    parameters: { assistantaiid, id, code, description, type, status, operation },
+});
+
+export const messageAiSel = ({ assistantaiid, threadid }: Dictionary) => ({
+    method: "UFN_MESSAGEAI_SEL",
+    key: "UFN_MESSAGEAI_SEL",
+    parameters: { assistantaiid, threadid },
+});
+
+export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation }: Dictionary) => ({
+    method: "UFN_MESSAGEAI_INS",
+    key: "UFN_MESSAGEAI_INS",
+    parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation },
+});
+
+export const updateAssistantAiDocumentTraining = (assistantaiid: number, documentsid: string) => ({
+    method: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
+    key: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
+    parameters: { assistantaiid, documentsid },
 });

@@ -34,6 +34,7 @@ interface Properties {
     environment: string;
     ringer_volume: number;
     origin_label: boolean;
+    lock_send_file_pc: boolean;
     range_date_filter: number | undefined;
 }
 
