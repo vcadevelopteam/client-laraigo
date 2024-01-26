@@ -521,8 +521,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     </iframe>
                     {(files && files !== "{}") &&
                         Object.keys(JSON.parse(files)).map((file: any) => {
-                            let hreffile = JSON.parse(files)[file]
-                            let extension = file.split('.').pop()
+                            const hreffile = JSON.parse(files)[file]
+                            const extension = file.split('.').pop()
                             return (
                                 <a key={file} download rel="noreferrer" target="_blank" href={hreffile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4, maxWidth: 200, border: "1px solid #e1e1e1", borderRadius: 5, marginBottom: 5, paddingRight: 5 }}>
                                     {extension === "pdf" ? (

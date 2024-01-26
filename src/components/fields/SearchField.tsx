@@ -23,12 +23,12 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: '2px 4px',
             display: 'flex',
             alignItems: 'center',
-            height: 35,
+            height: 40,
             border: '1px solid #EBEAED',
             backgroundColor: (props: any) => props.colorPlaceHolder || '#F9F9FA',
         },
         input: {
-            marginLeft: theme.spacing(1),
+            marginLeft: theme.spacing(.5),
             flex: 1,
         },
         inputPlaceholder: {

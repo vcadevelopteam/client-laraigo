@@ -14,6 +14,8 @@ export interface IState {
     requestNiubizCreateSessionToken: IRequest;
     requestOpenpayGetPaymentOrder: IRequest;
     requestOpenpayProcessTransaction: IRequest;
+    requestIzipayGetPaymentOrder: IRequest;
+    requestIzipayProcessTransaction: IRequest;
 }
 
 export const initialState: IState = {
@@ -21,6 +23,8 @@ export const initialState: IState = {
     requestNiubizCreateSessionToken: { ...initialCommon, data: null, loading: false, error: false },
     requestOpenpayGetPaymentOrder: { ...initialCommon, data: null, loading: false, error: false },
     requestOpenpayProcessTransaction: { ...initialCommon, data: null, loading: false, error: false },
+    requestIzipayGetPaymentOrder: { ...initialCommon, data: null, loading: false, error: false },
+    requestIzipayProcessTransaction: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -43,4 +47,14 @@ export default createReducer<IState>(initialState, {
     [actionTypes.PAYMENT_OPENPAY_PROCESSTRANSACTION_FAILURE]: caseFunctions.openpayProcessTransactionFailure,
     [actionTypes.PAYMENT_OPENPAY_PROCESSTRANSACTION_SUCCESS]: caseFunctions.openpayProcessTransactionSuccess,
     [actionTypes.PAYMENT_OPENPAY_PROCESSTRANSACTION_RESET]: caseFunctions.openpayProcessTransactionReset,
+
+    [actionTypes.PAYMENT_IZIPAY_GETPAYMENTORDER]: caseFunctions.izipayGetPaymentOrder,
+    [actionTypes.PAYMENT_IZIPAY_GETPAYMENTORDER_FAILURE]: caseFunctions.izipayGetPaymentOrderFailure,
+    [actionTypes.PAYMENT_IZIPAY_GETPAYMENTORDER_SUCCESS]: caseFunctions.izipayGetPaymentOrderSuccess,
+    [actionTypes.PAYMENT_IZIPAY_GETPAYMENTORDER_RESET]: caseFunctions.izipayGetPaymentOrderReset,
+
+    [actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION]: caseFunctions.izipayProcessTransaction,
+    [actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_FAILURE]: caseFunctions.izipayProcessTransactionFailure,
+    [actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_SUCCESS]: caseFunctions.izipayProcessTransactionSuccess,
+    [actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_RESET]: caseFunctions.izipayProcessTransactionReset,
 });

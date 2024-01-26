@@ -136,14 +136,14 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                             className="col-6"
                             onChange={(value) => setValue('description', value)}
                             valueDefault={edit ? (row?.description || "") : ""}
-                            error={`${errors?.description?.message}`}
+                            error={errors?.description?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.value)}
                             className="col-6"
                             onChange={(value) => setValue('inputvalue', value)}
                             valueDefault={row?.inputvalue || ""}
-                            error={`${errors?.inputvalue?.message}`}
+                            error={errors?.inputvalue?.message}
                         />
                     </div>
 

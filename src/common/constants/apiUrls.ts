@@ -1,4 +1,4 @@
-const ENV = import.meta.env.VITE_ENV || 'LOCAL';
+const ENV = import.meta.env.VITE_ENV || 'TESTING';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
@@ -18,6 +18,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
@@ -39,6 +40,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/testing-form.min.js',
         USELARAIGO: false,
         BODEGAACME: true,
@@ -60,6 +62,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
@@ -81,6 +84,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
@@ -102,6 +106,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
@@ -123,6 +128,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
@@ -144,6 +150,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
@@ -184,6 +191,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
@@ -205,6 +213,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
@@ -228,6 +237,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        IZIPAYSCRIPT: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
@@ -249,6 +259,7 @@ const FACEBOOKVERSION = APIS_URL[ENV].FACEBOOKVERSION
 const DIALOG360PARTNERID = APIS_URL[ENV].DIALOG360PARTNERID
 const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
 const NIUBIZSCRIPT = APIS_URL[ENV].NIUBIZSCRIPT
+const IZIPAYSCRIPT = APIS_URL[ENV].IZIPAYSCRIPT
 const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 const APIKEY_GMAPS = APIS_URL[ENV].APIKEY_GMAPS
 const USELARAIGO = APIS_URL[ENV].USELARAIGO
@@ -268,6 +279,7 @@ export const apiUrls = {
     DIALOG360PARTNERID,
     GOOGLECLIENTID_CALENDAR,
     NIUBIZSCRIPT,
+    IZIPAYSCRIPT,
     WEBFORMCHANNEL_FORM,
     APIKEY_GMAPS,
     USELARAIGO,
@@ -286,6 +298,7 @@ export const apiUrls = {
     MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,
     MAIN_URL_PAYMENTORDEROPENPAY: `${BASE_URL}/main/public/paymentorderopenpay`,
     MAIN_URL_PAYMENTORDEROPENPAYCOLOMBIA: `${BASE_URL}/main/public/paymentorderopenpaycolombia`,
+    MAIN_URL_PAYMENTORDERIZIPAY: `${BASE_URL}/main/public/paymentorderizipay`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
@@ -414,4 +427,7 @@ export const apiUrls = {
 
     PAYMENTORDER_OPENPAY_GETPAYMENTORDER: `${BASE_URL}/paymentopenpay/getpaymentorder`,
     PAYMENTORDER_OPENPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentopenpay/processtransaction`,
+
+    PAYMENTORDER_IZIPAY_GETPAYMENTORDER: `${BASE_URL}/paymentizipay/getpaymentorder`,
+    PAYMENTORDER_IZIPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentizipay/processtransaction`,
 };

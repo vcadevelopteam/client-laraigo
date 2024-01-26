@@ -6,7 +6,8 @@ import actionTypes from "./actionTypes";
 
 export interface IUserTmp extends ITemplate {
     user: IUser | null;
-    notifications?: NotificationZyx[]
+    notifications?: NotificationZyx[];
+    lastConnection?: string;
 }
 
 export interface IState {
@@ -49,4 +50,5 @@ export default createReducer<IState>(initialState, {
 
     [actionTypes.CHANGE_PWD_FIRST_LOGIN]: caseFunctions.changePwdFirstLogin,
     [actionTypes.NEW_NOTIFICATION]: caseFunctions.newNotification,
+    [actionTypes.UPDATE_CONNECTION]: caseFunctions.updateConnection,
 });
