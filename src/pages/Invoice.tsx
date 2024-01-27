@@ -7607,19 +7607,33 @@ const BillingOperation: FC<DetailProps> = ({
                                 )}
                             </div>
                             <div className="row-zyx">
+                                <FieldSelect
+                                    className="col-3"
+                                    data={dataPaymentMethod || []}
+                                    disabled={data?.invoicestatus === "INVOICED"}
+                                    error={errors?.paymentmethod?.message}
+                                    label={t(langKeys.billig_paymentmethod)}
+                                    optionDesc="description"
+                                    optionValue="value"
+                                    orderbylabel={true}
+                                    valueDefault={getValues("paymentmethod")}
+                                    onChange={(value) => {
+                                        setValue("paymentmethod", value?.value);
+                                    }}
+                                />
                                 <FieldView label={t(langKeys.currency)} value={data?.currency} className="col-3" />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.taxbase)}
                                     value={formatNumber(data?.subtotal || 0)}
                                 />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.billingtax)}
                                     value={formatNumber(data?.taxes || 0)}
                                 />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.totalamount)}
                                     value={formatNumber(data?.totalamount || 0)}
                                 />
@@ -7643,7 +7657,7 @@ const BillingOperation: FC<DetailProps> = ({
                             {creditNote ? (
                                 <div className="row-zyx">
                                     <FieldSelect
-                                        className="col-6"
+                                        className="col-3"
                                         data={datacreditnote}
                                         error={errors?.creditnotetype?.message}
                                         label={t(langKeys.creditnotetype)}
@@ -7676,21 +7690,6 @@ const BillingOperation: FC<DetailProps> = ({
                                     ) : null}
                                 </div>
                             ) : null}
-                            <div className="row-zyx">
-                                <FieldSelect
-                                    className="col-6"
-                                    data={dataPaymentMethod}
-                                    error={errors?.paymentmethod?.message}
-                                    label={t(langKeys.billig_paymentmethod)}
-                                    optionDesc="description"
-                                    optionValue="value"
-                                    orderbylabel={true}
-                                    valueDefault={getValues("paymentmethod")}
-                                    onChange={(value) => {
-                                        setValue("paymentmethod", value?.value);
-                                    }}
-                                />
-                            </div>
                             <div className="row-zyx">
                                 <TableContainer>
                                     <Table>
@@ -9070,6 +9069,19 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
                             <div className="row-zyx">
                                 <FieldSelect
                                     className="col-3"
+                                    data={dataPaymentMethod || []}
+                                    error={errors?.paymentmethod?.message}
+                                    label={t(langKeys.billig_paymentmethod)}
+                                    optionDesc="description"
+                                    optionValue="value"
+                                    orderbylabel={true}
+                                    valueDefault={getValues("paymentmethod")}
+                                    onChange={(value) => {
+                                        setValue("paymentmethod", value?.value);
+                                    }}
+                                />
+                                <FieldSelect
+                                    className="col-3"
                                     data={dataAllCurrency ?? []}
                                     disabled={invoicehasreport}
                                     error={errors?.invoicecurrency?.message}
@@ -9081,36 +9093,21 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
                                     valueDefault={getValues("invoicecurrency")}
                                 />
                                 <FieldEdit
-                                    className="col-3"
+                                    className="col-2"
                                     disabled={true}
                                     error={errors?.invoicetotalamount?.message}
                                     label={t(langKeys.taxbase)}
                                     valueDefault={formatNumber(getValues("invoicetotalamount") || 0)}
                                 />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.billingtax)}
                                     value={formatNumber(amountTax || 0)}
                                 />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.totalamount)}
                                     value={formatNumber(amountTotal || 0)}
-                                />
-                            </div>
-                            <div className="row-zyx">
-                                <FieldSelect
-                                    className="col-6"
-                                    data={dataPaymentMethod}
-                                    error={errors?.paymentmethod?.message}
-                                    label={t(langKeys.billig_paymentmethod)}
-                                    optionDesc="description"
-                                    optionValue="value"
-                                    orderbylabel={true}
-                                    valueDefault={getValues("paymentmethod")}
-                                    onChange={(value) => {
-                                        setValue("paymentmethod", value?.value);
-                                    }}
                                 />
                             </div>
                             <div className="row-zyx">

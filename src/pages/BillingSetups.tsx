@@ -462,7 +462,6 @@ const DetailGeneralConfiguration: React.FC<DetailGeneralConfigurationProps> = ({
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
 
-    const [blockUbigee, setBlockUbigee] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
     const arrayBread = [
@@ -833,7 +832,7 @@ const DetailGeneralConfiguration: React.FC<DetailGeneralConfigurationProps> = ({
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={blockUbigee}
+                            disabled={getValues("country") !== "PE"}
                             error={errors?.ubigeo?.message}
                             label={t(langKeys.billingubigeocode)}
                             onChange={(value) => setValue("ubigeo", value)}
@@ -852,9 +851,6 @@ const DetailGeneralConfiguration: React.FC<DetailGeneralConfigurationProps> = ({
                                 setValue("country", value?.code);
                                 if (value?.code !== "PE") {
                                     setValue("ubigeo", "");
-                                    setBlockUbigee(true);
-                                } else {
-                                    setBlockUbigee(false);
                                 }
                             }}
                         />
