@@ -5845,7 +5845,7 @@ const translation: LangKeys = {
   deliverytype: 'Delivery Type',
   billingtype: 'Billing Type',
   schedule_delivery_date: 'Scheduled delivery date',
-  orderlists: "orderlists",
+  orderlists: "Order Lists",
   deliveryinfo: "Delivery Information",
   deliverydate: "Delivery date",
   deliveryaddress: "Delivery address",
