@@ -90,7 +90,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             },
             {
                 Header: t(langKeys.billingtype),
-                accessor: 'payment_document_type',
+                accessor: 'payment_receipt',
                 NoFilter: true
             },
             {
@@ -116,12 +116,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             {
                 Header: t(langKeys.dateorder),
                 accessor: 'createdate',
-                NoFilter: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original.createdate;
-                    const formatteddate = formatDate(row, {withTime: false})
-                    return formatteddate
-                }
+                NoFilter: true,               
             },
             {
                 Header: t(langKeys.ticket),
