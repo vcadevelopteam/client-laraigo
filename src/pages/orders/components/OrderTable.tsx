@@ -65,7 +65,8 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             {
                 Header: t(langKeys.totalamount),
                 accessor: 'amount',
-                NoFilter: true
+                NoFilter: true,
+                Cell: ({ value }) => parseFloat(value).toFixed(2),
             },
             {
                 Header: t(langKeys.orderstatus),
