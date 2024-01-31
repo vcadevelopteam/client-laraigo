@@ -404,7 +404,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const isFiltering = useSelector(state => state.inbox.isFiltering);
     const hideLogs = useSelector(state => state.login.validateToken.user?.properties.hide_log_conversation) || false;
     const user = useSelector(state => state.login.validateToken.user);
-    
+
     const [counterTickets, setCounterTickets] = useState({
         assigned: -0,
         paused: -0,
