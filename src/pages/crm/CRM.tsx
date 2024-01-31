@@ -29,6 +29,7 @@ import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 const isIncremental = window.location.href.includes("incremental")
 import { MoreVert as MoreVertIcon, Traffic } from "@material-ui/icons";
 import { TrafficIndividualConfigurationModal, TrafficLightConfigurationModal } from "./Modals";
+import Add from "@material-ui/icons/Add";
 
 interface dataBackend {
   columnid: number,
@@ -92,6 +93,25 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "center",
     marginLeft: '25px',
     fontSize: 16
+  },
+  addBtn: {
+    width: 35,
+    height: 35,
+  
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+
+  },
+  addBtnContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    backgroundColor: "inherit",
+    position: "relative",
+    height: 35,
+    width: "fit-content",
   },
 }));
 
@@ -915,6 +935,12 @@ const CRM: FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const open = Boolean(anchorEl);
+  const id = open ? "crm-add-new-column-popover" : undefined;
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   const filtersElement = useMemo(() => (
     
@@ -1011,77 +1037,7 @@ const CRM: FC = () => {
 
           <div className={classes.canvasFiltersHeader}>
             <div style={{ flexGrow: 1 }} />
-            <div style={{ display: 'flex', gap:'1rem' }}>
-              <div className={classes.text}>
-                <Typography/>{t(langKeys.orderby)}
-              </div>				
-              <FieldSelect
-                variant="outlined"
-                label={t(langKeys.type)}
-                valueDefault={sortParams.type}
-                data={[]}
-                className={classes.filterComponent}
-                optionDesc="domaindesc"
-                optionValue="domainvalue"
-                onChange={(value) => {
-                    if(value?.domainvalue) {
-                        setSortParams({...sortParams, type: value.domainvalue})
-                    } else {
-                        setSortParams({...sortParams, type: ""})
-                    }
-                }}
-              />
-              <FieldSelect
-                variant="outlined"
-                label={t(langKeys.order)}
-                valueDefault={sortParams.order}
-                data={[]}
-                className={classes.filterComponent}
-                optionDesc="domaindesc"
-                optionValue="domainvalue"
-                onChange={(value) => {
-                    if (value?.domainvalue) {
-                        setSortParams({ ...sortParams, order: value.domainvalue });
-                    } else {
-                        setSortParams({ ...sortParams, order: '' });
-                    }
-                }}
-              />
-
-            </div>
-
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Traffic color="secondary" />}
-              style={{ backgroundColor: "#55BD84", marginLeft:'1rem' }}
-              onClick={() => setOpenModal(true)}
-            >
-              <Trans i18nKey={langKeys.configuration} />
-            </Button>              
-            {!isIncremental &&            
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={mainMulti.loading}
-                startIcon={<AddIcon color="secondary" />}
-                onClick={goToAddLead}
-                style={{ backgroundColor: "#55BD84" }}
-              >
-                <Trans i18nKey={langKeys.register} />
-              </Button>
-            }
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<SearchIcon style={{ color: 'white' }} />}
-              style={{ backgroundColor: '#55BD84', width: 120 }}
-              onClick={fetchBoardLeadsWithFilter}
-              disabled={mainMulti.loading}
-            >
-              <Trans i18nKey={langKeys.search} />
-            </Button>    
-
+          
                <Modal open={isModalOpen}>
               <div style={{ padding: '15vh 25%', alignItems: 'center', justifyContent: 'center' }}>
                 <div className={classes.errorModalContent}>
@@ -1205,20 +1161,77 @@ const CRM: FC = () => {
               orderby={mainMulti?.data[9]?.data} 
             />
           }
-          <div style={{ display: "flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold" }}>
-            <div style={{ minWidth: 280, maxWidth: 280, backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column", }}>{t(langKeys.new)}</div>
-            <div style={{
+          <div style={{ display: "flex", color: "white", paddingTop: 13, fontSize: "1.4em", fontWeight: "bold" }}>
+            
+            <div 
+              style={{ borderRadius:'20px', minWidth: 280, maxWidth: 280, backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column"}}
+            >
+
+             <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+              <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
+              {t(langKeys.new)}
+              </div>
+                <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                  <div className={classes.addBtn}>
+                      <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                  </div>
+                  <div style={{ width: 12 }} />                  
+                </Button>  
+              </div>   
+
+            </div>
+
+            <div style={{ borderRadius:'20px',
               minWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1),
-              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1), backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
-            }}>{t(langKeys.qualified)}</div>
-            <div style={{
+              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+            }}>
+             <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+              <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
+              {t(langKeys.qualified)}
+              </div>
+                <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                  <div className={classes.addBtn}>
+                      <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                  </div>
+                  <div style={{ width: 12 }} />                  
+                </Button>  
+              </div>   
+            </div>
+           
+            <div style={{ borderRadius:'20px',
               minWidth: 280 * dataColumn.filter((x: any) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: any) => x.type === "PROPOSITION").length - 1),
-              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: any) => x.type === "PROPOSITION").length - 1), backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
-            }}>{t(langKeys.proposition)}</div>
-            <div style={{
+              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: any) => x.type === "PROPOSITION").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+            }}>
+             <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+              <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
+              {t(langKeys.proposition)}
+              </div>
+                <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                  <div className={classes.addBtn}>
+                      <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                  </div>
+                  <div style={{ width: 12 }} />                  
+                </Button>  
+              </div>  
+            </div>
+
+            <div style={{ borderRadius:'20px',
               minWidth: 280 * dataColumn.filter((x: any) => x.type === "WON").length + 10 * (dataColumn.filter((x: any) => x.type === "WON").length - 1),
-              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "WON").length + 10 * (dataColumn.filter((x: any) => x.type === "WON").length - 1), backgroundColor: "#aa53e0", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
-            }}>{t(langKeys.won)}</div>
+              maxWidth: 280 * dataColumn.filter((x: any) => x.type === "WON").length + 10 * (dataColumn.filter((x: any) => x.type === "WON").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+            }}>
+             <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+              <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
+              {t(langKeys.won)}
+              </div>
+                <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                  <div className={classes.addBtn}>
+                      <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                  </div>
+                  <div style={{ width: 12 }} />                  
+                </Button>  
+              </div>  
+            </div>
+
           </div>
          
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>

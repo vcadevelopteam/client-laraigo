@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField, Typography } from "@material-ui/core";
-import { Add, MoreVert as MoreVertIcon, Traffic } from "@material-ui/icons";
+import { Add, MoreVert as MoreVertIcon, Traffic, Add as AddIcon } from "@material-ui/icons";
 import CloseIcon from "@material-ui/icons/Close";
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from "react-beautiful-dnd";
 import { langKeys } from "lang/keys";
@@ -705,7 +705,7 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
         borderRadius: 3,
     },
 	configBtn: {
-		marginLeft: 'auto',
+		marginLeft: 'auto',       
 	},
     popoverRoot: {
         width: columnWidth,
@@ -730,6 +730,8 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
     const { t } = useTranslation();
     const user = useSelector((state) => state.login.validateToken.user);
 	const [openModal, setOpenModal] = useState(false);
+    const mainMulti = useSelector(state => state.main.multiData);
+    const history = useHistory();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -770,16 +772,21 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
         passConfiguration(configuration)
     }, [configuration, sortParams])
 
+    const goToAddLead = useCallback(() => {
+        history.push(paths.CRM_ADD_LEAD);
+      }, [history]);
+
     return (
         <Box>
             <div className={classes.root}>
+
                 <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
                     <div className={classes.addBtn}>
                         <Add style={{ height: "75%", width: "auto" }} color="secondary" />
                     </div>
-                    <div style={{ width: 12 }} />
-                    <span>{t(langKeys.addacolumn)}</span>
+                    <div style={{ width: 12 }} />                  
                 </Button>
+
 				<div className={classes.text}>
 					<Typography/>{t(langKeys.orderby)}
 				</div>
@@ -815,12 +822,26 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                         }
                     }}
                 />
+
+                {!isIncremental &&            
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.configBtn}
+                        disabled={mainMulti.loading}
+                        startIcon={<AddIcon color="secondary" />}
+                        onClick={goToAddLead}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        <Trans i18nKey={langKeys.register} />
+                    </Button>
+                }
+
 				<Button
-					variant="contained"
+					variant="outlined"
 					color="primary"
 					className={classes.configBtn}
-					startIcon={<Traffic color="secondary" />}
-					style={{ backgroundColor: "#55BD84" }}
+					startIcon={<Traffic color="primary" />}					
 					onClick={() => setOpenModal(true)}
 				>
 					<Trans i18nKey={langKeys.configuration} />
