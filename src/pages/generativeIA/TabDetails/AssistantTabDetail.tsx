@@ -34,14 +34,18 @@ interface AssistantTabDetailProps {
     data: RowSelected
     setValue: any
     getValues: any,
-    errors: FieldErrors
+    errors: FieldErrors,
+    basemodel: string|null,
+    setBasemodel: (data:string|null) => void
 }
 
 const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     data:{row, edit},
     setValue,
     getValues,
-    errors
+    errors,
+    basemodel,
+    setBasemodel
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -63,6 +67,12 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
             "domainid": 437612,
             "domainvalue": "gpt-4-1106-preview",
             "domaindesc": "gpt-4-1106-preview",
+            "bydefault": null
+        },
+        {
+            "domainid": 438403,
+            "domainvalue": "llama-2-13b-chat.Q4_0",
+            "domaindesc": "llama-2-13b-chat.Q4_0",
             "bydefault": null
         }
     ];
@@ -115,7 +125,18 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     label={t(langKeys.basemodel)}
                     data={isRetrieval ? retrievalbasemodels : allbasemodels}
                     valueDefault={getValues('basemodel')}
-                    onChange={(value) => setValue('basemodel', value.domainvalue)}
+                    onChange={(value) => {
+                        if(value?.domainvalue) {
+                            setValue('basemodel', value.domainvalue)
+                            setBasemodel(value.domainvalue)
+                            if(value.domainvalue === 'llama-2-13b-chat.Q4_0') setValue('apikey', 'apikeyllama')
+                            else setValue('apikey', '')
+                        } else {
+                            setValue('basemodel', '')
+                            setBasemodel(null)
+                            setValue('apikey', '')
+                        }
+                    }}
                     error={errors?.basemodel?.message}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
@@ -130,35 +151,38 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
-                <FieldEdit
-                    className="col-12"
-                    label={t(langKeys.apikey)}
-                    valueDefault={getValues('apikey')}
-                    onChange={(value) => setValue('apikey', value)}
-                    error={errors?.apikey?.message}
-                    type="password"
-                />
-                <FormControlLabel style={{margin: 0}}
-                    control={
-                        <>
-                            <IOSSwitch
-                                checked={isCodeInterpreter}
-                                onChange={(event) => {
-                                    setIsCodeInterpreter(event.target.checked)
-                                    setValue('codeinterpreter', event.target.checked)
-                                }}
-                                color='primary'
-                            />
-                            <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
-                            <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
-                                <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
-                            </Tooltip>
-                        </>
-                    }                  
-                    className="col-5"
-                    label=""
-                />
-
+                {basemodel !== 'llama-2-13b-chat.Q4_0' && (
+                    <>
+                        <FieldEdit
+                            className="col-12"
+                            label={t(langKeys.apikey)}
+                            valueDefault={getValues('apikey')}
+                            onChange={(value) => setValue('apikey', value)}
+                            error={errors?.apikey?.message}
+                            type="password"
+                        />
+                        <FormControlLabel style={{margin: 0}}
+                            control={
+                                <>
+                                    <IOSSwitch
+                                        checked={isCodeInterpreter}
+                                        onChange={(event) => {
+                                            setIsCodeInterpreter(event.target.checked)
+                                            setValue('codeinterpreter', event.target.checked)
+                                        }}
+                                        color='primary'
+                                    />
+                                    <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
+                                    <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
+                                    </Tooltip>
+                                </>
+                            }                  
+                            className="col-5"
+                            label=""
+                        />
+                    </>
+                )}
             </div>
         </div>
     );

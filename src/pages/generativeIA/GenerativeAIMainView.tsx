@@ -158,12 +158,24 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             setAssistantDelete(row)
             setWaitSaveAssistantDelete(true);  
         };
+
+        const callbackLlama: () => void = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(insAssistantAi({
+                ...row,
+                id: row.assistantaiid,
+                operation: "DELETE",
+                status: "ELIMINADO",
+                type: "NINGUNO" 
+            })));
+            setWaitSave(true);
+        }
     
         dispatch(
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_delete),
-            callback,
+            callback: row.basemodel === 'llama-2-13b-chat.Q4_0' ? callbackLlama : callback,
           })
         );
     };
