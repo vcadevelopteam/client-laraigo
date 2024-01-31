@@ -114,17 +114,18 @@ const AccountMenu: FC = () => {
     }
 
     const consultHistoricalData = () => {
+        const accessToken = localStorage.accessToken
         if (isIncremental) {
             if (window.location.hostname === 'incremental-claro.laraigo.com') {
-                window.open("https://claro.laraigo.com/sign-in", '_blank');
+                window.open(`https://claro.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
             } else {
-                window.open("https://app.laraigo.com/sign-in", '_blank');
+                window.open(`https://app.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
             }
         } else {
             if (window.location.hostname === 'claro.laraigo.com') {
-                window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
+                window.open(`https://incremental-claro.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
             } else {
-                window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
+                window.open(`https://incremental-prod.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
             }
         }
     }
