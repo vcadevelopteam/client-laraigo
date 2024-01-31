@@ -397,7 +397,6 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const [ticketsToShow, setTicketsToShow] = useState<ITicket[]>([]);
     const [search, setSearch] = useState("");
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [checkInbox, setCheckInbox] = useState(false);
     const ticketList = useSelector(state => state.inbox.ticketList);
     const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
@@ -420,7 +419,6 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     useEffect(() => {
         if (agentSelected) {
             dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
-            setCheckInbox(true)
             setPageSelected(0)
             setCounterTickets({
                 assigned: -0,
@@ -443,39 +441,21 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     }, [dispatch])
 
     useEffect(() => {
-        if (checkInbox) {
-            if (!ticketList.loading && !ticketList.error) {
-                setDataTickets(ticketList.data as ITicket[]);
-                setCounterTickets({
-                    assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
-                    paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
-                    all: ticketList.data.length
-                })
+        if (!ticketList.loading && !ticketList.error) {
+            setDataTickets(ticketList.data as ITicket[]);
+            setCounterTickets({
+                assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
+                paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
+                all: ticketList.data.length
+            })
+            const tickets = ticketList.data.filter((x) => x.countnewmessages > 0);
 
-                const tickets = ticketList.data.filter((x) => x.countnewmessages > 0);
-
-                if (tickets.length > 0) {
-                    document.title = `(${tickets.length}) Laraigo`;
-                } else {
-                    document.title = `Laraigo`;
-                }
-
-                setCheckInbox(false);
+            if (tickets.length > 0) {
+                document.title = `(${tickets.length}) Laraigo`;
+            } else {
+                document.title = `Laraigo`;
             }
         }
-        else {
-            if (!ticketList.loading && !ticketList.error) {
-                if (ticketList.data.filter(item => item.status === "ASIGNADO").length > counterTickets.assigned && counterTickets.assigned <= 0) {
-                    setDataTickets(ticketList.data as ITicket[]);
-                    setCounterTickets({
-                        assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
-                        paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
-                        all: ticketList.data.length
-                    })
-                }
-            }
-        }
-
         return () => {
             document.title = `Laraigo`;
         };
@@ -489,20 +469,6 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, search));
         return () => setTicketsToShow(dataTickets)
     }, [pageSelected, search, dataTickets])
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            checkAgentInbox();
-        }, 60000);
-
-        return () => clearInterval(interval);
-    }, [])
-
-    const checkAgentInbox = () => {
-        if (user?.properties?.environment === "ENTEL" && userType === "AGENT" && checkInbox === false && counterTickets.assigned <= 0 && pageSelected === 0) {
-            dispatch(getTickets(user?.userid || null));
-        }
-    }
 
     const ticketFilteredListData = createItemData(ticketFilteredList.data, setTicketSelected, classes);
     const ticketsToShowData = createItemData(ticketsToShow, setTicketSelected, classes);
@@ -605,7 +571,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
                             }
                         </>
-                        : ((ticketList.loading && checkInbox) ? <ListItemSkeleton /> :
+                        : (ticketList.loading ? <ListItemSkeleton /> :
                             <AutoSizer>
                                 {({ height, width }: any) => (
                                     <FixedSizeList
