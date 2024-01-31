@@ -397,13 +397,14 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const [ticketsToShow, setTicketsToShow] = useState<ITicket[]>([]);
     const [search, setSearch] = useState("");
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [checkInbox, setCheckInbox] = useState(false);
     const ticketList = useSelector(state => state.inbox.ticketList);
     const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const isFiltering = useSelector(state => state.inbox.isFiltering);
     const hideLogs = useSelector(state => state.login.validateToken.user?.properties.hide_log_conversation) || false;
     const user = useSelector(state => state.login.validateToken.user);
-
+    
     const [counterTickets, setCounterTickets] = useState({
         assigned: -0,
         paused: -0,
@@ -419,6 +420,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     useEffect(() => {
         if (agentSelected) {
             dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
+            setCheckInbox(true)
             setPageSelected(0)
             setCounterTickets({
                 assigned: -0,
@@ -441,21 +443,39 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     }, [dispatch])
 
     useEffect(() => {
-        if (!ticketList.loading && !ticketList.error) {
-            setDataTickets(ticketList.data as ITicket[]);
-            setCounterTickets({
-                assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
-                paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
-                all: ticketList.data.length
-            })
-            const tickets = ticketList.data.filter((x) => x.countnewmessages > 0);
+        if (checkInbox) {
+            if (!ticketList.loading && !ticketList.error) {
+                setDataTickets(ticketList.data as ITicket[]);
+                setCounterTickets({
+                    assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
+                    paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
+                    all: ticketList.data.length
+                })
 
-            if (tickets.length > 0) {
-                document.title = `(${tickets.length}) Laraigo`;
-            } else {
-                document.title = `Laraigo`;
+                const tickets = ticketList.data.filter((x) => x.countnewmessages > 0);
+
+                if (tickets.length > 0) {
+                    document.title = `(${tickets.length}) Laraigo`;
+                } else {
+                    document.title = `Laraigo`;
+                }
+
+                setCheckInbox(false);
             }
         }
+        else {
+            if (!ticketList.loading && !ticketList.error) {
+                if (ticketList.data.filter(item => item.status === "ASIGNADO").length > counterTickets.assigned) {
+                    setDataTickets(ticketList.data as ITicket[]);
+                    setCounterTickets({
+                        assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
+                        paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
+                        all: ticketList.data.length
+                    })
+                }
+            }
+        }
+
         return () => {
             document.title = `Laraigo`;
         };
@@ -469,6 +489,20 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, search));
         return () => setTicketsToShow(dataTickets)
     }, [pageSelected, search, dataTickets])
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkAgentInbox();
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }, [])
+
+    const checkAgentInbox = () => {
+        if (user?.orgdesc?.includes('ENTEL') && userType === "AGENT" && checkInbox === false && counterTickets.assigned <= 0 && pageSelected === 0) {
+            dispatch(getTickets(user?.userid || null));
+        }
+    }
 
     const ticketFilteredListData = createItemData(ticketFilteredList.data, setTicketSelected, classes);
     const ticketsToShowData = createItemData(ticketsToShow, setTicketSelected, classes);
@@ -571,7 +605,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
                             }
                         </>
-                        : (ticketList.loading ? <ListItemSkeleton /> :
+                        : ((ticketList.loading && checkInbox) ? <ListItemSkeleton /> :
                             <AutoSizer>
                                 {({ height, width }: any) => (
                                     <FixedSizeList
@@ -601,7 +635,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
-    
+
     return (
         <div className={classes.containerPanel}>
             <TicketsPanel
