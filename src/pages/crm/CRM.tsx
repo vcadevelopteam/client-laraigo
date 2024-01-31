@@ -1,13 +1,10 @@
-import {
-    convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns,
-    insLead2, selOrderConfig, updateColumnsLeads, updateColumnsOrder, uuidv4
-} from "common/helpers";
+import { convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, insLead2, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
-import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
+import { getMultiCollection, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
 import { useHistory, useLocation } from "react-router";
@@ -15,9 +12,9 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon, CloseOutlined } from '@material-ui/icons';
+import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, CloseOutlined } from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
-import { Button, IconButton, Modal, Tooltip, Typography } from "@material-ui/core";
+import { Button, IconButton, Modal, Tooltip } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -27,8 +24,6 @@ import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 const isIncremental = window.location.href.includes("incremental")
-import { MoreVert as MoreVertIcon, Traffic } from "@material-ui/icons";
-import { TrafficIndividualConfigurationModal, TrafficLightConfigurationModal } from "./Modals";
 import Add from "@material-ui/icons/Add";
 
 interface dataBackend {
@@ -165,11 +160,11 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
                     <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        style={{ overflow: 'hidden', width: '100%' }}
+                        style={{ width: '100%', overflowY:'scroll', maxHeight: '60vh', overflowX:'clip', background:'green'  }}
                     >
                         <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
                         {column.items?.map((item: any, index: any) => {
-                            return (
+                            return (                                
                             <Draggable
                                 isDragDisabled={isIncremental}
                                 key={item.leadid}
@@ -1161,16 +1156,18 @@ const CRM: FC = () => {
                 <div style={{ marginRight:'1rem', borderRadius:'20px', minWidth: 280, maxWidth: 280, backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column"}}>
                     
                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                    <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
-                        {t(langKeys.new)}
-                    </div>
-                    <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                        <div className={classes.addBtn}>
-                            <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+
+                        <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
+                            {t(langKeys.new)}
                         </div>
-                        <div style={{ width: 12 }} />                  
-                    </Button>  
-                    </div>   
+                        <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                            <div className={classes.addBtn}>
+                                <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                            </div>
+                            <div style={{ width: 12 }} />                  
+                        </Button>  
+                        </div>  
+
                     </div>
 
                 <div style={{ marginRight:'1rem', borderRadius:'20px',
@@ -1235,12 +1232,10 @@ const CRM: FC = () => {
                             <div
                                 key={index}
                                 style={{
-                                    background: 'grey',
+                                    background: 'purple',
                                     borderRadius: '2rem',
                                     marginRight: '1rem',
-                                    padding: '0.5rem 1.2rem',
-                                    maxHeight: '75vh',
-                                    overflowY: 'auto'
+                                    padding: '0.5rem 1.2rem',                                                                    
                                 }}
                             >
                                 <DraggablesCategories
@@ -1292,31 +1287,31 @@ const CRM: FC = () => {
                 {!isIncremental &&
                 <div style={{ display: 'flex', gap: 8 }}>
                     <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
-                    onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
-                    >
-                    <Trans i18nKey={langKeys.send_hsm} />
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
+                        >
+                        <Trans i18nKey={langKeys.send_hsm} />
                     </Button>
                     <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                    startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                    onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
-                    >
-                    <Trans i18nKey={langKeys.send_mail} />
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
+                        >
+                        <Trans i18nKey={langKeys.send_mail} />
                     </Button>
                     <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                    onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
-                    >
-                    <Trans i18nKey={langKeys.send_sms} />
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
+                        >
+                        <Trans i18nKey={langKeys.send_sms} />
                     </Button>
                 </div>
                 }
