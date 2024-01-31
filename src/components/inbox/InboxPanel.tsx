@@ -465,7 +465,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         }
         else {
             if (!ticketList.loading && !ticketList.error) {
-                if (ticketList.data.filter(item => item.status === "ASIGNADO").length > counterTickets.assigned) {
+                if (ticketList.data.filter(item => item.status === "ASIGNADO").length > counterTickets.assigned && counterTickets.assigned <= 0) {
                     setDataTickets(ticketList.data as ITicket[]);
                     setCounterTickets({
                         assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
@@ -493,13 +493,13 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     useEffect(() => {
         const interval = setInterval(() => {
             checkAgentInbox();
-        }, 30000);
+        }, 60000);
 
         return () => clearInterval(interval);
     }, [])
 
     const checkAgentInbox = () => {
-        if (user?.orgdesc?.includes('ENTEL') && userType === "AGENT" && checkInbox === false && counterTickets.assigned <= 0 && pageSelected === 0) {
+        if (user?.properties?.environment === "ENTEL" && userType === "AGENT" && checkInbox === false && counterTickets.assigned <= 0 && pageSelected === 0) {
             dispatch(getTickets(user?.userid || null));
         }
     }
