@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, getValuesFromDomain, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
+import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -88,11 +89,19 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         url: ''
     });
     const [assistantaiid, setAssistantaiid] = useState('');
-
     const newArrayBread = [
         ...arrayBread,
         { id: "createssistant", name: t(langKeys.createssistant) },       
-    ];
+    ];      
+    const [encryptedApikey, setEncryptedApikey] = useState<string | null>(null)
+    const [generalprompt, setGeneralPrompt] = useState<string | null>(null)
+    const [documentId, setDocumentId] = useState<string | null>(null)
+    const [waitSaveCreateAssistant, setWaitSaveCreateAssistant] = useState(false)
+    const [waitSaveCreateAssistantFile, setWaitSaveCreateAssistantFile] = useState(false)
+    const [waitSaveCreateAssistantAssignFile, setWaitSaveCreateAssistantAssignFile] = useState(false)
+    const executeAssistant = useSelector(state => state.gpt.gptResult);
+    const [waitSaveCreateAssistant2, setWaitSaveCreateAssistant2] = useState(false)
+    const [waitSaveUpdateAssistant, setWaitSaveUpdateAssistant] = useState(false)
 
     useEffect(() => {
         dispatch(
@@ -126,109 +135,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         }
     }, [executeResult, waitSave])
 
-    useEffect(() => {
-        if(waitSaveInsFile){
-            if (!executeResult.loading && !executeResult.error) {
-                setWaitSaveInsFile(false);
-                InsFile()
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSaveInsFile(false);
-            }
-        }
-    }, [executeResult, waitSaveInsFile])
-
-    const InsFile = async () => {
-        const encryptedApikey = encrypt(getValues('apikey'), PUBLICKEYPEM);
-        try {
-            const isDocumentAPI = await fetch('https://documentgptapi.laraigo.com/files', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.token}`,
-              },
-              body: JSON.stringify({
-                file_url: cosFile.url,
-                file_name: cosFile.name,
-                apikey: encryptedApikey,
-              }),
-            });
-      
-            if (!isDocumentAPI.ok) {
-              console.error('Error en cargar documento:', isDocumentAPI.statusText);
-              setWaitSave(true);
-              return;
-            }
-      
-            const responseData = await isDocumentAPI.json();
-            const documentid = responseData.data.id;
-            
-            const assistantFilesAPI = await fetch('https://documentgptapi.laraigo.com/assistants/files', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.token}`,
-              },
-              body: JSON.stringify({
-                assistant_id: assistantaiid,
-                file_id: documentid,
-                apikey: encryptedApikey,
-              }),
-            });
-      
-            if (!assistantFilesAPI.ok) {
-              console.error('Error en la llamada al endpoint assistants/files:', assistantFilesAPI.statusText);
-              setWaitSave(true);
-              return;
-            }
-
-            const docListEndpoint = await fetch ('https://documentgptapi.laraigo.com/assistants/files/list', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${user?.token}`,
-                },
-                body: JSON.stringify({
-                  assistant_id: assistantaiid,                
-                  apikey: encryptedApikey,                  
-                }),
-            })
-            if (!docListEndpoint.ok) {
-                console.error('Error en el nuevo endpoint:', docListEndpoint.statusText);
-                setWaitSave(true);
-                return;
-            }      
-
-            const docListData = await docListEndpoint.json();
-            const list = docListData.data.data;
-            const matchingFile = list.find((file: Dictionary) => file.id===documentid);
-            if(!matchingFile){
-                console.error('No se encontró un archivo con el ID deseado.');
-                setWaitSave(true);
-                return;
-            }            
-
-            dispatch(execute(insAssistantAiDoc({
-                assistantaiid: executeResult.data[0].p_assistantaiid,
-                id: 0,
-                description: cosFile.name,
-                url: cosFile.url,
-                fileid: documentid,
-                type: 'FILE',
-                status: 'ACTIVO',
-                operation: 'INSERT',
-            })));
-            
-            setWaitSave(true);
-          } catch (error) {
-            console.error('Error en la llamada a la API:', error);
-            setWaitSave(true);
-          }
-    }
-
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({        
         defaultValues: {
             id: row?.assistantaiid || 0,
             code: row?.code || '',
@@ -284,6 +191,60 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         fetchDocumentsByAssistant();
     }, [])
 
+    useEffect(() => {
+        if (waitSaveCreateAssistant) {
+            if (!executeAssistant.loading && !executeAssistant.error) {
+                setWaitSaveCreateAssistant(false);
+                setAssistantaiid(executeAssistant.data.assistandid);
+                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: executeAssistant.data.assistandid, apikey: encryptedApikey })));
+                setWaitSaveInsFile(true);
+            } else if (executeAssistant.error) {
+                const errormessage = t(executeAssistant.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateAssistant(false);
+            }
+        }
+    }, [executeAssistant, waitSaveCreateAssistant]);
+
+    useEffect(() => {
+        if (waitSaveCreateAssistant2) {
+            if (!executeAssistant.loading && !executeAssistant.error) {
+                setWaitSaveCreateAssistant2(false);          
+                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: executeAssistant.data.assistandid, apikey: encryptedApikey })));
+                setWaitSave(true);
+            } else if (executeAssistant.error) {
+                const errormessage = t(executeAssistant.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateAssistant2(false);                
+            }
+        }
+    }, [executeAssistant, waitSaveCreateAssistant2]);
+
+        /*Para Update Assistant*/
+        useEffect(() => {
+            if (waitSaveUpdateAssistant) {
+                if (!executeAssistant.loading && !executeAssistant.error) {
+                    setWaitSaveUpdateAssistant(false);         
+                    dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, apikey: encryptedApikey })));
+                    setWaitSave(true);         
+                } else if (executeAssistant.error) {
+                    const errormessage = t(executeAssistant.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveUpdateAssistant(false);
+                }
+            }
+        }, [executeAssistant, waitSaveUpdateAssistant]);
+
+
     const filesIds = dataDocuments.data.map(item => item.fileid);
 
     const onMainSubmit = handleSubmit(async (data) => {
@@ -292,77 +253,56 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
             const encryptedApikey = encrypt(data.apikey, PUBLICKEYPEM);
 
-            let generalprompt = data.organizationname !== '' ? data.prompt + '\n\n' + 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n' +
-            'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-            ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname : 
-            data.prompt + '\n\n' + 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n' +
-            'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-            ', infórmales que solamente puedes comunicarte en ' + data.language;
+            let generalprompt;
 
-            if(data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.'
-            } else if(data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response
+            if (data.organizationname !== '') {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
+            } else {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language;
             }
 
-            try {
-                const endpoint = edit
-                ? 'https://documentgptapi.laraigo.com/assistants/update'
-                : 'https://documentgptapi.laraigo.com/assistants/new';
-                const apiResponse = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user?.token}`,
-                    },
-                    body: edit
-                    ? JSON.stringify({
-                        assistant_id: data.code,
-                        name: data.name,
-                        instructions: generalprompt,
-                        basemodel: data.basemodel,
-                        retrieval: data.retrieval,
-                        codeinterpreter: data.codeinterpreter,
-                        apikey: encryptedApikey,
-                        file_ids: filesIds,
-                    })
-                    : JSON.stringify({
-                        name: data.name,
-                        instructions: generalprompt,
-                        basemodel: data.basemodel,
-                        retrieval: data.retrieval,
-                        codeinterpreter: data.codeinterpreter,
-                        apikey: encryptedApikey,
-                    }),
-                });
-    
-                if (!apiResponse.ok) {
-                    console.error('Error en la llamada a la API:', apiResponse.statusText);
-                    setRegisterError(true)
-                    setWaitSave(true);
-                    return;
-                }
-
-                const responseData = await apiResponse.json();
-                if (
-                    responseData.data &&
-                    responseData.data.error &&
-                    responseData.data.error.code === 'invalid_api_key'
-                ) {
-                    console.error('Error: API key inválida. No se insertará en la base de datos.');
-                    setRegisterError(true);
-                    setWaitSave(true);
-                    return;
-                }
-                const assistantid = edit ? data.code : responseData.data.assistandid;
-                
-                dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: assistantid, apikey: encryptedApikey })));
-                setWaitSave(true);
-            } catch (error) {
-                console.error('Error en la llamada a la API:', error);
-                setRegisterError(true)
-                setWaitSave(true);
+            if (data.querywithoutanswer === 'Mejor Sugerencia') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
+                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
             }
+
+            setEncryptedApikey(encryptedApikey)
+            setGeneralPrompt(generalprompt)
+
+            if(edit){
+                dispatch(updateAssistant({
+                    assistant_id: data.code,
+                    name: data.name,
+                    instructions: generalprompt,
+                    basemodel: data.basemodel,
+                    retrieval: data.retrieval,
+                    codeinterpreter: data.codeinterpreter,
+                    apikey: encryptedApikey,
+                    file_ids: filesIds,
+                }))
+                setWaitSaveUpdateAssistant(true)    
+            } else {
+                dispatch(createAssistant({
+                    name: data.name,
+                    instructions: generalprompt,
+                    basemodel: data.basemodel,
+                    retrieval: data.retrieval,
+                    codeinterpreter: data.codeinterpreter,
+                    apikey: encryptedApikey,
+                }))            
+                setWaitSaveCreateAssistant2(true)        
+            }                   
         };
         dispatch(
             manageConfirmation({
@@ -372,74 +312,49 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             })
         );
     });
-
-    const onMainSubmitWithoutFiles = handleSubmit(async (data) => {
+  
+    const onMainSubmitWithFiles = handleSubmit(async (data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));           
 
-            const encryptedApikey = encrypt(data.apikey, PUBLICKEYPEM);
+            const encryptedApikey2 = encrypt(data.apikey, PUBLICKEYPEM);
 
-            let generalprompt = data.organizationname !== '' ? data.prompt + '\n\n' + 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n' +
-            'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-            ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname : 
-            data.prompt + '\n\n' + 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n' +
-            'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-            ', infórmales que solamente puedes comunicarte en ' + data.language;
+            let generalprompt;
 
-            if(data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.'
-            } else if(data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response
+            if (data.organizationname !== '') {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
+            } else {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language;
             }
 
-            try {
-                const endpoint = 'https://documentgptapi.laraigo.com/assistants/new';
-                const apiResponse = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user?.token}`,
-                    },
-                    body: JSON.stringify({
-                        name: data.name,
-                        instructions: generalprompt,
-                        basemodel: data.basemodel,
-                        retrieval: data.retrieval,
-                        codeinterpreter: data.codeinterpreter,
-                        apikey: encryptedApikey,
-                    }),
-                });
-    
-                if (!apiResponse.ok) {
-                    console.error('Error en la llamada a la API:', apiResponse.statusText);
-                    setRegisterError(true)
-                    setWaitSave(true);
-                    return;
-                }
-
-                const responseData = await apiResponse.json();
-
-                if (
-                    responseData.data &&
-                    responseData.data.error &&
-                    responseData.data.error.code === 'invalid_api_key'
-                ) {
-                    console.error('Error: API key inválida. No se insertará en la base de datos.');
-                    setRegisterError(true);
-                    setWaitSave(true);
-                    return;
-                }
-                const assistantid = edit ? data.code : responseData.data.assistandid;
-                setAssistantaiid(assistantid);
-
-                dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: assistantid, apikey: encryptedApikey })));
-
-                setWaitSaveInsFile(true);
-            } catch (error) {
-                console.error('Error en la llamada a la API:', error);
-                setRegisterError(true)
-                setWaitSave(true);
+            if (data.querywithoutanswer === 'Mejor Sugerencia') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
+                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
             }
+
+            setEncryptedApikey(encryptedApikey2)
+            setGeneralPrompt(generalprompt)
+
+            dispatch(createAssistant({
+                name: data.name,
+                instructions: generalprompt,
+                basemodel: data.basemodel,
+                retrieval: data.retrieval,
+                codeinterpreter: data.codeinterpreter,
+                apikey: encryptedApikey2,
+            }))
+            setWaitSaveCreateAssistant(true)
         };
         dispatch(
             manageConfirmation({
@@ -449,6 +364,75 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             })
         );
     });
+
+    useEffect(() => {
+        if (waitSaveInsFile) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveInsFile(false);
+                dispatch(addFile({
+                    file_url: cosFile.url,
+                    file_name: cosFile.name,
+                    apikey: encryptedApikey,
+                }))
+                setWaitSaveCreateAssistantFile(true);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveInsFile(false);
+            }
+        }
+    }, [executeResult, waitSaveInsFile]);
+
+    useEffect(() => {
+        if (waitSaveCreateAssistantFile) {
+            if (!executeAssistant.loading && !executeAssistant.error) {
+                setWaitSaveCreateAssistantFile(false);
+                setDocumentId(executeAssistant.data.id)
+                dispatch(assignFile({
+                    assistant_id: assistantaiid,
+                    file_id: executeAssistant.data.id,
+                    apikey: encryptedApikey,
+                }))
+                setWaitSaveCreateAssistantAssignFile(true)
+            } else if (executeAssistant.error) {
+                const errormessage = t(executeAssistant.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateAssistantFile(false);
+            }
+        }
+    }, [executeAssistant, waitSaveCreateAssistantFile]);
+
+    useEffect(() => {
+        if (waitSaveCreateAssistantAssignFile) {
+            if (!executeAssistant.loading && !executeAssistant.error) {
+                setWaitSaveCreateAssistantAssignFile(false);
+                dispatch(execute(insAssistantAiDoc({
+                    assistantaiid: executeResult.data[0].p_assistantaiid,
+                    id: 0,
+                    description: cosFile.name,
+                    url: cosFile.url,
+                    fileid: documentId,
+                    type: 'FILE',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })));
+                setWaitSave(true);
+            } else if (executeAssistant.error) {
+                const errormessage = t(executeAssistant.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateAssistantAssignFile(false);
+            }
+        }
+    }, [executeAssistant, waitSaveCreateAssistantAssignFile]);
 
 	const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
         setTabIndex(newIndex);
@@ -456,7 +440,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     return (
         <>
-            <form onSubmit={cosFile.name === '' && cosFile.url === '' ? onMainSubmit : onMainSubmitWithoutFiles} className={classes.formcontainer}>
+            <form onSubmit={cosFile.name === '' && cosFile.url === '' ? onMainSubmit : onMainSubmitWithFiles} className={classes.formcontainer}>
                 <div style={{ width: "100%" }}>
                     <div className={classes.titleandcrumbs}>
                         <div style={{ flexGrow: 1 }}>
