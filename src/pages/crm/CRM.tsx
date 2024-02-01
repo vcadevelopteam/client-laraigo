@@ -14,7 +14,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, CloseOutlined } from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
-import { Button, IconButton, Modal, Tooltip } from "@material-ui/core";
+import { Button, IconButton, Modal, Popover, Tooltip } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -160,7 +160,7 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
                     <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        style={{ width: '100%', overflowY:'scroll', maxHeight: '60vh', overflowX:'clip', background:'green'  }}
+                        style={{ width: '100%', overflowY:'scroll', maxHeight: '61vh', overflowX:'clip'  }}
                     >
                         <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
                         {column.items?.map((item: any, index: any) => {
@@ -930,6 +930,10 @@ const CRM: FC = () => {
         setAnchorEl(event.currentTarget);
     };
 
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     const filtersElement = useMemo(() => (
         
         <>
@@ -1027,9 +1031,9 @@ const CRM: FC = () => {
                 <div style={{ flexGrow: 1 }} />
             
                 <Modal open={isModalOpen}>
-                <div style={{ padding: '15vh 25%', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ padding: '30vh 35%', alignItems: 'center', justifyContent: 'center' }}>
                     <div className={classes.errorModalContent}>
-                    <div className="row-zyx">
+                    <div className="row-zyx" style={{marginTop:"1rem"}}>
                         {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
                         variant="outlined"
                         label={t(langKeys.agent)}
@@ -1055,82 +1059,81 @@ const CRM: FC = () => {
                     </div>
 
                     <div className="row-zyx">
-                    <FieldMultiSelect
-                        variant="outlined"
-                        label={t(langKeys.product, { count: 2 })}
-                        className="col-6"                   
-                        valueDefault={boardFilter.products}
-                        onChange={(v) => {
-                            const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-                            setBoardFilter(prev => ({ ...prev, products }));
-                        }}
-                        data={mainMulti.data[5]?.data || []}
-                        loading={mainMulti.loading}
-                        optionDesc="domaindesc"
-                        optionValue="domainvalue"
+                        <FieldMultiSelect
+                            variant="outlined"
+                            label={t(langKeys.product, { count: 2 })}
+                            className="col-6"                   
+                            valueDefault={boardFilter.products}
+                            onChange={(v) => {
+                                const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                                setBoardFilter(prev => ({ ...prev, products }));
+                            }}
+                            data={mainMulti.data[5]?.data || []}
+                            loading={mainMulti.loading}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
                         />
                         <FieldMultiSelect
-                        variant="outlined"
-                        label={t(langKeys.tag, { count: 2 })}
-                        className="col-6"                   
-                        valueDefault={boardFilter.tags}
-                        onChange={(v) => {
-                            const tags = v?.map((o: Dictionary) => o.tags).join(',') || '';
-                            setBoardFilter(prev => ({ ...prev, tags }));
-                        }}
-                        data={tags}
-                        loading={mainMulti.loading}
-                        optionDesc="tags"
-                        optionValue="tags"
+                            variant="outlined"
+                            label={t(langKeys.tag, { count: 2 })}
+                            className="col-6"                   
+                            valueDefault={boardFilter.tags}
+                            onChange={(v) => {
+                                const tags = v?.map((o: Dictionary) => o.tags).join(',') || '';
+                                setBoardFilter(prev => ({ ...prev, tags }));
+                            }}
+                            data={tags}
+                            loading={mainMulti.loading}
+                            optionDesc="tags"
+                            optionValue="tags"
                         />
                     </div>              
                     
                     <div className="row-zyx">
-                    <FieldEdit
-                        size="small"
-                        variant="outlined"
-                        valueDefault={boardFilter.customer}
-                        label={t(langKeys.customer)}
-                        className="col-6"                   
-                        disabled={mainMulti.loading}
-                        onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
+                        <FieldEdit
+                            size="small"
+                            variant="outlined"
+                            valueDefault={boardFilter.customer}
+                            label={t(langKeys.customer)}
+                            className="col-6"                   
+                            disabled={mainMulti.loading}
+                            onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
                         />
                         <FieldMultiSelect
-                        variant="outlined"
-                        label={t(langKeys.personType, { count: 2 })}
-                        className="col-6"                   
-                        valueDefault={boardFilter.persontype}
-                        onChange={(v) => {
-                            const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-                            setBoardFilter(prev => ({ ...prev, persontype }));
-                        }}
-                        data={mainMulti.data[7]?.data || []}
-                        loading={mainMulti.loading}
-                        optionDesc="domainvalue"
-                        optionValue="domainvalue"
+                            variant="outlined"
+                            label={t(langKeys.personType, { count: 2 })}
+                            className="col-6"                   
+                            valueDefault={boardFilter.persontype}
+                            onChange={(v) => {
+                                const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                                setBoardFilter(prev => ({ ...prev, persontype }));
+                            }}
+                            data={mainMulti.data[7]?.data || []}
+                            loading={mainMulti.loading}
+                            optionDesc="domainvalue"
+                            optionValue="domainvalue"
                         />
                     </div>           
 
-                    <div style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'right', marginTop:'1.4rem' }}>
                         <Button
-                        style={{ border: '1px solid #7721AD', marginRight: '1rem' }}
-                        className={classes.button}
-                        variant="contained"
-                        startIcon={<CloseOutlined />}
-                        onClick={() => setModalOpen(false)}
+                            style={{ border: '1px solid #7721AD', marginRight: '1rem' }}
+                            className={classes.button}
+                            variant="contained"
+                            startIcon={<CloseOutlined />}
+                            onClick={() => setModalOpen(false)}
                         >
-                        {t(langKeys.close)}
+                            {t(langKeys.close)}
                         </Button>
 
-                        <Button
-                        style={{ border: '1px solid #7721AD' }}
-                        className={classes.button}
-                        variant="contained"
-                        startIcon={<TuneIcon />}
-                        onClick={fetchBoardLeadsWithFilter}
-                        disabled={mainMulti.loading}
+                        <Button                                                  
+                            variant="contained"
+                            color="primary"
+                            startIcon={<TuneIcon />}
+                            onClick={fetchBoardLeadsWithFilter}
+                            disabled={mainMulti.loading}
                         >
-                        {t(langKeys.apply) + " " + t(langKeys.filters)}
+                            {t(langKeys.apply) + " " + t(langKeys.filters)}
                         </Button>
                     </div>
 
@@ -1151,77 +1154,78 @@ const CRM: FC = () => {
             }
 
             <div style= {{borderRadius:'2rem'}}>
-                <div style={{ display: "flex", color: "white", paddingTop: 13, fontSize: "1.4em", fontWeight: "bold" }}>
-                
-                <div style={{ marginRight:'1rem', borderRadius:'20px', minWidth: 280, maxWidth: 280, backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column"}}>
-                    
-                    <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-
-                        <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
-                            {t(langKeys.new)}
-                        </div>
-                        <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                            <div className={classes.addBtn}>
-                                <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                <div style={{ display: "flex", color: "white", paddingTop: 13, fontSize: "1.4em", fontWeight: "bold" }}>                
+                    <div style={{ marginRight:'1.1rem', borderRadius:'20px', minWidth: 320, maxWidth: 400, backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column"}}>
+                        <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+                            <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
+                                {t(langKeys.new)}
                             </div>
-                            <div style={{ width: 12 }} />                  
-                        </Button>  
+                            <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                                <div className={classes.addBtn}>
+                                    <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                                </div>
+                                <div style={{ width: 12 }} />                  
+                            </Button>  
+                            <Popover                            
+                                id={id}
+                                open={open}
+                                anchorEl={anchorEl}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                    vertical: "top",
+                                    horizontal: "left",
+                                }}
+                            >
+                            </Popover>
                         </div>  
-
                     </div>
 
-                <div style={{ marginRight:'1rem', borderRadius:'20px',
-                    minWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1),
-                    maxWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
-                }}>
-                <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                    <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
-                    {t(langKeys.qualified)}
+                    <div style={{ marginRight:'1rem', borderRadius:'20px',
+                        minWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1),
+                        maxWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+                    }}>
+                        <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+                            <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}> {t(langKeys.qualified)} </div>
+                            <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                                <div className={classes.addBtn}>
+                                    <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                                </div>
+                                <div style={{ width: 12 }} />                  
+                            </Button>  
+                        </div>   
                     </div>
-                    <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                        <div className={classes.addBtn}>
-                            <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                        </div>
-                        <div style={{ width: 12 }} />                  
-                    </Button>  
-                    </div>   
-                </div>
-                
-                <div style={{ borderRadius:'20px', marginRight:'1rem', 
-                    minWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: any) => x.type === "PROPOSITION").length - 1),
-                    maxWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: any) => x.type === "PROPOSITION").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
-                }}>
-                <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                    <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
-                    {t(langKeys.proposition)}
+                    
+                    <div style={{ borderRadius:'20px', marginRight:'1rem', 
+                        minWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1),
+                        maxWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+                    }}>
+                        <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+                            <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}> {t(langKeys.proposition)} </div>
+                            <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                                <div className={classes.addBtn}>
+                                    <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                                </div>
+                                <div style={{ width: 12 }} />                  
+                            </Button>  
+                        </div>  
                     </div>
-                    <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                        <div className={classes.addBtn}>
-                            <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                        </div>
-                        <div style={{ width: 12 }} />                  
-                    </Button>  
-                    </div>  
-                </div>
 
-                <div style={{ borderRadius:'20px', marginRight:'1rem', 
-                    minWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 10 * (dataColumn.filter((x: any) => x.type === "WON").length - 1),
-                    maxWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 10 * (dataColumn.filter((x: any) => x.type === "WON").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
-                }}>
-                <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                    <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
-                    {t(langKeys.won)}
+                    <div style={{ borderRadius:'20px', marginRight:'1rem', 
+                        minWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 10 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1),
+                        maxWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 10 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+                    }}>
+                        <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+                            <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}> {t(langKeys.won)} </div>
+                            <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                                <div className={classes.addBtn}>
+                                    <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                                </div>
+                                <div style={{ width: 12 }} />                  
+                            </Button>  
+                        </div>  
                     </div>
-                    <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                        <div className={classes.addBtn}>
-                            <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                        </div>
-                        <div style={{ width: 12 }} />                  
-                    </Button>  
-                    </div>  
-                </div>
+                </div>    
 
-                </div>         
         
                 <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>               
                     <Droppable droppableId="all-columns" direction="horizontal" type="column" >
@@ -1232,7 +1236,7 @@ const CRM: FC = () => {
                             <div
                                 key={index}
                                 style={{
-                                    background: 'purple',
+                                    background: '#FFFFFF',
                                     borderRadius: '2rem',
                                     marginRight: '1rem',
                                     padding: '0.5rem 1.2rem',                                                                    
@@ -1246,7 +1250,7 @@ const CRM: FC = () => {
                                     hanldeDeleteColumn={hanldeDeleteColumn}
                                     handleDelete={handleDelete}
                                     handleCloseLead={handleCloseLead}
-                                    sortParams={sortParams}
+                                    sortParams={sortParams}                                 
                                     configuration={configuration}
                                 />
                             </div>                       

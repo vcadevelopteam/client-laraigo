@@ -116,7 +116,7 @@ const useLeadCardStyles = makeStyles((theme) => ({
         borderRadius: 10
     },
     redLight: {
-        backgroundColor: 'red',
+        backgroundColor: '#7721AD',
         color: 'white',
         borderRadius: 10
     },
@@ -325,7 +325,8 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
 
     return (
         <Box {...boxProps} style={{ position: "relative" }} pb={1}>
-            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
+            
+            <div    style={{  background: '#F9F9FA'}} className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead.description}</span>
                 {lead.campaign && (
                     <span className={classes.info}>
@@ -377,6 +378,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     </div>
                 </div>
             </div>
+
             <div className={classes.floatingMenuIcon}>
                 {!isIncremental && (
                     <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
@@ -705,7 +707,7 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
         borderRadius: 3,
     },
 	configBtn: {
-		marginLeft: 'auto',       
+		marginLeft: '1rem'       
 	},
     popoverRoot: {
         width: columnWidth,
@@ -780,16 +782,10 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
         <Box>
             <div className={classes.root}>
 
-                <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                    <div className={classes.addBtn}>
-                        <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                    </div>
-                    <div style={{ width: 12 }} />                  
-                </Button>
-
-				<div className={classes.text}>
+				<div className={classes.text} style={{marginLeft:4}}>
 					<Typography/>{t(langKeys.orderby)}
 				</div>
+
 				<FieldSelect
 					variant="outlined"
 					label={t(langKeys.type)}
@@ -806,6 +802,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                         }
                     }}
 				/>
+
 				<FieldSelect
                     variant="outlined"
                     label={t(langKeys.order)}
@@ -823,6 +820,14 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     }}
                 />
 
+                <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
+                    <div className={classes.addBtn}>
+                        <Add style={{ height: "75%", width: "auto" }} color="secondary" />
+                    </div>
+                    <div style={{ width: 12 }} />                  
+                </Button>
+
+
                 {!isIncremental &&            
                     <Button
                         variant="contained"
@@ -831,12 +836,12 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                         disabled={mainMulti.loading}
                         startIcon={<AddIcon color="secondary" />}
                         onClick={goToAddLead}
-                        style={{ backgroundColor: "#55BD84" }}
+                        style={{ backgroundColor: "#55BD84", marginLeft: 'auto',  }}
                     >
                         <Trans i18nKey={langKeys.register} />
                     </Button>
                 }
-
+                
 				<Button
 					variant="outlined"
 					color="primary"
@@ -846,6 +851,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 				>
 					<Trans i18nKey={langKeys.configuration} />
 				</Button>
+
                 <Popover
                     id={id}
                     open={open}
@@ -859,6 +865,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     <ColumnTemplate onSubmit={handleSubmit} />
                 </Popover>
             </div>
+            
 			<TrafficLightConfigurationModal
 				openModal={openModal}
 				setOpenModal={setOpenModal}
