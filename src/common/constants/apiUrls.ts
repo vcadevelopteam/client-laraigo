@@ -429,4 +429,5 @@ export const apiUrls = {
     GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
 
     LLAMA_UPLOAD_FILES: `${BASE_URL}/llama/upload`,
+    LLAMA_MESSAGE: `${BASE_URL}/llama/message`,
 };
