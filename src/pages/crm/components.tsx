@@ -326,7 +326,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     return (
         <Box {...boxProps} style={{ position: "relative" }} pb={1}>
             
-            <div    style={{  background: '#F9F9FA'}} className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
+            <div    style={{ background: '#F9F9FA'}} className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead.description}</span>
                 {lead.campaign && (
                     <span className={classes.info}>
@@ -502,6 +502,7 @@ const InputTitle: FC<InputTitleProps> = ({
             <div className={classes.root}>
                 <h2
                     className={classes.title}
+                    style={{fontSize:'18px', fontWeight:'bolder'}}
                     // onClick={() => setEdit(true)}
                 >
                     {value}
@@ -599,7 +600,6 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
 }) => {
     const classes = useLeadColumnStyles();
     const edit = useRef(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const handleOnBlur = useCallback(
         (value: string) => {
@@ -611,7 +611,6 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
 
     const handleDelete = useCallback(() => {
         onDelete?.(columnid);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const user = useSelector((state) => state.login.validateToken.user);
     return (
@@ -644,7 +643,7 @@ interface LeadColumnListProps extends BoxProps {
     itemCount: number;
 }
 
-const useLeadColumnListStyles = makeStyles((theme) => ({
+const useLeadColumnListStyles = makeStyles(() => ({
     root: {
         width: 275,
         maxWidth: 275,
@@ -652,7 +651,7 @@ const useLeadColumnListStyles = makeStyles((theme) => ({
         borderRadius: cardBorderRadius,
     },
     draggOver: {
-        background: "rgb(211,211,211, 0.2)", // "lightgrey",
+        background: "rgb(211,211,211, 0.2)", 
     },
 }));
 
@@ -700,11 +699,11 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
     addBtn: {
         width: 35,
         height: 35,
-        backgroundColor: theme.palette.primary.light,
+        backgroundColor: '#7721AD',
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        borderRadius: 3,
+        borderRadius: 3,     
     },
 	configBtn: {
 		marginLeft: '1rem'       
@@ -716,6 +715,11 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
 	filterComponent: {
 		width: '220px',
 		marginLeft: '15px'
+	},
+    filterComponent2: {
+		width: '220px',
+		marginLeft: '15px',
+        marginRight: '2rem'
 	},
 	text: {
 		alignSelf: "center",
@@ -780,7 +784,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 
     return (
         <Box>
-            <div className={classes.root}>
+            <div className={classes.root} >
 
 				<div className={classes.text} style={{marginLeft:4}}>
 					<Typography/>{t(langKeys.orderby)}
@@ -803,12 +807,12 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     }}
 				/>
 
-				<FieldSelect
+				<FieldSelect                  
                     variant="outlined"
                     label={t(langKeys.order)}
                     valueDefault={sortParams.order}
                     data={orderby || []}
-                    className={classes.filterComponent}
+                    className={classes.filterComponent2}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                     onChange={(value) => {
@@ -820,13 +824,26 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     }}
                 />
 
-                <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                    <div className={classes.addBtn}>
-                        <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                    </div>
-                    <div style={{ width: 12 }} />                  
-                </Button>
+                <Button
+					variant="outlined"
+					color="primary"
+                    aria-describedby={id}
+					startIcon={<AddIcon color="primary" />}					
+					onClick={handleClick}
+				>                    
+					<Trans i18nKey={langKeys.addacolumn} />
+				</Button>
 
+				<Button
+					variant="outlined"
+					color="primary"
+					className={classes.configBtn}
+					startIcon={<Traffic color="primary" />}					
+					onClick={() => setOpenModal(true)}
+                    style={{ marginLeft: 'auto'  }}
+				>
+					<Trans i18nKey={langKeys.configuration} />
+				</Button>
 
                 {!isIncremental &&            
                     <Button
@@ -836,21 +853,12 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                         disabled={mainMulti.loading}
                         startIcon={<AddIcon color="secondary" />}
                         onClick={goToAddLead}
-                        style={{ backgroundColor: "#55BD84", marginLeft: 'auto',  }}
+                        style={{ backgroundColor: "#55BD84" }}
+                       
                     >
                         <Trans i18nKey={langKeys.register} />
                     </Button>
                 }
-                
-				<Button
-					variant="outlined"
-					color="primary"
-					className={classes.configBtn}
-					startIcon={<Traffic color="primary" />}					
-					onClick={() => setOpenModal(true)}
-				>
-					<Trans i18nKey={langKeys.configuration} />
-				</Button>
 
                 <Popover
                     id={id}

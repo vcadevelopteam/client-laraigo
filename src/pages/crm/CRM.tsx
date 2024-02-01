@@ -160,7 +160,7 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
                     <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        style={{ width: '100%', overflowY:'scroll', maxHeight: '61vh', overflowX:'clip'  }}
+                        style={{ width: '100%', overflowY:'scroll', maxHeight: '65vh', overflowX:'clip'}}
                     >
                         <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
                         {column.items?.map((item: any, index: any) => {
@@ -345,40 +345,49 @@ const CRM: FC = () => {
         }
     }, [mainMulti]);
 
-    const fetchBoardLeadsWithFilter = useCallback(() => {
-        const newParams = new URLSearchParams(location.search);
-        newParams.set('campaign', String(boardFilter.campaign));
-        newParams.set('products', String(boardFilter.products));
-        newParams.set('persontype', String(boardFilter.persontype));
-        newParams.set('tags', String(boardFilter.tags));
-        newParams.set('contact', String(boardFilter.customer));
-        newParams.set('asesorid', String(boardFilter.asesorid));
-        history.push({ search: newParams.toString() });
+    const [isModalOpen, setModalOpen] = useState(false);
 
-        dispatch(getMultiCollection([
-        getColumnsSel(1),
-        getLeadsSel({
-            id: 0,
-            campaignid: boardFilter.campaign,
-            fullname: boardFilter.customer,
-            leadproduct: boardFilter.products,
-            persontype: boardFilter.persontype,
-            tags: boardFilter.tags,
-            userid: String(boardFilter.asesorid || ""),
-            supervisorid: user?.userid || 0,
-            ordertype: sortParams.type,
-            orderby: sortParams.order,
-        }),
-        getAdviserFilteredUserRol(),
-        getCommChannelLst(),
-        getCampaignLst(),
-        getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
-        getLeadTasgsSel(),
-        getValuesFromDomain('TIPOPERSONA'),
-        getValuesFromDomain('ORDERTYPE'),
-        getValuesFromDomain('ORDERBY'),
-        ]));
-    }, [boardFilter, dispatch]);
+    const fetchBoardLeadsWithFilter = useCallback(async () => {
+        try {
+            const newParams = new URLSearchParams(location.search);
+            newParams.set('campaign', String(boardFilter.campaign));
+            newParams.set('products', String(boardFilter.products));
+            newParams.set('persontype', String(boardFilter.persontype));
+            newParams.set('tags', String(boardFilter.tags));
+            newParams.set('contact', String(boardFilter.customer));
+            newParams.set('asesorid', String(boardFilter.asesorid));
+            history.push({ search: newParams.toString() });
+    
+            await dispatch(getMultiCollection([
+                getColumnsSel(1),
+                getLeadsSel({
+                    id: 0,
+                    campaignid: boardFilter.campaign,
+                    fullname: boardFilter.customer,
+                    leadproduct: boardFilter.products,
+                    persontype: boardFilter.persontype,
+                    tags: boardFilter.tags,
+                    userid: String(boardFilter.asesorid || ""),
+                    supervisorid: user?.userid || 0,
+                    ordertype: sortParams.type,
+                    orderby: sortParams.order,
+                }),
+                getAdviserFilteredUserRol(),
+                getCommChannelLst(),
+                getCampaignLst(),
+                getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
+                getLeadTasgsSel(),
+                getValuesFromDomain('TIPOPERSONA'),
+                getValuesFromDomain('ORDERTYPE'),
+                getValuesFromDomain('ORDERBY'),
+            ]));
+    
+            setModalOpen(false);
+        } catch (error) {
+            console.error("Error al aplicar filtros:", error);
+        }
+    }, [boardFilter, dispatch, location.search, history, setModalOpen, sortParams, user]);
+    
 
     const onDragEnd = (result: DropResult, columns: dataBackend[], setDataColumn: any) => {
         if (!result.destination) return;
@@ -440,8 +449,8 @@ const CRM: FC = () => {
         const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
         const column = dataColumn[index];
         const copiedItems = [...column.items!!]
-        const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
-        copiedItems!.splice(leadIndex, 1); //v
+        const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
+        copiedItems!.splice(leadIndex, 1);
         const totalRevenue = copiedItems!.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)
         const newData = Object.values({ ...dataColumn, [index]: { ...column, total_revenue: totalRevenue, items: copiedItems } }) as dataBackend[]
         setDataColumn(newData);
@@ -920,7 +929,6 @@ const CRM: FC = () => {
         return (mainMulti.data[7].data);
     }, [mainMulti.data[7]]);
 
-    const [isModalOpen, setModalOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -983,10 +991,12 @@ const CRM: FC = () => {
         </>
     ), [user, allParameters, classes, mainMulti, t]);
 
+    const [prevColumnType, setPrevColumnType] = useState(null);
+
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 
-        <div style={{ marginBottom: '34px' }}>
+        <div style={{ marginBottom: '10px' }}>
             <div style={{ position: 'fixed', right: '25px', display: "flex", paddingBottom: '20px' }}>   
             <Tooltip title={t(langKeys.filters) + " "} arrow placement="top">
                 <IconButton
@@ -1031,7 +1041,7 @@ const CRM: FC = () => {
                 <div style={{ flexGrow: 1 }} />
             
                 <Modal open={isModalOpen}>
-                <div style={{ padding: '30vh 35%', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ margin: '17rem 40rem', alignItems: 'center', justifyContent: 'center' }}>
                     <div className={classes.errorModalContent}>
                     <div className="row-zyx" style={{marginTop:"1rem"}}>
                         {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
@@ -1134,7 +1144,8 @@ const CRM: FC = () => {
                             disabled={mainMulti.loading}
                         >
                             {t(langKeys.apply) + " " + t(langKeys.filters)}
-                        </Button>
+                        </Button>                       
+                        
                     </div>
 
                     </div>
@@ -1154,74 +1165,113 @@ const CRM: FC = () => {
             }
 
             <div style= {{borderRadius:'2rem'}}>
-                <div style={{ display: "flex", color: "white", paddingTop: 13, fontSize: "1.4em", fontWeight: "bold" }}>                
-                    <div style={{ marginRight:'1.1rem', borderRadius:'20px', minWidth: 320, maxWidth: 400, backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column"}}>
-                        <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                            <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}>
+
+                {/*Nuevo - Titulo*/}
+                <div style={{ 
+                    display: "flex", 
+                    color: "white", 
+                    paddingTop: 20, 
+                    fontSize: "20px", 
+                    fontWeight: "bold" 
+                }}>                
+                    <div style={{ 
+                            minWidth: 310, 
+                            maxWidth: 400, 
+                            height: 45,                       
+                            backgroundColor: "#AFAFAF", 
+                            padding: "5px 0", 
+                            marginLeft: "5px",                          
+                            display: "flex", 
+                            overflow: "hidden", 
+                            maxHeight: "100%", 
+                            textAlign: "center", 
+                            flexDirection: "column",
+                            borderTopLeftRadius: '20px',
+                            borderTopRightRadius: '20px',
+                            borderBottomLeftRadius: '0px',
+                            borderBottomRightRadius: '0px',
+                        }}>
+                        <div style={{
+                            display:'flex', 
+                            alignContent:'center', 
+                            justifyContent: 'center'
+                        }}>
+                            <div style={{paddingTop:'4px'}}>
                                 {t(langKeys.new)}
-                            </div>
-                            <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                                <div className={classes.addBtn}>
-                                    <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                                </div>
-                                <div style={{ width: 12 }} />                  
-                            </Button>  
-                            <Popover                            
-                                id={id}
-                                open={open}
-                                anchorEl={anchorEl}
-                                onClose={handleClose}
-                                anchorOrigin={{
-                                    vertical: "top",
-                                    horizontal: "left",
-                                }}
-                            >
-                            </Popover>
+                            </div>                           
                         </div>  
                     </div>
 
-                    <div style={{ marginRight:'1rem', borderRadius:'20px',
-                        minWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1),
-                        maxWidth: 280 * dataColumn.filter((x: any) => x.type === "QUALIFIED").length + 10 * (dataColumn.filter((x: any) => x.type === "QUALIFIED").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+                    {/*Calificado - Titulo*/}    
+                    <div style={{                        
+                        minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1),
+                        maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), 
+                        height: 45,                       
+                        backgroundColor: "#AFAFAF", 
+                        padding: "5px 0", 
+                        marginLeft: "21px",                          
+                        display: "flex", 
+                        overflow: "hidden", 
+                        maxHeight: "100%", 
+                        textAlign: "center", 
+                        flexDirection: "column",
+                        borderTopLeftRadius: '20px',
+                        borderTopRightRadius: '20px',
+                        borderBottomLeftRadius: '0px',
+                        borderBottomRightRadius: '0px',
                     }}>
-                        <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                            <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}> {t(langKeys.qualified)} </div>
-                            <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                                <div className={classes.addBtn}>
-                                    <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                                </div>
-                                <div style={{ width: 12 }} />                  
-                            </Button>  
+                        <div style={{
+                            display:'flex', 
+                            alignContent:'center', 
+                            justifyContent: 'center'
+                        }}>
+                            <div style={{paddingTop:'4px'}}> {t(langKeys.qualified)} </div>                          
                         </div>   
                     </div>
                     
-                    <div style={{ borderRadius:'20px', marginRight:'1rem', 
-                        minWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1),
-                        maxWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 10 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+                     {/*Propuesto - Titulo*/}    
+                    <div style={{                      
+                        minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1),
+                        maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), 
+                        height: 45,                       
+                        backgroundColor: "#AFAFAF", 
+                        padding: "5px 0", 
+                        marginLeft: "21px",                          
+                        display: "flex", 
+                        overflow: "hidden", 
+                        maxHeight: "100%", 
+                        textAlign: "center", 
+                        flexDirection: "column",
+                        borderTopLeftRadius: '20px',
+                        borderTopRightRadius: '20px',
+                        borderBottomLeftRadius: '0px',
+                        borderBottomRightRadius: '0px',         
                     }}>
                         <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                            <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}> {t(langKeys.proposition)} </div>
-                            <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                                <div className={classes.addBtn}>
-                                    <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                                </div>
-                                <div style={{ width: 12 }} />                  
-                            </Button>  
+                            <div style={{paddingTop:'4px'}}> {t(langKeys.proposition)} </div>                           
                         </div>  
                     </div>
 
-                    <div style={{ borderRadius:'20px', marginRight:'1rem', 
-                        minWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 10 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1),
-                        maxWidth: 280 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 10 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), backgroundColor: "#AFAFAF", padding: "10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",
+                    {/*Calificado - Titulo*/}    
+                    <div style={{                         
+                        minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1),
+                        maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), 
+                        height: 45,                       
+                        backgroundColor: "#AFAFAF", 
+                        padding: "5px 0", 
+                        marginLeft: "21px",                          
+                        display: "flex", 
+                        overflow: "hidden", 
+                        maxHeight: "100%", 
+                        textAlign: "center", 
+                        flexDirection: "column",
+                        borderTopLeftRadius: '20px',
+                        borderTopRightRadius: '20px',
+                        borderBottomLeftRadius: '0px',
+                        borderBottomRightRadius: '0px',        
                     }}>
                         <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                            <div style={{paddingTop:'6px', paddingLeft:'5.5rem'}}> {t(langKeys.won)} </div>
-                            <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                                <div className={classes.addBtn}>
-                                    <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                                </div>
-                                <div style={{ width: 12 }} />                  
-                            </Button>  
+                            <div style={{paddingTop:'4px'}}> {t(langKeys.won)} </div>                         
                         </div>  
                     </div>
                 </div>    
@@ -1236,10 +1286,14 @@ const CRM: FC = () => {
                             <div
                                 key={index}
                                 style={{
-                                    background: '#FFFFFF',
-                                    borderRadius: '2rem',
+                                    background: '#FFFFFF', // #FFFFFF                
                                     marginRight: '1rem',
-                                    padding: '0.5rem 1.2rem',                                                                    
+                                    marginLeft: '0.3rem',
+                                    padding: '0.5rem 0.6rem',  
+                                    borderTopLeftRadius: '0px',
+                                    borderTopRightRadius: '0px',
+                                    borderBottomLeftRadius: '20px',
+                                    borderBottomRightRadius: '20px',                                                                  
                                 }}
                             >
                                 <DraggablesCategories
