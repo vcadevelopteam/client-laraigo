@@ -275,6 +275,7 @@ export const apiUrls = {
 
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
+    INVOKE_INCREMENTAL: `${BASE_URL}/auth/incremental/invoke/token`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
     LOGOUT_URL: `${BASE_URL}/auth/logout`,
     MAIN_URL: `${BASE_URL}/main`,
