@@ -5650,7 +5650,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                     )}
                                     {data?.paymentprovider === "OPENPAY COLOMBIA" && (
                                         <OpenpayModal
-                                            amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                            amount={Math.round(((totalPay) + Number.EPSILON) * 100) / 100}
                                             buttontitle={t(langKeys.proceedpayment)}
                                             comments={comments}
                                             corpid={data?.corpid}
@@ -10165,7 +10165,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 )}
                                 {currentPaymentProvider === "OPENPAY COLOMBIA" && (
                                     <OpenpayModal
-                                        amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                        amount={Math.round(((totalPay) + Number.EPSILON) * 100) / 100}
                                         buttontitle={t(langKeys.proceedpayment)}
                                         buyamount={buyAmount}
                                         comments={comments}
