@@ -18,6 +18,7 @@ import { execute, getCollection } from "store/main/actions";
 import { assistantAiSel, exportExcel, insAssistantAi } from "common/helpers";
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
+import { deleteAssistant, deleteMassiveAssistant } from "store/gpt/actions";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -83,13 +84,16 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     const selectionKey = "assistantaiid";
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
-
     const newArrayBread = [
         ...arrayBread,
         { id: "generativeia", name: t(langKeys.generativeailow) },       
     ];
-
     const [waitSave, setWaitSave] = useState(false);
+
+    const executeAssistants = useSelector((state) => state.gpt.gptResult);
+    const [waitSaveAssistantsDelete, setWaitSaveAssistantDelete] = useState(false);
+    const [assistantDelete, setAssistantDelete] = useState<Dictionary | null>(null);
+
 
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
@@ -119,43 +123,40 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         setRowSelected({ row, edit: false });
     }
 
-    const handleDelete = (row: Dictionary) => {
-        const callback = async () => {
-            dispatch(showBackdrop(true));
-
-            try {
-                const assistantDelete = await fetch('https://documentgptapi.laraigo.com/assistants/delete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user?.token}`,
-                    },
-                    body: JSON.stringify({
-                        assistant_id: row.code,
-                        apikey: row.apikey,
-                    }),
-                });
-    
-                if (!assistantDelete.ok) {
-                    console.error('Error al eliminar el asistente:', assistantDelete.statusText);
-                    setWaitSave(true);
-                    return;
-                }
-
-                dispatch(
-                    execute(insAssistantAi({
-                        ...row,
-                        id: row.assistantaiid,
+    useEffect(() => {
+        if (waitSaveAssistantsDelete) {
+            if (!executeAssistants.loading && !executeAssistants.error) {
+                setWaitSaveAssistantDelete(false);
+                dispatch(execute(insAssistantAi({
+                        ...assistantDelete,
+                        id: assistantDelete?.assistantaiid,
                         operation: "DELETE",
                         status: "ELIMINADO",
                         type: "NINGUNO" 
                     }))
                 );
+                setAssistantDelete(null);
                 setWaitSave(true);
-            } catch (error) {
-                console.error('Error en la llamada:', error);
-                setWaitSave(true);
+            } else if (executeAssistants.error) {
+                const errormessage = t(executeAssistants.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveAssistantDelete(false);
             }
+        }
+    }, [executeAssistants, waitSaveAssistantsDelete]);
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(deleteAssistant({
+                assistant_id: row.code,
+                apikey: row.apikey,
+            }))
+            setAssistantDelete(row)
+            setWaitSaveAssistantDelete(true);  
         };
     
         dispatch(
@@ -169,45 +170,25 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     
     const handleDeleteSelection = async (dataSelected: Dictionary[]) => {
         const callback = async () => {
-            dispatch(showBackdrop(true));
+            dispatch(showBackdrop(true));  
+            const codes = dataSelected.map(obj=> obj.code)
+            dispatch(deleteMassiveAssistant({
+                ids: codes,
+                apikey: dataSelected[0].apikey,            
+            }))    
 
-            try {
-                const deletePromises = dataSelected.map(async (row) => {
-                    const assistantDelete = await fetch('https://documentgptapi.laraigo.com/assistants/delete', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${user?.token}`,
-                        },
-                        body: JSON.stringify({
-                            assistant_id: row.code,
-                            apikey: row.apikey,
-                        }),
-                    });
-
-                    if (!assistantDelete.ok) {
-                        console.error('Error al eliminar el asistente:', assistantDelete.statusText);
-                        return Promise.reject('Error en assistantDelete');
-                    }
-
-                    dispatch(
-                        execute(insAssistantAi({
-                            ...row,
-                            id: row.assistantaiid,
-                            operation: "DELETE",
-                            status: "ELIMINADO",
-                            type: "NINGUNO" 
-                        }))
-                    );
-
-                    return row;
-                });
-                const deletedRows = await Promise.all(deletePromises);
-                setWaitSave(true);
-            } catch (error) {
-                console.error('Error en la llamada:', error);
-                setWaitSave(true);
-            }
+            dataSelected.map(async (row) => {          
+                dispatch(
+                    execute(insAssistantAi({
+                        ...row,
+                        id: row.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+            });
+            setWaitSave(true);
         }
 
         dispatch(
@@ -219,7 +200,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         );
     };
     
-
     const columnsGenerativeIA = React.useMemo(
         () => [
             {

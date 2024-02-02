@@ -288,6 +288,7 @@ export const apiUrls = {
 
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
+    INVOKE_INCREMENTAL: `${BASE_URL}/auth/incremental/invoke/token`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
     LOGOUT_URL: `${BASE_URL}/auth/logout`,
     MAIN_URL: `${BASE_URL}/main`,
@@ -430,4 +431,17 @@ export const apiUrls = {
 
     PAYMENTORDER_IZIPAY_GETPAYMENTORDER: `${BASE_URL}/paymentizipay/getpaymentorder`,
     PAYMENTORDER_IZIPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentizipay/processtransaction`,
+
+    GPT_THREADS: `${BASE_URL}/gpt/threads`,
+    GPT_THREADS_DELETE: `${BASE_URL}/gpt/threads/delete`,
+    GPT_ASSISTANT_NEW: `${BASE_URL}/gpt/assistants/new`,
+    GPT_MESSAGES: `${BASE_URL}/gpt/assistants/messages`,
+    GPT_FILE_DELETE: `${BASE_URL}/gpt/files/delete`,
+
+    GPT_FILES: `${BASE_URL}/gpt/files`,
+    GPT_ASSISTANTS_FILES: `${BASE_URL}/gpt/assistants/files`,
+    GPT_ASSISTANTS_FILES_LIST: `${BASE_URL}/gpt/assistants/files/list`,
+    GPT_ASSISTANTS_UPDATE: `${BASE_URL}/gpt/assistants/update`,
+    GPT_ASSISTANTS_DELETE: `${BASE_URL}/gpt/assistants/delete`,
+    GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
 };
