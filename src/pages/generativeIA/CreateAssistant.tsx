@@ -153,7 +153,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             temperature: row?.temperature || 0,
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
-            apikey: edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '',
+            apikey: edit ? (row?.basemodel === 'llama-2-13b-chat.Q4_0' ? row?.apikey : decrypt(row?.apikey, PUBLICKEYPEM)) : '',
             retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
             type: row?.type || '',

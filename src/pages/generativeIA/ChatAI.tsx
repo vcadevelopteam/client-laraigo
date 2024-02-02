@@ -425,10 +425,11 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
             )
         );
         const message = messageText
+        const extendedMessage = row?.generalprompt + '\n\nCon las instrucciones propuestas, respondeme la siguiente consulta: ' + message;
         setMessageText('');
         fetchThreadMessages(selectedChat?.threadid);
         dispatch(messagesLlama({
-            text: message,
+            text: extendedMessage,
             assistant_id: 0,
             node_id: documents[0]
         }))
@@ -629,7 +630,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                                                     </div>
                                                     <div className={classes.textContainer}>
                                                         <Typography variant="body1">
-                                                            {message.messagetext}
+                                                            {message.messagetext.trim()}
                                                         </Typography>
                                                     </div>
                                                 </div>
