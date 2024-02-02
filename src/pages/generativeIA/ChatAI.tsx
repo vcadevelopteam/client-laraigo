@@ -172,6 +172,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [cardDelete, setCardDelete] = useState<Dictionary | null>(null);
     const [waitSaveMessageLlama, setWaitSaveMessageLlama] = useState(false)
+    const llamaFiles = useSelector((state) => state.llama.llamaResult);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
     const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
@@ -379,14 +380,14 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
 
     useEffect(() => {
         if (waitSaveMessageLlama) {
-            if (!executeThreads.loading && !executeThreads.error) {
+            if (!llamaFiles.loading && !llamaFiles.error) {
                 setWaitSaveMessageLlama(false);
                 dispatch(execute(insMessageAi({
                     assistantaiid: row?.assistantaiid,
                     threadid: selectedChat?.threadid,
                     assistantaidocumentid: 0,
                     id: 0,
-                    messagetext: executeThreads.data.response,
+                    messagetext: llamaFiles.data.response,
                     infosource: '',
                     type: 'BOT',
                     status: 'ACTIVO',
@@ -395,8 +396,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                 setIsLoading(false);
                 fetchThreadMessages(selectedChat?.threadid);
                 dispatch(showBackdrop(false));
-            } else if (executeThreads.error) {
-                const errormessage = t(executeThreads.code || "error_unexpected_error", {
+            } else if (llamaFiles.error) {
+                const errormessage = t(llamaFiles.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
@@ -404,7 +405,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                 setWaitSaveMessageLlama(false);
             }
         }
-    }, [executeThreads, waitSaveMessageLlama]);
+    }, [llamaFiles, waitSaveMessageLlama]);
 
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
@@ -438,7 +439,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
         const handleKeyUp = (event: KeyboardEvent) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                handleSendMessage();
+                row?.basemodel === 'llama-2-13b-chat.Q4_0' ? handleSendMessageLlama() : handleSendMessage()
             }
         };
         
@@ -449,7 +450,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
         return () => {
             document.removeEventListener('keyup', handleKeyUp);
         };
-    }, [handleSendMessage]);
+    }, [handleSendMessage, handleSendMessageLlama]);
 
     const handleDeleteChat = (chat: Dictionary) => {
         const callback = async () => {
@@ -514,6 +515,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
     const handleChatClick = (chat: Dictionary) => {
         setSelectedChat(chat);
         fetchThreadMessages(chat?.threadid)
+        setIsLoading(false);
     };
 
     return (

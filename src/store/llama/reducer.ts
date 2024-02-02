@@ -3,8 +3,6 @@ import { createReducer, initialCommon } from "common/helpers";
 import actionTypes from "./actionTypes";
 import * as caseFunctions from './caseFunctions';
 export interface IRequest extends ITemplate {
-    node_id: string|null;
-    text: string|null;
     data: any;
     success: boolean | undefined | null;
 }
@@ -14,7 +12,7 @@ export interface IState {
 }
 
 export const initialState: IState = {
-    llamaResult: { ...initialCommon, node_id: null, text: null, data: null, loading: false, error: false, success: undefined },
+    llamaResult: { ...initialCommon, data: null, loading: false, error: false, success: undefined },
 }
 
 export default createReducer<IState>(initialState, {
