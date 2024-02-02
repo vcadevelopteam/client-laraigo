@@ -11,10 +11,10 @@ import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, CloseOutlined } from '@material-ui/icons';
+import { DialogZyx, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
+import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, PriorityHighOutlined, DraftsRounded } from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
-import { Button, IconButton, Modal, Popover, Tooltip } from "@material-ui/core";
+import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Tooltip, Typography } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -24,7 +24,7 @@ import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 const isIncremental = window.location.href.includes("incremental")
-import Add from "@material-ui/icons/Add";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 interface dataBackend {
     columnid: number,
@@ -107,6 +107,84 @@ const useStyles = makeStyles((theme) => ({
         position: "relative",
         height: 35,
         width: "fit-content",
+    },
+    newTitle: {
+        height: 70,                       
+        backgroundColor: "#FFFF", 
+        padding: "14px 0 1px 0", 
+        marginLeft: "5px",                              
+        display: "flex", 
+        overflow: "hidden", 
+        maxHeight: "100%", 
+        textAlign: "center", 
+        flexDirection: "column",
+        borderTopLeftRadius: '20px',
+        borderTopRightRadius: '20px',
+        borderBottomLeftRadius: '0px',
+        borderBottomRightRadius: '0px',
+    },
+    otherTitles: {
+        height: 70,                       
+        backgroundColor: "#FFFF", 
+        padding: "14px 0 1px 0", 
+        marginLeft: "21px",                          
+        display: "flex", 
+        overflow: "hidden", 
+        maxHeight: "100%", 
+        textAlign: "center", 
+        flexDirection: "column",
+        borderTopLeftRadius: '20px',
+        borderTopRightRadius: '20px',
+        borderBottomLeftRadius: '0px',
+        borderBottomRightRadius: '0px',    
+    },
+    columnsTitles: {
+        display: "flex", 
+        color: "white", 
+        paddingTop: 20, 
+        fontSize: "20px", 
+        fontWeight: "bold" 
+    },
+    greyPart: {
+        height: 45,                       
+        backgroundColor: "#AFAFAF", 
+        padding: "5px 0", 
+        margin: "2px 15px",                          
+        display: "flex", 
+        overflow: "hidden", 
+        maxHeight: "100%", 
+        textAlign: "center", 
+        flexDirection: "column",
+        borderRadius: '20px',
+    },
+    otherGreyPart: {
+        height: 45,                       
+        backgroundColor: "#AFAFAF", 
+        padding: "5px 0", 
+        margin: "2px 15px 0 15px",                        
+        display: "flex", 
+        overflow: "hidden", 
+        maxHeight: "100%", 
+        textAlign: "center", 
+        flexDirection: "column",
+        borderRadius: '20px',  
+    },
+    oportunityList: {
+        background: '#FFFFFF',               
+        marginRight: '1rem',
+        marginLeft: '0.3rem',
+        padding: '0 0.6rem 0.5rem 0.6rem',  
+        borderTopLeftRadius: '0px',
+        borderTopRightRadius: '0px',
+        borderBottomLeftRadius: '20px',
+        borderBottomRightRadius: '20px', 
+    },
+    titleDialogZyx: {
+        fontSize: 30,
+        fontWeight: 'bold'
+    },
+    titleSection: {
+        width: "inherit",
     },
 }));
 
@@ -345,7 +423,9 @@ const CRM: FC = () => {
         }
     }, [mainMulti]);
 
-    const [isModalOpen, setModalOpen] = useState(false);
+    const [isModalOpenBOARD, setModalOpenBOARD] = useState(false);
+    const [isModalOpenGRID, setModalOpenGRID] = useState(false);
+
 
     const fetchBoardLeadsWithFilter = useCallback(async () => {
         try {
@@ -382,11 +462,11 @@ const CRM: FC = () => {
                 getValuesFromDomain('ORDERBY'),
             ]));
     
-            setModalOpen(false);
+            setModalOpenBOARD(false);
         } catch (error) {
             console.error("Error al aplicar filtros:", error);
         }
-    }, [boardFilter, dispatch, location.search, history, setModalOpen, sortParams, user]);
+    }, [boardFilter, dispatch, location.search, history, setModalOpenBOARD, sortParams, user]);
     
 
     const onDragEnd = (result: DropResult, columns: dataBackend[], setDataColumn: any) => {
@@ -872,9 +952,6 @@ const CRM: FC = () => {
         setWaitExport(true);
     };
 
-    const goToAddLead = useCallback(() => {
-        history.push(paths.CRM_ADD_LEAD);
-    }, [history]);
 
     useEffect(() => {
         if (waitExport) {
@@ -929,23 +1006,11 @@ const CRM: FC = () => {
         return (mainMulti.data[7].data);
     }, [mainMulti.data[7]]);
 
-    const [openModal, setOpenModal] = useState(false);
-
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const open = Boolean(anchorEl);
-    const id = open ? "crm-add-new-column-popover" : undefined;
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const filtersElement = useMemo(() => (
-        
+    {/*Nirvana Acá estan los filters de vista lista*/}
+    const filtersElement = useMemo(() => (        
         <>
-        {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
+        {(user && !(user.roledesc?.includes("ASESOR"))) && 
+        <FieldMultiSelect
             variant="outlined"
             label={t(langKeys.agent)}
             className={classes.filterComponent}
@@ -991,436 +1056,403 @@ const CRM: FC = () => {
         </>
     ), [user, allParameters, classes, mainMulti, t]);
 
-    const [prevColumnType, setPrevColumnType] = useState(null);
+ 
+    const secondaryButtons = [
+        'Contactar por Whatsapp',
+        'Enviar Correo',
+        'Enviar SMS',       
+    ];
+
+    const ITEM_HEIGHT = 48;
+
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const openSeButtons = Boolean(anchorElSeButtons);
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorElSeButtons(event.currentTarget);
+    };
+    const handleCloseSeButtons = () => {
+      setAnchorElSeButtons(null);
+    };
 
     return (
+
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-
-        <div style={{ marginBottom: '10px' }}>
-            <div style={{ position: 'fixed', right: '25px', display: "flex", paddingBottom: '20px' }}>   
-            <Tooltip title={t(langKeys.filters) + " "} arrow placement="top">
-                <IconButton
-                color="default"
-                onClick={() => setModalOpen(true)}
-                style={{ padding: '5px' }}
-                >
-                <TuneIcon />
-                </IconButton>
-            </Tooltip>
-
-            <div style={{ height: '20px', borderRight: '1px solid #ccc', margin: '6px 7px' }}></div>
-
-            <Tooltip title={t(langKeys.kanbanview) + " "} arrow placement="top">
-                <IconButton
-                color="default"
-                disabled={display === 'BOARD'}
-                onClick={() => setDisplay('BOARD')}
-                style={{ padding: '5px' }}
-                >
-                <ViewColumnIcon />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title={t(langKeys.listview) + " "} arrow placement="top">
-                <IconButton
-                color="default"
-                disabled={display === 'GRID'}
-                onClick={() => setDisplay('GRID')}
-                style={{ padding: '5px' }}
-                >
-                <ViewListIcon />
-                </IconButton>
-            </Tooltip>         
-            </div>
-        </div>
-
-        {display === 'BOARD' &&     
-
-            <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>     
-
-            <div className={classes.canvasFiltersHeader}>
-                <div style={{ flexGrow: 1 }} />
-            
-                <Modal open={isModalOpen}>
-                <div style={{ margin: '17rem 40rem', alignItems: 'center', justifyContent: 'center' }}>
-                    <div className={classes.errorModalContent}>
-                    <div className="row-zyx" style={{marginTop:"1rem"}}>
-                        {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
-                        variant="outlined"
-                        label={t(langKeys.agent)}
-                        className="col-6"                   
-                        valueDefault={boardFilter.asesorid}
-                        onChange={(value) => setBoardFilter(prev => ({ ...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }))}
-                        data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-                        optionDesc={'fullname'}
-                        optionValue={'userid'}
-                        disabled={Boolean(user?.roledesc?.includes("ASESOR")) || false}
-                        />}
-                        <FieldSelect
-                        variant="outlined"
-                        label={t(langKeys.campaign)}
-                        className="col-6"                   
-                        valueDefault={boardFilter.campaign}
-                        onChange={(v: ICampaignLst) => setBoardFilter(prev => ({ ...prev, campaign: v?.id || 0 }))}
-                        data={campaigns}
-                        loading={mainMulti.loading}
-                        optionDesc="description"
-                        optionValue="id"
-                        />
-                    </div>
-
-                    <div className="row-zyx">
-                        <FieldMultiSelect
-                            variant="outlined"
-                            label={t(langKeys.product, { count: 2 })}
-                            className="col-6"                   
-                            valueDefault={boardFilter.products}
-                            onChange={(v) => {
-                                const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-                                setBoardFilter(prev => ({ ...prev, products }));
-                            }}
-                            data={mainMulti.data[5]?.data || []}
-                            loading={mainMulti.loading}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                        <FieldMultiSelect
-                            variant="outlined"
-                            label={t(langKeys.tag, { count: 2 })}
-                            className="col-6"                   
-                            valueDefault={boardFilter.tags}
-                            onChange={(v) => {
-                                const tags = v?.map((o: Dictionary) => o.tags).join(',') || '';
-                                setBoardFilter(prev => ({ ...prev, tags }));
-                            }}
-                            data={tags}
-                            loading={mainMulti.loading}
-                            optionDesc="tags"
-                            optionValue="tags"
-                        />
-                    </div>              
+            <div style={{ marginBottom: '10px' }}>
+                <div style={{ position: 'fixed', right: '25px', display: "flex", paddingBottom: '20px' }}>   
                     
-                    <div className="row-zyx">
-                        <FieldEdit
-                            size="small"
-                            variant="outlined"
-                            valueDefault={boardFilter.customer}
-                            label={t(langKeys.customer)}
-                            className="col-6"                   
-                            disabled={mainMulti.loading}
-                            onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
-                        />
-                        <FieldMultiSelect
-                            variant="outlined"
-                            label={t(langKeys.personType, { count: 2 })}
-                            className="col-6"                   
-                            valueDefault={boardFilter.persontype}
-                            onChange={(v) => {
-                                const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-                                setBoardFilter(prev => ({ ...prev, persontype }));
-                            }}
-                            data={mainMulti.data[7]?.data || []}
-                            loading={mainMulti.loading}
-                            optionDesc="domainvalue"
-                            optionValue="domainvalue"
-                        />
-                    </div>           
-
-                    <div style={{ textAlign: 'right', marginTop:'1.4rem' }}>
-                        <Button
-                            style={{ border: '1px solid #7721AD', marginRight: '1rem' }}
-                            className={classes.button}
-                            variant="contained"
-                            startIcon={<CloseOutlined />}
-                            onClick={() => setModalOpen(false)}
+                    <Tooltip title={t(langKeys.filters) + " "} arrow placement="top">
+                        <IconButton
+                            color="default"
+                            onClick={() => setModalOpenBOARD(true)}
+                            style={{ padding: '5px' }}
                         >
-                            {t(langKeys.close)}
-                        </Button>
+                            <TuneIcon />
+                        </IconButton>
+                    </Tooltip>
 
-                        <Button                                                  
-                            variant="contained"
-                            color="primary"
-                            startIcon={<TuneIcon />}
-                            onClick={fetchBoardLeadsWithFilter}
-                            disabled={mainMulti.loading}
+                    <div style={{ height: '20px', borderRight: '1px solid #ccc', margin: '6px 7px' }}></div>
+
+                    <Tooltip title={t(langKeys.kanbanview) + " "} arrow placement="top">
+                        <IconButton
+                            color="default"
+                            disabled={display === 'BOARD'}
+                            onClick={() => setDisplay('BOARD')}
+                            style={{ padding: '5px' }}
                         >
-                            {t(langKeys.apply) + " " + t(langKeys.filters)}
-                        </Button>                       
-                        
-                    </div>
-
-                    </div>
+                            <ViewColumnIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t(langKeys.listview) + " "} arrow placement="top">
+                        <IconButton
+                            color="default"
+                            disabled={display === 'GRID'}
+                            onClick={() => setDisplay('GRID')}
+                            style={{ padding: '5px' }}
+                        >
+                            <ViewListIcon />
+                        </IconButton>
+                    </Tooltip>         
                 </div>
-                </Modal>       
             </div>
 
-            {!isIncremental && 
-                <AddColumnTemplate onSubmit={(data) => { 
-                    handleInsert(data, dataColumn, setDataColumn) 
-                }} 
-                updateSortParams={updateSortParams} 
-                passConfiguration={passConfiguration} 
-                ordertype={mainMulti?.data[8]?.data} 
-                orderby={mainMulti?.data[9]?.data} 
-                />
+            {display === 'BOARD' &&    
+                <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>   
+                    
+                    <div className={classes.canvasFiltersHeader}>
+                        <div style={{ flexGrow: 1 }} />  
+                        <DialogZyx 
+                            open={isModalOpenBOARD} 
+                            title={t(langKeys.filters)} 
+                            buttonText1={t(langKeys.close)}
+                            buttonText2={t(langKeys.apply) +  " " +t(langKeys.filters)}
+                            handleClickButton1={() => setModalOpenBOARD(false)}                    
+                            handleClickButton2={fetchBoardLeadsWithFilter}
+                            maxWidth="sm"
+                            buttonStyle1={{marginBottom:'0.3rem'}}
+                            buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                        >                     
+                            <div className="row-zyx" >
+                                {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
+                                    variant="outlined"
+                                    label={t(langKeys.agent)}
+                                    className="col-6"                   
+                                    valueDefault={boardFilter.asesorid}
+                                    onChange={(value) => setBoardFilter(prev => ({ ...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }))}
+                                    data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+                                    optionDesc={'fullname'}
+                                    optionValue={'userid'}
+                                    disabled={Boolean(user?.roledesc?.includes("ASESOR")) || false}
+                                />}
+                                <FieldSelect
+                                    variant="outlined"
+                                    label={t(langKeys.campaign)}
+                                    className="col-6"                   
+                                    valueDefault={boardFilter.campaign}
+                                    onChange={(v: ICampaignLst) => setBoardFilter(prev => ({ ...prev, campaign: v?.id || 0 }))}
+                                    data={campaigns}
+                                    loading={mainMulti.loading}
+                                    optionDesc="description"
+                                    optionValue="id"
+                                />
+                            </div>
+
+                            <div className="row-zyx">
+                                <FieldMultiSelect
+                                    variant="outlined"
+                                    label={t(langKeys.product, { count: 2 })}
+                                    className="col-6"                   
+                                    valueDefault={boardFilter.products}
+                                    onChange={(v) => {
+                                        const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                                        setBoardFilter(prev => ({ ...prev, products }));
+                                    }}
+                                    data={mainMulti.data[5]?.data || []}
+                                    loading={mainMulti.loading}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                                <FieldMultiSelect
+                                    variant="outlined"
+                                    label={t(langKeys.tag, { count: 2 })}
+                                    className="col-6"                   
+                                    valueDefault={boardFilter.tags}
+                                    onChange={(v) => {
+                                        const tags = v?.map((o: Dictionary) => o.tags).join(',') || '';
+                                        setBoardFilter(prev => ({ ...prev, tags }));
+                                    }}
+                                    data={tags}
+                                    loading={mainMulti.loading}
+                                    optionDesc="tags"
+                                    optionValue="tags"
+                                />
+                            </div>              
+                        
+                            <div className="row-zyx" style={{marginBottom:'0'}}>
+                                <FieldEdit
+                                    size="small"
+                                    variant="outlined"
+                                    valueDefault={boardFilter.customer}
+                                    label={t(langKeys.customer)}
+                                    className="col-6"                   
+                                    disabled={mainMulti.loading}
+                                    onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
+                                />
+                                <FieldMultiSelect
+                                    variant="outlined"
+                                    label={t(langKeys.personType, { count: 2 })}
+                                    className="col-6"                   
+                                    valueDefault={boardFilter.persontype}
+                                    onChange={(v) => {
+                                        const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                                        setBoardFilter(prev => ({ ...prev, persontype }));
+                                    }}
+                                    data={mainMulti.data[7]?.data || []}
+                                    loading={mainMulti.loading}
+                                    optionDesc="domainvalue"
+                                    optionValue="domainvalue"
+                                />
+                            </div>           
+                        </DialogZyx>   
+                    </div>                                         
+
+                    {!isIncremental && 
+                        <AddColumnTemplate onSubmit={(data) => { 
+                            handleInsert(data, dataColumn, setDataColumn) 
+                        }} 
+                            updateSortParams={updateSortParams} 
+                            passConfiguration={passConfiguration} 
+                            ordertype={mainMulti?.data[8]?.data} 
+                            orderby={mainMulti?.data[9]?.data} 
+                        />
+                    }
+
+                    <div style= {{borderRadius:'2rem'}}>                   
+
+                        <div className={classes.columnsTitles}>     
+                            {/*Nuevo - Titulo*/}
+                            <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 400 }}>
+                                <div className={classes.greyPart}>
+
+                                    <div style={{ display:'flex', alignContent:'center', justifyContent: 'center'}}>
+                                        <div style={{paddingTop:'4px'}}>
+                                            {t(langKeys.new)}
+                                        </div>                           
+                                    </div>                                 
+
+                                </div>                       
+                            </div>
+                            {/*Calificado - Titulo*/}    
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
+                                <div className={classes.otherGreyPart}>
+                                    <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
+                                        <div style={{paddingTop:'4px'}}> {t(langKeys.qualified)} </div>                          
+                                    </div>   
+                                </div>                        
+                            </div>                    
+                            {/*Propuesto - Titulo*/}    
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
+                                <div className={classes.otherGreyPart}>
+                                    <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+                                        <div style={{paddingTop:'4px'}}> {t(langKeys.proposition)} </div>                           
+                                    </div> 
+                                </div>                       
+                            </div>
+                            {/*Calificado - Titulo*/}    
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
+                                <div className={classes.otherGreyPart}>
+                                    <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
+                                        <div style={{paddingTop:'4px'}}> {t(langKeys.won)} </div>                         
+                                    </div>  
+                                </div>                        
+                            </div>
+                        </div>   
+                
+                        <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>               
+                            <Droppable droppableId="all-columns" direction="horizontal" type="column" >                    
+                                {(provided) => (
+                                    <div style={{ display: 'flex' }} {...provided.droppableProps} ref={provided.innerRef} >
+                                        {dataColumn.map((column, index) => (
+                                            <div key={index} className={classes.oportunityList} >
+                                                <DraggablesCategories
+                                                    isIncremental={isIncremental}
+                                                    deletable={dataColumn.filter((x: Dictionary) => x.type === column.type).length > 1}
+                                                    column={column}
+                                                    index={index}
+                                                    hanldeDeleteColumn={hanldeDeleteColumn}
+                                                    handleDelete={handleDelete}
+                                                    handleCloseLead={handleCloseLead}
+                                                    sortParams={sortParams}                                 
+                                                    configuration={configuration}
+                                                />
+                                            </div>                       
+                                        ))}
+                                    </div>
+                                )}
+                            </Droppable>           
+                        </DragDropContext>
+                    </div>
+
+                    <DialogZyx3Opt
+                        open={openDialog}
+                        title={t(langKeys.confirmation)}
+                        buttonText1={t(langKeys.cancel)}
+                        buttonText2={t(langKeys.negative)}
+                        buttonText3={t(langKeys.affirmative)}
+                        handleClickButton1={() => setOpenDialog(false)}
+                        handleClickButton2={() => hanldeDeleteColumn(deleteColumn, false)}
+                        handleClickButton3={() => hanldeDeleteColumn(deleteColumn, true)}
+                        maxWidth={'xs'}
+                    >
+                        <div>{t(langKeys.question_delete_all_items)}</div>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx3Opt>
+                </div>
             }
 
-            <div style= {{borderRadius:'2rem'}}>
-
-                {/*Nuevo - Titulo*/}
-                <div style={{ 
-                    display: "flex", 
-                    color: "white", 
-                    paddingTop: 20, 
-                    fontSize: "20px", 
-                    fontWeight: "bold" 
-                }}>                
-                    <div style={{ 
-                            minWidth: 310, 
-                            maxWidth: 400, 
-                            height: 45,                       
-                            backgroundColor: "#AFAFAF", 
-                            padding: "5px 0", 
-                            marginLeft: "5px",                          
-                            display: "flex", 
-                            overflow: "hidden", 
-                            maxHeight: "100%", 
-                            textAlign: "center", 
-                            flexDirection: "column",
-                            borderTopLeftRadius: '20px',
-                            borderTopRightRadius: '20px',
-                            borderBottomLeftRadius: '0px',
-                            borderBottomRightRadius: '0px',
-                        }}>
-                        <div style={{
-                            display:'flex', 
-                            alignContent:'center', 
-                            justifyContent: 'center'
-                        }}>
-                            <div style={{paddingTop:'4px'}}>
-                                {t(langKeys.new)}
-                            </div>                           
-                        </div>  
-                    </div>
-
-                    {/*Calificado - Titulo*/}    
-                    <div style={{                        
-                        minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1),
-                        maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), 
-                        height: 45,                       
-                        backgroundColor: "#AFAFAF", 
-                        padding: "5px 0", 
-                        marginLeft: "21px",                          
-                        display: "flex", 
-                        overflow: "hidden", 
-                        maxHeight: "100%", 
-                        textAlign: "center", 
-                        flexDirection: "column",
-                        borderTopLeftRadius: '20px',
-                        borderTopRightRadius: '20px',
-                        borderBottomLeftRadius: '0px',
-                        borderBottomRightRadius: '0px',
-                    }}>
-                        <div style={{
-                            display:'flex', 
-                            alignContent:'center', 
-                            justifyContent: 'center'
-                        }}>
-                            <div style={{paddingTop:'4px'}}> {t(langKeys.qualified)} </div>                          
-                        </div>   
-                    </div>
-                    
-                     {/*Propuesto - Titulo*/}    
-                    <div style={{                      
-                        minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1),
-                        maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), 
-                        height: 45,                       
-                        backgroundColor: "#AFAFAF", 
-                        padding: "5px 0", 
-                        marginLeft: "21px",                          
-                        display: "flex", 
-                        overflow: "hidden", 
-                        maxHeight: "100%", 
-                        textAlign: "center", 
-                        flexDirection: "column",
-                        borderTopLeftRadius: '20px',
-                        borderTopRightRadius: '20px',
-                        borderBottomLeftRadius: '0px',
-                        borderBottomRightRadius: '0px',         
-                    }}>
-                        <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                            <div style={{paddingTop:'4px'}}> {t(langKeys.proposition)} </div>                           
-                        </div>  
-                    </div>
-
-                    {/*Calificado - Titulo*/}    
-                    <div style={{                         
-                        minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1),
-                        maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), 
-                        height: 45,                       
-                        backgroundColor: "#AFAFAF", 
-                        padding: "5px 0", 
-                        marginLeft: "21px",                          
-                        display: "flex", 
-                        overflow: "hidden", 
-                        maxHeight: "100%", 
-                        textAlign: "center", 
-                        flexDirection: "column",
-                        borderTopLeftRadius: '20px',
-                        borderTopRightRadius: '20px',
-                        borderBottomLeftRadius: '0px',
-                        borderBottomRightRadius: '0px',        
-                    }}>
-                        <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                            <div style={{paddingTop:'4px'}}> {t(langKeys.won)} </div>                         
-                        </div>  
-                    </div>
-                </div>    
-
-        
-                <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>               
-                    <Droppable droppableId="all-columns" direction="horizontal" type="column" >
-                    
-                    {(provided) => (
-                        <div style={{ display: 'flex' }} {...provided.droppableProps} ref={provided.innerRef} >
-                        {dataColumn.map((column, index) => (
-                            <div
-                                key={index}
-                                style={{
-                                    background: '#FFFFFF', // #FFFFFF                
-                                    marginRight: '1rem',
-                                    marginLeft: '0.3rem',
-                                    padding: '0.5rem 0.6rem',  
-                                    borderTopLeftRadius: '0px',
-                                    borderTopRightRadius: '0px',
-                                    borderBottomLeftRadius: '20px',
-                                    borderBottomRightRadius: '20px',                                                                  
-                                }}
-                            >
-                                <DraggablesCategories
-                                    isIncremental={isIncremental}
-                                    deletable={dataColumn.filter((x: Dictionary) => x.type === column.type).length > 1}
-                                    column={column}
-                                    index={index}
-                                    hanldeDeleteColumn={hanldeDeleteColumn}
-                                    handleDelete={handleDelete}
-                                    handleCloseLead={handleCloseLead}
-                                    sortParams={sortParams}                                 
-                                    configuration={configuration}
-                                />
-                            </div>                       
-                        ))}
+            {display === 'GRID' &&
+                <div style={{ width: 'inherit', marginTop:'1.3rem' }}>
+                    <div className={classes.containerFilter}>
+                        
+                        <div style={{ display: 'flex', gap: 8 }}>
 
                         </div>
-                    )}
 
-                    </Droppable>           
-                </DragDropContext>
+                        {!isIncremental &&
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
+                                >
+                                <Trans i18nKey={langKeys.send_hsm} />
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
+                                >
+                                <Trans i18nKey={langKeys.send_mail} />
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
+                                >
+                                <Trans i18nKey={langKeys.send_sms} />
+                            </Button>
+                        </div>
+                        }
 
-            </div>
-
-            <DialogZyx3Opt
-                open={openDialog}
-                title={t(langKeys.confirmation)}
-                buttonText1={t(langKeys.cancel)}
-                buttonText2={t(langKeys.negative)}
-                buttonText3={t(langKeys.affirmative)}
-                handleClickButton1={() => setOpenDialog(false)}
-                handleClickButton2={() => hanldeDeleteColumn(deleteColumn, false)}
-                handleClickButton3={() => hanldeDeleteColumn(deleteColumn, true)}
-                maxWidth={'xs'}
-            >
-                <div>{t(langKeys.question_delete_all_items)}</div>
-                <div className="row-zyx">
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <IconButton
+                                aria-label="more"
+                                id="long-button"
+                                aria-controls={openSeButtons ? 'long-menu' : undefined}
+                                aria-expanded={openSeButtons ? 'true' : undefined}
+                                aria-haspopup="true"
+                                onClick={handleClickSeButtons}
+                            >
+                                <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                                id="long-menu"
+                                MenuListProps={{
+                                'aria-labelledby': 'long-button',
+                                }}
+                                anchorEl={anchorElSeButtons}
+                                open={openSeButtons}
+                                onClose={handleCloseSeButtons}
+                                PaperProps={{
+                                style: {
+                                    maxHeight: ITEM_HEIGHT * 5,
+                                    width: '29ch',
+                                    padding:'0',                                 
+                                },
+                                }}
+                            >
+                               <MenuList style={{padding:'0'}}>
+                                    <MenuItem style={{padding:'0.8rem 1rem'}}>
+                                        <ListItemIcon>
+                                            <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">Contactar por Whatsapp</Typography>
+                                    </MenuItem>
+                                    <Divider />
+                                    <MenuItem style={{padding:'0.8rem 1rem'}}>
+                                        <ListItemIcon>
+                                            <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">Enviar Correo</Typography>
+                                    </MenuItem>
+                                    <Divider />
+                                    <MenuItem style={{padding:'0.8rem 1rem'}}>
+                                        <ListItemIcon>
+                                            <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit" noWrap>
+                                            Enviar SMS
+                                        </Typography>
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
+                        </div>                        
+                    </div>
+                    
+                    
+                    <TablePaginated
+                        columns={columns}
+                        data={mainPaginated.data}
+                        totalrow={totalrow}
+                        loading={mainPaginated.loading}
+                        pageCount={pageCount}
+                        filterrange={true}
+                        download={true}
+                        fetchData={fetchGridData}
+                        autotrigger={true}
+                        autoRefresh={{ value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
+                        ButtonsElement={() => (<></>)}
+                        exportPersonalized={triggerExportData}
+                        useSelection={true}
+                        selectionFilter={{ key: 'status', value: 'ACTIVO' }}
+                        selectionKey={selectionKey}
+                        setSelectedRows={setSelectedRows}
+                        onClickRow={onClickRow}
+                        FiltersElement={filtersElement}
+                        onFilterChange={f => {
+                            const params = buildQueryFilters(f, location.search);
+                            params.set('asesorid', String(allParameters.asesorid));
+                            params.set('channels', String(allParameters.channel));
+                            params.set('contact', String(allParameters.contact));
+                            history.push({ search: params.toString() });
+                        }}
+                        initialEndDate={params.endDate}
+                        initialStartDate={params.startDate}
+                        initialFilters={params.filters}
+                        initialPageIndex={params.page}
+                    />
+                    {gridModal.name === 'ACTIVITY' && <NewActivityModal
+                        gridModalProps={gridModal}
+                        setGridModal={setGridModal}
+                        setAutoRefresh={setAutoRefresh}
+                    />}
+                    {gridModal.name === 'NOTE' && <NewNoteModal
+                        gridModalProps={gridModal}
+                        setGridModal={setGridModal}
+                        setAutoRefresh={setAutoRefresh}
+                    />}
+                    {gridModal.name === 'MESSAGE' && <DialogSendTemplate
+                        gridModalProps={gridModal}
+                        setGridModal={setGridModal}
+                    />}
                 </div>
-            </DialogZyx3Opt>
-            </div>
-        }
-
-        {display === 'GRID' &&
-            <div style={{ width: 'inherit' }}>
-            <div className={classes.containerFilter}>
-                <div style={{ display: 'flex', gap: 8 }}>
-
-                </div>
-                {!isIncremental &&
-                <div style={{ display: 'flex', gap: 8 }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                        startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
-                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
-                        >
-                        <Trans i18nKey={langKeys.send_hsm} />
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                        startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
-                        >
-                        <Trans i18nKey={langKeys.send_mail} />
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                        startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
-                        >
-                        <Trans i18nKey={langKeys.send_sms} />
-                    </Button>
-                </div>
-                }
-            </div>
-            <TablePaginated
-                columns={columns}
-                data={mainPaginated.data}
-                totalrow={totalrow}
-                loading={mainPaginated.loading}
-                pageCount={pageCount}
-                filterrange={true}
-                download={true}
-                fetchData={fetchGridData}
-                autotrigger={true}
-                autoRefresh={{ value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
-                ButtonsElement={() => (<div></div>)}
-                exportPersonalized={triggerExportData}
-                useSelection={true}
-                selectionFilter={{ key: 'status', value: 'ACTIVO' }}
-                selectionKey={selectionKey}
-                setSelectedRows={setSelectedRows}
-                onClickRow={onClickRow}
-                FiltersElement={filtersElement}
-                onFilterChange={f => {
-                const params = buildQueryFilters(f, location.search);
-                params.set('asesorid', String(allParameters.asesorid));
-                params.set('channels', String(allParameters.channel));
-                params.set('contact', String(allParameters.contact));
-                history.push({ search: params.toString() });
-                }}
-                initialEndDate={params.endDate}
-                initialStartDate={params.startDate}
-                initialFilters={params.filters}
-                initialPageIndex={params.page}
-            />
-            {gridModal.name === 'ACTIVITY' && <NewActivityModal
-                gridModalProps={gridModal}
-                setGridModal={setGridModal}
-                setAutoRefresh={setAutoRefresh}
-            />}
-            {gridModal.name === 'NOTE' && <NewNoteModal
-                gridModalProps={gridModal}
-                setGridModal={setGridModal}
-                setAutoRefresh={setAutoRefresh}
-            />}
-            {gridModal.name === 'MESSAGE' && <DialogSendTemplate
-                gridModalProps={gridModal}
-                setGridModal={setGridModal}
-            />}
-            </div>
-        }
+            }
         </div>
     );
 };

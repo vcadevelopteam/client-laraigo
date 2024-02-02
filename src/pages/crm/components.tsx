@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField, Typography } from "@material-ui/core";
-import { Add, MoreVert as MoreVertIcon, Traffic, Add as AddIcon } from "@material-ui/icons";
+import { MoreVert as MoreVertIcon, Traffic, Add as AddIcon } from "@material-ui/icons";
 import CloseIcon from "@material-ui/icons/Close";
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from "react-beautiful-dnd";
 import { langKeys } from "lang/keys";
@@ -131,8 +131,6 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     lead,
     snapshot,
     onDelete,
-    onClick,
-    onCloseLead,
     configuration,
     ...boxProps
 }) => {
@@ -339,13 +337,13 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     {user?.currencysymbol || "S/."} {Number(lead.expected_revenue).toLocaleString("en-US")}
                 </span>
                 <span className={classes.info}>{lead.displayname}</span>
-                {!!lead?.persontype && lead?.persontype !== null && (
+                {Boolean(lead?.persontype) && lead?.persontype !== null && (
                     <span style={{ fontWeight: "bold" }} className={classes.info}>
                         {lead.persontype}
                     </span>
                 )}
                 <div className={classes.tagsRow}>
-                    {tags.map((tag: String, index: number) => (
+                    {tags.map((tag: string, index: number) => (
                         <div className={classes.tag} key={index}>
                             <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
                             <div style={{ width: 6 }} />
@@ -355,7 +353,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                 </div>
                 {products.length !== 0 && <div style={{ height: "0.25em" }} />}
                 <div className={classes.tagsRow}>
-                    {products.map((tag: String, index: number) => (
+                    {products.map((tag: string, index: number) => (
                         <div className={classes.tag} key={index}>
                             <div className={classes.tagCircle} style={{ backgroundColor: colors[2] }} />
                             <div style={{ width: 6 }} />
@@ -397,17 +395,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     PaperProps={{
                         className: classes.popoverPaper,
                     }}
-                >
-                    {/* <Button
-                        variant="text"
-                        color="inherit"
-                        fullWidth
-                        type="button"
-                        onClick={handleCloseLead}
-                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                    >
-                        <Trans i18nKey={langKeys.close} />
-                    </Button> */}
+                >                  
                     <Button
                         variant="text"
                         color="inherit"
@@ -448,7 +436,7 @@ interface InputTitleProps {
     inputClasses?: string;
 }
 
-const useInputTitleStyles = makeStyles((theme) => ({
+const useInputTitleStyles = makeStyles(() => ({
     root: {
         maxHeight: inputTitleHeight,
         height: inputTitleHeight,
@@ -593,7 +581,6 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     total_revenue,
     titleOnChange,
     onDelete,
-    onAddCard,
     deletable,
     total_cards,
     ...boxProps
@@ -668,8 +655,8 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
 };
 
 interface AddColumnTemplatePops extends Omit<BoxProps, "onSubmit"> {
-    onSubmit: (data: any) => void;
-    updateSortParams: (value: any) => void;
+    onSubmit: (data: Dictionary) => void;
+    updateSortParams: (value: Dictionary) => void;
     passConfiguration: (value: Dictionary) => void;
     ordertype: Dictionary;
     orderby: Dictionary;
@@ -728,7 +715,7 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
 	}
 }));
 
-export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, passConfiguration, ordertype, orderby, ...boxProps }) => {
+export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, passConfiguration, ordertype, orderby }) => {
     const classes = useAddColumnTemplateStyles();
     const dispatch = useDispatch();
     const main = useSelector((state) => state.main.mainData);
@@ -750,7 +737,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
     const open = Boolean(anchorEl);
     const id = open ? "crm-add-new-column-popover" : undefined;
 
-    const handleSubmit = (data: any) => {
+    const handleSubmit = (data: Dictionary) => {
         onSubmit(data);
         handleClose();
     };
@@ -830,6 +817,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     aria-describedby={id}
 					startIcon={<AddIcon color="primary" />}					
 					onClick={handleClick}
+                    style={{marginRight:'1rem'}}    
 				>                    
 					<Trans i18nKey={langKeys.addacolumn} />
 				</Button>
@@ -885,7 +873,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 };
 
 interface ColumnTemplateProps {
-    onSubmit: (title: any) => void;
+    onSubmit: (title: Dictionary) => void;
 }
 
 const useColumnTemplateStyles = makeStyles((theme) => ({
@@ -962,7 +950,7 @@ const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
     );
 };
 
-const useTabPanelStyles = makeStyles((theme) => ({
+const useTabPanelStyles = makeStyles(() => ({
     root: {
         border: "#A59F9F 1px solid",
         borderRadius: 6,
