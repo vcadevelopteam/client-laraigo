@@ -15,6 +15,7 @@ export interface IState {
     triggerChangeOrganization: ITemplate & { automaticConnection?: boolean };
     validateToken: IUserTmp;
     logout: ITemplate;
+    invokeIncremental: ITemplate;
     ignorePwdchangefirstloginValidation: boolean;
 }
 
@@ -23,6 +24,7 @@ export const initialState: IState = {
     triggerChangeOrganization: initialCommon,
     validateToken: { ...initialCommon, user: null, loading: true, notifications: [] },
     logout: initialCommon,
+    invokeIncremental: initialCommon,
     ignorePwdchangefirstloginValidation: false,
 };
 
@@ -31,6 +33,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.LOGIN_SUCCESS]: caseFunctions.loginSuccess,
     [actionTypes.LOGIN_FAILURE]: caseFunctions.loginFailure,
     [actionTypes.LOGIN_RESET]: caseFunctions.loginReset,
+    
+    [actionTypes.INVOKE_INCREMENTAL]: caseFunctions.invokeIncremental,
+    [actionTypes.INVOKE_INCREMENTAL_SUCCESS]: caseFunctions.invokeIncrementalSuccess,
+    [actionTypes.INVOKE_INCREMENTAL_FAILURE]: caseFunctions.invokeIncrementalFailure,
+    [actionTypes.INVOKE_INCREMENTAL_RESET]: caseFunctions.invokeIncrementalReset,
 
     [actionTypes.VALIDATE_TOKEN]: caseFunctions.validateToken,
     [actionTypes.VALIDATE_TOKEN_SUCCESS]: caseFunctions.validateTokenSuccess,

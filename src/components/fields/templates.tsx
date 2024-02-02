@@ -363,7 +363,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
     return (
         <div className={className}>
             {(variant === "standard" && !!label) &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{display: "flex"}}>
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -636,7 +636,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText="" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "" }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -676,9 +676,9 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
 
     return (
         <div className={className}>
-            
+
             {(variant === "standard" && !!label) &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{display: "flex"}}>
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -740,7 +740,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
-            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            const optionsSelected = data.filter(o => `${valueDefault}`.split(",").indexOf(o[optionValue].toString()) > -1)
             setOptionsSelected(optionsSelected);
         } else {
             setOptionsSelected([]);
@@ -888,7 +888,7 @@ export const FieldMultiSelectVirtualized: React.FC<TemplateAutocompleteProps> = 
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
-            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            const optionsSelected = data.filter(o => `${valueDefault}`.split(",").indexOf(o[optionValue].toString()) > -1)
             setOptionsSelected(optionsSelected);
         } else {
             setOptionsSelected([]);
@@ -961,7 +961,7 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
-            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            const optionsSelected = data.filter(o => `${valueDefault}`.split(",").indexOf(o[optionValue].toString()) > -1)
             setOptionsSelected(optionsSelected);
         } else {
             setOptionsSelected([]);
@@ -1036,7 +1036,7 @@ export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ er
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
-            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            const optionsSelected = data.filter(o => `${valueDefault}`.split(",").indexOf(o[optionValue].toString()) > -1)
             setOptionsSelected(optionsSelected);
         } else {
             setOptionsSelected([]);
@@ -1074,7 +1074,7 @@ export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ er
                 )}
                 onInput={(e: any) => {
                     if (e.target.value.indexOf(",") > -1) {
-                        const values = e.target.value.split(",");
+                        const values = `${e.target.value}`.split(",");
                         e.target.value = values[0]
                         el?.current?.dispatchEvent(ke);
                     }
@@ -1156,9 +1156,9 @@ export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ classN
 
     return (
         <div className={className} style={{ ...style, paddingBottom: '3px' }}>
-            
+
             {(!!label) &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary" style={{display: "flex"}}>
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary" style={{ display: "flex" }}>
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1326,7 +1326,7 @@ export const AntTabPanel: FC<AntTabPanelProps> = ({ index, currentIndex, childre
     if (index !== currentIndex) {
         return null
     }
-    
+
     return (
         <div role="tabpanel" >
             {children}
@@ -1401,7 +1401,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
             <span style={style}>
                 {icon?.(handleClick) || <Tooltip title={String(t(langKeys.send_emoji))} arrow placement="top">
                     <IconButton onClick={handleClick} size='small'>
-                        <EmojiICon className={classes.root}/>
+                        <EmojiICon className={classes.root} />
                     </IconButton>
                 </Tooltip>}
                 {open && (
