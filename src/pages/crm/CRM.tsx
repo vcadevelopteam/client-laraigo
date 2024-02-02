@@ -14,7 +14,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, PriorityHighOutlined, DraftsRounded } from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
-import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Tooltip, Typography } from "@material-ui/core";
+import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -1056,23 +1056,19 @@ const CRM: FC = () => {
         </>
     ), [user, allParameters, classes, mainMulti, t]);
 
- 
-    const secondaryButtons = [
-        'Contactar por Whatsapp',
-        'Enviar Correo',
-        'Enviar SMS',       
-    ];
-
-    const ITEM_HEIGHT = 48;
 
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const openSeButtons = Boolean(anchorElSeButtons);
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLElement>) => {
-      setAnchorElSeButtons(event.currentTarget);
-    };
-    const handleCloseSeButtons = () => {
-      setAnchorElSeButtons(null);
-    };
+    const [openSeButtons, setOpenSeButtons] = useState(false);
+
+    const handleClickSeButtons = (event: Dictionary) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+      };
+    
+      const handleCloseSeButtons = () => {
+        setAnchorElSeButtons(null);
+        setOpenSeButtons(false);
+      };
 
     return (
 
@@ -1354,31 +1350,22 @@ const CRM: FC = () => {
                             <IconButton
                                 aria-label="more"
                                 id="long-button"
-                                aria-controls={openSeButtons ? 'long-menu' : undefined}
-                                aria-expanded={openSeButtons ? 'true' : undefined}
-                                aria-haspopup="true"
                                 onClick={handleClickSeButtons}
+                                style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+
                             >
                                 <MoreVertIcon />
                             </IconButton>
-                            <Menu
-                                id="long-menu"
-                                MenuListProps={{
-                                'aria-labelledby': 'long-button',
-                                }}
-                                anchorEl={anchorElSeButtons}
+                            <Popper
                                 open={openSeButtons}
-                                onClose={handleCloseSeButtons}
-                                PaperProps={{
-                                style: {
-                                    maxHeight: ITEM_HEIGHT * 5,
-                                    width: '29ch',
-                                    padding:'0',                                 
-                                },
-                                }}
+                                anchorEl={anchorElSeButtons}
+                                placement="bottom-start"
+                                transition
+                                style={{marginRight:'1rem'}}
                             >
-                               <MenuList style={{padding:'0'}}>
-                                    <MenuItem style={{padding:'0.8rem 1rem'}}>
+                                {({ TransitionProps }) => (
+                                <Paper {...TransitionProps} elevation={3}>
+                                     <MenuItem style={{padding:'0.8rem 1rem'}} onClick={handleCloseSeButtons}>
                                         <ListItemIcon>
                                             <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
                                         </ListItemIcon>
@@ -1400,8 +1387,9 @@ const CRM: FC = () => {
                                             Enviar SMS
                                         </Typography>
                                     </MenuItem>
-                                </MenuList>
-                            </Menu>
+                                </Paper>
+                                )}
+                            </Popper>
                         </div>                        
                     </div>
                     
