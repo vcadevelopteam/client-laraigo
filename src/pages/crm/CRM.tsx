@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
         gap: 16,
         flexWrap: 'wrap',
         justifyContent: 'space-between'
-    },
+    },   
     filterComponent: {
         width: '220px'
     },
@@ -467,7 +467,59 @@ const CRM: FC = () => {
             console.error("Error al aplicar filtros:", error);
         }
     }, [boardFilter, dispatch, location.search, history, setModalOpenBOARD, sortParams, user]);
-    
+
+    const fetchBoardLeadsWithFilterGRID = useCallback(async () => {
+        try {
+          const allParameters: {
+            contact: string;
+            channel: string;
+            asesorid: string;
+            persontype: string;
+          } = {
+            asesorid: String(initialAsesorId),
+            channel: otherParams.channels,
+            contact: otherParams.contact,
+            persontype: otherParams.persontype,
+          };
+      
+          const newParams = new URLSearchParams(location.search);
+          newParams.set('asesorid', String(allParameters.asesorid));
+          newParams.set('channels', String(allParameters.channel));
+          newParams.set('contact', String(allParameters.contact));
+          history.push({ search: newParams.toString() });
+      
+          await dispatch(getMultiCollection([
+            getColumnsSel(1),
+            getLeadsSel({
+              id: 0,
+              campaignid: boardFilter.campaign,
+              tags: boardFilter.tags,
+              persontype: boardFilter.persontype,
+              leadproduct: allParameters.channel,
+              fullname: allParameters.contact,
+              userid: String(allParameters.asesorid || ""),
+              supervisorid: user?.userid || 0,
+              ordertype: sortParams.type,
+              orderby: sortParams.order,
+            }),
+            getAdviserFilteredUserRol(),
+            getCommChannelLst(),
+            getCampaignLst(),
+            getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
+            getLeadTasgsSel(),
+            getValuesFromDomain('TIPOPERSONA'),
+            getValuesFromDomain('ORDERTYPE'),
+            getValuesFromDomain('ORDERBY'),
+          ]));
+      
+          setModalOpenGRID(false);
+        } catch (error) {
+          console.error("Error al aplicar filtros:", error);
+        }
+      }, [boardFilter, dispatch, history, location.search, setModalOpenGRID, sortParams, user]);
+
+      
+      
 
     const onDragEnd = (result: DropResult, columns: dataBackend[], setDataColumn: any) => {
         if (!result.destination) return;
@@ -1006,9 +1058,9 @@ const CRM: FC = () => {
         return (mainMulti.data[7].data);
     }, [mainMulti.data[7]]);
 
-    {/*Nirvana Acá estan los filters de vista lista*/}
     const filtersElement = useMemo(() => (        
         <>
+        {/*
         {(user && !(user.roledesc?.includes("ASESOR"))) && 
         <FieldMultiSelect
             variant="outlined"
@@ -1053,6 +1105,7 @@ const CRM: FC = () => {
             optionDesc="domainvalue"
             optionValue="domainvalue"
         />
+        */}
         </>
     ), [user, allParameters, classes, mainMulti, t]);
 
@@ -1063,12 +1116,8 @@ const CRM: FC = () => {
     const handleClickSeButtons = (event: Dictionary) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
-      };
-    
-      const handleCloseSeButtons = () => {
-        setAnchorElSeButtons(null);
-        setOpenSeButtons(false);
-      };
+      };    
+
 
     return (
 
@@ -1079,7 +1128,13 @@ const CRM: FC = () => {
                     <Tooltip title={t(langKeys.filters) + " "} arrow placement="top">
                         <IconButton
                             color="default"
-                            onClick={() => setModalOpenBOARD(true)}
+                            onClick={() => {
+                                if (display === 'BOARD') {
+                                  setModalOpenBOARD(true);
+                                } else if (display === 'GRID') {
+                                  setModalOpenGRID(true);
+                                }
+                            }}
                             style={{ padding: '5px' }}
                         >
                             <TuneIcon />
@@ -1128,7 +1183,8 @@ const CRM: FC = () => {
                             buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
                         >                     
                             <div className="row-zyx" >
-                                {(user && !(user.roledesc?.includes("ASESOR"))) && <FieldMultiSelect
+                                {(user && !(user.roledesc?.includes("ASESOR"))) && 
+                                <FieldMultiSelect
                                     variant="outlined"
                                     label={t(langKeys.agent)}
                                     className="col-6"                   
@@ -1308,118 +1364,227 @@ const CRM: FC = () => {
 
             {display === 'GRID' &&
                 <div style={{ width: 'inherit', marginTop:'1.3rem' }}>
-                    <div className={classes.containerFilter}>
-                        
-                        <div style={{ display: 'flex', gap: 8 }}>
 
-                        </div>
+                    <div className={classes.canvasFiltersHeader}>
+                        <div style={{ flexGrow: 1 }} />  
+                        <DialogZyx 
+                            open={isModalOpenGRID} 
+                            title={t(langKeys.filters) + " " + t(langKeys.grid_view)} 
+                            buttonText1={t(langKeys.close)}
+                            buttonText2={t(langKeys.apply) +  " " +t(langKeys.filters)}
+                            handleClickButton1={() => setModalOpenGRID(false)}                    
+                            handleClickButton2={fetchBoardLeadsWithFilterGRID}
+                            maxWidth="sm"
+                            buttonStyle1={{marginBottom:'0.3rem'}}
+                            buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                        >                     
+                            <div className="row-zyx" >
+                                {(user && !(user.roledesc?.includes("ASESOR"))) && 
+                                <FieldMultiSelect
+                                    variant="outlined"
+                                    label={t(langKeys.agent)}
+                                    className="col-6"                  
+                                    valueDefault={allParameters.asesorid}
+                                    onChange={(value) => { setAllParameters({ ...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }) }}
+                                    data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+                                    optionDesc={'fullname'}
+                                    optionValue={'userid'}
+                                    disabled={Boolean(user?.roledesc?.includes("ASESOR")) || false}
+                                />}
+                                <FieldMultiSelect
+                                    variant="outlined"
+                                    label={t(langKeys.channel)}
+                                    className="col-6"                   
+                                    valueDefault={allParameters.channel}
+                                    onChange={(value) => setAllParameters({ ...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',') })}
+                                    data={channels}
+                                    optionDesc={'communicationchanneldesc'}
+                                    optionValue={'communicationchannelid'}
+                                />
+                            </div>
 
+                            <div className="row-zyx" style={{marginBottom:'0'}}>
+                            <FieldEdit
+                                size="small"
+                                variant="outlined"
+                                label={t(langKeys.customer)}
+                                className="col-6"                   
+                                valueDefault={allParameters.contact}
+                                onChange={(value) => setAllParameters({ ...allParameters, contact: value })}
+                            />
+
+                            <FieldMultiSelect
+                                variant="outlined"
+                                label={t(langKeys.personType, { count: 2 })}
+                                className="col-6"                   
+                                valueDefault={allParameters.persontype}
+                                onChange={(v) => {
+                                const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                                setAllParameters({ ...allParameters, persontype });
+                                }}
+                                data={userType}
+                                optionDesc="domainvalue"
+                                optionValue="domainvalue"
+                            />
+                            </div>           
+                        </DialogZyx>   
+                    </div> 
+
+                    <div className={classes.containerFilter}>                        
+                        <div style={{ display: 'flex', gap: 8 }}></div>
                         {!isIncremental &&
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                                startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
-                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
-                                >
-                                <Trans i18nKey={langKeys.send_hsm} />
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                                startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
-                                >
-                                <Trans i18nKey={langKeys.send_mail} />
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                                startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
-                                >
-                                <Trans i18nKey={langKeys.send_sms} />
-                            </Button>
-                        </div>
-                        }
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <IconButton
+                                    aria-label="more"
+                                    id="long-button"
+                                    onClick={handleClickSeButtons}
+                                    style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
 
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            <IconButton
-                                aria-label="more"
-                                id="long-button"
-                                onClick={handleClickSeButtons}
-                                style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                                >
+                                    <MoreVertIcon />
+                                </IconButton>
+                                <Popper
+                                    open={openSeButtons}
+                                    anchorEl={anchorElSeButtons}
+                                    placement="bottom-start"
+                                    transition
+                                    style={{marginRight:'1rem'}}
+                                >
+                                    {({ TransitionProps }) => (
+                                    <Paper {...TransitionProps} elevation={3}>
 
-                            >
-                                <MoreVertIcon />
-                            </IconButton>
-                            <Popper
-                                open={openSeButtons}
-                                anchorEl={anchorElSeButtons}
-                                placement="bottom-start"
-                                transition
-                                style={{marginRight:'1rem'}}
-                            >
-                                {({ TransitionProps }) => (
-                                <Paper {...TransitionProps} elevation={3}>
-                                     <MenuItem style={{padding:'0.8rem 1rem'}} onClick={handleCloseSeButtons}>
-                                        <ListItemIcon>
-                                            <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                        </ListItemIcon>
-                                        <Typography variant="inherit">Contactar por Whatsapp</Typography>
-                                    </MenuItem>
-                                    <Divider />
-                                    <MenuItem style={{padding:'0.8rem 1rem'}}>
-                                        <ListItemIcon>
-                                            <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                        </ListItemIcon>
-                                        <Typography variant="inherit">Enviar Correo</Typography>
-                                    </MenuItem>
-                                    <Divider />
-                                    <MenuItem style={{padding:'0.8rem 1rem'}}>
-                                        <ListItemIcon>
-                                            <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                        </ListItemIcon>
-                                        <Typography variant="inherit" noWrap>
-                                            Enviar SMS
-                                        </Typography>
-                                    </MenuItem>
-                                </Paper>
-                                )}
-                            </Popper>
-                        </div>                        
-                    </div>
-                    
+                                        <MenuItem 
+                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                            onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
+                                        >
+                                            <ListItemIcon>
+                                                <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                            </ListItemIcon>
+                                            <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
+                                        </MenuItem>
+
+                                        <Divider />
+
+                                        <MenuItem 
+                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                            onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
+                                        >
+                                            <ListItemIcon>
+                                                <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                            </ListItemIcon>
+                                            <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
+                                        </MenuItem>
+
+                                        <Divider />
+
+                                        <MenuItem 
+                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                            onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
+                                        >
+                                            <ListItemIcon>
+                                                <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                            </ListItemIcon>
+                                            <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
+                                        </MenuItem>
+
+                                    </Paper>
+                                    )}
+                                </Popper>
+                            </div>     
+                        }                                          
+                    </div>                    
                     
                     <TablePaginated
                         columns={columns}
                         data={mainPaginated.data}
                         totalrow={totalrow}
                         loading={mainPaginated.loading}
-                        pageCount={pageCount}
+                        pageCount={pageCount}                        
                         filterrange={true}
                         download={true}
                         fetchData={fetchGridData}
                         autotrigger={true}
                         autoRefresh={{ value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
-                        ButtonsElement={() => (<></>)}
+                        ButtonsElement={() => (                           
+                            <>       
+                                {/*
+                                <div style={{ display: 'flex', gap: 8 }}></div>
+                                {!isIncremental &&
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <IconButton
+                                            aria-label="more"
+                                            id="long-button"
+                                            onClick={handleClickSeButtons}
+                                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+
+                                        >
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                        <Popper
+                                            open={openSeButtons}
+                                            anchorEl={anchorElSeButtons}
+                                            placement="bottom-start"
+                                            transition
+                                            style={{marginRight:'1rem'}}
+                                        >
+                                            {({ TransitionProps }) => (
+                                                <Paper {...TransitionProps} elevation={3}>
+
+                                                    <MenuItem 
+                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
+                                                    </MenuItem>
+
+                                                    <Divider />
+
+                                                    <MenuItem 
+                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
+                                                    </MenuItem>
+
+                                                    <Divider />
+
+                                                    <MenuItem 
+                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
+                                                    </MenuItem>
+
+                                                </Paper>
+                                            )}
+                                        </Popper>
+                                    </div>     
+                                }  
+                                */}                   
+                            </>
+                        )}
                         exportPersonalized={triggerExportData}
                         useSelection={true}
                         selectionFilter={{ key: 'status', value: 'ACTIVO' }}
                         selectionKey={selectionKey}
                         setSelectedRows={setSelectedRows}
-                        onClickRow={onClickRow}
-                        FiltersElement={filtersElement}
-                        onFilterChange={f => {
-                            const params = buildQueryFilters(f, location.search);
-                            params.set('asesorid', String(allParameters.asesorid));
-                            params.set('channels', String(allParameters.channel));
-                            params.set('contact', String(allParameters.contact));
-                            history.push({ search: params.toString() });
-                        }}
+                        onClickRow={onClickRow}                        
+                        FiltersElement={filtersElement}                      
                         initialEndDate={params.endDate}
                         initialStartDate={params.startDate}
                         initialFilters={params.filters}
