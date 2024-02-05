@@ -10,11 +10,11 @@ import paths from "common/constants/paths";
 import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { DialogZyx, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, PriorityHighOutlined, DraftsRounded } from '@material-ui/icons';
+import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
-import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
+import { Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
     },
     newTitle: {
         height: 70,                       
-        backgroundColor: "#FFFF", 
+        backgroundColor: "#F9F9FA", 
         padding: "14px 0 1px 0", 
         marginLeft: "5px",                              
         display: "flex", 
@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
     },
     otherTitles: {
         height: 70,                       
-        backgroundColor: "#FFFF", 
+        backgroundColor: "#F9F9FA", 
         padding: "14px 0 1px 0", 
         marginLeft: "21px",                          
         display: "flex", 
@@ -170,7 +170,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '20px',  
     },
     oportunityList: {
-        background: '#FFFFFF',               
+        background: '#F9F9FA',               
         marginRight: '1rem',
         marginLeft: '0.3rem',
         padding: '0 0.6rem 0.5rem 0.6rem',  
@@ -210,7 +210,7 @@ interface IBoardFilter {
     persontype: string;
 }
 
-const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams, configuration: Dictionary }> = ({ column,
+const DraggablesCategories: FC<{ column: Dictionary, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams, configuration: any }> = ({ column,
     index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental, sortParams, configuration }) => {
     const { t } = useTranslation();
 
@@ -255,7 +255,7 @@ const DraggablesCategories: FC<{ column: any, deletable: boolean, index: number,
                                     style={provided.draggableProps.style}
                                     snapshot={snapshot}
                                     >
-                                    {(style: any) => (
+                                    {(style: Dictionary) => (
                                         <div
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
@@ -409,11 +409,11 @@ const CRM: FC = () => {
         if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
             const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
             const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
-            let unordeneddatacolumns = columns.map((column) => {
+            const unordeneddatacolumns = columns.map((column) => {
             column.items = leads.filter(x => x.column_uuid === column.column_uuid);
             return { ...column, total_revenue: (column.items.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)) }
             })
-            let ordereddata = [...unordeneddatacolumns.filter((x: any) => x.type === "NEW"),
+            const ordereddata = [...unordeneddatacolumns.filter((x: Dictionary) => x.type === "NEW"),
             ...unordeneddatacolumns.filter((x) => x.type === "QUALIFIED"),
             ...unordeneddatacolumns.filter((x) => x.type === "PROPOSITION"),
             ...unordeneddatacolumns.filter((x) => x.type === "WON"),
@@ -467,58 +467,6 @@ const CRM: FC = () => {
             console.error("Error al aplicar filtros:", error);
         }
     }, [boardFilter, dispatch, location.search, history, setModalOpenBOARD, sortParams, user]);
-
-    const fetchBoardLeadsWithFilterGRID = useCallback(async () => {
-        try {
-          const allParameters: {
-            contact: string;
-            channel: string;
-            asesorid: string;
-            persontype: string;
-          } = {
-            asesorid: String(initialAsesorId),
-            channel: otherParams.channels,
-            contact: otherParams.contact,
-            persontype: otherParams.persontype,
-          };
-      
-          const newParams = new URLSearchParams(location.search);
-          newParams.set('asesorid', String(allParameters.asesorid));
-          newParams.set('channels', String(allParameters.channel));
-          newParams.set('contact', String(allParameters.contact));
-          history.push({ search: newParams.toString() });
-      
-          await dispatch(getMultiCollection([
-            getColumnsSel(1),
-            getLeadsSel({
-              id: 0,
-              campaignid: boardFilter.campaign,
-              tags: boardFilter.tags,
-              persontype: boardFilter.persontype,
-              leadproduct: allParameters.channel,
-              fullname: allParameters.contact,
-              userid: String(allParameters.asesorid || ""),
-              supervisorid: user?.userid || 0,
-              ordertype: sortParams.type,
-              orderby: sortParams.order,
-            }),
-            getAdviserFilteredUserRol(),
-            getCommChannelLst(),
-            getCampaignLst(),
-            getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
-            getLeadTasgsSel(),
-            getValuesFromDomain('TIPOPERSONA'),
-            getValuesFromDomain('ORDERTYPE'),
-            getValuesFromDomain('ORDERBY'),
-          ]));
-      
-          setModalOpenGRID(false);
-        } catch (error) {
-          console.error("Error al aplicar filtros:", error);
-        }
-      }, [boardFilter, dispatch, history, location.search, setModalOpenGRID, sortParams, user]);
-
-      
       
 
     const onDragEnd = (result: DropResult, columns: dataBackend[], setDataColumn: any) => {
@@ -614,7 +562,7 @@ const CRM: FC = () => {
         }))
     }
 
-    const handleInsert = (infa: any, columns: dataBackend[], setDataColumn: any) => {
+    const handleInsert = (infa: Dictionary, columns: dataBackend[], setDataColumn: any) => {
         const newIndex = columns.length
         const uuid = uuidv4() // from common/helpers
 
@@ -638,8 +586,8 @@ const CRM: FC = () => {
         index: newIndex,
         items: []
         }
-        let unordeneddatacolumns = Object.values({ ...columns, newColumn })
-        let ordereddata = [...unordeneddatacolumns.filter((x: any) => x.type === "NEW"),
+        const unordeneddatacolumns = Object.values({ ...columns, newColumn })
+        const ordereddata = [...unordeneddatacolumns.filter((x: any) => x.type === "NEW"),
         ...unordeneddatacolumns.filter((x: any) => x.type === "QUALIFIED"),
         ...unordeneddatacolumns.filter((x: any) => x.type === "PROPOSITION"),
         ...unordeneddatacolumns.filter((x: any) => x.type === "WON"),
@@ -683,6 +631,7 @@ const CRM: FC = () => {
         if (user.roledesc?.includes("ASESOR")) return user.userid;
         else return otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || "") : "";
     }, [otherParams, user]);
+  
 
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
@@ -732,7 +681,7 @@ const CRM: FC = () => {
             return (
             <div style={{ cursor: 'pointer' }}>
                 <div>{t(langKeys.name)}: {row['contact_name']}</div>
-                {!!row['persontype'] && <div>{t(langKeys.personType)}: {row['persontype']}</div>}
+                {Boolean(row['persontype']) && <div>{t(langKeys.personType)}: {row['persontype']}</div>}
                 <div>{t(langKeys.email)}: {row['email']}</div>
                 <div>{t(langKeys.phone)}: {row['phone']}</div>
                 <Rating
@@ -775,7 +724,7 @@ const CRM: FC = () => {
             return (
             <div style={{ cursor: 'pointer' }}>
                 {
-                column.sortType === "datetime" && !!row[column.id]
+                column.sortType === "datetime" && Boolean(row[column.id])
                     ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
                     month: "2-digit",
@@ -930,7 +879,7 @@ const CRM: FC = () => {
                             color="action"
                             />
                         </IconButton>
-                        {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && !!row.phone) &&
+                        {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && Boolean(row.phone)) &&
                             <IconButton
                             aria-label="more"
                             aria-controls="long-menu"
@@ -960,7 +909,8 @@ const CRM: FC = () => {
     );
 
     const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
+        console.log(filters)
+        setfetchDataAux({ ...fetchDataAux, daterange:daterange, ...{ pageSize, pageIndex, filters, sorts } });
         dispatch(getCollectionPaginated(getPaginatedLead(
         {
             startdate: daterange.startDate!,
@@ -973,6 +923,35 @@ const CRM: FC = () => {
         }
         )));
     };
+
+    const fetchBoardLeadsWithFilterGRID = useCallback(async () => {
+        try {                       
+            const newParams = new URLSearchParams(location.search);
+          
+            for (const key in fetchDataAux) {
+                const value = (fetchDataAux as Dictionary)[key];
+                if (key === 'filters' || value === undefined || value === null || key === 'sorts' || key === 'daterange') continue;
+                newParams.set(key, String(value));
+            }
+            const colFilters = fetchDataAux.filters;
+            for (const key in colFilters) {
+                if (typeof colFilters[key] === 'object' && 'value' in colFilters[key] && 'operator' in colFilters[key]) {
+                    newParams.set(key, String(colFilters[key].value));
+                    newParams.set(`${key}-operator`, String(colFilters[key].operator));
+                }
+            }
+
+            newParams.set('asesorid', String(allParameters.asesorid));
+            newParams.set('channels', String(allParameters.channel));
+            newParams.set('contact', String(allParameters.contact));           
+            history.push({ search: newParams.toString() });
+     
+            setModalOpenGRID(false);
+            fetchGridData({...fetchDataAux});               
+        } catch (error) {
+            console.error("Error al aplicar filtros:", error);
+        }
+    }, [boardFilter, dispatch, history, location.search, setModalOpenGRID, sortParams, user, fetchGridData]);
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
@@ -1003,7 +982,6 @@ const CRM: FC = () => {
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
-
 
     useEffect(() => {
         if (waitExport) {
@@ -1057,67 +1035,14 @@ const CRM: FC = () => {
         if (!mainMulti.data[7]?.data || mainMulti.data[7]?.key !== "UFN_DOMAIN_LST_VALORES") return [];
         return (mainMulti.data[7].data);
     }, [mainMulti.data[7]]);
-
-    const filtersElement = useMemo(() => (        
-        <>
-        {/*
-        {(user && !(user.roledesc?.includes("ASESOR"))) && 
-        <FieldMultiSelect
-            variant="outlined"
-            label={t(langKeys.agent)}
-            className={classes.filterComponent}
-            valueDefault={allParameters.asesorid}
-            onChange={(value) => { setAllParameters({ ...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }) }}
-            data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-            optionDesc={'fullname'}
-            optionValue={'userid'}
-            disabled={Boolean(user?.roledesc?.includes("ASESOR")) || false}
-        />}
-        <FieldMultiSelect
-            variant="outlined"
-            label={t(langKeys.channel)}
-            className={classes.filterComponent}
-            valueDefault={allParameters.channel}
-            onChange={(value) => setAllParameters({ ...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',') })}
-            data={channels}
-            optionDesc={'communicationchanneldesc'}
-            optionValue={'communicationchannelid'}
-        />
-        <FieldEdit
-            size="small"
-            variant="outlined"
-            label={t(langKeys.customer)}
-            className={classes.filterComponent}
-            valueDefault={allParameters.contact}
-            onChange={(value) => setAllParameters({ ...allParameters, contact: value })}
-        />
-
-        <FieldMultiSelect
-            variant="outlined"
-            label={t(langKeys.personType, { count: 2 })}
-            className={classes.filterComponent}
-            valueDefault={allParameters.persontype}
-            onChange={(v) => {
-            const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-            setAllParameters({ ...allParameters, persontype });
-            }}
-            data={userType}
-            optionDesc="domainvalue"
-            optionValue="domainvalue"
-        />
-        */}
-        </>
-    ), [user, allParameters, classes, mainMulti, t]);
-
-
+  
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
 
     const handleClickSeButtons = (event: Dictionary) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
-      };    
-
+    };    
 
     return (
 
@@ -1281,7 +1206,6 @@ const CRM: FC = () => {
                     <div style= {{borderRadius:'2rem'}}>                   
 
                         <div className={classes.columnsTitles}>     
-                            {/*Nuevo - Titulo*/}
                             <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 400 }}>
                                 <div className={classes.greyPart}>
 
@@ -1293,7 +1217,6 @@ const CRM: FC = () => {
 
                                 </div>                       
                             </div>
-                            {/*Calificado - Titulo*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
@@ -1301,7 +1224,6 @@ const CRM: FC = () => {
                                     </div>   
                                 </div>                        
                             </div>                    
-                            {/*Propuesto - Titulo*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
@@ -1309,7 +1231,6 @@ const CRM: FC = () => {
                                     </div> 
                                 </div>                       
                             </div>
-                            {/*Calificado - Titulo*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
@@ -1369,7 +1290,7 @@ const CRM: FC = () => {
                         <div style={{ flexGrow: 1 }} />  
                         <DialogZyx 
                             open={isModalOpenGRID} 
-                            title={t(langKeys.filters) + " " + t(langKeys.grid_view)} 
+                            title={t(langKeys.filters) + " "} 
                             buttonText1={t(langKeys.close)}
                             buttonText2={t(langKeys.apply) +  " " +t(langKeys.filters)}
                             handleClickButton1={() => setModalOpenGRID(false)}                    
@@ -1505,89 +1426,26 @@ const CRM: FC = () => {
                         pageCount={pageCount}                        
                         filterrange={true}
                         download={true}
+                        FiltersElement={<></>}
                         fetchData={fetchGridData}
-                        autotrigger={true}
-                        autoRefresh={{ value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
-                        ButtonsElement={() => (                           
-                            <>       
-                                {/*
-                                <div style={{ display: 'flex', gap: 8 }}></div>
-                                {!isIncremental &&
-                                    <div style={{ display: 'flex', gap: 8 }}>
-                                        <IconButton
-                                            aria-label="more"
-                                            id="long-button"
-                                            onClick={handleClickSeButtons}
-                                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-
-                                        >
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                        <Popper
-                                            open={openSeButtons}
-                                            anchorEl={anchorElSeButtons}
-                                            placement="bottom-start"
-                                            transition
-                                            style={{marginRight:'1rem'}}
-                                        >
-                                            {({ TransitionProps }) => (
-                                                <Paper {...TransitionProps} elevation={3}>
-
-                                                    <MenuItem 
-                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
-                                                    </MenuItem>
-
-                                                    <Divider />
-
-                                                    <MenuItem 
-                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
-                                                    </MenuItem>
-
-                                                    <Divider />
-
-                                                    <MenuItem 
-                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
-                                                    </MenuItem>
-
-                                                </Paper>
-                                            )}
-                                        </Popper>
-                                    </div>     
-                                }  
-                                */}                   
-                            </>
-                        )}
+                        autotrigger={true}                       
+                        autoRefresh={{ value: autoRefresh, callback: (value) => setAutoRefresh(value) }}                       
                         exportPersonalized={triggerExportData}
                         useSelection={true}
                         selectionFilter={{ key: 'status', value: 'ACTIVO' }}
                         selectionKey={selectionKey}
+                        onFilterChange={f => {
+                            const params = buildQueryFilters(f, location.search);
+                            params.set('asesorid', String(allParameters.asesorid));
+                            params.set('channels', String(allParameters.channel));
+                            params.set('contact', String(allParameters.contact));
+                            history.push({ search: params.toString() });
+                        }}
                         setSelectedRows={setSelectedRows}
                         onClickRow={onClickRow}                        
-                        FiltersElement={filtersElement}                      
+                                      
                         initialEndDate={params.endDate}
-                        initialStartDate={params.startDate}
-                        initialFilters={params.filters}
+                        initialStartDate={params.startDate}                      
                         initialPageIndex={params.page}
                     />
                     {gridModal.name === 'ACTIVITY' && <NewActivityModal

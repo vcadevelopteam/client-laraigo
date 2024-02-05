@@ -324,7 +324,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     return (
         <Box {...boxProps} style={{ position: "relative" }} pb={1}>
             
-            <div    style={{ background: '#F9F9FA'}} className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
+            <div    style={{ background: '#FFFFFF'}} className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead.description}</span>
                 {lead.campaign && (
                     <span className={classes.info}>
@@ -656,8 +656,8 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
 
 interface AddColumnTemplatePops extends Omit<BoxProps, "onSubmit"> {
     onSubmit: (data: Dictionary) => void;
-    updateSortParams: (value: Dictionary) => void;
-    passConfiguration: (value: Dictionary) => void;
+    updateSortParams: (value: any) => void;
+    passConfiguration: (value: any) => void;
     ordertype: Dictionary;
     orderby: Dictionary;
 }
