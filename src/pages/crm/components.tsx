@@ -653,7 +653,35 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
         </Box>
     );
 };
+interface AddColumnPopoverProps {
+    id: string | undefined;
+    anchorEl: HTMLButtonElement | null;
+    onClose: () => void;
+    onSubmit: (data: Dictionary) => void;
+}
 
+const AddColumnPopover: FC<AddColumnPopoverProps> = ({ id, anchorEl, onClose, onSubmit }) => {
+    const handleSubmit = (data: Dictionary) => {
+        onSubmit(data);
+        onClose();
+    };
+    return (
+        <Popover
+            id={id}
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={onClose}
+            anchorOrigin={{
+                vertical: "top",
+                horizontal: "left",
+            }}
+        >
+            <ColumnTemplate onSubmit={handleSubmit} />
+        </Popover>
+    );
+};
+
+export default AddColumnPopover;
 interface AddColumnTemplatePops extends Omit<BoxProps, "onSubmit"> {
     onSubmit: (data: Dictionary) => void;
     updateSortParams: (value: any) => void;
@@ -811,7 +839,8 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     }}
                 />
 
-                <Button
+                {/*
+                 <Button
 					variant="outlined"
 					color="primary"
                     aria-describedby={id}
@@ -821,7 +850,8 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 				>                    
 					<Trans i18nKey={langKeys.addacolumn} />
 				</Button>
-
+                */}
+          
 				<Button
 					variant="outlined"
 					color="primary"
@@ -848,18 +878,12 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     </Button>
                 }
 
-                <Popover
+                <AddColumnPopover
                     id={id}
-                    open={open}
                     anchorEl={anchorEl}
                     onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                    }}
-                >
-                    <ColumnTemplate onSubmit={handleSubmit} />
-                </Popover>
+                    onSubmit={handleSubmit}
+                />      
             </div>
             
 			<TrafficLightConfigurationModal

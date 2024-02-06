@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
+import AddColumnPopover, { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
@@ -12,7 +12,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { DialogZyx, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
+import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, AddCircleRounded} from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
 import { Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -111,8 +111,9 @@ const useStyles = makeStyles((theme) => ({
     newTitle: {
         height: 70,                       
         backgroundColor: "#F9F9FA", 
-        padding: "14px 0 1px 0", 
-        marginLeft: "5px",                              
+        padding: "14px 0px 1px 0", 
+        marginLeft: "5px",  
+        marginRight: "5px",                            
         display: "flex", 
         overflow: "hidden", 
         maxHeight: "100%", 
@@ -127,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
         height: 70,                       
         backgroundColor: "#F9F9FA", 
         padding: "14px 0 1px 0", 
-        marginLeft: "21px",                          
+        marginLeft: "0px",                          
         display: "flex", 
         overflow: "hidden", 
         maxHeight: "100%", 
@@ -171,7 +172,7 @@ const useStyles = makeStyles((theme) => ({
     },
     oportunityList: {
         background: '#F9F9FA',               
-        marginRight: '1rem',
+        marginRight: '0',
         marginLeft: '0.3rem',
         padding: '0 0.6rem 0.5rem 0.6rem',  
         borderTopLeftRadius: '0px',
@@ -908,8 +909,7 @@ const CRM: FC = () => {
         [voxiConnection, callOnLine]
     );
 
-    const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        console.log(filters)
+    const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {     
         setfetchDataAux({ ...fetchDataAux, daterange:daterange, ...{ pageSize, pageIndex, filters, sorts } });
         dispatch(getCollectionPaginated(getPaginatedLead(
         {
@@ -1036,6 +1036,7 @@ const CRM: FC = () => {
         return (mainMulti.data[7].data);
     }, [mainMulti.data[7]]);
   
+
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
 
@@ -1044,12 +1045,20 @@ const CRM: FC = () => {
         setOpenSeButtons((prevOpen) => !prevOpen);
     };    
 
-    return (
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const open = Boolean(anchorEl);
+    const id = open ? "crm-add-new-column-popover" : undefined;
 
+    return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ marginBottom: '10px' }}>
                 <div style={{ position: 'fixed', right: '25px', display: "flex", paddingBottom: '20px' }}>   
-                    
                     <Tooltip title={t(langKeys.filters) + " "} arrow placement="top">
                         <IconButton
                             color="default"
@@ -1065,9 +1074,7 @@ const CRM: FC = () => {
                             <TuneIcon />
                         </IconButton>
                     </Tooltip>
-
                     <div style={{ height: '20px', borderRight: '1px solid #ccc', margin: '6px 7px' }}></div>
-
                     <Tooltip title={t(langKeys.kanbanview) + " "} arrow placement="top">
                         <IconButton
                             color="default"
@@ -1092,8 +1099,7 @@ const CRM: FC = () => {
             </div>
 
             {display === 'BOARD' &&    
-                <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>   
-                    
+                <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}> 
                     <div className={classes.canvasFiltersHeader}>
                         <div style={{ flexGrow: 1 }} />  
                         <DialogZyx 
@@ -1202,44 +1208,107 @@ const CRM: FC = () => {
                             orderby={mainMulti?.data[9]?.data} 
                         />
                     }
-
-                    <div style= {{borderRadius:'2rem'}}>                   
-
+                    <div style= {{borderRadius:'2rem'}}>                  
                         <div className={classes.columnsTitles}>     
-                            <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 400 }}>
+                            <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 410 }}>
                                 <div className={classes.greyPart}>
-
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center'}}>
                                         <div style={{paddingTop:'4px'}}>
                                             {t(langKeys.new)}
-                                        </div>                           
-                                    </div>                                 
-
+                                        </div>                         
+                                    </div>                                
                                 </div>                       
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 9 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
-                                        <div style={{paddingTop:'4px'}}> {t(langKeys.qualified)} </div>                          
+                                        <div style={{paddingTop:'4px', paddingLeft:'15.5rem'}}> {t(langKeys.qualified)} </div>  
+                                        
+                                        <div style={{ margin: '0 0 0 12rem', width: '3rem', padding: '0' }}>
+
+                                            <Tooltip title={t(langKeys.addacolumn)} arrow placement="top">
+                                                <IconButton
+                                                    color="secondary"
+                                                    style={{ padding: '5px' }}
+                                                    onClick={handleClick}
+                                                >                                             
+                                                    <AddCircleRounded />                                                                                     
+                                                </IconButton>
+                                            </Tooltip>
+
+                                            <AddColumnPopover
+                                                id={id}
+                                                anchorEl={anchorEl}
+                                                onClose={handleClose}
+                                                onSubmit={(data) => { 
+                                                    console.log('Data from Popover:', data);
+                                                    handleClose(); 
+                                                }}
+                                            />
+                                        </div>       
+
                                     </div>   
                                 </div>                        
                             </div>                    
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 9 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                                        <div style={{paddingTop:'4px'}}> {t(langKeys.proposition)} </div>                           
+                                        <div style={{paddingTop:'4px', paddingLeft:'5.5rem'}}> {t(langKeys.proposition)} </div>  
+                                            <div style={{ margin: '0 0 0 2rem', width: '3rem', padding: '0' }}>
+
+                                                <Tooltip title={t(langKeys.addacolumn)} arrow placement="top">
+                                                    <IconButton
+                                                        color="secondary"
+                                                        style={{ padding: '5px' }}
+                                                        onClick={handleClick}
+                                                    >                                             
+                                                        <AddCircleRounded />                                                                                     
+                                                    </IconButton>
+                                                </Tooltip>
+
+                                                <AddColumnPopover
+                                                    id={id}
+                                                    anchorEl={anchorEl}
+                                                    onClose={handleClose}
+                                                    onSubmit={(data) => { 
+                                                        console.log('Data from Popover:', data);
+                                                        handleClose(); 
+                                                    }}
+                                                />
+                                            </div>                       
                                     </div> 
                                 </div>                       
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 9 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                                        <div style={{paddingTop:'4px'}}> {t(langKeys.won)} </div>                         
+                                        <div style={{paddingTop:'4px', paddingLeft:'6rem'}}> {t(langKeys.won)} </div>       
+                                            
+                                            <div style={{ margin: '0 0 0 3rem', width: '3rem', padding: '0' }}>
+                                                <Tooltip title={t(langKeys.addacolumn)} arrow placement="top">
+                                                    <IconButton
+                                                        color="secondary"
+                                                        style={{ padding: '5px' }}
+                                                        onClick={handleClick}
+                                                    >                                             
+                                                        <AddCircleRounded />                                                                                     
+                                                    </IconButton>
+                                                </Tooltip>
+
+                                                <AddColumnPopover
+                                                    id={id}
+                                                    anchorEl={anchorEl}
+                                                    onClose={handleClose}
+                                                    onSubmit={(data) => { 
+                                                        console.log('Data from Popover:', data);
+                                                        handleClose(); 
+                                                    }}
+                                                />
+                                            </div>                         
                                     </div>  
                                 </div>                        
                             </div>
-                        </div>   
-                
+                        </div>                   
                         <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>               
                             <Droppable droppableId="all-columns" direction="horizontal" type="column" >                    
                                 {(provided) => (
