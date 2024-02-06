@@ -715,7 +715,7 @@ const TableZyx = React.memo(({
                         </div>
                     )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                        {ButtonsElement && <ButtonsElement />}
+                        {ButtonsElement}
                         {importCSV && (
                             <>
                                 <input

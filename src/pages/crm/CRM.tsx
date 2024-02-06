@@ -1444,35 +1444,21 @@ const CRM: FC = () => {
                         initialEndDate={params.endDate}
                         initialStartDate={params.startDate}                      
                         initialPageIndex={params.page}
-                        ButtonsElement={() => (  
-                            <>
-                                
-                                <div style={{ display: 'flex', gap: 8 }}></div>
-                                {!isIncremental &&                                           
-                                    <div>
-                                         {/*
-                                                   <Button
-                                            variant="outlined"
-                                            color="primary"                                           
-                                            startIcon={<ArrowDownwardIcon color="primary" />}					
-                                            style={{ marginLeft: 'auto' }}
-                                            //onClick={() => exportExcel()}
-                                            >
-                                            <Trans i18nKey={langKeys.download} />
-                                        </Button>
-                                            */}
-                                        <IconButton
-                                            aria-label="more"
-                                            id="long-button"
-                                            onClick={handleClickSeButtons}
-                                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                                        >
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                    </div>
-                                }                                                    
-                           </> 
-                        )}
+                        ButtonsElement={<>
+							<div style={{ display: 'flex', gap: 8 }}></div>
+							{!isIncremental &&                                           
+								<div>
+									<IconButton
+										aria-label="more"
+										id="long-button"
+										onClick={handleClickSeButtons}
+										style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+									>
+										<MoreVertIcon />
+									</IconButton>
+								</div>
+							}                                                    
+					   </> }
                        
                     />
                     {gridModal.name === 'ACTIVITY' && <NewActivityModal
