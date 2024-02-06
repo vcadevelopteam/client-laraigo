@@ -3,18 +3,18 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import AddColumnPopover, { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
+import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
 import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, AddCircleRounded} from '@material-ui/icons';
+import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
-import { Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
+import { Button, Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -25,6 +25,8 @@ import { WhatsappIcon } from "icons";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 const isIncremental = window.location.href.includes("incremental")
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+
 
 interface dataBackend {
     columnid: number,
@@ -111,9 +113,8 @@ const useStyles = makeStyles((theme) => ({
     newTitle: {
         height: 70,                       
         backgroundColor: "#F9F9FA", 
-        padding: "14px 0px 1px 0", 
-        marginLeft: "5px",  
-        marginRight: "5px",                            
+        padding: "14px 0 1px 0", 
+        marginLeft: "5px",                              
         display: "flex", 
         overflow: "hidden", 
         maxHeight: "100%", 
@@ -128,7 +129,7 @@ const useStyles = makeStyles((theme) => ({
         height: 70,                       
         backgroundColor: "#F9F9FA", 
         padding: "14px 0 1px 0", 
-        marginLeft: "0px",                          
+        marginLeft: "21px",                          
         display: "flex", 
         overflow: "hidden", 
         maxHeight: "100%", 
@@ -172,7 +173,7 @@ const useStyles = makeStyles((theme) => ({
     },
     oportunityList: {
         background: '#F9F9FA',               
-        marginRight: '0',
+        marginRight: '1rem',
         marginLeft: '0.3rem',
         padding: '0 0.6rem 0.5rem 0.6rem',  
         borderTopLeftRadius: '0px',
@@ -1209,105 +1210,46 @@ const CRM: FC = () => {
                         />
                     }
                     <div style= {{borderRadius:'2rem'}}>                  
-                        <div className={classes.columnsTitles}>     
-                            <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 410 }}>
+                        <div className={classes.columnsTitles}>    
+
+                             {/*Nuevo - Titulo*/}
+                            <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 400 }}>
                                 <div className={classes.greyPart}>
+
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center'}}>
                                         <div style={{paddingTop:'4px'}}>
                                             {t(langKeys.new)}
-                                        </div>                         
-                                    </div>                                
+                                        </div>                           
+                                    </div>                                 
+
                                 </div>                       
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 9 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
+                            {/*Calificado - Titulo*/}    
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
-                                        <div style={{paddingTop:'4px', paddingLeft:'15.5rem'}}> {t(langKeys.qualified)} </div>  
-                                        
-                                        <div style={{ margin: '0 0 0 12rem', width: '3rem', padding: '0' }}>
-
-                                            <Tooltip title={t(langKeys.addacolumn)} arrow placement="top">
-                                                <IconButton
-                                                    color="secondary"
-                                                    style={{ padding: '5px' }}
-                                                    onClick={handleClick}
-                                                >                                             
-                                                    <AddCircleRounded />                                                                                     
-                                                </IconButton>
-                                            </Tooltip>
-
-                                            <AddColumnPopover
-                                                id={id}
-                                                anchorEl={anchorEl}
-                                                onClose={handleClose}
-                                                onSubmit={(data) => { 
-                                                    console.log('Data from Popover:', data);
-                                                    handleClose(); 
-                                                }}
-                                            />
-                                        </div>       
-
+                                        <div style={{paddingTop:'4px'}}> {t(langKeys.qualified)} </div>                          
                                     </div>   
                                 </div>                        
                             </div>                    
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 9 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
+                            {/*Propuesto - Titulo*/}    
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                                        <div style={{paddingTop:'4px', paddingLeft:'5.5rem'}}> {t(langKeys.proposition)} </div>  
-                                            <div style={{ margin: '0 0 0 2rem', width: '3rem', padding: '0' }}>
-
-                                                <Tooltip title={t(langKeys.addacolumn)} arrow placement="top">
-                                                    <IconButton
-                                                        color="secondary"
-                                                        style={{ padding: '5px' }}
-                                                        onClick={handleClick}
-                                                    >                                             
-                                                        <AddCircleRounded />                                                                                     
-                                                    </IconButton>
-                                                </Tooltip>
-
-                                                <AddColumnPopover
-                                                    id={id}
-                                                    anchorEl={anchorEl}
-                                                    onClose={handleClose}
-                                                    onSubmit={(data) => { 
-                                                        console.log('Data from Popover:', data);
-                                                        handleClose(); 
-                                                    }}
-                                                />
-                                            </div>                       
+                                        <div style={{paddingTop:'4px'}}> {t(langKeys.proposition)} </div>                           
                                     </div> 
                                 </div>                       
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 9 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
+                            {/*Calificado - Titulo*/}    
+                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                                        <div style={{paddingTop:'4px', paddingLeft:'6rem'}}> {t(langKeys.won)} </div>       
-                                            
-                                            <div style={{ margin: '0 0 0 3rem', width: '3rem', padding: '0' }}>
-                                                <Tooltip title={t(langKeys.addacolumn)} arrow placement="top">
-                                                    <IconButton
-                                                        color="secondary"
-                                                        style={{ padding: '5px' }}
-                                                        onClick={handleClick}
-                                                    >                                             
-                                                        <AddCircleRounded />                                                                                     
-                                                    </IconButton>
-                                                </Tooltip>
-
-                                                <AddColumnPopover
-                                                    id={id}
-                                                    anchorEl={anchorEl}
-                                                    onClose={handleClose}
-                                                    onSubmit={(data) => { 
-                                                        console.log('Data from Popover:', data);
-                                                        handleClose(); 
-                                                    }}
-                                                />
-                                            </div>                         
+                                        <div style={{paddingTop:'4px'}}> {t(langKeys.won)} </div>                         
                                     </div>  
                                 </div>                        
                             </div>
+
+
                         </div>                   
                         <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>               
                             <Droppable droppableId="all-columns" direction="horizontal" type="column" >                    
@@ -1516,6 +1458,91 @@ const CRM: FC = () => {
                         initialEndDate={params.endDate}
                         initialStartDate={params.startDate}                      
                         initialPageIndex={params.page}
+                        ButtonsElement={() => (  
+                            <>
+                                  
+                            {/*
+                                     
+                               
+                                <div style={{ display: 'flex', gap: 8 }}></div>
+                                {!isIncremental &&
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"                                           
+                                            startIcon={<ArrowDownwardIcon color="primary" />}					
+                                            style={{ marginLeft: 'auto', marginLeft: '1rem'    }}
+                                        >
+                                            <Trans i18nKey={langKeys.download} />
+                                        </Button>
+
+                                        <IconButton
+                                            aria-label="more"
+                                            id="long-button"
+                                            onClick={handleClickSeButtons}
+                                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+
+                                        >
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                        <Popper
+                                            open={openSeButtons}
+                                            anchorEl={anchorElSeButtons}
+                                            placement="bottom-start"
+                                            transition
+                                            style={{marginRight:'1rem'}}
+                                        >
+                                            {({ TransitionProps }) => (
+                                                <Paper {...TransitionProps} elevation={3}>
+
+                                                    <MenuItem 
+                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
+                                                    </MenuItem>
+
+                                                    <Divider />
+
+                                                    <MenuItem 
+                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
+                                                    </MenuItem>
+
+                                                    <Divider />
+
+                                                    <MenuItem 
+                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
+                                                    </MenuItem>
+
+                                                </Paper>
+                                            )}
+                                        </Popper>
+                                    </div>     
+                                }  
+                                               
+                           
+                            */}                 
+                           </> 
+                        )}
+                       
                     />
                     {gridModal.name === 'ACTIVITY' && <NewActivityModal
                         gridModalProps={gridModal}

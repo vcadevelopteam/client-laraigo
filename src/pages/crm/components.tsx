@@ -839,7 +839,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                     }}
                 />
 
-                {/*
+          
                  <Button
 					variant="outlined"
 					color="primary"
@@ -850,7 +850,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 				>                    
 					<Trans i18nKey={langKeys.addacolumn} />
 				</Button>
-                */}
+       
           
 				<Button
 					variant="outlined"
