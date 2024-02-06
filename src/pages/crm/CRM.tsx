@@ -10,11 +10,11 @@ import paths from "common/constants/paths";
 import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { DialogZyx, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
-import { Button, Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
+import { Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -25,7 +25,6 @@ import { WhatsappIcon } from "icons";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 const isIncremental = window.location.href.includes("incremental")
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 
 interface dataBackend {
@@ -1044,17 +1043,7 @@ const CRM: FC = () => {
     const handleClickSeButtons = (event: Dictionary) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
-    };    
-
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-    const open = Boolean(anchorEl);
-    const id = open ? "crm-add-new-column-popover" : undefined;
+    };      
 
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -1364,6 +1353,7 @@ const CRM: FC = () => {
 
                     <div className={classes.containerFilter}>                        
                         <div style={{ display: 'flex', gap: 8 }}></div>
+                  
                         {!isIncremental &&
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <IconButton
@@ -1371,62 +1361,58 @@ const CRM: FC = () => {
                                     id="long-button"
                                     onClick={handleClickSeButtons}
                                     style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-
                                 >
                                     <MoreVertIcon />
                                 </IconButton>
                                 <Popper
                                     open={openSeButtons}
                                     anchorEl={anchorElSeButtons}
-                                    placement="bottom-start"
+                                    placement="bottom"
                                     transition
                                     style={{marginRight:'1rem'}}
                                 >
                                     {({ TransitionProps }) => (
-                                    <Paper {...TransitionProps} elevation={3}>
+                                        <Paper {...TransitionProps} elevation={30}>
 
-                                        <MenuItem 
-                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                            onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
-                                        >
-                                            <ListItemIcon>
-                                                <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                            </ListItemIcon>
-                                            <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
-                                        </MenuItem>
-
-                                        <Divider />
-
-                                        <MenuItem 
-                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                            onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
-                                        >
-                                            <ListItemIcon>
-                                                <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                            </ListItemIcon>
-                                            <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
-                                        </MenuItem>
-
-                                        <Divider />
-
-                                        <MenuItem 
-                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                            onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
-                                        >
-                                            <ListItemIcon>
-                                                <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                            </ListItemIcon>
-                                            <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
-                                        </MenuItem>
-
-                                    </Paper>
+                                            <MenuItem 
+                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
+                                            >
+                                                <ListItemIcon>
+                                                    <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                                </ListItemIcon>
+                                                <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
+                                            </MenuItem>
+                                            <Divider />
+                                            <MenuItem 
+                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
+                                            >
+                                                <ListItemIcon>
+                                                    <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                </ListItemIcon>
+                                                <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
+                                            </MenuItem>
+                                            <Divider />
+                                            <MenuItem 
+                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
+                                            >
+                                                <ListItemIcon>
+                                                    <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                </ListItemIcon>
+                                                <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
+                                            </MenuItem>
+                                        </Paper>
                                     )}
                                 </Popper>
                             </div>     
-                        }                                          
+                        }                        
+                     
+                                                            
                     </div>                    
                     
                     <TablePaginated
@@ -1460,86 +1446,31 @@ const CRM: FC = () => {
                         initialPageIndex={params.page}
                         ButtonsElement={() => (  
                             <>
-                                  
-                            {/*
-                                     
-                               
+                                
                                 <div style={{ display: 'flex', gap: 8 }}></div>
-                                {!isIncremental &&
-                                    <div style={{ display: 'flex', gap: 8 }}>
-                                        <Button
+                                {!isIncremental &&                                           
+                                    <div>
+                                         {/*
+                                                   <Button
                                             variant="outlined"
                                             color="primary"                                           
                                             startIcon={<ArrowDownwardIcon color="primary" />}					
-                                            style={{ marginLeft: 'auto', marginLeft: '1rem'    }}
-                                        >
+                                            style={{ marginLeft: 'auto' }}
+                                            //onClick={() => exportExcel()}
+                                            >
                                             <Trans i18nKey={langKeys.download} />
                                         </Button>
-
+                                            */}
                                         <IconButton
                                             aria-label="more"
                                             id="long-button"
                                             onClick={handleClickSeButtons}
                                             style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-
                                         >
                                             <MoreVertIcon />
                                         </IconButton>
-                                        <Popper
-                                            open={openSeButtons}
-                                            anchorEl={anchorElSeButtons}
-                                            placement="bottom-start"
-                                            transition
-                                            style={{marginRight:'1rem'}}
-                                        >
-                                            {({ TransitionProps }) => (
-                                                <Paper {...TransitionProps} elevation={3}>
-
-                                                    <MenuItem 
-                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
-                                                    </MenuItem>
-
-                                                    <Divider />
-
-                                                    <MenuItem 
-                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
-                                                    </MenuItem>
-
-                                                    <Divider />
-
-                                                    <MenuItem 
-                                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                        onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
-                                                    </MenuItem>
-
-                                                </Paper>
-                                            )}
-                                        </Popper>
-                                    </div>     
-                                }  
-                                               
-                           
-                            */}                 
+                                    </div>
+                                }                                                    
                            </> 
                         )}
                        
