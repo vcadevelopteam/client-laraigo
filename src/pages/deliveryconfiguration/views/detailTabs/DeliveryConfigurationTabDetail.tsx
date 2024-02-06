@@ -81,6 +81,11 @@ interface ConfigurationTabDetailProps {
     fetchVehicles: () => void;
 }
 
+interface RowSelected {
+    row2: Dictionary | null;
+    edit: boolean;
+}
+
 const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({  
     setOpenModalNonWorkingDays,
     setOpenModalNonWorkingDaysCopy,
@@ -121,6 +126,21 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const mainConfig = useSelector(state => state.main.execute);
     const mainVehicles = useSelector(state => state.main.mainAux);
 
+    const [selectedRow, setSelectedRow] = useState<RowSelected>({
+        row2: null,
+        edit: false,
+    });
+
+    const handleEdit = (row2: Dictionary) => {   
+        setSelectedRow({ row2, edit: true });
+        setOpenModalAssociatedVehicleDialog(true)
+    }
+
+    function handleRegister() {
+        setSelectedRow({row2: null, edit: false})
+        setOpenModalAssociatedVehicleDialog(true)
+    }
+
     useEffect(() => {
         fetchConfiguration()
         fetchVehicles()
@@ -129,7 +149,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const columns = React.useMemo(
         () => [
           {
-            accessor: 'productalternativeid',
+            accessor: 'deliveryvehicleid',
             NoFilter: true,
             disableGlobalFilter: true,
             isComponent: true,
@@ -139,60 +159,60 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 const row = props.cell.row.original;
                 return (
                     <TemplateIcons
-                        //deleteFunction={() => handleDelete(row)}
-                        //editFunction={() => handleEdit(row)}
+                        deleteFunction={() => handleEdit(row)}
+                        editFunction={() => handleEdit(row)}
                     />
                 )
             }
           },
           {
             Header: t(langKeys.organization),
-            accessor: "productdescription",
+            accessor: "createdate",
             width: "auto",
           },
           {
             Header: t(langKeys.vehicletype),
-            accessor: "productdescriptionlarge",
+            accessor: "type",
             width: "auto",
           },
           {
             Header: t(langKeys.brand),
-            accessor: "familydescription",
+            accessor: "brand",
             width: "auto",
           },
           {
             Header: t(langKeys.model),
-            accessor: "subfamilydescription",
+            accessor: "model",
             width: "auto",
           },
           {
             Header: t(langKeys.platenum),
-            accessor: "dateofphysicalcount",
+            accessor: "vehicleplate",
             width: "auto",
           },
           {
             Header: t(langKeys.capacity),
-            accessor: "isconciliated",
+            accessor: "ability",
             width: "auto",
           },
           {
             Header: t(langKeys.averagespeed),
-            accessor: "shelflifeindays",
+            accessor: "averagespeed",
             width: "auto",
           },
           {
             Header: t(langKeys.insuredamount),
-            accessor: "dueDate",
+            accessor: "insuredamount",
             width: "auto",
           },
           {
             Header: t(langKeys.carriername),
-            accessor: "carriername",
+            accessor: "userid",
             width: "auto",
           },
           {
             Header: t(langKeys.licensenum),
-            accessor: "licensenum",
+            accessor: "license",
             width: "auto",
           },
         ],
@@ -479,7 +499,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                     </div>                  
                     <AssociatedVehicleDialog
                         openModal={openModalAssociatedVehicleDialog}
-                        setOpenModal={setOpenModalAssociatedVehicleDialog}
+                        setOpenModal={setOpenModalAssociatedVehicleDialog}    
+                        data={selectedRow}   
+                        fetchVehicles={fetchVehicles}                 
                     />
                 </div>
                 <div className='row-zyx'>                
@@ -489,7 +511,8 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         download={false}
                         filterGeneral={false}
                         register={true}
-                        handleRegister={setOpenModalAssociatedVehicleDialog}
+                        handleRegister={handleRegister}
+                        onClickRow={handleEdit}
                     />
                 </div>
             </div>
