@@ -142,7 +142,7 @@ const useStyles = makeStyles((theme) => ({
     columnsTitles: {
         display: "flex", 
         color: "white", 
-        paddingTop: 20, 
+        paddingTop: 10, 
         fontSize: "20px", 
         fontWeight: "bold" 
     },
@@ -1199,8 +1199,7 @@ const CRM: FC = () => {
                         />
                     }
                     <div style= {{borderRadius:'2rem'}}>                  
-                        <div className={classes.columnsTitles}>    
-
+                        <div className={classes.columnsTitles}>   
                              {/*Nuevo - Titulo*/}
                             <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 400 }}>
                                 <div className={classes.greyPart}>
@@ -1213,7 +1212,7 @@ const CRM: FC = () => {
 
                                 </div>                       
                             </div>
-                            {/*Calificado - Titulo*/}    
+                            {/*Calificado - Calificado*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
@@ -1221,7 +1220,7 @@ const CRM: FC = () => {
                                     </div>   
                                 </div>                        
                             </div>                    
-                            {/*Propuesto - Titulo*/}    
+                            {/*Propuesto - Propuesto*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
@@ -1229,7 +1228,7 @@ const CRM: FC = () => {
                                     </div> 
                                 </div>                       
                             </div>
-                            {/*Calificado - Titulo*/}    
+                            {/*Calificado - Ganado*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
@@ -1237,8 +1236,6 @@ const CRM: FC = () => {
                                     </div>  
                                 </div>                        
                             </div>
-
-
                         </div>                   
                         <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>               
                             <Droppable droppableId="all-columns" direction="horizontal" type="column" >                    
