@@ -12,12 +12,13 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
-import { resetMainAux } from 'store/main/actions';
+import { getCollection, getCollectionAux, resetMainAux } from 'store/main/actions';
 import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
 import NonWorkingDaysCopyDialog from '../dialogs/NonWorkingDaysDialog copy';
+import { deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -54,6 +55,9 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         { id: "main-view", name: t(langKeys.delivery) },
         { id: "detail-view", name: t(langKeys.configuration) },
     ];
+
+    const fetchConfiguration = () => dispatch(getCollection(deliveryConfigurationSel({id: 0, all: true})));
+    const fetchVehicles = () => dispatch(getCollectionAux(deliveryVehicleSel({id: 0, all: true})));
     
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -151,6 +155,8 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
                     setOpenModalVehicleType={setOpenModalVehicleType}
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
+                    fetchConfiguration={fetchConfiguration}
+                    fetchVehicles={fetchVehicles}
                 />
 
                 <VehicleTypeDialog

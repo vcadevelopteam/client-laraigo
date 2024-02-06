@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AssociatedVehicleDialog from '../../dialogs/AssociatedVehicleDialog';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { CellProps } from 'react-table';
+import { useSelector } from 'hooks';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -76,6 +77,8 @@ interface ConfigurationTabDetailProps {
     setOpenModalDeliveryShifts: (flag: boolean) => void;
     setOpenModalVehicleType: (flag: boolean) => void;
     setOpenModalDeliveryOrderPhoto: (flag: boolean) => void;
+    fetchConfiguration: () => void;
+    fetchVehicles: () => void;
 }
 
 const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({  
@@ -83,7 +86,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     setOpenModalNonWorkingDaysCopy,
     setOpenModalDeliveryShifts,
     setOpenModalVehicleType,
-    setOpenModalDeliveryOrderPhoto    
+    setOpenModalDeliveryOrderPhoto,
+    fetchConfiguration,
+    fetchVehicles,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -113,6 +118,13 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const [friday, setFriday] = useState(true);
     const [saturday, setSaturday] = useState(false);
     const [sunday, setSunday] = useState(true);
+    const mainConfig = useSelector(state => state.main.execute);
+    const mainVehicles = useSelector(state => state.main.mainAux);
+
+    useEffect(() => {
+        fetchConfiguration()
+        fetchVehicles()
+    }, [])
 
     const columns = React.useMemo(
         () => [
@@ -473,7 +485,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 <div className='row-zyx'>                
                     <TableZyx
                         columns={columns}
-                        data={[]}
+                        data={mainVehicles.data || []}
                         download={false}
                         filterGeneral={false}
                         register={true}
