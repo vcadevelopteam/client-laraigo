@@ -5788,6 +5788,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billig_cash: 'Efectivo',
   billing_iva: 'IVA',
   billing_paymentcardnotvalid: "Esta tarjeta no es válida para este medio de pago",
+  executingUser: "Usuario que ejecuta",
+  executingUserProfile: "Perfil de Usuario que Ejecuta",
+  groupedBy: "Agrupado Por",
+  showHideColumns: "Mostrar/Ocultar Columnas",
 };
 
 const esResource: ResourceLanguage = {

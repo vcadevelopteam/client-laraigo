@@ -5,20 +5,21 @@ import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignRe
 import { Dictionary, IFetchData } from "@types";
 import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker, FieldMultiSelect } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { DownloadIcon } from 'icons';
-import { Button } from '@material-ui/core';
+import { DownloadIcon, WhatsappIcon } from 'icons';
+import { Button, Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
-
-
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import AllInboxIcon from '@material-ui/icons/AllInbox'; 
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 interface DetailProps {
     setViewSelected?: (view: string) => void;
     externalUse?: boolean;
@@ -47,6 +48,9 @@ const useStyles = makeStyles(() => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    filterComponent: {
+        width: '180px'
+      },
 }));
 
 const dataReportType = {
@@ -147,6 +151,16 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     const { executiontype } = props.cell.row.original;
                     return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }
+            },
+            {
+                Header: t(langKeys.executingUser),
+                accessor: 'campaignid',
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.executingUserProfile),
+                accessor: 'datetimestart',           
+                Cell: cell
             },
             {
                 Header: t(langKeys.total),
@@ -256,12 +270,10 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'contact', alias: t(langKeys.contact)},
                     {key: 'template', alias: t(langKeys.templatename)},
                     {key: 'rundate', alias: t(langKeys.rundate)},
-                    {key: 'runtime', alias: t(langKeys.runtime)},
+                    {key: 'executingUser', alias: t(langKeys.executingUser)},
+                    {key: 'datetimestart', alias: t(langKeys.executingUserProfile)},                 
                     {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
-                    {key: 'finishdate', alias: t(langKeys.finishconversationdate)},
-                    {key: 'finishtime', alias: t(langKeys.finishconversationtime)},
-                    {key: 'realduration', alias: t(langKeys.realduration)},
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
                     {key: 'classification', alias: t(langKeys.classification)},
                     {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
@@ -310,6 +322,25 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         }
     };
 
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [openSeButtons, setOpenSeButtons] = useState(false);
+    const handleClickSeButtons = (event: Dictionary) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+    };   
+
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+    const handleOpenGroupedByModal = () => {
+        setGroupedByModalOpen(true);
+    };
+      
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
+    const handleOpenShowColumnsModal = () => {
+        setShowColumnsModalOpen(true);
+    };
+
+ 
+
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -339,10 +370,65 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             settotalrow(mainPaginated.count);
             dispatch(showBackdrop(false));
         }
-    }, [mainPaginated]);
+    }, [mainPaginated]);    
 
-    const ButtonsElement = () => {
-        return (
+   
+    return (
+        <div style={{ width: '100%' }}>
+            {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={setViewSelected}
+                    />
+                    <TitleDetail
+                        title={t(langKeys.report)}
+                    />
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => setViewSelected && setViewSelected("view-1")}
+                    >{t(langKeys.back)}</Button>
+                </div>
+            </div>}
+            {externalUse && <div style={{ height: 10 }}></div>}
+
+            {isGroupedByModalOpen && (
+                <DialogZyx 
+                    open={isGroupedByModalOpen} 
+                    title={t(langKeys.groupedBy)} 
+                    buttonText1={t(langKeys.close)}
+                    buttonText2={t(langKeys.apply) }
+                    handleClickButton1={() => setGroupedByModalOpen(false)}                    
+                    handleClickButton2={()=> setGroupedByModalOpen(false)}
+                    maxWidth="sm"
+                    buttonStyle1={{marginBottom:'0.3rem'}}
+                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                >                     
+                    {/* Falta */}
+                </DialogZyx>
+            )}
+
+            {isShowColumnsModalOpen && (
+                <DialogZyx 
+                    open={isShowColumnsModalOpen} 
+                    title={t(langKeys.showHideColumns)} 
+                    buttonText1={t(langKeys.close)}
+                    buttonText2={t(langKeys.apply) }
+                    handleClickButton1={() => setShowColumnsModalOpen(false)}                    
+                    handleClickButton2={()=> setShowColumnsModalOpen(false)}
+                    maxWidth="sm"
+                    buttonStyle1={{marginBottom:'0.3rem'}}
+                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                >                     
+                    {/* Falta */}
+                </DialogZyx>
+            )}
+
             <div style={{ width: '100%', display: 'flex'  }}>                 
                 
                 <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
@@ -360,6 +446,14 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                             {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                         </Button>
                     </DateRangePicker>
+                    <FieldSelect
+                        variant="outlined"
+                        label={t(langKeys.channel)}
+                        className={classes.filterComponent}
+                        data={[]}
+                        optionDesc={'communicationchanneldesc'}
+                        optionValue={'communicationchannelid'}
+                    />
                     <Button
                         disabled={mainPaginated.loading}
                         variant="contained"
@@ -367,8 +461,10 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                         startIcon={<SearchIcon style={{ color: 'white' }} />}
                         style={{ width: 120, backgroundColor: "#55BD84" }}
                         onClick={() => fetchData(fetchDataAux)}
-                    >{t(langKeys.search)}
+                    >   {t(langKeys.search)}
                     </Button>
+                   
+
                 </div> 
 
                 <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
@@ -395,39 +491,71 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                         </Button>
                         
                 </div>
+                
+                <div>
+                <div style={{ display: 'flex', gap: 8 }}></div>
+                                                                        
+                    <div>
+
+                        <IconButton
+                            aria-label="more"
+                            id="long-button"
+                            onClick={handleClickSeButtons}
+                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                        >
+                            <MoreVertIcon />
+                        </IconButton>
+
+                        <div style={{ display: 'flex', gap: 8 }}>                               
+                            <Popper
+                                open={openSeButtons}
+                                anchorEl={anchorElSeButtons}
+                                placement="bottom"
+                                transition
+                                style={{marginRight:'1rem'}}
+                            >
+                                {({ TransitionProps }) => (
+                                    <Paper {...TransitionProps} elevation={5}>
+
+                                        <MenuItem 
+                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                            onClick={handleOpenGroupedByModal}
+                                        >
+                                            <ListItemIcon>
+                                                <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                            </ListItemIcon>
+                                            <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                        </MenuItem>
+                                        <Divider />
+
+                                        <MenuItem 
+                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                            onClick={handleOpenShowColumnsModal}                                           
+                                        >
+                                            <ListItemIcon>
+                                                <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                            </ListItemIcon>
+                                            <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                        </MenuItem>   
+
+                                    </Paper>
+                                )}
+                            </Popper>
+                        </div>     
+                                              
+                    </div>
+                                                  
+                    
+                </div>
                    
                 
               
             </div>
-        )
-    }
-
-    return (
-        <div style={{ width: '100%' }}>
-            {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={setViewSelected}
-                    />
-                    <TitleDetail
-                        title={t(langKeys.report)}
-                    />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected && setViewSelected("view-1")}
-                    >{t(langKeys.back)}</Button>
-                </div>
-            </div>}
-            {externalUse && <div style={{ height: 10 }}></div>}
             
             <div style={{width:'100%', height:'100%'}}>        
-                <ButtonsElement/>
+             
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}

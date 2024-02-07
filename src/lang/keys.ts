@@ -5774,6 +5774,10 @@ export const langKeys = {
   billig_cash: 'billig_cash',
   billing_iva: 'billing_iva',
   billing_paymentcardnotvalid: "billing_paymentcardnotvalid",
+  executingUser: "executingUser",
+  executingUserProfile: "executingUserProfile",
+  groupedBy: "groupedBy",
+  showHideColumns: "showHideColumns",
 };
 
 export type LangKeys = typeof langKeys;
