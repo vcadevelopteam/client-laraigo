@@ -34,7 +34,7 @@ export interface TableConfig {
   calculate?: boolean;
   handleCalculate?(param: any): void;
   HeadComponent?: () => JSX.Element | null;
-  ButtonsElement?: ReactElement;
+  ButtonsElement?: (() => JSX.Element) | ReactElement;
   FiltersElement?: ReactElement;
   pageSizeDefault?: number;
   filterGeneral?: boolean;

@@ -1198,9 +1198,9 @@ const CRM: FC = () => {
                             orderby={mainMulti?.data[9]?.data} 
                         />
                     }
+
                     <div style= {{borderRadius:'2rem'}}>                  
                         <div className={classes.columnsTitles}>   
-                             {/*Nuevo - Titulo*/}
                             <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 400 }}>
                                 <div className={classes.greyPart}>
 
@@ -1212,7 +1212,6 @@ const CRM: FC = () => {
 
                                 </div>                       
                             </div>
-                            {/*Calificado - Calificado*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
@@ -1220,7 +1219,6 @@ const CRM: FC = () => {
                                     </div>   
                                 </div>                        
                             </div>                    
-                            {/*Propuesto - Propuesto*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
@@ -1228,7 +1226,6 @@ const CRM: FC = () => {
                                     </div> 
                                 </div>                       
                             </div>
-                            {/*Calificado - Ganado*/}    
                             <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
@@ -1348,69 +1345,7 @@ const CRM: FC = () => {
                         </DialogZyx>   
                     </div> 
 
-                    <div className={classes.containerFilter}>                        
-                        <div style={{ display: 'flex', gap: 8 }}></div>
-                  
-                        {!isIncremental &&
-                            <div style={{ display: 'flex', gap: 8 }}>
-                                <IconButton
-                                    aria-label="more"
-                                    id="long-button"
-                                    onClick={handleClickSeButtons}
-                                    style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                                >
-                                    <MoreVertIcon />
-                                </IconButton>
-                                <Popper
-                                    open={openSeButtons}
-                                    anchorEl={anchorElSeButtons}
-                                    placement="bottom"
-                                    transition
-                                    style={{marginRight:'1rem'}}
-                                >
-                                    {({ TransitionProps }) => (
-                                        <Paper {...TransitionProps} elevation={30}>
-
-                                            <MenuItem 
-                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
-                                            >
-                                                <ListItemIcon>
-                                                    <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                                </ListItemIcon>
-                                                <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
-                                            </MenuItem>
-                                            <Divider />
-                                            <MenuItem 
-                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
-                                            >
-                                                <ListItemIcon>
-                                                    <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                </ListItemIcon>
-                                                <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
-                                            </MenuItem>
-                                            <Divider />
-                                            <MenuItem 
-                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
-                                            >
-                                                <ListItemIcon>
-                                                    <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                </ListItemIcon>
-                                                <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
-                                            </MenuItem>
-                                        </Paper>
-                                    )}
-                                </Popper>
-                            </div>     
-                        }                        
-                     
-                                                            
-                    </div>                    
+                                 
                     
                     <TablePaginated
                         columns={columns}
@@ -1441,22 +1376,72 @@ const CRM: FC = () => {
                         initialEndDate={params.endDate}
                         initialStartDate={params.startDate}                      
                         initialPageIndex={params.page}
-                        ButtonsElement={<>
-							<div style={{ display: 'flex', gap: 8 }}></div>
-							{!isIncremental &&                                           
-								<div>
-									<IconButton
-										aria-label="more"
-										id="long-button"
-										onClick={handleClickSeButtons}
-										style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-									>
-										<MoreVertIcon />
-									</IconButton>
-								</div>
-							}                                                    
-					   </> }
-                       
+                        ButtonsElement={
+                            <>
+                                <div style={{ display: 'flex', gap: 8 }}></div>
+                                {!isIncremental &&                                           
+                                    <div>
+                                        <IconButton
+                                            aria-label="more"
+                                            id="long-button"
+                                            onClick={handleClickSeButtons}
+                                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                                        >
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                        {!isIncremental &&
+                                            <div style={{ display: 'flex', gap: 8 }}>                               
+                                                <Popper
+                                                    open={openSeButtons}
+                                                    anchorEl={anchorElSeButtons}
+                                                    placement="bottom"
+                                                    transition
+                                                    style={{marginRight:'1rem'}}
+                                                >
+                                                    {({ TransitionProps }) => (
+                                                        <Paper {...TransitionProps} elevation={30}>
+
+                                                            <MenuItem 
+                                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                                                </ListItemIcon>
+                                                                <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
+                                                            </MenuItem>
+                                                            <Divider />
+                                                            <MenuItem 
+                                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                                </ListItemIcon>
+                                                                <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
+                                                            </MenuItem>
+                                                            <Divider />
+                                                            <MenuItem 
+                                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                                </ListItemIcon>
+                                                                <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
+                                                            </MenuItem>
+                                                        </Paper>
+                                                    )}
+                                                </Popper>
+                                            </div>     
+                                        }                       
+                                    </div>
+                                }                                                    
+                            </> 
+                        }                       
                     />
                     {gridModal.name === 'ACTIVITY' && <NewActivityModal
                         gridModalProps={gridModal}
@@ -1477,4 +1462,5 @@ const CRM: FC = () => {
         </div>
     );
 };
+
 export default CRM;
