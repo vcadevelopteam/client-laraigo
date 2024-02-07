@@ -1399,7 +1399,7 @@ const CRM: FC = () => {
                                                     style={{marginRight:'1rem'}}
                                                 >
                                                     {({ TransitionProps }) => (
-                                                        <Paper {...TransitionProps} elevation={30}>
+                                                        <Paper {...TransitionProps} elevation={5}>
 
                                                             <MenuItem 
                                                                 disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
