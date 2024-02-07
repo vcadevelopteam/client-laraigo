@@ -6,13 +6,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail } from 'components';
-import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
-import { getCollection, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { getCollection, getCollectionAux } from 'store/main/actions';
 import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
@@ -31,16 +29,7 @@ const useStyles = makeStyles(() => ({
    
 }));
 
-interface RowSelected {
-    row: Dictionary | null;
-    edit: boolean;
-}
-
-interface DetailProps {
-    data: RowSelected;
-}
-
-const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit } }) => {
+const DeliveryConfigurationDetail: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -57,7 +46,7 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         automaticA: false,
         manualA: false,
         predefinedA: false,
-        inmediateA: false,
+        inmediateA: true,
         invoiceD: false,
         shareInvoiceD: false,
         guideD: false,
@@ -71,15 +60,51 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         routingLogic: false,
         insuredLimitR: false,
         capacityR: false,
-        monday: false,
-        tuesday: false,
-        wednesday: false,
-        thursday: false,
-        friday: false,
+        monday: true,
+        tuesday: true,
+        wednesday: true,
+        thursday: true,
+        friday: true,
         saturday: false,
         sunday: false,
-        validationDistance: null,        
+        validationDistance: false,
+        deliveryphoto: false,
     })
+
+    const fetchOriginalConfig = () => {
+        setConfigjson({
+            automaticA: main?.data?.[0]?.config?.automaticA || false,
+            manualA: main?.data?.[0]?.config?.manualA || false,
+            predefinedA: main?.data?.[0]?.config?.predefinedA || false,
+            inmediateA: main?.data?.[0]?.config?.inmediateA || true,
+            invoiceD: main?.data?.[0]?.config?.invoiceD || false,
+            shareInvoiceD: main?.data?.[0]?.config?.shareInvoiceD || false,
+            guideD: main?.data?.[0]?.config?.guideD || false,
+            wspI: main?.data?.[0]?.config?.wspI || false,
+            emailI: main?.data?.[0]?.config?.emailI || false,
+            sendScheduleN: main?.data?.[0]?.config?.sendScheduleN || false,
+            sendDispatchN: main?.data?.[0]?.config?.sendDispatchN || false,
+            smsN: main?.data?.[0]?.config?.smsN || false,
+            wspN: main?.data?.[0]?.config?.wspN || false,
+            emailN: main?.data?.[0]?.config?.emailN || false,
+            routingLogic: main?.data?.[0]?.config?.routingLogic || false,
+            insuredLimitR: main?.data?.[0]?.config?.insuredLimitR || false,
+            capacityR: main?.data?.[0]?.config?.capacityR || false,
+            monday: main?.data?.[0]?.config?.monday || true,
+            tuesday: main?.data?.[0]?.config?.tuesday || true,
+            wednesday: main?.data?.[0]?.config?.wednesday || true,
+            thursday: main?.data?.[0]?.config?.thursday || true,
+            friday: main?.data?.[0]?.config?.friday || true,
+            saturday: main?.data?.[0]?.config?.saturday || false,
+            sunday: main?.data?.[0]?.config?.sunday || false,
+            validationDistance: main?.data?.[0]?.config?.validationDistance || false,
+            deliveryphoto: main?.data?.[0]?.config?.deliveryphoto || false,
+        })
+    } 
+
+    useEffect(() => {
+        fetchOriginalConfig()
+    }, [main.data[0]])
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
@@ -88,35 +113,28 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
 
     const fetchConfiguration = () => dispatch(getCollection(deliveryConfigurationSel({id: 0, all: true})));
     const fetchVehicles = () => dispatch(getCollectionAux(deliveryVehicleSel({id: 0, all: true})));
-    
-    const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            warehouseid: row?.warehouseid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || '',
-            name: row?.name || '',
-            description: row?.description || '',
-            address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            status: row?.status || 'ACTIVO'
-        }
-    });
 
-    const onMainSubmit = (() => {        
-        debugger
+    const onMainSubmit = (() => {
         const existingConfig = main.data[0];
-        console.log('te')
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(deliveryConfigurationIns({
-                id: existingConfig?.deliveryconfigurationid,
-                config: JSON.stringify(configjson),
-                status: 'ACTIVO',
-                type: '',              
-                operation: 'UPDATE',
-            })));
+            if(existingConfig) {
+                dispatch(execute(deliveryConfigurationIns({
+                    id: existingConfig?.deliveryconfigurationid,
+                    config: JSON.stringify(configjson),
+                    status: 'ACTIVO',
+                    type: '',              
+                    operation: 'UPDATE',
+                })));
+            } else {
+                dispatch(execute(deliveryConfigurationIns({
+                    id: 0,
+                    config: JSON.stringify(configjson),
+                    status: 'ACTIVO',
+                    type: '',              
+                    operation: 'INSERT',
+                })));
+            }
             setWaitSave(true);            
         }
         dispatch(manageConfirmation({
@@ -129,8 +147,8 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
+                fetchConfiguration()
                 setWaitSave(false)
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
@@ -141,57 +159,39 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         }
     }, [executeRes, waitSave])
 
-    React.useEffect(() => {
-        register('warehouseid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-
-        dispatch(resetMainAux());
-    }, [register]);
-
     return (
         <>
-            <form onSubmit={onMainSubmit} style={{width: '100%'}}>
+            <form style={{width: '100%'}}>
                 <div className={classes.corporationNameAndButtons}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.name)} ${t(langKeys.corporation)}`}
+                            title={`${t(langKeys.name)} ${t(langKeys.corporation)}`}
                         />
                     </div>
-                    <div  className={classes.corporationNameAndButtons}>
+                    <div className={classes.corporationNameAndButtons}>
                         <Button
                             variant="contained"
                             type="button"
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => fetchOriginalConfig()}
                         >{t(langKeys.back)}</Button>
                         <Button
                             variant="contained"
                             color="primary"
-                            type="submit"
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
-                            onClick={onMainSubmit}
-                        >                            
+                            onClick={() => onMainSubmit()}
+                        >
                             {t(langKeys.save)}
                         </Button>
                     </div>
-
                 </div>
-                
                 <DeliveryConfigurationTabDetail
-                    row={row}
-                    setValue={setValue}
-                    getValues={getValues}
-                    errors={errors}
                     setOpenModalNonWorkingDays={setOpenModalNonWorkingDays}
                     setOpenModalNonWorkingDaysCopy={setOpenModalNonWorkingDaysCopy}
                     setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
@@ -202,7 +202,6 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     setConfigjson={setConfigjson}
                     configjson={configjson}
                 />
-
                 <VehicleTypeDialog
                     openModal={openModalVehicleType}
                     setOpenModal={setOpenModalVehicleType}
