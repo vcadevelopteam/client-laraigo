@@ -49,7 +49,7 @@ const AssociatedVehicleDialog: React.FC<{
             brand: row2?.brand || '',
             model: row2?.model || '',
             vehicleplate: row2?.vehicleplate || '',
-            ability: row2?.ability || 0,           
+            capacity: row2?.capacity || 0,           
             averagespeed: row2?.averagespeed || 0,
             insuredamount: row2?.insuredamount || 0,
             userid: row2?.userid || 0,
@@ -57,8 +57,7 @@ const AssociatedVehicleDialog: React.FC<{
         }
     });
 
-    const onMainSubmit = handleSubmit((data) => {     
-        console.log('te')    
+    const onMainSubmit = handleSubmit((data) => {        
         const callback = () => {
             dispatch(showBackdrop(true));
             if (edit) {
@@ -83,7 +82,7 @@ const AssociatedVehicleDialog: React.FC<{
         register('brand', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('model', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('vehicleplate', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('ability', { validate: (value) => (value && parseFloat(value) > 0) || t(langKeys.field_required) });
+        register('capacity', { validate: (value) => (value && parseFloat(value) > 0) || t(langKeys.field_required) });
         register('insuredamount', { validate: (value) => (value && parseFloat(value) > 0) || t(langKeys.field_required) });
         register('averagespeed', { validate: (value) => (value && parseFloat(value) > 0) || t(langKeys.field_required) });
         register('userid',  { validate: (value) => (value && parseFloat(value) > 0) || t(langKeys.field_required) });
@@ -115,7 +114,7 @@ const AssociatedVehicleDialog: React.FC<{
           setValue('brand', row2.brand)
           setValue('model', row2.model)
           setValue('vehicleplate', row2.vehicleplate)
-          setValue('ability', row2.ability)
+          setValue('capacity', row2.capacity)
           setValue('insuredamount', row2.averagespeed)
           setValue('averagespeed', row2.insuredamount)
           setValue('userid', row2.userid)
@@ -167,9 +166,9 @@ const AssociatedVehicleDialog: React.FC<{
                     label={t(langKeys.capacity)}
                     type="number"
                     className="col-6"
-                    valueDefault={row2?.ability}
-                    onChange={(value)=> setValue('ability', value)}
-                    error={typeof errors?.ability?.message === 'string' ? errors?.ability?.message : ''}
+                    valueDefault={row2?.capacity}
+                    onChange={(value)=> setValue('capacity', value)}
+                    error={typeof errors?.capacity?.message === 'string' ? errors?.capacity?.message : ''}
 
                 />
                 <FieldEdit

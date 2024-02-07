@@ -12,6 +12,11 @@ import AssociatedVehicleDialog from '../../dialogs/AssociatedVehicleDialog';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { CellProps } from 'react-table';
 import { useSelector } from 'hooks';
+import { execute } from "store/main/actions";
+import { deliveryVehicleIns } from 'common/helpers';
+import { showSnackbar,  showBackdrop,  manageConfirmation,} from "store/popus/actions";
+import { useDispatch } from "react-redux";
+
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -51,6 +56,7 @@ interface CustomTitleHelperProps {
     title: string;
     helperText?: string; 
 }
+
   
 const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
     const classes = useStyles();
@@ -79,6 +85,8 @@ interface ConfigurationTabDetailProps {
     setOpenModalDeliveryOrderPhoto: (flag: boolean) => void;
     fetchConfiguration: () => void;
     fetchVehicles: () => void;
+    setConfigjson: (data: any) => void;
+    configjson: Dictionary;
 }
 
 interface RowSelected {
@@ -94,6 +102,8 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     setOpenModalDeliveryOrderPhoto,
     fetchConfiguration,
     fetchVehicles,
+    setConfigjson,
+    configjson
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -119,32 +129,80 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const [monday, setMonday] = useState(true);
     const [tuesday, setTuesday] = useState(true);
     const [wednesday, setWednesday] = useState(true);
-    const [thursday, setThursday] = useState(false);
+    const [thursday, setThursday] = useState(true);
     const [friday, setFriday] = useState(true);
     const [saturday, setSaturday] = useState(false);
-    const [sunday, setSunday] = useState(true);
-    const mainConfig = useSelector(state => state.main.execute);
+    const [sunday, setSunday] = useState(false);   
     const mainVehicles = useSelector(state => state.main.mainAux);
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeResult = useSelector((state) => state.main.execute);
+    const user = useSelector((state) => state.login.validateToken.user);
+    const main = useSelector((state) => state.main.mainData);
 
     const [selectedRow, setSelectedRow] = useState<RowSelected>({
         row2: null,
         edit: false,
     });
 
+    function handleRegister() {
+        setSelectedRow({row2: null, edit: false})
+        setOpenModalAssociatedVehicleDialog(true)
+    }
+
     const handleEdit = (row2: Dictionary) => {   
         setSelectedRow({ row2, edit: true });
         setOpenModalAssociatedVehicleDialog(true)
     }
 
-    function handleRegister() {
-        setSelectedRow({row2: null, edit: false})
-        setOpenModalAssociatedVehicleDialog(true)
+    const handleDelete = (row2: Dictionary) => {   
+        const callback = () => {
+            dispatch(
+              execute(deliveryVehicleIns({ ...row2, id: row2.deliveryvehicleid, operation: "DELETE", status: "ELIMINADO"}))
+            );
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+          };
+      
+          dispatch(
+            manageConfirmation({
+              visible: true,
+              question: t(langKeys.confirmation_delete),
+              callback,
+            })
+          );
     }
 
     useEffect(() => {
         fetchConfiguration()
         fetchVehicles()
     }, [])
+
+    useEffect(() => {
+        if (waitSave) {
+          if (!executeResult.loading && !executeResult.error) {
+            dispatch(
+              showSnackbar({
+                show: true,
+                severity: "success",
+                message: t(langKeys.successful_delete),
+              })
+            );          
+            fetchVehicles();
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+          } else if (executeResult.error) {
+            const errormessage = t(executeResult.code || "error_unexpected_error", {
+              module: t(langKeys.domain).toLocaleLowerCase(),
+            });
+            dispatch(
+              showSnackbar({ show: true, severity: "error", message: errormessage })
+            );
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+          }
+        }
+      }, [executeResult, waitSave]);
 
     const columns = React.useMemo(
         () => [
@@ -159,7 +217,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 const row = props.cell.row.original;
                 return (
                     <TemplateIcons
-                        deleteFunction={() => handleEdit(row)}
+                        deleteFunction={() => handleDelete(row)}
                         editFunction={() => handleEdit(row)}
                     />
                 )
@@ -192,7 +250,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
           },
           {
             Header: t(langKeys.capacity),
-            accessor: "ability",
+            accessor: "capacity",
             width: "auto",
           },
           {
@@ -233,7 +291,10 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     color="primary" 
                                     style={{ pointerEvents: "auto" }} 
                                     checked={automaticAppointment} 
-                                    onChange={(e) => setAutomaticAppointment(e.target.checked)} 
+                                    onChange={(e) => {
+                                        setAutomaticAppointment(e.target.checked)
+                                        setConfigjson({...configjson, automaticA: e.target.checked})
+                                    }} 
                                     name="auto" 
                                 />}
                                 label={t(langKeys.automatic)}
@@ -245,7 +306,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     color="primary" 
                                     style={{ pointerEvents: "auto" }} 
                                     checked={manualAppointment} 
-                                    onChange={(e) => setManualAppointment(e.target.checked)} 
+                                    onChange={(e) => {
+                                        setManualAppointment(e.target.checked)
+                                        setConfigjson({...configjson, manualA: e.target.checked})
+
+                                    }} 
                                     name="man" 
                                 />}
                                 label={t(langKeys.manual)}
@@ -257,7 +322,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                         color="primary" 
                                         style={{ pointerEvents: "auto" }} 
                                         checked={defaultAppointment} 
-                                        onChange={(e) => setDefaultAppointment(e.target.checked)} 
+                                        onChange={(e) => {
+                                            setDefaultAppointment(e.target.checked)
+                                            setConfigjson({...configjson, predefinedA: e.target.checked})
+
+                                        }} 
                                         name="predef" 
                                     />}
                                 label={t(langKeys.default2)}
@@ -268,8 +337,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 <Checkbox 
                                     color="primary" 
                                     style={{ pointerEvents: "visible" }} 
-                                    checked={immediateAppointment} 
-                                    onChange={(e) => setImmediateAppointment(e.target.checked)} 
+                                    checked={immediateAppointment}                                     
+                                    onChange={(e)=>{
+                                        setImmediateAppointment(true)
+                                        setConfigjson({...configjson, inmediateA: true})
+                                    }} 
                                     name="immediate" 
                                 />}
                                 label={t(langKeys.immediate)}
@@ -283,17 +355,37 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={invoiceElectronicTicket} onChange={(e) => setInvoiceElectronicTicket(e.target.checked)} name="sun" />}
+                                control={
+                                    <Checkbox color="primary" style={{ pointerEvents: "auto" }} 
+                                        checked={invoiceElectronicTicket} 
+                                        onChange={(e) => {
+                                            setInvoiceElectronicTicket(e.target.checked)
+                                            setConfigjson({...configjson, invoiceD: e.target.checked})
+                                        }} 
+                                        name="sun" 
+                                    />
+                                }
                                 label={t(langKeys.electronic_ticket_and_invoice)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={shareVoucher} onChange={(e) => setShareVoucher(e.target.checked)} name="mon" />}
+                                control={<Checkbox color="primary" 
+                                style={{ pointerEvents: "auto" }} 
+                                checked={shareVoucher} onChange={(e) => {
+                                    setShareVoucher(e.target.checked)
+                                    setConfigjson({...configjson, shareInvoiceD: e.target.checked})
+                                }} 
+                                name="mon" />}
                                 label={t(langKeys.sharevoucher)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={referralGuide} onChange={(e) => setReferralGuide(e.target.checked)} name="tue" />}
+                                control={<Checkbox color="primary" 
+                                style={{ pointerEvents: "auto" }} checked={referralGuide} 
+                                onChange={(e) => {setReferralGuide(e.target.checked)
+                                    setConfigjson({...configjson, guideD: e.target.checked})
+                                }} 
+                                name="tue" />}
                                 label={t(langKeys.referralguide)}
                             />
                         </FormGroup><></>
@@ -308,12 +400,16 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={whatsapp1} onChange={(e) => setWhatsapp1(e.target.checked)} name="sun" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={whatsapp1} onChange={(e) => {setWhatsapp1(e.target.checked)
+                                    setConfigjson({...configjson, wspI: e.target.checked})
+                                }} name="sun" />}
                                 label={t(langKeys.WHATSAPP)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={email1} onChange={(e) => setEmail1(e.target.checked)} name="mon" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={email1} onChange={(e) => {setEmail1(e.target.checked) 
+                                    setConfigjson({...configjson, emailI: e.target.checked})
+                                }} name="mon" />}
                                 label={t(langKeys.emitteremail)}
                             />
                         </FormGroup><></>
@@ -328,12 +424,16 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sendScheduling} onChange={(e) => setSendScheduling(e.target.checked)} name="sun" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sendScheduling} onChange={(e) => {setSendScheduling(e.target.checked) 
+                                    setConfigjson({...configjson, sendScheduleN: e.target.checked})
+                            }} name="sun" />}
                                 label={t(langKeys.sendduringscheduling)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sendShipment} onChange={(e) => setSendShipment(e.target.checked)} name="mon" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sendShipment} onChange={(e) => {setSendShipment(e.target.checked) 
+                                    setConfigjson({...configjson, sendDispatchN: e.target.checked})
+                            }} name="mon" />}
                                 label={t(langKeys.sendduringshipment)}
                             />
                         </FormGroup><></>
@@ -345,17 +445,23 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sms} onChange={(e) => setSms(e.target.checked)} name="sun" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sms} onChange={(e) => {setSms(e.target.checked)
+                                    setConfigjson({...configjson, smsN: e.target.checked})
+                                }} name="sun" />}
                                 label={t(langKeys.sms)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={whatsapp2} onChange={(e) => setWhatsapp2(e.target.checked)} name="mon" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={whatsapp2} onChange={(e) => {setWhatsapp2(e.target.checked)
+                                    setConfigjson({...configjson, wspN: e.target.checked})
+                                }} name="mon" />}
                                 label={t(langKeys.WHATSAPP)}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={email2} onChange={(e) => setEmail2(e.target.checked)} name="tue" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={email2} onChange={(e) => {setEmail2(e.target.checked)
+                                    setConfigjson({...configjson, emailN: e.target.checked})
+                                }} name="tue" />}
                                 label={t(langKeys.emitteremail)}
                             />
                         </FormGroup><></>
@@ -366,18 +472,24 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         <div style={{display:'flex'}}>
                             <CustomTitleHelper title={t(langKeys.routinglogic)}/>                                
                             <div style={{ width: 6 }} />
-                            <IOSSwitch checked={routingLogic} onChange={(e) => setRoutingLogic(e.target.checked)} name="checkedB" />
+                            <IOSSwitch checked={routingLogic} onChange={(e) => {setRoutingLogic(e.target.checked)
+                                setConfigjson({...configjson, routingLogic: e.target.checked})
+                            }} name="checkedB" />
                         </div>
                         <FormGroup>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={insuredLimit} onChange={(e) => setInsuredLimit(e.target.checked)} name="sun" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={insuredLimit} onChange={(e) => {setInsuredLimit(e.target.checked)
+                                    setConfigjson({...configjson, insuredLimitR: e.target.checked})
+                                }} name="sun" />}
                                 label={t(langKeys.insuredlimit)}
                                 disabled={!routingLogic}
                             />
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={capacity} onChange={(e) => setCapacity(e.target.checked)} name="mon" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={capacity} onChange={(e) => {setCapacity(e.target.checked)
+                                    setConfigjson({...configjson, capacityR: e.target.checked})
+                                }} name="mon" />}
                                 label={t(langKeys.CAPACITY)}
                                 disabled={!routingLogic}
                             />
@@ -405,12 +517,14 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={monday} onChange={(e) => setMonday(e.target.checked)} name="monday" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={monday} onChange={(e) => {setMonday(e.target.checked)
+                                        setConfigjson({...configjson, monday: e.target.checked})}} name="monday" />}
                                     label={t(langKeys.monday)}
                                 />
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto", paddingLeft:"2rem" }} checked={tuesday} onChange={(e) => setTuesday(e.target.checked)} name="motuesdayn" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto", paddingLeft:"2rem" }} checked={friday} onChange={(e) => {setFriday(e.target.checked)
+                                        setConfigjson({...configjson, friday: e.target.checked})}} name="motuesdayn" />}
                                     label={t(langKeys.friday)}
                                 />
                             </div>
@@ -418,12 +532,16 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={wednesday} onChange={(e) => setWednesday(e.target.checked)} name="wednesday" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={tuesday} onChange={(e) => {setTuesday(e.target.checked)
+                                        setConfigjson({...configjson, tuesday: e.target.checked})
+                                    }} name="wednesday" />}
                                     label={t(langKeys.tuesday)}
                                 />
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto", paddingLeft:"1.5rem"}} checked={thursday} onChange={(e) => setThursday(e.target.checked)} name="thursday" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto", paddingLeft:"1.5rem"}} checked={saturday} onChange={(e) => {setSaturday(e.target.checked)
+                                        setConfigjson({...configjson, saturday: e.target.checked})
+                                    }} name="thursday" />}
                                     label={t(langKeys.saturday)}
                                 />
                             </div>
@@ -431,19 +549,25 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                             <div style={{display:'flex'}}>
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={friday} onChange={(e) => setFriday(e.target.checked)} name="friday" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={wednesday} onChange={(e) => {setWednesday(e.target.checked)
+                                        setConfigjson({...configjson, wednesday: e.target.checked})
+                                    }} name="friday" />}
                                     label={t(langKeys.wednesday)}
                                 />
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
-                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={saturday} onChange={(e) => setSaturday(e.target.checked)} name="saturday" />}
+                                    control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sunday} onChange={(e) =>{ setSunday(e.target.checked)
+                                        setConfigjson({...configjson, sunday: e.target.checked})
+                                    }} name="saturday" />}
                                     label={t(langKeys.sunday)}
                                 />
                             </div>
 
                             <FormControlLabel
                                 className={classes.thursdayseparation}                                
-                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sunday} onChange={(e) => setSunday(e.target.checked)} name="sunday" />}
+                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={thursday} onChange={(e) => {setThursday(e.target.checked)
+                                    setConfigjson({...configjson, thursday: e.target.checked})
+                                }} name="sunday" />}
                                 label={t(langKeys.thursday)}
                             />
 
@@ -484,6 +608,8 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 valueDefault={''}
                                 className="col-2"
                                 type='number'
+                                onChange={(value) => setConfigjson({...configjson, validationDistance: value})
+                            }
                             />
                         </div>        
                       

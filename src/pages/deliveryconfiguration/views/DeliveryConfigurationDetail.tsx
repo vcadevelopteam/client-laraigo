@@ -18,7 +18,8 @@ import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
 import NonWorkingDaysCopyDialog from '../dialogs/NonWorkingDaysDialog copy';
-import { deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
+import { deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
+import { execute } from "store/main/actions";
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -50,6 +51,35 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
     const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
+    const main = useSelector((state) => state.main.mainData);
+
+    const [configjson, setConfigjson] = useState({
+        automaticA: false,
+        manualA: false,
+        predefinedA: false,
+        inmediateA: false,
+        invoiceD: false,
+        shareInvoiceD: false,
+        guideD: false,
+        wspI: false,
+        emailI: false,
+        sendScheduleN: false,
+        sendDispatchN: false,
+        smsN: false,
+        wspN: false,
+        emailN: false,
+        routingLogic: false,
+        insuredLimitR: false,
+        capacityR: false,
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        saturday: false,
+        sunday: false,
+        validationDistance: null,        
+    })
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
@@ -74,11 +104,34 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         }
     });
 
+    const onMainSubmit = (() => {        
+        debugger
+        const existingConfig = main.data[0];
+        console.log('te')
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(deliveryConfigurationIns({
+                id: existingConfig?.deliveryconfigurationid,
+                config: JSON.stringify(configjson),
+                status: 'ACTIVO',
+                type: '',              
+                operation: 'UPDATE',
+            })));
+            setWaitSave(true);            
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
+                setWaitSave(false)
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -99,19 +152,6 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
 
         dispatch(resetMainAux());
     }, [register]);
-
-    const onMainSubmit = handleMainSubmit((data) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            //dispatch(execute(insWarehouse(data)));
-            setWaitSave(true);
-        }
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
 
     return (
         <>
@@ -138,7 +178,9 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                             color="primary"
                             type="submit"
                             startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}>
+                            style={{ backgroundColor: "#55BD84" }}
+                            onClick={onMainSubmit}
+                        >                            
                             {t(langKeys.save)}
                         </Button>
                     </div>
@@ -157,6 +199,8 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
                     fetchConfiguration={fetchConfiguration}
                     fetchVehicles={fetchVehicles}
+                    setConfigjson={setConfigjson}
+                    configjson={configjson}
                 />
 
                 <VehicleTypeDialog

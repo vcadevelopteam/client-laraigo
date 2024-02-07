@@ -4128,8 +4128,8 @@ export const deliveryVehicleSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const deliveryVehicleIns = ({ id, status, type, brand, model, vehicleplate, ability, insuredamount, averagespeed, userid, license, operation }: Dictionary) => ({
+export const deliveryVehicleIns = ({ id, status, type, brand, model, vehicleplate, capacity, insuredamount, averagespeed, userid, license, operation }: Dictionary) => ({
     method: "UFN_DELIVERYVEHICLE_INS",
     key: "UFN_DELIVERYVEHICLE_INS",
-    parameters: { id, status, type, brand, model, vehicleplate, ability, insuredamount, averagespeed, userid, license, operation },
+    parameters: { id, status, type, brand, model, vehicleplate, capacity, insuredamount, averagespeed, userid, license, operation },
 });

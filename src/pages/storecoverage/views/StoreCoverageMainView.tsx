@@ -95,7 +95,7 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
-        execute(insStore({ ...row, id: row.storeid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
+        execute(insStore({ ...row, id: row.storeid, coveragearea: JSON.stringify(row.coveragearea), operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" }))
       );
       dispatch(showBackdrop(true));
       setWaitSave(true);
