@@ -77,7 +77,7 @@ const cleanLogsReassignedTask = (interactions: IInteraction[], returnHidden: boo
 
 export const conversation = (state: IState): IState => ({
     ...state,
-    conversationData: { ...state.conversationData, data: null, loading: true, error: false }
+    conversationData: { ...state.conversationData, interactions: [], loading: true, error: false }
 });
 
 export const conversationSuccess = (state: IState, action: IAction): IState => {
@@ -85,7 +85,8 @@ export const conversationSuccess = (state: IState, action: IAction): IState => {
         ...state,
         conversationData: {
             key: action.payload.key,
-            data: action.payload.params || null,
+            interactions: getGroupInteractions(cleanLogsReassignedTask(action.payload.interactions || [], true), false, true),
+            ticket: action.payload.ticket,
             loading: false,
             error: false
         }
@@ -107,41 +108,3 @@ export const conversationReset = (state: IState): IState => ({
     ...state,
     conversationData: initialState.conversationData,
 });
-
-
-
-export const interaction = (state: IState): IState => ({
-    ...state,
-    interactionData: { ...state.interactionData, data: [], loading: true, error: false }
-});
-
-export const interactionSuccess = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        interactionData: {
-            key: action.payload.key,            
-            data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), false, true),
-            count: 0,
-            loading: false,
-            error: false
-        }
-    }
-};
-
-export const interactionFailure = (state: IState, action: IAction): IState => ({
-    ...state,
-    interactionData: {
-        ...state.interactionData,
-        loading: false,
-        error: true,
-        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
-        message: action.payload.message || 'error_unexpected_error',
-    }
-});
-
-export const interactionReset = (state: IState): IState => ({
-    ...state,
-    interactionData: initialState.interactionData,
-});
-
-
