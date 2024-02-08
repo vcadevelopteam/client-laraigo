@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -47,7 +46,10 @@ import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'components/report/ReportRequestSD';
 import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
+import { Checkbox, Divider, FormControlLabel, ListItemIcon, Paper, Popper } from '@material-ui/core';
 const isIncremental = window.location.href.includes("incremental")
+import AllInboxIcon from '@material-ui/icons/AllInbox'; 
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -72,9 +74,7 @@ const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
         flexDirection: 'column',
-        width: '100%',
-        // overflowY: "auto"
-        // flex: 1
+        width: '100%',      
     },
     containerDetails: {
         marginTop: theme.spacing(3)
@@ -138,7 +138,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -159,10 +158,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const columns = React.useMemo(() => reportColumns.map(x => {
         switch (x.proargtype) {
             case "bigint":
@@ -366,7 +363,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         )));
     };
 
-
     const handlerSearchGraphic = (daterange: any, column: string) => {
         setfetchDataAux(prev => ({ ...prev, daterange }));
         dispatch(getMainGraphic(getReportGraphic(
@@ -384,7 +380,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         )));
     }
 
-
     const handleSelected = () => {
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
@@ -395,6 +390,86 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     }
+
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [openSeButtons, setOpenSeButtons] = useState(false);
+
+    const handleClickSeButtons = (event: Dictionary) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+    }; 
+
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+    const handleOpenGroupedByModal = () => {
+        setGroupedByModalOpen(true);
+    };
+
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
+    const handleOpenShowColumnsModal = () => {
+        setShowColumnsModalOpen(true);
+    };
+
+    const [filterEmail, setFilterEmail] = useState(true);
+    const [filterCheckExecutingUser, setFilterCheckExecutingUser] = useState(true);
+    const [filterCheckFirstReplyDate, setFilterCheckFirstReplyDate] = useState(true);
+    const [filterCheckTotal, setFilterCheckTotal] = useState(true);
+    const [filterCheckSatisfactory, setFilterCheckSatisfactory] = useState(true);
+    const [filterCheckSatisfactoryPercent, setFilterCheckSatisfactoryPercent] = useState(true);
+    const [filterCheckFailed, setFilterCheckFailed] = useState(true);
+    const [filterCheckFailedPercent, setFilterCheckFailedPercent] = useState(true);
+    const [filterCheckAttended, setFilterCheckAttended] = useState(true);
+    const [filterCheckLocked, setFilterCheckLocked] = useState(true);
+    const [filterCheckBlacklist, setFilterCheckBlacklist] = useState(true);
+    const [filterBalanced, setFilterBalanced] = useState(true);
+    const [filterTags, setFilterTags] = useState(true);
+    const [filterAgentResponse, setFilterAgentResponse] = useState(true);
+    const [filterSusTime, setFilterSusTime] = useState(true);
+
+    const handleFilterEmail = () => {
+        setFilterEmail((prev) => !prev);
+    };    
+    const handleExecutingUser = () => {
+        setFilterCheckExecutingUser((prev) => !prev);
+    };    
+    const handleFirstReplyDate = () => {
+        setFilterCheckFirstReplyDate((prev) => !prev);
+    };    
+    const handleTotal = () => {
+        setFilterCheckTotal((prev) => !prev);
+    };    
+    const handleSatisfactory = () => {
+        setFilterCheckSatisfactory((prev) => !prev);
+    };    
+    const handleSatisfactoryPercent = () => {
+        setFilterCheckSatisfactoryPercent((prev) => !prev);
+    };    
+    const handleFailed = () => {
+        setFilterCheckFailed((prev) => !prev);
+    };    
+    const handleFailedPercent = () => {
+        setFilterCheckFailedPercent((prev) => !prev);
+    };    
+    const handleAttended = () => {
+        setFilterCheckAttended((prev) => !prev);
+    };
+    const handleLocked = () => {
+        setFilterCheckLocked((prev) => !prev);
+    };    
+    const handleBlacklist = () => {
+        setFilterCheckBlacklist((prev) => !prev);
+    };
+    const handleFilterSusTime = () => {
+        setFilterSusTime((prev) => !prev);
+    };   
+    const handleFilterAgentResponse = () => {
+        setFilterAgentResponse((prev) => !prev);
+    };  
+    const handleFilterBalanced = () => {
+        setFilterBalanced((prev) => !prev);
+    };    
+    const handleFilterTags = () => {
+        setFilterTags((prev) => !prev);
+    };
 
     return (
         <div style={{ width: '100%', display: "flex", flex: 1, flexDirection: "column" }}>
@@ -454,8 +529,311 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                 ))}
                                             </>
                                         )}
-                                        ButtonsElement={() => (
-                                            <Button
+                                        ButtonsElement={
+                                            <>
+                                             <div>
+                                                <IconButton
+                                                    aria-label="more"
+                                                    id="long-button"
+                                                    onClick={handleClickSeButtons}
+                                                    style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                                                >
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                                <Popper
+                                                    open={openSeButtons}
+                                                    anchorEl={anchorElSeButtons}
+                                                    placement="bottom"
+                                                    transition
+                                                    style={{marginRight:'1rem'}}
+                                                >
+                                                    {({ TransitionProps }) => (
+                                                       <Paper {...TransitionProps} elevation={5}>
+
+                                                       <MenuItem 
+                                                           style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                                           onClick={handleOpenGroupedByModal}
+                                                       >
+                                                           <ListItemIcon>
+                                                               <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                                           </ListItemIcon>
+                                                           <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                                       </MenuItem>
+                                                       <Divider />
+                   
+                                                       <MenuItem 
+                                                           style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                           onClick={handleOpenShowColumnsModal}                                           
+                                                       >
+                                                           <ListItemIcon>
+                                                               <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                           </ListItemIcon>
+                                                           <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                                       </MenuItem>   
+                   
+                                                   </Paper>
+                                                    )}
+                                                </Popper>
+                                                {isGroupedByModalOpen && (
+                                                    <DialogZyx 
+                                                        open={isGroupedByModalOpen} 
+                                                        title={t(langKeys.groupedBy)} 
+                                                        buttonText1={t(langKeys.close)}
+                                                        buttonText2={t(langKeys.apply) }
+                                                        handleClickButton1={() => setGroupedByModalOpen(false)}                    
+                                                        handleClickButton2={()=> setGroupedByModalOpen(false)}
+                                                        maxWidth="sm"
+                                                        buttonStyle1={{marginBottom:'0.3rem'}}
+                                                        buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                                                    >                     
+                                                        {/* Falta */}
+                                                    </DialogZyx>
+                                                )}
+                                                {isShowColumnsModalOpen && (
+                                                    <DialogZyx 
+                                                    open={isShowColumnsModalOpen} 
+                                                    title={t(langKeys.showHideColumns)} 
+                                                    buttonText1={t(langKeys.close)}
+                                                    buttonText2={t(langKeys.apply) }
+                                                    handleClickButton1={() => setShowColumnsModalOpen(false)}                    
+                                                    handleClickButton2={()=> setShowColumnsModalOpen(false)}
+                                                    maxWidth="sm"
+                                                    buttonStyle1={{marginBottom:'0.3rem'}}
+                                                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                                                >  
+                                                    <Grid container spacing={1} style={{marginTop:'0.5rem'}}>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterEmail}
+                                                                        onChange={handleFilterEmail}                          
+                                                                        name="executiontype"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.email)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckExecutingUser}
+                                                                        onChange={handleExecutingUser }                          
+                                                                        name="executingUser"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.starttime)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckFirstReplyDate}
+                                                                        onChange={handleFirstReplyDate }                          
+                                                                        name="firstreplydate"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.finishtime)}
+                                                            />
+                                                        </Grid>                   
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckTotal}
+                                                                        onChange={handleTotal }                          
+                                                                        name="total"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.ticket_fechahandoff)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckSatisfactory}
+                                                                        onChange={handleSatisfactory }                          
+                                                                        name="satisfactory"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_derivationtime)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckSatisfactoryPercent}
+                                                                        onChange={handleSatisfactoryPercent }                          
+                                                                        name="satisfactory_percent"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_firstinteractiondate) + " " + t(langKeys.agent)}
+                                                            />
+                                                        </Grid>
+                                                        
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckFailed}
+                                                                        onChange={handleFailed }                          
+                                                                        name="failed"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_firstinteractiontime)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckFailedPercent}
+                                                                        onChange={handleFailedPercent }                          
+                                                                        name="failed_percent"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_tmo)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckAttended}
+                                                                        onChange={handleAttended }                          
+                                                                        name="attended"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_tmoagent)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckLocked}
+                                                                        onChange={handleLocked }                          
+                                                                        name="locked"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_tmeagent)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterCheckBlacklist}
+                                                                        onChange={handleBlacklist }                          
+                                                                        name="blacklist"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_holdingholdtime)}
+                                                            />
+                                                        </Grid>    
+
+                                                         <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterSusTime}
+                                                                        onChange={handleFilterSusTime }                          
+                                                                        name="failed_percent"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_suspensiontime)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterAgentResponse}
+                                                                        onChange={handleFilterAgentResponse }                          
+                                                                        name="attended"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_avgagentresponse)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterBalanced}
+                                                                        onChange={handleFilterBalanced }                          
+                                                                        name="locked"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_swingingtimes)}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <FormControlLabel
+                                                                style={{ pointerEvents: "none" }}
+                                                                control={
+                                                                    <Checkbox
+                                                                        color="primary"
+                                                                        style={{ pointerEvents: "auto" }}
+                                                                        checked={filterTags}
+                                                                        onChange={handleFilterTags }                          
+                                                                        name="blacklist"
+                                                                    />
+                                                                }
+                                                                label={t(langKeys.report_productivity_tags)}
+                                                            />
+                                                        </Grid>                    
+                                                    </Grid>
+                                                </DialogZyx>
+                                                )}
+                                             </div>
+                                             <Button
                                                 className={classes.button}
                                                 variant="contained"
                                                 color="primary"
@@ -465,7 +843,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                             >
                                                 {t(langKeys.graphic_view)}
                                             </Button>
-                                        )}
+                                            </>                                            
+                                        }
                                         download={true}
                                         fetchData={fetchData}
                                         exportPersonalized={triggerExportData}
@@ -609,9 +988,9 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('graphictype')}
                     error={(errors?.graphictype?.message as string) ?? ""}
                     onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }, { key: 'LINE', value: 'LINEA' },]}
                     uset={true}
-                    prefixTranslation="graphic_"
+                    prefixTranslation="graphic_"    
                     optionDesc="value"
                     optionValue="key"
                 />
@@ -667,7 +1046,6 @@ const ReportConversationWhatsapp: FC = () => {
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -707,23 +1085,11 @@ const ReportConversationWhatsapp: FC = () => {
             },
             {
                 Header: "Fecha de inicio",
-                accessor: 'conversationstart',
-                // Cell: (props: any) => {
-                //     const { conversationstart } = props.cell.row.original;
-                //     return (
-                //         <div>{conversationstart ? new Date(conversationstart).toLocaleString() : ''}</div>
-                //     )
-                // }
+                accessor: 'conversationstart',               
             },
             {
                 Header: "Fecha de fin",
-                accessor: 'conversationend',
-                // Cell: (props: any) => {
-                //     const { conversationend } = props.cell.row.original;
-                //     return (
-                //         <div>{conversationend ? new Date(conversationend).toLocaleString() : ''}</div>
-                //     )
-                // }
+                accessor: 'conversationend',               
             },
             {
                 Header: t(langKeys.countrycode),
@@ -768,20 +1134,7 @@ const ReportConversationWhatsapp: FC = () => {
                                 >
                                     {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                                 </Button>
-                            </DateRangePicker>
-                            {/* <FieldSelect
-                                onChange={(value) => setshippingtype(value?.domainvalue||"")}
-                                label={t(langKeys.shippingtype)}
-                                loading={multiDataAux.loading}
-                                variant="outlined"
-                                valueDefault={shippingtype}
-                                style={{width: "170px"}}
-                                data={shippingTypesData}
-                                optionValue="domainvalue"
-                                optionDesc="domainvalue"
-                                uset={true}
-                                prefixTranslation='type_shippingtype_'
-                            /> */}
+                            </DateRangePicker>                            
                             <div>
                                 <Button
                                     disabled={multiData.loading}

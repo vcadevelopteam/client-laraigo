@@ -123,6 +123,21 @@ export const CampaignReport: React.FC<DetailProps> = ({
     const columns = React.useMemo(
         () => [
             {
+                Header: t(langKeys.executingUser),
+                accessor: 'executingUser',
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.executingUserProfile),
+                accessor: 'executingUserProfile',           
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.channeltype),
+                accessor: 'channelType',
+                Cell: cell
+            },
+            {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
                 Cell: cell
@@ -163,17 +178,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                     const { executiontype } = props.cell.row.original;
                     return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }
-            },
-            {
-                Header: t(langKeys.executingUser),
-                accessor: 'executingUser',
-                Cell: cell
-            },
-            {
-                Header: t(langKeys.executingUserProfile),
-                accessor: 'executingUserProfile',           
-                Cell: cell
-            },
+            },            
             {
                 Header: t(langKeys.total),
                 accessor: 'total',

@@ -89,7 +89,43 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-var randomColor = () => Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+
+const predefinedColors = [
+    "#7721AD",
+    "#B41A1A",
+    "#9DABBD",
+    "#FFA000",
+    "#50AE54",
+    "#001AFF",
+    "#2BD37B",
+    "#FFA34F",
+    "#FC0D1B",
+    "#FFBF00",
+    "#0F7F13",
+    "#00CFE5",
+    "#1D1856",
+    "#FB5F5F",
+    "#B061E1"
+];
+
+let colorIndex = 0;
+
+const getColor = () => {
+    if (colorIndex < predefinedColors.length) {
+        // Utiliza un color predeterminado si hay disponibles
+        const color = predefinedColors[colorIndex];
+        colorIndex++;
+        return color;
+    } else {
+        // Utiliza la lógica de color aleatorio si ya se agotaron los colores predeterminados
+        let randomColor;
+        do {
+            randomColor = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        } while (predefinedColors.includes(`#${randomColor}`)); // Asegúrate de que el color no se repita
+        return `#${randomColor}`;
+    }
+};
+
 interface IGraphic {
     graphicType: string;
     column: string;
@@ -226,7 +262,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                     columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
                     summary: parseInt(x.summary),
                     percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
-                    color: `#${randomColor()}`
+                    color: getColor()
                 })));
             }
         } else {
@@ -237,11 +273,12 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                     columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
                     summary: parseInt(x.summary),
                     percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
-                    color: `#${randomColor()}`
+                    color: getColor()
                 })));
             }
         }
     }, [mainGraphicRes, data, loading])
+    
 
     return (
         <>
@@ -353,9 +390,18 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
 
                                 <YAxis domain={[0, maxSummary]}/>
                                 <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
-                                <Bar dataKey="summary" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" >
-                                    <LabelList dataKey="summary" position="top" />
+                                
+                                <Bar 
+                                    dataKey="summary"
+                                    fill={getColor()}
+                                    textAnchor="end"
+                                    stackId="a"
+                                    type="monotone"
+                                >
+                                <LabelList dataKey="summary" position="top" />
                                 </Bar>
+
+
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

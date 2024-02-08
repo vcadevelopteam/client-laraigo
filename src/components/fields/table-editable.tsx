@@ -616,7 +616,11 @@ const TableZyxEditable = React.memo(({
                             </Fab>
                         </Tooltip>
                     )}
-                    {ButtonsElement && <ButtonsElement />}
+                    {typeof ButtonsElement === 'function' ? (
+                        ButtonsElement()
+                        ) : (
+                        ButtonsElement
+                    )}
                     {register && (
                         <Button
                             className={classes.button}
