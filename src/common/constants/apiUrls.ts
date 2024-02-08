@@ -346,6 +346,7 @@ export const apiUrls = {
     CHECK_PAYMENTPLAN: `${BASE_URL}/channel/checkpaymentplan`,
     REESCHEDULECALL: `${BASE_URL}/campaign/hsmcall`,
     SEND_INVOICE: `${BASE_URL}/billing/sendinvoice`,
+    CONVERSATION: `${BASE_URL}/ticket`,
 
     PERSON: `${BASE_URL}/person`,
 

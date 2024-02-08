@@ -353,6 +353,10 @@ const paths = {
         path: '/recoverpassword/:token',
         resolve: (token: string) => `/recoverpassword/${token}`
     },
+    CONVERSATION: {
+        path: '/conversation/:token',
+        resolve: (token: string) => `/conversation/${token}`
+    },
 };
 
 export default paths;
