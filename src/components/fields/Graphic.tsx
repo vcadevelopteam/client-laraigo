@@ -89,7 +89,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 const predefinedColors = [
     "#7721AD",
     "#B41A1A",
@@ -112,16 +111,14 @@ let colorIndex = 0;
 
 const getColor = () => {
     if (colorIndex < predefinedColors.length) {
-        // Utiliza un color predeterminado si hay disponibles
         const color = predefinedColors[colorIndex];
         colorIndex++;
         return color;
     } else {
-        // Utiliza la lógica de color aleatorio si ya se agotaron los colores predeterminados
         let randomColor;
         do {
             randomColor = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-        } while (predefinedColors.includes(`#${randomColor}`)); // Asegúrate de que el color no se repita
+        } while (predefinedColors.includes(`#${randomColor}`)); 
         return `#${randomColor}`;
     }
 };

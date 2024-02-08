@@ -124,17 +124,17 @@ export const CampaignReport: React.FC<DetailProps> = ({
         () => [
             {
                 Header: t(langKeys.executingUser),
-                accessor: 'executingUser',
+                accessor: 'executionuser',
                 Cell: cell
             },
             {
                 Header: t(langKeys.executingUserProfile),
-                accessor: 'executingUserProfile',           
+                accessor: 'executionuserprofile',           
                 Cell: cell
             },
             {
                 Header: t(langKeys.channeltype),
-                accessor: 'channelType',
+                accessor: 'channeltype',
                 Cell: cell
             },
             {
