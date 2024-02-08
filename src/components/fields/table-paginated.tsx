@@ -926,7 +926,7 @@ const TableZyx = React.memo(({
         </Box >
     )
 })
-
+TableZyx.displayName = 'TableZyx';
 export default TableZyx;
 
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
