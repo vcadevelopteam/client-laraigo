@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getDateCleaned } from 'common/helpers';
+import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getChannelSel, getDateCleaned } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker, FieldMultiSelect } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { DownloadIcon, WhatsappIcon } from 'icons';
-import { Button, Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
+import { DownloadIcon } from 'icons';
+import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
@@ -20,9 +20,15 @@ import { CellProps } from 'react-table';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import AllInboxIcon from '@material-ui/icons/AllInbox'; 
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
+import { FieldErrors } from "react-hook-form";
+import { getCollection, resetAllMain } from "store/main/actions";
+
 interface DetailProps {
     setViewSelected?: (view: string) => void;
     externalUse?: boolean;
+    setValue: Dictionary
+    getValues: Dictionary,
+    errors: FieldErrors
 }
 
 const arrayBread = [
@@ -66,7 +72,13 @@ const initialRange = {
     key: 'selection'
 }
 
-export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externalUse }) => {
+export const CampaignReport: React.FC<DetailProps> = ({ 
+    setViewSelected, 
+    externalUse, 
+    setValue,
+    getValues,
+    errors
+}) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -80,7 +92,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     const [openModal, setOpenModal] = useState(false);
     const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
     
-    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [reportType, setReportType] = useState<string>('default');
 
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
@@ -154,12 +166,12 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             },
             {
                 Header: t(langKeys.executingUser),
-                accessor: 'campaignid',
+                accessor: 'executingUser',
                 Cell: cell
             },
             {
                 Header: t(langKeys.executingUserProfile),
-                accessor: 'datetimestart',           
+                accessor: 'executingUserProfile',           
                 Cell: cell
             },
             {
@@ -248,7 +260,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         }
         if (reportType === dataReportType.default) {
             dispatch(exportData(getCampaignReportExport(
-                Object.keys(selectedRows).reduce((ad: any[], d: any) => {
+                Object.keys(selectedRows).reduce((ad: Dictionary[], d: Dictionary) => {
                     ad.push({
                         campaignid: d.split('_')[0],
                         rundate: d.split('_')[1]
@@ -271,7 +283,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'template', alias: t(langKeys.templatename)},
                     {key: 'rundate', alias: t(langKeys.rundate)},
                     {key: 'executingUser', alias: t(langKeys.executingUser)},
-                    {key: 'datetimestart', alias: t(langKeys.executingUserProfile)},                 
+                    {key: 'executingUserProfile', alias: t(langKeys.firstreplydate)},   
                     {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
                     {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
                     {key: 'classification', alias: t(langKeys.classification)},
@@ -322,6 +334,9 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         }
     };
 
+    const fetchDataChannels = () => dispatch(getCollection(getChannelSel(0)));
+
+
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const handleClickSeButtons = (event: Dictionary) => {
@@ -339,8 +354,76 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         setShowColumnsModalOpen(true);
     };
 
- 
+    const executeResult = useSelector((state) => state.channel.channelList);
+    const [waitSave, setWaitSave] = useState(false);
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                fetchDataChannels();
+            } else if (executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.property).toLocaleLowerCase(),
+                        }),
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave]);
 
+    useEffect(() => {
+        fetchDataChannels();
+
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
+
+
+    const responseChannels = {
+        "error": false,
+        "success": true,
+        "data": [
+            {                
+                "typedesc": "CHAT WEB",
+            },
+            {                
+                "typedesc": "WEB FORM",
+            },
+            {                
+                "typedesc": "WEB FORM",
+            },
+            {                
+                "typedesc": "WEB FORM",
+            },
+            {                
+                "typedesc": "FACEBOOK WALL",            
+            },
+            {                
+                "typedesc": "FACEBOOK MESSENGER",
+            },
+            {                
+                "typedesc": "WHATSAPP",
+            },
+            {                
+                "typedesc": "WEB FORM",
+            },
+        ]
+    };
+    
+    const channelsByOrg = Array.from(new Set(responseChannels.data.map(channel => channel.typedesc))).map(typedesc => ({ domaindesc: typedesc, domainvalue: typedesc }));
+  
+    //const multiDataAux = useSelector(state => state.main.multiDataAux);
+    //const channelsByOrg = multiDataAux?.data?.[0]?.data||[];
+    
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -349,6 +432,62 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         };
     }, []);
 
+    const [filterCheckExecutiontype, setFilterCheckExecutiontype] = useState(true);
+    const [filterCheckExecutingUser, setFilterCheckExecutingUser] = useState(true);
+    const [filterCheckFirstReplyDate, setFilterCheckFirstReplyDate] = useState(true);
+    const [filterCheckTotal, setFilterCheckTotal] = useState(true);
+    const [filterCheckSatisfactory, setFilterCheckSatisfactory] = useState(true);
+    const [filterCheckSatisfactoryPercent, setFilterCheckSatisfactoryPercent] = useState(true);
+    const [filterCheckFailed, setFilterCheckFailed] = useState(true);
+    const [filterCheckFailedPercent, setFilterCheckFailedPercent] = useState(true);
+    const [filterCheckAttended, setFilterCheckAttended] = useState(true);
+    const [filterCheckLocked, setFilterCheckLocked] = useState(true);
+    const [filterCheckBlacklist, setFilterCheckBlacklist] = useState(true);
+
+    const handleExecutiontype = () => {
+        setFilterCheckExecutiontype((prev) => !prev);
+    };
+    
+    const handleExecutingUser = () => {
+        setFilterCheckExecutingUser((prev) => !prev);
+    };
+    
+    const handleFirstReplyDate = () => {
+        setFilterCheckFirstReplyDate((prev) => !prev);
+    };
+    
+    const handleTotal = () => {
+        setFilterCheckTotal((prev) => !prev);
+    };
+    
+    const handleSatisfactory = () => {
+        setFilterCheckSatisfactory((prev) => !prev);
+    };
+    
+    const handleSatisfactoryPercent = () => {
+        setFilterCheckSatisfactoryPercent((prev) => !prev);
+    };
+    
+    const handleFailed = () => {
+        setFilterCheckFailed((prev) => !prev);
+    };
+    
+    const handleFailedPercent = () => {
+        setFilterCheckFailedPercent((prev) => !prev);
+    };
+    
+    const handleAttended = () => {
+        setFilterCheckAttended((prev) => !prev);
+    };
+    
+    const handleLocked = () => {
+        setFilterCheckLocked((prev) => !prev);
+    };
+    
+    const handleBlacklist = () => {
+        setFilterCheckBlacklist((prev) => !prev);
+    };
+    
     useEffect(() => {
         if (waitExport) {
             if (!resExportData.loading && !resExportData.error) {
@@ -415,21 +554,190 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
 
             {isShowColumnsModalOpen && (
                 <DialogZyx 
-                    open={isShowColumnsModalOpen} 
-                    title={t(langKeys.showHideColumns)} 
-                    buttonText1={t(langKeys.close)}
-                    buttonText2={t(langKeys.apply) }
-                    handleClickButton1={() => setShowColumnsModalOpen(false)}                    
-                    handleClickButton2={()=> setShowColumnsModalOpen(false)}
-                    maxWidth="sm"
-                    buttonStyle1={{marginBottom:'0.3rem'}}
-                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
-                >                     
-                    {/* Falta */}
-                </DialogZyx>
+                open={isShowColumnsModalOpen} 
+                title={t(langKeys.showHideColumns)} 
+                buttonText1={t(langKeys.close)}
+                buttonText2={t(langKeys.apply) }
+                handleClickButton1={() => setShowColumnsModalOpen(false)}                    
+                handleClickButton2={()=> setShowColumnsModalOpen(false)}
+                maxWidth="sm"
+                buttonStyle1={{marginBottom:'0.3rem'}}
+                buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+            >  
+                <Grid container spacing={1} style={{marginTop:'0.5rem'}}>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckExecutiontype}
+                                    onChange={handleExecutiontype }                          
+                                    name="executiontype"
+                                />
+                            }
+                            label={t(langKeys.executiontype)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckExecutingUser}
+                                    onChange={handleExecutingUser }                          
+                                    name="executingUser"
+                                />
+                            }
+                            label={t(langKeys.executingUser)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckFirstReplyDate}
+                                    onChange={handleFirstReplyDate }                          
+                                    name="firstreplydate"
+                                />
+                            }
+                            label={t(langKeys.executingUserProfile)}
+                        />
+                    </Grid>                   
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckTotal}
+                                    onChange={handleTotal }                          
+                                    name="total"
+                                />
+                            }
+                            label={t(langKeys.total)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckSatisfactory}
+                                    onChange={handleSatisfactory }                          
+                                    name="satisfactory"
+                                />
+                            }
+                            label={t(langKeys.satisfactory)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckSatisfactoryPercent}
+                                    onChange={handleSatisfactoryPercent }                          
+                                    name="satisfactory_percent"
+                                />
+                            }
+                            label={t(langKeys.satisfactory_percent)}
+                        />
+                    </Grid>
+                    
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckFailed}
+                                    onChange={handleFailed }                          
+                                    name="failed"
+                                />
+                            }
+                            label={t(langKeys.failed)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckFailedPercent}
+                                    onChange={handleFailedPercent }                          
+                                    name="failed_percent"
+                                />
+                            }
+                            label={t(langKeys.failed_percent)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckAttended}
+                                    onChange={handleAttended }                          
+                                    name="attended"
+                                />
+                            }
+                            label={t(langKeys.attended)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckLocked}
+                                    onChange={handleLocked }                          
+                                    name="locked"
+                                />
+                            }
+                            label={t(langKeys.locked)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            style={{ pointerEvents: "none" }}
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    style={{ pointerEvents: "auto" }}
+                                    checked={filterCheckBlacklist}
+                                    onChange={handleBlacklist }                          
+                                    name="blacklist"
+                                />
+                            }
+                            label={t(langKeys.blacklist)}
+                        />
+                    </Grid>                  
+                </Grid>
+            </DialogZyx>
+            
+                
             )}
 
-            <div style={{ width: '100%', display: 'flex'  }}>                 
+            <div style={{ width: '100%', display: 'flex', background:'white', padding:'1rem 0 0 0'  }}>                 
                 
                 <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
                     <DateRangePicker
@@ -447,13 +755,15 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                         </Button>
                     </DateRangePicker>
                     <FieldSelect
-                        variant="outlined"
                         label={t(langKeys.channel)}
-                        className={classes.filterComponent}
-                        data={[]}
-                        optionDesc={'communicationchanneldesc'}
-                        optionValue={'communicationchannelid'}
-                    />
+                        variant="outlined"                       
+                        className={classes.filterComponent}                        
+                        data={channelsByOrg}                       
+                        onChange={(value) => setValue('basemodel', value.domainvalue)}
+                        error={errors?.basemodel?.message}
+                        optionDesc="domaindesc"
+                        optionValue="domainvalue"
+                    />                      
                     <Button
                         disabled={mainPaginated.loading}
                         variant="contained"
@@ -490,68 +800,59 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                             {`${t(langKeys.download)}`}
                         </Button>
                         
-                </div>
-                
+                </div>                
+                                                         
                 <div>
-                <div style={{ display: 'flex', gap: 8 }}></div>
-                                                                        
-                    <div>
+                    <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        onClick={handleClickSeButtons}
+                        style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
 
-                        <IconButton
-                            aria-label="more"
-                            id="long-button"
-                            onClick={handleClickSeButtons}
-                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                    <div style={{ display: 'flex', gap: 8 }}>                               
+                        <Popper
+                            open={openSeButtons}
+                            anchorEl={anchorElSeButtons}
+                            placement="bottom"
+                            transition
+                            style={{marginRight:'1rem'}}
                         >
-                            <MoreVertIcon />
-                        </IconButton>
+                            {({ TransitionProps }) => (
+                                <Paper {...TransitionProps} elevation={5}>
 
-                        <div style={{ display: 'flex', gap: 8 }}>                               
-                            <Popper
-                                open={openSeButtons}
-                                anchorEl={anchorElSeButtons}
-                                placement="bottom"
-                                transition
-                                style={{marginRight:'1rem'}}
-                            >
-                                {({ TransitionProps }) => (
-                                    <Paper {...TransitionProps} elevation={5}>
+                                    <MenuItem 
+                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                        onClick={handleOpenGroupedByModal}
+                                    >
+                                        <ListItemIcon>
+                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                    </MenuItem>
+                                    <Divider />
 
-                                        <MenuItem 
-                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                            onClick={handleOpenGroupedByModal}
-                                        >
-                                            <ListItemIcon>
-                                                <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                            </ListItemIcon>
-                                            <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
-                                        </MenuItem>
-                                        <Divider />
+                                    <MenuItem 
+                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
+                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                        onClick={handleOpenShowColumnsModal}                                           
+                                    >
+                                        <ListItemIcon>
+                                            <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                    </MenuItem>   
 
-                                        <MenuItem 
-                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                            onClick={handleOpenShowColumnsModal}                                           
-                                        >
-                                            <ListItemIcon>
-                                                <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                            </ListItemIcon>
-                                            <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
-                                        </MenuItem>   
+                                </Paper>
+                            )}
+                        </Popper>
+                    </div>     
+                                        
+                </div>                                                 
 
-                                    </Paper>
-                                )}
-                            </Popper>
-                        </div>     
-                                              
-                    </div>
-                                                  
-                    
-                </div>
-                   
-                
-              
             </div>
             
             <div style={{width:'100%', height:'100%'}}>        
