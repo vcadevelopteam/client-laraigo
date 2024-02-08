@@ -33,6 +33,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSave2, setWaitSave2] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [openModalNonWorkingDays, setOpenModalNonWorkingDays] = useState(false)
@@ -46,7 +47,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
         automaticA: false,
         manualA: false,
         predefinedA: false,
-        inmediateA: true,
+        inmediateA: false,
         invoiceD: false,
         shareInvoiceD: false,
         guideD: false,
@@ -60,46 +61,77 @@ const DeliveryConfigurationDetail: React.FC = () => {
         routingLogic: false,
         insuredLimitR: false,
         capacityR: false,
-        monday: true,
-        tuesday: true,
-        wednesday: true,
-        thursday: true,
-        friday: true,
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
         saturday: false,
         sunday: false,
-        validationDistance: false,
+        validationDistance: null,
         deliveryphoto: false,
     })
 
     const fetchOriginalConfig = () => {
-        setConfigjson({
-            automaticA: main?.data?.[0]?.config?.automaticA || false,
-            manualA: main?.data?.[0]?.config?.manualA || false,
-            predefinedA: main?.data?.[0]?.config?.predefinedA || false,
-            inmediateA: main?.data?.[0]?.config?.inmediateA || true,
-            invoiceD: main?.data?.[0]?.config?.invoiceD || false,
-            shareInvoiceD: main?.data?.[0]?.config?.shareInvoiceD || false,
-            guideD: main?.data?.[0]?.config?.guideD || false,
-            wspI: main?.data?.[0]?.config?.wspI || false,
-            emailI: main?.data?.[0]?.config?.emailI || false,
-            sendScheduleN: main?.data?.[0]?.config?.sendScheduleN || false,
-            sendDispatchN: main?.data?.[0]?.config?.sendDispatchN || false,
-            smsN: main?.data?.[0]?.config?.smsN || false,
-            wspN: main?.data?.[0]?.config?.wspN || false,
-            emailN: main?.data?.[0]?.config?.emailN || false,
-            routingLogic: main?.data?.[0]?.config?.routingLogic || false,
-            insuredLimitR: main?.data?.[0]?.config?.insuredLimitR || false,
-            capacityR: main?.data?.[0]?.config?.capacityR || false,
-            monday: main?.data?.[0]?.config?.monday || true,
-            tuesday: main?.data?.[0]?.config?.tuesday || true,
-            wednesday: main?.data?.[0]?.config?.wednesday || true,
-            thursday: main?.data?.[0]?.config?.thursday || true,
-            friday: main?.data?.[0]?.config?.friday || true,
-            saturday: main?.data?.[0]?.config?.saturday || false,
-            sunday: main?.data?.[0]?.config?.sunday || false,
-            validationDistance: main?.data?.[0]?.config?.validationDistance || false,
-            deliveryphoto: main?.data?.[0]?.config?.deliveryphoto || false,
-        })
+        if(main.data[0]) {
+            setConfigjson({
+                automaticA: main?.data?.[0]?.config?.automaticA,
+                manualA: main?.data?.[0]?.config?.manualA,
+                predefinedA: main?.data?.[0]?.config?.predefinedA,
+                inmediateA: main?.data?.[0]?.config?.inmediateA,
+                invoiceD: main?.data?.[0]?.config?.invoiceD,
+                shareInvoiceD: main?.data?.[0]?.config?.shareInvoiceD,
+                guideD: main?.data?.[0]?.config?.guideD,
+                wspI: main?.data?.[0]?.config?.wspI,
+                emailI: main?.data?.[0]?.config?.emailI,
+                sendScheduleN: main?.data?.[0]?.config?.sendScheduleN,
+                sendDispatchN: main?.data?.[0]?.config?.sendDispatchN,
+                smsN: main?.data?.[0]?.config?.smsN,
+                wspN: main?.data?.[0]?.config?.wspN,
+                emailN: main?.data?.[0]?.config?.emailN,
+                routingLogic: main?.data?.[0]?.config?.routingLogic,
+                insuredLimitR: main?.data?.[0]?.config?.insuredLimitR,
+                capacityR: main?.data?.[0]?.config?.capacityR,
+                monday: main?.data?.[0]?.config?.monday,
+                tuesday: main?.data?.[0]?.config?.tuesday,
+                wednesday: main?.data?.[0]?.config?.wednesday,
+                thursday: main?.data?.[0]?.config?.thursday,
+                friday: main?.data?.[0]?.config?.friday,
+                saturday: main?.data?.[0]?.config?.saturday,
+                sunday: main?.data?.[0]?.config?.sunday,
+                validationDistance: main?.data?.[0]?.config?.validationDistance,
+                deliveryphoto: main?.data?.[0]?.config?.deliveryphoto,
+            })
+        } else {
+            setConfigjson({
+                automaticA: false,
+                manualA: false,
+                predefinedA: false,
+                inmediateA: true,
+                invoiceD: true,
+                shareInvoiceD: true,
+                guideD: true,
+                wspI: false,
+                emailI: false,
+                sendScheduleN: false,
+                sendDispatchN: false,
+                smsN: false,
+                wspN: false,
+                emailN: false,
+                routingLogic: false,
+                insuredLimitR: false,
+                capacityR: false,
+                monday: true,
+                tuesday: true,
+                wednesday: true,
+                thursday: true,
+                friday: true,
+                saturday: false,
+                sunday: false,
+                validationDistance: null,
+                deliveryphoto: false,
+            })
+        }
     } 
 
     useEffect(() => {
@@ -113,6 +145,27 @@ const DeliveryConfigurationDetail: React.FC = () => {
 
     const fetchConfiguration = () => dispatch(getCollection(deliveryConfigurationSel({id: 0, all: true})));
     const fetchVehicles = () => dispatch(getCollectionAux(deliveryVehicleSel({id: 0, all: true})));
+
+    useEffect(() => {
+        fetchConfiguration()
+        fetchVehicles()
+        setWaitSave2(true)
+    }, [])
+
+    useEffect(() => {
+        if (waitSave2) {
+            if (!main.loading && !main.error) {
+                if(main.data[0] === undefined) {
+                    setConfigjson({...configjson, inmediateA: true, invoiceD: true, shareInvoiceD: true, guideD: true, monday: true, tuesday: true, wednesday: true, thursday: true, friday: true})
+                }
+                setWaitSave2(false)
+            } else if (main.error) {
+                const errormessage = t(main.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitSave2(false);
+            }
+        }
+    }, [main, waitSave2])
 
     const onMainSubmit = (() => {
         const existingConfig = main.data[0];

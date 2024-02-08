@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { ChangeEvent, useEffect, useState } from 'react'; 
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -140,11 +140,6 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     }
 
     useEffect(() => {
-        fetchConfiguration()
-        fetchVehicles()
-    }, [])
-
-    useEffect(() => {
         if (waitSave) {
           if (!executeResult.loading && !executeResult.error) {
             dispatch(
@@ -243,6 +238,20 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
         []
     );
 
+    const handleChange = (name: string) => (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            // Contar cuántos checkboxes están en true
+            const checkedCount = [configjson.automaticA, configjson.manualA, configjson.predefinedA, configjson.inmediateA].filter(value => value).length;
+    
+            // Permitir el cambio solo si hay menos de 2 checkboxes en true
+            if (checkedCount < 2 || configjson[name]) {
+                setConfigjson({ ...configjson, [name]: e.target.checked });
+            }
+        } else {
+            setConfigjson({ ...configjson, [name]: e.target.checked });
+        }
+    };
+
     return (
         <div className={classes.containerDetail}>
             <div className='row-zyx'>
@@ -257,9 +266,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     color="primary" 
                                     style={{ pointerEvents: "auto" }} 
                                     checked={configjson.automaticA} 
-                                    onChange={(e) => {
-                                        setConfigjson({...configjson, automaticA: e.target.checked})
-                                    }} 
+                                    onChange={handleChange('automaticA')} 
                                     name="auto" 
                                 />}
                                 label={t(langKeys.automatic)}
@@ -271,9 +278,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     color="primary" 
                                     style={{ pointerEvents: "auto" }} 
                                     checked={configjson.manualA} 
-                                    onChange={(e) => {
-                                        setConfigjson({...configjson, manualA: e.target.checked})
-                                    }} 
+                                    onChange={handleChange('manualA')} 
                                     name="man" 
                                 />}
                                 label={t(langKeys.manual)}
@@ -285,10 +290,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                         color="primary" 
                                         style={{ pointerEvents: "auto" }} 
                                         checked={configjson.predefinedA} 
-                                        onChange={(e) => {
-                                            setConfigjson({...configjson, predefinedA: e.target.checked})
-
-                                        }} 
+                                        onChange={handleChange('predefinedA')} 
                                         name="predef" 
                                     />}
                                 label={t(langKeys.default2)}
@@ -369,6 +371,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 style={{ pointerEvents: "none" }}
                                 control={
                                     <Checkbox
+                                        disabled={!configjson.shareInvoiceD}
                                         color="primary"
                                         style={{ pointerEvents: "auto" }}
                                         checked={configjson.wspI}
@@ -384,6 +387,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 style={{ pointerEvents: "none" }}
                                 control={
                                     <Checkbox
+                                        disabled={!configjson.shareInvoiceD}
                                         color="primary"
                                         style={{ pointerEvents: "auto" }}
                                         checked={configjson.emailI}
@@ -447,6 +451,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={
                                     <Checkbox
                                         color="primary"
+                                        disabled={!configjson.sendDispatchN && !configjson.sendScheduleN}
                                         style={{ pointerEvents: "auto" }}
                                         checked={configjson.smsN}
                                         onChange={(e) => {
@@ -462,6 +467,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={
                                     <Checkbox
                                         color="primary"
+                                        disabled={!configjson.sendDispatchN && !configjson.sendScheduleN}
                                         style={{ pointerEvents: "auto" }}
                                         checked={configjson.wspN}
                                         onChange={(e) => {
@@ -477,6 +483,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={
                                     <Checkbox
                                         color="primary"
+                                        disabled={!configjson.sendDispatchN && !configjson.sendScheduleN}
                                         style={{ pointerEvents: "auto" }}
                                         checked={configjson.emailN}
                                         onChange={(e) => {
