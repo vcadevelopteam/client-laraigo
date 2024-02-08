@@ -106,3 +106,11 @@ export function request_send(request: any) {
         return ExternalRequestManager.get(url, { auth: authorization, headers: headersjson });
     }
 }
+
+export function conversation(token:string) {
+    return APIManager.get(apiUrls.CONVERSATION + "/" + token, {  }, true);
+}
+
+export function interactions(token:string, requestBody: any) {
+    return APIManager.post(apiUrls.CONVERSATION + "/" + token, {data: requestBody}, true);
+}

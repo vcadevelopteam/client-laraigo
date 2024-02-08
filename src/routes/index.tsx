@@ -99,6 +99,7 @@ const Privacy = lazy(() => import('pages/Privacy'));
 const TermsOfService = lazy(() => import('pages/TermsOfService'));
 const ActivateUser = lazy(() => import('pages/ActivateUser'));
 const RecoverPassword = lazy(() => import('pages/RecoverPassword'));
+const Conversation = lazy(() => import('pages/Conversation'));
 const CRM = lazy(() => import('pages/crm/CRM'));
 const LeadForm = lazy(() => import('pages/crm/LeadForm'));
 const ServiceDesk = lazy(() => import('pages/servicedesk/ServiceDesk'));
@@ -252,6 +253,7 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.TERMSOFSERVICE} render={() => <TermsOfService />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
 					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />
+					<Route exact path={paths.CONVERSATION.path} render={() => <Conversation />} />
 					<ProtectRoute exact path={paths.PRODUCTCATALOG} component={() => (<Layout mainClasses={classes.main}><ProductCatalog /></Layout>)} />
 					<ProtectRoute exact path={paths.CATALOGMASTER} component={() => (<Layout mainClasses={classes.main}><CatalogMaster /></Layout>)} />
 					<ProtectRoute exact path={paths.ORDERS} component={() => (<Layout mainClasses={classes.main}><Orders /></Layout>)} />

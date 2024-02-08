@@ -362,6 +362,10 @@ const paths = {
     },
     INVENTORY: '/inventory',
     INVENTORYCONSUMPTION: '/inventoryconsumption',
+    CONVERSATION: {
+        path: '/conversation/:token',
+        resolve: (token: string) => `/conversation/${token}`
+    },
 };
 
 export default paths;
