@@ -715,7 +715,7 @@ const TableZyx = React.memo(({
                         </div>
                     )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                        {ButtonsElement}
+                        {typeof ButtonsElement === 'function' ? (<ButtonsElement />) : ButtonsElement}
                         {importCSV && (
                             <>
                                 <input
@@ -922,7 +922,7 @@ const TableZyx = React.memo(({
         </Box >
     )
 })
-
+TableZyx.displayName = 'TableZyx';
 export default TableZyx;
 
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
