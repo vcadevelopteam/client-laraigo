@@ -310,20 +310,14 @@ const Conversation= () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [ticket, setTicket] = React.useState<any>(null)
     const [showAllInteraction, setShowAllInteraction] = React.useState(false)
     const conversationData = useSelector(state => state.conversation.conversationData);
-    const interactionExtraList = useSelector(state => state.conversation.interactionData);
     const [interactionsToShow, setinteractionsToShow] = React.useState<IGroupInteraction[]>([])
     const el = React.useRef<null | HTMLDivElement>(null);
 
     useEffect(() => {
         dispatch(getConversationData(token))
     }, [])
-    useEffect(() => {
-        if (conversationData.data?.conversationid)
-            dispatch(getInteractionData(token, conversationData.data));
-    }, [conversationData])
 
     const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
         const downloadPdfDocument = () => {
@@ -363,7 +357,7 @@ const Conversation= () => {
                                     doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                                     heightLeft -= pageHeight;
                                 }
-                                doc.save(`ticket${ticket?.ticketnum}.pdf`);
+                                doc.save(`ticket${conversationData?.ticket?.[0]?.ticketnum}.pdf`);
                                 document.getElementById('newexportcontainer')?.remove();
                             });
                     }
@@ -384,14 +378,14 @@ const Conversation= () => {
 
     useEffect(() => {
         if (showAllInteraction) {
-            setinteractionsToShow(interactionExtraList.data)
+            setinteractionsToShow(conversationData?.interactions||[])
         } else {
-            setinteractionsToShow(interactionExtraList?.data?.map(x => ({
+            setinteractionsToShow((conversationData?.interactions||[])?.map(x => ({
                 ...x,
                 interactions: x.interactions.filter(y => !y.isHide)
             })))
         }
-    }, [showAllInteraction, interactionExtraList.loading])
+    }, [showAllInteraction, conversationData.loading])
 
     return (
         <div style={{
@@ -399,16 +393,16 @@ const Conversation= () => {
             flexDirection: 'column',
             alignItems: 'center',
             width: 600,
-            margin: '0 auto', // {ticket?.displayname + " - " + ticket?.ticketnum}
+            margin: '0 auto', 
         }}>
             <div style={{display: "flex", padding: 10, width: "100%", justifyContent: "space-between"}}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
-                        
+                        {conversationData?.ticket?.[0]?.firstname + " " + conversationData?.ticket?.[0]?.lastname + " - " + conversationData?.ticket?.[0]?.ticketnum}
                     </div>
                 </div>
                 <GenericPdfDownloader
-                    downloadFileName={`ticket-` + ticket?.ticketnum}
+                    downloadFileName={`ticket-` + conversationData?.ticket?.[0]?.ticketnum}
                 />
             </div>
             <div style={{ position: 'absolute', left: 16, bottom: 16 }}>
@@ -419,12 +413,12 @@ const Conversation= () => {
                 </Tooltip>
             </div>
             <div style={{width: 600}}>
-                {interactionExtraList.loading ? <SkeletonInteraction /> :
+                {conversationData.loading ? <SkeletonInteraction /> :
                     <div ref={el} className="scroll-style-go" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: "93vh" }}>
                         {interactionsToShow.map((groupInteraction) => (
                             <ItemGroupInteraction
-                                imageClient={ticket?.imageurldef}
-                                clientName={ticket?.displayname}
+                                imageClient={conversationData?.ticket?.[0]?.imageurldef}
+                                clientName={conversationData?.ticket?.[0]?.firstname + " " + conversationData?.ticket?.[0]?.lastname}
                                 classes={classes}
                                 groupInteraction={groupInteraction}
                                 key={groupInteraction.interactionid} />

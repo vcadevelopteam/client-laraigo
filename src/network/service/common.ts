@@ -110,7 +110,3 @@ export function request_send(request: any) {
 export function conversation(token:string) {
     return APIManager.get(apiUrls.CONVERSATION + "/" + token, {  }, true);
 }
-
-export function interactions(token:string, requestBody: any) {
-    return APIManager.post(apiUrls.CONVERSATION + "/" + token, {data: requestBody}, true);
-}
