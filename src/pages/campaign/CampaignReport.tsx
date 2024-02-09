@@ -339,28 +339,84 @@ export const CampaignReport: React.FC<DetailProps> = ({
         }
     };
 
+
+    const storedVisibleColumns = localStorage.getItem('visibleColumns');
+
+    const initialVisibleColumns = storedVisibleColumns ? JSON.parse(storedVisibleColumns) : {
+        executionuser: true,
+        executionuserprofile: true,
+        channeltype: true,
+        title: true,
+        description: true,
+        templatetype: true,
+        templatename: true,
+        channel: true,
+        rundate: true,
+        executiontype: true,
+        total: true,
+        success: true,
+        successp: true,
+        fail: true,
+        failp: true,
+        attended: true,
+        locked: true,
+        blacklisted: true,
+    };
+
+    const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
+
+    const handleToggleColumnVisibility = (columnName: keyof typeof visibleColumns) => {
+        setVisibleColumns((prevVisibleColumns: typeof visibleColumns) => {
+            const updatedVisibleColumns = {
+            ...prevVisibleColumns,
+            [columnName]: !prevVisibleColumns[columnName],
+            };
+            localStorage.setItem('visibleColumns', JSON.stringify(updatedVisibleColumns));
+            return updatedVisibleColumns;
+        });
+    };
+
+    const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
+
     const fetchDataChannels = () => dispatch(getCollection(getChannelSel(0)));
-
-
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const handleClickSeButtons = (event: Dictionary) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
-    };   
-
+    };  
+   
     const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
     const handleOpenGroupedByModal = () => {
         setGroupedByModalOpen(true);
     };
-      
     const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
     const handleOpenShowColumnsModal = () => {
         setShowColumnsModalOpen(true);
     };
-
     const executeResult = useSelector((state) => state.channel.channelList);
     const [waitSave, setWaitSave] = useState(false);
+
+    const responseChannels = {
+        "error": false,
+        "success": true,
+        "data": [
+            { "typedesc": "CHAT WEB", },
+            { "typedesc": "WEB FORM", },
+            { "typedesc": "WEB FORM", },
+            { "typedesc": "WEB FORM", },
+            { "typedesc": "FACEBOOK WALL", },
+            { "typedesc": "FACEBOOK MESSENGER", },
+            { "typedesc": "WHATSAPP", },
+            { "typedesc": "WEB FORM", },
+        ]
+    };
+    
+    const channelsByOrg = Array.from(new Set(responseChannels.data.map(channel => channel.typedesc))).map(typedesc => ({ domaindesc: typedesc, domainvalue: typedesc }));
+    //const multiDataAux = useSelector(state => state.main.multiDataAux);
+    //const channelsByOrg = multiDataAux?.data?.[0]?.data||[];
+
+
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -391,44 +447,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
             dispatch(resetAllMain());
         };
     }, []);
-
-
-    const responseChannels = {
-        "error": false,
-        "success": true,
-        "data": [
-            {                
-                "typedesc": "CHAT WEB",
-            },
-            {                
-                "typedesc": "WEB FORM",
-            },
-            {                
-                "typedesc": "WEB FORM",
-            },
-            {                
-                "typedesc": "WEB FORM",
-            },
-            {                
-                "typedesc": "FACEBOOK WALL",            
-            },
-            {                
-                "typedesc": "FACEBOOK MESSENGER",
-            },
-            {                
-                "typedesc": "WHATSAPP",
-            },
-            {                
-                "typedesc": "WEB FORM",
-            },
-        ]
-    };
-    
-    const channelsByOrg = Array.from(new Set(responseChannels.data.map(channel => channel.typedesc))).map(typedesc => ({ domaindesc: typedesc, domainvalue: typedesc }));
   
-    //const multiDataAux = useSelector(state => state.main.multiDataAux);
-    //const channelsByOrg = multiDataAux?.data?.[0]?.data||[];
-    
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -437,62 +456,6 @@ export const CampaignReport: React.FC<DetailProps> = ({
         };
     }, []);
 
-    const [filterCheckExecutiontype, setFilterCheckExecutiontype] = useState(true);
-    const [filterCheckExecutingUser, setFilterCheckExecutingUser] = useState(true);
-    const [filterCheckFirstReplyDate, setFilterCheckFirstReplyDate] = useState(true);
-    const [filterCheckTotal, setFilterCheckTotal] = useState(true);
-    const [filterCheckSatisfactory, setFilterCheckSatisfactory] = useState(true);
-    const [filterCheckSatisfactoryPercent, setFilterCheckSatisfactoryPercent] = useState(true);
-    const [filterCheckFailed, setFilterCheckFailed] = useState(true);
-    const [filterCheckFailedPercent, setFilterCheckFailedPercent] = useState(true);
-    const [filterCheckAttended, setFilterCheckAttended] = useState(true);
-    const [filterCheckLocked, setFilterCheckLocked] = useState(true);
-    const [filterCheckBlacklist, setFilterCheckBlacklist] = useState(true);
-
-    const handleExecutiontype = () => {
-        setFilterCheckExecutiontype((prev) => !prev);
-    };
-    
-    const handleExecutingUser = () => {
-        setFilterCheckExecutingUser((prev) => !prev);
-    };
-    
-    const handleFirstReplyDate = () => {
-        setFilterCheckFirstReplyDate((prev) => !prev);
-    };
-    
-    const handleTotal = () => {
-        setFilterCheckTotal((prev) => !prev);
-    };
-    
-    const handleSatisfactory = () => {
-        setFilterCheckSatisfactory((prev) => !prev);
-    };
-    
-    const handleSatisfactoryPercent = () => {
-        setFilterCheckSatisfactoryPercent((prev) => !prev);
-    };
-    
-    const handleFailed = () => {
-        setFilterCheckFailed((prev) => !prev);
-    };
-    
-    const handleFailedPercent = () => {
-        setFilterCheckFailedPercent((prev) => !prev);
-    };
-    
-    const handleAttended = () => {
-        setFilterCheckAttended((prev) => !prev);
-    };
-    
-    const handleLocked = () => {
-        setFilterCheckLocked((prev) => !prev);
-    };
-    
-    const handleBlacklist = () => {
-        setFilterCheckBlacklist((prev) => !prev);
-    };
-    
     useEffect(() => {
         if (waitExport) {
             if (!resExportData.loading && !resExportData.error) {
@@ -514,8 +477,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
             settotalrow(mainPaginated.count);
             dispatch(showBackdrop(false));
         }
-    }, [mainPaginated]);    
-
+    }, [mainPaginated]);  
    
     return (
         <div style={{ width: '100%' }}>
@@ -559,16 +521,14 @@ export const CampaignReport: React.FC<DetailProps> = ({
 
             {isShowColumnsModalOpen && (
                 <DialogZyx 
-                open={isShowColumnsModalOpen} 
-                title={t(langKeys.showHideColumns)} 
-                buttonText1={t(langKeys.close)}
-                buttonText2={t(langKeys.apply) }
-                handleClickButton1={() => setShowColumnsModalOpen(false)}                    
-                handleClickButton2={()=> setShowColumnsModalOpen(false)}
-                maxWidth="sm"
-                buttonStyle1={{marginBottom:'0.3rem'}}
-                buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
-            >  
+                    open={isShowColumnsModalOpen} 
+                    title={t(langKeys.showHideColumns)} 
+                    buttonText1={t(langKeys.close)}            
+                    handleClickButton1={() => setShowColumnsModalOpen(false)}                    
+                    maxWidth="sm"
+                    buttonStyle1={{marginBottom:'0.3rem'}}
+                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                >  
                 <Grid container spacing={1} style={{marginTop:'0.5rem'}}>
                     <Grid item xs={4}>
                         <FormControlLabel
@@ -577,8 +537,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckExecutiontype}
-                                    onChange={handleExecutiontype }                          
+                                    checked={visibleColumns.executiontype}
+                                    onChange={() => handleToggleColumnVisibility('executiontype')}
                                     name="executiontype"
                                 />
                             }
@@ -592,8 +552,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckExecutingUser}
-                                    onChange={handleExecutingUser }                          
+                                    checked={visibleColumns.executionuser}
+                                    onChange={() => handleToggleColumnVisibility('executionuser')}
                                     name="executingUser"
                                 />
                             }
@@ -607,9 +567,9 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckFirstReplyDate}
-                                    onChange={handleFirstReplyDate }                          
-                                    name="firstreplydate"
+                                    checked={visibleColumns.executionuserprofile}
+                                    onChange={() => handleToggleColumnVisibility('executionuserprofile')}
+                                    name="executionuserprofile"
                                 />
                             }
                             label={t(langKeys.executingUserProfile)}
@@ -622,8 +582,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckTotal}
-                                    onChange={handleTotal }                          
+                                    checked={visibleColumns.total}
+                                    onChange={() => handleToggleColumnVisibility('total')}
                                     name="total"
                                 />
                             }
@@ -637,8 +597,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckSatisfactory}
-                                    onChange={handleSatisfactory }                          
+                                    checked={visibleColumns.success}
+                                    onChange={() => handleToggleColumnVisibility('success')}
                                     name="satisfactory"
                                 />
                             }
@@ -652,8 +612,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckSatisfactoryPercent}
-                                    onChange={handleSatisfactoryPercent }                          
+                                    checked={visibleColumns.successp}
+                                    onChange={() => handleToggleColumnVisibility('successp')}
                                     name="satisfactory_percent"
                                 />
                             }
@@ -668,8 +628,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckFailed}
-                                    onChange={handleFailed }                          
+                                    checked={visibleColumns.fail}
+                                    onChange={() => handleToggleColumnVisibility('fail')}
                                     name="failed"
                                 />
                             }
@@ -683,9 +643,9 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckFailedPercent}
-                                    onChange={handleFailedPercent }                          
-                                    name="failed_percent"
+                                    checked={visibleColumns.failp}
+                                    onChange={() => handleToggleColumnVisibility('failp')}
+                                    name="failp"
                                 />
                             }
                             label={t(langKeys.failed_percent)}
@@ -698,8 +658,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckAttended}
-                                    onChange={handleAttended }                          
+                                    checked={visibleColumns.attended}
+                                    onChange={() => handleToggleColumnVisibility('attended')}
                                     name="attended"
                                 />
                             }
@@ -713,8 +673,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckLocked}
-                                    onChange={handleLocked }                          
+                                    checked={visibleColumns.locked}
+                                    onChange={() => handleToggleColumnVisibility('locked')}
                                     name="locked"
                                 />
                             }
@@ -728,9 +688,9 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 <Checkbox
                                     color="primary"
                                     style={{ pointerEvents: "auto" }}
-                                    checked={filterCheckBlacklist}
-                                    onChange={handleBlacklist }                          
-                                    name="blacklist"
+                                    checked={visibleColumns.blacklisted}
+                                    onChange={() => handleToggleColumnVisibility('blacklisted')}
+                                    name="blacklisted"
                                 />
                             }
                             label={t(langKeys.blacklist)}
@@ -841,7 +801,6 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                     <Divider />
 
                                     <MenuItem 
-                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
                                         style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
                                         onClick={handleOpenShowColumnsModal}                                           
                                     >
@@ -863,7 +822,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
             <div style={{width:'100%', height:'100%'}}>        
              
                 <TablePaginated
-                    columns={columns}
+                    columns={visibleColumnsList}
                     data={mainPaginated.data}
                     totalrow={totalrow}
                     loading={mainPaginated.loading}
