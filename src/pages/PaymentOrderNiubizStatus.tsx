@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Popus from 'components/layout/Popus';
+import React, { FC, useEffect, useState } from 'react';
 
 import { apiUrls } from 'common/constants';
 import { Dictionary } from '@types';
-import { FC, useEffect, useState } from 'react';
 import { formatNumber } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import { LaraigoLogo } from 'icons';

@@ -64,6 +64,10 @@ const paths = {
         path: "/paymentorderizipay/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderizipay/${corpid}/${orgid}/${ordercode}`,
     },
+    EPAYCO_PAYMENTORDER: {
+        path: "/paymentorderepayco/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderepayco/${corpid}/${orgid}/${ordercode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,

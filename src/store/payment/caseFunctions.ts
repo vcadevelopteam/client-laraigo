@@ -222,3 +222,77 @@ export const izipayProcessTransactionReset = (state: IState): IState => ({
     ...state,
     requestIzipayProcessTransaction: initialState.requestIzipayProcessTransaction,
 })
+
+export const epaycoGetPaymentOrder = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEpaycoGetPaymentOrder: {
+        ...state.requestEpaycoGetPaymentOrder,
+        error: false,
+        loading: true,
+    }
+})
+
+export const epaycoGetPaymentOrderFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEpaycoGetPaymentOrder: {
+        ...state.requestEpaycoGetPaymentOrder,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const epaycoGetPaymentOrderSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEpaycoGetPaymentOrder: {
+        ...state.requestEpaycoGetPaymentOrder,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const epaycoGetPaymentOrderReset = (state: IState): IState => ({
+    ...state,
+    requestEpaycoGetPaymentOrder: initialState.requestEpaycoGetPaymentOrder,
+})
+
+export const epaycoProcessTransaction = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEpaycoProcessTransaction: {
+        ...state.requestEpaycoProcessTransaction,
+        error: false,
+        loading: true,
+    }
+})
+
+export const epaycoProcessTransactionFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEpaycoProcessTransaction: {
+        ...state.requestEpaycoProcessTransaction,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const epaycoProcessTransactionSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEpaycoProcessTransaction: {
+        ...state.requestEpaycoProcessTransaction,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const epaycoProcessTransactionReset = (state: IState): IState => ({
+    ...state,
+    requestEpaycoProcessTransaction: initialState.requestEpaycoProcessTransaction,
+})

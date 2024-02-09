@@ -5774,6 +5774,7 @@ export const langKeys = {
   billig_cash: 'billig_cash',
   billing_iva: 'billing_iva',
   billing_paymentcardnotvalid: "billing_paymentcardnotvalid",
+  current_language: 'current_language',
 };
 
 export type LangKeys = typeof langKeys;
