@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -6,10 +5,10 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Popus from 'components/layout/Popus';
+import React, { FC, useEffect, useState } from 'react';
 
 import { apiUrls } from '../common/constants/apiUrls';
 import { Dictionary } from '@types';
-import { FC, useEffect, useState } from 'react';
 import { formatNumber } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import { LaraigoLogo } from 'icons';
@@ -170,20 +169,20 @@ export const PaymentOrderNiubiz: FC = () => {
 
                 if (resultSessionToken.data) {
                     if (apiUrls.BODEGAACME) {
-                        if (resultSessionToken.data.paymentstatus === "PAID") {
+                        if (resultSessionToken.data.paymentstatus === "ACME") {
                             window.open("https://wa.me/51994204479", '_blank');
                             window.open("about:blank", "_self");
                             window.close();
                         }
                         else {
                             setPaymentData(resultSessionToken.data);
-                            importUrlScript(apiUrls.NIUBIZSCRIPT);
+                            importUrlScript(`${apiUrls.NIUBIZSCRIPT}`);
                             importManualScript(resultSessionToken.data);
                         }
                     }
                     else {
                         setPaymentData(resultSessionToken.data);
-                        importUrlScript(apiUrls.NIUBIZSCRIPT);
+                        importUrlScript(`${apiUrls.NIUBIZSCRIPT}`);
                         importManualScript(resultSessionToken.data);
                     }
                 }
