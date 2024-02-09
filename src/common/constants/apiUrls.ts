@@ -1,4 +1,4 @@
-const ENV = import.meta.env.VITE_ENV || 'TESTING';
+const ENV = import.meta.env.VITE_ENV || 'LOCAL';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
@@ -300,6 +300,7 @@ export const apiUrls = {
     MAIN_URL_PAYMENTORDEROPENPAY: `${BASE_URL}/main/public/paymentorderopenpay`,
     MAIN_URL_PAYMENTORDEROPENPAYCOLOMBIA: `${BASE_URL}/main/public/paymentorderopenpaycolombia`,
     MAIN_URL_PAYMENTORDERIZIPAY: `${BASE_URL}/main/public/paymentorderizipay`,
+    MAIN_URL_PAYMENTORDEREPAYCO: `${BASE_URL}/main/public/paymentorderepayco`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
@@ -432,6 +433,9 @@ export const apiUrls = {
 
     PAYMENTORDER_IZIPAY_GETPAYMENTORDER: `${BASE_URL}/paymentizipay/getpaymentorder`,
     PAYMENTORDER_IZIPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentizipay/processtransaction`,
+
+    PAYMENTORDER_EPAYCO_GETPAYMENTORDER: `${BASE_URL}/paymentepayco/getpaymentorder`,
+    PAYMENTORDER_EPAYCO_PROCESSTRANSACTION: `${BASE_URL}/paymentepayco/processtransaction`,
 
     GPT_THREADS: `${BASE_URL}/gpt/threads`,
     GPT_THREADS_DELETE: `${BASE_URL}/gpt/threads/delete`,

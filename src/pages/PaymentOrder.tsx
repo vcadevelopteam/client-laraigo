@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CulqiModal from 'components/fields/CulqiModal';
-import Popus from 'components/layout/Popus';
+import Popus from 'components/layout/Popus'; import React, { FC, useEffect, useState } from 'react';
 
 import { apiUrls } from 'common/constants';
-import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from "@material-ui/core";
 import { useDispatch } from 'react-redux';
@@ -112,7 +110,7 @@ export const PaymentOrder: FC = () => {
 
                 if (mainResult.data.length) {
                     if (apiUrls.BODEGAACME) {
-                        if (mainResult.data[0].paymentstatus === "PAID") {
+                        if (mainResult.data[0].paymentstatus === "ACME") {
                             window.open("https://wa.me/51994204479", '_blank');
                             window.open("about:blank", "_self");
                             window.close();
@@ -148,12 +146,12 @@ export const PaymentOrder: FC = () => {
     useEffect(() => {
         if (waitPay) {
             if (!culqiResult.loading && culqiResult.data) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: '' + t(culqiResult.message || langKeys.success) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: String(t(culqiResult.message || langKeys.success)) }))
                 dispatch(showBackdrop(false));
                 setWaitPay(false);
             }
             else if (culqiResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: '' + t(culqiResult.message || langKeys.error_cos_unexpected) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: String(t(culqiResult.message || langKeys.error_cos_unexpected)) }))
                 dispatch(showBackdrop(false));
                 setWaitPay(false);
             }

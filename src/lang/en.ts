@@ -5862,6 +5862,7 @@ const translation: LangKeys = {
   billig_cash: 'Cash',
   billing_iva: 'IVA',
   billing_paymentcardnotvalid: "This card is not valid for this payment method",
+  current_language: 'en',
 };
 
 const enResource: ResourceLanguage = {

@@ -13,7 +13,7 @@ import { formatNumber } from "common/helpers";
 import { langKeys } from "lang/keys";
 import { LaraigoLogo } from "icons";
 import { makeStyles } from "@material-ui/core";
-import { izipayGetPaymentOrder, izipayProcessTransaction } from "store/payment/actions";
+import { epaycoGetPaymentOrder } from "store/payment/actions";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
@@ -173,14 +173,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const PaymentOrderIzipay: FC = () => {
+export const PaymentOrderEpayco: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const resultGetPaymentOrder = useSelector((state) => state.payment.requestIzipayGetPaymentOrder);
-    const resultProcessTransaction = useSelector((state) => state.payment.requestIzipayProcessTransaction);
+    const resultGetPaymentOrder = useSelector((state) => state.payment.requestEpaycoGetPaymentOrder);
 
     const { corpid, orgid, ordercode }: any = useParams();
 
@@ -195,23 +194,8 @@ export const PaymentOrderIzipay: FC = () => {
     };
 
     const fetchData = () => {
-        dispatch(izipayGetPaymentOrder({ corpid: corpid, orgid: orgid, ordercode: ordercode }));
+        dispatch(epaycoGetPaymentOrder({ corpid: corpid, orgid: orgid, ordercode: ordercode }));
         setWaitData(true);
-    };
-
-    const processTransaction = () => {
-        const paidData = document.getElementById("transaction-data")?.innerHTML;
-
-        if (paidData) {
-            dispatch(
-                izipayProcessTransaction({
-                    paymentdata: paidData,
-                    paymentorderdata: paymentData,
-                })
-            );
-            dispatch(showBackdrop(true));
-            setWaitProcess(true);
-        }
     };
 
     const importUrlScript = (url: string) => {
@@ -233,73 +217,29 @@ export const PaymentOrderIzipay: FC = () => {
 
         script.async = true;
         script.text = `
-            const iziConfig = {
-                publicKey: '${authCredentials.publicKey}',
-                config: {
-                    transactionId: '${data.transactionid}',
-                    action: 'pay',
-                    merchantCode: '${authCredentials.merchantId}',
-                    order: {
-                        orderNumber: '${String(data.paymentorderid).padStart(5, "0")}',
-                        currency: '${data.currency}',
-                        amount: '${(Math.round((data.totalamount || 0) * 100) / 100).toFixed(2)}',
-                        processType: 'AT',
-                        merchantBuyerId: '${data.personid}',
-                        dateTimeTransaction: '${Date.now()}',
-                    },
-                    card: {
-                        brand: '',
-                        pan: '',
-                    },
-                    billing: {
-                        firstName: '${(data.userfirstname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")}',
-                        lastName: '${(data.userlastname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")}',
-                        email: 'laraigo@laraigo.com',
-                        phoneNumber: '51999999999',
-                        street: 'LARAIGO',
-                        city: '${data.usercity || "LIMA"}',
-                        state: '${data.usercity || "LIMA"}',
-                        country: 'PE',
-                        postalCode: '00001',
-                        document: '12345678',
-                        documentType: 'DNI',
-                    },
-                    render: {
-                        typeForm: 'pop-up',
-                    },
-                },
-            };
+            var handler = ePayco.checkout.configure({
+                key: '${authCredentials.publicKey}',
+                test: ${authCredentials.sandbox ? 'true' : 'false'}
+            });
 
-            const callbackPayment = response => {
-                console.log(JSON.stringify(response, null, 2));
-                if (response.code && response.message && response.response) {
-                    if (response.code === "00" && response.message === "OK") {
-                        document.getElementById("transaction-data").innerHTML = JSON.stringify(response, null, 2);
-                        document.getElementById("process-button").click();
-                    }
-                }
+            var data={
+                address_billing: "${data.useraddress || "NONE"}",
+                amount: "${(Math.round((data.totalamount || 0) * 100) / 100).toFixed(2)}",
+                confirmation: "${apiUrls.PAYMENTORDER_EPAYCO_PROCESSTRANSACTION}",
+                country: "${data.usercountry}",
+                currency: "${data.currency?.toLocaleLowerCase()}",
+                description: "${data.description}",
+                external: "false",
+                extra1: "${data.corpid}",
+                extra2: "${data.orgid}",
+                extra3: "${data.paymentorderid}",
+                lang: "${t(langKeys.current_language)}",
+                methodsDisable: ["PSE","SP","CASH","DP"],
+                name: "${data.description}",
+                name_billing: "${(data.userfirstname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")} ${(data.userlastname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")}",
             }
 
-            const handleForm = () => {
-                try {
-                    const izi = new Izipay({
-                        publicKey: iziConfig?.publicKey,
-                        config: iziConfig?.config,
-                    });
-    
-                    izi &&
-                    izi.LoadForm({
-                        authorization: '${data.token}',
-                        keyRSA: 'RSA',
-                        callbackResponse: callbackPayment,
-                    });
-    
-                } catch (error) {
-                    console.log(error);
-                }
-            };
-
-            handleForm();
+            handler.open(data);
         `;
 
         document.body.appendChild(script);
@@ -317,7 +257,10 @@ export const PaymentOrderIzipay: FC = () => {
 
                 if (resultGetPaymentOrder.data) {
                     setPaymentData(resultGetPaymentOrder.data);
-                    importUrlScript(`${apiUrls.IZIPAYSCRIPT}`);
+
+                    if (resultGetPaymentOrder.data.script) {
+                        importUrlScript(resultGetPaymentOrder.data.script);
+                    }
                 }
             } else if (resultGetPaymentOrder.error) {
                 dispatch(
@@ -334,29 +277,6 @@ export const PaymentOrderIzipay: FC = () => {
             }
         }
     }, [resultGetPaymentOrder, waitData]);
-
-    useEffect(() => {
-        if (waitProcess) {
-            if (!resultProcessTransaction.loading && !resultProcessTransaction.error) {
-                dispatch(showBackdrop(false));
-                setWaitProcess(false);
-                setShowPayment(false);
-                fetchData();
-            } else if (resultProcessTransaction.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(resultProcessTransaction.msg ?? "error_unexpected_error", {
-                            module: t(langKeys.organization_plural).toLocaleLowerCase(),
-                        }),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitProcess(false);
-            }
-        }
-    }, [resultProcessTransaction, waitProcess]);
 
     if (resultGetPaymentOrder.loading) {
         return (
@@ -784,7 +704,7 @@ export const PaymentOrderIzipay: FC = () => {
                                             />
                                         </div>
                                     )}
-                                    {paymentData.totalamount && paymentData.authcredentials && paymentData.token && (
+                                    {(paymentData.totalamount && paymentData.authcredentials) && (
                                         <>
                                             <Button
                                                 variant="contained"
@@ -800,12 +720,6 @@ export const PaymentOrderIzipay: FC = () => {
                                             >
                                                 {t(langKeys.proceedpayment)}
                                             </Button>
-                                            <Button
-                                                className={classes.hidden}
-                                                onClick={processTransaction}
-                                                id="process-button"
-                                            ></Button>
-                                            <div className={classes.hidden} id="transaction-data"></div>
                                         </>
                                     )}
                                 </div>
@@ -841,4 +755,4 @@ export const PaymentOrderIzipay: FC = () => {
     }
 };
 
-export default PaymentOrderIzipay;
+export default PaymentOrderEpayco;
