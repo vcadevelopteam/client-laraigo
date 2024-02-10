@@ -2609,6 +2609,7 @@ export const langKeys = {
   report_productivity_derivationtime: 'report_productivity_derivationtime',
   report_productivity_derivationtime_help: "report_productivity_derivationtime_help",
   report_productivity_firstinteractiondate: 'report_productivity_firstinteractiondate',
+  report_productivity_firstinteractiondateagent: 'report_productivity_firstinteractiondateagent',
   report_productivity_firstinteractiontime: 'report_productivity_firstinteractiontime',
   report_productivity_tmo: 'report_productivity_tmo',
   report_productivity_tmo_help: 'report_productivity_tmo_help',
@@ -2632,6 +2633,7 @@ export const langKeys = {
   report_productivity_holdingholdtime: 'report_productivity_holdingholdtime',
   report_productivity_holdingholdtime_help: 'report_productivity_holdingholdtime_help',
   report_productivity_tags: 'report_productivity_tags',
+  report_productivity_tags_help: 'report_productivity_tags',
 
   report_tipification: 'report_tipification',
   report_tipification_ticket: 'report_tipification_ticket',
