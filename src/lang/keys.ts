@@ -5770,7 +5770,7 @@ export const langKeys = {
   billig_paymentmethod: 'billig_paymentmethod',
   billig_creditcard: 'billig_creditcard',
   billig_debitcard: 'billig_debitcard',
-  billig_transfer: 'billig_transfer',
+  billig_credit: 'billig_credit',
   billig_cash: 'billig_cash',
   billing_iva: 'billing_iva',
   billing_paymentcardnotvalid: "billing_paymentcardnotvalid",

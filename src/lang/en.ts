@@ -5858,7 +5858,7 @@ const translation: LangKeys = {
   billig_paymentmethod: 'Payment Method',
   billig_creditcard: 'Credit Card',
   billig_debitcard: 'Debit Card',
-  billig_transfer: 'Transfer',
+  billig_credit: 'Credit',
   billig_cash: 'Cash',
   billing_iva: 'IVA',
   billing_paymentcardnotvalid: "This card is not valid for this payment method",

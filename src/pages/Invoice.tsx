@@ -5650,7 +5650,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                     )}
                                     {data?.paymentprovider === "OPENPAY COLOMBIA" && (
                                         <OpenpayModal
-                                            amount={Math.round(((totalPay) + Number.EPSILON) * 100) / 100}
+                                            amount={Math.round((totalPay + Number.EPSILON) * 100) / 100}
                                             buttontitle={t(langKeys.proceedpayment)}
                                             comments={comments}
                                             corpid={data?.corpid}
@@ -7117,7 +7117,7 @@ const BillingOperation: FC<DetailProps> = ({
     const dataPaymentMethod = [
         { value: "Tarjeta Crédito", description: t(langKeys.billig_creditcard) },
         { value: "Tarjeta Débito", description: t(langKeys.billig_debitcard) },
-        { value: "Transferencia", description: t(langKeys.billig_transfer) },
+        { value: "Crédito", description: t(langKeys.billig_credit) },
         { value: "Efectivo", description: t(langKeys.billig_cash) },
     ];
 
@@ -8214,7 +8214,7 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
     const dataPaymentMethod = [
         { value: "Tarjeta Crédito", description: t(langKeys.billig_creditcard) },
         { value: "Tarjeta Débito", description: t(langKeys.billig_debitcard) },
-        { value: "Transferencia", description: t(langKeys.billig_transfer) },
+        { value: "Crédito", description: t(langKeys.billig_credit) },
         { value: "Efectivo", description: t(langKeys.billig_cash) },
     ];
 
@@ -8603,15 +8603,11 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
     };
 
     const getDocumentResult = (country: string, documenttype: string) => {
-        if ((country === "PE" && documenttype === "6") || (country !== "PE" && documenttype === "0")) {
-            return "emissorinvoice";
-        }
-
         if (country === "PE" && (documenttype === "1" || documenttype === "4" || documenttype === "7")) {
+            return "emissorinvoice";
+        } else {
             return "emissorticket";
         }
-
-        return "";
     };
 
     const getInvoiceType = (invoicetype: string) => {
@@ -10165,7 +10161,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 )}
                                 {currentPaymentProvider === "OPENPAY COLOMBIA" && (
                                     <OpenpayModal
-                                        amount={Math.round(((totalPay) + Number.EPSILON) * 100) / 100}
+                                        amount={Math.round((totalPay + Number.EPSILON) * 100) / 100}
                                         buttontitle={t(langKeys.proceedpayment)}
                                         buyamount={buyAmount}
                                         comments={comments}
