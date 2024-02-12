@@ -8604,9 +8604,9 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
 
     const getDocumentResult = (country: string, documenttype: string) => {
         if (country === "PE" && (documenttype === "1" || documenttype === "4" || documenttype === "7")) {
-            return "emissorinvoice";
-        } else {
             return "emissorticket";
+        } else {
+            return "emissorinvoice";
         }
     };
 
