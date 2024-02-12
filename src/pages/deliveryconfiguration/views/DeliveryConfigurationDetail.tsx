@@ -18,6 +18,7 @@ import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
 import NonWorkingDaysCopyDialog from '../dialogs/NonWorkingDaysDialog copy';
 import { deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
 import { execute } from "store/main/actions";
+import { Dictionary } from '@types';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -28,6 +29,42 @@ const useStyles = makeStyles(() => ({
     },
    
 }));
+
+interface DeliveryShift {
+    shift: string;
+    startTime: string;
+    endTime: string;
+}
+
+interface ConfigJson {
+    automaticA: boolean;
+    manualA: boolean;
+    predefinedA: boolean;
+    inmediateA: boolean;
+    invoiceD: boolean;
+    shareInvoiceD: boolean;
+    guideD: boolean;
+    wspI: boolean;
+    emailI: boolean;
+    sendScheduleN: boolean;
+    sendDispatchN: boolean;
+    smsN: boolean;
+    wspN: boolean;
+    emailN: boolean;
+    routingLogic: boolean;
+    insuredLimitR: boolean;
+    capacityR: boolean;
+    monday: boolean;
+    tuesday: boolean;
+    wednesday: boolean;
+    thursday: boolean;
+    friday: boolean;
+    saturday: boolean;
+    sunday: boolean;
+    validationDistance: null | number;
+    deliveryphoto: boolean;
+    deliveryShifts: DeliveryShift[];
+}
 
 const DeliveryConfigurationDetail: React.FC = () => {
     const { t } = useTranslation();
@@ -42,8 +79,12 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
     const main = useSelector((state) => state.main.mainData);
-
-    const [configjson, setConfigjson] = useState({
+    const [newShift, setNewShift] = useState<DeliveryShift>({
+        shift: '',
+        startTime: '',
+        endTime: '',
+    })
+    const [configjson, setConfigjson] = useState<ConfigJson>({
         automaticA: false,
         manualA: false,
         predefinedA: false,
@@ -70,6 +111,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
         sunday: false,
         validationDistance: null,
         deliveryphoto: false,
+        deliveryShifts: [],
     })
 
     const fetchOriginalConfig = () => {
@@ -101,6 +143,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 sunday: main?.data?.[0]?.config?.sunday,
                 validationDistance: main?.data?.[0]?.config?.validationDistance,
                 deliveryphoto: main?.data?.[0]?.config?.deliveryphoto,
+                deliveryShifts: main?.data?.[0]?.config?.deliveryShifts,
             })
         } else {
             setConfigjson({
@@ -130,9 +173,10 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 sunday: false,
                 validationDistance: null,
                 deliveryphoto: false,
+                deliveryShifts: [],
             })
         }
-    } 
+    }
 
     useEffect(() => {
         fetchOriginalConfig()
@@ -167,7 +211,88 @@ const DeliveryConfigurationDetail: React.FC = () => {
         }
     }, [main, waitSave2])
 
+    const onMainSubmitShifts = (() => {
+        const deliveryShiftsAux = configjson.deliveryShifts
+        deliveryShiftsAux.push(newShift)
+        setConfigjson({
+            ...configjson,
+            deliveryShifts: deliveryShiftsAux
+        })
+        const existingConfig = main.data[0];
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            if(existingConfig) {
+                dispatch(execute(deliveryConfigurationIns({
+                    id: existingConfig?.deliveryconfigurationid,
+                    config: JSON.stringify(configjson),
+                    status: 'ACTIVO',
+                    type: '',              
+                    operation: 'UPDATE',
+                })));
+            } else {
+                dispatch(execute(deliveryConfigurationIns({
+                    id: 0,
+                    config: JSON.stringify(configjson),
+                    status: 'ACTIVO',
+                    type: '',              
+                    operation: 'INSERT',
+                })));
+            }
+            setWaitSave(true);            
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
     const onMainSubmit = (() => {
+        const existingConfig = main.data[0];
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            if(existingConfig) {
+                dispatch(execute(deliveryConfigurationIns({
+                    id: existingConfig?.deliveryconfigurationid,
+                    config: JSON.stringify(configjson),
+                    status: 'ACTIVO',
+                    type: '',              
+                    operation: 'UPDATE',
+                })));
+            } else {
+                dispatch(execute(deliveryConfigurationIns({
+                    id: 0,
+                    config: JSON.stringify(configjson),
+                    status: 'ACTIVO',
+                    type: '',              
+                    operation: 'INSERT',
+                })));
+            }
+            setWaitSave(true);            
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    useEffect(() => {
+        console.log(configjson)
+    }, [configjson])
+
+    const handleDeleteShifts = ((shiftToDelete: Dictionary) => {
+        debugger
+        const deliveryShiftsAux = configjson.deliveryShifts
+        const updatedShifts = deliveryShiftsAux.filter(shift => {
+            return !(shift.shift === shiftToDelete.shift &&
+                     shift.startTime === shiftToDelete.startTime &&
+                     shift.endTime === shiftToDelete.endTime);
+        });
+        setConfigjson({
+            ...configjson,
+            deliveryShifts: updatedShifts
+        })
         const existingConfig = main.data[0];
         const callback = () => {
             dispatch(showBackdrop(true));
@@ -270,6 +395,11 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 <DeliverySchedulesDialog
                     openModal={openModalDeliverySchedules}
                     setOpenModal={setOpenModalDeliverySchedules}
+                    setNewShift={setNewShift}
+                    newShift={newShift}
+                    onMainSubmit={onMainSubmitShifts}
+                    configjson={configjson}
+                    handleDelete={handleDeleteShifts}
                 />
                 <DeliveryPhotoDialog
                     openModal={openModalDeliverPhoto}

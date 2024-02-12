@@ -5,10 +5,6 @@ import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import AddIcon from "@material-ui/icons/Add";
-import { useDispatch } from "react-redux";
-import { useSelector } from "hooks";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { format } from "date-fns";
 import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
@@ -20,41 +16,47 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+interface DeliveryShift {
+    shift: string;
+    startTime: string;
+    endTime: string;
+}
+
+interface RowSelected {
+    row2: Dictionary | null;
+    edit: boolean;
+}
+
 const InsertDeliverySchedulesDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
-    row: Dictionary;
-}> = ({ openModal, setOpenModal, row }) => {
+    setNewShift: (shift: DeliveryShift) => void;
+    newShift: DeliveryShift;
+    onMainSubmit: () => void;
+    data: RowSelected;
+}> = ({ openModal, setOpenModal, setNewShift, newShift, onMainSubmit, data:{row2, edit} }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector((state) => state.main.execute);
 
-    const signatureDateDefault = format(new Date(), "yyyy-MM-dd");
+    const shifts = [
+        {
+            domainvalue: 'Mañana',
+            domaindesc: 'Mañana',
+        },
+        {
+            domainvalue: 'Tarde',
+            domaindesc: 'Tarde',
+        },
+        {
+            domainvalue: 'Noche',
+            domaindesc: 'Noche',
+        },
+    ]
 
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setOpenModal(false);
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code ?? "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave]);
+    const handleAddShift = () => {
+        setOpenModal(false);
+        onMainSubmit()
+    }
 
     return (
         <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="sm">
@@ -62,17 +64,26 @@ const InsertDeliverySchedulesDialog: React.FC<{
                 <FieldSelect
                     label={t(langKeys.shifts)}
                     className="col-4"
-                    data={[]}
-                    optionValue="shifts"
-                    optionDesc="name"
+                    data={shifts}
+                    valueDefault={edit ? row2?.shift : newShift.shift}
+                    onChange={(value) => setNewShift({...newShift, shift: value.domainvalue})}
+                    optionValue="domainvalue"
+                    optionDesc="domaindesc"
                 />
                 <div className="col-2"></div>
-                <FieldEdit label={t(langKeys.from)} type="time" valueDefault={signatureDateDefault} className="col-3" />
+                <FieldEdit
+                    label={t(langKeys.from)}
+                    type="time"
+                    className="col-3"
+                    valueDefault={edit ? row2?.startTime : newShift.startTime}
+                    onChange={(value) => setNewShift({...newShift, startTime: value})}
+                />
                 <FieldEdit
                     label={t(langKeys.until)}
                     type="time"
-                    valueDefault={signatureDateDefault}
                     className="col-3"
+                    valueDefault={edit ? row2?.endTime : newShift.endTime}
+                    onChange={(value) => setNewShift({...newShift, endTime: value})}
                 />
             </div>
             <div className={classes.button}>
@@ -94,6 +105,7 @@ const InsertDeliverySchedulesDialog: React.FC<{
                     color="primary"
                     startIcon={<AddIcon color="secondary" />}
                     style={{ backgroundColor: "#55BD84" }}
+                    onClick={handleAddShift}
                 >
                     {t(langKeys.add)}
                 </Button>
