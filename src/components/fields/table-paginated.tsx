@@ -447,6 +447,7 @@ const TableZyx = React.memo(({
         pageCount,
         setPageSize,
         toggleAllRowsSelected,
+        allColumns,
         state: { pageIndex, pageSize, selectedRowIds },
     } = useTable(
         {
@@ -689,20 +690,20 @@ const TableZyx = React.memo(({
         columns.map((column: Column) => [column.accessor, column.showColumn !== undefined ? column.showColumn : true])
     );
 
-    const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
-    const [pendingChanges, setPendingChanges] = useState(initialVisibleColumns);
+    // const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
+    // const [pendingChanges, setPendingChanges] = useState(initialVisibleColumns);
 
     const handleToggleColumnVisibility = (columnName: any) => {
-        setPendingChanges((prevPendingChanges: Dictionary) => ({
-           ...prevPendingChanges,
-           [columnName]: !prevPendingChanges[columnName],
-        }));
+        // setPendingChanges((prevPendingChanges: Dictionary) => ({
+        //    ...prevPendingChanges,
+        //    [columnName]: !prevPendingChanges[columnName],
+        // }));
      };
 
     const applyPendingChanges = () => {
-        localStorage.setItem('columns', JSON.stringify(pendingChanges));
-        setVisibleColumns(pendingChanges);
-        setShowColumnsModalOpen(false);
+        // localStorage.setItem('columns', JSON.stringify(pendingChanges));
+        // setVisibleColumns(pendingChanges);
+        // setShowColumnsModalOpen(false);
     };   
 
 
@@ -896,11 +897,14 @@ const TableZyx = React.memo(({
                                 buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
                             >  
                             <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                    {columns
-                                        .filter((column) => column.showColumn === true)
+                                    {allColumns.filter(x => x)
                                         .map((column) => (
-                                            <Grid item xs={4} key={column.accessor}>
-                                                <FormControlLabel
+                                            <Grid item xs={4} key={column.id}>
+                                                <label>
+                                                <input type="checkbox" {...column.getToggleHiddenProps()} />{" "}
+                                                {column.id}
+                                                </label>
+                                                {/* <FormControlLabel
                                                     style={{ pointerEvents: "none" }}
                                                     control={
                                                         <Checkbox
@@ -912,7 +916,7 @@ const TableZyx = React.memo(({
                                                         />
                                                     }
                                                     label={t(column.Header)}
-                                                />
+                                                /> */}
                                             </Grid>
                                         ))}
                                 </Grid>
@@ -947,8 +951,8 @@ const TableZyx = React.memo(({
                 <Box overflow="auto" style={{ flex: 1 }}>
                     <MaUTable {...getTableProps()} aria-label="enhanced table" size="small" aria-labelledby="tableTitle">
                         <TableHead>
-                            {headerGroups.map((headerGroup) => (
-                                <TableRow {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroups.map((headerGroup, index) => (
+                                <TableRow {...headerGroup.getHeaderGroupProps()} key={index}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
@@ -984,21 +988,21 @@ const TableZyx = React.memo(({
                                                                 </Tooltip>
                                                             )}
                                                         </div>
-                                                        {!column.NoFilter &&
-                                                            <DefaultColumnFilter
-                                                                header={column.id}
-                                                                listSelectFilter={column.listSelectFilter || []}
-                                                                type={column.type}
-                                                                filters={pagination.filters}
-                                                                setFilters={(filters: any, page: number) => {
-                                                                    setFilters(filters, page);
-                                                                    setTFilters(prev => ({
-                                                                        ...prev,
-                                                                        filters,
-                                                                        page,
-                                                                    }));
-                                                                }}
-                                                            />
+                                                        {!column.NoFilter && null
+                                                            // <DefaultColumnFilter
+                                                            //     header={column.id}
+                                                            //     listSelectFilter={column.listSelectFilter || []}
+                                                            //     type={column.type}
+                                                            //     filters={pagination.filters}
+                                                            //     setFilters={(filters: any, page: number) => {
+                                                            //         setFilters(filters, page);
+                                                            //         setTFilters(prev => ({
+                                                            //             ...prev,
+                                                            //             filters,
+                                                            //             page,
+                                                            //         }));
+                                                            //     }}
+                                                            // />
                                                         }
                                                     </>)
                                                 }
