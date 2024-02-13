@@ -62,6 +62,13 @@ interface ConfigJson {
     nightEndTime: string | null;
 }
 
+interface VehicleType {
+    vehicle: string;
+    insuredAmount: number;
+    speed: number;
+    capacity: number;
+}
+
 const DeliveryConfigurationDetail: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -109,6 +116,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
         nightEndTime: null,
     })
     const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
+    const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([])
 
     const fetchOriginalConfig = () => {
         if(main.data.length) {
@@ -147,6 +155,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 nightEndTime: main?.data?.[0]?.config?.nightEndTime,
             })
             setNonWorkingDates(main?.data?.[0]?.config?.nonWorkingDates)
+            setVehicleTypes(main?.data?.[0]?.config?.vehicleTypes)
         } else {
             setConfigjson({
                 automaticA: false,
@@ -219,7 +228,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             if(existingConfig) {
                 dispatch(execute(deliveryConfigurationIns({
                     id: existingConfig?.deliveryconfigurationid,
-                    config: JSON.stringify({...configjson, nonWorkingDates: nonWorkingDates}),
+                    config: JSON.stringify({...configjson, nonWorkingDates: nonWorkingDates, vehicleTypes: vehicleTypes}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'UPDATE',
@@ -227,7 +236,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             } else {
                 dispatch(execute(deliveryConfigurationIns({
                     id: 0,
-                    config: JSON.stringify(configjson),
+                    config: JSON.stringify({...configjson, nonWorkingDates: nonWorkingDates, vehicleTypes: vehicleTypes}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'INSERT',
@@ -302,6 +311,10 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 <VehicleTypeDialog
                     openModal={openModalVehicleType}
                     setOpenModal={setOpenModalVehicleType}
+                    vehicleTypes={vehicleTypes}
+                    setVehicleTypes={setVehicleTypes}
+                    onMainSubmit={onMainSubmit}
+                    fetchOriginalConfig={fetchOriginalConfig}
                 />
                 <NonWorkingDaysDialog
                     openModal={openModalNonWorkingDays}
