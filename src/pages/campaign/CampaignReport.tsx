@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useCallback, useEffect, useMemo, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getChannelSel, getDateCleaned } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker, FieldMultiSelect } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -99,13 +99,15 @@ export const CampaignReport: React.FC<DetailProps> = ({
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     
     const cell = (props: CellProps<Dictionary>) => {
+        // eslint-disable-next-line react/prop-types
         const column = props.cell.column;
+        // eslint-disable-next-line react/prop-types
         const row = props.cell.row.original;
         return (
             <div onClick={() => {
                 setSelectedRow(row);
                 setOpenModal(true);
-            }}>
+            }}>             
                 {column.sortType === "datetime" && !!row[column.id]
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
@@ -115,9 +117,16 @@ export const CampaignReport: React.FC<DetailProps> = ({
                     minute: "numeric",
                     second: "numeric"
                 })
+                // eslint-disable-next-line react/prop-types
                 : row[column.id]}
             </div>
         )
+    }
+
+    interface Column {
+        Header: string;
+        accessor: string;
+        showColumn?: boolean;        
     }
 
     const columns = React.useMemo(
@@ -163,27 +172,40 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
                 NoFilter: false,
+                showColumn: true,   
                 prefixTranslation: 'executiontype',
                 Cell: (props: CellProps<Dictionary>) => {
+                    // eslint-disable-next-line react/prop-types
                     const { executiontype } = props.cell.row.original;
                     return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }
-            },      
+            },           
             {
                 Header: t(langKeys.executingUser),
+                showColumn: true,
                 accessor: 'executionuser',
-                Cell: cell
+                Cell: (props: any) => {
+                    // eslint-disable-next-line react/prop-types
+                    const { value } = props.cell;
+                    return value !== null ? value : '-';
+                }
             },
             {
                 Header: t(langKeys.executingUserProfile),
-                accessor: 'executionuserprofile',           
-                Cell: cell
-            },                
+                showColumn: true,
+                accessor: 'executionuserprofile',
+                Cell: (props: any) => {
+                    // eslint-disable-next-line react/prop-types
+                    const { value } = props.cell;
+                    return value !== null ? value : '-';
+                }
+            },       
             {
                 Header: t(langKeys.total),
                 accessor: 'total',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -191,6 +213,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 accessor: 'success',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -198,6 +221,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 accessor: 'successp',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -205,6 +229,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 accessor: 'fail',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -212,6 +237,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 accessor: 'failp',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -219,6 +245,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 accessor: 'attended',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -226,15 +253,17 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 accessor: 'locked',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.blacklisted),
                 accessor: 'blacklisted',
                 type: 'number',
-                sortType: 'number',
+                sortType: 'number',  
+                showColumn: true,            
                 Cell: cell
-            }
+            },
         ],
         []
     );
@@ -258,8 +287,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
             skip: pageIndex * pageSize,
           })
         ));
-    };
-      
+    };      
 
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
@@ -347,57 +375,37 @@ export const CampaignReport: React.FC<DetailProps> = ({
         }
     };
 
+
     const storedVisibleColumns = localStorage.getItem('visibleColumns');
 
-    const initialVisibleColumns = storedVisibleColumns ? JSON.parse(storedVisibleColumns) : {
-        executionuser: true,
-        executionuserprofile: true,
-        channeltype: true,
-        title: true,
-        description: true,
-        templatetype: true,
-        templatename: true,
-        channel: true,
-        rundate: true,
-        executiontype: true,
-        total: true,
-        success: true,
-        successp: true,
-        fail: true,
-        failp: true,
-        attended: true,
-        locked: true,
-        blacklisted: true,
-    };
+    const initialVisibleColumns = storedVisibleColumns
+    ? JSON.parse(storedVisibleColumns)
+    : Object.fromEntries(
+        columns.map((column: Column) => [column.accessor, column.showColumn !== undefined ? column.showColumn : true])
+    );
+
 
     const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
     const [pendingChanges, setPendingChanges] = useState(initialVisibleColumns);
 
-    const handleToggleColumnVisibility = (columnName: keyof typeof visibleColumns) => {
-        setPendingChanges((prevPendingChanges: typeof pendingChanges) => ({
+    const handleToggleColumnVisibility = (columnName) => {
+        setPendingChanges((prevPendingChanges) => ({
             ...prevPendingChanges,
             [columnName]: !prevPendingChanges[columnName],
         }));
-    };
+    };    
 
     const applyPendingChanges = () => {
         localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges));
         setVisibleColumns(pendingChanges);
-        fetchData({
-            pageSize: 20,
-            pageIndex: 0,
-            filters: {},
-            sorts: {},
-            daterange: null,
-        });
-    
-        setShowColumnsModalOpen(false); 
+      
+        setShowColumnsModalOpen(false);
     };
+    
        
     // eslint-disable-next-line react/prop-types
     const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
 
-    const fetchDataChannels = () => dispatch(getCollection(getChannelSel(0)));
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
 
@@ -412,9 +420,12 @@ export const CampaignReport: React.FC<DetailProps> = ({
     const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
     const handleOpenShowColumnsModal = () => {
         setShowColumnsModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
     };
-    const executeResult = useSelector((state) => state.channel.channelList);
-    const [waitSave, setWaitSave] = useState(false);
+   
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -430,7 +441,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
         };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
-    const responseChannels = {
+    //para filtro
+    const channelsList = {
         "error": false,
         "success": true,
         "data": [
@@ -444,43 +456,13 @@ export const CampaignReport: React.FC<DetailProps> = ({
             { "typedesc": "WEB FORM", },
         ]
     };    
-    const channelsByOrg = Array.from(new Set(responseChannels.data.map(channel => channel.typedesc))).map(typedesc => ({ domaindesc: typedesc, domainvalue: typedesc }));
-
+    const channelsByOrg = Array.from(new Set(channelsList.data.map(channel => channel.typedesc))).map(typedesc => ({ domaindesc: typedesc, domainvalue: typedesc }));
     const [selectedChannelType, setSelectedChannelType] = useState(null);
     const filteredData = mainPaginated.data.filter(item => {
         return selectedChannelType ? item.channeltype === selectedChannelType : true;
-      });
+    });
 
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                fetchDataChannels();
-            } else if (executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        severity: "error",
-                        show: true,
-                        message: t(executeResult.code ?? "error_unexpected_error", {
-                            module: t(langKeys.property).toLocaleLowerCase(),
-                        }),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave]);
 
-    useEffect(() => {
-        fetchDataChannels();
-
-        return () => {
-            dispatch(resetAllMain());
-        };
-    }, []);
   
     useEffect(() => {
         dispatch(resetCollectionPaginated());
@@ -512,6 +494,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
             dispatch(showBackdrop(false));
         }
     }, [mainPaginated]);  
+
+
    
     return (
         <div style={{ width: '100%' }}>
@@ -558,151 +542,35 @@ export const CampaignReport: React.FC<DetailProps> = ({
                     open={isShowColumnsModalOpen} 
                     title={t(langKeys.showHideColumns)} 
                     buttonText1={t(langKeys.close)}     
-                    buttonText2={t(langKeys.apply)}       
+                    buttonText2={t(langKeys.refresh)}       
                     handleClickButton1={() => setShowColumnsModalOpen(false)}   
                     handleClickButton2={applyPendingChanges}                    
                     maxWidth="sm"
                     buttonStyle1={{marginBottom:'0.3rem'}}
                     buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
                 >  
-                    <Grid container spacing={1} style={{marginTop:'0.5rem'}}>
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.executiontype}
-                                        onChange={() => handleToggleColumnVisibility('executiontype')}
-                                        name="executiontype"
+                   <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                        {columns
+                            .filter((column) => column.showColumn === true)
+                            .map((column) => (
+                                <Grid item xs={4} key={column.accessor}>
+                                    <FormControlLabel
+                                        style={{ pointerEvents: "none" }}
+                                        control={
+                                            <Checkbox
+                                                color="primary"
+                                                style={{ pointerEvents: "auto" }}
+                                                checked={pendingChanges[column.accessor]}
+                                                onChange={() => handleToggleColumnVisibility(column.accessor)}
+                                                name={column.accessor}
+                                            />
+                                        }
+                                        label={t(column.Header)}
                                     />
-                                }
-                                label={t(langKeys.executiontype)}
-                            />
-                        </Grid>                                                   
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.total}
-                                        onChange={() => handleToggleColumnVisibility('total')}
-                                        name="total"
-                                    />
-                                }
-                                label={t(langKeys.total)}
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.success}
-                                        onChange={() => handleToggleColumnVisibility('success')}
-                                        name="satisfactory"
-                                    />
-                                }
-                                label={t(langKeys.satisfactory)}
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.successp}
-                                        onChange={() => handleToggleColumnVisibility('successp')}
-                                        name="satisfactory_percent"
-                                    />
-                                }
-                                label={t(langKeys.satisfactory_percent)}
-                            />
-                        </Grid>
-                        
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.fail}
-                                        onChange={() => handleToggleColumnVisibility('fail')}
-                                        name="failed"
-                                    />
-                                }
-                                label={t(langKeys.failed)}
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.failp}
-                                        onChange={() => handleToggleColumnVisibility('failp')}
-                                        name="failp"
-                                    />
-                                }
-                                label={t(langKeys.failed_percent)}
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.attended}
-                                        onChange={() => handleToggleColumnVisibility('attended')}
-                                        name="attended"
-                                    />
-                                }
-                                label={t(langKeys.attended)}
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.locked}
-                                        onChange={() => handleToggleColumnVisibility('locked')}
-                                        name="locked"
-                                    />
-                                }
-                                label={t(langKeys.locked)}
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
-                                    <Checkbox
-                                        color="primary"
-                                        style={{ pointerEvents: "auto" }}
-                                        checked={pendingChanges.blacklisted}
-                                        onChange={() => handleToggleColumnVisibility('blacklisted')}
-                                        name="blacklisted"
-                                    />
-                                }
-                                label={t(langKeys.blacklist)}
-                            />
-                        </Grid>                  
+                                </Grid>
+                            ))}
                     </Grid>
+
                 </DialogZyx>               
             )}
 
@@ -723,14 +591,15 @@ export const CampaignReport: React.FC<DetailProps> = ({
                             {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                         </Button>
                     </DateRangePicker>
+
+
                     <FieldSelect
                         label={t(langKeys.channel)}
                         variant="outlined"                       
                         className={classes.filterComponent}                        
                         data={channelsByOrg}                       
                         onChange={(value) => {
-                            setValue('basemodel', value.domainvalue);
-                            setSelectedChannelType(value.domainvalue);
+                            setValue('basemodel', value.domainvalue);                       
                         }}
                         error={errors?.basemodel?.message}
                         optionDesc="domaindesc"
@@ -743,12 +612,10 @@ export const CampaignReport: React.FC<DetailProps> = ({
                         color="primary"
                         startIcon={<SearchIcon style={{ color: 'white' }} />}
                         style={{ width: 120, backgroundColor: "#55BD84" }}
-                        onClick={() => fetchData(fetchDataAux, selectedChannelType)}
+                        onClick={() => fetchData(fetchDataAux)}
                     >
                         {t(langKeys.search)}
                     </Button>
-
-                   
 
                 </div> 
 
@@ -843,6 +710,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                     useSelection={true}
                     selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
+                    groupedBy={true}
+                    showHideColumns={true}                    
                 />
             </div>
             
@@ -933,4 +802,4 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
             </div>
         </DialogZyx>
     )
-}
+}   
