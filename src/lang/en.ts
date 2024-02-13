@@ -3633,6 +3633,7 @@ const translation: LangKeys = {
   max_limit: 'Max limit {{n}}',
   max_limit_file_per_upload: 'Max limit {{n}} files per upload',
   type_activitylead_call: 'Call',
+  type_activitylead_appointment: 'APPOINTMENT (Scheduling)',
   type_activitylead_automated: 'Automate message',
   type_activitylead_automatedmail: 'Automate message email',
   type_activitylead_automatedhsm: 'Automate message hsm',
