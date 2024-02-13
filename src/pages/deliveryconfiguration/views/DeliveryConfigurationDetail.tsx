@@ -12,12 +12,11 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
 import { getCollection, getCollectionAux } from 'store/main/actions';
 import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
-import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
-import NonWorkingDaysCopyDialog from '../dialogs/NonWorkingDaysDialog copy';
 import { deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
 import { execute } from "store/main/actions";
+import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -71,7 +70,6 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [openModalNonWorkingDays, setOpenModalNonWorkingDays] = useState(false)
-    const [openModalNonWorkingDaysCopy, setOpenModalNonWorkingDaysCopy] = useState(false)
     const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
@@ -110,6 +108,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
         nightStartTime: null,
         nightEndTime: null,
     })
+    const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
 
     const fetchOriginalConfig = () => {
         if(main.data.length) {
@@ -147,6 +146,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 nightStartTime: main?.data?.[0]?.config?.nightStartTime,
                 nightEndTime: main?.data?.[0]?.config?.nightEndTime,
             })
+            setNonWorkingDates(main?.data?.[0]?.config?.nonWorkingDates)
         } else {
             setConfigjson({
                 automaticA: false,
@@ -219,7 +219,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             if(existingConfig) {
                 dispatch(execute(deliveryConfigurationIns({
                     id: existingConfig?.deliveryconfigurationid,
-                    config: JSON.stringify(configjson),
+                    config: JSON.stringify({...configjson, nonWorkingDates: nonWorkingDates}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'UPDATE',
@@ -291,7 +291,6 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 </div>
                 <DeliveryConfigurationTabDetail
                     setOpenModalNonWorkingDays={setOpenModalNonWorkingDays}
-                    setOpenModalNonWorkingDaysCopy={setOpenModalNonWorkingDaysCopy}
                     setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
                     setOpenModalVehicleType={setOpenModalVehicleType}
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
@@ -307,10 +306,10 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 <NonWorkingDaysDialog
                     openModal={openModalNonWorkingDays}
                     setOpenModal={setOpenModalNonWorkingDays}
-                />
-                <NonWorkingDaysCopyDialog
-                    openModal={openModalNonWorkingDaysCopy}
-                    setOpenModal={setOpenModalNonWorkingDaysCopy}
+                    nonWorkingDates={nonWorkingDates}
+                    setNonWorkingDates={setNonWorkingDates}
+                    onMainSubmit={onMainSubmit}
+                    fetchOriginalConfig={fetchOriginalConfig}
                 />
                 <DeliverySchedulesDialog
                     openModal={openModalDeliverySchedules}

@@ -71,7 +71,6 @@ const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText
 
 interface ConfigurationTabDetailProps {
     setOpenModalNonWorkingDays: (flag: boolean) => void;
-    setOpenModalNonWorkingDaysCopy: (flag: boolean) => void;
     setOpenModalDeliveryShifts: (flag: boolean) => void;
     setOpenModalVehicleType: (flag: boolean) => void;
     setOpenModalDeliveryOrderPhoto: (flag: boolean) => void;
@@ -88,7 +87,6 @@ interface RowSelected {
 
 const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({  
     setOpenModalNonWorkingDays,
-    setOpenModalNonWorkingDaysCopy,
     setOpenModalDeliveryShifts,
     setOpenModalVehicleType,
     setOpenModalDeliveryOrderPhoto,
@@ -679,19 +677,19 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                 </div>
                 <div className='col-3'>    
                     <CustomTitleHelper title={t(langKeys.nonWorkingdays)}/>           
-                    <span className={classes.span} onClick={() => setOpenModalNonWorkingDaysCopy(true)}>
+                    <span className={classes.span} onClick={() => setOpenModalNonWorkingDays(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.nonworkingdays)}
                     </span>
                 </div>
                 <div className='col-3'>                                  
                     <div style={{display:'flex'}}>
                         <div style={{display:'flex'}}>
-                            <CustomTitleHelper title={t(langKeys.deliveryphotoorder)}/>                                                             
+                            <CustomTitleHelper title={t(langKeys.deliveryphotoorder)}/>
                             <div style={{ width: 6 }} />
-                                <IOSSwitch 
-                                    checked={configjson.deliveryphoto} 
-                                    onChange={(e) => setConfigjson({...configjson, deliveryphoto: e.target.checked})} 
-                                    name="checkedB" 
+                                <IOSSwitch
+                                    checked={configjson.deliveryphoto}
+                                    onChange={(e) => setConfigjson({...configjson, deliveryphoto: e.target.checked})}
+                                    name="checkedB"
                                 />
                         </div>
                         <div style={{ width: 10 }} />
