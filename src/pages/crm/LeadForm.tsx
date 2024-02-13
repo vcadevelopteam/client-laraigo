@@ -2441,7 +2441,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 setValue('hsmtemplateid', 0);
                                                 trigger('type');
                                                 if (v?.domainvalue === "appointment") {
-                                                    setValue('duedate', new Date())
+                                                    console.log(getValues('duedate'))
+                                                    setValue('duedate', new Date().toISOString().slice(0, 16).replace('T', ' '))
                                                 }
                                                 if ((v?.domainvalue || "") === "automated") {
                                                     register('hsmtemplateid', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) })
@@ -2519,7 +2520,6 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             valueDefault={getValues('calendar')}
                                             onChange={v => {
                                                 setValue('calendar', v?.calendareventid || 0);
-                                                debugger
                                                 v?.eventlink && window.open("https://" + v.eventlink, '_blank');
                                             }}
                                             error={errors?.assignto?.message}
