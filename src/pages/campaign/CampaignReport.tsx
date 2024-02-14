@@ -120,12 +120,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
     }
   
     const columns = React.useMemo(
-        () => [    
-            {
-                Header: t(langKeys.channeltype),
-                accessor: 'channeltype',
-                Cell: cell
-            },        
+        () => [                    
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
@@ -320,6 +315,8 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 true,
                 [
                     {key: 'templatetype', alias: t(langKeys.templatetype)},
+                    {key: 'date', alias: t(langKeys.date)},
+                    {key: 'campaign', alias: t(langKeys.campaign)},
                     {key: 'campaign', alias: t(langKeys.campaign)},
                     {key: 'description', alias: t(langKeys.description)},
                     {key: 'template', alias: t(langKeys.template)},
