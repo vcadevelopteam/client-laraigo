@@ -1659,13 +1659,14 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
     }
 });
 
-export const getCampaignReportPaginated = ({ startdate, enddate, filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
+export const getCampaignReportPaginated = ({ startdate, enddate, channeltype, filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_CAMPAIGNREPORT_SEL",
     methodCount: "UFN_CAMPAIGNREPORT_TOTALRECORDS",
     parameters: {
         origin: "campaignreport",
         startdate,
         enddate,
+        channeltype,
         filters,
         sorts,
         take,

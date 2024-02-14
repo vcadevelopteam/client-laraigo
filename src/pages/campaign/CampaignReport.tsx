@@ -70,9 +70,7 @@ const initialRange = {
 
 export const CampaignReport: React.FC<DetailProps> = ({ 
     setViewSelected, 
-    externalUse, 
-    setValue,
-    getValues,
+    externalUse,    
     errors
 }) => {
     const classes = useStyles();
@@ -260,26 +258,6 @@ export const CampaignReport: React.FC<DetailProps> = ({
         []
     );
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData, channelType: string | null = null) => {
-        dispatch(showBackdrop(true));
-        const updatedFilters = channelType ? [...filters, { id: 'channeltype', value: channelType }] : filters;
-      
-        setfetchDataAux({
-          ...fetchDataAux,
-          ...{ pageSize, pageIndex, filters: updatedFilters, sorts }
-        });
-      
-        dispatch(getCollectionPaginated(
-          getCampaignReportPaginated({
-            startdate: dateRangeCreateDate.startDate,
-            enddate: dateRangeCreateDate.endDate,
-            sorts,
-            filters: updatedFilters,
-            take: pageSize,
-            skip: pageIndex * pageSize,
-          })
-        ));
-    };      
 
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
@@ -370,12 +348,13 @@ export const CampaignReport: React.FC<DetailProps> = ({
     //channel Filter
     const channelTypeList = filterChannel.data || [];
     const channelTypeFilteredList = new Set();
+    const [selectedChannel, setSelectedChannel] = useState("");
 
     const uniqueTypdescList = channelTypeList.filter(item => {
-        if (channelTypeFilteredList.has(item.typedesc)) {
+        if (channelTypeFilteredList.has(item.type)) {
             return false; 
         }
-        channelTypeFilteredList.add(item.typedesc);
+        channelTypeFilteredList.add(item.type);
         return true;
     });
    
@@ -413,6 +392,21 @@ export const CampaignReport: React.FC<DetailProps> = ({
     }, [mainPaginated]);  
 
 
+    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+        dispatch(showBackdrop(true))
+        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
+        dispatch(getCollectionPaginated(getCampaignReportPaginated(
+            {
+                startdate: dateRangeCreateDate.startDate,
+                enddate: dateRangeCreateDate.endDate,
+                channeltype: selectedChannel,
+                sorts: sorts,
+                filters: filters,
+                take: pageSize,
+                skip: pageIndex * pageSize,
+            }
+        )));
+    };  
    
     return (
         <div style={{ width: '100%' }}>
@@ -456,13 +450,13 @@ export const CampaignReport: React.FC<DetailProps> = ({
                         </Button>
                     </DateRangePicker>
 
-
                     <FieldSelect
                         label={t(langKeys.channel)}
                         variant="outlined"                       
                         className={classes.filterComponent}                        
-                        data={uniqueTypdescList || []}                      
-                        error={errors?.basemodel?.message}
+                        data={uniqueTypdescList || []}        
+                        valueDefault={uniqueTypdescList}
+                        onChange={(value) => setSelectedChannel(value?.type||"")}           
                         optionDesc="typedesc"
                         optionValue="typedesc"
                     />
@@ -519,8 +513,9 @@ export const CampaignReport: React.FC<DetailProps> = ({
                     useSelection={true}
                     selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
-                    groupedBy={true}
-                    showHideColumns={true}                    
+                    groupedBy={true}                           
+                    //ButtonsElement={buttonsElementContent}           
+                    showHideColumns={true} 
                 />
             </div>
             
