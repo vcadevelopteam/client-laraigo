@@ -536,8 +536,6 @@ const TableZyx = React.memo(({
         }
     )
 
-    //const [filteredColumns, setFilteredColumns] = useState(columns);
-
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
             // const pageIndex = !page ? prev.pageIndex : page;
@@ -650,25 +648,32 @@ const TableZyx = React.memo(({
         })
     }
 
+    interface Column {
+        Header: string;
+        accessor: string;
+        showColumn?: boolean;
+    }
+    interface ColumnVisibility {
+        [key: string]: boolean;
+    }
 
-  
-    //nuevo
     const { t } = useTranslation();
-
+    const showExtraButtonIcon = showHideColumns || groupedBy;
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
+    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
 
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
     }; 
 
-    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
     const handleOpenGroupedByModal = () => {
         setGroupedByModalOpen(true);
         };
 
-    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
     const handleOpenShowColumnsModal = () => {
         setShowColumnsModalOpen(true);
         if (openSeButtons) {
@@ -676,36 +681,6 @@ const TableZyx = React.memo(({
             setOpenSeButtons(false);
         }
     };
-
-    const storedVisibleColumns = localStorage.getItem('columns');
-    interface Column {
-        Header: string;
-        accessor: string;
-        showColumn?: boolean;        
-    }
-
-    const initialVisibleColumns = storedVisibleColumns
-    ? JSON.parse(storedVisibleColumns)
-    : Object.fromEntries(
-        columns.map((column: Column) => [column.accessor, column.showColumn !== undefined ? column.showColumn : true])
-    );
-
-    // const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
-    // const [pendingChanges, setPendingChanges] = useState(initialVisibleColumns);
-
-    const handleToggleColumnVisibility = (columnName: any) => {
-        // setPendingChanges((prevPendingChanges: Dictionary) => ({
-        //    ...prevPendingChanges,
-        //    [columnName]: !prevPendingChanges[columnName],
-        // }));
-     };
-
-    const applyPendingChanges = () => {
-        // localStorage.setItem('columns', JSON.stringify(pendingChanges));
-        // setVisibleColumns(pendingChanges);
-        // setShowColumnsModalOpen(false);
-    };   
-
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -720,11 +695,7 @@ const TableZyx = React.memo(({
             document.removeEventListener('click', handleClickOutside);
         };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
-    //fin del  nuevo
     
-    
-    
-    const showExtraButtonIcon = showHideColumns || groupedBy;
 
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
@@ -863,7 +834,21 @@ const TableZyx = React.memo(({
                                     >
                                         {({ TransitionProps }) => (
                                             <Paper {...TransitionProps} elevation={5}>
-                                               
+                                                
+                                                {groupedBy && (
+                                                    <div>
+                                                        <MenuItem 
+                                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                                            onClick={handleOpenGroupedByModal}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                                            </ListItemIcon>
+                                                            <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                                        </MenuItem>
+                                                        <Divider />
+                                                    </div>
+                                                )}
 
                                                 {showHideColumns && (
                                                     <MenuItem 
@@ -888,43 +873,42 @@ const TableZyx = React.memo(({
                             <DialogZyx 
                                 open={isShowColumnsModalOpen} 
                                 title={t(langKeys.showHideColumns)} 
-                                buttonText1={t(langKeys.close)}     
-                                buttonText2={t(langKeys.refresh)}       
-                                handleClickButton1={() => setShowColumnsModalOpen(false)}   
-                                handleClickButton2={applyPendingChanges}                  
+                                buttonText2={t(langKeys.close)}       
+                                handleClickButton2={() => setShowColumnsModalOpen(false)}                  
                                 maxWidth="sm"
                                 buttonStyle1={{marginBottom:'0.3rem'}}
                                 buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
-                            >  
-                            <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                    {allColumns.filter(x => x)
-                                        .map((column) => (
-                                            <Grid item xs={4} key={column.id}>
-                                                <label>
-                                                <input type="checkbox" {...column.getToggleHiddenProps()} />{" "}
-                                                {column.id}
-                                                </label>
-                                                {/* <FormControlLabel
-                                                    style={{ pointerEvents: "none" }}
-                                                    control={
-                                                        <Checkbox
-                                                            color="primary"
-                                                            style={{ pointerEvents: "auto" }}
-                                                            checked={pendingChanges[column.accessor]}
-                                                            onChange={() => handleToggleColumnVisibility(column.accessor)}
-                                                            name={column.accessor}
-                                                        />
-                                                    }
-                                                    label={t(column.Header)}
-                                                /> */}
-                                            </Grid>
-                                        ))}
+                            >                              
+                                <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                                {allColumns.filter(column => {
+                                    const isColumnInstance = 'accessor' in column && 'Header' in column;
+                                    return isColumnInstance && 'showColumn' in (column as Column) && (column as Column).showColumn === true;
+                                })
+                                    .map((column) => (
+                                        <Grid item xs={4} key={column.id}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        color="primary"
+                                                        checked={!columnVisibility[column.id]}  
+                                                        onChange={() => {
+                                                            column.toggleHidden();
+                                                            setColumnVisibility(prevVisibility => ({
+                                                                ...prevVisibility,
+                                                            [column.id]: !prevVisibility[column.id],
+                                                            }));
+                                                        }}
+                                                    />
+                                                }
+                                                label={t(column.Header as string)}
+                                            />
+                                        </Grid>
+                                    ))}
                                 </Grid>
+
                             </DialogZyx>               
                         )}
 
-
-                       
                         {isGroupedByModalOpen && (
                             <DialogZyx 
                                 open={isGroupedByModalOpen} 
@@ -988,21 +972,21 @@ const TableZyx = React.memo(({
                                                                 </Tooltip>
                                                             )}
                                                         </div>
-                                                        {!column.NoFilter && null
-                                                            // <DefaultColumnFilter
-                                                            //     header={column.id}
-                                                            //     listSelectFilter={column.listSelectFilter || []}
-                                                            //     type={column.type}
-                                                            //     filters={pagination.filters}
-                                                            //     setFilters={(filters: any, page: number) => {
-                                                            //         setFilters(filters, page);
-                                                            //         setTFilters(prev => ({
-                                                            //             ...prev,
-                                                            //             filters,
-                                                            //             page,
-                                                            //         }));
-                                                            //     }}
-                                                            // />
+                                                        {!column.NoFilter &&
+                                                            <DefaultColumnFilter
+                                                                header={column.id}
+                                                                listSelectFilter={column.listSelectFilter || []}
+                                                                type={column.type}
+                                                                filters={pagination.filters}
+                                                                setFilters={(filters: any, page: number) => {
+                                                                    setFilters(filters, page);
+                                                                    setTFilters(prev => ({
+                                                                        ...prev,
+                                                                        filters,
+                                                                        page,
+                                                                    }));
+                                                                }}
+                                                            />
                                                         }
                                                     </>)
                                                 }
