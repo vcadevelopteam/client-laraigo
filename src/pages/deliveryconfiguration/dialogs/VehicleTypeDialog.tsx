@@ -51,7 +51,7 @@ const useStyles = makeStyles(() => ({
 }));
 interface VehicleType {
     vehicle: string;
-    insuredAmount: number;
+    insuredamount: number;
     speed: number;
     capacity: number;
 }
@@ -68,7 +68,7 @@ const VehicleTypeDialog: React.FC<{
 	const classes = useStyles();
     const [newVehicleType, setNewVehicleType] = useState<VehicleType>({
         vehicle: "",
-        insuredAmount: 0,
+        insuredamount: 0,
         speed: 0,
         capacity: 0,
     });
@@ -79,7 +79,7 @@ const VehicleTypeDialog: React.FC<{
         setVehicleTypes([...vehicleTypes, newVehicleType]);
         setNewVehicleType({
             vehicle: "",
-            insuredAmount: 0,
+            insuredamount: 0,
             speed: 0,
             capacity: 0,
         });
@@ -88,7 +88,7 @@ const VehicleTypeDialog: React.FC<{
     const handleClean = () => {
         setNewVehicleType({
             vehicle: "",
-            insuredAmount: 0,
+            insuredamount: 0,
             speed: 0,
             capacity: 0,
         });
@@ -110,7 +110,7 @@ const VehicleTypeDialog: React.FC<{
 		const updatedVehicleTypes = [...vehicleTypes];
         updatedVehicleTypes[index] = {
             vehicle: newVehicleType.vehicle,
-            insuredAmount: newVehicleType.insuredAmount,
+            insuredamount: newVehicleType.insuredamount,
             speed: newVehicleType.speed,
             capacity: newVehicleType.capacity
         };
@@ -120,7 +120,7 @@ const VehicleTypeDialog: React.FC<{
 		setIsEditing(false)
 		setNewVehicleType({
 			vehicle: '',
-			insuredAmount: 0,
+			insuredamount: 0,
 			speed: 0,
 			capacity: 0,
 		})
@@ -131,7 +131,7 @@ const VehicleTypeDialog: React.FC<{
 		setVehicleAux(null)
 		setNewVehicleType({
 			vehicle: '',
-			insuredAmount: 0,
+			insuredamount: 0,
 			speed: 0,
 			capacity: 0,
 		})
@@ -144,6 +144,7 @@ const VehicleTypeDialog: React.FC<{
 
 	const closeModal = () => {
         fetchOriginalConfig();
+        handleCancel()
         setOpenModal(false);
     };
 
@@ -177,8 +178,8 @@ const VehicleTypeDialog: React.FC<{
                         <FieldEdit
                             type="number"
                             label={t(langKeys.insuredamount)}
-                            valueDefault={newVehicleType.insuredAmount}
-                            onChange={(value) => setNewVehicleType({ ...newVehicleType, insuredAmount: value })}
+                            valueDefault={newVehicleType.insuredamount}
+                            onChange={(value) => setNewVehicleType({ ...newVehicleType, insuredamount: value })}
                             className="col-6"
                         />
                     </div>
@@ -221,7 +222,7 @@ const VehicleTypeDialog: React.FC<{
 									variant="contained"
 									disabled={
 										newVehicleType.vehicle === "" ||
-										newVehicleType.insuredAmount <= 0 ||
+										newVehicleType.insuredamount <= 0 ||
 										newVehicleType.speed <= 0 ||
 										newVehicleType.capacity <= 0 ||
 										vehicleTypes.some(vehicle => vehicle.vehicle === newVehicleType.vehicle)
@@ -235,7 +236,7 @@ const VehicleTypeDialog: React.FC<{
 									variant="contained"
 									disabled={
 										!newVehicleType.vehicle &&
-										!newVehicleType.insuredAmount &&
+										!newVehicleType.insuredamount &&
 										!newVehicleType.speed &&
 										!newVehicleType.capacity
 									}

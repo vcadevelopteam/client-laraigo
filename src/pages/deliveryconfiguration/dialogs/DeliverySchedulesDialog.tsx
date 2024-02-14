@@ -1,9 +1,10 @@
-import { makeStyles } from "@material-ui/core";
+import { IconButton, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldEdit } from "components";
 import { langKeys } from "lang/keys";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Dictionary } from "@types";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles(() => ({      
     shiftsContainer: {
@@ -33,7 +34,8 @@ const DeliverySchedulesDialog: React.FC<{
     onMainSubmit: () => void;
     configjson: Dictionary;
     setConfigjson: (data: any) => void;
-}> = ({ openModal, setOpenModal, onMainSubmit, configjson, setConfigjson }) => {
+    fetchOriginalConfig: () => void;
+}> = ({ openModal, setOpenModal, onMainSubmit, configjson, setConfigjson, fetchOriginalConfig }) => {
     const { t } = useTranslation();
     const classes = useStyles();
 
@@ -41,64 +43,104 @@ const DeliverySchedulesDialog: React.FC<{
         onMainSubmit();
     }
 
+    const handleCleanMorningRow = () => {
+        setConfigjson({...configjson, morningstarttime: null, morningendtime: null})
+    }
+
+    const handleCleanAfternoonRow = () => {
+        setConfigjson({...configjson, afternoonstarttime: null, afternoonendtime: null})
+    }
+
+    const handleCleanNightRow = () => {
+        setConfigjson({...configjson, nightstarttime: null, nightendtime: null})
+    }
+
+    const handleClose = () => {
+        fetchOriginalConfig()
+        setOpenModal(false)
+    }
+
     return (
-        <DialogZyx open={openModal} title={t(langKeys.deliveryshifts)} maxWidth="md" buttonText0={t(langKeys.close)} buttonText1={t(langKeys.save)} handleClickButton0={() => setOpenModal(false)} handleClickButton1={handleSave}>
-            <div className="row-zyx">
-                <div className="row-zyx">
-                    <div className="col-4">{t(langKeys.shift)}</div>
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.deliveryshifts)}
+            maxWidth="md"
+            buttonText0={t(langKeys.close)}
+            buttonText1={t(langKeys.save)}
+            handleClickButton0={handleClose}
+            handleClickButton1={handleSave}
+        >
+            <div className="row-zyx" style={{marginBottom: 0}}>
+                <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
+                    <div className="col-3">{t(langKeys.shift)}</div>
                     <div className="col-4">{t(langKeys.from)}</div>
                     <div className="col-4">{t(langKeys.until)}</div>
                 </div>
-                <div className="row-zyx">
-                    <div className="col-4">Mañana</div>
+                <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
+                    <div className="col-3" style={{display:'flex', justifyContent: 'center'}}>Mañana</div>
                     <FieldEdit
                         type="time"
                         variant="outlined"
                         className="col-4"
-                        valueDefault={configjson.morningStartTime}
-                        onChange={(value) => setConfigjson({...configjson, morningStartTime: value})}
+                        valueDefault={configjson.morningstarttime || ''}
+                        onChange={(value) => setConfigjson({...configjson, morningstarttime: value})}
                     />
                     <FieldEdit
                         type="time"
                         variant="outlined"
                         className="col-4"
-                        valueDefault={configjson.morningEndTime}
-                        onChange={(value) => setConfigjson({...configjson, morningEndTime: value})}
+                        valueDefault={configjson.morningendtime || ''}
+                        onChange={(value) => setConfigjson({...configjson, morningendtime: value})}
                     />
+                    <div className="col-1">
+                        <IconButton onClick={handleCleanMorningRow}>
+                            <DeleteIcon/>
+                        </IconButton>
+                    </div>
                 </div>
-                <div className="row-zyx">
-                    <div className="col-4">Tarde</div>
+                <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
+                    <div className="col-3" style={{display:'flex', justifyContent: 'center'}}>Tarde</div>
                     <FieldEdit
                         type="time"
                         variant="outlined"
                         className="col-4"
-                        valueDefault={configjson.afternoonStartTime}
-                        onChange={(value) => setConfigjson({...configjson, afternoonStartTime: value})}
+                        valueDefault={configjson.afternoonstarttime || ''}
+                        onChange={(value) => setConfigjson({...configjson, afternoonstarttime: value})}
                     />
                     <FieldEdit
                         type="time"
                         variant="outlined"
                         className="col-4"
-                        valueDefault={configjson.afternoonEndTime}
-                        onChange={(value) => setConfigjson({...configjson, afternoonEndTime: value})}
+                        valueDefault={configjson.afternoonendtime || ''}
+                        onChange={(value) => setConfigjson({...configjson, afternoonendtime: value})}
                     />
+                    <div className="col-1">
+                        <IconButton onClick={handleCleanAfternoonRow}>
+                            <DeleteIcon/>
+                        </IconButton>
+                    </div>
                 </div>
-                <div className="row-zyx">
-                    <div className="col-4">Noche</div>
+                <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
+                    <div className="col-3" style={{display:'flex', justifyContent: 'center'}}>Noche</div>
                     <FieldEdit
                         type="time"
                         variant="outlined"
                         className="col-4"
-                        valueDefault={configjson.nightStartTime}
-                        onChange={(value) => setConfigjson({...configjson, nightStartTime: value})}
+                        valueDefault={configjson.nightstarttime || ''}
+                        onChange={(value) => setConfigjson({...configjson, nightstarttime: value})}
                     />
                     <FieldEdit
                         type="time"
                         variant="outlined"
                         className="col-4"
-                        valueDefault={configjson.nightEndTime}
-                        onChange={(value) => setConfigjson({...configjson, nightEndTime: value})}
+                        valueDefault={configjson.nightendtime || ''}
+                        onChange={(value) => setConfigjson({...configjson, nightendtime: value})}
                     />
+                    <div className="col-1">
+                        <IconButton onClick={handleCleanNightRow}>
+                            <DeleteIcon/>
+                        </IconButton>
+                    </div>
                 </div>
             </div>
         </DialogZyx>

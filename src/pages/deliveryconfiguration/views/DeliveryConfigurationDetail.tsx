@@ -28,23 +28,23 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface ConfigJson {
-    automaticA: boolean;
-    manualA: boolean;
-    predefinedA: boolean;
-    inmediateA: boolean;
-    invoiceD: boolean;
-    shareInvoiceD: boolean;
-    guideD: boolean;
-    wspI: boolean;
-    emailI: boolean;
-    sendScheduleN: boolean;
-    sendDispatchN: boolean;
-    smsN: boolean;
-    wspN: boolean;
-    emailN: boolean;
-    routingLogic: boolean;
-    insuredLimitR: boolean;
-    capacityR: boolean;
+    automatica: boolean;
+    manuala: boolean;
+    predefineda: boolean;
+    inmediatea: boolean;
+    invoiced: boolean;
+    shareinvoiced: boolean;
+    guided: boolean;
+    wspi: boolean;
+    emaili: boolean;
+    sendschedulen: boolean;
+    senddispatchn: boolean;
+    smsn: boolean;
+    wspn: boolean;
+    emailn: boolean;
+    routinglogic: boolean;
+    insuredlimitr: boolean;
+    capacityr: boolean;
     monday: boolean;
     tuesday: boolean;
     wednesday: boolean;
@@ -52,14 +52,14 @@ interface ConfigJson {
     friday: boolean;
     saturday: boolean;
     sunday: boolean;
-    validationDistance: null | number;
+    validationdistance: null | number;
     deliveryphoto: boolean;
-    morningStartTime: string | null;
-    morningEndTime: string | null;
-    afternoonStartTime: string | null;
-    afternoonEndTime: string | null;
-    nightStartTime: string | null;
-    nightEndTime: string | null;
+    morningstarttime: string | null;
+    morningendtime: string | null;
+    afternoonstarttime: string | null;
+    afternoonendtime: string | null;
+    nightstarttime: string | null;
+    nightendtime: string | null;
 }
 
 interface VehicleType {
@@ -82,23 +82,23 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
     const main = useSelector((state) => state.main.mainData);
     const [configjson, setConfigjson] = useState<ConfigJson>({
-        automaticA: false,
-        manualA: false,
-        predefinedA: false,
-        inmediateA: false,
-        invoiceD: false,
-        shareInvoiceD: false,
-        guideD: false,
-        wspI: false,
-        emailI: false,
-        sendScheduleN: false,
-        sendDispatchN: false,
-        smsN: false,
-        wspN: false,
-        emailN: false,
-        routingLogic: false,
-        insuredLimitR: false,
-        capacityR: false,
+        automatica: false,
+        manuala: false,
+        predefineda: false,
+        inmediatea: false,
+        invoiced: false,
+        shareinvoiced: false,
+        guided: false,
+        wspi: false,
+        emaili: false,
+        sendschedulen: false,
+        senddispatchn: false,
+        smsn: false,
+        wspn: false,
+        emailn: false,
+        routinglogic: false,
+        insuredlimitr: false,
+        capacityr: false,
         monday: false,
         tuesday: false,
         wednesday: false,
@@ -106,38 +106,39 @@ const DeliveryConfigurationDetail: React.FC = () => {
         friday: false,
         saturday: false,
         sunday: false,
-        validationDistance: null,
+        validationdistance: null,
         deliveryphoto: false,
-        morningStartTime: null,
-        morningEndTime: null,
-        afternoonStartTime: null,
-        afternoonEndTime: null,
-        nightStartTime: null,
-        nightEndTime: null,
+        morningstarttime: null,
+        morningendtime: null,
+        afternoonstarttime: null,
+        afternoonendtime: null,
+        nightstarttime: null,
+        nightendtime: null,
     })
     const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
     const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([])
+    const [deliveryPhotos, setDeliveryPhotos] = useState<string[]>([])
 
     const fetchOriginalConfig = () => {
         if(main.data.length) {
             setConfigjson({
-                automaticA: main?.data?.[0]?.config?.automaticA,
-                manualA: main?.data?.[0]?.config?.manualA,
-                predefinedA: main?.data?.[0]?.config?.predefinedA,
-                inmediateA: main?.data?.[0]?.config?.inmediateA,
-                invoiceD: main?.data?.[0]?.config?.invoiceD,
-                shareInvoiceD: main?.data?.[0]?.config?.shareInvoiceD,
-                guideD: main?.data?.[0]?.config?.guideD,
-                wspI: main?.data?.[0]?.config?.wspI,
-                emailI: main?.data?.[0]?.config?.emailI,
-                sendScheduleN: main?.data?.[0]?.config?.sendScheduleN,
-                sendDispatchN: main?.data?.[0]?.config?.sendDispatchN,
-                smsN: main?.data?.[0]?.config?.smsN,
-                wspN: main?.data?.[0]?.config?.wspN,
-                emailN: main?.data?.[0]?.config?.emailN,
-                routingLogic: main?.data?.[0]?.config?.routingLogic,
-                insuredLimitR: main?.data?.[0]?.config?.insuredLimitR,
-                capacityR: main?.data?.[0]?.config?.capacityR,
+                automatica: main?.data?.[0]?.config?.automatica,
+                manuala: main?.data?.[0]?.config?.manuala,
+                predefineda: main?.data?.[0]?.config?.predefineda,
+                inmediatea: main?.data?.[0]?.config?.inmediatea,
+                invoiced: main?.data?.[0]?.config?.invoiced,
+                shareinvoiced: main?.data?.[0]?.config?.shareinvoiced,
+                guided: main?.data?.[0]?.config?.guided,
+                wspi: main?.data?.[0]?.config?.wspi,
+                emaili: main?.data?.[0]?.config?.emaili,
+                sendschedulen: main?.data?.[0]?.config?.sendschedulen,
+                senddispatchn: main?.data?.[0]?.config?.senddispatchn,
+                smsn: main?.data?.[0]?.config?.smsn,
+                wspn: main?.data?.[0]?.config?.wspn,
+                emailn: main?.data?.[0]?.config?.emailn,
+                routinglogic: main?.data?.[0]?.config?.routinglogic,
+                insuredlimitr: main?.data?.[0]?.config?.insuredlimitr,
+                capacityr: main?.data?.[0]?.config?.capacityr,
                 monday: main?.data?.[0]?.config?.monday,
                 tuesday: main?.data?.[0]?.config?.tuesday,
                 wednesday: main?.data?.[0]?.config?.wednesday,
@@ -145,36 +146,37 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 friday: main?.data?.[0]?.config?.friday,
                 saturday: main?.data?.[0]?.config?.saturday,
                 sunday: main?.data?.[0]?.config?.sunday,
-                validationDistance: main?.data?.[0]?.config?.validationDistance,
+                validationdistance: main?.data?.[0]?.config?.validationdistance,
                 deliveryphoto: main?.data?.[0]?.config?.deliveryphoto,
-                morningStartTime: main?.data?.[0]?.config?.morningStartTime,
-                morningEndTime: main?.data?.[0]?.config?.morningEndTime,
-                afternoonStartTime: main?.data?.[0]?.config?.afternoonStartTime,
-                afternoonEndTime: main?.data?.[0]?.config?.afternoonEndTime,
-                nightStartTime: main?.data?.[0]?.config?.nightStartTime,
-                nightEndTime: main?.data?.[0]?.config?.nightEndTime,
+                morningstarttime: main?.data?.[0]?.config?.morningstarttime,
+                morningendtime: main?.data?.[0]?.config?.morningendtime,
+                afternoonstarttime: main?.data?.[0]?.config?.afternoonstarttime,
+                afternoonendtime: main?.data?.[0]?.config?.afternoonendtime,
+                nightstarttime: main?.data?.[0]?.config?.nightstarttime,
+                nightendtime: main?.data?.[0]?.config?.nightendtime,
             })
-            setNonWorkingDates(main?.data?.[0]?.config?.nonWorkingDates)
-            setVehicleTypes(main?.data?.[0]?.config?.vehicleTypes)
+            setNonWorkingDates(main?.data?.[0]?.config?.nonworkingdates)
+            setVehicleTypes(main?.data?.[0]?.config?.vehicletypes)
+            setDeliveryPhotos(main?.data?.[0]?.config?.deliveryphotos)
         } else {
             setConfigjson({
-                automaticA: false,
-                manualA: false,
-                predefinedA: false,
-                inmediateA: true,
-                invoiceD: true,
-                shareInvoiceD: true,
-                guideD: true,
-                wspI: false,
-                emailI: false,
-                sendScheduleN: false,
-                sendDispatchN: false,
-                smsN: false,
-                wspN: false,
-                emailN: false,
-                routingLogic: false,
-                insuredLimitR: false,
-                capacityR: false,
+                automatica: false,
+                manuala: false,
+                predefineda: false,
+                inmediatea: true,
+                invoiced: true,
+                shareinvoiced: true,
+                guided: true,
+                wspi: false,
+                emaili: false,
+                sendschedulen: false,
+                senddispatchn: false,
+                smsn: false,
+                wspn: false,
+                emailn: false,
+                routinglogic: false,
+                insuredlimitr: false,
+                capacityr: false,
                 monday: true,
                 tuesday: true,
                 wednesday: true,
@@ -182,14 +184,14 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 friday: true,
                 saturday: false,
                 sunday: false,
-                validationDistance: null,
+                validationdistance: null,
                 deliveryphoto: false,
-                morningStartTime: null,
-                morningEndTime: null,
-                afternoonStartTime: null,
-                afternoonEndTime: null,
-                nightStartTime: null,
-                nightEndTime: null,
+                morningstarttime: null,
+                morningendtime: null,
+                afternoonstarttime: null,
+                afternoonendtime: null,
+                nightstarttime: null,
+                nightendtime: null,
             })
         }
     }
@@ -228,7 +230,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             if(existingConfig) {
                 dispatch(execute(deliveryConfigurationIns({
                     id: existingConfig?.deliveryconfigurationid,
-                    config: JSON.stringify({...configjson, nonWorkingDates: nonWorkingDates, vehicleTypes: vehicleTypes}),
+                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'UPDATE',
@@ -236,7 +238,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             } else {
                 dispatch(execute(deliveryConfigurationIns({
                     id: 0,
-                    config: JSON.stringify({...configjson, nonWorkingDates: nonWorkingDates, vehicleTypes: vehicleTypes}),
+                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'INSERT',
@@ -330,10 +332,15 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     onMainSubmit={onMainSubmit}
                     configjson={configjson}
                     setConfigjson={setConfigjson}
+                    fetchOriginalConfig={fetchOriginalConfig}
                 />
                 <DeliveryPhotoDialog
                     openModal={openModalDeliverPhoto}
                     setOpenModal={setOpenModalDeliverPhoto}
+                    onMainSubmit={onMainSubmit}
+                    deliveryPhotos={deliveryPhotos}
+                    setDeliveryPhotos={setDeliveryPhotos}
+                    fetchOriginalConfig={fetchOriginalConfig}
                 />
             </form>
         </>

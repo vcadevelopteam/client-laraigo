@@ -1,146 +1,174 @@
-import React, { useEffect, useState } from "react";
-import { Button, makeStyles, IconButton, Typography } from "@material-ui/core";
+import React, { useState } from "react";
+import { Button, makeStyles, IconButton } from "@material-ui/core";
 import { DialogZyx, FieldEdit } from "components";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import ClearIcon from "@material-ui/icons/Clear";
-import SaveIcon from "@material-ui/icons/Save";
 import AddIcon from "@material-ui/icons/Add";
-import { useDispatch } from "react-redux";
-import { useSelector } from "hooks";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles(() => ({
-    button: {
-        display: "flex",
-        gap: "10px",
-        alignItems: "center",
-        justifyContent: "flex-end",
-    },
-    titlespace: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
     addbutton: {
-        backgroundColor: "#55BD84",
-        margin: "1rem 0 ",
+        marginTop: 20,
+    },
+    col4: {
+        height: 324,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginBottom: 0,
+        border: "4px outset #7721AD",
+    },
+    selectedPhotosContainer: {
+        maxHeight: "260px",
+        overflowY: "auto",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+    },
+    photoItem: {
+        marginBottom: 6,
+        display: "flex",
+        alignItems: "center",
+    },
+    photoSpan: {
+        border: "1px solid black",
+        width: 100,
+        display: "flex",
+        justifyContent: "center",
+        padding: "8px 0",
+    },
+    noPhotosTextContainer: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
     },
 }));
 
 const DeliveryPhotoDialog = ({
     openModal,
     setOpenModal,
+    onMainSubmit,
+    deliveryPhotos,
+    setDeliveryPhotos,
+    fetchOriginalConfig,
 }: {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
+    onMainSubmit: () => void;
+    deliveryPhotos: string[];
+    setDeliveryPhotos: (photos: string[]) => void;
+    fetchOriginalConfig: () => void;
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector((state) => state.main.execute);
+    const [isAding, setIsAding] = useState(false);
+    const [newPhoto, setNewPhoto] = useState('');
 
-    const [photoCount, setPhotoCount] = useState(1);
-    const [savedPhotoCount, setSavedPhotoCount] = useState(1);
+    const handleCancelNewPhoto = () => {
+        setNewPhoto('')
+        setIsAding(false)
+    }
 
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_register),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setOpenModal(false);
-                setWaitSave(false);
-            } else if (executeRes.error) {
-                const errorMessage = t(executeRes.code ?? "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave]);
+    const handleSaveNewPhoto = () => {
+        setDeliveryPhotos([...deliveryPhotos, newPhoto])
+        setNewPhoto('')
+        setIsAding(false)
+    }
 
-    const handleModalClose = () => {
-        if (!waitSave) {
-            setPhotoCount(savedPhotoCount);
-            setOpenModal(false);
-        }
+    const handleDeletePhoto = (photo: string) => {
+        const updatedPhotos = deliveryPhotos.filter((p) => p !== photo);
+        setDeliveryPhotos(updatedPhotos);
     };
 
     const handleSave = () => {
-        setSavedPhotoCount(photoCount);
-        setWaitSave(true);
-    };
+        onMainSubmit()
+        setOpenModal(false)
+    }
 
-    const handleDeleteField = () => {
-        setPhotoCount((prevCount) => prevCount - 1);
+    const closeModal = () => {
+        fetchOriginalConfig();
+        handleCancelNewPhoto()
+        setOpenModal(false);
     };
 
     return (
-        <DialogZyx open={openModal} title={t(langKeys.deliveryphotoorder)} maxWidth="sm">
-            <div className="row-zyx" style={{ gap: "1rem" }}>
-                {Array.from({ length: photoCount }).map((_, index) => (
-                    <div key={index} className="field-edit-container">
-                        <div className={classes.titlespace}>
-                            <div>
-                                <Typography>{t(langKeys.photo) + " " + (index + 1)}</Typography>
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.deliveryphotoorder)}
+            maxWidth="sm"
+            buttonText0={t(langKeys.close)}
+            buttonText1={t(langKeys.save)}
+            handleClickButton0={closeModal}
+            handleClickButton1={handleSave}
+        >
+            <div className="row-zyx" style={{marginBottom: 0}}>
+                <div className={classes.col4}>
+                    {deliveryPhotos.length > 0 ? (
+                        <>
+                            <h3>Fotos registradas</h3>
+                            <div className={classes.selectedPhotosContainer}>
+                                {deliveryPhotos.map((photo) => (
+                                    <>
+                                        <div className={classes.photoItem}>
+                                            <span className={classes.photoSpan}>{photo}</span>
+                                            <IconButton onClick={() => handleDeletePhoto(photo)}>
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                        </div>
+                                    </>
+                                ))}
                             </div>
-                            <div>
-                                <IconButton onClick={() => handleDeleteField()} className="delete-button">
-                                    <DeleteIcon />
-                                </IconButton>
-                            </div>
+                        </>
+                    ) : (
+                        <div className={classes.noPhotosTextContainer}>
+                            <p>No hay fotos registradas</p>
                         </div>
-                        <FieldEdit type="text" className="col-12" />
+                    )}
+                </div>
+                {isAding ? (
+                    <div style={{display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', marginTop: 20,}}>
+                        <FieldEdit
+                            label={t(langKeys.name)}
+                            variant="outlined"
+                            valueDefault={newPhoto}
+                            onChange={(value) => setNewPhoto(value)}
+                        />
+                        <div style={{display: 'flex', justifyContent: 'center'}}>
+                            <Button
+                                className={classes.addbutton}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<AddIcon color="secondary"/>}
+                                onClick={handleSaveNewPhoto}
+                                disabled={newPhoto === '' || deliveryPhotos.some(photo => photo === newPhoto)}
+                            >
+                                {t(langKeys.add)}
+                            </Button>
+                            <div style={{width: 20}}/>
+                            <Button
+                                className={classes.addbutton}
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleCancelNewPhoto}
+                            >
+                                {t(langKeys.cancel)}
+                            </Button>
+                        </div>
                     </div>
-                ))}
-
-                <Button
-                    className={classes.addbutton}
-                    variant="contained"
-                    type="button"
-                    color="primary"
-                    startIcon={<AddIcon color="secondary" />}
-                    onClick={() => {
-                        setPhotoCount((prevCount) => prevCount + 1);
-                    }}
-                >
-                    {t(langKeys.add) + " " + t(langKeys.deliveryphotoorder)}
-                </Button>
-            </div>
-
-            <div className={classes.button}>
-                <Button
-                    variant="contained"
-                    type="button"
-                    color="primary"
-                    startIcon={<ClearIcon color="secondary" />}
-                    style={{ backgroundColor: "#FB5F5F" }}
-                    onClick={handleModalClose}
-                >
-                    {t(langKeys.back)}
-                </Button>
-
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    type="button"
-                    startIcon={<SaveIcon color="secondary" />}
-                    style={{ backgroundColor: "#55BD84" }}
-                    onClick={handleSave}
-                >
-                    {t(langKeys.save)}
-                </Button>
+                ): (
+                    <Button
+                        className={classes.addbutton}
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon color="secondary"/>}
+                        onClick={() => setIsAding(true)}
+                    >
+                        {t(langKeys.add) + " " + t(langKeys.deliveryphotoorder)}
+                    </Button>
+                )}
             </div>
         </DialogZyx>
     );

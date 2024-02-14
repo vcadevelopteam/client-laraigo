@@ -98,7 +98,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const { t } = useTranslation();
     const classes = useStyles();
     const [openModalAssociatedVehicleDialog, setOpenModalAssociatedVehicleDialog] = useState(false)
-    const [routingLogic, setRoutingLogic] = useState(configjson.routingLogic);
+    const [routingLogic, setRoutingLogic] = useState(configjson.routinglogic);
     const mainVehicles = useSelector(state => state.main.mainAux);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -239,7 +239,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const handleChange = (name: string) => (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
             // Contar cuántos checkboxes están en true
-            const checkedCount = [configjson.automaticA, configjson.manualA, configjson.predefinedA, configjson.inmediateA].filter(value => value).length;
+            const checkedCount = [configjson.automatica, configjson.manuala, configjson.predefineda, configjson.inmediatea].filter(value => value).length;
     
             // Permitir el cambio solo si hay menos de 2 checkboxes en true
             if (checkedCount < 2 || configjson[name]) {
@@ -263,8 +263,8 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 <Checkbox 
                                     color="primary" 
                                     style={{ pointerEvents: "auto" }} 
-                                    checked={configjson.automaticA} 
-                                    onChange={handleChange('automaticA')} 
+                                    checked={configjson.automatica} 
+                                    onChange={handleChange('automatica')} 
                                     name="auto" 
                                 />}
                                 label={t(langKeys.automatic)}
@@ -275,8 +275,8 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 <Checkbox 
                                     color="primary" 
                                     style={{ pointerEvents: "auto" }} 
-                                    checked={configjson.manualA} 
-                                    onChange={handleChange('manualA')} 
+                                    checked={configjson.manuala} 
+                                    onChange={handleChange('manuala')} 
                                     name="man" 
                                 />}
                                 label={t(langKeys.manual)}
@@ -287,8 +287,8 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     <Checkbox 
                                         color="primary" 
                                         style={{ pointerEvents: "auto" }} 
-                                        checked={configjson.predefinedA} 
-                                        onChange={handleChange('predefinedA')} 
+                                        checked={configjson.predefineda} 
+                                        onChange={handleChange('predefineda')} 
                                         name="predef" 
                                     />}
                                 label={t(langKeys.default2)}
@@ -299,9 +299,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 <Checkbox 
                                     color="primary"
                                     style={{ pointerEvents: "visible" }}
-                                    checked={configjson.inmediateA}
+                                    checked={configjson.inmediatea}
                                     onChange={()=>{
-                                        setConfigjson({...configjson, inmediateA: true})
+                                        setConfigjson({...configjson, inmediatea: true})
                                     }}
                                     name="immediate"
                                 />}
@@ -318,9 +318,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 style={{ pointerEvents: "none" }}
                                 control={
                                     <Checkbox color="primary" style={{ pointerEvents: "auto" }}
-                                        checked={configjson.invoiceD}
+                                        checked={configjson.invoiced}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, invoiceD: e.target.checked})
+                                            setConfigjson({...configjson, invoiced: e.target.checked})
                                         }} 
                                         name="sun" 
                                     />
@@ -332,9 +332,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={
                                     <Checkbox color="primary" 
                                         style={{ pointerEvents: "auto" }} 
-                                        checked={configjson.shareInvoiceD}
+                                        checked={configjson.shareinvoiced}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, shareInvoiceD: e.target.checked})
+                                            setConfigjson({...configjson, shareinvoiced: e.target.checked})
                                         }} 
                                         name="mon"
                                     />
@@ -346,9 +346,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={
                                     <Checkbox color="primary" 
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.guideD}
+                                        checked={configjson.guided}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, guideD: e.target.checked})
+                                            setConfigjson({...configjson, guided: e.target.checked})
                                         }} 
                                         name="tue"
                                     />
@@ -369,12 +369,12 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 style={{ pointerEvents: "none" }}
                                 control={
                                     <Checkbox
-                                        disabled={!configjson.shareInvoiceD}
+                                        disabled={!configjson.shareinvoiced}
                                         color="primary"
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.wspI}
+                                        checked={configjson.wspi}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, wspI: e.target.checked})
+                                            setConfigjson({...configjson, wspi: e.target.checked})
                                         }}
                                         name="sun"
                                     />
@@ -385,12 +385,12 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 style={{ pointerEvents: "none" }}
                                 control={
                                     <Checkbox
-                                        disabled={!configjson.shareInvoiceD}
+                                        disabled={!configjson.shareinvoiced}
                                         color="primary"
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.emailI}
+                                        checked={configjson.emaili}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, emailI: e.target.checked})
+                                            setConfigjson({...configjson, emaili: e.target.checked})
                                         }}
                                         name="mon"
                                     />
@@ -413,9 +413,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     <Checkbox
                                         color="primary"
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.sendScheduleN}
+                                        checked={configjson.sendschedulen}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, sendScheduleN: e.target.checked})
+                                            setConfigjson({...configjson, sendschedulen: e.target.checked})
                                         }}
                                         name="sun"
                                     />
@@ -428,9 +428,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     <Checkbox 
                                         color="primary"
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.sendDispatchN}
+                                        checked={configjson.senddispatchn}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, sendDispatchN: e.target.checked})
+                                            setConfigjson({...configjson, senddispatchn: e.target.checked})
                                         }}
                                         name="mon"
                                     />
@@ -449,11 +449,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={
                                     <Checkbox
                                         color="primary"
-                                        disabled={!configjson.sendDispatchN && !configjson.sendScheduleN}
+                                        disabled={!configjson.senddispatchn && !configjson.sendschedulen}
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.smsN}
+                                        checked={configjson.smsn}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, smsN: e.target.checked})
+                                            setConfigjson({...configjson, smsn: e.target.checked})
                                         }}
                                         name="sun"
                                     />
@@ -465,11 +465,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={
                                     <Checkbox
                                         color="primary"
-                                        disabled={!configjson.sendDispatchN && !configjson.sendScheduleN}
+                                        disabled={!configjson.senddispatchn && !configjson.sendschedulen}
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.wspN}
+                                        checked={configjson.wspn}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, wspN: e.target.checked})
+                                            setConfigjson({...configjson, wspn: e.target.checked})
                                         }}
                                         name="mon"
                                     />
@@ -481,11 +481,11 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                 control={
                                     <Checkbox
                                         color="primary"
-                                        disabled={!configjson.sendDispatchN && !configjson.sendScheduleN}
+                                        disabled={!configjson.senddispatchn && !configjson.sendschedulen}
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.emailN}
+                                        checked={configjson.emailn}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, emailN: e.target.checked})
+                                            setConfigjson({...configjson, emailn: e.target.checked})
                                         }}
                                         name="tue"
                                     />
@@ -501,10 +501,10 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                             <CustomTitleHelper title={t(langKeys.routinglogic)}/>                                
                             <div style={{ width: 6 }} />
                             <IOSSwitch
-                                checked={configjson.routingLogic}
+                                checked={configjson.routinglogic}
                                 onChange={(e) => {
                                     setRoutingLogic(e.target.checked)
-                                    setConfigjson({...configjson, routingLogic: e.target.checked})
+                                    setConfigjson({...configjson, routinglogic: e.target.checked})
                                 }}
                                 name="checkedB"
                             />
@@ -516,9 +516,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     <Checkbox
                                         color="primary"
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.insuredLimitR}
+                                        checked={configjson.insuredlimitr}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, insuredLimitR: e.target.checked})
+                                            setConfigjson({...configjson, insuredlimitr: e.target.checked})
                                         }}
                                         name="sun"
                                     />
@@ -532,9 +532,9 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     <Checkbox
                                         color="primary"
                                         style={{ pointerEvents: "auto" }}
-                                        checked={configjson.capacityR}
+                                        checked={configjson.capacityr}
                                         onChange={(e) => {
-                                            setConfigjson({...configjson, capacityR: e.target.checked})
+                                            setConfigjson({...configjson, capacityr: e.target.checked})
                                         }}
                                         name="mon"
                                     />
@@ -704,10 +704,10 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                     <CustomTitleHelper title={t(langKeys.deliveryvalidationdistance)}/>
                     <div style={{ width: 300 }}>
                         <FieldEdit
-                            valueDefault={configjson.validationDistance}
+                            valueDefault={configjson.validationdistance}
                             className="col-2"
                             type='number'
-                            onChange={(value) => setConfigjson({...configjson, validationDistance: value})}
+                            onChange={(value) => setConfigjson({...configjson, validationdistance: value})}
                         />
                     </div>
                 </div>
