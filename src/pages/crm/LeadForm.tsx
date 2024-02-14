@@ -2441,6 +2441,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 setValue('hsmtemplateid', 0);
                                                 trigger('type');
                                                 if (v?.domainvalue === "appointment") {
+                                                    console.log(getValues('duedate'))
                                                     setValue('duedate', new Date().toISOString().slice(0, 16).replace('T', ' '))
                                                 }
                                                 if ((v?.domainvalue || "") === "automated") {
