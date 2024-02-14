@@ -1,5 +1,5 @@
 import { Button, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit } from "components";
+import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -28,18 +28,31 @@ interface RowSelected {
     edit: boolean;
 }
 
+interface VehicleType {
+    vehicle: string;
+    insuredamount: number;
+    speed: number;
+    capacity: number;
+}
+
 
 const AssociatedVehicleDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
     data: RowSelected;
     fetchVehicles: ()=> void;
-}> = ({ openModal, setOpenModal, data:{row2, edit}, fetchVehicles }) => {
+    vehicleTypes: VehicleType[];
+}> = ({ openModal, setOpenModal, data:{row2, edit}, fetchVehicles, vehicleTypes }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector((state) => state.main.execute);
+    const user = useSelector(state => state.login.validateToken.user);
+    const [capacityAux, setCapacityAux] = useState(0)
+    const [speedAux, setSpeedAux] = useState(0)
+    const [insuredAux, setInsuredAux] = useState(0)
+    const [typeAux, setTypeAux] = useState('')
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -56,6 +69,8 @@ const AssociatedVehicleDialog: React.FC<{
             license: row2?.license || '',
         }
     });
+
+    console.log(user)
 
     const onMainSubmit = handleSubmit((data) => {        
         const callback = () => {
@@ -118,7 +133,16 @@ const AssociatedVehicleDialog: React.FC<{
           setValue('insuredamount', row2.averagespeed)
           setValue('averagespeed', row2.insuredamount)
           setValue('userid', row2.userid)
-          setValue('license', row2.license)          
+          setValue('license', row2.license)
+          setCapacityAux(row2.capacity)
+          setInsuredAux(row2.insuredamount)
+          setSpeedAux(row2.averagespeed)
+          setTypeAux(row2.type)
+        } else {
+            setCapacityAux(0)
+            setInsuredAux(0)
+            setSpeedAux(0)
+            setTypeAux('')
         }
       }, [row2])
 
@@ -127,14 +151,39 @@ const AssociatedVehicleDialog: React.FC<{
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.organization)}
-                    type="text" className="col-6"                    
+                    type="text" className="col-6"
+                    disabled={true}
+                    valueDefault={user?.orgdesc}
                 />
-                <FieldEdit
+                <FieldSelect
                     label={t(langKeys.vehicletype)}
                     type="text" className="col-6"
-                    valueDefault={row2?.type}
-                    onChange={(value)=> setValue('type', value)}
+                    data={vehicleTypes || []}
+                    valueDefault={typeAux}
+                    onChange={(value)=> {
+                        if(value){
+                            setValue('type', value.vehicle)
+                            setValue('capacity', value.capacity)
+                            setValue('averagespeed', value.speed)
+                            setValue('insuredamount', value.insuredamount)
+                            setCapacityAux(value.capacity)
+                            setSpeedAux(value.speed)
+                            setInsuredAux(value.insuredamount)
+                            setTypeAux(value.vehicle)
+                        } else {
+                            setValue('type', '')
+                            setValue('capacity', 0)
+                            setValue('averagespeed', 0)
+                            setValue('insuredamount', 0)
+                            setCapacityAux(0)
+                            setInsuredAux(0)
+                            setSpeedAux(0)
+                            setTypeAux('')
+                        }
+                    }}
                     error={typeof errors?.type?.message === 'string' ? errors?.type?.message : ''}
+                    optionDesc="vehicle"
+                    optionValue="vehicle"
                 />
                 <FieldEdit
                     label={t(langKeys.brand)}
@@ -142,6 +191,7 @@ const AssociatedVehicleDialog: React.FC<{
                     className="col-6"
                     valueDefault={row2?.brand}
                     onChange={(value)=> setValue('brand', value)}
+                    maxLength={200}
                     error={typeof errors?.brand?.message === 'string' ? errors?.brand?.message : ''}
 
                 />
@@ -150,6 +200,7 @@ const AssociatedVehicleDialog: React.FC<{
                     type="text"
                     className="col-6"
                     valueDefault={row2?.model}
+                    maxLength={200}
                     onChange={(value)=> setValue('model', value)}
                     error={typeof errors?.model?.message === 'string' ? errors?.model?.message : ''}
 
@@ -158,6 +209,7 @@ const AssociatedVehicleDialog: React.FC<{
                     label={t(langKeys.platenum)}                 
                     className="col-6"
                     valueDefault={row2?.vehicleplate}
+                    maxLength={10}
                     onChange={(value)=> setValue('vehicleplate', value)}
                     error={typeof errors?.vehicleplate?.message === 'string' ? errors?.vehicleplate?.message : ''}
 
@@ -166,8 +218,8 @@ const AssociatedVehicleDialog: React.FC<{
                     label={t(langKeys.capacity)}
                     type="number"
                     className="col-6"
-                    valueDefault={row2?.capacity}
-                    onChange={(value)=> setValue('capacity', value)}
+                    valueDefault={capacityAux}
+                    disabled={true}
                     error={typeof errors?.capacity?.message === 'string' ? errors?.capacity?.message : ''}
 
                 />
@@ -175,8 +227,8 @@ const AssociatedVehicleDialog: React.FC<{
                     label={t(langKeys.averagespeed)}
                     type="number"
                     className="col-6"
-                    valueDefault={row2?.averagespeed}                  
-                    onChange={(value)=> setValue('averagespeed', value)}
+                    valueDefault={speedAux}                  
+                    disabled={true}
                     error={typeof errors?.averagespeed?.message === 'string' ? errors?.averagespeed?.message : ''}
 
                 />
@@ -184,8 +236,8 @@ const AssociatedVehicleDialog: React.FC<{
                     label={t(langKeys.insuredamount)}
                     type="number"
                     className="col-6"
-                    valueDefault={row2?.insuredamount}
-                    onChange={(value)=> setValue('insuredamount', value)}
+                    valueDefault={insuredAux}
+                    disabled={true}
                     error={typeof errors?.insuredamount?.message === 'string' ? errors?.insuredamount?.message : ''}
 
                 />
@@ -203,6 +255,7 @@ const AssociatedVehicleDialog: React.FC<{
                     type="text"
                     className="col-6"
                     valueDefault={row2?.license}
+                    maxLength={9}
                     onChange={(value)=> setValue('license', value)}
                     error={typeof errors?.license?.message === 'string' ? errors?.license?.message : ''}
                 />

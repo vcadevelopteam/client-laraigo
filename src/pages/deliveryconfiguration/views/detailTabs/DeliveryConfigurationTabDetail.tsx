@@ -47,8 +47,15 @@ const useStyles = makeStyles((theme) => ({
     thursdayseparation: {
         pointerEvents: "none", 
         paddingBottom:"10px",
-    }    
+    },
 }));
+
+interface VehicleType {
+    vehicle: string;
+    insuredamount: number;
+    speed: number;
+    capacity: number;
+}
 
 interface CustomTitleHelperProps {
     title: string;
@@ -78,6 +85,7 @@ interface ConfigurationTabDetailProps {
     fetchVehicles: () => void;
     setConfigjson: (data: any) => void;
     configjson: Dictionary;
+    vehicleTypes: VehicleType[];
 }
 
 interface RowSelected {
@@ -94,6 +102,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     fetchVehicles,
     setConfigjson,
     configjson,
+    vehicleTypes,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -721,7 +730,8 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         openModal={openModalAssociatedVehicleDialog}
                         setOpenModal={setOpenModalAssociatedVehicleDialog}    
                         data={selectedRow}   
-                        fetchVehicles={fetchVehicles}                 
+                        fetchVehicles={fetchVehicles}
+                        vehicleTypes={vehicleTypes}
                     />
                 </div>
                 <div className='row-zyx'>                

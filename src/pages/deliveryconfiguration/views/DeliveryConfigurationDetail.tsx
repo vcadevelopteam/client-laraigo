@@ -64,7 +64,7 @@ interface ConfigJson {
 
 interface VehicleType {
     vehicle: string;
-    insuredAmount: number;
+    insuredamount: number;
     speed: number;
     capacity: number;
 }
@@ -309,6 +309,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     fetchVehicles={fetchVehicles}
                     setConfigjson={setConfigjson}
                     configjson={configjson}
+                    vehicleTypes={vehicleTypes}
                 />
                 <VehicleTypeDialog
                     openModal={openModalVehicleType}
