@@ -10,11 +10,11 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
-import { getCollection, getCollectionAux } from 'store/main/actions';
+import { getCollection, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
 import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
-import { deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
+import { deliveryAppUsersSel, deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
 import { execute } from "store/main/actions";
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 
@@ -203,10 +203,12 @@ const DeliveryConfigurationDetail: React.FC = () => {
 
     const fetchConfiguration = () => dispatch(getCollection(deliveryConfigurationSel({id: 0, all: true})));
     const fetchVehicles = () => dispatch(getCollectionAux(deliveryVehicleSel({id: 0, all: true})));
+    const fetchDrivers = () => dispatch(getCollectionAux2(deliveryAppUsersSel()));
 
     useEffect(() => {
         fetchConfiguration()
         fetchVehicles()
+        fetchDrivers()
         setWaitSave2(true)
     }, [])
 

@@ -4133,3 +4133,9 @@ export const deliveryVehicleIns = ({ id, status, type, brand, model, vehicleplat
     key: "UFN_DELIVERYVEHICLE_INS",
     parameters: { id, status, type, brand, model, vehicleplate, capacity, insuredamount, averagespeed, userid, license, operation },
 });
+
+export const deliveryAppUsersSel = () => ({
+    method: "UFN_USERS_APP_DELIVERY_SEL",
+    key: "UFN_USERS_APP_DELIVERY_SEL",
+    parameters: {},
+});
