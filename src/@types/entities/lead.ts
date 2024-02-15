@@ -195,7 +195,7 @@ export interface AutomatizationRuleSave {
     operation: string,
     description: string,
     communicationchannelid: number,
-    communicationchannelorigen?: number,
+    communicationchannelorigin?: number,
     columnid: number,
     columnname: string,
     shippingtype: string,
