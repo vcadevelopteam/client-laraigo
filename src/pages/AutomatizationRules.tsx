@@ -166,7 +166,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insAutomatizationRules({ ...data, messagetemplateparameters: JSON.stringify(data.variables) })));
+            dispatch(execute(insAutomatizationRules({ ...data, messagetemplateparameters: JSON.stringify(data.variables), schedule: data?.schedule||null })));
 
             setWaitSave(true);
         }
@@ -362,7 +362,10 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             className="col-6"
                             onChange={(value) => {
                                 setValue('communicationchannelid', value?.communicationchannelid || 0)
-                                setValue('messagetemplateid', 0)
+                                setValue('hsmtemplatename', '');
+                                setValue('variables', []);
+                                setBodyMessage('');
+                                setValue('messagetemplateid', 0);
                                 if(value?.type){
                                     setTemplatesList(templates.data.filter(x=>(x.type==="HSM" && value.type.includes("WHA"))||(x.type==="MAIL" && value.type.includes("MAI"))))
                                 }else{
