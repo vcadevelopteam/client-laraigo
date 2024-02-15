@@ -293,8 +293,7 @@ export const PaymentOrderEpayco: FC = () => {
                             <div className={classes.back}>
                                 <div className={classes.containerSuccess}>
                                     <div style={{ display: "flex", justifyContent: "center" }}>
-                                        {!apiUrls.BODEGAACME && <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />}
-                                        {apiUrls.BODEGAACME && <img src={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/BODEGA%20ACME/40016109-be7d-4aa7-9287-743d35fcc05d/470e9a59-bbaa-4742-ba5b-e4aa1c21d865_waifu2x_art_noise3_scale.png'} style={{ height: 120, margin: '20px' }} />}
+                                    <img src={'https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/dfbffeb9-5a11-4020-852d-a600264d8fb4/epayco-logo-fondo-oscuro.png'} style={{ height: 120, margin: '20px' }} />
                                     </div>
                                     <div style={{ fontWeight: "bold", fontSize: 20, marginBottom: "20px" }}>
                                         {t(langKeys.paymentorder_success)}
