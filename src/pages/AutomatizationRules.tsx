@@ -66,8 +66,15 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const dataCommChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataLeads = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataTags = multiData[4] && multiData[4].success ? multiData[4].data : [];
-    const prevChannel = dataCommChannels.filter(x=>x.communicationchannelid === row?.communicationchannelid)?.[0] ||null
-    const [templatesList, setTemplatesList] = useState<any[]>(templates.data.filter(x=>(x.type==="HSM" && prevChannel?.type?.includes("WHA"))||(x.type==="MAIL" && prevChannel?.type?.includes("MAI")))||[]);
+    const [templatesList, setTemplatesList] = useState<any[]>([]);
+    
+    useEffect(() => {
+        if(dataCommChannels.length){
+            const prevChannel = dataCommChannels.filter(x=>x.communicationchannelid === row?.communicationchannelid)?.[0] ||null
+            setTemplatesList(templates.data.filter(x=>(x.type==="HSM" && prevChannel?.type?.includes("WHA"))||(x.type==="MAIL" && prevChannel?.type?.includes("MAI")))||[])
+        }
+    }, [dataCommChannels])
+
     const dataOrder = [
         { value: "new", description: t(langKeys.new) },
         { value: "dispatched", description: t(langKeys.dispatched) },
@@ -103,9 +110,6 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
         name: 'variables',
     });
 
-    useEffect(() => {
-        console.log(errors)
-    }, [errors])
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
@@ -621,7 +625,7 @@ const AutomatizationRules: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insAutomatizationRules({ ...row, id: row?.leadautomatizationrulesid, order: row?.typeorder, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(insAutomatizationRules({ ...row, id: row?.leadautomatizationrulesid, order: row?.typeorder, operation: 'DELETE', status: 'ELIMINADO', messagetemplateparameters: JSON.stringify(row?.messagetemplateparameters||"") })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
