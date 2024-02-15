@@ -79,7 +79,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             operation: row ? "EDIT" : "INSERT",
             description: row?.description || '',
             communicationchannelid: row?.communicationchannelid || 0,
-            sourcechannelid: row?.sourcechannelid || 0,
+            communicationchannelorigen: row?.communicationchannelorigen || 0,
             columnid: row?.columnid || 0,
             columnname: row?.columnname || 0,
             shippingtype: row?.shippingtype || "",
@@ -121,7 +121,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
         register('id');
         register('description', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('communicationchannelid', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
-        register('sourcechannelid', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
+        register('communicationchannelorigen', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
         register('columnid');
         register('shippingtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('schedule', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -207,8 +207,8 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                         <FieldSelect
                             label={t(langKeys.originchannel)}
                             className="col-6"
-                            onChange={(value) => setValue('sourcechannelid', value?.communicationchannelid || 0)}
-                            valueDefault={getValues('sourcechannelid')}
+                            onChange={(value) => setValue('communicationchannelorigen', value?.communicationchannelid || 0)}
+                            valueDefault={getValues('communicationchannelorigen')}
                             data={dataCommChannels}
                             helperText={t(langKeys.originchannel_help)}
                             optionDesc="communicationchanneldesc"
