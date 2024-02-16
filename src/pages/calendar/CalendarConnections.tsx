@@ -269,7 +269,7 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                         <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CALENDAR}>
                             <GoogleLogIn
                                 label="Conectar"
-                                scope={'https://www.googleapis.com/auth/calendar.readonly'}
+                                scope={'https://www.googleapis.com/auth/calendar'}
                                 googleDispatch={(e) => {
                                     dispatch(calendarGoogleLogIn({ ...e, id: row?.calendareventid }))
                                     setWaitGoogleLogIn(true);
