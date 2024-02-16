@@ -921,6 +921,13 @@ export const getCommChannelLst = (): IRequestBody => ({
     }
 });
 
+export const getCommChannelLstTypeDesc = (): IRequestBody => ({
+    method: "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC",
+    key: "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC",
+    parameters: {
+    }
+});
+
 export const getValuesForTree = (type = "QUICKREPLY"): IRequestBody => ({
     method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",

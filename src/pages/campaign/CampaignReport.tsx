@@ -3,14 +3,14 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getChannelSel, getCommChannelLst, getDateCleaned } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
-import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
+import { exportData, getCollection, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon } from 'icons';
-import { Button } from '@material-ui/core';
+import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
@@ -18,6 +18,9 @@ import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
 import { FieldErrors } from "react-hook-form";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import AllInboxIcon from '@material-ui/icons/AllInbox'; 
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 
 interface DetailProps {
     setViewSelected?: (view: string) => void;
@@ -253,7 +256,6 @@ export const CampaignReport: React.FC<DetailProps> = ({
         []
     );
 
-
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
@@ -388,6 +390,61 @@ export const CampaignReport: React.FC<DetailProps> = ({
         }
     }, [mainPaginated]);  
 
+    const storedVisibleColumns = localStorage.getItem('visibleColumns');
+    type VisibleColumns = Record<string, boolean>;
+    const initialVisibleColumns: VisibleColumns = storedVisibleColumns
+        ? JSON.parse(storedVisibleColumns)
+        : columns.reduce((acc, column) => {// eslint-disable-next-line react/prop-types
+            if (column.showColumn) {// eslint-disable-next-line react/prop-types
+                acc[column.accessor] = true;
+            }
+    return acc;
+    }, {} as VisibleColumns);
+
+    const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
+    const [pendingChanges, setPendingChanges] = useState(initialVisibleColumns);
+
+    const handleToggleColumnVisibility = (columnName: keyof typeof visibleColumns) => {
+        setPendingChanges((prevPendingChanges: typeof pendingChanges) => ({
+            ...prevPendingChanges,
+            [columnName]: !prevPendingChanges[columnName],
+        }));
+    };
+
+    const applyPendingChanges = () => {
+        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges));
+        setVisibleColumns(pendingChanges);          
+        setShowColumnsModalOpen(false); 
+    }; // eslint-disable-next-line react/prop-types
+    const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
+
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [openSeButtons, setOpenSeButtons] = useState(false);
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+    };     
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+    const handleOpenGroupedByModal = () => {
+        setGroupedByModalOpen(true);
+        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
+    };
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
+    const handleOpenShowColumnsModal = () => { 
+        setShowColumnsModalOpen(true);        
+        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
+    };
+    
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;    
+            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null); setOpenSeButtons(false);
+            }
+        };    
+        document.addEventListener('click', handleClickOutside);
+        return () => { document.removeEventListener('click', handleClickOutside); };
+    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
         dispatch(showBackdrop(true))
@@ -492,13 +549,111 @@ export const CampaignReport: React.FC<DetailProps> = ({
                             variant="contained"
                         >
                             {`${t(langKeys.download)}`}
-                        </Button>
-                </div>                                                                                   
+                        </Button>                        
+                </div>     
+                <div>
+                    <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        onClick={(event) => handleClickSeButtons(event)}
+                        style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+
+                    <div style={{ display: 'flex', gap: 8 }}>                               
+                        <Popper
+                            open={openSeButtons}
+                            anchorEl={anchorElSeButtons}
+                            placement="bottom"
+                            transition
+                            style={{marginRight:'1rem'}}
+                        >
+                            {({ TransitionProps }) => (
+                                <Paper {...TransitionProps} elevation={5}>
+
+                                    <MenuItem 
+                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                        onClick={handleOpenGroupedByModal}
+                                    >
+                                        <ListItemIcon>
+                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                    </MenuItem>
+                                    <Divider />
+
+                                    <MenuItem 
+                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                        onClick={handleOpenShowColumnsModal}                                           
+                                    >
+                                        <ListItemIcon>
+                                            <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                    </MenuItem>   
+
+                                </Paper>
+                            )}
+                        </Popper>
+                    </div>    
+                    {isGroupedByModalOpen && (
+                        <DialogZyx 
+                            open={isGroupedByModalOpen} 
+                            title={t(langKeys.groupedBy)} 
+                            buttonText1={t(langKeys.close)}
+                            buttonText2={t(langKeys.apply) }
+                            handleClickButton1={() => setGroupedByModalOpen(false)}                    
+                            handleClickButton2={()=> setGroupedByModalOpen(false)}
+                            maxWidth="sm"
+                            buttonStyle1={{marginBottom:'0.3rem'}}
+                            buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                        >                     
+                            {/* Falta */}
+                        </DialogZyx>
+                    )} 
+                     {isShowColumnsModalOpen && (
+                            <DialogZyx 
+                                open={isShowColumnsModalOpen} 
+                                title={t(langKeys.showHideColumns)} 
+                                buttonText1={t(langKeys.close)}     
+                                buttonText2={t(langKeys.refresh)}       
+                                handleClickButton1={() => setShowColumnsModalOpen(false)}   
+                                handleClickButton2={applyPendingChanges}                  
+                                maxWidth="sm"
+                                buttonStyle1={{marginBottom:'0.3rem'}}
+                                buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                            >  
+                            <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                                {columns // eslint-disable-next-line react/prop-types
+                                    .filter((column) => column.showColumn === true)
+                                    .map((column) => ( // eslint-disable-next-line react/prop-types
+                                        <Grid item xs={4} key={column.accessor}>
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                control={
+                                                    <Checkbox
+                                                        color="primary"
+                                                        style={{ pointerEvents: "auto" }} // eslint-disable-next-line react/prop-types
+                                                        checked={pendingChanges[column.accessor]} // eslint-disable-next-line react/prop-types
+                                                        onChange={() => handleToggleColumnVisibility(column.accessor)} // eslint-disable-next-line react/prop-types
+                                                        name={column.accessor}
+                                                    />
+                                                } // eslint-disable-next-line react/prop-types
+                                                label={t(column.Header)}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </DialogZyx>               
+                        )}
+                                        
+                </div>                                                                                
             </div>
             
             <div style={{width:'100%', height:'100%'}}>       
                 <TablePaginated
-                    columns={columns}
+                    columns={visibleColumnsList}
                     data={mainPaginated.data}
                     totalrow={totalrow}
                     loading={mainPaginated.loading}
@@ -509,10 +664,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                     exportPersonalized={triggerExportData}
                     useSelection={true}
                     selectionKey={selectionKey}
-                    setSelectedRows={setSelectedRows}
-                    groupedBy={true}                           
-                    //ButtonsElement={buttonsElementContent}           
-                    showHideColumns={true} 
+                    setSelectedRows={setSelectedRows}             
                 />
             </div>
             
