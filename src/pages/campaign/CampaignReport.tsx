@@ -127,16 +127,19 @@ export const CampaignReport: React.FC<DetailProps> = ({
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
+                groupedBy: false,  
                 Cell: cell
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
+                groupedBy: false,  
                 Cell: cell
             },
             {
                 Header: t(langKeys.templatetype),
                 accessor: 'templatetype',
+                groupedBy: false,  
                 Cell: cell
             },
             {
@@ -147,6 +150,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
+                groupedBy: false,  
                 Cell: cell
             },
             {
@@ -160,6 +164,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
                 NoFilter: false,
+                groupedBy: false,  
                 showColumn: true,   
                 prefixTranslation: 'executiontype',
                 Cell: (props: CellProps<Dictionary>) => {
@@ -172,6 +177,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 Header: t(langKeys.executingUser),
                 showColumn: true,
                 accessor: 'executionuser',
+                groupedBy: false,  
                 Cell: (props: any) => {
                     // eslint-disable-next-line react/prop-types
                     const { value } = props.cell;
@@ -182,6 +188,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 Header: t(langKeys.executingUserProfile),
                 showColumn: true,
                 accessor: 'executionuserprofile',
+                groupedBy: false,  
                 Cell: (props: any) => {
                     // eslint-disable-next-line react/prop-types
                     const { value } = props.cell;
@@ -390,6 +397,30 @@ export const CampaignReport: React.FC<DetailProps> = ({
         }
     }, [mainPaginated]);  
 
+    //groupedBy 
+    type VisibleColumns2 = Record<string, boolean>;
+    const storedVisibleColumns2 = localStorage.getItem('visibleColumns');
+    const initialVisibleColumns2: VisibleColumns2 = storedVisibleColumns2
+        ? JSON.parse(storedVisibleColumns2)
+        : columns.reduce((acc, column) => {
+            // eslint-disable-next-line react/prop-types
+            if (column.showColumn) {  // eslint-disable-next-line react/prop-types
+                acc[column.accessor] = false;
+            }
+            return acc;
+        }, {} as VisibleColumns2);
+
+    const [visibleColumns2, setVisibleColumns2] = useState(initialVisibleColumns2);
+    const [pendingChanges2, setPendingChanges2] = useState(initialVisibleColumns2);
+    const handleToggleColumnVisibility2 = (columnName: keyof typeof visibleColumns2) => {
+        setPendingChanges2((prevPendingChanges: typeof pendingChanges2) => ({
+            ...prevPendingChanges,
+            [columnName]: !prevPendingChanges[columnName],
+        }));
+    };
+
+
+    //showHide
     const storedVisibleColumns = localStorage.getItem('visibleColumns');
     type VisibleColumns = Record<string, boolean>;
     const initialVisibleColumns: VisibleColumns = storedVisibleColumns
@@ -418,6 +449,10 @@ export const CampaignReport: React.FC<DetailProps> = ({
     }; // eslint-disable-next-line react/prop-types
     const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
 
+
+
+
+    //open close modals dialogs
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -609,7 +644,27 @@ export const CampaignReport: React.FC<DetailProps> = ({
                             buttonStyle1={{marginBottom:'0.3rem'}}
                             buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
                         >                     
-                            {/* Falta */}
+                            <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                                {columns // eslint-disable-next-line react/prop-types
+                                    .filter((column) => column.groupedBy === false)
+                                    .map((column) => ( // eslint-disable-next-line react/prop-types
+                                    <Grid item xs={4} key={column.accessor}>
+                                        <FormControlLabel
+                                            style={{ pointerEvents: "none" }}
+                                            control={
+                                                <Checkbox
+                                                    color="primary"
+                                                    style={{ pointerEvents: "auto" }} // eslint-disable-next-line react/prop-types
+                                                    checked={pendingChanges2[column.accessor]} // eslint-disable-next-line react/prop-types
+                                                    onChange={() => handleToggleColumnVisibility2(column.accessor)} // eslint-disable-next-line react/prop-types
+                                                    name={column.accessor}
+                                                />
+                                            } // eslint-disable-next-line react/prop-types
+                                            label={t(column.Header)}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
                         </DialogZyx>
                     )} 
                      {isShowColumnsModalOpen && (
@@ -624,10 +679,10 @@ export const CampaignReport: React.FC<DetailProps> = ({
                                 buttonStyle1={{marginBottom:'0.3rem'}}
                                 buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
                             >  
-                            <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                {columns // eslint-disable-next-line react/prop-types
-                                    .filter((column) => column.showColumn === true)
-                                    .map((column) => ( // eslint-disable-next-line react/prop-types
+                                <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                                    {columns // eslint-disable-next-line react/prop-types
+                                        .filter((column) => column.showColumn === true)
+                                        .map((column) => ( // eslint-disable-next-line react/prop-types
                                         <Grid item xs={4} key={column.accessor}>
                                             <FormControlLabel
                                                 style={{ pointerEvents: "none" }}
