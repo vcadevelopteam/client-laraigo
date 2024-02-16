@@ -16,6 +16,8 @@ export interface IState {
     requestOpenpayProcessTransaction: IRequest;
     requestIzipayGetPaymentOrder: IRequest;
     requestIzipayProcessTransaction: IRequest;
+    requestEpaycoGetPaymentOrder: IRequest;
+    requestEpaycoProcessTransaction: IRequest;
 }
 
 export const initialState: IState = {
@@ -25,6 +27,8 @@ export const initialState: IState = {
     requestOpenpayProcessTransaction: { ...initialCommon, data: null, loading: false, error: false },
     requestIzipayGetPaymentOrder: { ...initialCommon, data: null, loading: false, error: false },
     requestIzipayProcessTransaction: { ...initialCommon, data: null, loading: false, error: false },
+    requestEpaycoGetPaymentOrder: { ...initialCommon, data: null, loading: false, error: false },
+    requestEpaycoProcessTransaction: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -57,4 +61,14 @@ export default createReducer<IState>(initialState, {
     [actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_FAILURE]: caseFunctions.izipayProcessTransactionFailure,
     [actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_SUCCESS]: caseFunctions.izipayProcessTransactionSuccess,
     [actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_RESET]: caseFunctions.izipayProcessTransactionReset,
+
+    [actionTypes.PAYMENT_EPAYCO_GETPAYMENTORDER]: caseFunctions.epaycoGetPaymentOrder,
+    [actionTypes.PAYMENT_EPAYCO_GETPAYMENTORDER_FAILURE]: caseFunctions.epaycoGetPaymentOrderFailure,
+    [actionTypes.PAYMENT_EPAYCO_GETPAYMENTORDER_SUCCESS]: caseFunctions.epaycoGetPaymentOrderSuccess,
+    [actionTypes.PAYMENT_EPAYCO_GETPAYMENTORDER_RESET]: caseFunctions.epaycoGetPaymentOrderReset,
+
+    [actionTypes.PAYMENT_EPAYCO_PROCESSTRANSACTION]: caseFunctions.epaycoProcessTransaction,
+    [actionTypes.PAYMENT_EPAYCO_PROCESSTRANSACTION_FAILURE]: caseFunctions.epaycoProcessTransactionFailure,
+    [actionTypes.PAYMENT_EPAYCO_PROCESSTRANSACTION_SUCCESS]: caseFunctions.epaycoProcessTransactionSuccess,
+    [actionTypes.PAYMENT_EPAYCO_PROCESSTRANSACTION_RESET]: caseFunctions.epaycoProcessTransactionReset,
 });
