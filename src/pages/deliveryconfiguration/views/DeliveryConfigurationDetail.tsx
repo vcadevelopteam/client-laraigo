@@ -6,20 +6,17 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TitleDetail } from 'components';
-import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
-import { getCollection, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { getCollection, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
 import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
-import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
-import NonWorkingDaysCopyDialog from '../dialogs/NonWorkingDaysDialog copy';
-import { deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
+import { deliveryAppUsersSel, deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
 import { execute } from "store/main/actions";
+import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -28,49 +25,80 @@ const useStyles = makeStyles(() => ({
         gap: '10px', 
         alignItems: 'center', 
     },
-   
 }));
 
-interface RowSelected {
-    row: Dictionary | null;
-    edit: boolean;
+interface ConfigJson {
+    automatica: boolean;
+    manuala: boolean;
+    predefineda: boolean;
+    inmediatea: boolean;
+    invoiced: boolean;
+    shareinvoiced: boolean;
+    guided: boolean;
+    wspi: boolean;
+    emaili: boolean;
+    sendschedulen: boolean;
+    senddispatchn: boolean;
+    smsn: boolean;
+    wspn: boolean;
+    emailn: boolean;
+    routinglogic: boolean;
+    insuredlimitr: boolean;
+    capacityr: boolean;
+    monday: boolean;
+    tuesday: boolean;
+    wednesday: boolean;
+    thursday: boolean;
+    friday: boolean;
+    saturday: boolean;
+    sunday: boolean;
+    validationdistance: null | number;
+    deliveryphoto: boolean;
+    morningstarttime: string | null;
+    morningendtime: string | null;
+    afternoonstarttime: string | null;
+    afternoonendtime: string | null;
+    nightstarttime: string | null;
+    nightendtime: string | null;
 }
 
-interface DetailProps {
-    data: RowSelected;
+interface VehicleType {
+    vehicle: string;
+    insuredamount: number;
+    speed: number;
+    capacity: number;
 }
 
-const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit } }) => {
+const DeliveryConfigurationDetail: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSave2, setWaitSave2] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [openModalNonWorkingDays, setOpenModalNonWorkingDays] = useState(false)
-    const [openModalNonWorkingDaysCopy, setOpenModalNonWorkingDaysCopy] = useState(false)
     const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
     const main = useSelector((state) => state.main.mainData);
-
-    const [configjson, setConfigjson] = useState({
-        automaticA: false,
-        manualA: false,
-        predefinedA: false,
-        inmediateA: false,
-        invoiceD: false,
-        shareInvoiceD: false,
-        guideD: false,
-        wspI: false,
-        emailI: false,
-        sendScheduleN: false,
-        sendDispatchN: false,
-        smsN: false,
-        wspN: false,
-        emailN: false,
-        routingLogic: false,
-        insuredLimitR: false,
-        capacityR: false,
+    const [configjson, setConfigjson] = useState<ConfigJson>({
+        automatica: false,
+        manuala: false,
+        predefineda: false,
+        inmediatea: false,
+        invoiced: false,
+        shareinvoiced: false,
+        guided: false,
+        wspi: false,
+        emaili: false,
+        sendschedulen: false,
+        senddispatchn: false,
+        smsn: false,
+        wspn: false,
+        emailn: false,
+        routinglogic: false,
+        insuredlimitr: false,
+        capacityr: false,
         monday: false,
         tuesday: false,
         wednesday: false,
@@ -78,8 +106,95 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         friday: false,
         saturday: false,
         sunday: false,
-        validationDistance: null,        
+        validationdistance: null,
+        deliveryphoto: false,
+        morningstarttime: null,
+        morningendtime: null,
+        afternoonstarttime: null,
+        afternoonendtime: null,
+        nightstarttime: null,
+        nightendtime: null,
     })
+    const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
+    const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([])
+    const [deliveryPhotos, setDeliveryPhotos] = useState<string[]>([])
+
+    const fetchOriginalConfig = () => {
+        if(main.data.length) {
+            setConfigjson({
+                automatica: main?.data?.[0]?.config?.automatica,
+                manuala: main?.data?.[0]?.config?.manuala,
+                predefineda: main?.data?.[0]?.config?.predefineda,
+                inmediatea: main?.data?.[0]?.config?.inmediatea,
+                invoiced: main?.data?.[0]?.config?.invoiced,
+                shareinvoiced: main?.data?.[0]?.config?.shareinvoiced,
+                guided: main?.data?.[0]?.config?.guided,
+                wspi: main?.data?.[0]?.config?.wspi,
+                emaili: main?.data?.[0]?.config?.emaili,
+                sendschedulen: main?.data?.[0]?.config?.sendschedulen,
+                senddispatchn: main?.data?.[0]?.config?.senddispatchn,
+                smsn: main?.data?.[0]?.config?.smsn,
+                wspn: main?.data?.[0]?.config?.wspn,
+                emailn: main?.data?.[0]?.config?.emailn,
+                routinglogic: main?.data?.[0]?.config?.routinglogic,
+                insuredlimitr: main?.data?.[0]?.config?.insuredlimitr,
+                capacityr: main?.data?.[0]?.config?.capacityr,
+                monday: main?.data?.[0]?.config?.monday,
+                tuesday: main?.data?.[0]?.config?.tuesday,
+                wednesday: main?.data?.[0]?.config?.wednesday,
+                thursday: main?.data?.[0]?.config?.thursday,
+                friday: main?.data?.[0]?.config?.friday,
+                saturday: main?.data?.[0]?.config?.saturday,
+                sunday: main?.data?.[0]?.config?.sunday,
+                validationdistance: main?.data?.[0]?.config?.validationdistance,
+                deliveryphoto: main?.data?.[0]?.config?.deliveryphoto,
+                morningstarttime: main?.data?.[0]?.config?.morningstarttime,
+                morningendtime: main?.data?.[0]?.config?.morningendtime,
+                afternoonstarttime: main?.data?.[0]?.config?.afternoonstarttime,
+                afternoonendtime: main?.data?.[0]?.config?.afternoonendtime,
+                nightstarttime: main?.data?.[0]?.config?.nightstarttime,
+                nightendtime: main?.data?.[0]?.config?.nightendtime,
+            })
+            setNonWorkingDates(main?.data?.[0]?.config?.nonworkingdates)
+            setVehicleTypes(main?.data?.[0]?.config?.vehicletypes)
+            setDeliveryPhotos(main?.data?.[0]?.config?.deliveryphotos)
+        } else {
+            setConfigjson({
+                automatica: false,
+                manuala: false,
+                predefineda: false,
+                inmediatea: true,
+                invoiced: true,
+                shareinvoiced: true,
+                guided: true,
+                wspi: false,
+                emaili: false,
+                sendschedulen: false,
+                senddispatchn: false,
+                smsn: false,
+                wspn: false,
+                emailn: false,
+                routinglogic: false,
+                insuredlimitr: false,
+                capacityr: false,
+                monday: true,
+                tuesday: true,
+                wednesday: true,
+                thursday: true,
+                friday: true,
+                saturday: false,
+                sunday: false,
+                validationdistance: null,
+                deliveryphoto: false,
+                morningstarttime: null,
+                morningendtime: null,
+                afternoonstarttime: null,
+                afternoonendtime: null,
+                nightstarttime: null,
+                nightendtime: null,
+            })
+        }
+    }
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
@@ -88,35 +203,49 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
 
     const fetchConfiguration = () => dispatch(getCollection(deliveryConfigurationSel({id: 0, all: true})));
     const fetchVehicles = () => dispatch(getCollectionAux(deliveryVehicleSel({id: 0, all: true})));
-    
-    const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            warehouseid: row?.warehouseid || 0,
-            operation: edit ? "EDIT" : "INSERT",
-            type: row?.type || '',
-            name: row?.name || '',
-            description: row?.description || '',
-            address: row?.address || '',
-            phone: row?.phone || '',
-            latitude: row?.latitude || '',
-            longitude: row?.longitude || '',
-            status: row?.status || 'ACTIVO'
-        }
-    });
+    const fetchDrivers = () => dispatch(getCollectionAux2(deliveryAppUsersSel()));
 
-    const onMainSubmit = (() => {        
-        debugger
+    useEffect(() => {
+        fetchConfiguration()
+        fetchVehicles()
+        fetchDrivers()
+        setWaitSave2(true)
+    }, [])
+
+    useEffect(() => {
+        if (waitSave2) {
+            if (!main.loading && !main.error && main.key === 'UFN_DELIVERYCONFIGURATION_SEL') {
+                fetchOriginalConfig()
+                setWaitSave2(false)
+            } else if (main.error) {
+                const errormessage = t(main.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitSave2(false);
+            }
+        }
+    }, [main, waitSave2])
+
+    const onMainSubmit = (() => {
         const existingConfig = main.data[0];
-        console.log('te')
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(deliveryConfigurationIns({
-                id: existingConfig?.deliveryconfigurationid,
-                config: JSON.stringify(configjson),
-                status: 'ACTIVO',
-                type: '',              
-                operation: 'UPDATE',
-            })));
+            if(existingConfig) {
+                dispatch(execute(deliveryConfigurationIns({
+                    id: existingConfig?.deliveryconfigurationid,
+                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos}),
+                    status: 'ACTIVO',
+                    type: '',              
+                    operation: 'UPDATE',
+                })));
+            } else {
+                dispatch(execute(deliveryConfigurationIns({
+                    id: 0,
+                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos}),
+                    status: 'ACTIVO',
+                    type: '',              
+                    operation: 'INSERT',
+                })));
+            }
             setWaitSave(true);            
         }
         dispatch(manageConfirmation({
@@ -129,8 +258,8 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
+                fetchConfiguration()
                 setWaitSave(false)
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
@@ -141,59 +270,40 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
         }
     }, [executeRes, waitSave])
 
-    React.useEffect(() => {
-        register('warehouseid');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
-
-        dispatch(resetMainAux());
-    }, [register]);
-
     return (
         <>
-            <form onSubmit={onMainSubmit} style={{width: '100%'}}>
+            <form style={{width: '100%'}}>
                 <div className={classes.corporationNameAndButtons}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.name)} ${t(langKeys.corporation)}`}
+                            title={`${t(langKeys.name)} ${t(langKeys.corporation)}`}
                         />
                     </div>
-                    <div  className={classes.corporationNameAndButtons}>
+                    <div className={classes.corporationNameAndButtons}>
                         <Button
                             variant="contained"
                             type="button"
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => fetchOriginalConfig()}
                         >{t(langKeys.back)}</Button>
                         <Button
                             variant="contained"
                             color="primary"
-                            type="submit"
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
-                            onClick={onMainSubmit}
-                        >                            
+                            onClick={() => onMainSubmit()}
+                        >
                             {t(langKeys.save)}
                         </Button>
                     </div>
-
                 </div>
-                
                 <DeliveryConfigurationTabDetail
-                    row={row}
-                    setValue={setValue}
-                    getValues={getValues}
-                    errors={errors}
                     setOpenModalNonWorkingDays={setOpenModalNonWorkingDays}
-                    setOpenModalNonWorkingDaysCopy={setOpenModalNonWorkingDaysCopy}
                     setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
                     setOpenModalVehicleType={setOpenModalVehicleType}
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
@@ -201,27 +311,39 @@ const DeliveryConfigurationDetail: React.FC<DetailProps> = ({ data: { row, edit 
                     fetchVehicles={fetchVehicles}
                     setConfigjson={setConfigjson}
                     configjson={configjson}
+                    vehicleTypes={vehicleTypes}
                 />
-
                 <VehicleTypeDialog
                     openModal={openModalVehicleType}
                     setOpenModal={setOpenModalVehicleType}
+                    vehicleTypes={vehicleTypes}
+                    setVehicleTypes={setVehicleTypes}
+                    onMainSubmit={onMainSubmit}
+                    fetchOriginalConfig={fetchOriginalConfig}
                 />
                 <NonWorkingDaysDialog
                     openModal={openModalNonWorkingDays}
                     setOpenModal={setOpenModalNonWorkingDays}
-                />
-                <NonWorkingDaysCopyDialog
-                    openModal={openModalNonWorkingDaysCopy}
-                    setOpenModal={setOpenModalNonWorkingDaysCopy}
+                    nonWorkingDates={nonWorkingDates}
+                    setNonWorkingDates={setNonWorkingDates}
+                    onMainSubmit={onMainSubmit}
+                    fetchOriginalConfig={fetchOriginalConfig}
                 />
                 <DeliverySchedulesDialog
                     openModal={openModalDeliverySchedules}
                     setOpenModal={setOpenModalDeliverySchedules}
+                    onMainSubmit={onMainSubmit}
+                    configjson={configjson}
+                    setConfigjson={setConfigjson}
+                    fetchOriginalConfig={fetchOriginalConfig}
                 />
                 <DeliveryPhotoDialog
                     openModal={openModalDeliverPhoto}
                     setOpenModal={setOpenModalDeliverPhoto}
+                    onMainSubmit={onMainSubmit}
+                    deliveryPhotos={deliveryPhotos}
+                    setDeliveryPhotos={setDeliveryPhotos}
+                    fetchOriginalConfig={fetchOriginalConfig}
                 />
             </form>
         </>

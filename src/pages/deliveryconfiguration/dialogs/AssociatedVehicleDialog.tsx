@@ -1,5 +1,5 @@
 import { Button, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit } from "components";
+import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -22,24 +22,36 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-
 interface RowSelected {
     row2: Dictionary | null;
     edit: boolean;
 }
 
+interface VehicleType {
+    vehicle: string;
+    insuredamount: number;
+    speed: number;
+    capacity: number;
+}
 
 const AssociatedVehicleDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
     data: RowSelected;
     fetchVehicles: ()=> void;
-}> = ({ openModal, setOpenModal, data:{row2, edit}, fetchVehicles }) => {
+    vehicleTypes: VehicleType[];
+}> = ({ openModal, setOpenModal, data:{row2, edit}, fetchVehicles, vehicleTypes }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector((state) => state.main.execute);
+    const user = useSelector(state => state.login.validateToken.user);
+    const [capacityAux, setCapacityAux] = useState(0)
+    const [speedAux, setSpeedAux] = useState(0)
+    const [insuredAux, setInsuredAux] = useState(0)
+    const [typeAux, setTypeAux] = useState('')
+    const mainDrivers = useSelector(state => state.main.mainAux2);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -57,7 +69,7 @@ const AssociatedVehicleDialog: React.FC<{
         }
     });
 
-    const onMainSubmit = handleSubmit((data) => {        
+    const onMainSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
             if (edit) {
@@ -108,33 +120,77 @@ const AssociatedVehicleDialog: React.FC<{
 
     useEffect(() => {
         if(row2) {
-          setValue('id', row2.deliveryvehicleid)
-          setValue('status', row2.status)
-          setValue('type', row2.type)
-          setValue('brand', row2.brand)
-          setValue('model', row2.model)
-          setValue('vehicleplate', row2.vehicleplate)
-          setValue('capacity', row2.capacity)
-          setValue('insuredamount', row2.averagespeed)
-          setValue('averagespeed', row2.insuredamount)
-          setValue('userid', row2.userid)
-          setValue('license', row2.license)          
+            setValue('id', row2.deliveryvehicleid)
+            setValue('status', row2.status)
+            setValue('type', row2.type)
+            setValue('brand', row2.brand)
+            setValue('model', row2.model)
+            setValue('vehicleplate', row2.vehicleplate)
+            setValue('capacity', row2.capacity)
+            setValue('insuredamount', row2.averagespeed)
+            setValue('averagespeed', row2.insuredamount)
+            setValue('userid', row2.userid)
+            setValue('license', row2.license)
+            setCapacityAux(row2.capacity)
+            setInsuredAux(row2.insuredamount)
+            setSpeedAux(row2.averagespeed)
+            setTypeAux(row2.type)
+        } else {
+            setValue('id', 0)
+            setValue('type', '')
+            setValue('brand', '')
+            setValue('model', '')
+            setValue('vehicleplate', '')
+            setValue('capacity', 0)
+            setValue('insuredamount', 0)
+            setValue('averagespeed', 0)
+            setValue('userid', 0)
+            setValue('license', '')
+            setCapacityAux(0)
+            setInsuredAux(0)
+            setSpeedAux(0)
+            setTypeAux('')
         }
-      }, [row2])
+    }, [openModal])
 
     return (
         <DialogZyx open={openModal} title={t(langKeys.associatedvehicles)} maxWidth="lg">
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.organization)}
-                    type="text" className="col-6"                    
+                    type="text" className="col-6"
+                    disabled={true}
+                    valueDefault={user?.orgdesc}
                 />
-                <FieldEdit
+                <FieldSelect
                     label={t(langKeys.vehicletype)}
                     type="text" className="col-6"
-                    valueDefault={row2?.type}
-                    onChange={(value)=> setValue('type', value)}
+                    data={vehicleTypes || []}
+                    valueDefault={typeAux}
+                    onChange={(value)=> {
+                        if(value){
+                            setValue('type', value.vehicle)
+                            setValue('capacity', value.capacity)
+                            setValue('averagespeed', value.speed)
+                            setValue('insuredamount', value.insuredamount)
+                            setCapacityAux(value.capacity)
+                            setSpeedAux(value.speed)
+                            setInsuredAux(value.insuredamount)
+                            setTypeAux(value.vehicle)
+                        } else {
+                            setValue('type', '')
+                            setValue('capacity', 0)
+                            setValue('averagespeed', 0)
+                            setValue('insuredamount', 0)
+                            setCapacityAux(0)
+                            setInsuredAux(0)
+                            setSpeedAux(0)
+                            setTypeAux('')
+                        }
+                    }}
                     error={typeof errors?.type?.message === 'string' ? errors?.type?.message : ''}
+                    optionDesc="vehicle"
+                    optionValue="vehicle"
                 />
                 <FieldEdit
                     label={t(langKeys.brand)}
@@ -142,67 +198,66 @@ const AssociatedVehicleDialog: React.FC<{
                     className="col-6"
                     valueDefault={row2?.brand}
                     onChange={(value)=> setValue('brand', value)}
+                    maxLength={200}
                     error={typeof errors?.brand?.message === 'string' ? errors?.brand?.message : ''}
-
                 />
                 <FieldEdit
                     label={t(langKeys.model)}
                     type="text"
                     className="col-6"
                     valueDefault={row2?.model}
+                    maxLength={200}
                     onChange={(value)=> setValue('model', value)}
                     error={typeof errors?.model?.message === 'string' ? errors?.model?.message : ''}
-
                 />
                 <FieldEdit
                     label={t(langKeys.platenum)}                 
                     className="col-6"
                     valueDefault={row2?.vehicleplate}
+                    maxLength={10}
                     onChange={(value)=> setValue('vehicleplate', value)}
                     error={typeof errors?.vehicleplate?.message === 'string' ? errors?.vehicleplate?.message : ''}
-
                 />
                 <FieldEdit
                     label={t(langKeys.capacity)}
                     type="number"
                     className="col-6"
-                    valueDefault={row2?.capacity}
-                    onChange={(value)=> setValue('capacity', value)}
+                    valueDefault={capacityAux}
+                    disabled={true}
                     error={typeof errors?.capacity?.message === 'string' ? errors?.capacity?.message : ''}
-
                 />
                 <FieldEdit
                     label={t(langKeys.averagespeed)}
                     type="number"
                     className="col-6"
-                    valueDefault={row2?.averagespeed}                  
-                    onChange={(value)=> setValue('averagespeed', value)}
+                    valueDefault={speedAux}                  
+                    disabled={true}
                     error={typeof errors?.averagespeed?.message === 'string' ? errors?.averagespeed?.message : ''}
-
                 />
                 <FieldEdit
                     label={t(langKeys.insuredamount)}
                     type="number"
                     className="col-6"
-                    valueDefault={row2?.insuredamount}
-                    onChange={(value)=> setValue('insuredamount', value)}
+                    valueDefault={insuredAux}
+                    disabled={true}
                     error={typeof errors?.insuredamount?.message === 'string' ? errors?.insuredamount?.message : ''}
-
                 />
-                <FieldEdit
+                <FieldSelect
                     label={t(langKeys.carriername)}
-                    type="text"
                     className="col-6"
+                    data={mainDrivers.data || []}
                     valueDefault={row2?.userid}
-                    onChange={(value)=> setValue('userid', value)}
+                    onChange={(value)=> setValue('userid', value.userid)}
                     error={typeof errors?.userid?.message === 'string' ? errors?.userid?.message : ''}
-
+                    optionDesc="name"
+                    optionValue="userid"
                 />
                 <FieldEdit
                     label={t(langKeys.licensenum)}
                     type="text"
                     className="col-6"
                     valueDefault={row2?.license}
+                    maxLength={9}
                     onChange={(value)=> setValue('license', value)}
                     error={typeof errors?.license?.message === 'string' ? errors?.license?.message : ''}
                 />
