@@ -71,11 +71,7 @@ const initialRange = {
     key: 'selection'
 }
 
-export const CampaignReport: React.FC<DetailProps> = ({ 
-    setViewSelected, 
-    externalUse,    
-    errors
-}) => {
+export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externalUse }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -89,7 +85,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
     const [openModal, setOpenModal] = useState(false);
     const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
     
-    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    const [selectedRows, setSelectedRows] = useState<any>({});
     const [reportType, setReportType] = useState<string>('default');
 
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
@@ -107,7 +103,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 setSelectedRow(row);
                 setOpenModal(true);
             }}>             
-                {column.sortType === "datetime" && !!row[column.id]
+                {column.sortType === "datetime" && !!row[column.id] 
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
                     month: "2-digit",
@@ -165,36 +161,42 @@ export const CampaignReport: React.FC<DetailProps> = ({
                 accessor: 'executiontype',
                 NoFilter: false,
                 groupedBy: false,  
-                showColumn: true,   
+                showColumn: true,     
                 prefixTranslation: 'executiontype',
                 Cell: (props: CellProps<Dictionary>) => {
-                    // eslint-disable-next-line react/prop-types
                     const { executiontype } = props.cell.row.original;
                     return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }
-            },           
+            },     
+            
+            
             {
                 Header: t(langKeys.executingUser),
-                showColumn: true,
                 accessor: 'executionuser',
+                NoFilter: false,
                 groupedBy: false,  
-                Cell: (props: any) => {
-                    // eslint-disable-next-line react/prop-types
-                    const { value } = props.cell;
-                    return value !== null ? value : '-';
+                showColumn: true,   
+                prefixTranslation: 'executionuser',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { executionuser } = props.cell.row.original;
+                    return executionuser !== undefined ? t(`executionuser_${executionuser}`) : '';
                 }
             },
             {
                 Header: t(langKeys.executingUserProfile),
-                showColumn: true,
                 accessor: 'executionuserprofile',
+                NoFilter: false,
                 groupedBy: false,  
-                Cell: (props: any) => {
-                    // eslint-disable-next-line react/prop-types
-                    const { value } = props.cell;
-                    return value !== null ? value : '-';
+                showColumn: true,   
+                prefixTranslation: 'executionuserprofile',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { executionuserprofile } = props.cell.row.original;
+                    return executionuserprofile !== undefined ? t(`executionuserprofile_${executionuserprofile}`) : '';
                 }
-            },       
+            },
+            
+            
+
             {
                 Header: t(langKeys.total),
                 accessor: 'total',
@@ -263,6 +265,22 @@ export const CampaignReport: React.FC<DetailProps> = ({
         []
     );
 
+    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+        dispatch(showBackdrop(true))
+        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
+        dispatch(getCollectionPaginated(getCampaignReportPaginated(
+            {
+                startdate: dateRangeCreateDate.startDate,
+                enddate: dateRangeCreateDate.endDate,
+                channeltype: selectedChannel,
+                sorts: sorts,
+                filters: filters,
+                take: pageSize,
+                skip: pageIndex * pageSize,
+            }
+        )));
+    };  
+
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
@@ -272,9 +290,11 @@ export const CampaignReport: React.FC<DetailProps> = ({
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_type_selected)}));
             return null;
         }
+        
+        
         if (reportType === dataReportType.default) {
             dispatch(exportData(getCampaignReportExport(
-                Object.keys(selectedRows).reduce((ad: Dictionary[], d: Dictionary) => {
+                Object.keys(selectedRows).reduce((ad: any[], d: any) => {
                     ad.push({
                         campaignid: d.split('_')[0],
                         rundate: d.split('_')[1]
@@ -326,22 +346,21 @@ export const CampaignReport: React.FC<DetailProps> = ({
                     {key: 'templatetype', alias: t(langKeys.templatetype)},
                     {key: 'date', alias: t(langKeys.date)},
                     {key: 'campaign', alias: t(langKeys.campaign)},
-                    {key: 'campaign', alias: t(langKeys.campaign)},
                     {key: 'description', alias: t(langKeys.description)},
-                    {key: 'template', alias: t(langKeys.template)},
                     {key: 'ticketnum', alias: t(langKeys.ticket)},
-                    {key: 'year', alias: t(langKeys.year)},
-                    {key: 'month', alias: t(langKeys.month)},
-                    {key: 'ticketdate', alias: t(langKeys.ticketdate)},
-                    {key: 'tickettime', alias: t(langKeys.tickettime)},
-                    {key: 'contact', alias: t(langKeys.contact)},
-                    {key: 'client', alias: t(langKeys.client)},
-                    {key: 'channel', alias: t(langKeys.channel)},
                     {key: 'group', alias: t(langKeys.group)},
-                    {key: 'firstagent', alias: t(langKeys.firstagent)},
-                    {key: 'message', alias: t(langKeys.message)},
+                    {key: 'userid', alias: t(langKeys.userid)},
+                    {key: 'agent', alias: t(langKeys.agent)},
+                    {key: 'contact', alias: t(langKeys.contact)},
+                    {key: 'template', alias: t(langKeys.templatename)},
+                    {key: 'rundate', alias: t(langKeys.rundate)},
+                    {key: 'runtime', alias: t(langKeys.runtime)},
+                    {key: 'executionuser', alias: t(langKeys.executingUser)},
+                    {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
+                    {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
                     {key: 'classification', alias: t(langKeys.classification)},
-                    {key: 'lastagent', alias: t(langKeys.lastagent)},
+                    {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
                     {key: 'log', alias: t(langKeys.log)},
                 ]
@@ -351,20 +370,6 @@ export const CampaignReport: React.FC<DetailProps> = ({
         }
     };
 
-    //channel Filter
-    const channelTypeList = filterChannel.data || [];
-    const channelTypeFilteredList = new Set();
-    const [selectedChannel, setSelectedChannel] = useState("");
-
-    const uniqueTypdescList = channelTypeList.filter(item => {
-        if (channelTypeFilteredList.has(item.type)) {
-            return false; 
-        }
-        channelTypeFilteredList.add(item.type);
-        return true;
-    });
-   
-    const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -397,21 +402,41 @@ export const CampaignReport: React.FC<DetailProps> = ({
         }
     }, [mainPaginated]);  
 
-    //groupedBy 
+   
+   
+    //channel Filter ----------------------------------------------------------------------------------
+    const channelTypeList = filterChannel.data || [];
+    const channelTypeFilteredList = new Set();
+    const [selectedChannel, setSelectedChannel] = useState("");
+
+    const uniqueTypdescList = channelTypeList.filter(item => {
+        if (channelTypeFilteredList.has(item.type)) {
+            return false; 
+        }
+        channelTypeFilteredList.add(item.type);
+        return true;
+    });
+   
+    const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
+
+
+
+    //groupedBy  ----------------------------------------------------------------------------------
     type VisibleColumns2 = Record<string, boolean>;
+
     const storedVisibleColumns2 = localStorage.getItem('visibleColumns');
+
     const initialVisibleColumns2: VisibleColumns2 = storedVisibleColumns2
         ? JSON.parse(storedVisibleColumns2)
         : columns.reduce((acc, column) => {
-            // eslint-disable-next-line react/prop-types
-            if (column.showColumn) {  // eslint-disable-next-line react/prop-types
-                acc[column.accessor] = false;
-            }
+            acc[column.accessor] = false;
             return acc;
         }, {} as VisibleColumns2);
 
+
     const [visibleColumns2, setVisibleColumns2] = useState(initialVisibleColumns2);
     const [pendingChanges2, setPendingChanges2] = useState(initialVisibleColumns2);
+
     const handleToggleColumnVisibility2 = (columnName: keyof typeof visibleColumns2) => {
         setPendingChanges2((prevPendingChanges: typeof pendingChanges2) => ({
             ...prevPendingChanges,
@@ -419,8 +444,19 @@ export const CampaignReport: React.FC<DetailProps> = ({
         }));
     };
 
+    const applyPendingChanges2 = () => {
+        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges2));
+        setVisibleColumns2(pendingChanges2);
+        setShowColumnsModalOpen(false);
+    };
 
-    //showHide
+    useEffect(() => {
+        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges2));
+    }, [pendingChanges2]);
+
+
+
+    //showHide ----------------------------------------------------------------------------------
     const storedVisibleColumns = localStorage.getItem('visibleColumns');
     type VisibleColumns = Record<string, boolean>;
     const initialVisibleColumns: VisibleColumns = storedVisibleColumns
@@ -450,9 +486,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
     const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
 
 
-
-
-    //open close modals dialogs
+    //open close modals dialogs ----------------------------------------------------------------------------------
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -481,21 +515,7 @@ export const CampaignReport: React.FC<DetailProps> = ({
         return () => { document.removeEventListener('click', handleClickOutside); };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
-        dispatch(showBackdrop(true))
-        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
-        dispatch(getCollectionPaginated(getCampaignReportPaginated(
-            {
-                startdate: dateRangeCreateDate.startDate,
-                enddate: dateRangeCreateDate.endDate,
-                channeltype: selectedChannel,
-                sorts: sorts,
-                filters: filters,
-                take: pageSize,
-                skip: pageIndex * pageSize,
-            }
-        )));
-    };  
+
    
     return (
         <div style={{ width: '100%' }}>
