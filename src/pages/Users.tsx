@@ -553,6 +553,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
                             />
+                            <FieldSelect
+                                label={t(langKeys.warehouse)}
+                                className={classes.mb2}
+                                valueDefault={getValues('warehouseid')}
+                                error={errors?.warehouseid?.message}
+                                data={resFromOrg?.data?.[3]?.data || []}
+                                onChange={(value) => setValue('warehouseid', value.warehouseid)}
+                                loading={dataApplications.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="warehouseid"
+                            />
                         </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
