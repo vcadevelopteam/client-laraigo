@@ -2585,6 +2585,7 @@ export const langKeys = {
 
   report_leadgridtracking: "report_leadgridtracking",
   report_productivity: 'report_productivity',
+  report_productivity_filter_channels: 'report_productivity_filter_channels',
   report_productivity_ticket: 'report_productivity_ticket',
   report_productivity_ticketyear: 'report_productivity_ticketyear',
   report_productivity_ticketmonth: 'report_productivity_ticketmonth',

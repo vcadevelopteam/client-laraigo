@@ -2428,6 +2428,7 @@ const translation: LangKeys = {
   NINGUNO: "NINGUNO",
 
   report_productivity: 'Conversations',
+  report_productivity_filter_channels: 'Channels',
   report_productivity_ticket: 'Ticket',
   report_productivity_ticketyear: 'Year',
   report_productivity_ticketmonth: 'Month',

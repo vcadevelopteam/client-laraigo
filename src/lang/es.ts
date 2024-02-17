@@ -2303,6 +2303,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   class: "Clase",
   report_productivity: "Conversaciones",
+  report_productivity_filter_channels: 'Canales',
   report_productivity_ticket: "Ticket",
   modeltooltip: 'Número de modelo del distribuidor principal para este producto.',
   catalog_nrotooltip: "Código de catálogo del distribuidor principal para este producto.",
