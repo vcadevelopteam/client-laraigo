@@ -1,0 +1,32 @@
+export const columnsHideShow = {
+    productivity: {
+        email: true,
+        starttime: true,
+        endtime: true,
+        derivationdate: true,
+        derivationtime: true, 
+        firstinteractiondateagent: true,
+        firstinteractiontime: true,
+        tmo: true, 
+        tmoagent: true,
+        tmeagent: true,
+        holdingholdtime: true,
+        suspensiontime: true, 
+        avgagentresponse: true,
+        swingingtimes: true,
+        tags: true,  
+    },
+    campaignreport: {
+        executiontype: true,
+        executionuser: true,
+        executionuserprofile: true,
+        total: true,
+        success: true, 
+        successp: true,
+        fail: true,
+        failp: true, 
+        attended: true,
+        locked: true,
+        blacklisted: true,      
+    }
+}

@@ -2587,6 +2587,7 @@ export const langKeys = {
 
   report_leadgridtracking: "report_leadgridtracking",
   report_productivity: 'report_productivity',
+  report_productivity_filter_channels: 'report_productivity_filter_channels',
   report_productivity_ticket: 'report_productivity_ticket',
   report_productivity_ticketyear: 'report_productivity_ticketyear',
   report_productivity_ticketmonth: 'report_productivity_ticketmonth',
@@ -2611,6 +2612,7 @@ export const langKeys = {
   report_productivity_derivationtime: 'report_productivity_derivationtime',
   report_productivity_derivationtime_help: "report_productivity_derivationtime_help",
   report_productivity_firstinteractiondate: 'report_productivity_firstinteractiondate',
+  report_productivity_firstinteractiondateagent: 'report_productivity_firstinteractiondateagent',
   report_productivity_firstinteractiontime: 'report_productivity_firstinteractiontime',
   report_productivity_tmo: 'report_productivity_tmo',
   report_productivity_tmo_help: 'report_productivity_tmo_help',
@@ -2634,6 +2636,7 @@ export const langKeys = {
   report_productivity_holdingholdtime: 'report_productivity_holdingholdtime',
   report_productivity_holdingholdtime_help: 'report_productivity_holdingholdtime_help',
   report_productivity_tags: 'report_productivity_tags',
+  report_productivity_tags_help: 'report_productivity_tags',
 
   report_tipification: 'report_tipification',
   report_tipification_ticket: 'report_tipification_ticket',
@@ -5884,6 +5887,10 @@ export const langKeys = {
   billing_iva: 'billing_iva',
   billing_paymentcardnotvalid: "billing_paymentcardnotvalid",
   current_language: 'current_language',
+  executingUser: "executingUser",
+  executingUserProfile: "executingUserProfile",
+  groupedBy: "groupedBy",
+  showHideColumns: "showHideColumns",
 };
 
 export type LangKeys = typeof langKeys;

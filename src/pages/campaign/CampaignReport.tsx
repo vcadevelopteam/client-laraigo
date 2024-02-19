@@ -1,27 +1,33 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getDateCleaned } from 'common/helpers';
+import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getChannelSel, getCommChannelLst, getDateCleaned } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
-import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
+import { exportData, getCollection, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon } from 'icons';
-import { Button } from '@material-ui/core';
+import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
-
+import { FieldErrors } from "react-hook-form";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import AllInboxIcon from '@material-ui/icons/AllInbox'; 
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 
 interface DetailProps {
     setViewSelected?: (view: string) => void;
     externalUse?: boolean;
+    setValue: Dictionary
+    getValues: Dictionary,
+    errors: FieldErrors
 }
 
 const arrayBread = [
@@ -47,6 +53,9 @@ const useStyles = makeStyles(() => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    filterComponent: {
+        width: '180px'
+      },
 }));
 
 const dataReportType = {
@@ -81,16 +90,20 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
 
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+
+    const filterChannel = useSelector ((state)=> state.main.mainAux)
     
     const cell = (props: CellProps<Dictionary>) => {
+        // eslint-disable-next-line react/prop-types
         const column = props.cell.column;
+        // eslint-disable-next-line react/prop-types
         const row = props.cell.row.original;
         return (
             <div onClick={() => {
                 setSelectedRow(row);
                 setOpenModal(true);
-            }}>
-                {column.sortType === "datetime" && !!row[column.id]
+            }}>             
+                {column.sortType === "datetime" && !!row[column.id] 
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
                     month: "2-digit",
@@ -99,26 +112,30 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     minute: "numeric",
                     second: "numeric"
                 })
+                // eslint-disable-next-line react/prop-types
                 : row[column.id]}
             </div>
         )
     }
-
+  
     const columns = React.useMemo(
-        () => [
+        () => [                    
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
+                groupedBy: false,  
                 Cell: cell
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
+                groupedBy: false,  
                 Cell: cell
             },
             {
                 Header: t(langKeys.templatetype),
                 accessor: 'templatetype',
+                groupedBy: false,  
                 Cell: cell
             },
             {
@@ -129,6 +146,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
+                groupedBy: false,  
                 Cell: cell
             },
             {
@@ -142,17 +160,49 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
                 NoFilter: false,
+                groupedBy: false,  
+                showColumn: true,     
                 prefixTranslation: 'executiontype',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { executiontype } = props.cell.row.original;
                     return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }
+            },     
+            
+            
+            {
+                Header: t(langKeys.executingUser),
+                accessor: 'executionuser',
+                NoFilter: false,
+                groupedBy: false,  
+                showColumn: true,   
+                prefixTranslation: 'executionuser',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { executionuser } = props.cell.row.original;
+                    return executionuser !== undefined ? t(`executionuser_${executionuser}`) : '';
+                }
             },
+            {
+                Header: t(langKeys.executingUserProfile),
+                accessor: 'executionuserprofile',
+                NoFilter: false,
+                groupedBy: false,  
+                showColumn: true,   
+                prefixTranslation: 'executionuserprofile',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { executionuserprofile } = props.cell.row.original;
+                    return executionuserprofile !== undefined ? t(`executionuserprofile_${executionuserprofile}`) : '';
+                }
+            },
+            
+            
+
             {
                 Header: t(langKeys.total),
                 accessor: 'total',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -160,6 +210,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'success',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -167,6 +218,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'successp',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -174,6 +226,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'fail',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -181,6 +234,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'failp',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -188,6 +242,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'attended',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -195,15 +250,17 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'locked',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.blacklisted),
                 accessor: 'blacklisted',
                 type: 'number',
-                sortType: 'number',
+                sortType: 'number',  
+                showColumn: true,            
                 Cell: cell
-            }
+            },
         ],
         []
     );
@@ -215,13 +272,14 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             {
                 startdate: dateRangeCreateDate.startDate,
                 enddate: dateRangeCreateDate.endDate,
+                channeltype: selectedChannel,
                 sorts: sorts,
                 filters: filters,
                 take: pageSize,
                 skip: pageIndex * pageSize,
             }
         )));
-    };
+    };  
 
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
@@ -232,6 +290,8 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_type_selected)}));
             return null;
         }
+        
+        
         if (reportType === dataReportType.default) {
             dispatch(exportData(getCampaignReportExport(
                 Object.keys(selectedRows).reduce((ad: any[], d: any) => {
@@ -257,11 +317,10 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'template', alias: t(langKeys.templatename)},
                     {key: 'rundate', alias: t(langKeys.rundate)},
                     {key: 'runtime', alias: t(langKeys.runtime)},
+                    {key: 'executionuser', alias: t(langKeys.executingUser)},
+                    {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
                     {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
-                    {key: 'finishdate', alias: t(langKeys.finishconversationdate)},
-                    {key: 'finishtime', alias: t(langKeys.finishconversationtime)},
-                    {key: 'realduration', alias: t(langKeys.realduration)},
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
                     {key: 'classification', alias: t(langKeys.classification)},
                     {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
@@ -285,22 +344,23 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 true,
                 [
                     {key: 'templatetype', alias: t(langKeys.templatetype)},
+                    {key: 'date', alias: t(langKeys.date)},
                     {key: 'campaign', alias: t(langKeys.campaign)},
                     {key: 'description', alias: t(langKeys.description)},
-                    {key: 'template', alias: t(langKeys.template)},
                     {key: 'ticketnum', alias: t(langKeys.ticket)},
-                    {key: 'year', alias: t(langKeys.year)},
-                    {key: 'month', alias: t(langKeys.month)},
-                    {key: 'ticketdate', alias: t(langKeys.ticketdate)},
-                    {key: 'tickettime', alias: t(langKeys.tickettime)},
-                    {key: 'contact', alias: t(langKeys.contact)},
-                    {key: 'client', alias: t(langKeys.client)},
-                    {key: 'channel', alias: t(langKeys.channel)},
                     {key: 'group', alias: t(langKeys.group)},
-                    {key: 'firstagent', alias: t(langKeys.firstagent)},
-                    {key: 'message', alias: t(langKeys.message)},
+                    {key: 'userid', alias: t(langKeys.userid)},
+                    {key: 'agent', alias: t(langKeys.agent)},
+                    {key: 'contact', alias: t(langKeys.contact)},
+                    {key: 'template', alias: t(langKeys.templatename)},
+                    {key: 'rundate', alias: t(langKeys.rundate)},
+                    {key: 'runtime', alias: t(langKeys.runtime)},
+                    {key: 'executionuser', alias: t(langKeys.executingUser)},
+                    {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
+                    {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
                     {key: 'classification', alias: t(langKeys.classification)},
-                    {key: 'lastagent', alias: t(langKeys.lastagent)},
+                    {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
                     {key: 'log', alias: t(langKeys.log)},
                 ]
@@ -313,6 +373,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
+        fetchFiltersChannels();
         return () => {
             dispatch(resetCollectionPaginated());
         };
@@ -339,69 +400,123 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             settotalrow(mainPaginated.count);
             dispatch(showBackdrop(false));
         }
-    }, [mainPaginated]);
+    }, [mainPaginated]);  
 
-    const ButtonsElement = () => {
-        return (
-            <div style={{ width: '100%', display: 'flex'  }}>                 
-                
-                <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
-                    <DateRangePicker
-                        open={openDateRangeCreateDateModal}
-                        setOpen={setOpenDateRangeCreateDateModal}
-                        range={dateRangeCreateDate}
-                        onSelect={setDateRangeCreateDate}
-                    >
-                        <Button
-                            className={classes.itemDate}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                        >
-                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                        </Button>
-                    </DateRangePicker>
-                    <Button
-                        disabled={mainPaginated.loading}
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                        style={{ width: 120, backgroundColor: "#55BD84" }}
-                        onClick={() => fetchData(fetchDataAux)}
-                    >{t(langKeys.search)}
-                    </Button>
-                </div> 
+   
+   
+    //channel Filter ----------------------------------------------------------------------------------
+    const channelTypeList = filterChannel.data || [];
+    const channelTypeFilteredList = new Set();
+    const [selectedChannel, setSelectedChannel] = useState("");
 
-                <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
-                    <FieldSelect
-                        uset={true}
-                        variant="outlined"
-                        label={t(langKeys.reporttype)}
-                        className={classes.select}
-                        valueDefault={reportType}
-                        onChange={(value) => setReportType(value?.key)}
-                        data={dictToArrayKV(dataReportType)}
-                        optionDesc="value"
-                        optionValue="key"
-                    />
-                      <Button
-                            className={classes.button}
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            onClick={() => triggerExportData()}                         
-                            startIcon={<DownloadIcon />}
-                            variant="contained"
-                        >
-                            {`${t(langKeys.download)}`}
-                        </Button>
-                        
-                </div>
-                   
-                
-              
-            </div>
-        )
-    }
+    const uniqueTypdescList = channelTypeList.filter(item => {
+        if (channelTypeFilteredList.has(item.type)) {
+            return false; 
+        }
+        channelTypeFilteredList.add(item.type);
+        return true;
+    });
+   
+    const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
 
+
+
+    //groupedBy  ----------------------------------------------------------------------------------
+    type VisibleColumns2 = Record<string, boolean>;
+
+    const storedVisibleColumns2 = localStorage.getItem('visibleColumns');
+
+    const initialVisibleColumns2: VisibleColumns2 = storedVisibleColumns2
+        ? JSON.parse(storedVisibleColumns2)
+        : columns.reduce((acc, column) => {
+            acc[column.accessor] = false;
+            return acc;
+        }, {} as VisibleColumns2);
+
+
+    const [visibleColumns2, setVisibleColumns2] = useState(initialVisibleColumns2);
+    const [pendingChanges2, setPendingChanges2] = useState(initialVisibleColumns2);
+
+    const handleToggleColumnVisibility2 = (columnName: keyof typeof visibleColumns2) => {
+        setPendingChanges2((prevPendingChanges: typeof pendingChanges2) => ({
+            ...prevPendingChanges,
+            [columnName]: !prevPendingChanges[columnName],
+        }));
+    };
+
+    const applyPendingChanges2 = () => {
+        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges2));
+        setVisibleColumns2(pendingChanges2);
+        setShowColumnsModalOpen(false);
+    };
+
+    useEffect(() => {
+        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges2));
+    }, [pendingChanges2]);
+
+
+
+    //showHide ----------------------------------------------------------------------------------
+    const storedVisibleColumns = localStorage.getItem('visibleColumns');
+    type VisibleColumns = Record<string, boolean>;
+    const initialVisibleColumns: VisibleColumns = storedVisibleColumns
+        ? JSON.parse(storedVisibleColumns)
+        : columns.reduce((acc, column) => {// eslint-disable-next-line react/prop-types
+            if (column.showColumn) {// eslint-disable-next-line react/prop-types
+                acc[column.accessor] = true;
+            }
+    return acc;
+    }, {} as VisibleColumns);
+
+    const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
+    const [pendingChanges, setPendingChanges] = useState(initialVisibleColumns);
+
+    const handleToggleColumnVisibility = (columnName: keyof typeof visibleColumns) => {
+        setPendingChanges((prevPendingChanges: typeof pendingChanges) => ({
+            ...prevPendingChanges,
+            [columnName]: !prevPendingChanges[columnName],
+        }));
+    };
+
+    const applyPendingChanges = () => {
+        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges));
+        setVisibleColumns(pendingChanges);          
+        setShowColumnsModalOpen(false); 
+    }; // eslint-disable-next-line react/prop-types
+    const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
+
+
+    //open close modals dialogs ----------------------------------------------------------------------------------
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [openSeButtons, setOpenSeButtons] = useState(false);
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+    };     
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+    const handleOpenGroupedByModal = () => {
+        setGroupedByModalOpen(true);
+        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
+    };
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
+    const handleOpenShowColumnsModal = () => { 
+        setShowColumnsModalOpen(true);        
+        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
+    };
+    
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;    
+            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null); setOpenSeButtons(false);
+            }
+        };    
+        document.addEventListener('click', handleClickOutside);
+        return () => { document.removeEventListener('click', handleClickOutside); };
+    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
+
+
+   
     return (
         <div style={{ width: '100%' }}>
             {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -425,11 +540,195 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 </div>
             </div>}
             {externalUse && <div style={{ height: 10 }}></div>}
+
+            <div style={{ width: '100%', display: 'flex', background:'white', padding:'1rem 0 0 0'  }}>                 
+                
+                <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
+                    <DateRangePicker
+                        open={openDateRangeCreateDateModal}
+                        setOpen={setOpenDateRangeCreateDateModal}
+                        range={dateRangeCreateDate}
+                        onSelect={setDateRangeCreateDate}
+                    >
+                        <Button
+                            className={classes.itemDate}
+                            startIcon={<CalendarIcon />}
+                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                        >
+                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                        </Button>
+                    </DateRangePicker>
+
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        variant="outlined"                       
+                        className={classes.filterComponent}                        
+                        data={uniqueTypdescList || []}        
+                        valueDefault={uniqueTypdescList}
+                        onChange={(value) => setSelectedChannel(value?.type||"")}           
+                        optionDesc="typedesc"
+                        optionValue="typedesc"
+                    />
+                  
+                   <Button
+                        disabled={mainPaginated.loading}
+                        variant="contained"
+                        color="primary"
+                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                        style={{ width: 120, backgroundColor: "#55BD84" }}
+                        onClick={() => fetchData(fetchDataAux)}
+                    >
+                        {t(langKeys.search)}
+                    </Button>
+
+                </div> 
+
+                <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
+                    <FieldSelect
+                        uset={true}
+                        variant="outlined"
+                        label={t(langKeys.reporttype)}
+                        className={classes.select}
+                        valueDefault={reportType}
+                        onChange={(value) => setReportType(value?.key)}
+                        data={dictToArrayKV(dataReportType)}
+                        optionDesc="value"
+                        optionValue="key"
+                    />
+                      <Button
+                            className={classes.button}
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            onClick={() => triggerExportData()}                         
+                            startIcon={<DownloadIcon />}
+                            variant="contained"
+                        >
+                            {`${t(langKeys.download)}`}
+                        </Button>                        
+                </div>     
+                <div>
+                    <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        onClick={(event) => handleClickSeButtons(event)}
+                        style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+
+                    <div style={{ display: 'flex', gap: 8 }}>                               
+                        <Popper
+                            open={openSeButtons}
+                            anchorEl={anchorElSeButtons}
+                            placement="bottom"
+                            transition
+                            style={{marginRight:'1rem'}}
+                        >
+                            {({ TransitionProps }) => (
+                                <Paper {...TransitionProps} elevation={5}>
+
+                                    {/* <MenuItem 
+                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                        onClick={handleOpenGroupedByModal}
+                                    >
+                                        <ListItemIcon>
+                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                    </MenuItem>
+                                    <Divider /> */}
+
+                                    <MenuItem 
+                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                        onClick={handleOpenShowColumnsModal}                                           
+                                    >
+                                        <ListItemIcon>
+                                            <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                    </MenuItem>   
+
+                                </Paper>
+                            )}
+                        </Popper>
+                    </div>    
+                    {isGroupedByModalOpen && (
+                        <DialogZyx 
+                            open={isGroupedByModalOpen} 
+                            title={t(langKeys.groupedBy)} 
+                            buttonText1={t(langKeys.close)}
+                            buttonText2={t(langKeys.apply) }
+                            handleClickButton1={() => setGroupedByModalOpen(false)}                    
+                            handleClickButton2={()=> setGroupedByModalOpen(false)}
+                            maxWidth="sm"
+                            buttonStyle1={{marginBottom:'0.3rem'}}
+                            buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                        >                     
+                            <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                                {columns // eslint-disable-next-line react/prop-types
+                                    .filter((column) => column.groupedBy === false)
+                                    .map((column) => ( // eslint-disable-next-line react/prop-types
+                                    <Grid item xs={4} key={column.accessor}>
+                                        <FormControlLabel
+                                            style={{ pointerEvents: "none" }}
+                                            control={
+                                                <Checkbox
+                                                    color="primary"
+                                                    style={{ pointerEvents: "auto" }} // eslint-disable-next-line react/prop-types
+                                                    checked={pendingChanges2[column.accessor]} // eslint-disable-next-line react/prop-types
+                                                    onChange={() => handleToggleColumnVisibility2(column.accessor)} // eslint-disable-next-line react/prop-types
+                                                    name={column.accessor}
+                                                />
+                                            } // eslint-disable-next-line react/prop-types
+                                            label={t(column.Header)}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </DialogZyx>
+                    )} 
+                     {isShowColumnsModalOpen && (
+                            <DialogZyx 
+                                open={isShowColumnsModalOpen} 
+                                title={t(langKeys.showHideColumns)} 
+                                buttonText1={t(langKeys.close)}     
+                                buttonText2={t(langKeys.refresh)}       
+                                handleClickButton1={() => setShowColumnsModalOpen(false)}   
+                                handleClickButton2={applyPendingChanges}                  
+                                maxWidth="sm"
+                                buttonStyle1={{marginBottom:'0.3rem'}}
+                                buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                            >  
+                                <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                                    {columns // eslint-disable-next-line react/prop-types
+                                        .filter((column) => column.showColumn === true)
+                                        .map((column) => ( // eslint-disable-next-line react/prop-types
+                                        <Grid item xs={4} key={column.accessor}>
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                control={
+                                                    <Checkbox
+                                                        color="primary"
+                                                        style={{ pointerEvents: "auto" }} // eslint-disable-next-line react/prop-types
+                                                        checked={pendingChanges[column.accessor]} // eslint-disable-next-line react/prop-types
+                                                        onChange={() => handleToggleColumnVisibility(column.accessor)} // eslint-disable-next-line react/prop-types
+                                                        name={column.accessor}
+                                                    />
+                                                } // eslint-disable-next-line react/prop-types
+                                                label={t(column.Header)}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </DialogZyx>               
+                        )}
+                                        
+                </div>                                                                                
+            </div>
             
-            <div style={{width:'100%', height:'100%'}}>        
-                <ButtonsElement/>
+            <div style={{width:'100%', height:'100%'}}>       
                 <TablePaginated
-                    columns={columns}
+                    columns={visibleColumnsList}
                     data={mainPaginated.data}
                     totalrow={totalrow}
                     loading={mainPaginated.loading}
@@ -440,7 +739,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     exportPersonalized={triggerExportData}
                     useSelection={true}
                     selectionKey={selectionKey}
-                    setSelectedRows={setSelectedRows}
+                    setSelectedRows={setSelectedRows}             
                 />
             </div>
             
@@ -531,4 +830,4 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
             </div>
         </DialogZyx>
     )
-}
+}   

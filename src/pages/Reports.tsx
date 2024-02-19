@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -16,7 +15,7 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx, DateRangePicker, SkeletonReport } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp, getDateCleaned } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp, getDateCleaned, getCommChannelLst } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic, cleanViewChange, setViewChange } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -47,7 +46,11 @@ import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'components/report/ReportRequestSD';
 import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
+import { Checkbox, Divider, FormControlLabel, ListItemIcon, Paper, Popper } from '@material-ui/core';
 const isIncremental = window.location.href.includes("incremental")
+import AllInboxIcon from '@material-ui/icons/AllInbox'; 
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
+import { columnsHideShow } from 'common/helpers/columnsReport';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -72,9 +75,7 @@ const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
         flexDirection: 'column',
-        width: '100%',
-        // overflowY: "auto"
-        // flex: 1
+        width: '100%',      
     },
     containerDetails: {
         marginTop: theme.spacing(3)
@@ -138,7 +139,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -159,17 +159,17 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const columns = React.useMemo(() => reportColumns.map(x => {
+        const showColumn = columnsHideShow[row?.origin]?.[x.proargnames] ?? false;
         switch (x.proargtype) {
             case "bigint":
                 if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
                     return {
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                         accessor: x.proargnames,
+                        showColumn,
                         type: "number-centered"
                     }
                 }
@@ -177,6 +177,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     return {
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                         accessor: x.proargnames,
+                        showColumn,
                         helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                         type: "number"
                     }
@@ -188,6 +189,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     accessor: x.proargnames,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "boolean",
+                    showColumn,
                     Cell: (props: any) => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;
@@ -200,6 +202,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     accessor: x.proargnames,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
+                    showColumn,
                     Cell: (props: any) => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;
@@ -222,6 +225,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     accessor: x.proargnames,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
+                    showColumn,
                     Cell: (props: any) => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;
@@ -248,6 +252,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     accessor: x.proargnames,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
+                                    showColumn,
                                     Cell: (props: any) => {
                                         const { status } = props.cell.row.original;
                                         return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
@@ -257,6 +262,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
+                                    showColumn,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
@@ -270,6 +276,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     accessor: x.proargnames,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
+                                    showColumn,
                                     Cell: (props: any) => {
                                         const { interactiontext } = props.cell.row.original;
                                         let texttoshow = interactiontext.length < 40 ? interactiontext : interactiontext.substring(0, 40) + "... "
@@ -282,6 +289,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     accessor: x.proargnames,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
+                                    showColumn,
                                     Cell: (props: any) => {
                                         const { question } = props.cell.row.original;
                                         let texttoshow = question.length < 40 ? question : question.substring(0, 40) + "... "
@@ -292,6 +300,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
+                                    showColumn,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
@@ -300,6 +309,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         return {
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                             accessor: x.proargnames,
+                            showColumn,
                             helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                             type: "string"
                         }
@@ -366,7 +376,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         )));
     };
 
-
     const handlerSearchGraphic = (daterange: any, column: string) => {
         setfetchDataAux(prev => ({ ...prev, daterange }));
         dispatch(getMainGraphic(getReportGraphic(
@@ -384,7 +393,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         )));
     }
 
-
     const handleSelected = () => {
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
@@ -395,6 +403,55 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     }
+
+    //filter channel
+    const filterChannel = useSelector ((state)=> state.main.mainAux)
+    const [waitExport, setWaitExport] = useState(false);
+
+    const channelTypeList = filterChannel.data || [];
+    const channelTypeFilteredList = new Set();
+    const [selectedChannel, setSelectedChannel] = useState("");
+
+    const uniqueTypdescList = channelTypeList.filter(item => {
+        if (channelTypeFilteredList.has(item.type)) {
+            return false; 
+        }
+        channelTypeFilteredList.add(item.type);
+        return true;
+    });
+   
+    // const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
+    // useEffect(() => {
+    //     dispatch(resetCollectionPaginated());
+    //     fetchData(fetchDataAux);
+    //     fetchFiltersChannels();
+    //     return () => {
+    //         dispatch(resetCollectionPaginated());
+    //     };
+    // }, []);
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [resExportData, waitExport]);
+
+    useEffect(() => {
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+            settotalrow(mainPaginated.count);
+            dispatch(showBackdrop(false));
+        }
+    }, [mainPaginated]);  
 
     return (
         <div style={{ width: '100%', display: "flex", flex: 1, flexDirection: "column" }}>
@@ -422,6 +479,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                         loading={mainPaginated.loading}
                                         pageCount={pageCount}
                                         filterrange={true}
+                                        showHideColumns={true}
                                         FiltersElement={(
                                             <>
                                                 {!allFilters ? null : allFilters.map(filtro => (
@@ -452,10 +510,12 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                         />
                                                     )
                                                 ))}
+                                               
                                             </>
                                         )}
-                                        ButtonsElement={() => (
-                                            <Button
+                                        ButtonsElement={
+                                            <>                                            
+                                             <Button
                                                 className={classes.button}
                                                 variant="contained"
                                                 color="primary"
@@ -465,7 +525,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                             >
                                                 {t(langKeys.graphic_view)}
                                             </Button>
-                                        )}
+                                            </>                                            
+                                        }
                                         download={true}
                                         fetchData={fetchData}
                                         exportPersonalized={triggerExportData}
@@ -552,7 +613,7 @@ interface SummaryGraphicProps {
 const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix, allParameters = {} }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+   
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
         defaultValues: {
             graphictype: 'BAR',
@@ -591,6 +652,25 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         )));
     }
 
+    const columnsToExclude = [
+        "email",
+        "starttime",
+        "endtime",
+        "derivationdate",
+        "derivationtime",
+        "firstinteractiondate",
+        "firstinteractiontime",
+        "tmo",
+        "tmoagent",
+        "tmeagent",
+        "holdingholdtime",
+        "suspensiontime",
+        "avgagentresponse",
+        "swingingtimes",
+        "tags"
+    ];
+    const filteredColumns = columns.filter(column => !columnsToExclude.includes(column));
+
     return (
         <DialogZyx
             open={openModal}
@@ -609,9 +689,9 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('graphictype')}
                     error={(errors?.graphictype?.message as string) ?? ""}
                     onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }, { key: 'LINE', value: 'LINEA' },]}
                     uset={true}
-                    prefixTranslation="graphic_"
+                    prefixTranslation="graphic_"    
                     optionDesc="value"
                     optionValue="key"
                 />
@@ -623,7 +703,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('column')}                    
                     error={(errors?.column?.message as string) ?? ""}
                     onChange={(value) => setValue('column', value?.key)}
-                    data={columns.map(x => ({ key: x, value: x }))}
+                    data={filteredColumns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}
@@ -667,7 +747,6 @@ const ReportConversationWhatsapp: FC = () => {
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -707,23 +786,11 @@ const ReportConversationWhatsapp: FC = () => {
             },
             {
                 Header: "Fecha de inicio",
-                accessor: 'conversationstart',
-                // Cell: (props: any) => {
-                //     const { conversationstart } = props.cell.row.original;
-                //     return (
-                //         <div>{conversationstart ? new Date(conversationstart).toLocaleString() : ''}</div>
-                //     )
-                // }
+                accessor: 'conversationstart',               
             },
             {
                 Header: "Fecha de fin",
-                accessor: 'conversationend',
-                // Cell: (props: any) => {
-                //     const { conversationend } = props.cell.row.original;
-                //     return (
-                //         <div>{conversationend ? new Date(conversationend).toLocaleString() : ''}</div>
-                //     )
-                // }
+                accessor: 'conversationend',               
             },
             {
                 Header: t(langKeys.countrycode),
@@ -768,20 +835,7 @@ const ReportConversationWhatsapp: FC = () => {
                                 >
                                     {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                                 </Button>
-                            </DateRangePicker>
-                            {/* <FieldSelect
-                                onChange={(value) => setshippingtype(value?.domainvalue||"")}
-                                label={t(langKeys.shippingtype)}
-                                loading={multiDataAux.loading}
-                                variant="outlined"
-                                valueDefault={shippingtype}
-                                style={{width: "170px"}}
-                                data={shippingTypesData}
-                                optionValue="domainvalue"
-                                optionDesc="domainvalue"
-                                uset={true}
-                                prefixTranslation='type_shippingtype_'
-                            /> */}
+                            </DateRangePicker>                            
                             <div>
                                 <Button
                                     disabled={multiData.loading}

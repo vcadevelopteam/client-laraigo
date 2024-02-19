@@ -2430,6 +2430,7 @@ const translation: LangKeys = {
   NINGUNO: "NINGUNO",
 
   report_productivity: 'Conversations',
+  report_productivity_filter_channels: 'Channels',
   report_productivity_ticket: 'Ticket',
   report_productivity_ticketyear: 'Year',
   report_productivity_ticketmonth: 'Month',
@@ -2454,6 +2455,7 @@ const translation: LangKeys = {
   report_productivity_derivationdate: 'Derivation date',
   report_productivity_derivationtime: 'Derivation hour',
   report_productivity_firstinteractiondate: 'Date of first interaction',
+  report_productivity_firstinteractiondateagent: 'Date of first interaction agent',
   report_productivity_firstinteractiontime: 'Hour of first interaction',
   report_productivity_tmo: 'TMO',
   report_productivity_tmo_help: 'Sum of the real duration + the paused time.',
@@ -2479,6 +2481,8 @@ const translation: LangKeys = {
   report_productivity_holdingholdtime: 'Holding hold time',
   report_productivity_holdingholdtime_help: 'It is the time that a ticket was found in holding, until being referred to an advisor.',
   report_productivity_tags: 'Tags',
+  report_productivity_tags_help: 'Tag(s) associated to the ticket through a flow to know the path(s) that the conversation followed. All tags will be displayed in order from left to right from the most recent to the oldest.',
+
 
   report_tipification: 'Classifications',
   report_tipification_ticket: 'Ticket',
@@ -5968,6 +5972,10 @@ const translation: LangKeys = {
   entereddata: 'Entered Data',
   coordinate: 'Coordinate',
   area: 'Area',
+  executingUser: "Executing User",
+  executingUserProfile: "Executing User Profile",
+  groupedBy: "Grouped By",
+  showHideColumns: "Show/Hide Columns",
 };
 
 const enResource: ResourceLanguage = {

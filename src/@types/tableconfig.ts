@@ -37,6 +37,10 @@ export interface TableConfig {
   ButtonsElement?: (() => JSX.Element) | ReactElement;
   FiltersElement?: ReactElement;
   pageSizeDefault?: number;
+
+  groupedBy?: boolean;  
+  showHideColumns?: boolean;
+  
   filterGeneral?: boolean;
   hoverShadow?: boolean;
   loading?: boolean;
