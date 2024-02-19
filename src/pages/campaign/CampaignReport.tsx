@@ -627,7 +627,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                             {({ TransitionProps }) => (
                                 <Paper {...TransitionProps} elevation={5}>
 
-                                    <MenuItem 
+                                    {/* <MenuItem 
                                         style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
                                         onClick={handleOpenGroupedByModal}
                                     >
@@ -636,7 +636,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                                         </ListItemIcon>
                                         <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
                                     </MenuItem>
-                                    <Divider />
+                                    <Divider /> */}
 
                                     <MenuItem 
                                         style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
