@@ -50,6 +50,7 @@ import { Checkbox, Divider, FormControlLabel, ListItemIcon, Paper, Popper } from
 const isIncremental = window.location.href.includes("incremental")
 import AllInboxIcon from '@material-ui/icons/AllInbox'; 
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
+import { columnsHideShow } from 'common/helpers/columnsReport';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -161,12 +162,14 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     }, [])
 
     const columns = React.useMemo(() => reportColumns.map(x => {
+        const showColumn = columnsHideShow[row?.origin]?.[x.proargnames] ?? false;
         switch (x.proargtype) {
             case "bigint":
                 if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
                     return {
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                         accessor: x.proargnames,
+                        showColumn,
                         type: "number-centered"
                     }
                 }
@@ -174,6 +177,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     return {
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                         accessor: x.proargnames,
+                        showColumn,
                         helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                         type: "number"
                     }
@@ -185,6 +189,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     accessor: x.proargnames,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "boolean",
+                    showColumn,
                     Cell: (props: any) => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;
@@ -197,6 +202,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     accessor: x.proargnames,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
+                    showColumn,
                     Cell: (props: any) => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;
@@ -219,6 +225,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     accessor: x.proargnames,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
+                    showColumn,
                     Cell: (props: any) => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;
@@ -245,6 +252,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     accessor: x.proargnames,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
+                                    showColumn,
                                     Cell: (props: any) => {
                                         const { status } = props.cell.row.original;
                                         return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
@@ -254,6 +262,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
+                                    showColumn,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
@@ -267,6 +276,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     accessor: x.proargnames,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
+                                    showColumn,
                                     Cell: (props: any) => {
                                         const { interactiontext } = props.cell.row.original;
                                         let texttoshow = interactiontext.length < 40 ? interactiontext : interactiontext.substring(0, 40) + "... "
@@ -279,6 +289,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     accessor: x.proargnames,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
+                                    showColumn,
                                     Cell: (props: any) => {
                                         const { question } = props.cell.row.original;
                                         let texttoshow = question.length < 40 ? question : question.substring(0, 40) + "... "
@@ -289,6 +300,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
+                                    showColumn,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
@@ -297,6 +309,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         return {
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                             accessor: x.proargnames,
+                            showColumn,
                             helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                             type: "string"
                         }
