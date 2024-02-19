@@ -5502,6 +5502,7 @@ export const langKeys = {
   entereddata: 'entereddata',
   coordinate: 'coordinate',
   area: 'area',
+  automaticscheduling: 'automaticscheduling',
 };
 
 export type LangKeys = typeof langKeys;

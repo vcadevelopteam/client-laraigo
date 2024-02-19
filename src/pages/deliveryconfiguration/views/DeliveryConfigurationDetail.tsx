@@ -17,6 +17,7 @@ import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
 import { deliveryAppUsersSel, deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
 import { execute } from "store/main/actions";
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
+import AutomaticDeliveryDialog from '../dialogs/AutomaticDeliveryDialog';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -68,6 +69,12 @@ interface VehicleType {
     speed: number;
     capacity: number;
 }
+interface AutomaticSchedule {
+    starttime: string;
+    endtime: string;
+    shift: string;
+    deliveryday: string;
+}
 
 const DeliveryConfigurationDetail: React.FC = () => {
     const { t } = useTranslation();
@@ -80,6 +87,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
+    const [openModalAutomaticDelivery, setOpenModalAutomaticDelivery] = useState(false)
     const main = useSelector((state) => state.main.mainData);
     const [configjson, setConfigjson] = useState<ConfigJson>({
         automatica: false,
@@ -118,6 +126,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
     const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([])
     const [deliveryPhotos, setDeliveryPhotos] = useState<string[]>([])
+    const [automaticSchedules, setAutomaticSchedules] = useState<AutomaticSchedule[]>([])
 
     const fetchOriginalConfig = () => {
         if(main.data.length) {
@@ -158,6 +167,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             setNonWorkingDates(main?.data?.[0]?.config?.nonworkingdates)
             setVehicleTypes(main?.data?.[0]?.config?.vehicletypes)
             setDeliveryPhotos(main?.data?.[0]?.config?.deliveryphotos)
+            setAutomaticSchedules(main?.data?.[0]?.config?.automaticschedules)
         } else {
             setConfigjson({
                 automatica: false,
@@ -232,7 +242,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             if(existingConfig) {
                 dispatch(execute(deliveryConfigurationIns({
                     id: existingConfig?.deliveryconfigurationid,
-                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos}),
+                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos, automaticschedules: automaticSchedules}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'UPDATE',
@@ -240,7 +250,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             } else {
                 dispatch(execute(deliveryConfigurationIns({
                     id: 0,
-                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos}),
+                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos, automaticschedules: automaticSchedules}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'INSERT',
@@ -307,6 +317,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
                     setOpenModalVehicleType={setOpenModalVehicleType}
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
+                    setOpenModalAutomaticDelivery={setOpenModalAutomaticDelivery}
                     fetchConfiguration={fetchConfiguration}
                     fetchVehicles={fetchVehicles}
                     setConfigjson={setConfigjson}
@@ -344,6 +355,15 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     deliveryPhotos={deliveryPhotos}
                     setDeliveryPhotos={setDeliveryPhotos}
                     fetchOriginalConfig={fetchOriginalConfig}
+                />
+                <AutomaticDeliveryDialog
+                    openModal={openModalAutomaticDelivery}
+                    setOpenModal={setOpenModalAutomaticDelivery}
+                    automaticSchedules={automaticSchedules}
+                    setAutomaticSchedules={setAutomaticSchedules}
+                    onMainSubmit={onMainSubmit}
+                    fetchOriginalConfig={fetchOriginalConfig}
+                    configjson={configjson}
                 />
             </form>
         </>

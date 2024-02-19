@@ -41,6 +41,11 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 12,
         marginTop: 4,
     },
+    orderNumber: {
+        textDecoration: 'underline',
+        color: 'blue',
+        cursor: "pointer",
+    },
 }));
 
 interface RowSelected {
@@ -74,80 +79,16 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [waitExport, setWaitExport] = useState(false);
-    const resExportData = useSelector((state) => state.main.exportData);
-    const [waitUpload, setWaitUpload] = useState(false);
-    const importRes = useSelector((state) => state.main.execute);
+    const main = useSelector((state) => state.main.mainData);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
         { id: "detail-view", name: t(langKeys.orderlist) },
     ];
 
-    const handleEdit = (row: Dictionary) => {
-        setRowSelected({ row, edit: true });
-    };
-
 	useEffect(() => {
 		fetchData()
 	},[]);
-
-    useEffect(() => {
-        if (waitUpload) {
-            if (!importRes.loading && !importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_import),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            } else if (importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(importRes.code || "error_unexpected_error"),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            }
-        }
-    }, [importRes, waitUpload]);
-
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        };
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_delete),
-                callback,
-            })
-        );
-    };
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", {
-                    module: t(langKeys.person).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [resExportData, waitExport]);
 
     useEffect(() => {
         if (waitSave) {
@@ -183,7 +124,9 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
+                        <TemplateIcons
+                            editFunction={() => moveDetailView2(row)}
+                        />
                     );
                 },
             },
@@ -196,6 +139,22 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 Header: t(langKeys.ordernumber),
                 accessor: "ordernumber",
                 width: "auto",
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    const orderNumber = props.cell.value;
+                    const handleClickOrderNumber = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+                        event.stopPropagation();
+                        moveDetailView(row);
+                    };
+                    return (
+                        <span
+                            className={classes.orderNumber}
+                            onClick={handleClickOrderNumber}
+                        >
+                            {orderNumber}
+                        </span>
+                    );
+                },
             },
             {
                 Header: t(langKeys.uniqueroutingcode),
@@ -204,7 +163,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.clientname),
-                accessor: "clientname",
+                accessor: "name",
                 width: "auto",
             },
             {
@@ -214,7 +173,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.totalamount),
-                accessor: "totalamount",
+                accessor: "amount",
                 width: "auto",
             },
             {
@@ -229,7 +188,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.appointmenttype),
-                accessor: "appointmenttype",
+                accessor: "schedulingtype",
                 width: "auto",
             },
             {
@@ -244,7 +203,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.scheduledshift),
-                accessor: "scheduledshift",
+                accessor: "deliveryshift",
                 width: "auto",
             },
             {
@@ -254,21 +213,21 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.ordertime),
-                accessor: "ordertime",
+                accessor: "timeorder",
                 width: "auto",
             },
         ],
         []
     );
 
-    function moveDetailView() {
+    function moveDetailView(row: Dictionary) {
         setViewSelected("detail-view");
-        setRowSelected({ row: null, edit: false });
+        setRowSelected({ row, edit: true });
     }
 
-    function moveDetailView2() {
+    function moveDetailView2(row: Dictionary) {
         setViewSelected("detail-view2");
-        setRowSelected({ row: null, edit: false });
+        setRowSelected({ row, edit: true });
     }
 
     return (
@@ -294,10 +253,11 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             />
             <TableZyx
                 columns={columns}
-                data={[]}
+                data={main.data || []}
                 filterGeneral={true}
                 useSelection={true}
                 register={true}
+                onClickRow={moveDetailView2}
                 handleRegister={moveDetailView}
                 ButtonsElement={() => (
                     <div style={{ justifyContent: "right", display: "flex" }}>
@@ -322,7 +282,6 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 cancelundelivered={() => setOpenModalCanceled(true)}
                             />
                         </div>
-
                         <Button
                             variant="contained"
                             color="primary"
@@ -346,16 +305,6 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             }}
                         >
                             <Trans i18nKey={langKeys.electronic_ticket_and_invoice} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            startIcon={<ReceiptIcon color="secondary" />}
-                            className={classes.button}
-                            onClick={() => moveDetailView2()}
-                        >
-                            <Trans i18nKey={langKeys.test} />
                         </Button>
                     </div>
                 )}

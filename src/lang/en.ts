@@ -5583,6 +5583,7 @@ const translation: LangKeys = {
   entereddata: 'Entered Data',
   coordinate: 'Coordinate',
   area: 'Area',
+  automaticscheduling: 'Automatic scheduling',
 };
 
 const enResource: ResourceLanguage = {

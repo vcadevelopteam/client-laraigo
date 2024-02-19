@@ -1,10 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
-import { resetAllMain } from "store/main/actions";
+import { getCollection, resetAllMain } from "store/main/actions";
 import OrderListDetail from "./views/OrderListDetail";
 import OrderListMainView from "./views/OrderListMainView";
 import OrderListDetail2 from "./views/OrderListDetail2";
+import { listOrderSel } from "common/helpers";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -20,7 +21,7 @@ const OrderList: FC = () => {
     const [viewSelected, setViewSelected] = useState("main-view");
 
     const fetchData = () => {
-        //dispatch(getCollection(selStore(0)));
+        dispatch(getCollection(listOrderSel(true)));
     };
 
     useEffect(() => {

@@ -4139,3 +4139,9 @@ export const deliveryAppUsersSel = () => ({
     key: "UFN_USERS_APP_DELIVERY_SEL",
     parameters: {},
 });
+
+export const listOrderSel = (ordersinattention: boolean) => ({
+    method: "UFN_LISTORDER_SEL",
+    key: "UFN_LISTORDER_SEL",
+    parameters: { ordersinattention },
+});

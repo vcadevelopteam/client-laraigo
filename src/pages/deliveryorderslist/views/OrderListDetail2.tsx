@@ -85,7 +85,7 @@ const OrderListDetail2: React.FC<DetailProps> = ({ data: { row, edit }, setViewS
             status: row?.status || "ACTIVO",
         },
     });
-
+    
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {

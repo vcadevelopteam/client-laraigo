@@ -5512,7 +5512,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   entereddata: 'Datos Ingresados',
   coordinate: 'Coordenada',
   area: 'Área',
-
+  automaticscheduling: 'Agendamiento automático',
 };
 
 const esResource: ResourceLanguage = {

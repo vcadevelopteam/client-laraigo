@@ -81,6 +81,7 @@ interface ConfigurationTabDetailProps {
     setOpenModalDeliveryShifts: (flag: boolean) => void;
     setOpenModalVehicleType: (flag: boolean) => void;
     setOpenModalDeliveryOrderPhoto: (flag: boolean) => void;
+    setOpenModalAutomaticDelivery: (flag: boolean) => void;
     fetchConfiguration: () => void;
     fetchVehicles: () => void;
     setConfigjson: (data: any) => void;
@@ -98,6 +99,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     setOpenModalDeliveryShifts,
     setOpenModalVehicleType,
     setOpenModalDeliveryOrderPhoto,
+    setOpenModalAutomaticDelivery,
     fetchConfiguration,
     fetchVehicles,
     setConfigjson,
@@ -266,18 +268,21 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                     <FormControl component="fieldset" >                                             
                         <CustomTitleHelper title={t(langKeys.appointmenttype)}/>                                           
                         <FormGroup>
-                            <FormControlLabel
-                                style={{ pointerEvents: "none" }}
-                                control={
+                            <div style={{display: 'flex', alignItems: 'center'}}>
                                 <Checkbox 
                                     color="primary" 
-                                    style={{ pointerEvents: "auto" }} 
+                                    style={{ pointerEvents: "auto", paddingLeft: 0 }} 
                                     checked={configjson.automatica} 
                                     onChange={handleChange('automatica')} 
                                     name="auto" 
-                                />}
-                                label={t(langKeys.automatic)}
-                            />
+                                />
+                                <span
+                                    onClick={() => setOpenModalAutomaticDelivery(true)}
+                                    style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                                >
+                                    {t(langKeys.automatic)}
+                                </span>
+                            </div>
                             <FormControlLabel
                                 style={{ pointerEvents: "none" }}
                                 control={
