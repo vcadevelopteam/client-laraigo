@@ -9,5 +9,6 @@
     },
     "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features"
-    }
+    },
+    "compile-hero.disable-compile-files-on-did-save-code": false
 }
