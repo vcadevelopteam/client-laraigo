@@ -13,6 +13,29 @@ import { useTranslation } from "react-i18next";
 import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
+    mainContainer: {
+        marginBottom: 0,
+        display: 'flex',
+        alignItems: 'center'
+    },
+    ordersTitle: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: 0
+    },
+    ordersSpan: {
+        fontWeight: 'bold',
+        fontSize: 17
+    },
+    container: {
+        border: '1px solid black',
+        borderRadius: 5,
+        padding: 5,
+        width: '80%'
+    },
+    flex: {
+        display: 'flex',
+    },
 }));
 
 interface AutomaticSchedule {
@@ -165,14 +188,14 @@ const AutomaticDeliveryDialog = ({
             handleClickButton0={closeModal}
             handleClickButton1={handleSave}
         >
-            <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
-                <div className="col-6" style={{display: 'flex', alignItems: 'center', marginBottom: 0}}>
-                    <span style={{fontWeight: 'bold', fontSize: 17}}>Pedidos</span>
+            <div className={`${classes.mainContainer} row-zyx`}>
+                <div className={`${classes.ordersTitle} col-6`}>
+                    <span className={classes.ordersSpan}>Pedidos</span>
                     <IconButton>
                         <AddCircleIcon style={{color: 'green'}} onClick={handleCreateSchedule}/>
                     </IconButton>
                 </div>
-                <span className="col-6" style={{fontWeight: 'bold', fontSize: 17, marginBottom: 0}}>Entrega</span>
+                <span className={`${classes.ordersSpan} col-6`}>Entrega</span>
                 {automaticSchedules.length > 0 && (
                     <>
                         <span className="col-3" style={{marginBottom: 0}}>{t(langKeys.from)}</span>
@@ -182,18 +205,18 @@ const AutomaticDeliveryDialog = ({
                         {automaticSchedules.map((schedule) => (
                             <>
                                 <div className="col-3">
-                                    <div style={{border: '1px solid black', borderRadius: 5, padding: 5, width: '80%'}}>{schedule.starttime}</div>
+                                    <div className={classes.container}>{schedule.starttime}</div>
                                 </div>
                                 <div className="col-3">
-                                    <div style={{border: '1px solid black', borderRadius: 5, padding: 5, width: '80%'}}>{schedule.endtime}</div>
+                                    <div className={classes.container}>{schedule.endtime}</div>
                                 </div>
                                 <div className="col-3">
-                                    <div style={{border: '1px solid black', borderRadius: 5, padding: 5, width: '80%'}}>{schedule.shift}</div>
+                                    <div className={classes.container}>{schedule.shift}</div>
                                 </div>
                                 <div className="col-2">
-                                    <div style={{border: '1px solid black', borderRadius: 5, padding: 5, width: '80%'}}>{schedule.deliveryday}</div>
+                                    <div className={classes.container}>{schedule.deliveryday}</div>
                                 </div>
-                                <div className="col-1" style={{display: 'flex'}}>
+                                <div className={`${classes.flex} col-1`}>
                                     <IconButton onClick={() => handleEdit(schedule)}>
                                         <EditIcon/>
                                     </IconButton>
@@ -240,7 +263,7 @@ const AutomaticDeliveryDialog = ({
                             onChange={(value) => setNewSchedule({...newSchedule, deliveryday: value.domainvalue})}
                         />
                         {isAding ? (
-                            <div className="col-1" style={{display: 'flex'}}>
+                            <div className={`${classes.flex} col-1`}>
                                 <IconButton onClick={handleSaveNewSchedule}>
                                     <CheckIcon/>
                                 </IconButton>
@@ -249,7 +272,7 @@ const AutomaticDeliveryDialog = ({
                                 </IconButton>
                             </div>
                         ) : (
-                            <div className="col-1" style={{display: 'flex'}}>
+                            <div className={`${classes.flex} col-1`}>
                                 <IconButton onClick={handleSaveEdit}>
                                     <SaveIcon/>
                                 </IconButton>
