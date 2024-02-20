@@ -50,7 +50,6 @@ const ReconcileBalanceDialog: React.FC<{
         }
     }
 }, [executeRes, waitSave])
-console.log(row)
   
 const updateBalances = () => {
   const callback = () => {

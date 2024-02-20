@@ -277,27 +277,45 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                     </div>
                 </div>
                 <div className='row-zyx col-6'>
-                    <div className='col-6'>
+                    <div className='col-12'>
                         <div className='row-zyx'>
-                            <FieldEdit
-                                label={t(langKeys.typecostdispatch)}
-                                valueDefault={row?.typecostdispatch}
-                                className="col-6"
-                                disabled
-                            />
-                        </div>
-                        <div className='row-zyx'>
-                            <FieldEdit
-                                label={t(langKeys.current_balance)}
-                                valueDefault={parseFloat(row?.currentbalance).toFixed(2)}
-                                className="col-6"
-                                disabled={true}
-                            />
+                            <div className='row-zyx col-6'>
+                                <FieldEdit
+                                    label={t(langKeys.typecostdispatch)}
+                                    valueDefault={row?.typecostdispatch}
+                                    className="col-6"
+                                    disabled
+                                />
+                                <div className='col-6'></div>
+                                <FieldEdit
+                                    label={t(langKeys.current_balance)}
+                                    valueDefault={parseFloat(row?.currentbalance).toFixed(2)}
+                                    className="col-6"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className="col-6">
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.files)}</Box>
+                                <UploaderIcon classes={classes} setFiles={setFiles} />
+                                
+                                {files.length > 0 &&
+                                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
+                                        {files.map((item: IFile) => <ItemFile key={item.id} item={item} setFiles={setFiles} />)}
+                                    </div>
+                                }
+                            </div>
                         </div>
                         <div className='row-zyx'>
                             <FieldEdit
                                 label={t(langKeys.family)}
                                 valueDefault={row?.familydescription}
+                                className="col-3"
+                                disabled={true}
+                            /> 
+                            <div className='col-3'></div>
+                            <FieldEdit
+                                label={t(langKeys.subfamily)}
+                                valueDefault={row?.subfamilydescription}
                                 className="col-6"
                                 disabled={true}
                             /> 
@@ -306,39 +324,22 @@ const InventoryTabDetail: React.FC<InventoryTabDetailProps> = ({
                             <FieldEdit
                                 label={t(langKeys.status)}
                                 valueDefault={row?.status}
-                                className="col-6"
+                                className="col-3"
                                 disabled={true}
                             />
-                        </div>
-                        <div className='row-zyx'>
+                            <div className='col-9'></div>
                             <FieldSelect
                                 label={t(langKeys.dispatch_unit)}
                                 valueDefault={row?.unitdispatchdescription}
                                 data={multiData?.data?.[1]?.data||[]}
-                                className="col-6"
+                                className="col-3"
                                 optionDesc="domaindesc"
                                 optionValue="domaindesc"
                             /> 
-                        </div>  
+                        </div> 
                     </div>
                     <div className='row-zyx col-6'>
-                        <div className="col-12">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.files)}</Box>
-                            <UploaderIcon classes={classes} setFiles={setFiles} />
-                            
-                            {files.length > 0 &&
-                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
-                                    {files.map((item: IFile) => <ItemFile key={item.id} item={item} setFiles={setFiles} />)}
-                                </div>
-                            }
-                        </div>
                         <div className='col-12'>
-                            <FieldEdit
-                                label={t(langKeys.subfamily)}
-                                valueDefault={row?.subfamilydescription}
-                                className="col-6"
-                                disabled={true}
-                            /> 
                         </div>
                     </div>
                 </div>

@@ -186,7 +186,12 @@ const InventoryMainView: FC<InventoryMainViewProps> = ({
         Header: t(langKeys.current_balance),
         accessor: "currentbalance",
         width: "auto",
-        type:"number"
+        type:"number",
+        Cell: (props: any) => {
+            const row = props.cell.row.original;
+
+            return Number(row?.currentbalance).toFixed(2);
+        }
       },
       {
         Header: t(langKeys.family),

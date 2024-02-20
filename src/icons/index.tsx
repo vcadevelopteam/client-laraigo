@@ -122,6 +122,14 @@ export { ReactComponent as CloseTicketIcon } from './close-ticket.svg';
 export { ReactComponent as RichResponseIcon } from './rich-response.svg';
 
 export { ReactComponent as GenderIcon } from './gender.svg';
+export { ReactComponent as InventoryMiniIcon } from './inventory.svg';
+export { ReactComponent as CurrentBalanceIcon } from './balance_actual.svg';
+export { ReactComponent as CurrentCountIcon } from './recuento_fisico.svg';
+export { ReactComponent as StandarCostIcon } from './costo.svg';
+export { ReactComponent as ReconcileBalanceSheetsIcon } from './conciliar.svg';
+export { ReactComponent as SeeProductAvailabilityIcon } from './disponibilidad_parte.svg';
+export { ReactComponent as ManageReservationsIcon } from './reservas.svg';
+export { ReactComponent as SeeInventoryTransactionsIcon } from './transacciones.svg';
 export { ReactComponent as WifiCalling } from './wifi_calling.svg';
 export { ReactComponent as PhoneCalling } from './phone_callin_black.svg';
 export { ReactComponent as BuildingIcon } from './building-city-town.svg';

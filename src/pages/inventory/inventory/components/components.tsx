@@ -15,6 +15,7 @@ import clsx from 'clsx';
 import { ListItemIcon, Menu, MenuItem } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { showSnackbar } from 'store/popus/actions';
+import { CurrentBalanceIcon, CurrentCountIcon, InventoryMiniIcon, ManageReservationsIcon, ReconcileBalanceSheetsIcon, SeeInventoryTransactionsIcon, SeeProductAvailabilityIcon, StandarCostIcon } from 'icons';
 
 interface TemplateIconsProps {
     changeStatus?: (param: any) => void;
@@ -173,7 +174,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
             >
                 <MenuItem ref={menuItemRef} onMouseEnter={handleMouseEnter}>
                     <ListItemIcon color="inherit">
-                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        <InventoryMiniIcon width={25} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     <Trans i18nKey={langKeys.inventorysettings} />
                 </MenuItem>
@@ -183,7 +184,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
                     seeproductavailability?.(e)
                 }}>
                     <ListItemIcon color="inherit">
-                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        <SeeProductAvailabilityIcon width={25} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     <Trans i18nKey={langKeys.seeproductavailability} />
                 </MenuItem>
@@ -193,7 +194,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
                     managereservations?.(e)
                 }}>
                     <ListItemIcon color="inherit">
-                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        <ManageReservationsIcon width={25} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     <Trans i18nKey={langKeys.managereservations} />
                 </MenuItem>
@@ -203,7 +204,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
                     seeinventorytransactions?.(e)
                 }}>
                     <ListItemIcon color="inherit">
-                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        <SeeInventoryTransactionsIcon width={25} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     <Trans i18nKey={langKeys.seeinventorytransactions} />
                 </MenuItem>
@@ -231,7 +232,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
                             setShowSubMenu(false);
                         }}>
                             <ListItemIcon color="inherit">
-                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                                <CurrentBalanceIcon width={25} style={{ fill: '#7721AD' }} />
                             </ListItemIcon>
                             <Trans i18nKey={langKeys.current_balance} />
                         </MenuItem>
@@ -242,7 +243,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
                             setShowSubMenu(false);
                         }}>
                             <ListItemIcon color="inherit">
-                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                                <CurrentCountIcon width={25} style={{ fill: '#7721AD' }} />
                             </ListItemIcon>
                             <Trans i18nKey={langKeys.currentcount} />
                         </MenuItem>
@@ -253,7 +254,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
                             setShowSubMenu(false);
                         }}>
                             <ListItemIcon color="inherit">
-                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                                <StandarCostIcon width={25} style={{ fill: '#7721AD' }} />
                             </ListItemIcon>
                             <Trans i18nKey={langKeys.standard_cost} />
                         </MenuItem>
@@ -264,7 +265,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
                             setShowSubMenu(false);
                         }}>
                             <ListItemIcon color="inherit">
-                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                                <StandarCostIcon width={25} style={{ fill: '#7721AD' }} />
                             </ListItemIcon>
                             <Trans i18nKey={langKeys.average_cost} />
                         </MenuItem>
@@ -275,7 +276,7 @@ export const ExtrasMenuInventory: React.FC<InventoryIconsProps> = ({
                             setShowSubMenu(false);
                         }}>
                             <ListItemIcon color="inherit">
-                                <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                                <ReconcileBalanceSheetsIcon width={25} style={{ fill: '#7721AD' }} />
                             </ListItemIcon>
                             <Trans i18nKey={langKeys.reconcilebalancesheets} />
                         </MenuItem>

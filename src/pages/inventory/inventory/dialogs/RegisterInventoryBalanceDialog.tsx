@@ -70,17 +70,16 @@ const RegisterInventoryBalanceDialog: React.FC<{
 }, [executeRes, waitSave])
 
 React.useEffect(() => {
-  register('shelflifedays', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
+  register('shelflifedays');
   register('currentbalance', { validate: (value) =>((value && value>0) ? true : t(langKeys.field_required) + "") });
   register('recountphysical', { validate: (value) =>((value>=0) ? true : t(langKeys.field_required) + "") });
   register('shelf', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('lotecode', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('lotecode');
   register('recountphysicaldate', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
-  register('duedate', { validate: (value) =>((value && value.length>0) ? true : t(langKeys.field_required) + "") });
+  register('duedate');
 }, [register, openModal]);
   
 const submitData = handleMainSubmit((data) => {
-  debugger
   const callback = () => {
       dispatch(showBackdrop(true));
       dispatch(execute(insInventoryBalance(data)));
