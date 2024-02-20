@@ -214,7 +214,6 @@ interface IBoardFilter {
 const DraggablesCategories: FC<{ column: Dictionary, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams, configuration: any }> = ({ column,
     index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental, sortParams, configuration }) => {
     const { t } = useTranslation();
-
     return (
         <Draggable draggableId={column.column_uuid} index={index + 1} key={column.column_uuid} isDragDisabled={isIncremental}>
         {(provided) => (
@@ -375,7 +374,8 @@ const CRM: FC = () => {
         setSortParams(value)
     }
 
-    useEffect(() => {
+    useEffect(() => {        
+        setDataColumn([])
         dispatch(getMultiCollection([
         getColumnsSel(1),
         getLeadsSel({
@@ -407,22 +407,25 @@ const CRM: FC = () => {
 
     useEffect(() => {
         if (!mainMulti.error && !mainMulti.loading) {
-        if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
-            const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
-            const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
-            const unordeneddatacolumns = columns.map((column) => {
-            column.items = leads.filter(x => x.column_uuid === column.column_uuid);
-            return { ...column, total_revenue: (column.items.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)) }
-            })
-            const ordereddata = [...unordeneddatacolumns.filter((x: Dictionary) => x.type === "NEW"),
-            ...unordeneddatacolumns.filter((x) => x.type === "QUALIFIED"),
-            ...unordeneddatacolumns.filter((x) => x.type === "PROPOSITION"),
-            ...unordeneddatacolumns.filter((x) => x.type === "WON"),
-            ];
-            setDataColumn(ordereddata)
+            if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
+                const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
+                const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
+                const unordeneddatacolumns = columns.map((column) => {
+                column.items = leads.filter(x => x.column_uuid === column.column_uuid);
+                return { ...column, total_revenue: (column.items.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)) }
+                })
+                const ordereddata = [...unordeneddatacolumns.filter((x: Dictionary) => x.type === "NEW"),
+                ...unordeneddatacolumns.filter((x) => x.type === "QUALIFIED"),
+                ...unordeneddatacolumns.filter((x) => x.type === "PROPOSITION"),
+                ...unordeneddatacolumns.filter((x) => x.type === "WON"),
+                ];
+                setDataColumn(ordereddata)
+            }
         }
-        }
-    }, [mainMulti]);
+    }, [mainMulti.data]);
+    useEffect(() => {
+        console.log(dataColumn)
+    }, [dataColumn]);
 
     const [isModalOpenBOARD, setModalOpenBOARD] = useState(false);
     const [isModalOpenGRID, setModalOpenGRID] = useState(false);
@@ -438,7 +441,8 @@ const CRM: FC = () => {
             newParams.set('contact', String(boardFilter.customer));
             newParams.set('asesorid', String(boardFilter.asesorid));
             history.push({ search: newParams.toString() });
-    
+            
+            setDataColumn([])
             await dispatch(getMultiCollection([
                 getColumnsSel(1),
                 getLeadsSel({
