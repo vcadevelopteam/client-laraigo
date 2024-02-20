@@ -2384,6 +2384,7 @@ const translation: LangKeys = {
   report_inputretry_valid: "Valid",
 
   report_interaction: "Interactions",
+  report_interaction_filter_channels: 'Channels',
   report_interaction_ticketnum: "Ticket",
   report_interaction_ticketyear: "Year",
   report_interaction_ticketmonth: "Month",
@@ -2417,10 +2418,13 @@ const translation: LangKeys = {
     Carousel: Carousel used by the Chatweb/Messenger channel`,
   report_interaction_interactiontype: 'Interaction type',
   report_interaction_interactiontext: 'Text interaction',
+  report_interaction_interactiontext_help: 'It is the message sent in the interaction can be a text, image or video.',
   report_interaction_clientnumber: 'Client number',
   report_interaction_personcommunicationchannel: 'Person communication channel',
+  report_interaction_personcommunicationchannel_help: 'Tool through which the client communicates with the platform.',
   report_interaction_email: 'Email',
   report_interaction_ticketgroup: 'Group',
+  report_interaction_ticketgroup_help: 'Group to which you are assigned.',
   propertywaitingtimecustomer: "Time to send a message alert to the advisor waiting for the client",
   propertywaitingtimecustomermessage: "Customer waiting time alert message to advisor",
 
@@ -2483,6 +2487,7 @@ const translation: LangKeys = {
 
 
   report_tipification: 'Classifications',
+  report_tipification_filter_channels: 'Channels',
   report_tipification_ticket: 'Ticket',
   report_tipification_datehour: 'Ticket date - Ticket hour',
   report_tipification_person: 'Person',

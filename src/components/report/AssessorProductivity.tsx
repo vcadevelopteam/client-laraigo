@@ -465,7 +465,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         })
                                         fetchData()
                                     }}
-                                >{t(langKeys.refresh)}
+                                >{t(langKeys.search)}
                                 </Button>
                             </div>
                         </Box>
@@ -473,179 +473,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 </div>
             </div>
 
-            <Grid container spacing={3}>
-                <Grid item xs={12} md={6} lg={6}>
-                    <div>
-                        <Grid container spacing={1} >
-                            <Grid item xs={12} md={12} lg={12}>
-                                <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
-                                })} style={{ color: "white" }}>
-                                    <CardContent style={{ paddingBottom: 10 }}>
-                                        <Typography variant="h5">
-                                            {t(langKeys.report_userproductivity_cardtme)}
-                                            <Tooltip title={`${t(langKeys.tmetooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
-                                            </Tooltip>
-                                        </Typography>
-                                        <Typography variant="h5" component="div" align="center">
-                                            {detailCustomReport.data[0]?.cardavgavgtme}
-                                        </Typography>
-                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
-                                            {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral || ""}`}
-                                            {(detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax_tme)}
-                                    value={detailCustomReport.data[0]?.cardavgmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmeuser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
-                                    value={detailCustomReport.data[0]?.cardmaxmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})` : "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin_tme)}
-                                    value={detailCustomReport.data[0]?.cardavgmintme}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmeuser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin_tme)}
-                                    value={detailCustomReport.data[0]?.cardminmintme}
-                                    value2={detailCustomReport.data[0]?.cardminmintmeuser ? `#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})` : "-"}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                    <div>
-                        <Grid container spacing={1}>
-                            <Grid item xs={12} md={12} lg={12}>
-                                <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
-                                })} style={{ color: "white" }}>
-                                    <CardContent style={{ paddingBottom: 10 }}>
-                                        <Typography variant="h5">
-                                            {t(langKeys.report_userproductivity_cardtmo)}
-                                            <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
-                                            </Tooltip>
-                                        </Typography>
-                                        <Typography variant="h5" component="div" align="center">
-                                            {detailCustomReport.data[0]?.cardavgavgtmo}
-                                        </Typography>
-                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
-                                            {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral || ""}`}
-                                            {(detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax_tmo)}
-                                    value={detailCustomReport.data[0]?.cardavgmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmouser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
-                                    value={detailCustomReport.data[0]?.cardmaxmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})` : "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin_tmo)}
-                                    value={detailCustomReport.data[0]?.cardavgmintmo}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmouser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin_tmo)}
-                                    value={detailCustomReport.data[0]?.cardminmintmo}
-                                    value2={detailCustomReport.data[0]?.cardminmintmouser ? `#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})` : "-"}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </Grid>
-            </Grid>
+           
 
-            <Grid container spacing={3} className={classes.containerDetails} style={{paddingTop:10}}>
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card>
-                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="body2">
-                                    {t(langKeys.report_userproductivity_totalclosedtickets)}
-                                </Typography>
-                                <Typography variant="h5" component="div" align="center">
-                                    {detailCustomReport.data[0]?.totalclosedtickets}
-                                </Typography>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="subtitle1" >
-                                    {maxmin.maxticketsclosedasesor} ({maxmin.maxticketsclosed})
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxticketsclosedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    {maxmin.minticketsclosedasesor} ({maxmin.minticketsclosed})
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_minticketsclosedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card>
-                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="body2">
-                                    N° {t(langKeys.report_userproductivity_usersconnected)}
-                                </Typography>
-                                <Typography variant="h5" component="div" align="center">
-                                    {detailCustomReport.data[0]?.usersconnected}
-                                </Typography>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="subtitle1">
-                                    {maxmin.maxtimeconnectedasesor} ({maxmin.maxtimeconnected} m)
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxtimeconnectedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    {maxmin.mintimeconnectedasesor} ({maxmin.mintimeconnected} m)
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_mintimeconnectedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+         
 
             {view === "GRID" ? (
                 <TableZyx
@@ -810,7 +640,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('graphictype')}
                     error={errors?.graphictype?.message}
                     onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }, { key: 'LINE', value: 'LINEA' },]}
                     uset={true}
                     prefixTranslation="graphic_"
                     optionDesc="value"

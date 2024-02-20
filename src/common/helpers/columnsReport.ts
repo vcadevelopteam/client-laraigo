@@ -28,5 +28,28 @@ export const columnsHideShow = {
         attended: true,
         locked: true,
         blacklisted: true,      
+    },
+    tipification: {       
+        enddate: true,
+        endtime: true,
+        firstinteractiondate: true,
+        firstinteractiontime: true, 
+        person: true,
+        phone: true,
+        closedby: true, 
+        agent: true,
+        closetype: true,
+        channel: true,  
+    },
+    interaction: {
+        //interactiondatehour: true,
+        channel: true,  
+        agent: true,
+        ticketgroup: true,
+        person: true,
+        originalname: true,
+        clientnumber: true,
+        email: true,
+        personcommunicationchannel: true,
     }
 }

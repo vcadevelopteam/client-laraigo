@@ -652,7 +652,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         )));
     }
 
-    const columnsToExclude = [
+    const excludeConversation = [
         "email",
         "starttime",
         "endtime",
@@ -669,7 +669,17 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         "swingingtimes",
         "tags"
     ];
-    const filteredColumns = columns.filter(column => !columnsToExclude.includes(column));
+    const excludeTipification = [
+        "ticket",
+        "starttime",
+        "enddate",
+        "endtime",
+        "firstinteractiondate",
+        "firstinteractiontime",
+        "phone",      
+    ];
+    const filteredColumns = columns.filter(column => !excludeConversation.includes(column));
+
 
     return (
         <DialogZyx
