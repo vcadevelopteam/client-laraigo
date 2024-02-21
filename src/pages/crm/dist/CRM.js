@@ -236,8 +236,12 @@ var DraggablesCategories = function (_a) {
             react_1["default"].createElement(react_beautiful_dnd_1.Droppable, { droppableId: column.column_uuid, type: "task" }, function (provided, snapshot) {
                 var _a, _b;
                 return (react_1["default"].createElement("div", __assign({}, provided.droppableProps, { ref: provided.innerRef, style: { width: '100%', overflowY: 'scroll', maxHeight: '65vh', overflowX: 'clip' } }),
-                    react_1["default"].createElement(components_1.DroppableLeadColumnList, { snapshot: snapshot, itemCount: ((_a = column.items) === null || _a === void 0 ? void 0 : _a.length) || 0 }, (_b = column.items) === null || _b === void 0 ? void 0 : _b.map(function (item, index) { return (react_1["default"].createElement(react_beautiful_dnd_1.Draggable, { isDragDisabled: isIncremental, key: index, draggableId: item.leadid.toString(), index: index }, function (provided, snapshot) { return (react_1["default"].createElement(prueba_1["default"], { style: provided.draggableProps.style, snapshot: snapshot }, function (style) { return (react_1["default"].createElement("div", __assign({ ref: provided.innerRef }, provided.draggableProps, provided.dragHandleProps, { style: __assign({ width: '100%' }, style) }),
-                        react_1["default"].createElement(components_1.DraggableLeadCardContent, { lead: item, snapshot: snapshot, onDelete: handleDelete, onCloseLead: handleCloseLead, configuration: configuration }))); })); })); })),
+                    react_1["default"].createElement(components_1.DroppableLeadColumnList, { snapshot: snapshot, itemCount: ((_a = column.items) === null || _a === void 0 ? void 0 : _a.length) || 0 }, (_b = column.items) === null || _b === void 0 ? void 0 : _b.map(function (item, index) {
+                        return (react_1["default"].createElement(react_beautiful_dnd_1.Draggable, { isDragDisabled: isIncremental, key: item.leadid, draggableId: item.leadid.toString(), index: index }, function (provided, snapshot) {
+                            return (react_1["default"].createElement(prueba_1["default"], { style: provided.draggableProps.style, snapshot: snapshot }, function (style) { return (react_1["default"].createElement("div", __assign({ ref: provided.innerRef }, provided.draggableProps, provided.dragHandleProps, { style: __assign({ width: '100%' }, style) }),
+                                react_1["default"].createElement(components_1.DraggableLeadCardContent, { lead: item, snapshot: snapshot, onDelete: handleDelete, onCloseLead: handleCloseLead, configuration: configuration }))); }));
+                        }));
+                    })),
                     provided.placeholder));
             })))); }));
 };
@@ -260,13 +264,13 @@ var CRM = function () {
         ]
     });
     var otherParams = react_1.useMemo(function () { return ({
-        asesorid: query.get('asesorid') || '',
+        asesorid: Number(query.get('asesorid')),
         channels: query.get('channels') || '',
         contact: query.get('contact') || '',
         products: query.get('products') || '',
         persontype: query.get('persontype') || '',
         tags: query.get('tags') || '',
-        campaign: query.get('campaign') || ''
+        campaign: Number(query.get('campaign'))
     }); }, [query]);
     var _r = react_1.useState(query.get('display') || 'BOARD'), display = _r[0], setDisplay = _r[1];
     var _s = react_1.useState({
@@ -296,7 +300,6 @@ var CRM = function () {
         setSortParams(value);
     };
     react_1.useEffect(function () {
-        setDataColumn([]);
         dispatch(actions_1.getMultiCollection([
             helpers_1.getColumnsSel(1),
             helpers_1.getLeadsSel({
@@ -337,7 +340,7 @@ var CRM = function () {
                 setDataColumn(ordereddata);
             }
         }
-    }, [mainMulti.data]);
+    }, [mainMulti]);
     var _u = react_1.useState(false), isModalOpenBOARD = _u[0], setModalOpenBOARD = _u[1];
     var _v = react_1.useState(false), isModalOpenGRID = _v[0], setModalOpenGRID = _v[1];
     var fetchBoardLeadsWithFilter = react_1.useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -354,7 +357,6 @@ var CRM = function () {
                     newParams.set('contact', String(boardFilter.customer));
                     newParams.set('asesorid', String(boardFilter.asesorid));
                     history.push({ search: newParams.toString() });
-                    setDataColumn([]);
                     return [4 /*yield*/, dispatch(actions_1.getMultiCollection([
                             helpers_1.getColumnsSel(1),
                             helpers_1.getLeadsSel({
@@ -900,7 +902,7 @@ var CRM = function () {
                     react_1["default"].createElement(components_2.DialogZyx, { open: isModalOpenBOARD, title: t(keys_1.langKeys.filters), buttonText1: t(keys_1.langKeys.close), buttonText2: t(keys_1.langKeys.apply) + " " + t(keys_1.langKeys.filters), handleClickButton1: function () { return setModalOpenBOARD(false); }, handleClickButton2: fetchBoardLeadsWithFilter, maxWidth: "sm", buttonStyle1: { marginBottom: '0.3rem' }, buttonStyle2: { marginRight: '1rem', marginBottom: '0.3rem' } },
                         react_1["default"].createElement("div", { className: "row-zyx" },
                             (user && !((_a = user.roledesc) === null || _a === void 0 ? void 0 : _a.includes("ASESOR"))) &&
-                                react_1["default"].createElement(components_2.FieldMultiSelect, { variant: "outlined", label: t(keys_1.langKeys.agent), className: "col-6", valueDefault: (boardFilter.asesorid), onChange: function (value) { return setBoardFilter(function (prev) { return (__assign(__assign({}, prev), { asesorid: value === null || value === void 0 ? void 0 : value.map(function (o) { return o['userid']; }).join(',') })); }); }, data: ((_c = (_b = mainMulti.data[2]) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.sort(function (a, b) { var _a, _b; return ((_a = a === null || a === void 0 ? void 0 : a.fullname) === null || _a === void 0 ? void 0 : _a.toLowerCase()) > ((_b = b === null || b === void 0 ? void 0 : b.fullname) === null || _b === void 0 ? void 0 : _b.toLowerCase()) ? 1 : -1; })) || [], optionDesc: 'fullname', optionValue: 'userid', disabled: Boolean((_d = user === null || user === void 0 ? void 0 : user.roledesc) === null || _d === void 0 ? void 0 : _d.includes("ASESOR")) || false }),
+                                react_1["default"].createElement(components_2.FieldMultiSelect, { variant: "outlined", label: t(keys_1.langKeys.agent), className: "col-6", valueDefault: boardFilter.asesorid, onChange: function (value) { return setBoardFilter(function (prev) { return (__assign(__assign({}, prev), { asesorid: value === null || value === void 0 ? void 0 : value.map(function (o) { return o['userid']; }).join(',') })); }); }, data: ((_c = (_b = mainMulti.data[2]) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.sort(function (a, b) { var _a, _b; return ((_a = a === null || a === void 0 ? void 0 : a.fullname) === null || _a === void 0 ? void 0 : _a.toLowerCase()) > ((_b = b === null || b === void 0 ? void 0 : b.fullname) === null || _b === void 0 ? void 0 : _b.toLowerCase()) ? 1 : -1; })) || [], optionDesc: 'fullname', optionValue: 'userid', disabled: Boolean((_d = user === null || user === void 0 ? void 0 : user.roledesc) === null || _d === void 0 ? void 0 : _d.includes("ASESOR")) || false }),
                             react_1["default"].createElement(components_2.FieldSelect, { variant: "outlined", label: t(keys_1.langKeys.campaign), className: "col-6", valueDefault: boardFilter.campaign, onChange: function (v) { return setBoardFilter(function (prev) { return (__assign(__assign({}, prev), { campaign: (v === null || v === void 0 ? void 0 : v.id) || 0 })); }); }, data: campaigns, loading: mainMulti.loading, optionDesc: "description", optionValue: "id" })),
                         react_1["default"].createElement("div", { className: "row-zyx" },
                             react_1["default"].createElement(components_2.FieldMultiSelect, { variant: "outlined", label: t(keys_1.langKeys.product, { count: 2 }), className: "col-6", valueDefault: boardFilter.products, onChange: function (v) {
