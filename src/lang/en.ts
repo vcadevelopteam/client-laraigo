@@ -5538,6 +5538,7 @@ const translation: LangKeys = {
   prepare: 'Prepare',
   requestedquantity: 'Requested Quantity',
   send_invoice_helper_text: 'Please note that there is an additional cost for sending the voucher',
+  send_notification_helper_text: 'Please note that there is an additional cost for sending the notification',
   sendnotification_helper_text: 'Please note that there is an additional cost for sending the notification',
   automatic: 'Automatic',
   default2: 'Default',

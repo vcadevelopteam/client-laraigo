@@ -5453,6 +5453,7 @@ export const langKeys = {
   prepare: 'prepare',
   requestedquantity: 'requestedquantity',
   send_invoice_helper_text: 'send_invoice_helper_text',
+  send_notification_helper_text: 'send_notification_helper_text',
   sendnotification_helper_text: 'sendnotification_helper_text',
 
   automatic: 'automatic',

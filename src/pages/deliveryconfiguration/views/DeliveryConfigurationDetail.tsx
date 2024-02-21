@@ -79,6 +79,7 @@ interface AutomaticSchedule {
 const DeliveryConfigurationDetail: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
     const [waitSave2, setWaitSave2] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -179,8 +180,8 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 guided: true,
                 wspi: false,
                 emaili: false,
-                sendschedulen: false,
-                senddispatchn: false,
+                sendschedulen: true,
+                senddispatchn: true,
                 smsn: false,
                 wspn: false,
                 emailn: false,
@@ -289,7 +290,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                             breadcrumbs={arrayBread}
                         />
                         <TitleDetail
-                            title={`${t(langKeys.name)} ${t(langKeys.corporation)}`}
+                            title={user?.corpdesc}
                         />
                     </div>
                     <div className={classes.corporationNameAndButtons}>

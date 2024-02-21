@@ -280,7 +280,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
             <div className='row-zyx'>
                 <div className='col-3'>                                  
                     <FormControl component="fieldset" >                                             
-                        <CustomTitleHelper title={t(langKeys.appointmenttype)}/>                                           
+                        <CustomTitleHelper title={t(langKeys.appointmenttype)}/>
                         <FormGroup>
                             <div className={classes.checkboxContainer}>
                                 <Checkbox 
@@ -436,7 +436,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                     <FormControl component="fieldset">                       
                         <CustomTitleHelper
                            title={t(langKeys.sendnotification)}     
-                           helperText={t(langKeys.send_invoice_helper_text)}                         
+                           helperText={t(langKeys.send_notification_helper_text)}                         
                         />     
                         <FormGroup>
                             <FormControlLabel
