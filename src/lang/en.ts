@@ -2590,35 +2590,16 @@ const translation: LangKeys = {
   organizationdetail: "Organization detail",
   messagetemplatedetail: "Message template detail",
   report_userproductivity_totaltickets: 'Ticket quantity',
-  report_userproductivity_totaltickets_help: 'report_userproductivity_totaltickets_help',
-
+  report_userproductivity_totaltickets_help: 'Cantidad de tickets que ha atendido el usuario.',
   report_userproductivity_closedtickets: 'Closed',
-  report_userproductivity_closedtickets_help: 'report_userproductivity_closedtickets_help',
-
   report_userproductivity_asignedtickets: 'In atention',
-  report_userproductivity_asignedtickets_help: 'report_userproductivity_asignedtickets_help',
-
   report_userproductivity_suspendedtickets: 'Suspended',
-  report_userproductivity_suspendedtickets_help: 'report_userproductivity_suspendedtickets_help',
-
   report_userproductivity_avgfirstreplytime: 'TME AVG',
-  report_userproductivity_avgfirstreplytime_help: 'report_userproductivity_avgfirstreplytime_help',
-
   report_userproductivity_maxfirstreplytime: 'TME MAX',
-  report_userproductivity_maxfirstreplytime_help: 'report_userproductivity_maxfirstreplytime_help',
-
   report_userproductivity_minfirstreplytime: 'TME MIN',
-  report_userproductivity_minfirstreplytime_help: 'report_userproductivity_minfirstreplytime_help',
-
   report_userproductivity_avgtotalduration: 'TMO AVG',
-  report_userproductivity_avgtotalduration_help: 'report_userproductivity_avgtotalduration_help',
-
   report_userproductivity_maxtotalduration: 'TMO MAX',
-  report_userproductivity_maxtotalduration_help: 'report_userproductivity_maxtotalduration_help',
-
   report_userproductivity_mintotalduration: 'TMO MIN',
-  report_userproductivity_mintotalduration_help: 'report_userproductivity_mintotalduration_help',
-
   compliance: "Compliance",
   report_userproductivity_avgtotalasesorduration: 'TMO agent AVG',
   report_userproductivity_maxtotalasesorduration: 'TMO agent MAX',
