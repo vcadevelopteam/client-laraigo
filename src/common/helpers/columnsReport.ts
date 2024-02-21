@@ -42,7 +42,7 @@ export const columnsHideShow = {
         channel: true,  
     },
     interaction: {
-        //interactiondatehour: true,
+        interactiondatehour: true,
         channel: true,  
         agent: true,
         ticketgroup: true,

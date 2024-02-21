@@ -40,6 +40,7 @@ export interface TableConfig {
 
   groupedBy?: boolean;  
   showHideColumns?: boolean;
+  typificationFilter?: boolean;
   
   filterGeneral?: boolean;
   hoverShadow?: boolean;

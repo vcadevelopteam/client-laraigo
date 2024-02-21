@@ -480,6 +480,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                         pageCount={pageCount}
                                         filterrange={true}
                                         showHideColumns={true}
+                                        typificationFilter={true}
                                         FiltersElement={(
                                             <>
                                                 {!allFilters ? null : allFilters.map(filtro => (
@@ -667,19 +668,30 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         "suspensiontime",
         "avgagentresponse",
         "swingingtimes",
-        "tags"
+        "tags",
+        
     ];
-    const excludeTipification = [
+    const excludeTypification = [
         "ticket",
-        "starttime",
+        "datehour",
         "enddate",
-        "endtime",
+        "endtime",       
         "firstinteractiondate",
         "firstinteractiontime",
         "phone",      
     ];
-    const filteredColumns = columns.filter(column => !excludeConversation.includes(column));
 
+    const excludeUserProductivity = [
+        "hourfirstlogin",
+        "cardavgavgtme",
+        "cardavgmaxtme",
+        "cardavgmintme",       
+        "avgtotalasesorduration",
+        "groups",
+        "phone",      
+    ];
+
+    const filteredColumns = columns.filter(column => !excludeConversation.includes(column));
 
     return (
         <DialogZyx

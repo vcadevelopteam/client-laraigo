@@ -21,6 +21,7 @@ import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
 import AllInboxIcon from '@material-ui/icons/AllInbox'; 
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
+import CategoryIcon from '@material-ui/icons/Category';
 import clsx from 'clsx';
 import { Skeleton } from '@material-ui/lab';
 import {
@@ -45,7 +46,7 @@ import {
     useRowSelect,
 } from 'react-table'
 import { Range } from 'react-date-range';
-import { DialogZyx, DateRangePicker } from 'components';
+import { DialogZyx, DateRangePicker, FieldSelect } from 'components';
 import { Checkbox, Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
@@ -424,6 +425,7 @@ const TableZyx = React.memo(({
     initialPageIndex = 0,
     groupedBy,
     showHideColumns,
+    typificationFilter,
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, pageIndex: initialPageIndex });
@@ -658,11 +660,12 @@ const TableZyx = React.memo(({
     }
 
     const { t } = useTranslation();
-    const showExtraButtonIcon = showHideColumns || groupedBy;
+    const showExtraButtonIcon = showHideColumns || groupedBy || typificationFilter;
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
-    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);    
     const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
+    const [isTypificationFilterModalOpen, setTypificationFilterModalOpen] = useState(false);    
     const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
 
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -672,7 +675,7 @@ const TableZyx = React.memo(({
 
     const handleOpenGroupedByModal = () => {
         setGroupedByModalOpen(true);
-        };
+    };
 
     const handleOpenShowColumnsModal = () => {
         setShowColumnsModalOpen(true);
@@ -682,10 +685,14 @@ const TableZyx = React.memo(({
         }
     };
 
+    const handleOpeTypificationFilterModal = () => {
+        setTypificationFilterModalOpen(true);
+    };
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node;    
-            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && !isTypificationFilterModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
                 setAnchorElSeButtons(null);
                 setOpenSeButtons(false);
             }
@@ -694,7 +701,7 @@ const TableZyx = React.memo(({
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
+    }, [isGroupedByModalOpen, isShowColumnsModalOpen, isTypificationFilterModalOpen, anchorElSeButtons, setOpenSeButtons]);
     
 
     return (
@@ -861,6 +868,17 @@ const TableZyx = React.memo(({
                                                         <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
                                                     </MenuItem>
                                                 )}
+                                                 {typificationFilter && (
+                                                    <MenuItem 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                        onClick={handleOpeTypificationFilterModal}                                           
+                                                    >
+                                                        <ListItemIcon>
+                                                            <CategoryIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">{t(langKeys.filter)}</Typography>
+                                                    </MenuItem>
+                                                )}
                                             </Paper>
                                         )}
                                     </Popper>
@@ -922,6 +940,56 @@ const TableZyx = React.memo(({
                                 buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
                             >                     
                                 {/* Falta */}
+                            </DialogZyx>
+                        )}   
+
+                         {isTypificationFilterModalOpen && (
+                            <DialogZyx 
+                                open={isTypificationFilterModalOpen} 
+                                title={t(langKeys.typify)} 
+                                buttonText1={t(langKeys.close)}
+                                buttonText2={t(langKeys.apply) }
+                                handleClickButton1={() => setTypificationFilterModalOpen(false)}                    
+                                handleClickButton2={()=> setTypificationFilterModalOpen(false)}
+                                maxWidth="sm"
+                                buttonStyle1={{marginBottom:'0.3rem'}}
+                                buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                            >                     
+                                <div style={{display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '1rem'}}>
+                                    <FieldSelect
+                                        label={t(langKeys.report_tipification_classificationlevel1)}
+                                        className="col-12"
+                                        //valueDefault={getValues('graphictype')}
+                                        //error={errors?.graphictype?.message}
+                                        //onChange={(value) => setValue('graphictype', value?.key)}
+                                        data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                                        uset={true}                                 
+                                        optionDesc="value"
+                                        optionValue="key"
+                                    />
+                                    <FieldSelect
+                                        label={t(langKeys.report_tipification_classificationlevel2)}
+                                        className="col-12"
+                                        //valueDefault={getValues('graphictype')}
+                                        //error={errors?.graphictype?.message}
+                                        //onChange={(value) => setValue('graphictype', value?.key)}
+                                        data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                                        uset={true}                                 
+                                        optionDesc="value"
+                                        optionValue="key"
+                                    />
+                                    <FieldSelect
+                                        label={t(langKeys.report_tipification_classificationlevel3)}
+                                        className="col-12"
+                                        //valueDefault={getValues('graphictype')}
+                                        //error={errors?.graphictype?.message}
+                                        //onChange={(value) => setValue('graphictype', value?.key)}
+                                        data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                                        uset={true}                                 
+                                        optionDesc="value"
+                                        optionValue="key"
+                                    />
+                                </div>
                             </DialogZyx>
                         )}                   
 
