@@ -1,6 +1,6 @@
 import React, { useEffect, useState, PropsWithChildren, MouseEventHandler } from 'react';
 import Table from '@material-ui/core/Table';
-import { TableSortLabel } from '@material-ui/core'
+import { Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, TableSortLabel, Typography } from '@material-ui/core'
 import Button from '@material-ui/core/Button';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -13,6 +13,8 @@ import Menu from '@material-ui/core/Menu';
 import { exportExcel, getLocaleDateString, localesLaraigo } from 'common/helpers';
 import { setMemoryTable } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
+import AllInboxIcon from '@material-ui/icons/AllInbox'; 
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 import {
     FirstPage,
     LastPage,
@@ -35,7 +37,7 @@ import IconButton from '@material-ui/core/IconButton';
 import BackupIcon from '@material-ui/icons/Backup';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Dictionary, TableConfig } from '@types'
-import { SearchField } from 'components';
+import { DialogZyx, SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -67,6 +69,15 @@ import {
 } from '@material-ui/pickers';
 import { TableFooter } from '@material-ui/core';
 
+interface ColumnVisibility {
+    [key: string]: boolean;
+}
+
+interface Column {
+    Header: string;
+    accessor: string;
+    showColumn?: boolean;
+}
 export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
     name: string
     onAdd?: (instance: TableInstance<T>) => MouseEventHandler
@@ -387,11 +398,52 @@ const TableZyx = React.memo(({
     useFooter = false,
     heightWithCheck = 43,
     checkHistoryCenter = false,
+    showHideColumns,
+    groupedBy,
+    ExtraMenuOptions,
     acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
 }: TableConfig) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const [initial, setInitial] = useState(true);
+    const showExtraButtonIcon = showHideColumns || groupedBy || ExtraMenuOptions;
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);   
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false); 
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [openSeButtons, setOpenSeButtons] = useState(false);
+    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
+    const { t } = useTranslation();
+
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+    }; 
+
+    const handleOpenGroupedByModal = () => {
+        setGroupedByModalOpen(true);
+    };
+
+    const handleOpenShowColumnsModal = () => {
+        setShowColumnsModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;    
+            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null);
+                setOpenSeButtons(false);
+            }
+        };    
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
     const DefaultColumnFilter = ({
         column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" },
@@ -668,6 +720,7 @@ const TableZyx = React.memo(({
         setPageSize,
         globalFilteredRows,
         setGlobalFilter,
+        allColumns,
         state: { pageIndex, pageSize, selectedRowIds },
         toggleAllRowsSelected
     } = useTable({
@@ -803,7 +856,6 @@ const TableZyx = React.memo(({
         },
         [headerGroups, prepareRow, page]
     )
-
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
@@ -908,6 +960,62 @@ const TableZyx = React.memo(({
                         ><Trans i18nKey={langKeys.download} />
                         </Button>
                     )}
+                    {showExtraButtonIcon && (
+                        <div>
+                             <IconButton
+                                aria-label="more"
+                                id="long-button"
+                                onClick={(event) => handleClickSeButtons(event)}
+                                style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                            >
+                                <MoreVertIcon />
+                            </IconButton>
+
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <Popper
+                                    open={openSeButtons}
+                                    anchorEl={anchorElSeButtons}
+                                    placement="bottom"
+                                    transition
+                                    style={{marginRight:'1rem'}}
+                                >
+                                    {({ TransitionProps }) => (
+                                        <Paper {...TransitionProps} elevation={5}>
+                                            
+                                            {groupedBy && (
+                                                <div>
+                                                    <MenuItem 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                                        onClick={handleOpenGroupedByModal}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                                    </MenuItem>
+                                                    <Divider />
+                                                </div>
+                                            )}
+
+                                            {showHideColumns && (
+                                                <MenuItem 
+                                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                    onClick={handleOpenShowColumnsModal}                                           
+                                                >
+                                                    <ListItemIcon>
+                                                        <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                    </ListItemIcon>
+                                                    <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                                </MenuItem>
+                                            )}
+                                            {ExtraMenuOptions}
+                                        </Paper>
+                                    )}
+                                </Popper>
+                            </div>
+                                     
+                        </div>  
+                    )}
                     {deleteData && (
                         <Button
                             className={classes.button}
@@ -968,6 +1076,63 @@ const TableZyx = React.memo(({
                         />
                     </div>
                 </Box>
+            )}
+
+            {isGroupedByModalOpen && (
+                <DialogZyx 
+                    open={isGroupedByModalOpen} 
+                    title={t(langKeys.groupedBy)} 
+                    buttonText1={t(langKeys.close)}
+                    buttonText2={t(langKeys.apply) }
+                    handleClickButton1={() => setGroupedByModalOpen(false)}                    
+                    handleClickButton2={()=> setGroupedByModalOpen(false)}
+                    maxWidth="sm"
+                    buttonStyle1={{marginBottom:'0.3rem'}}
+                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                >                     
+                    {/* Falta */}
+                </DialogZyx>
+            )} 
+
+            {isShowColumnsModalOpen && (
+                <DialogZyx 
+                    open={isShowColumnsModalOpen} 
+                    title={t(langKeys.showHideColumns)} 
+                    buttonText2={t(langKeys.close)}       
+                    handleClickButton2={() => setShowColumnsModalOpen(false)}                  
+                    maxWidth="sm"
+                    buttonStyle1={{marginBottom:'0.3rem'}}
+                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                >                              
+                    <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                    {allColumns.filter(column => {
+                        const isColumnInstance = 'accessor' in column && 'Header' in column;
+                        if("fixed" in column ) return false
+                        return isColumnInstance && 'showColumn' in (column as Column) && (column as Column).showColumn === true;
+                    })
+                        .map((column) => (
+                            <Grid item xs={4} key={column.id}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            color="primary"
+                                            checked={!columnVisibility[column.id]}  
+                                            onChange={() => {
+                                                column.toggleHidden();
+                                                setColumnVisibility(prevVisibility => ({
+                                                    ...prevVisibility,
+                                                [column.id]: !prevVisibility[column.id],
+                                                }));
+                                            }}
+                                        />
+                                    }
+                                    label={t(column.Header as string)}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+
+                </DialogZyx>               
             )}
 
             {HeadComponent && <HeadComponent />}
