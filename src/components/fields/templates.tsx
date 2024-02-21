@@ -739,14 +739,22 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
     useEffect(() => {
-        if (valueDefault && data.length > 0) {
-            const optionsSelected = data.filter(o => `${valueDefault}`.split(",").indexOf(o[optionValue].toString()) > -1)
+        if (typeof valueDefault === 'string' && valueDefault.trim() !== '' && data.length > 0) {
+            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1);
             setOptionsSelected(optionsSelected);
         } else {
             setOptionsSelected([]);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data]);
+    }, [data, valueDefault, optionValue]);
+
+    // useEffect(() => {
+    //     if (valueDefault && data.length > 0) {
+    //         const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+    //         setOptionsSelected(optionsSelected);
+    //     } else {
+    //         setOptionsSelected([]);
+    //     }
+    // }, [data]);
 
     return (
         <div className={className}>
