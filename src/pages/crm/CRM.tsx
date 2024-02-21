@@ -214,7 +214,6 @@ interface IBoardFilter {
 const DraggablesCategories: FC<{ column: Dictionary, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams, configuration: any }> = ({ column,
     index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental, sortParams, configuration }) => {
     const { t } = useTranslation();
-
     return (
         <Draggable draggableId={column.column_uuid} index={index + 1} key={column.column_uuid} isDragDisabled={isIncremental}>
         {(provided) => (
@@ -376,6 +375,7 @@ const CRM: FC = () => {
     }
 
     useEffect(() => {
+        setDataColumn([])
         dispatch(getMultiCollection([
         getColumnsSel(1),
         getLeadsSel({
@@ -424,6 +424,10 @@ const CRM: FC = () => {
         }
     }, [mainMulti]);
 
+    useEffect(() => {
+      console.log(dataColumn)
+    }, [dataColumn]);
+
     const [isModalOpenBOARD, setModalOpenBOARD] = useState(false);
     const [isModalOpenGRID, setModalOpenGRID] = useState(false);
 
@@ -438,7 +442,7 @@ const CRM: FC = () => {
             newParams.set('contact', String(boardFilter.customer));
             newParams.set('asesorid', String(boardFilter.asesorid));
             history.push({ search: newParams.toString() });
-    
+            setDataColumn([])
             await dispatch(getMultiCollection([
                 getColumnsSel(1),
                 getLeadsSel({
