@@ -525,23 +525,23 @@ exports.FieldMultiSelect = function (_a) {
     var error = _a.error, label = _a.label, data = _a.data, optionValue = _a.optionValue, optionDesc = _a.optionDesc, _b = _a.valueDefault, valueDefault = _b === void 0 ? "" : _b, onChange = _a.onChange, _c = _a.disabled, disabled = _c === void 0 ? false : _c, loading = _a.loading, _d = _a.className, className = _d === void 0 ? null : _d, _e = _a.style, style = _e === void 0 ? null : _e, _f = _a.variant, variant = _f === void 0 ? "standard" : _f, _g = _a.uset, uset = _g === void 0 ? false : _g, _h = _a.prefixTranslation, prefixTranslation = _h === void 0 ? "" : _h, _j = _a.limitTags, limitTags = _j === void 0 ? -1 : _j;
     var t = react_i18next_1.useTranslation().t;
     var _k = react_1.useState([]), optionsSelected = _k[0], setOptionsSelected = _k[1];
+    // useEffect(() => {
+    //     if (typeof valueDefault === 'string' && valueDefault.trim() !== '' && data.length > 0) {
+    //         const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1);
+    //         setOptionsSelected(optionsSelected);
+    //     } else {
+    //         setOptionsSelected([]);
+    //     }
+    // }, [data, valueDefault, optionValue]);
     react_1.useEffect(function () {
-        if (typeof valueDefault === 'string' && valueDefault.trim() !== '' && data.length > 0) {
+        if (valueDefault && data.length > 0) {
             var optionsSelected_1 = data.filter(function (o) { return valueDefault.split(",").indexOf(o[optionValue].toString()) > -1; });
             setOptionsSelected(optionsSelected_1);
         }
         else {
             setOptionsSelected([]);
         }
-    }, [data, valueDefault]);
-    // useEffect(() => {
-    //     if (valueDefault && data.length > 0) {
-    //         const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
-    //         setOptionsSelected(optionsSelected);
-    //     } else {
-    //         setOptionsSelected([]);
-    //     }
-    // }, [data]);
+    }, [data]);
     return (react_1["default"].createElement("div", { className: className },
         variant === "standard" &&
             react_1["default"].createElement(Box_1["default"], { fontWeight: 500, lineHeight: "18px", fontSize: 14, mb: 1, color: "textPrimary" }, label),
