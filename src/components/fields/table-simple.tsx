@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, PropsWithChildren, MouseEventHandler } from 'react';
 import Table from '@material-ui/core/Table';
+import { TableSortLabel } from '@material-ui/core'
 import Button from '@material-ui/core/Button';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowUp from '@material-ui/icons/KeyboardArrowUp'
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
 import { exportExcel, getLocaleDateString, localesLaraigo } from 'common/helpers';
@@ -38,14 +41,18 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 import Checkbox from '@material-ui/core/Checkbox';
 import {
     useTable,
+    TableInstance,
+    TableOptions,
     useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination,
-    useRowSelect,
+    useRowSelect,    
     Row,
     FilterProps,
-    CellProps
+    CellProps,   
+    useExpanded,
+    useGroupBy,
 } from 'react-table'
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -59,6 +66,14 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import { TableFooter } from '@material-ui/core';
+
+export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
+    name: string
+    onAdd?: (instance: TableInstance<T>) => MouseEventHandler
+    onDelete?: (instance: TableInstance<T>) => MouseEventHandler
+    onEdit?: (instance: TableInstance<T>) => MouseEventHandler
+    onClick?: (row: Row<T>) => void
+}
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -137,14 +152,38 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeaderColumn: {
         display: 'flex',
-        justifyContent: 'space-between',
+        gap: '0.5rem',
         alignItems: 'center'
     },
     iconHelpText: {
         width: 15,
         height: 15,
         cursor: 'pointer',
-    }
+    },
+    headerIcon: {
+        '& svg': {
+          width: 16,
+          height: 16,
+          marginTop: -2,
+          marginRight: 4,
+          marginLeft: -6
+        },
+    },
+    iconDirectionAsc: {
+        transform: 'rotate(90deg)',
+    },
+    iconDirectionDesc: {
+        transform: 'rotate(180deg)',
+    },
+    cellIcon: {
+        '& svg': {
+          width: 16,
+          height: 16,
+          marginTop: -2,
+          marginRight: 4,
+          marginLeft: -6
+        },
+    },
 }));
 
 declare module "react-table" {
@@ -402,8 +441,7 @@ const TableZyx = React.memo(({
         const keyPress = React.useCallback((e) => {
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
-            }
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+            }            
         }, [value, operator])
         const handleDate = (date: Date) => {
             if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
@@ -642,8 +680,11 @@ const TableZyx = React.memo(({
             : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex),
     },
         useFilters,
+       
         useGlobalFilter,
-        useSortBy,
+        useGroupBy,
+        useSortBy,       
+        useExpanded,     
         usePagination,
         useRowSelect,
         hooks => {
@@ -651,6 +692,7 @@ const TableZyx = React.memo(({
                 {
                     id: 'selection',
                     width: 80,
+                    disableGroupBy: true,
                     Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
                         <div>
                             <Checkbox
@@ -681,13 +723,17 @@ const TableZyx = React.memo(({
                 } as any,
                 ...columns,
             ])
+            hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {
+                // fix the parent group of the selection button to not be resizable
+                const selectionGroupHeader = headerGroups[0].headers[0]
+                selectionGroupHeader.canResize = false
+            })
         }
     )
 
     useEffect(() => {
         setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
     }, [globalFilteredRows])
-
 
     useEffect(() => {
         if (initialStateFilter) {
@@ -729,7 +775,7 @@ const TableZyx = React.memo(({
                     {...row.getRowProps({ style })}
                     hover
                 >
-                    {row.cells.map((cell, _) =>
+                    {row.cells.map((cell, _) => //eslint-disable-next-line
                         <TableCell
                             {...cell.getCellProps({
                                 style: {
@@ -745,10 +791,11 @@ const TableZyx = React.memo(({
                                     whiteSpace: 'nowrap',
                                     textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
-                            })}
+                            })}                            
                             onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
                         >
                             {cell.render('Cell')}
+                           
                         </TableCell>
                     )}
                 </TableRow>
@@ -926,38 +973,56 @@ const TableZyx = React.memo(({
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column" }}>
-            <Box overflow="auto" style={{ flex: 1 }}>
+                <Box overflow="auto" style={{ flex: 1 }}>
                     <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead style={{ display: 'table-header-group' }}>
-                            {headerGroups.map((headerGroup) => (
-                                <TableRow  {...headerGroup.getHeaderGroupProps()} style={useSelection ? { display: 'flex' } : {}}>
+                            {headerGroups.map((headerGroup) => ( //eslint-disable-next-line
+                                <TableRow {...headerGroup.getHeaderGroupProps()} style={useSelection ? { display: 'flex' } : {}}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
-                                            <th style={{ width: "0px" }} key="header-floating"></th> :
+                                            
+                                            <th style={{ width: "0px" }} key="header-floating"></th> : 
                                             <TableCell key={ii} style={useSelection ? {
                                                 ...(column.width === 'auto' ? {
                                                     flex: 1,
                                                 } : {
                                                     minWidth: column.minWidth,
                                                     width: column.width,
-                                                    maxWidth: column.maxWidth,
+                                                    maxWidth: column.maxWidth, 
                                                 })
                                             } : {}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
-                                                            <Box
 
-                                                                {...column.getHeaderProps(column.getSortByToggleProps({ title: 'ordenar' }))}
+                                                            { column.canGroupBy === true && (
+                                                                <Tooltip title={''}>
+                                                                    <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
+                                                                    {column.canGroupBy === true && (
+                                                                        <TableSortLabel
+                                                                        active
+                                                                        direction={column.isGrouped ? 'desc' : 'asc'}
+                                                                        IconComponent={KeyboardArrowRight}
+                                                                        className={classes.headerIcon}
+                                                                        {...column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar' }))}
+                                                                        />
+                                                                    )}
+                                                                    </div>
+                                                                </Tooltip>
+                                                            )}
+
+
+                                                            <Box
+                                                                {...column.getHeaderProps(column.getSortByToggleProps({ title: 'Ordenar' }))}
                                                                 style={{
                                                                     whiteSpace: 'nowrap',
                                                                     wordWrap: 'break-word',
                                                                     display: 'flex',
                                                                     cursor: 'pointer',
-                                                                    alignItems: 'center',
+                                                                    alignItems: 'center',                                                                    
                                                                 }}
-                                                            >
+                                                            >                                                              
                                                                 {column.render('Header')}
                                                                 {column.isSorted && (
                                                                     column.isSortedDesc ?
@@ -965,6 +1030,7 @@ const TableZyx = React.memo(({
                                                                         :
                                                                         <ArrowUpwardIcon className={classes.iconOrder} color="action" />
                                                                 )}
+                                                               
                                                             </Box>
                                                             {!!column.helpText && (
                                                                 <Tooltip title={<div style={{ fontSize: 12 }}>{column.helpText}</div>} arrow placement="top" >
@@ -999,13 +1065,13 @@ const TableZyx = React.memo(({
                             )}
                             {(!loading && !useSelection) && page.map(row => {
                                 prepareRow(row);
-                                return (
+                                return ( //eslint-disable-next-line
                                     <TableRow
                                         {...row.getRowProps()}
                                         hover
                                         style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                     >
-                                        {row.cells.map((cell, i) =>
+                                        {row.cells.map((cell) => //eslint-disable-next-line
                                             <TableCell
                                                 {...cell.getCellProps({
                                                     style: {
@@ -1021,7 +1087,39 @@ const TableZyx = React.memo(({
                                                 })}
                                                 onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
                                             >
-                                                {cell.render('Cell')}
+                                               {cell.isGrouped ? (
+                                                    <>
+                                                        <TableSortLabel
+                                                            classes={{
+                                                                iconDirectionAsc: classes.iconDirectionAsc,
+                                                                iconDirectionDesc: classes.iconDirectionDesc,
+                                                            }}
+                                                            active
+                                                            direction={row.isExpanded ? 'desc' : 'asc'}
+                                                            IconComponent={KeyboardArrowUp}
+                                                            {...row.getToggleRowExpandedProps()}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation(); 
+                                                                row.toggleRowExpanded();
+                                                            }}
+                                                            className={classes.cellIcon}
+                                                        />{' '}
+                                                        {cell.render('Cell', { editable: false })} ({row.subRows.length})
+                                                    </>
+                                                ) : (
+                                                    columns.isGrouped ? ( 
+                                                        cell.isAggregated ? (
+                                                            cell.render('Aggregated')
+                                                        ) : cell.isPlaceholder ? null : (
+                                                            cell.render('Cell')
+                                                        )
+                                                    ) : (
+                                                        cell.render('Cell')
+                                                    )
+                                                )}
+
+
+                                                
                                             </TableCell>
                                         )}
                                     </TableRow>
@@ -1029,9 +1127,9 @@ const TableZyx = React.memo(({
                             })}
                         </TableBody>
                         {useFooter && <TableFooter>
-                            {footerGroups.map(group => (
+                            {footerGroups.map(group => ( //eslint-disable-next-line
                                 <TableRow {...group.getFooterGroupProps()}>
-                                    {group.headers.map(column => (
+                                    {group.headers.map(column => ( //eslint-disable-next-line
                                         <TableCell {...column.getFooterProps({
                                             style: {
                                                 fontWeight: "bold",
@@ -1047,6 +1145,7 @@ const TableZyx = React.memo(({
                         </TableFooter>}
                     </Table>
                 </Box>
+                
                 {toolsFooter && (
                     <Box className={classes.footerTable}>
                         <Box>
