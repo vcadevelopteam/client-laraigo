@@ -154,7 +154,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
+    
     const columns = React.useMemo(
         () => [
             {
@@ -174,61 +174,74 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 accessor: 'totaltickets',
                 type: "number",
                 sortType: 'number',
+                helpText: t(langKeys.report_userproductivity_totaltickets_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_closedtickets),
                 accessor: 'closedtickets',
                 type: "number",
                 sortType: 'number',
+                helpText: t(langKeys.report_userproductivity_closedtickets_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_asignedtickets),
                 accessor: 'asignedtickets',
                 type: "number",
                 sortType: 'number',
+                helpText: t(langKeys.report_userproductivity_asignedtickets_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_suspendedtickets),
                 accessor: 'suspendedtickets',
                 type: "number",
                 sortType: 'number',
+                helpText: t(langKeys.report_userproductivity_suspendedtickets_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_avgfirstreplytime),
                 accessor: 'avgfirstreplytime',
+                helpText: t(langKeys.report_userproductivity_avgfirstreplytime_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_maxfirstreplytime),
                 accessor: 'maxfirstreplytime',
+                helpText: t(langKeys.report_userproductivity_maxfirstreplytime_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_minfirstreplytime),
                 accessor: 'minfirstreplytime',
+                helpText: t(langKeys.report_userproductivity_minfirstreplytime_help),
             },
-            // {
-            //     Header: t(langKeys.report_userproductivity_avgtotalduration),
-            //     accessor: 'avgtotalduration',
-            //     NoFilter: false
-            // },
+            {
+                Header: t(langKeys.report_userproductivity_avgtotalduration),
+                accessor: 'avgtotalduration',
+                NoFilter: false,
+                helpText: t(langKeys.report_userproductivity_avgtotalduration_help),
+            },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
+                helpText: t(langKeys.report_userproductivity_maxtotalduration_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalduration),
                 accessor: 'mintotalduration',
+                helpText: t(langKeys.report_userproductivity_mintotalduration_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_avgtotalasesorduration),
                 accessor: 'avgtotalasesorduration',
+                helpText: t(langKeys.report_userproductivity_avgtotalasesorduration_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalasesorduration),
                 accessor: 'maxtotalasesorduration',
+                helpText: t(langKeys.report_userproductivity_maxtotalasesorduration_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalasesorduration),
                 accessor: 'mintotalasesorduration',
+                helpText: t(langKeys.report_userproductivity_mintotalasesorduration_help),
             },
             {
                 Header: t(langKeys.report_userproductivity_tmravg),
