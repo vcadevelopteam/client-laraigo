@@ -51,6 +51,7 @@ const isIncremental = window.location.href.includes("incremental")
 import AllInboxIcon from '@material-ui/icons/AllInbox'; 
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 import { columnsHideShow } from 'common/helpers/columnsReport';
+import TipificationReport from './TipificationReport';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -480,7 +481,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                         pageCount={pageCount}
                                         filterrange={true}
                                         showHideColumns={true}
-                                        typificationFilter={true}
                                         FiltersElement={(
                                             <>
                                                 {!allFilters ? null : allFilters.map(filtro => (
@@ -1306,6 +1306,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'TIPIFICATION':
+                return (
+                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("tipificationreport")}}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
+                                    title={t('report_' + report?.origin)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t('report_' + report?.origin)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1742,6 +1763,14 @@ const Reports: FC = () => {
                     <ReportLeadGridTracking />
                 </div>
             </>
+        )
+    } else if (viewSelected === "tipificationreport") {
+        return (
+            <TipificationReport 
+                setViewSelected={setViewSelected}
+                row={rowSelected}
+                setSearchValue={setSearchValue} 
+            />
         )
     }else {
         return (

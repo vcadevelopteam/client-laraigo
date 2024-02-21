@@ -40,7 +40,6 @@ export interface TableConfig {
 
   groupedBy?: boolean;  
   showHideColumns?: boolean;
-  typificationFilter?: boolean;
   
   filterGeneral?: boolean;
   hoverShadow?: boolean;
@@ -86,6 +85,7 @@ export interface TableConfig {
   };
   registertext?: string;
   useFooter?: boolean;
+  ExtraMenuOptions?: ReactElement;
 }
 
 export interface Pagination {
