@@ -230,10 +230,10 @@ export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, pass
     parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
-export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, storeid, warehouseid}: Dictionary): IRequestBody => ({
+export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, storeid, warehouseid, showbots}: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
-    parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect, storeid, warehouseid }
+    parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect, storeid, warehouseid, showbots }
 });
 
 export const insStore = ({ id, description, phone, address, warehouseid, coveragearea , warehouseinstore, type , status, operation }: Dictionary): IRequestBody => ({

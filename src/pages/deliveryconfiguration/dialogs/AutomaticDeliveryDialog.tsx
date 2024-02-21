@@ -10,7 +10,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
     mainContainer: {
@@ -44,6 +43,11 @@ interface AutomaticSchedule {
     shift: string;
     deliveryday: string;
 }
+interface DeliveryShift {
+    shiftname: string;
+    starttime: string;
+    endtime: string;
+}
 
 const AutomaticDeliveryDialog = ({
     openModal,
@@ -52,7 +56,7 @@ const AutomaticDeliveryDialog = ({
     setAutomaticSchedules,
     onMainSubmit,
     fetchOriginalConfig,
-    configjson
+    deliveryShifts,
 }: {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
@@ -60,7 +64,7 @@ const AutomaticDeliveryDialog = ({
     setAutomaticSchedules: (automaticSchedules: AutomaticSchedule[]) => void;
     onMainSubmit: () => void;
     fetchOriginalConfig: () => void;
-    configjson: Dictionary;
+    deliveryShifts: DeliveryShift[];
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -169,15 +173,6 @@ const AutomaticDeliveryDialog = ({
         },
     ]
 
-    const shifts: {domainvalue: string; domaindesc: string}[] = [];
-    if (configjson.morningstarttime !== null && configjson.morningendtime !== null) {
-        shifts.push({domainvalue: 'Mañana', domaindesc: 'Mañana'});
-    } if (configjson.afternoonstarttime !== null && configjson.afternoonendtime !== null) {
-        shifts.push({domainvalue: 'Tarde', domaindesc: 'Tarde'});
-    } if (configjson.nightstarttime !== null && configjson.nightendtime !== null) {
-        shifts.push({domainvalue: 'Noche', domaindesc: 'Noche'});
-    }
-
     return (
         <DialogZyx
             open={openModal}
@@ -247,9 +242,9 @@ const AutomaticDeliveryDialog = ({
                         <FieldSelect
                             label={t(langKeys.shift)}
                             className='col-3'
-                            data={shifts}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
+                            data={deliveryShifts}
+                            optionDesc="shiftname"
+                            optionValue="shiftname"
                             valueDefault={newSchedule?.shift}
                             onChange={(value) => setNewSchedule({...newSchedule, shift: value.domainvalue})}
                         />

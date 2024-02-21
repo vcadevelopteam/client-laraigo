@@ -55,12 +55,6 @@ interface ConfigJson {
     sunday: boolean;
     validationdistance: null | number;
     deliveryphoto: boolean;
-    morningstarttime: string | null;
-    morningendtime: string | null;
-    afternoonstarttime: string | null;
-    afternoonendtime: string | null;
-    nightstarttime: string | null;
-    nightendtime: string | null;
 }
 
 interface VehicleType {
@@ -74,6 +68,11 @@ interface AutomaticSchedule {
     endtime: string;
     shift: string;
     deliveryday: string;
+}
+interface DeliveryShift {
+    shiftname: string;
+    starttime: string;
+    endtime: string;
 }
 
 const DeliveryConfigurationDetail: React.FC = () => {
@@ -117,17 +116,12 @@ const DeliveryConfigurationDetail: React.FC = () => {
         sunday: false,
         validationdistance: null,
         deliveryphoto: false,
-        morningstarttime: null,
-        morningendtime: null,
-        afternoonstarttime: null,
-        afternoonendtime: null,
-        nightstarttime: null,
-        nightendtime: null,
     })
     const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
     const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([])
     const [deliveryPhotos, setDeliveryPhotos] = useState<string[]>([])
     const [automaticSchedules, setAutomaticSchedules] = useState<AutomaticSchedule[]>([])
+    const [deliveryShifts, setDeliveryShifts] = useState<DeliveryShift[]>([])
 
     const fetchOriginalConfig = () => {
         if(main.data.length) {
@@ -158,17 +152,12 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 sunday: main?.data?.[0]?.config?.sunday,
                 validationdistance: main?.data?.[0]?.config?.validationdistance,
                 deliveryphoto: main?.data?.[0]?.config?.deliveryphoto,
-                morningstarttime: main?.data?.[0]?.config?.morningstarttime,
-                morningendtime: main?.data?.[0]?.config?.morningendtime,
-                afternoonstarttime: main?.data?.[0]?.config?.afternoonstarttime,
-                afternoonendtime: main?.data?.[0]?.config?.afternoonendtime,
-                nightstarttime: main?.data?.[0]?.config?.nightstarttime,
-                nightendtime: main?.data?.[0]?.config?.nightendtime,
             })
             setNonWorkingDates(main?.data?.[0]?.config?.nonworkingdates)
             setVehicleTypes(main?.data?.[0]?.config?.vehicletypes)
             setDeliveryPhotos(main?.data?.[0]?.config?.deliveryphotos)
             setAutomaticSchedules(main?.data?.[0]?.config?.automaticschedules)
+            setDeliveryShifts(main?.data?.[0]?.config?.deliveryshifts)
         } else {
             setConfigjson({
                 automatica: false,
@@ -197,12 +186,6 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 sunday: false,
                 validationdistance: null,
                 deliveryphoto: false,
-                morningstarttime: null,
-                morningendtime: null,
-                afternoonstarttime: null,
-                afternoonendtime: null,
-                nightstarttime: null,
-                nightendtime: null,
             })
         }
     }
@@ -243,7 +226,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             if(existingConfig) {
                 dispatch(execute(deliveryConfigurationIns({
                     id: existingConfig?.deliveryconfigurationid,
-                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos, automaticschedules: automaticSchedules}),
+                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos, automaticschedules: automaticSchedules, deliveryshifts: deliveryShifts}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'UPDATE',
@@ -251,7 +234,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             } else {
                 dispatch(execute(deliveryConfigurationIns({
                     id: 0,
-                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos, automaticschedules: automaticSchedules}),
+                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos, automaticschedules: automaticSchedules, deliveryshifts: deliveryShifts}),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'INSERT',
@@ -345,9 +328,9 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     openModal={openModalDeliverySchedules}
                     setOpenModal={setOpenModalDeliverySchedules}
                     onMainSubmit={onMainSubmit}
-                    configjson={configjson}
-                    setConfigjson={setConfigjson}
                     fetchOriginalConfig={fetchOriginalConfig}
+                    deliveryShifts={deliveryShifts}
+                    setDeliveryShifts={setDeliveryShifts}
                 />
                 <DeliveryPhotoDialog
                     openModal={openModalDeliverPhoto}
@@ -364,7 +347,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     setAutomaticSchedules={setAutomaticSchedules}
                     onMainSubmit={onMainSubmit}
                     fetchOriginalConfig={fetchOriginalConfig}
-                    configjson={configjson}
+                    deliveryShifts={deliveryShifts}
                 />
             </form>
         </>

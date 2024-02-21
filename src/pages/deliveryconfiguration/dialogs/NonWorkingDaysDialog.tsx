@@ -95,7 +95,7 @@ const NonWorkingDaysDialog: React.FC<{
         <DialogZyx
             open={openModal}
             title={t(langKeys.nonworkingdaysregister)}
-            maxWidth="md"
+            maxWidth="lg"
             buttonText0={t(langKeys.back)}
             handleClickButton0={closeModal}
             buttonText1={t(langKeys.save)}
