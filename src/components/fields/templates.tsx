@@ -738,14 +738,15 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
-    useEffect(() => {
+    useEffect(() => {    
+        
         if (typeof valueDefault === 'string' && valueDefault.trim() !== '' && data.length > 0) {
             const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1);
             setOptionsSelected(optionsSelected);
         } else {
             setOptionsSelected([]);
         }
-    }, [data, valueDefault, optionValue]);
+    }, [data, valueDefault]);
 
     // useEffect(() => {
     //     if (valueDefault && data.length > 0) {

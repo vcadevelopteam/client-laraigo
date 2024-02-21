@@ -330,13 +330,13 @@ const CRM: FC = () => {
     });
 
     const otherParams = useMemo(() => ({
-        asesorid: Number(query.get('asesorid')),
+        asesorid: query.get('asesorid')|| '',
         channels: query.get('channels') || '',
         contact: query.get('contact') || '',
         products: query.get('products') || '',
         persontype: query.get('persontype') || '',
         tags: query.get('tags') || '',
-        campaign: Number(query.get('campaign')),
+        campaign: query.get('campaign') || '',
     }), [query]);
 
     const [display, setDisplay] = useState(query.get('display') || 'BOARD');
@@ -1105,7 +1105,7 @@ const CRM: FC = () => {
                                     variant="outlined"
                                     label={t(langKeys.agent)}
                                     className="col-6"                   
-                                    valueDefault={boardFilter.asesorid}
+                                    valueDefault={(boardFilter.asesorid)}
                                     onChange={(value) => setBoardFilter(prev => ({ ...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',') }))}
                                     data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
                                     optionDesc={'fullname'}

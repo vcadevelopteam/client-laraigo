@@ -533,7 +533,7 @@ exports.FieldMultiSelect = function (_a) {
         else {
             setOptionsSelected([]);
         }
-    }, [data, valueDefault, optionValue]);
+    }, [data, valueDefault]);
     // useEffect(() => {
     //     if (valueDefault && data.length > 0) {
     //         const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
