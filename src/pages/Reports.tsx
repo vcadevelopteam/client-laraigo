@@ -462,128 +462,130 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     handleClick={handleSelected}
                 />
             </div>
-            {multiData.length > 0 ?
-                <>
-                    {customReport ?
+            
+            {customReport ?
                         <AssessorProductivity
                             row={row}
-                            multiData={multiData}
                             allFilters={allFilters}
-                        />
-                        :
+                        />:
                         <>
-                                {view === "GRID" ? (
-                                    <TablePaginated
-                                        columns={columns}
-                                        data={mainPaginated.data}
-                                        totalrow={totalrow}
-                                        loading={mainPaginated.loading}
-                                        pageCount={pageCount}
-                                        filterrange={true}
-                                        showHideColumns={true}
-                                        FiltersElement={(
-                                            <>
-                                                {!allFilters ? null : allFilters.map(filtro => (
-                                                    (filtro.values[0].multiselect ?
-                                                        <FieldMultiSelect
-                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
-                                                            limitTags={1}
-                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                            className={classes.filterComponent}
-                                                            key={filtro.values[0].filter}
-                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                            variant="outlined"
-                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                            optionDesc={filtro.values[0].optionDesc}
-                                                            optionValue={filtro.values[0].optionValue}
-                                                        />
-                                                        :
-                                                        <FieldSelect
-                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
-                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                            className={classes.filterComponent}
-                                                            key={filtro.values[0].filter}
-                                                            variant="outlined"
-                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                            optionDesc={filtro.values[0].optionDesc}
-                                                            optionValue={filtro.values[0].optionValue}
-                                                        />
-                                                    )
-                                                ))}
-                                               
-                                            </>
-                                        )}
-                                        ButtonsElement={
-                                            <>                                            
-                                             <Button
-                                                className={classes.button}
-                                                variant="contained"
-                                                color="primary"
-                                                disabled={mainPaginated.loading || mainPaginated.data.length <= 0}
-                                                onClick={() => setOpenModal(true)}
-                                                startIcon={<AssessmentIcon />}
-                                            >
-                                                {t(langKeys.graphic_view)}
-                                            </Button>
-                                            </>                                            
-                                        }
-                                        download={true}
-                                        fetchData={fetchData}
-                                        exportPersonalized={triggerExportData}
-                                    />
-                                ) : (
-                                    <div className={classes.container}>
-                                    <Graphic
-                                        graphicType={view.split("-")?.[1] || "BAR"}
-                                        column={view.split("-")?.[2] || "summary"}
-                                        openModal={openModal}
-                                        setOpenModal={setOpenModal}
-                                        daterange={fetchDataAux.daterange}
-                                        setView={setView}
-                                        row={row!!}
-                                        handlerSearchGraphic={handlerSearchGraphic}
-                                        FiltersElement={(
-                                            <>
-                                                {!allFilters ? null : allFilters.map(filtro => (
-                                                    (filtro.values[0].multiselect ?
-                                                        <FieldMultiSelect
-                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
-                                                            limitTags={1}
-                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                            className={classes.filterComponent}
-                                                            key={filtro.values[0].filter}
-                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                            variant="outlined"
-                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                            optionDesc={filtro.values[0].optionDesc}
-                                                            optionValue={filtro.values[0].optionValue}
-                                                        />
-                                                        :
-                                                        <FieldSelect
-                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
-                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                            className={classes.filterComponent}
-                                                            key={filtro.values[0].filter}
-                                                            variant="outlined"
-                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                            optionDesc={filtro.values[0].optionDesc}
-                                                            optionValue={filtro.values[0].optionValue}
-                                                        />
-                                                    )
-                                                ))}
-                                            </>
-                                        )}
-                                    />
-                                    </div>
-                                )}
-                        </>
-                    }
-                </>
-                :
-                <SkeletonReport />
-            }
+                            {multiData.length > 0 ?
+                                <>
+                                
+                                
+                                                {view === "GRID" ? (
+                                                    <TablePaginated
+                                                        columns={columns}
+                                                        data={mainPaginated.data}
+                                                        totalrow={totalrow}
+                                                        loading={mainPaginated.loading}
+                                                        pageCount={pageCount}
+                                                        filterrange={true}
+                                                        showHideColumns={true}
+                                                        FiltersElement={(
+                                                            <>
+                                                                {!allFilters ? null : allFilters.map(filtro => (
+                                                                    (filtro.values[0].multiselect ?
+                                                                        <FieldMultiSelect
+                                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
+                                                                            limitTags={1}
+                                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                                            className={classes.filterComponent}
+                                                                            key={filtro.values[0].filter}
+                                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                                            variant="outlined"
+                                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                                            optionDesc={filtro.values[0].optionDesc}
+                                                                            optionValue={filtro.values[0].optionValue}
+                                                                        />
+                                                                        :
+                                                                        <FieldSelect
+                                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
+                                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                                            className={classes.filterComponent}
+                                                                            key={filtro.values[0].filter}
+                                                                            variant="outlined"
+                                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                                            optionDesc={filtro.values[0].optionDesc}
+                                                                            optionValue={filtro.values[0].optionValue}
+                                                                        />
+                                                                    )
+                                                                ))}
+                                                            
+                                                            </>
+                                                        )}
+                                                        ButtonsElement={
+                                                            <>                                            
+                                                            <Button
+                                                                className={classes.button}
+                                                                variant="contained"
+                                                                color="primary"
+                                                                disabled={mainPaginated.loading || mainPaginated.data.length <= 0}
+                                                                onClick={() => setOpenModal(true)}
+                                                                startIcon={<AssessmentIcon />}
+                                                            >
+                                                                {t(langKeys.graphic_view)}
+                                                            </Button>
+                                                            </>                                            
+                                                        }
+                                                        download={true}
+                                                        fetchData={fetchData}
+                                                        exportPersonalized={triggerExportData}
+                                                    />
+                                                ) : (
+                                                    <div className={classes.container}>
+                                                    <Graphic
+                                                        graphicType={view.split("-")?.[1] || "BAR"}
+                                                        column={view.split("-")?.[2] || "summary"}
+                                                        openModal={openModal}
+                                                        setOpenModal={setOpenModal}
+                                                        daterange={fetchDataAux.daterange}
+                                                        setView={setView}
+                                                        row={row!!}
+                                                        handlerSearchGraphic={handlerSearchGraphic}
+                                                        FiltersElement={(
+                                                            <>
+                                                                {!allFilters ? null : allFilters.map(filtro => (
+                                                                    (filtro.values[0].multiselect ?
+                                                                        <FieldMultiSelect
+                                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
+                                                                            limitTags={1}
+                                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                                            className={classes.filterComponent}
+                                                                            key={filtro.values[0].filter}
+                                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                                            variant="outlined"
+                                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                                            optionDesc={filtro.values[0].optionDesc}
+                                                                            optionValue={filtro.values[0].optionValue}
+                                                                        />
+                                                                        :
+                                                                        <FieldSelect
+                                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
+                                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                                            className={classes.filterComponent}
+                                                                            key={filtro.values[0].filter}
+                                                                            variant="outlined"
+                                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                                            optionDesc={filtro.values[0].optionDesc}
+                                                                            optionValue={filtro.values[0].optionValue}
+                                                                        />
+                                                                    )
+                                                                ))}
+                                                            </>
+                                                        )}
+                                                    />
+                                                    </div>
+                                                )}
+                                                
+                                        
+                                </>
+                                :
+                                <SkeletonReport />
+                            }
+                        </>}
             <SummaryGraphic
                 openModal={openModal}
                 setOpenModal={setOpenModal}
@@ -652,10 +654,38 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
             }
         )));
     }
-    Object.keys(columnsHideGraphic[row?.origin]);
+    const excludeConversation = [
+        "email",
+        "starttime",
+        "endtime",
+        "derivationdate",
+        "derivationtime",
+        "firstinteractiondate",
+        "firstinteractiontime",
+        "tmo",
+        "tmoagent",
+        "tmeagent",
+        "holdingholdtime",
+        "suspensiontime",
+        "avgagentresponse",
+        "swingingtimes",
+        "tags",
+        "firstinteractiondateagent",        
+    ];
+
+    const excludeInteractions = [
+        "ticketdatehour",
+        "interactionid",
+        "interactiondatehour",
+        "originalname",  
+        "interactiontext",
+        "email",       
+    ];
     
-       
-    const filteredColumns = columns.filter(column => !excludeConversation.includes(column));
+    let filteredColumns = columns
+
+    if(row?.reportname==="CONVERSATION") filteredColumns = columns.filter(column => !excludeConversation.includes(column));
+    if(row?.reportname==="INTERACTION") filteredColumns = columns.filter(column => !excludeInteractions.includes(column));
 
     return (
         <DialogZyx
@@ -934,23 +964,23 @@ const Reports: FC = () => {
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         setRowSelected(row);
-
-        let allRequestBody: IRequestBody[] = [];
-
-        allRequestBody.push(getReportColumnSel(row?.methodcollection || ""));
-
-        if (allFilters) {
-            allFilters.sort((a, b) => a.order - b.order);
-            allFilters.forEach(x => {
-                allRequestBody.push(getReportFilterSel(
-                    String(x.values[0].filter),
-                    x.values[0].isListDomains ? String(x.values[0].filter) + "_" + x.values[0].domainname : String(x.values[0].filter),
-                    x.values[0].isListDomains ? x.values[0].domainname : ""
-                ))
-            });
+        if(row.reportname !== 'PRODUCTIVITY'){
+            const allRequestBody: IRequestBody[] = [];
+            allRequestBody.push(getReportColumnSel(row?.methodcollection || ""));
+    
+            if (allFilters) {
+                allFilters.sort((a, b) => a.order - b.order);
+                allFilters.forEach(x => {
+                    allRequestBody.push(getReportFilterSel(
+                        String(x.values[0].filter),
+                        x.values[0].isListDomains ? String(x.values[0].filter) + "_" + x.values[0].domainname : String(x.values[0].filter),
+                        x.values[0].isListDomains ? x.values[0].domainname : ""
+                    ))
+                });
+            }
+    
+            dispatch(getMultiCollection(allRequestBody));
         }
-
-        dispatch(getMultiCollection(allRequestBody));
         setViewSelected("view-2");
         setCustomReport(row.reportname === 'PRODUCTIVITY');
     }
