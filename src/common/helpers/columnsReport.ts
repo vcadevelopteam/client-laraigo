@@ -1,3 +1,16 @@
+export const columnsHideGraphic = {
+    interaction: {
+        interactiondatehour: true,
+        channel: true,  
+        agent: true,
+        ticketgroup: true,
+        person: true,
+        originalname: true,
+        clientnumber: true,
+        email: true,
+        personcommunicationchannel: true,
+    }
+}
 export const columnsHideShow = {
     productivity: {
         email: true,

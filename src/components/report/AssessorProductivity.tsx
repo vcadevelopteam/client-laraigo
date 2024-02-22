@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { cleanViewChange, getCollectionAux, getMainGraphic, resetMainAux, setViewChange } from "store/main/actions";
-import { getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
+import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
+import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
@@ -39,7 +39,6 @@ import InfoIcon from "@material-ui/icons/Info";
 
 interface Assessor {
     row: Dictionary | null;
-    multiData: MultiData[];
     allFilters: Dictionary[];
 }
 
@@ -119,10 +118,11 @@ const columnsTemp = [
     "groups",
 ];
 
-const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
+const AssessorProductivity: FC<Assessor> = ({ row, allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
+    const multiData = useSelector(state => state.main.multiData);
     const user = useSelector((state) => state.login.validateToken.user);
     const groups = user?.groups?.split(",").filter((x) => !!x) || [];
     const mainAux = useSelector((state) => state.main.mainAux);
@@ -164,25 +164,17 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
         loading: false,
         data: [],
     });
-
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
-        setOpenSeButtons((prevOpen) => !prevOpen);
-    };
-
-    const handleOpenShowColumnsModal = () => {
-        setShowColumnsModalOpen(true);
-        if (openSeButtons) {
-            setAnchorElSeButtons(null);
-            setOpenSeButtons(false);
-        }
-    };
-    useEffect(() => {
+    useEffect(() => {        
         dispatch(setViewChange("report_userproductivity"));
+        dispatch(getMultiCollection([
+            getReportColumnSel("UFN_REPORT_USERPRODUCTIVITY_SEL"),
+            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC",""),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_GRUPOS","GRUPOS"),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_ESTADOORGUSER","ESTADOORGUSER"),
+        ]));
         return () => {
             dispatch(cleanViewChange());
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const columns = React.useMemo(
@@ -343,23 +335,25 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     
     useEffect(() => {
         if (allFilters) {
-            let groupitem = allFilters.find((e) => e.values[0].label === "group");
-            if (!!groupitem) {
-                let arraygroups =
-                    multiData[
-                        multiData.findIndex(
-                            (x) =>
-                                x.key ===
-                                (groupitem?.values[0].isListDomains
-                                    ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname
-                                    : groupitem?.values[0].filter)
-                        )
-                    ];
-                setgroupsdata(
-                    groups.length > 0
-                        ? arraygroups.data.filter((x) => groups.includes(x.domainvalue))
-                        : arraygroups.data
-                );
+            if(!multiData.loading && !multiData.error && multiData.data.length){
+                const groupitem = allFilters.find((e) => e.values[0].label === "group");
+                if (groupitem) {
+                    const arraygroups =
+                        multiData?.data[
+                            multiData?.data?.findIndex(
+                                (x) =>
+                                    x.key ===
+                                    (groupitem?.values[0].isListDomains
+                                        ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname
+                                        : groupitem?.values[0].filter)
+                            )
+                        ];
+                    setgroupsdata(
+                        groups.length > 0
+                            ? arraygroups.data.filter((x) => groups.includes(x.domainvalue))
+                            : arraygroups.data
+                    );
+                }
             }
         }
     }, [multiData, allFilters]);
@@ -501,7 +495,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             document.removeEventListener("click", handleClickOutside);
         };
     }, [anchorElSeButtons, setOpenSeButtons]);
-
+    
     return (
         <>
             {view === "GRID" ? (
@@ -557,37 +551,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                             alignItems="center"
                                         >
                                             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                                {/* <FieldMultiSelect
-                                                    limitTags={1}
-                                                    label={t("report_userproductivity_filter_channels")}
-                                                    className={classes.filterComponent}
-                                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
-                                                    variant="outlined"
-                                                    valueDefault={allParameters?.channel || ""}
-                                                    onChange={(value) =>
-                                                        setValue( "channel", value ? value                                                                      
-                                                            .map(
-                                                                (o: Dictionary) => o["type"]
-                                                            )
-                                                            .join() : ""
-                                                        )
-                                                    }                                                    
-                                                    data={
-                                                        multiData[
-                                                            multiData.findIndex(
-                                                                (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
-                                                            )
-                                                        ].data
-                                                    }
-                                                    optionDesc={"typedesc"}
-                                                    optionValue={"type"}
-                                                    
-                                                /> */}
                                                 <FieldMultiSelect
                                                     limitTags={1}
                                                     label={t("report_userproductivity_filter_channels")}
                                                     className={classes.filterComponent}
-                                                    key={"UFN_COMMUNICATIONCHANNEL_LST"}
+                                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
                                                     valueDefault={allParameters?.channel || ""}
                                                     onChange={(value) =>
                                                         setValue(
@@ -595,7 +563,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                                             value
                                                                 ? value
                                                                       .map(
-                                                                          (o: Dictionary) => o["communicationchannelid"]
+                                                                          (o: Dictionary) => o["type"]
                                                                       )
                                                                       .join()
                                                                 : ""
@@ -603,14 +571,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                                     }
                                                     variant="outlined"
                                                     data={
-                                                        multiData[
-                                                            multiData.findIndex(
-                                                                (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST"
-                                                            )
-                                                        ].data
+                                                        multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
                                                     }
+                                                    loading={multiData.loading}
                                                     optionDesc={"typedesc"}
-                                                    optionValue={"communicationchannelid"}
+                                                    optionValue={"type"}
                                                 />
                                             </div>
                                         </Box>
@@ -796,7 +761,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                             setValue("userstatus", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
                         }
                         variant="outlined"
-                        data={multiData[multiData.findIndex((x) => "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")].data}
+                        data={multiData?.data?.find(x=>x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data||[]}
+                        loading={multiData.loading}
                         optionDesc={"domaindesc"}
                         optionValue={"domainvalue"}
                     />
