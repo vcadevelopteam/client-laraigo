@@ -5508,6 +5508,15 @@ export const langKeys = {
   photonamealreadyexist: 'photonamealreadyexist',
   completeallfields: 'completeallfields',
   vehiclealreadyexist: 'vehiclealreadyexist',
+  saverecurrent: 'saverecurrent',
+  saveunique: 'saveunique',
+  recurringnonworkingdateexist: 'recurringnonworkingdateexist',
+  uniquenonworkingdateexist: 'uniquenonworkingdateexist',
+  uniquedates: 'uniquedates',
+  recurringdates: 'recurringdates',
+  nodatesselected: 'nodatesselected',
+  norecurringdatesselected: 'norecurringdatesselected',
+  nodateselected: 'nodateselected',
 };
 
 export type LangKeys = typeof langKeys;

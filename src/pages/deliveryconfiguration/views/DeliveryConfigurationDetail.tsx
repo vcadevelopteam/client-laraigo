@@ -159,6 +159,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
             setDeliveryPhotos(main?.data?.[0]?.config?.deliveryphotos)
             setAutomaticSchedules(main?.data?.[0]?.config?.automaticschedules)
             setDeliveryShifts(main?.data?.[0]?.config?.deliveryshifts)
+            setRecurrentNonWorkingDates(main?.data?.[0]?.config?.recurrentnonworkingdates)
         } else {
             setConfigjson({
                 automatica: false,
@@ -227,7 +228,15 @@ const DeliveryConfigurationDetail: React.FC = () => {
             if(existingConfig) {
                 dispatch(execute(deliveryConfigurationIns({
                     id: existingConfig?.deliveryconfigurationid,
-                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos, automaticschedules: automaticSchedules, deliveryshifts: deliveryShifts}),
+                    config: JSON.stringify({
+                        ...configjson,
+                        nonworkingdates: nonWorkingDates,
+                        recurrentnonworkingdates: recurrentNonWorkingDates,
+                        vehicletypes: vehicleTypes,
+                        deliveryphotos: deliveryPhotos,
+                        automaticschedules: automaticSchedules,
+                        deliveryshifts: deliveryShifts
+                    }),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'UPDATE',
@@ -235,7 +244,15 @@ const DeliveryConfigurationDetail: React.FC = () => {
             } else {
                 dispatch(execute(deliveryConfigurationIns({
                     id: 0,
-                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos, automaticschedules: automaticSchedules, deliveryshifts: deliveryShifts}),
+                    config: JSON.stringify({
+                        ...configjson,
+                        nonworkingdates: nonWorkingDates,
+                        recurrentnonworkingdates: recurrentNonWorkingDates,
+                        vehicletypes: vehicleTypes,
+                        deliveryphotos: deliveryPhotos,
+                        automaticschedules: automaticSchedules,
+                        deliveryshifts: deliveryShifts
+                    }),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'INSERT',

@@ -5589,6 +5589,15 @@ const translation: LangKeys = {
   photonamealreadyexist: 'There is already a photo with that name',
   completeallfields: 'Complete all fiedls correctly',
   vehiclealreadyexist: 'There is already a vehicle type with that name',
+  saverecurrent: 'Save recurring date',
+  saveunique: 'Save single date',
+  recurringnonworkingdateexist: 'The selected date has already been registered as a recurring non-working date',
+  uniquenonworkingdateexist: 'The selected date has already been registered as a non-working date',
+  uniquedates: 'Unique dates',
+  recurringdates: 'Recurring dates',
+  nodatesselected: 'No dates selected',
+  norecurringdatesselected: 'No recurring dates selected',
+  nodateselected: 'You have not selected a date',
 };
 
 const enResource: ResourceLanguage = {

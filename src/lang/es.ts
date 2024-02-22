@@ -5518,6 +5518,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   photonamealreadyexist: 'Ya existe una foto con ese nombre',
   completeallfields: 'Completa todos los campos de manera correcta',
   vehiclealreadyexist: 'Ya existe un tipo de vehículo con ese nombre',
+  saverecurrent: 'Guardar fecha recurrente',
+  saveunique: 'Guardar fecha unica',
+  recurringnonworkingdateexist: 'La fecha seleccionada ya ha sido registrada como fecha no laborable recurrente',
+  uniquenonworkingdateexist: 'La fecha seleccionada ya ha sido registrada como fecha no laborable',
+  uniquedates: 'Fechas únicas',
+  recurringdates: 'Fechas recurrentes',
+  nodatesselected: 'No hay fechas seleccionadas',
+  norecurringdatesselected: 'No hay fechas recurrentes seleccionadas',
+  nodateselected: 'No ha seleccionado una fecha',
 };
 
 const esResource: ResourceLanguage = {
