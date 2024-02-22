@@ -20,8 +20,8 @@ const OrderList: FC = () => {
     });
     const [viewSelected, setViewSelected] = useState("main-view");
 
-    const fetchData = () => {
-        dispatch(getCollection(listOrderSel(true)));
+    const fetchData = (flag: boolean) => {
+        dispatch(getCollection(listOrderSel(flag)));
     };
 
     useEffect(() => {

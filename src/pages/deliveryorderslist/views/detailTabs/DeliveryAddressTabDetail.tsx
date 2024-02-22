@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface InventoryTabDetailProps {
-errors: FieldErrors;
+    errors: FieldErrors;
 }
 
 const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors }) => {

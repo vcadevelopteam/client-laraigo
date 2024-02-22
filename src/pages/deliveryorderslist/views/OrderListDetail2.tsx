@@ -24,7 +24,7 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData?: () => void;
+    fetchData?: (flag: boolean) => void;
 }
 
 const useStyles = makeStyles(() => ({
@@ -96,7 +96,6 @@ const OrderListDetail2: React.FC<DetailProps> = ({ data: { row, edit }, setViewS
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
                     })
                 );
-                fetchData && fetchData();
                 dispatch(showBackdrop(false));
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", {

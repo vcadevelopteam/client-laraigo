@@ -25,7 +25,7 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData?: () => void;
+    fetchData?: (flag: boolean) => void;
 }
 
 const useStyles = makeStyles(() => ({
@@ -93,7 +93,6 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
                     })
                 );
-                fetchData && fetchData();
                 dispatch(showBackdrop(false));
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", {
@@ -215,7 +214,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     <OrderListTabDetail row={row} />
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <DeliveryAddressTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />
+                    <DeliveryAddressTabDetail errors={errors} />
                 </AntTabPanel>
             </form>
         </>

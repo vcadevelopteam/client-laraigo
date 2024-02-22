@@ -74,15 +74,25 @@ const VehicleTypeDialog: React.FC<{
     });
 	const [vehicleAux, setVehicleAux] = useState<VehicleType|null>(null);
 	const [isEditing, setIsEditing] = useState(false)
+    const [vehicleCreationError, setVehicleCreationError] = useState(false)
 
     const handleRegister = () => {
-        setVehicleTypes([...vehicleTypes, newVehicleType]);
-        setNewVehicleType({
-            vehicle: "",
-            insuredamount: 0,
-            speed: 0,
-            capacity: 0,
-        });
+        if(newVehicleType.vehicle !== "" &&
+        newVehicleType.insuredamount > 0 &&
+        newVehicleType.speed > 0 &&
+        newVehicleType.capacity > 0 &&
+        !vehicleTypes.some(vehicle => vehicle.vehicle === newVehicleType.vehicle)) {
+            setVehicleTypes([...vehicleTypes, newVehicleType]);
+            setNewVehicleType({
+                vehicle: "",
+                insuredamount: 0,
+                speed: 0,
+                capacity: 0,
+            });
+            setVehicleCreationError(false)
+        } else {
+            setVehicleCreationError(true)
+        }
     };
 
     const handleClean = () => {
@@ -92,6 +102,7 @@ const VehicleTypeDialog: React.FC<{
             speed: 0,
             capacity: 0,
         });
+        setVehicleCreationError(false)
     };
 
 	const handleDelete = (vehicleToDelete: VehicleType) => {
@@ -101,34 +112,41 @@ const VehicleTypeDialog: React.FC<{
 
 	const handleEdit = (vehicleToEdit: VehicleType) => {
 		setIsEditing(true)
+        setVehicleCreationError(false)
 		setNewVehicleType(vehicleToEdit)
 		setVehicleAux(vehicleToEdit)
 	}
 
 	const handleSaveEdit = () => {
-		const index = vehicleTypes.findIndex(vehicle => vehicle.vehicle === vehicleAux?.vehicle);
-		const updatedVehicleTypes = [...vehicleTypes];
-        updatedVehicleTypes[index] = {
-            vehicle: newVehicleType.vehicle,
-            insuredamount: newVehicleType.insuredamount,
-            speed: newVehicleType.speed,
-            capacity: newVehicleType.capacity
-        };
-		setVehicleTypes(updatedVehicleTypes);
+		if(newVehicleType.insuredamount > 0 && newVehicleType.speed > 0 && newVehicleType.capacity > 0) {
+            const index = vehicleTypes.findIndex(vehicle => vehicle.vehicle === vehicleAux?.vehicle);
+            const updatedVehicleTypes = [...vehicleTypes];
+            updatedVehicleTypes[index] = {
+                vehicle: newVehicleType.vehicle,
+                insuredamount: newVehicleType.insuredamount,
+                speed: newVehicleType.speed,
+                capacity: newVehicleType.capacity
+            };
+            setVehicleTypes(updatedVehicleTypes);
 
-		setVehicleAux(null)
-		setIsEditing(false)
-		setNewVehicleType({
-			vehicle: '',
-			insuredamount: 0,
-			speed: 0,
-			capacity: 0,
-		})
+            setVehicleAux(null)
+            setIsEditing(false)
+            setNewVehicleType({
+                vehicle: '',
+                insuredamount: 0,
+                speed: 0,
+                capacity: 0,
+            })
+            setVehicleCreationError(false)
+        } else {
+            setVehicleCreationError(true)
+        }
 	}
 
 	const handleCancel = () => {
 		setIsEditing(false)
 		setVehicleAux(null)
+        setVehicleCreationError(false)
 		setNewVehicleType({
 			vehicle: '',
 			insuredamount: 0,
@@ -172,14 +190,20 @@ const VehicleTypeDialog: React.FC<{
                             label={t(langKeys.vehicle)}
 							disabled={isEditing}
                             valueDefault={newVehicleType.vehicle}
-                            onChange={(value) => setNewVehicleType({ ...newVehicleType, vehicle: value })}
+                            onChange={(value) => {
+                                setNewVehicleType({ ...newVehicleType, vehicle: value })
+                                setVehicleCreationError(false)
+                            }}
                             className="col-6"
                         />
                         <FieldEdit
                             type="number"
                             label={t(langKeys.insuredamount)}
                             valueDefault={newVehicleType.insuredamount}
-                            onChange={(value) => setNewVehicleType({ ...newVehicleType, insuredamount: value })}
+                            onChange={(value) => {
+                                setNewVehicleType({ ...newVehicleType, insuredamount: value })
+                                setVehicleCreationError(false)
+                            }}
                             className="col-6"
                         />
                     </div>
@@ -188,16 +212,27 @@ const VehicleTypeDialog: React.FC<{
                             type="number"
                             label={t(langKeys.averagespeed)}
                             valueDefault={newVehicleType.speed}
-                            onChange={(value) => setNewVehicleType({ ...newVehicleType, speed: value })}
+                            onChange={(value) => {
+                                setNewVehicleType({ ...newVehicleType, speed: value })
+                                setVehicleCreationError(false)
+                            }}
                             className="col-6"
                         />
                         <FieldEdit
                             type="number"
                             label={t(langKeys.capacity)}
                             valueDefault={newVehicleType.capacity}
-                            onChange={(value) => setNewVehicleType({ ...newVehicleType, capacity: value })}
+                            onChange={(value) => {
+                                setNewVehicleType({ ...newVehicleType, capacity: value })
+                                setVehicleCreationError(false)
+                            }}
                             className="col-6"
                         />
+                        {vehicleCreationError && (
+                            <span style={{color: 'red'}}>
+                                {(newVehicleType.vehicle === '' || newVehicleType.insuredamount <= 0 || newVehicleType.speed <= 0 || newVehicleType.capacity <= 0) ? t(langKeys.completeallfields) : t(langKeys.vehiclealreadyexist)}
+                            </span>
+                        )}
                     </div>
                     <div style={{marginTop: 10}}>
 						{isEditing ? (
@@ -220,13 +255,6 @@ const VehicleTypeDialog: React.FC<{
 							<>
 								<Button
 									variant="contained"
-									disabled={
-										newVehicleType.vehicle === "" ||
-										newVehicleType.insuredamount <= 0 ||
-										newVehicleType.speed <= 0 ||
-										newVehicleType.capacity <= 0 ||
-										vehicleTypes.some(vehicle => vehicle.vehicle === newVehicleType.vehicle)
-									}
 									style={{marginRight: 10}}
 									onClick={handleRegister}
 								>

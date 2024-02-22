@@ -5514,6 +5514,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   coordinate: 'Coordenada',
   area: 'Área',
   automaticscheduling: 'Agendamiento automático',
+  shiftnamealreadyexist: 'Ya existe un turno con ese nombre',
+  photonamealreadyexist: 'Ya existe una foto con ese nombre',
+  completeallfields: 'Completa todos los campos de manera correcta',
+  vehiclealreadyexist: 'Ya existe un tipo de vehículo con ese nombre',
 };
 
 const esResource: ResourceLanguage = {

@@ -118,6 +118,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
         deliveryphoto: false,
     })
     const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
+    const [recurrentNonWorkingDates, setRecurrentNonWorkingDates] = useState<string[]>([])
     const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([])
     const [deliveryPhotos, setDeliveryPhotos] = useState<string[]>([])
     const [automaticSchedules, setAutomaticSchedules] = useState<AutomaticSchedule[]>([])
@@ -323,6 +324,8 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     setNonWorkingDates={setNonWorkingDates}
                     onMainSubmit={onMainSubmit}
                     fetchOriginalConfig={fetchOriginalConfig}
+                    recurrentNonWorkingDates={recurrentNonWorkingDates}
+                    setRecurrentNonWorkingDates={setRecurrentNonWorkingDates}
                 />
                 <DeliverySchedulesDialog
                     openModal={openModalDeliverySchedules}

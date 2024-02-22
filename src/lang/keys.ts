@@ -5504,6 +5504,10 @@ export const langKeys = {
   coordinate: 'coordinate',
   area: 'area',
   automaticscheduling: 'automaticscheduling',
+  shiftnamealreadyexist: 'shiftnamealreadyexist',
+  photonamealreadyexist: 'photonamealreadyexist',
+  completeallfields: 'completeallfields',
+  vehiclealreadyexist: 'vehiclealreadyexist',
 };
 
 export type LangKeys = typeof langKeys;

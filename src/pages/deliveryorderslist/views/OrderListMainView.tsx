@@ -55,7 +55,7 @@ interface RowSelected {
 
 interface InventoryTabDetailProps {
     setViewSelected: (view: string) => void;
-    fetchData: () => void;
+    fetchData: (flag: boolean) => void;
     setRowSelected: (rowdata: RowSelected) => void;
 }
 
@@ -86,9 +86,9 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
         { id: "detail-view", name: t(langKeys.orderlist) },
     ];
 
-	useEffect(() => {
-		fetchData()
-	},[]);
+    useEffect(() => {
+		fetchData(attentionOrders)
+	},[attentionOrders]);
 
     useEffect(() => {
         if (waitSave) {
@@ -256,9 +256,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 data={main.data || []}
                 filterGeneral={true}
                 useSelection={true}
-                register={true}
                 onClickRow={moveDetailView2}
-                handleRegister={moveDetailView}
                 ButtonsElement={() => (
                     <div style={{ justifyContent: "right", display: "flex" }}>
                         <Button

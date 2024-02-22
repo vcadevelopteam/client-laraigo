@@ -65,6 +65,7 @@ const DeliverySchedulesDialog: React.FC<{
     })
     const [isEditing, setIsEditing] = useState(false);
     const [shiftAux, setShiftAux] = useState<DeliveryShift|null>(null);
+    const [shiftNameError, setShiftNameError] = useState(false);
 
     const handleSave = () => {
         onMainSubmit();
@@ -84,20 +85,28 @@ const DeliverySchedulesDialog: React.FC<{
             endtime: '',
         })
         setIsAding(false)
+        setShiftNameError(false)
     }
 
     const handleSaveNewShift = () => {
-        setDeliveryShifts([...deliveryShifts, newShift])
-        setNewShift({
-            shiftname: '',
-            starttime: '',
-            endtime: '',
-        })
-        setIsAding(false)
+        if (!deliveryShifts.some(shift => shift.shiftname === newShift.shiftname) && newShift.shiftname !== '' && newShift.starttime !== '' && newShift.endtime !== '') {
+            setDeliveryShifts([...deliveryShifts, newShift]);
+            setNewShift({
+                shiftname: '',
+                starttime: '',
+                endtime: '',
+            });
+            setIsAding(false);
+            setShiftNameError(false);
+        } else {
+            setShiftNameError(true);
+        }
     }
 
     const handleEdit = (shiftToEdit: DeliveryShift) => {
 		setIsEditing(true)
+        setShiftNameError(false);
+        setIsAding(false)
 		setNewShift(shiftToEdit)
 		setShiftAux(shiftToEdit)
 	}
@@ -110,25 +119,33 @@ const DeliverySchedulesDialog: React.FC<{
 			starttime: '',
             endtime: '',
 		})
+        setShiftNameError(false);
 	}
 
     const handleSaveEdit = () => {
-		const index = deliveryShifts.findIndex(shift => shift.shiftname === shiftAux?.shiftname);
-		const updatedShifts = [...deliveryShifts];
-        updatedShifts[index] = {
-            shiftname: newShift.shiftname,
-            starttime: newShift.starttime,
-            endtime: newShift.endtime,
-        };
-		setDeliveryShifts(updatedShifts);
+        const isEditingSameShift = shiftAux && newShift.shiftname === shiftAux.shiftname;
 
-		setShiftAux(null)
-		setIsEditing(false)
-		setNewShift({
-            shiftname: '',
-			starttime: '',
-            endtime: '',
-		})
+		if(!deliveryShifts.some(shift => shift.shiftname === newShift.shiftname && !isEditingSameShift) && newShift.shiftname !== '' && newShift.starttime !== '' && newShift.endtime !== '') {
+            const index = deliveryShifts.findIndex(shift => shift.shiftname === shiftAux?.shiftname);
+            const updatedShifts = [...deliveryShifts];
+            updatedShifts[index] = {
+                shiftname: newShift.shiftname,
+                starttime: newShift.starttime,
+                endtime: newShift.endtime,
+            };
+            setDeliveryShifts(updatedShifts);
+
+            setShiftAux(null)
+            setIsEditing(false)
+            setNewShift({
+                shiftname: '',
+                starttime: '',
+                endtime: '',
+            })
+            setShiftNameError(false);
+        } else {
+            setShiftNameError(true);
+        }
 	}
 
     const handleDeleteShift = (shiftToDelete: DeliveryShift) => {
@@ -184,27 +201,39 @@ const DeliverySchedulesDialog: React.FC<{
                             <div className="col-4" style={{marginBottom:0}}>{t(langKeys.until)}</div>
                         </div>
                         <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
-                            <FieldEdit
-                                variant="outlined"
-                                className="col-3"
-                                valueDefault={newShift.shiftname}
-                                onChange={(value) => setNewShift({...newShift, shiftname: value})}
-                            />
-                            <FieldEdit
-                                type="time"
-                                variant="outlined"
-                                className="col-4"
-                                valueDefault={newShift.starttime}
-                                onChange={(value) => setNewShift({...newShift, starttime: value})}
-                            />
-                            <FieldEdit
-                                type="time"
-                                variant="outlined"
-                                className="col-4"
-                                valueDefault={newShift.endtime}
-                                onChange={(value) => setNewShift({...newShift, endtime: value})}
-                            />
-                            <div className="col-1" style={{display: 'flex'}}>
+                            <div className="col-3" style={{marginBottom:0}}>
+                                <FieldEdit
+                                    variant="outlined"
+                                    valueDefault={newShift.shiftname}
+                                    onChange={(value) => {
+                                        setNewShift({...newShift, shiftname: value})
+                                        setShiftNameError(false)
+                                    }}
+                                />
+                            </div>
+                            <div className="col-4"  style={{marginBottom:0}}>
+                                <FieldEdit
+                                    type="time"
+                                    variant="outlined"
+                                    valueDefault={newShift.starttime}
+                                    onChange={(value) => {
+                                        setNewShift({...newShift, starttime: value})
+                                        setShiftNameError(false)
+                                    }}
+                                />
+                            </div>
+                            <div className="col-4" style={{marginBottom:0}}>
+                                <FieldEdit
+                                    type="time"
+                                    variant="outlined"
+                                    valueDefault={newShift.endtime}
+                                    onChange={(value) => {
+                                        setNewShift({...newShift, endtime: value})
+                                        setShiftNameError(false)
+                                    }}
+                                />
+                            </div>
+                            <div className="col-1" style={{display: 'flex', marginBottom:0}}>
                             {isAding ? (
                                 <div className={`${classes.flex} col-1`}>
                                     <IconButton onClick={handleSaveNewShift}>
@@ -226,6 +255,11 @@ const DeliverySchedulesDialog: React.FC<{
                             )}
                             </div>
                         </div>
+                        {shiftNameError && (
+                            <span style={{color: 'red'}}>
+                                {(newShift.shiftname === '' || newShift.starttime === '' || newShift.endtime === '') ? t(langKeys.completeallfields) : t(langKeys.shiftnamealreadyexist)}
+                            </span>
+                        )}
                     </>
                 ): (
                     <Button

@@ -67,7 +67,9 @@ const NonWorkingDaysDialog: React.FC<{
     setNonWorkingDates: (dates: string[]) => void;
     onMainSubmit: () => void;
     fetchOriginalConfig: () => void;
-}> = ({ openModal, setOpenModal, nonWorkingDates, setNonWorkingDates, onMainSubmit, fetchOriginalConfig }) => {
+    recurrentNonWorkingDates: string[];
+    setRecurrentNonWorkingDates: (dates: string[]) => void;
+}> = ({ openModal, setOpenModal, nonWorkingDates, setNonWorkingDates, onMainSubmit, fetchOriginalConfig, recurrentNonWorkingDates, setRecurrentNonWorkingDates }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [tempSelectedDates, setTempSelectedDates] = useState<DayProp | null>(null);

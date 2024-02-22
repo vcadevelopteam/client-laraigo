@@ -5585,6 +5585,10 @@ const translation: LangKeys = {
   coordinate: 'Coordinate',
   area: 'Area',
   automaticscheduling: 'Automatic scheduling',
+  shiftnamealreadyexist: 'There is already a shift with that name',
+  photonamealreadyexist: 'There is already a photo with that name',
+  completeallfields: 'Complete all fiedls correctly',
+  vehiclealreadyexist: 'There is already a vehicle type with that name',
 };
 
 const enResource: ResourceLanguage = {

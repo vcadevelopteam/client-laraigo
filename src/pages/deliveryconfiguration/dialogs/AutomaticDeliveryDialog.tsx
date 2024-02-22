@@ -77,6 +77,7 @@ const AutomaticDeliveryDialog = ({
         deliveryday: '',
     })
     const [scheduleAux, setScheduleAux] = useState<AutomaticSchedule|null>(null);
+    const [registerError, setRegisterError] = useState(false)
 
     const closeModal = () => {
         fetchOriginalConfig();
@@ -86,6 +87,7 @@ const AutomaticDeliveryDialog = ({
     };
 
     const handleCreateSchedule = () => {
+        handleCancel()
         setIsAding(true);
     }
 
@@ -97,21 +99,29 @@ const AutomaticDeliveryDialog = ({
             deliveryday: '',
         })
         setIsAding(false)
+        setRegisterError(false)
     }
 
     const handleSaveNewSchedule = () => {
-        setAutomaticSchedules([...automaticSchedules, newSchedule])
-        setNewSchedule({
-            starttime: '',
-            endtime: '',
-            shift: '',
-            deliveryday: '',
-        })
-        setIsAding(false)
+        if(newSchedule.starttime !== '' && newSchedule.endtime !== '' && newSchedule.shift !== '' && newSchedule.deliveryday !== '') {
+            setAutomaticSchedules([...automaticSchedules, newSchedule])
+            setNewSchedule({
+                starttime: '',
+                endtime: '',
+                shift: '',
+                deliveryday: '',
+            })
+            setIsAding(false)
+            setRegisterError(false)
+        } else {
+            setRegisterError(true)
+        }
     }
 
     const handleEdit = (scheduleToEdit: AutomaticSchedule) => {
 		setIsEditing(true)
+        setIsAding(false)
+        setRegisterError(false)
 		setNewSchedule(scheduleToEdit)
 		setScheduleAux(scheduleToEdit)
 	}
@@ -119,6 +129,7 @@ const AutomaticDeliveryDialog = ({
     const handleCancel = () => {
 		setIsEditing(false)
 		setScheduleAux(null)
+        setRegisterError(false)
 		setNewSchedule({
 			starttime: '',
             endtime: '',
@@ -128,24 +139,29 @@ const AutomaticDeliveryDialog = ({
 	}
 
     const handleSaveEdit = () => {
-		const index = automaticSchedules.findIndex(schedule => schedule === scheduleAux);
-		const updatedSchedules = [...automaticSchedules];
-        updatedSchedules[index] = {
-            starttime: newSchedule.starttime,
-            endtime: newSchedule.endtime,
-            shift: newSchedule.shift,
-            deliveryday: newSchedule.deliveryday
-        };
-		setAutomaticSchedules(updatedSchedules);
+		if(newSchedule.starttime !== '' && newSchedule.endtime !== '' && newSchedule.shift !== '' && newSchedule.deliveryday !== '') {
+            const index = automaticSchedules.findIndex(schedule => schedule === scheduleAux);
+            const updatedSchedules = [...automaticSchedules];
+            updatedSchedules[index] = {
+                starttime: newSchedule.starttime,
+                endtime: newSchedule.endtime,
+                shift: newSchedule.shift,
+                deliveryday: newSchedule.deliveryday
+            };
+            setAutomaticSchedules(updatedSchedules);
 
-		setScheduleAux(null)
-		setIsEditing(false)
-		setNewSchedule({
-			starttime: '',
-            endtime: '',
-            shift: '',
-            deliveryday: '',
-		})
+            setScheduleAux(null)
+            setIsEditing(false)
+            setNewSchedule({
+                starttime: '',
+                endtime: '',
+                shift: '',
+                deliveryday: '',
+            })
+            setRegisterError(false)
+        } else {
+            setRegisterError(true)
+        }
 	}
 
     const handleDeleteSchedule = (scheduleToDelete: AutomaticSchedule) => {
@@ -230,14 +246,20 @@ const AutomaticDeliveryDialog = ({
                             type="time"
                             className='col-3'
                             valueDefault={newSchedule.starttime}
-                            onChange={(value) => setNewSchedule({...newSchedule, starttime: value})}
+                            onChange={(value) => {
+                                setNewSchedule({...newSchedule, starttime: value})
+                                setRegisterError(false)
+                            }}
                         />
                         <FieldEdit
                             label={t(langKeys.until)}
                             type="time"
                             className='col-3'
                             valueDefault={newSchedule.endtime}
-                            onChange={(value) => setNewSchedule({...newSchedule, endtime: value})}
+                            onChange={(value) => {
+                                setNewSchedule({...newSchedule, endtime: value})
+                                setRegisterError(false)
+                            }}
                         />
                         <FieldSelect
                             label={t(langKeys.shift)}
@@ -245,8 +267,15 @@ const AutomaticDeliveryDialog = ({
                             data={deliveryShifts}
                             optionDesc="shiftname"
                             optionValue="shiftname"
-                            valueDefault={newSchedule?.shift}
-                            onChange={(value) => setNewSchedule({...newSchedule, shift: value.domainvalue})}
+                            valueDefault={newSchedule.shift}
+                            onChange={(value) => {
+                                if(value) {
+                                    setNewSchedule({...newSchedule, shift: value.shiftname})
+                                } else {
+                                    setNewSchedule({...newSchedule, shift: ''})
+                                }
+                                setRegisterError(false)
+                            }}
                         />
                         <FieldSelect
                             label={t(langKeys.day)}
@@ -255,7 +284,14 @@ const AutomaticDeliveryDialog = ({
                             optionValue="domainvalue"
                             optionDesc="domaindesc"
                             valueDefault={newSchedule?.deliveryday}
-                            onChange={(value) => setNewSchedule({...newSchedule, deliveryday: value.domainvalue})}
+                            onChange={(value) => {
+                                if(value) {
+                                    setNewSchedule({...newSchedule, deliveryday: value.domainvalue})
+                                } else {
+                                    setNewSchedule({...newSchedule, deliveryday: ''})
+                                }
+                                setRegisterError(false)
+                            }}
                         />
                         {isAding ? (
                             <div className={`${classes.flex} col-1`}>
@@ -276,6 +312,7 @@ const AutomaticDeliveryDialog = ({
                                 </IconButton>
                             </div>
                         )}
+                        {registerError && (<span style={{color: 'red'}}>{t(langKeys.completeallfields)}</span>)}
                     </>
                 )}
             </div>
