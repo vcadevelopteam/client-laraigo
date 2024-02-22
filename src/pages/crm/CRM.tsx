@@ -1208,21 +1208,21 @@ const CRM: FC = () => {
 
                                 </div>                       
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
                                         <div style={{paddingTop:'4px'}}> {t(langKeys.qualified)} </div>                          
                                     </div>   
                                 </div>                        
                             </div>                    
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
                                         <div style={{paddingTop:'4px'}}> {t(langKeys.proposition)} </div>                           
                                     </div> 
                                 </div>                       
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
                                         <div style={{paddingTop:'4px'}}> {t(langKeys.won)} </div>                         
