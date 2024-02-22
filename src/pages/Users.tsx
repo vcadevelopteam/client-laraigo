@@ -1554,8 +1554,12 @@ const Users: FC = () => {
                 NoFilter: true,
                 prefixTranslation: "status_",
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                    if(props.cell.row.original) {
+                        const { status } = props.cell.row.original;
+                        return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                    }
+                    return null
+                   
                 },
             },
             {

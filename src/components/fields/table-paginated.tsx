@@ -45,7 +45,7 @@ import {
     useRowSelect,
 } from 'react-table'
 import { Range } from 'react-date-range';
-import { DialogZyx, DateRangePicker } from 'components';
+import { DialogZyx, DateRangePicker, FieldSelect } from 'components';
 import { Checkbox, Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
@@ -424,6 +424,7 @@ const TableZyx = React.memo(({
     initialPageIndex = 0,
     groupedBy,
     showHideColumns,
+    ExtraMenuOptions,
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, pageIndex: initialPageIndex });
@@ -658,11 +659,11 @@ const TableZyx = React.memo(({
     }
 
     const { t } = useTranslation();
-    const showExtraButtonIcon = showHideColumns || groupedBy;
+    const showExtraButtonIcon = showHideColumns || groupedBy || ExtraMenuOptions;
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
-    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
-    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);    
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false); 
     const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
 
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -672,7 +673,7 @@ const TableZyx = React.memo(({
 
     const handleOpenGroupedByModal = () => {
         setGroupedByModalOpen(true);
-        };
+    };
 
     const handleOpenShowColumnsModal = () => {
         setShowColumnsModalOpen(true);
@@ -681,7 +682,6 @@ const TableZyx = React.memo(({
             setOpenSeButtons(false);
         }
     };
-
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node;    
@@ -861,6 +861,7 @@ const TableZyx = React.memo(({
                                                         <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
                                                     </MenuItem>
                                                 )}
+                                                {ExtraMenuOptions}
                                             </Paper>
                                         )}
                                     </Popper>
@@ -923,7 +924,7 @@ const TableZyx = React.memo(({
                             >                     
                                 {/* Falta */}
                             </DialogZyx>
-                        )}                   
+                        )}                    
 
                     </div>
                 </div>
