@@ -1373,6 +1373,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
 
 export const getCampaignLst = (): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
+    key:"UFN_CAMPAIGN_LST",
     parameters: {}
 });
 

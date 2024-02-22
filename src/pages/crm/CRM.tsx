@@ -214,7 +214,6 @@ interface IBoardFilter {
 const DraggablesCategories: FC<{ column: Dictionary, deletable: boolean, index: number, hanldeDeleteColumn: (a: string) => void, handleDelete: (lead: ICrmLead) => void, handleCloseLead: (lead: ICrmLead) => void, isIncremental: boolean, sortParams: sortParams, configuration: any }> = ({ column,
     index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental, sortParams, configuration }) => {
     const { t } = useTranslation();
-
     return (
         <Draggable draggableId={column.column_uuid} index={index + 1} key={column.column_uuid} isDragDisabled={isIncremental}>
         {(provided) => (
@@ -376,6 +375,7 @@ const CRM: FC = () => {
     }
 
     useEffect(() => {
+        setDataColumn([])
         dispatch(getMultiCollection([
         getColumnsSel(1),
         getLeadsSel({
@@ -424,6 +424,10 @@ const CRM: FC = () => {
         }
     }, [mainMulti]);
 
+    useEffect(() => {
+      console.log(dataColumn)
+    }, [dataColumn]);
+
     const [isModalOpenBOARD, setModalOpenBOARD] = useState(false);
     const [isModalOpenGRID, setModalOpenGRID] = useState(false);
 
@@ -438,7 +442,7 @@ const CRM: FC = () => {
             newParams.set('contact', String(boardFilter.customer));
             newParams.set('asesorid', String(boardFilter.asesorid));
             history.push({ search: newParams.toString() });
-    
+            setDataColumn([])
             await dispatch(getMultiCollection([
                 getColumnsSel(1),
                 getLeadsSel({
@@ -1040,10 +1044,25 @@ const CRM: FC = () => {
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
 
-    const handleClickSeButtons = (event: Dictionary) => {
-        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElSeButtons(event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
-    };      
+     };
+    
+    const handleCloseSeButtons = () => {
+    setAnchorElSeButtons(null);
+    setOpenSeButtons(false);
+    };
+    
+    useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (anchorElSeButtons && !anchorElSeButtons.contains(event.target as Node)) {
+        handleCloseSeButtons();
+        }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => { document.removeEventListener('mousedown', handleClickOutside);};}, [anchorElSeButtons]);    
 
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -1212,21 +1231,21 @@ const CRM: FC = () => {
 
                                 </div>                       
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
                                         <div style={{paddingTop:'4px'}}> {t(langKeys.qualified)} </div>                          
                                     </div>   
                                 </div>                        
                             </div>                    
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
                                         <div style={{paddingTop:'4px'}}> {t(langKeys.proposition)} </div>                           
                                     </div> 
                                 </div>                       
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
+                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
                                 <div className={classes.otherGreyPart}>
                                     <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
                                         <div style={{paddingTop:'4px'}}> {t(langKeys.won)} </div>                         
