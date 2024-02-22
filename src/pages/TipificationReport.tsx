@@ -339,6 +339,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
+        debugger
         dispatch(
             getCollectionPaginated(
                 getPaginatedForReports(
@@ -353,13 +354,13 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                         sorts: sorts,
                         filters: {
                             ...(tipification1
-                                ? { classificationlevel1: { value: tipification1, operator: "contains" } }
+                                ? { classificationlevel1: { value: tipification1, operator: "equals" } }
                                 : {}),
                             ...(tipification2
-                                ? { classificationlevel2: { value: tipification2, operator: "contains" } }
+                                ? { classificationlevel2: { value: tipification2, operator: "equals" } }
                                 : {}),
                             ...(tipification3
-                                ? { classificationlevel3: { value: tipification3, operator: "contains" } }
+                                ? { classificationlevel3: { value: tipification3, operator: "equals" } }
                                 : {}),
                             ...filters,
                         },
