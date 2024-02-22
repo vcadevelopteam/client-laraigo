@@ -1,5 +1,3 @@
-/* TODO: añadir la implementación con meta */
-/* eslint-disable react-hooks/exhaustive-deps */
 import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
 import FacebookLogin from "react-facebook-login";
@@ -9,14 +7,15 @@ import SaveIcon from '@material-ui/icons/Save';
 import TableZyx from '../components/fields/table-simple';
 
 import { apiUrls } from "common/constants";
+import { Box, FormControlLabel } from "@material-ui/core";
 import { Dictionary, MultiData } from "@types";
 import { Facebook as FacebookIcon, Search as SearchIcon } from "@material-ui/icons";
 import { getCollection, getMultiCollection, resetAllMain, cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { getValuesFromDomain, metaCatalogSel, metaBusinessSel } from 'common/helpers';
+import { IOSSwitch, TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail } from 'components';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
@@ -314,6 +313,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
     const resultBusinessList = useSelector(state => state.catalog.requestCatalogBusinessList);
     const resultManageCatalog = useSelector(state => state.catalog.requestCatalogManageCatalog);
 
+    const [checkedCatalog, setCheckedCatalog] = useState(row ? row?.haslink : true);
     const [businessList, setBusinessList] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
     const [waitBusiness, setWaitBusiness] = useState(false);
@@ -325,8 +325,9 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
             catalogname: row?.catalogname || '',
             catalogtype: row?.catalogtype || '',
             description: row?.description || '',
+            haslink: row ? row?.haslink : true,
             id: row?.metacatalogid || 0,
-            metabusinessid: row?.metabusinessid || 0,
+            metabusinessid: row ? row.metabusinessid : null,
             operation: row ? "EDIT" : "CREATE",
             status: row?.status || '',
             type: row?.type || '',
@@ -339,8 +340,9 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
         register('catalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('catalogtype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description');
+        register('haslink');
         register('id');
-        register('metabusinessid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('metabusinessid', { validate: (value) => ((value || value === 0) && value >= 0) || t(langKeys.field_required) });
         register('operation');
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
@@ -455,10 +457,10 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                    {!row && <div className="row-zyx">
+                    {(!row && checkedCatalog) && <div className="row-zyx" style={{ paddingBottom: "10px" }}>
                         <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.catalogmaster_businessalert)}</div>
                         <FacebookLogin
-                            appId={apiUrls.CATALOGAPP}
+                            appId={`${apiUrls.CATALOGAPP}`}
                             autoLoad={false}
                             buttonStyle={{ margin: "auto", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                             fields="name,email,picture"
@@ -488,16 +490,42 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                         />
                     </div>}
                     <div className="row-zyx">
+                        <div className={"col-6"} style={{ paddingBottom: "3px" }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">
+                                {t(langKeys.catalogmaster_haslink)}
+                            </Box>
+                            <FormControlLabel
+                                label={""}
+                                style={{ paddingLeft: 10 }}
+                                control={
+                                    <IOSSwitch
+                                        checked={checkedCatalog}
+                                        disabled={row ? true : false}
+                                        onChange={(e) => {
+                                            setCheckedCatalog(e.target.checked);
+                                            setValue("haslink", e.target.checked);
+
+                                            if (e.target.checked) {
+                                                setValue("metabusinessid", null);
+                                            }
+                                            else {
+                                                setValue("metabusinessid", 0);
+                                            }
+                                        }}
+                                    />
+                                }
+                            />
+                        </div>
                         <FieldSelect
-                            className="col-12"
+                            className="col-6"
                             data={businessList}
-                            disabled={row ? true : false}
+                            disabled={row ? true : (checkedCatalog ? false : true)}
                             error={errors?.metabusinessid?.message}
                             label={t(langKeys.catalogmaster_businesschoose)}
-                            onChange={(value) => setValue('metabusinessid', value?.metabusinessid || 0)}
+                            onChange={(value) => setValue('metabusinessid', value?.metabusinessid || null)}
                             optionDesc="businessname"
                             optionValue="metabusinessid"
-                            valueDefault={row?.metabusinessid || 0}
+                            valueDefault={row?.metabusinessid || null}
                         />
                     </div>
                     <div className="row-zyx">
