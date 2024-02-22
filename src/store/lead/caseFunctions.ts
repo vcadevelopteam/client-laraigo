@@ -463,6 +463,36 @@ export const getPersonTypeReset = (state: IState): IState => ({
     personTypeDomain: initialState.personTypeDomain,
 });
 
+export const getCalendar = (state: IState): IState => ({
+    ...state,
+    calendar: { ...state.calendar, loading: true, error: false },
+});
+
+export const getCalendarSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    calendar: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getCalendarFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    calendar: {
+        ...state.calendar,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getCalendarFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio TIPOPERSONA',
+    },
+});
+
+export const getCalendarReset = (state: IState): IState => ({
+    ...state,
+    calendar: initialState.calendar,
+});
+
 
 
 export const getLeadTemplates = (state: IState): IState => ({
