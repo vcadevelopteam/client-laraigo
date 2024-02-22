@@ -97,6 +97,7 @@ const ProductCatalog: FC = () => {
     const [catalogId, setCatalogId] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
     const [metaCatalogList, setMetaCatalogList] = useState<Dictionary[]>([]);
+    const [metaCatalogAllList, setMetaCatalogAllList] = useState<Dictionary[]>([]);
     const [openModal, setOpenModal] = useState(false);
     const [pageCount, setPageCount] = useState(0);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -280,7 +281,8 @@ const ProductCatalog: FC = () => {
             }
 
             if (mainResult.multiData.data[6] && mainResult.multiData.data[6].success) {
-                setMetaCatalogList(mainResult.multiData.data[6].data || []);
+                setMetaCatalogList(mainResult.multiData.data[6].data?.filter((x) => x.haslink === true) || []);
+                setMetaCatalogAllList(mainResult.multiData.data[6].data || []);
             }
         }
     }, [mainResult.multiData.data])
@@ -689,7 +691,7 @@ const ProductCatalog: FC = () => {
                 arrayBread={arrayBread}
                 data={rowSelected}
                 fetchData={() => fetchData(fetchDataAux)}
-                metaCatalogList={metaCatalogList}
+                metaCatalogList={metaCatalogAllList}
                 multiData={mainResult.multiData.data}
                 setViewSelected={redirectFunc}
             />

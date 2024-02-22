@@ -2054,7 +2054,7 @@ const translation: LangKeys = {
   reschedule_event: "Reprogramar evento",
   successfully_scheduled: "Ha programado el evento con éxito",
   confirmed: "Confirmado",
-  enter_details: "Ingrese los detalles",  
+  enter_details: "Ingrese los detalles",
   warehouse: "Almacén",
   warehouses: "Almacenes",
   standard_cost: "Costo estándar",
@@ -5922,6 +5922,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   executingUserProfile: "Perfil de Usuario que Ejecuta",
   groupedBy: "Agrupado Por",
   showHideColumns: "Mostrar/Ocultar Columnas",
+  catalogmaster_haslink: 'Enlazar a Negocio',
 };
 
 const esResource: ResourceLanguage = {

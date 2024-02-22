@@ -709,7 +709,7 @@ export const getDocumentLibrary = (): IRequestBody => ({
 export const getDocumentLibraryByUser = (): IRequestBody => ({
     method: "QUERY_DOCUMENTLIBRARY_BY_USER",
     key: "QUERY_DOCUMENTLIBRARY_BY_USER",
-    parameters: { }
+    parameters: {}
 })
 export const getReportSchedulerSel = (id: number): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_SEL",
@@ -730,7 +730,7 @@ export const reportSchedulerIns = ({ id, title, status, origin, origintype, repo
     }
 })
 
-export const documentLibraryIns = ({id, title, description, category, groups, link, favorite, status, operation }: Dictionary): IRequestBody => ({
+export const documentLibraryIns = ({ id, title, description, category, groups, link, favorite, status, operation }: Dictionary): IRequestBody => ({
     method: "UFN_DOCUMENTLIBRARY_INS",
     key: "UFN_DOCUMENTLIBRARY_INS",
     parameters: {
@@ -4138,10 +4138,10 @@ export const paymentOrderSel = ({ corpid, orgid, conversationid, personid, payme
     parameters: { corpid, orgid, conversationid, personid, paymentorderid, ordercode }
 });
 
-export const metaCatalogIns = ({ corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, username, operation }: Dictionary) => ({
+export const metaCatalogIns = ({ corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, haslink, username, operation }: Dictionary) => ({
     method: "UFN_METACATALOG_INS",
     key: "UFN_METACATALOG_INS",
-    parameters: { corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, username, operation },
+    parameters: { corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, haslink, username, operation },
 });
 
 export const metaCatalogSel = ({ corpid, orgid, metabusinessid, id }: Dictionary) => ({
