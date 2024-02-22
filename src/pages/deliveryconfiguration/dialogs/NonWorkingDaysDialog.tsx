@@ -1,7 +1,8 @@
 import { Button, IconButton, makeStyles } from "@material-ui/core";
-import { DialogZyx } from "components";
+import { DialogZyx, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import React, { useState } from "react";
+import FilterListIcon from '@material-ui/icons/FilterList';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useTranslation } from "react-i18next";
 import CalendarZyx, { DayProp } from "components/fields/Calendar";
@@ -22,7 +23,6 @@ const useStyles = makeStyles(() => ({
     },
     col4: {
         height: 324,
-        width: '50%',
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -77,6 +77,11 @@ const NonWorkingDaysDialog: React.FC<{
     const classes = useStyles();
     const [tempSelectedDates, setTempSelectedDates] = useState<DayProp | null>(null);
     const [dateError, setDateError] = useState(false)
+    const [filtering, setFiltering] = useState(false)
+    const [filterData, setFilterData] = useState({
+        year: '',
+        month: '',
+    })
 
     const handleDateChange = (date: DayProp) => {
         setTempSelectedDates(date[0]);
@@ -127,6 +132,57 @@ const NonWorkingDaysDialog: React.FC<{
         setTempSelectedDates(null);
     };
 
+    const months = [
+        {
+            domainvalue: '01',
+        },
+        {
+            domainvalue: '02',
+        },
+        {
+            domainvalue: '03',
+        },
+        {
+            domainvalue: '04',
+        },
+        {
+            domainvalue: '05',
+        },
+        {
+            domainvalue: '06',
+        },
+        {
+            domainvalue: '07',
+        },
+        {
+            domainvalue: '08',
+        },
+        {
+            domainvalue: '09',
+        },
+        {
+            domainvalue: '10',
+        },
+        {
+            domainvalue: '11',
+        },
+        {
+            domainvalue: '12',
+        }
+    ]
+
+    const years = [
+        {
+            domainvalue: '2023',
+        },
+        {
+            domainvalue: '2024',
+        },
+        {
+            domainvalue: '2025',
+        },
+    ]
+
     return (
         <DialogZyx
             open={openModal}
@@ -168,52 +224,119 @@ const NonWorkingDaysDialog: React.FC<{
                     </div>
                 </div>
                 <div className="col-6" style={{display: 'flex'}}>
-                    <div className={classes.col4}>
-                        {nonWorkingDates.length > 0 ? (
-                            <>
-                                <h3>{t(langKeys.uniquedates)}</h3>
-                                <div className={classes.selectedDatesContainer}>
-                                    {nonWorkingDates.map((date) => (
-                                        <>
-                                            <div className={classes.dateItem}>
-                                                <span className={classes.dateSpan}>{date}</span>
-                                                <IconButton onClick={() => handleDeleteDate(date)}>
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </div>
-                                        </>
-                                    ))}
+                    <div style={{width: '50%'}}>
+                        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
+                            <IconButton
+                                style={{ backgroundColor: filtering ? '#90CAF9' : '', color: 'black', borderRadius: 25, padding: 5, marginRight: 5}}
+                                onClick={() => {
+                                    if(filtering) {
+                                        setFiltering(false)
+                                        setFilterData({
+                                            year: '',
+                                            month: '',
+                                        })
+                                    } else {
+                                        if(filterData.year !== '' || filterData.month !== '') {
+                                            setFiltering(true)
+                                        }
+                                    }
+                                }
+                            }>
+                                <FilterListIcon/>
+                            </IconButton>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                variant="outlined"
+                                data={years}
+                                optionDesc="domainvalue"
+                                optionValue="domainvalue"
+                                valueDefault={filterData.year}
+                                onChange={(value) => {
+                                    if(value) {
+                                        setFilterData({...filterData, year: value.domainvalue})
+                                    } else {
+                                        setFilterData({...filterData, year: ''})
+                                    }
+                                }}
+                            />
+                            <div style={{width: 5}}/>
+                            <FieldSelect
+                                label={t(langKeys.month)}
+                                variant="outlined"
+                                data={months}
+                                optionDesc="domainvalue"
+                                optionValue="domainvalue"
+                                valueDefault={filterData.month}
+                                onChange={(value) => {
+                                    if(value) {
+                                        setFilterData({...filterData, month: value.domainvalue})
+                                    } else {
+                                        setFilterData({...filterData, month: ''})
+                                    }
+                                }}
+                            />
+                        </div>
+                        <div className={classes.col4}>
+                            {nonWorkingDates.length > 0 ? (
+                                <>
+                                    <h3>{t(langKeys.uniquedates)}</h3>
+                                    <div className={classes.selectedDatesContainer}>
+                                        {nonWorkingDates.map((date) => (
+                                            <>
+                                                <div className={classes.dateItem}>
+                                                    <span className={classes.dateSpan}>{date}</span>
+                                                    <IconButton onClick={() => handleDeleteDate(date)}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </div>
+                                            </>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className={classes.noDatesTextContainer}>
+                                    <p>{t(langKeys.nodatesselected)}</p>
                                 </div>
-                            </>
-                        ) : (
-                            <div className={classes.noDatesTextContainer}>
-                                <p>{t(langKeys.nodatesselected)}</p>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                     <div style={{width: 20}}/>
-                    <div className={classes.col4}>
-                        {recurrentNonWorkingDates.length > 0 ? (
-                            <>
-                                <h3>{t(langKeys.recurringdates)}</h3>
-                                <div className={classes.selectedDatesContainer}>
-                                    {recurrentNonWorkingDates.map((date) => (
-                                        <>
-                                            <div className={classes.dateItem}>
-                                                <span className={classes.dateSpan}>{date}</span>
-                                                <IconButton onClick={() => handleDeleteRecurrent(date)}>
-                                                    <DeleteIcon/>
-                                                </IconButton>
-                                            </div>
-                                        </>
-                                    ))}
+                    <div style={{width: '50%'}}>
+                        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
+                            <IconButton style={{ color: 'black', borderRadius: 25, padding: 5, marginRight: 5}}>
+                                <FilterListIcon/>
+                            </IconButton>
+                            <FieldSelect
+                                label={t(langKeys.month)}
+                                variant="outlined"
+                                data={months}
+                                optionDesc="domainvalue"
+                                optionValue="domainvalue"
+                            />
+                        </div>
+                        <div className={classes.col4}>
+                            {recurrentNonWorkingDates.length > 0 ? (
+                                <>
+                                    <h3>{t(langKeys.recurringdates)}</h3>
+                                    <div className={classes.selectedDatesContainer}>
+                                        {recurrentNonWorkingDates.map((date) => (
+                                            <>
+                                                <div className={classes.dateItem}>
+                                                    <span className={classes.dateSpan}>{date}</span>
+                                                    <IconButton onClick={() => handleDeleteRecurrent(date)}>
+                                                        <DeleteIcon/>
+                                                    </IconButton>
+                                                </div>
+                                            </>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className={classes.noDatesTextContainer}>
+                                    <p>{t(langKeys.norecurringdatesselected)}</p>
                                 </div>
-                            </>
-                        ) : (
-                            <div className={classes.noDatesTextContainer}>
-                                <p>{t(langKeys.norecurringdatesselected)}</p>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

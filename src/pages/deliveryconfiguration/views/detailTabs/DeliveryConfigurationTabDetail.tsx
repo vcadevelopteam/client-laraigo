@@ -743,6 +743,18 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         />
                     </div>
                 </div>
+                <div className='col-6'>
+                    <CustomTitleHelper title={`${t(langKeys.ticket_reason)} ${t(langKeys.undelivered)}`}/>
+                    <span className={classes.span}>
+                        {t(langKeys.edit) + ' ' + t(langKeys.ticket_reason) + ' ' + t(langKeys.undelivered)}
+                    </span>
+                </div>
+                <div className='col-6'>
+                    <CustomTitleHelper title={`${t(langKeys.submotive)} ${t(langKeys.undelivered)}`}/>
+                    <span className={classes.span}>
+                        {t(langKeys.edit) + ' ' + t(langKeys.submotive) + ' ' + t(langKeys.undelivered)}
+                    </span>
+                </div>
             </div>
             <div className='row-zyx'>
                 <div>
