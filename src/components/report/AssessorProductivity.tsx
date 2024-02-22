@@ -551,31 +551,22 @@ const AssessorProductivity: FC<Assessor> = ({ row, allFilters }) => {
                                             alignItems="center"
                                         >
                                             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                                <FieldMultiSelect
-                                                    limitTags={1}
+                                                <FieldSelect
+                                                    
                                                     label={t("report_userproductivity_filter_channels")}
                                                     className={classes.filterComponent}
                                                     key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
                                                     valueDefault={allParameters?.channel || ""}
                                                     onChange={(value) =>
-                                                        setValue(
-                                                            "channel",
-                                                            value
-                                                                ? value
-                                                                      .map(
-                                                                          (o: Dictionary) => o["type"]
-                                                                      )
-                                                                      .join()
-                                                                : ""
-                                                        )
+                                                        setValue("channel", value?.type || "")
                                                     }
                                                     variant="outlined"
                                                     data={
                                                         multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
                                                     }
                                                     loading={multiData.loading}
-                                                    optionDesc={"typedesc"}
-                                                    optionValue={"type"}
+                                                    optionDesc={"type"}
+                                                    optionValue={"typedesc"}
                                                 />
                                             </div>
                                         </Box>
