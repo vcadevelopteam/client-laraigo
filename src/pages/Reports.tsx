@@ -669,6 +669,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         "avgagentresponse",
         "swingingtimes",
         "tags",
+        "firstinteractiondateagent",
         
     ];
        
