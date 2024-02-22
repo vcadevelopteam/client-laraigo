@@ -339,7 +339,6 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
-        debugger
         dispatch(
             getCollectionPaginated(
                 getPaginatedForReports(
@@ -573,6 +572,9 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                         valueDefault={tipification1}
                         onChange={(e) => {
                             setTipification1(e?.description || "");
+                            setTipification2("");
+                            setTipification3("");
+
                             if (e?.classificationid) dispatch(getTipificationLevel2(e.classificationid));
                             else dispatch(resetGetTipificationLevel2());
                         }}
@@ -585,6 +587,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                         valueDefault={tipification2}
                         onChange={(value) => {
                             setTipification2(value?.description || "");
+                            setTipification3("");
                             if (value?.classificationid) dispatch(getTipificationLevel3(value.classificationid));
                             else dispatch(resetGetTipificationLevel3());
                         }}
