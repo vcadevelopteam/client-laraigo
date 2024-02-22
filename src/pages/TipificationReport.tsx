@@ -680,7 +680,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
         );
     };
 
-    const excludeConversation = [
+    const excludeTypification = [
         "ticket",
         "datehour",
         "enddate",
@@ -690,7 +690,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
         "phone"
     ];
 
-    const filteredColumns = columns.filter((column) => !excludeConversation.includes(column));
+    const filteredColumns = columns.filter((column) => !excludeTypification.includes(column));
     return (
         <DialogZyx
             open={openModal}

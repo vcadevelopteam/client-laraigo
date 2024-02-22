@@ -671,26 +671,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         "tags",
         
     ];
-    const excludeTypification = [
-        "ticket",
-        "datehour",
-        "enddate",
-        "endtime",       
-        "firstinteractiondate",
-        "firstinteractiontime",
-        "phone",      
-    ];
-
-    const excludeUserProductivity = [
-        "hourfirstlogin",
-        "cardavgavgtme",
-        "cardavgmaxtme",
-        "cardavgmintme",       
-        "avgtotalasesorduration",
-        "groups",
-        "phone",      
-    ];
-
+       
     const filteredColumns = columns.filter(column => !excludeConversation.includes(column));
 
     return (

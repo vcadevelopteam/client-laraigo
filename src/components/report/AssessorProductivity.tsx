@@ -557,6 +557,32 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                             alignItems="center"
                                         >
                                             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                                {/* <FieldMultiSelect
+                                                    limitTags={1}
+                                                    label={t("report_userproductivity_filter_channels")}
+                                                    className={classes.filterComponent}
+                                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
+                                                    variant="outlined"
+                                                    valueDefault={allParameters?.channel || ""}
+                                                    onChange={(value) =>
+                                                        setValue( "channel", value ? value                                                                      
+                                                            .map(
+                                                                (o: Dictionary) => o["type"]
+                                                            )
+                                                            .join() : ""
+                                                        )
+                                                    }                                                    
+                                                    data={
+                                                        multiData[
+                                                            multiData.findIndex(
+                                                                (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
+                                                            )
+                                                        ].data
+                                                    }
+                                                    optionDesc={"typedesc"}
+                                                    optionValue={"type"}
+                                                    
+                                                /> */}
                                                 <FieldMultiSelect
                                                     limitTags={1}
                                                     label={t("report_userproductivity_filter_channels")}
@@ -583,7 +609,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                                             )
                                                         ].data
                                                     }
-                                                    optionDesc={"communicationchanneldesc"}
+                                                    optionDesc={"typedesc"}
                                                     optionValue={"communicationchannelid"}
                                                 />
                                             </div>
@@ -664,7 +690,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                             <ListItemIcon>
                                 <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
                             </ListItemIcon>
-                            <Typography variant="inherit">{t(langKeys.filter)}</Typography>
+                            <Typography variant="inherit">{t(langKeys.filters)}</Typography>
                         </MenuItem>
                     }
                 />
@@ -744,7 +770,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 buttonStyle1={{ marginBottom: "0.3rem" }}
                 buttonStyle2={{ marginRight: "1rem", marginBottom: "0.3rem" }}
             >
-                <div className="row-zyx">
+                <div className="row-zyx" style={{marginBottom: 0, paddingBottom: 0}}>                    
                     <FieldMultiSelect
                         limitTags={1}
                         label={t("report_userproductivity_filter_group")}
@@ -774,19 +800,22 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         optionDesc={"domaindesc"}
                         optionValue={"domainvalue"}
                     />
+
                     <div style={{ alignItems: "center" }} className="col-6">
                         <div>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={16} color="textPrimary" padding="10px 0 8px 2px">
                                 {t(langKeys.report_userproductivity_filter_includebot)}
                             </Box>
                             <FormControlLabel
-                                style={{ paddingLeft: 10 }}
+                                style={{ paddingLeft: 10, paddingBottom: 0 }}
                                 control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
                                 label={checkedA ? t(langKeys.yes) : "No"}
                             />
                         </div>
                     </div>
+
                 </div>
+
             </DialogZyx>
         </>
     );
@@ -857,7 +886,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
             )
         );
     };
-    const excludeConversation = [
+    const excludeUserProductivity = [
         "hourfirstlogin",
         "avgfirstreplytime",
         "maxfirstreplytime",
@@ -866,7 +895,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
         "groups",
     ];
 
-    const filteredColumns = columns.filter((column) => !excludeConversation.includes(column.key));
+    const filteredColumns = columns.filter((column) => !excludeUserProductivity.includes(column.key));
 
     return (
         <DialogZyx
