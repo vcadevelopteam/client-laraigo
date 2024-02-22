@@ -1044,10 +1044,25 @@ const CRM: FC = () => {
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
 
-    const handleClickSeButtons = (event: Dictionary) => {
-        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElSeButtons(event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
-    };      
+     };
+    
+    const handleCloseSeButtons = () => {
+    setAnchorElSeButtons(null);
+    setOpenSeButtons(false);
+    };
+    
+    useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (anchorElSeButtons && !anchorElSeButtons.contains(event.target as Node)) {
+        handleCloseSeButtons();
+        }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => { document.removeEventListener('mousedown', handleClickOutside);};}, [anchorElSeButtons]);    
 
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
