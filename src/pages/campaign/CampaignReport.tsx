@@ -427,7 +427,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
 
     const initialVisibleColumns2: VisibleColumns2 = storedVisibleColumns2
         ? JSON.parse(storedVisibleColumns2)
-        : columns.reduce((acc, column) => {
+        : columns.reduce((acc, column) => {// eslint-disable-next-line react/prop-types
             acc[column.accessor] = false;
             return acc;
         }, {} as VisibleColumns2);
@@ -468,20 +468,16 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     }, {} as VisibleColumns);
 
     const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
-    const [pendingChanges, setPendingChanges] = useState(initialVisibleColumns);
 
     const handleToggleColumnVisibility = (columnName: keyof typeof visibleColumns) => {
-        setPendingChanges((prevPendingChanges: typeof pendingChanges) => ({
-            ...prevPendingChanges,
-            [columnName]: !prevPendingChanges[columnName],
-        }));
-    };
-
-    const applyPendingChanges = () => {
-        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges));
-        setVisibleColumns(pendingChanges);          
-        setShowColumnsModalOpen(false); 
-    }; // eslint-disable-next-line react/prop-types
+        const updatedVisibleColumns = {
+          ...visibleColumns,
+          [columnName]: !visibleColumns[columnName],
+        };
+      
+        localStorage.setItem('visibleColumns', JSON.stringify(updatedVisibleColumns));
+        setVisibleColumns(updatedVisibleColumns);
+    };    // eslint-disable-next-line react/prop-types
     const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
 
 
@@ -688,15 +684,12 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     )} 
                      {isShowColumnsModalOpen && (
                             <DialogZyx 
-                                open={isShowColumnsModalOpen} 
-                                title={t(langKeys.showHideColumns)} 
-                                buttonText1={t(langKeys.close)}     
-                                buttonText2={t(langKeys.refresh)}       
-                                handleClickButton1={() => setShowColumnsModalOpen(false)}   
-                                handleClickButton2={applyPendingChanges}                  
+                                open={isShowColumnsModalOpen}
+                                title={t(langKeys.showHideColumns)}
+                                buttonText1={t(langKeys.close)}
+                                handleClickButton1={() => setShowColumnsModalOpen(false)}
                                 maxWidth="sm"
-                                buttonStyle1={{marginBottom:'0.3rem'}}
-                                buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                                buttonStyle1={{ marginBottom: '0.3rem' }}
                             >  
                                 <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
                                     {columns // eslint-disable-next-line react/prop-types
@@ -709,7 +702,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                                                     <Checkbox
                                                         color="primary"
                                                         style={{ pointerEvents: "auto" }} // eslint-disable-next-line react/prop-types
-                                                        checked={pendingChanges[column.accessor]} // eslint-disable-next-line react/prop-types
+                                                        checked={visibleColumns[column.accessor]} // eslint-disable-next-line react/prop-types
                                                         onChange={() => handleToggleColumnVisibility(column.accessor)} // eslint-disable-next-line react/prop-types
                                                         name={column.accessor}
                                                     />
