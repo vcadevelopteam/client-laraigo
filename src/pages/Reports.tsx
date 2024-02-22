@@ -50,7 +50,7 @@ import { Checkbox, Divider, FormControlLabel, ListItemIcon, Paper, Popper } from
 const isIncremental = window.location.href.includes("incremental")
 import AllInboxIcon from '@material-ui/icons/AllInbox'; 
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
-import { columnsHideShow } from 'common/helpers/columnsReport';
+import { columnsHideGraphic, columnsHideShow } from 'common/helpers/columnsReport';
 import TipificationReport from './TipificationReport';
 interface RowSelected {
     row: Dictionary | null,
@@ -652,26 +652,8 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
             }
         )));
     }
-
-    const excludeConversation = [
-        "email",
-        "starttime",
-        "endtime",
-        "derivationdate",
-        "derivationtime",
-        "firstinteractiondate",
-        "firstinteractiontime",
-        "tmo",
-        "tmoagent",
-        "tmeagent",
-        "holdingholdtime",
-        "suspensiontime",
-        "avgagentresponse",
-        "swingingtimes",
-        "tags",
-        "firstinteractiondateagent",
-        
-    ];
+    Object.keys(columnsHideGraphic[row?.origin]);
+    
        
     const filteredColumns = columns.filter(column => !excludeConversation.includes(column));
 
