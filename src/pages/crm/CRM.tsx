@@ -216,74 +216,78 @@ const DraggablesCategories: FC<{ column: Dictionary, deletable: boolean, index: 
     const { t } = useTranslation();
     return (
         <Draggable draggableId={column.column_uuid} index={index + 1} key={column.column_uuid} isDragDisabled={isIncremental}>
-            {(provided) => (
-                <div
-                    {...provided.draggableProps}
-                    ref={provided.innerRef}
-                >
-                    <DraggableLeadColumn
-                        title={t(column.description.toLowerCase())}
-                        key={index + 1}
-                        snapshot={null}
-                        provided={provided}
-                        columnid={column.column_uuid}
-                        deletable={deletable}
-                        onDelete={hanldeDeleteColumn}
-                        total_revenue={column.total_revenue!}
-                        total_cards={column.items.length}
+        {(provided) => (
+            <div
+            {...provided.draggableProps}
+            ref={provided.innerRef}
+            >
+            <DraggableLeadColumn
+                title={t(column.description.toLowerCase())}
+                key={index + 1}
+                snapshot={null}
+                provided={provided}
+                columnid={column.column_uuid}
+                deletable={deletable}
+                onDelete={hanldeDeleteColumn}
+                total_revenue={column.total_revenue!}
+                total_cards={column.items.length}
+            >
+                <Droppable droppableId={column.column_uuid} type="task">
+                {(provided, snapshot) => {
+                    return (
+                    <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        style={{ width: '100%', overflowY:'scroll', maxHeight: '65vh', overflowX:'clip'}}
                     >
-                        <Droppable droppableId={column.column_uuid} type="task">
-                            {(provided, snapshot) => {
+                        <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
+                        {column.items?.map((item: any, index: any) => {
+                            return (                                
+                            <Draggable
+                                isDragDisabled={isIncremental}
+                                key={item.leadid}
+                                draggableId={item.leadid.toString()}
+                                index={index}
+                            >
+                                {(provided, snapshot) => {
                                 return (
-                                    <div
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                        style={{ width: '100%', overflowY: 'scroll', maxHeight: '65vh', overflowX: 'clip' }}
+                                    <NaturalDragAnimation
+                                    style={provided.draggableProps.style}
+                                    snapshot={snapshot}
                                     >
-                                        <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
-                                            {column.items?.map((item: any, index: any) => (
-                                                <Draggable
-                                                    isDragDisabled={isIncremental}
-                                                    key={index}
-                                                    draggableId={item.leadid.toString()}
-                                                    index={index}
-                                                >
-                                                    {(provided, snapshot) => (
-                                                        <NaturalDragAnimation
-                                                            style={provided.draggableProps.style}
-                                                            snapshot={snapshot}
-                                                        >
-                                                            {(style: Dictionary) => (
-                                                                <div
-                                                                    ref={provided.innerRef}
-                                                                    {...provided.draggableProps}
-                                                                    {...provided.dragHandleProps}
-                                                                    style={{ width: '100%', ...style }}
-                                                                >
-                                                                    <DraggableLeadCardContent
-                                                                        lead={item}
-                                                                        snapshot={snapshot}
-                                                                        onDelete={handleDelete}
-                                                                        onCloseLead={handleCloseLead}
-                                                                        configuration={configuration}
-                                                                    />
-                                                                </div>
-                                                            )}
-                                                        </NaturalDragAnimation>
-                                                    )}
-                                                </Draggable>
-                                            ))}
-                                        </DroppableLeadColumnList>
-                                        {provided.placeholder}
-                                    </div>
-                                );
-                            }}
-                        </Droppable>
-                    </DraggableLeadColumn>
-                </div>
-            )}
+                                    {(style: Dictionary) => (
+                                        <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={{ width: '100%', ...style }}
+                                        >
+                                        <DraggableLeadCardContent
+                                            lead={item}
+                                            snapshot={snapshot}
+                                            onDelete={handleDelete}
+                                            onCloseLead={handleCloseLead}
+                                            configuration={configuration}
+                                        />
+                                        </div>
+                                    )}
+                                    </NaturalDragAnimation>
+                                )
+                                }}
+                            </Draggable>
+                            );
+                        })}
+                        </DroppableLeadColumnList>
+                        {provided.placeholder}
+                    </div>
+                    );
+                }}
+                </Droppable>
+            </DraggableLeadColumn>
+            </div>
+        )}
         </Draggable>
-    );
+    )
 }
 
 interface sortParams {
@@ -370,7 +374,7 @@ const CRM: FC = () => {
         setSortParams(value)
     }
 
-    useEffect(() => {        
+    useEffect(() => {
         setDataColumn([])
         dispatch(getMultiCollection([
         getColumnsSel(1),
@@ -403,25 +407,30 @@ const CRM: FC = () => {
 
     useEffect(() => {
         if (!mainMulti.error && !mainMulti.loading) {
-            if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
-                const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
-                const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
-                const unordeneddatacolumns = columns.map((column) => {
-                column.items = leads.filter(x => x.column_uuid === column.column_uuid);
-                return { ...column, total_revenue: (column.items.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)) }
-                })
-                const ordereddata = [...unordeneddatacolumns.filter((x: Dictionary) => x.type === "NEW"),
-                ...unordeneddatacolumns.filter((x) => x.type === "QUALIFIED"),
-                ...unordeneddatacolumns.filter((x) => x.type === "PROPOSITION"),
-                ...unordeneddatacolumns.filter((x) => x.type === "WON"),
-                ];
-                setDataColumn(ordereddata)
-            }
+        if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
+            const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
+            const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
+            const unordeneddatacolumns = columns.map((column) => {
+            column.items = leads.filter(x => x.column_uuid === column.column_uuid);
+            return { ...column, total_revenue: (column.items.reduce((a, b) => a + parseFloat(b.expected_revenue), 0)) }
+            })
+            const ordereddata = [...unordeneddatacolumns.filter((x: Dictionary) => x.type === "NEW"),
+            ...unordeneddatacolumns.filter((x) => x.type === "QUALIFIED"),
+            ...unordeneddatacolumns.filter((x) => x.type === "PROPOSITION"),
+            ...unordeneddatacolumns.filter((x) => x.type === "WON"),
+            ];
+            setDataColumn(ordereddata)
         }
-    }, [mainMulti.data]);
-   
+        }
+    }, [mainMulti]);
+
+    useEffect(() => {
+      console.log(dataColumn)
+    }, [dataColumn]);
+
     const [isModalOpenBOARD, setModalOpenBOARD] = useState(false);
     const [isModalOpenGRID, setModalOpenGRID] = useState(false);
+
 
     const fetchBoardLeadsWithFilter = useCallback(async () => {
         try {
@@ -433,7 +442,6 @@ const CRM: FC = () => {
             newParams.set('contact', String(boardFilter.customer));
             newParams.set('asesorid', String(boardFilter.asesorid));
             history.push({ search: newParams.toString() });
-            
             setDataColumn([])
             await dispatch(getMultiCollection([
                 getColumnsSel(1),
