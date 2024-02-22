@@ -9,8 +9,18 @@ export const columnsHideGraphic = {
         clientnumber: true,
         email: true,
         personcommunicationchannel: true,
+    },
+    userproductivityhours: {
+        busytimewithinwork: true,
+        freetimewithinwork: true,  
+        busytimeoutsidework: true,
+        availabletime: true,
+        idletime: true,
+        idletimewithoutattention: true,
+        qtydisconnection: true,   
     }
 }
+
 export const columnsHideShow = {
     productivity: {
         email: true,
@@ -64,5 +74,14 @@ export const columnsHideShow = {
         clientnumber: true,
         email: true,
         personcommunicationchannel: true,
+    },
+    userproductivityhours: {
+        busytimewithinwork: true,
+        freetimewithinwork: true,  
+        busytimeoutsidework: true,
+        availabletime: true,
+        idletime: true,
+        qtyconnection: true,
+        qtydisconnection: true,   
     }
 }
