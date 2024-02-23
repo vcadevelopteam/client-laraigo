@@ -5,7 +5,7 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import { Dictionary } from "@types";
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { calculateDateFromWeek, dayNames2, selBookingCalendar, timetomin } from "common/helpers";
+import { calculateDateFromWeek, dayNames2, hash256, selBookingCalendar, timetomin } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { getCollectionAux } from "store/main/actions";
 import { useSelector } from "hooks";
@@ -187,13 +187,22 @@ const BookingTime: FC<{
     item: Dictionary;
     handleClick: (event: any) => void;
 }> = ({ item, handleClick }) => {
+    const [color, setColor] = useState(item?.color || "#e1e1e1")
     const classes = useScheduleStyles();
 
+    useEffect(() => {
+      if (item.email) {
+        hash256(item.email).then((res) => {
+            setColor('#' + res.substring(0, 6))
+        })
+      }
+    }, [item])
+    
     return (
         <div
             className={classes.itemBooking}
             style={{
-                backgroundColor: item.color || "#e1e1e1",
+                backgroundColor: color,
                 height: `${item.totalTime}%`,
                 position: "absolute",
                 top: `${item.initTime}%`

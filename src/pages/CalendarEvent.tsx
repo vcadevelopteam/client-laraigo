@@ -234,7 +234,15 @@ const FormToSend: FC<{
     React.useEffect(() => {
         register('notes');
         register('name', { validate: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + "") });
-        register('email');
+        register('email', {
+            validate: {
+              required: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + ""),
+              validEmail: (value) => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(value) || (t(langKeys.emailverification) + "");
+              },
+            },
+          });
         register('phone', { validate: (value) => event?.notificationtype === "MAIL" || !!value || (t(langKeys.field_required) + "") });
     }, [register, t, event])
 
@@ -274,9 +282,9 @@ const FormToSend: FC<{
                         control={control}
                         rules={{
                             validate: (value) => {
-                                if ((value.length || "") === 0) {
+                                if ((value?.length || "") === 0) {
                                     return t(langKeys.field_required) as string;
-                                } else if ((value.length || "") < 10) {
+                                } else if ((value?.length || "") < 10) {
                                     return t(langKeys.validationphone) as string;
                                 }
                             }

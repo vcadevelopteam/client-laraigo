@@ -13,14 +13,15 @@ import { apiUrls } from 'common/constants';
 import GoogleLogIn from 'components/fields/GoogleLogIn';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { calendarGoogleDisconnect, calendarGoogleLogIn } from 'store/calendar/actions';
-import { Typography } from '@material-ui/core';
+import { CircularProgress, Typography } from '@material-ui/core';
+import { getCollectionAux } from 'store/main/actions';
+import { selBookingIntegrationSel } from 'common/helpers';
 const isIncremental = window.location.href.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
-        background: '#fff',
     },
     containerDescription: {
         display: 'flex',
@@ -44,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         alignItems: "center",
         gap: '10px 64px',
+        background: '#fff',
+        padding: '20px',
+        marginBottom: '20px',
     },
     integrationItem: {
         flexGrow: 1,
@@ -68,6 +72,16 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '16px',
         color: '#989898',
     },
+    integrationInformation: {
+        fontSize: '16px',
+        color: '#2E2C34',
+        ' & > p': {
+            fontWeight: 'bold',
+        },
+        ' & > p > span': {
+            fontWeight: 'normal',
+        }
+    },
     integrationButton: {
         padding: 12,
         fontWeight: 500,
@@ -85,6 +99,13 @@ interface CalendarConnectionsProps {
 
     calendarGoogleActive: boolean;
     setCalendarGoogleActive: (value: boolean) => void;
+}
+
+interface CalendarIntegrationData {
+    calendarintegrationid: number;
+    calendareventid: number;
+    email: string;
+    person_name: string;
 }
 
 const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
@@ -105,10 +126,24 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
     const resCalendarGoogleDisconnect = useSelector(state => state.calendar.requestGoogleDisconnect);
     const [waitGoogleLogIn, setWaitGoogleLogIn] = useState(false);
     const [waitGoogleDisconnect, setWaitGoogleDisconnect] = useState(false);
+    const mainResultAux = useSelector(state => state.main.mainAux);
+    const [integrationData, setIntegrationData] = useState<CalendarIntegrationData[]>([])
 
-    const googleConfirmDisconnect = (id: number) => {
+    useEffect(() => {
+        dispatch(getCollectionAux(selBookingIntegrationSel(row?.calendareventid)))
+    }, [row])
+
+    useEffect(() => {
+        if (!mainResultAux.loading && !mainResultAux.error) {
+            console.log('data')
+            console.log(mainResultAux.data)
+            setIntegrationData(mainResultAux.data as CalendarIntegrationData[])
+        }
+    }, [mainResultAux])
+
+    const googleConfirmDisconnect = (calendareventid: number, calendarintegrationid: number) => {
         const callback = () => {
-            dispatch(calendarGoogleDisconnect({ id }))
+            dispatch(calendarGoogleDisconnect({ calendareventid, calendarintegrationid }))
             dispatch(showBackdrop(true));
             setWaitGoogleDisconnect(true);  
         }
@@ -134,6 +169,7 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                 setWaitGoogleLogIn(false)
                 if (!resCalendarGoogleLogIn.error) {
                     setCalendarGoogleActive(true)
+                    dispatch(getCollectionAux(selBookingIntegrationSel(row?.calendareventid)))
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 }
             }
@@ -155,6 +191,7 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                 dispatch(showBackdrop(false))
                 if (!resCalendarGoogleDisconnect.error) {
                     setCalendarGoogleActive(false)
+                    dispatch(getCollectionAux(selBookingIntegrationSel(row?.calendareventid)))
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 }
             }
@@ -163,7 +200,7 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
     
     return (
         <div className={classes.containerDetail}>
-            <div className="row-zyx">
+            <div className="row-zyx" style={{ background: '#fff', marginBottom: 0}}>
                 <div className={classes.containerDescription}>
                     <Typography className={classes.containerDescriptionTitle} color="primary">
                         {t(langKeys.calendar_connections_title)}
@@ -173,6 +210,46 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                     </Typography>
                 </div>
             </div>
+            {!mainResultAux.loading && integrationData.map((item) => (
+                <div key={item.calendarintegrationid} className={classes.integrationRow}>
+                    <div className={classes.integrationItem}>
+                        <div>
+                            <GoogleCalendarIcon className={classes.integrationIcon} />
+                        </div>
+                        <div className={classes.integrationText}>
+                            <div className={classes.integrationTitle}>
+                                Google Calendar
+                            </div>
+                            <div className={classes.integrationDescription}>
+                                Gmail - G Suite
+                            </div>
+                            <div className={classes.integrationInformation}>
+                                {item.person_name && (
+                                    <Typography>
+                                        {t(langKeys.assigned_agent)}: <span>{item.person_name}</span>
+                                    </Typography>
+                                )}
+                                <Typography>
+                                    {t(langKeys.agent_email)}: <span>{item.email}</span>
+                                </Typography>
+                            </div>
+                        </div>
+                    </div>
+                    {!isIncremental &&
+                        <Button
+                            className={classes.integrationButton}
+                            variant="contained"
+                            disabled={resCalendarGoogleValidate.loading}
+                            color="primary"
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => googleConfirmDisconnect(row?.calendareventid, item.calendarintegrationid)}
+                        >
+                            {t(langKeys.disconnect)} 
+                        </Button>
+                    }
+                </div>
+            ))}
+
             <div className={classes.integrationRow}>
                 <div className={classes.integrationItem}>
                     <div>
@@ -189,33 +266,25 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                 </div>
                 {!isIncremental &&
                     <div>
-                        {calendarGoogleActive ?
-                            <Button
-                                className={classes.integrationButton}
-                                variant="contained"
-                                disabled={resCalendarGoogleValidate.loading}
-                                color="primary"
-                                style={{ backgroundColor: "#FB5F5F" }}
-                                onClick={() => googleConfirmDisconnect(row?.calendareventid)}
-                            >
-                                {t(langKeys.disconnect)} 
-                            </Button>
-                            :
-                            <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CALENDAR}>
-                                <GoogleLogIn
-                                    label="Conectar"
-                                    scope={'https://www.googleapis.com/auth/calendar.readonly'}
-                                    googleDispatch={(e) => {
-                                        dispatch(calendarGoogleLogIn({ ...e, id: row?.calendareventid }))
-                                        setWaitGoogleLogIn(true);
-                                    }}
-                                    data={{id: row?.calendareventid, data_code: row?.code }}
-                                />
-                            </GoogleOAuthProvider>
-                        }
+                        <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CALENDAR}>
+                            <GoogleLogIn
+                                label="Conectar"
+                                scope={'https://www.googleapis.com/auth/calendar.readonly'}
+                                googleDispatch={(e) => {
+                                    dispatch(calendarGoogleLogIn({ ...e, id: row?.calendareventid }))
+                                    setWaitGoogleLogIn(true);
+                                }}
+                                data={{id: row?.calendareventid, data_code: row?.code }}
+                            />
+                        </GoogleOAuthProvider>
                     </div>
                 }
             </div>
+            {mainResultAux.loading && (
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
+                    <CircularProgress />
+                </div>
+            )}
         </div>
     )
 }
