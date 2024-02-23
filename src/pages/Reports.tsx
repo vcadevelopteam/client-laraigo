@@ -49,6 +49,7 @@ import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
 import { columnsHideShow } from 'common/helpers/columnsReport';
 import TipificationReport from './staticReports/TipificationReport';
+import ProductivityHoursReport from './staticReports/ProductivityHoursreport';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -1018,7 +1019,7 @@ const Reports: FC = () => {
         setViewSelected(key);
     }
 
-    const reportSwitch = (report: any, index: number) => {
+    const reportSwitch = (report: any, index: number) => {        
         switch (report.reportname) {
             case 'HEATMAP':
                 return (
@@ -1318,6 +1319,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+                case 'PRODUCTIVITYHOURS':
+                    return (
+                        <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                            <Card >
+                                <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("productivityhoursreport")}}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
+                                        title={t('report_' + report?.origin)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                            {t('report_' + report?.origin)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    )                
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1763,7 +1785,16 @@ const Reports: FC = () => {
                 setSearchValue={setSearchValue} 
             />
         )
-    }else {
+    }  else if (viewSelected === "productivityhoursreport") {  
+        return (            
+            <ProductivityHoursReport 
+                setViewSelected={setViewSelected}
+                row={rowSelected}
+                setSearchValue={setSearchValue} 
+            />
+        )
+    }    
+    else {
         return (
             <ReportItem
                 setViewSelected={setViewSelected}
