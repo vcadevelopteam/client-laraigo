@@ -18,6 +18,8 @@ import { deliveryAppUsersSel, deliveryConfigurationIns, deliveryConfigurationSel
 import { execute } from "store/main/actions";
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import AutomaticDeliveryDialog from '../dialogs/AutomaticDeliveryDialog';
+import MotiveDialog from '../dialogs/MotiveDialog';
+import SubmotiveDialog from '../dialogs/SubmotiveDialog';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -88,6 +90,8 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
     const [openModalAutomaticDelivery, setOpenModalAutomaticDelivery] = useState(false)
+    const [openModalMotiveDialog, setOpenModalMotiveDialog] = useState(false)
+    const [openModalSubmotiveDialog, setOpenModalSubmotiveDialog] = useState(false)
     const main = useSelector((state) => state.main.mainData);
     const [configjson, setConfigjson] = useState<ConfigJson>({
         automatica: false,
@@ -320,6 +324,8 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     setOpenModalVehicleType={setOpenModalVehicleType}
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
                     setOpenModalAutomaticDelivery={setOpenModalAutomaticDelivery}
+                    setOpenModalMotiveDialog={setOpenModalMotiveDialog}
+                    setOpenModalSubmotiveDialog={setOpenModalSubmotiveDialog}
                     fetchConfiguration={fetchConfiguration}
                     fetchVehicles={fetchVehicles}
                     setConfigjson={setConfigjson}
@@ -368,6 +374,14 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     onMainSubmit={onMainSubmit}
                     fetchOriginalConfig={fetchOriginalConfig}
                     deliveryShifts={deliveryShifts}
+                />
+                <MotiveDialog
+                    openModal={openModalMotiveDialog}
+                    setOpenModal={setOpenModalMotiveDialog}
+                />
+                <SubmotiveDialog
+                    openModal={openModalSubmotiveDialog}
+                    setOpenModal={setOpenModalSubmotiveDialog}
                 />
             </form>
         </>
