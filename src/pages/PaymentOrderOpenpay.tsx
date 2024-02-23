@@ -7,6 +7,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Popus from 'components/layout/Popus';
 import React, { FC, useEffect, useState } from 'react';
 
+import { apiUrls } from 'common/constants';
 import { Dictionary } from '@types';
 import { formatNumber } from 'common/helpers';
 import { langKeys } from 'lang/keys';
@@ -81,8 +82,8 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
     },
     textTitle: {
-        border: '1px solid #7721AD',
-        background: '#7721AD',
+        border: apiUrls.BODEGAACME ? '1px solid #6127B1' : '1px solid #7721AD',
+        background: apiUrls.BODEGAACME ? '#6127B1' : '#7721AD',
         padding: '8px',
         fontWeight: 'bold',
         color: 'white',
@@ -317,7 +318,8 @@ export const PaymentOrderOpenpay: FC = () => {
                                 <div className={classes.back}>
                                     <div className={classes.containerSuccess}>
                                         <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                            <LaraigoLogo style={{ height: 120, margin: '20px' }} />
+                                            {!apiUrls.BODEGAACME && <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />}
+                                            {apiUrls.BODEGAACME && <img src={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/BODEGA%20ACME/40016109-be7d-4aa7-9287-743d35fcc05d/470e9a59-bbaa-4742-ba5b-e4aa1c21d865_waifu2x_art_noise3_scale.png'} style={{ height: 120, margin: '20px' }} />}
                                         </div>
                                         <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_success)}</div>
                                         {paymentData.ordercode && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
@@ -328,7 +330,7 @@ export const PaymentOrderOpenpay: FC = () => {
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                                 <div className={classes.textField}>
-                                                    {paymentData?.ordercode}
+                                                    {apiUrls.BODEGAACME ? paymentData?.paymentorderid : paymentData?.ordercode}
                                                 </div>
                                             </div>
                                         </div>}

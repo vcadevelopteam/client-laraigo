@@ -65,7 +65,8 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             {
                 Header: t(langKeys.totalamount),
                 accessor: 'amount',
-                NoFilter: true
+                NoFilter: true,
+                Cell: ({ value }) => parseFloat(value).toFixed(2),
             },
             {
                 Header: t(langKeys.orderstatus),
@@ -79,8 +80,8 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                     delivered: t(langKeys.delivered),
                   };
               
-                  const status = row.values.orderstatus.toLowerCase();
-                  return orderStatusMap[status];
+                  const status = (row?.values?.orderstatus||"")?.toLowerCase();
+                  return orderStatusMap?.[status]||"";
                 },
             },              
             {
@@ -90,7 +91,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             },
             {
                 Header: t(langKeys.billingtype),
-                accessor: 'payment_document_type',
+                accessor: 'payment_receipt',
                 NoFilter: true
             },
             {
@@ -116,12 +117,7 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
             {
                 Header: t(langKeys.dateorder),
                 accessor: 'createdate',
-                NoFilter: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original.createdate;
-                    const formatteddate = formatDate(row, {withTime: false})
-                    return formatteddate
-                }
+                NoFilter: true,               
             },
             {
                 Header: t(langKeys.ticket),

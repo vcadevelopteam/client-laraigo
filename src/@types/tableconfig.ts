@@ -34,9 +34,13 @@ export interface TableConfig {
   calculate?: boolean;
   handleCalculate?(param: any): void;
   HeadComponent?: () => JSX.Element | null;
-  ButtonsElement?: () => JSX.Element | null;
+  ButtonsElement?: (() => JSX.Element) | ReactElement;
   FiltersElement?: ReactElement;
   pageSizeDefault?: number;
+
+  groupedBy?: boolean;  
+  showHideColumns?: boolean;
+  
   filterGeneral?: boolean;
   hoverShadow?: boolean;
   loading?: boolean;
@@ -81,6 +85,7 @@ export interface TableConfig {
   };
   registertext?: string;
   useFooter?: boolean;
+  ExtraMenuOptions?: ReactElement;
 }
 
 export interface Pagination {

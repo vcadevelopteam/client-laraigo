@@ -42,6 +42,51 @@ export const loginReset = (state: IState): IState => ({
     login: initialState.login,
 });
 
+
+
+
+
+export const invokeIncremental = (state: IState): IState => ({
+    ...state,
+    invokeIncremental: {
+        ...state.invokeIncremental,
+        loading: true,
+        error: false
+    }
+});
+
+export const invokeIncrementalSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        invokeIncremental: {
+            ...state.invokeIncremental,
+            loading: false,
+            error: false,
+        }
+    }
+};
+
+export const invokeIncrementalFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    invokeIncremental: {
+        ...state.invokeIncremental,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+    }
+});
+
+export const invokeIncrementalReset = (state: IState): IState => ({
+    ...state,
+    invokeIncremental: initialState.invokeIncremental,
+});
+
+
+
+
+
+
+
 export const updateUserInformation = (state: IState, action: IAction): IState => ({
     ...state,
     validateToken: {

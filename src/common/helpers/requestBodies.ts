@@ -235,18 +235,31 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
     parameters: { type, classificationid }
 });
 
-
 export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS" }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key,
     parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
-export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, showbots }: Dictionary): IRequestBody => ({
+export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, storeid, warehouseid, showbots}: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
-    parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect, showbots }
+    parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect, storeid, warehouseid, showbots }
 });
+
+export const insStore = ({ id, description, phone, address, warehouseid, coveragearea , warehouseinstore, type , status, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_STORE_INS",
+    key: "UFN_STORE_INS",
+    parameters: { id, description, phone, address, warehouseid, coveragearea , warehouseinstore, type , status, operation }
+});
+
+export const selStore = (id: number): IRequestBody => ({
+    method: "UFN_STORE_SEL",
+    key: "UFN_STORE_SEL",
+    parameters: { id, all: id === 0 }
+});
+
+
 export const selOrgSimpleList = (): IRequestBody => ({
     method: "UFN_ORG_LST_SIMPLE",
     key: "UFN_ORG_LST_SIMPLE",
@@ -696,7 +709,7 @@ export const getDocumentLibrary = (): IRequestBody => ({
 export const getDocumentLibraryByUser = (): IRequestBody => ({
     method: "QUERY_DOCUMENTLIBRARY_BY_USER",
     key: "QUERY_DOCUMENTLIBRARY_BY_USER",
-    parameters: { }
+    parameters: {}
 })
 export const getReportSchedulerSel = (id: number): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_SEL",
@@ -717,7 +730,7 @@ export const reportSchedulerIns = ({ id, title, status, origin, origintype, repo
     }
 })
 
-export const documentLibraryIns = ({id, title, description, category, groups, link, favorite, status, operation }: Dictionary): IRequestBody => ({
+export const documentLibraryIns = ({ id, title, description, category, groups, link, favorite, status, operation }: Dictionary): IRequestBody => ({
     method: "UFN_DOCUMENTLIBRARY_INS",
     key: "UFN_DOCUMENTLIBRARY_INS",
     parameters: {
@@ -917,6 +930,13 @@ export const getConfigurationVariables = (communicationchannelid: number): IRequ
 export const getCommChannelLst = (): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_LST",
     key: "UFN_COMMUNICATIONCHANNEL_LST",
+    parameters: {
+    }
+});
+
+export const getCommChannelLstTypeDesc = (): IRequestBody => ({
+    method: "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC",
+    key: "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC",
     parameters: {
     }
 });
@@ -1353,6 +1373,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
 
 export const getCampaignLst = (): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
+    key:"UFN_CAMPAIGN_LST",
     parameters: {}
 });
 
@@ -1683,13 +1704,14 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
     }
 });
 
-export const getCampaignReportPaginated = ({ startdate, enddate, filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
+export const getCampaignReportPaginated = ({ startdate, enddate, channeltype, filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_CAMPAIGNREPORT_SEL",
     methodCount: "UFN_CAMPAIGNREPORT_TOTALRECORDS",
     parameters: {
         origin: "campaignreport",
         startdate,
         enddate,
+        channeltype,
         filters,
         sorts,
         take,
@@ -2479,7 +2501,7 @@ export const getOrderColumns = ({ id = 0 }: Dictionary): IRequestBody => ({
     }
 })
 
-export const insAutomatizationRules = ({ id, description, status, type, columnid, order, orderstatus, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
+export const insAutomatizationRules = ({ id, description, status, type, columnid, communicationchannelorigin, order, orderstatus, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
     method: 'UFN_LEADAUTOMATIZATIONRULES_INS',
     key: "UFN_LEADAUTOMATIZATIONRULES_INS",
     parameters: {
@@ -2498,6 +2520,7 @@ export const insAutomatizationRules = ({ id, description, status, type, columnid
         orderstatus,
         tags,
         products,
+        communicationchannelorigin,
         operation,
     }
 });
@@ -3357,6 +3380,12 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
+export const selBookingIntegrationSel = (calendareventid: number) => ({
+    method: "UFN_CALENDAREVENT_INTEGRATION_SEL",
+    key: "UFN_CALENDAREVENT_INTEGRATION_SEL",
+    parameters: { calendareventid },
+});
+
 export const calendarBookingCancel = ({ calendareventid, id, phone, name, username, email, canceltype, cancelcomment, corpid, orgid, userid, otros }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
@@ -3674,6 +3703,7 @@ export const getAdvisorListVoxi = (): IRequestBody => ({
 
 export const getUserAsesorByOrgID = (): IRequestBody => ({
     method: "UFN_USER_ASESORBYORGID_LST",
+    key: "UFN_USER_ASESORBYORGID_LST",
     parameters: {}
 });
 
@@ -4109,10 +4139,10 @@ export const paymentOrderSel = ({ corpid, orgid, conversationid, personid, payme
     parameters: { corpid, orgid, conversationid, personid, paymentorderid, ordercode }
 });
 
-export const metaCatalogIns = ({ corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, username, operation }: Dictionary) => ({
+export const metaCatalogIns = ({ corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, haslink, username, operation }: Dictionary) => ({
     method: "UFN_METACATALOG_INS",
     key: "UFN_METACATALOG_INS",
-    parameters: { corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, username, operation },
+    parameters: { corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, haslink, username, operation },
 });
 
 export const metaCatalogSel = ({ corpid, orgid, metabusinessid, id }: Dictionary) => ({
@@ -4822,4 +4852,40 @@ export const updateAssistantAiDocumentTraining = (assistantaiid: number, documen
     method: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
     key: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
     parameters: { assistantaiid, documentsid },
+});
+
+export const getWarehouseSel = () => ({
+    method: "UFN_WAREHOUSE_SEL",
+    key: "UFN_WAREHOUSE_SEL",
+    parameters: {}
+});
+
+export const deliveryConfigurationSel = ({ id, all }: Dictionary) => ({
+    method: "UFN_DELIVERYCONFIGURATION_SEL",
+    key: "UFN_DELIVERYCONFIGURATION_SEL",
+    parameters: { id, all },
+});
+
+export const deliveryConfigurationIns = ({ id, config, status, type, operation }: Dictionary) => ({
+    method: "UFN_DELIVERYCONFIGURATION_INS",
+    key: "UFN_DELIVERYCONFIGURATION_INS",
+    parameters: { id, config, status, type, operation },
+});
+
+export const deliveryVehicleSel = ({ id, all }: Dictionary) => ({
+    method: "UFN_DELIVERYVEHICLE_SEL",
+    key: "UFN_DELIVERYVEHICLE_SEL",
+    parameters: { id, all },
+});
+
+export const deliveryVehicleIns = ({ id, status, type, brand, model, vehicleplate, capacity, insuredamount, averagespeed, userid, license, operation }: Dictionary) => ({
+    method: "UFN_DELIVERYVEHICLE_INS",
+    key: "UFN_DELIVERYVEHICLE_INS",
+    parameters: { id, status, type, brand, model, vehicleplate, capacity, insuredamount, averagespeed, userid, license, operation },
+});
+
+export const deliveryAppUsersSel = () => ({
+    method: "UFN_USERS_APP_DELIVERY_SEL",
+    key: "UFN_USERS_APP_DELIVERY_SEL",
+    parameters: {},
 });

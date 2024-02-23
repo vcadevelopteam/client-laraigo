@@ -1223,7 +1223,6 @@ export const loadScripts = (scripts: string[]) => {
     return { scriptPlatform, scriptRecaptcha, clarityScript, gtmScript }
 }
 
-
 export function encrypt(plaintext:string, key:string) {
     let ciphertext = '';
     for (let i = 0; i < plaintext.length; i++) {
@@ -1241,4 +1240,13 @@ export function decrypt(ciphertext:string, key:string) {
         plaintext += String.fromCharCode(charCode);
     }
     return plaintext;
+}
+
+export function hash256 (message: string) {
+    const msgBuffer = new TextEncoder().encode(message);
+    return crypto.subtle.digest('SHA-256', msgBuffer).then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    });
 }

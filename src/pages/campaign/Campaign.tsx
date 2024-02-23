@@ -13,7 +13,7 @@ import { getCollection, execute, getCollectionAux, resetAllMain } from 'store/ma
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CampaignDetail } from './CampaignDetail';
 import { Blacklist } from './Blacklist';
-import { CampaignReport } from './CampaignReport';
+import { CampaignReport } from '../staticReports/CampaignReport';
 import { IconButton, ListItemIcon } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';

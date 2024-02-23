@@ -13,7 +13,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import { getDomainsByTypename } from 'store/person/actions';
 import {
     insLead2, adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
-    getLeadsSel, leadHistoryIns
+    getLeadsSel, leadHistoryIns, selCalendar
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -22,7 +22,7 @@ import { useSelector } from 'hooks';
 import {
     archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory,
     resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction,
-    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, getPersonType, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels, resetGetPersonType
+    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, getPersonType, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels, resetGetPersonType, getCalendar, resetGetCalendar
 } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -601,6 +601,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getLeadTemplates());
         dispatch(getLeadChannels());
         dispatch(getPersonType(getValuesFromDomain('TIPOPERSONA')));
+        dispatch(getCalendar(selCalendar(0)));
         
         return () => {
             dispatch(resetGetLead());
@@ -617,6 +618,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetGetLeadTagsDomain());
             dispatch(resetGetPersonType());
             dispatch(resetGetLeadChannels());
+            dispatch(resetGetCalendar());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, match.params.id, dispatch]);
@@ -2114,6 +2116,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const [domainsTotal, setDomainsTotal] = useState<Dictionary[]>([])
     const [bodyMessage, setBodyMessage] = useState('');
     // const [bodyCleaned, setBodyCleaned] = useState('');
+    const calendarList = useSelector(state => state.lead.calendar);
     const [assigntoinitial, setassigntoinitial] = useState(0)
 
     useEffect(() => {
@@ -2183,7 +2186,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             hsmtemplateid: activity?.hsmtemplateid || 0,
             communicationchannelid: activity?.communicationchannelid || 0,
             hsmtemplatetype: activity?.hsmtemplatetype || "",
-            variables: []
+            variables: [],
+            calendar: activity?.calendar || 0
         },
     });
 
@@ -2236,7 +2240,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
             hsmtemplateid: 0,
             hsmtemplatename: '',
-            variables: []
+            variables: [],
+            calendar: 0
         });
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2265,7 +2270,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             hsmtemplateid: activity?.hsmtemplateid || 0,
             communicationchannelid: activity?.communicationchannelid || 0,
             hsmtemplatetype: template?.type || "",
-            variables: []
+            variables: [],
+            calendar: activity?.calendar || 0
         });
 
         setBodyMessage(template?.body || "")
@@ -2434,6 +2440,10 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 setBodyMessage('');
                                                 setValue('hsmtemplateid', 0);
                                                 trigger('type');
+                                                if (v?.domainvalue === "appointment") {
+                                                    console.log(getValues('duedate'))
+                                                    setValue('duedate', new Date().toISOString().slice(0, 16).replace('T', ' '))
+                                                }
                                                 if ((v?.domainvalue || "") === "automated") {
                                                     register('hsmtemplateid', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) })
                                                 } else {
@@ -2499,6 +2509,21 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="column">
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        {getValues('type').includes("appointment")?
+                                        <FieldSelect
+                                            label={t(langKeys.calendar)}
+                                            className={classes.field}
+                                            data={calendarList.data}
+                                            optionDesc="code"
+                                            optionValue="calendareventid"
+                                            loading={calendarList.loading}
+                                            valueDefault={getValues('calendar')}
+                                            onChange={v => {
+                                                setValue('calendar', v?.calendareventid || 0);
+                                                v?.eventlink && window.open("https://" + v.eventlink, '_blank');
+                                            }}
+                                            error={errors?.assignto?.message}
+                                        />:
                                         <FieldEdit
                                             label={t(langKeys.dueDate)}
                                             className={classes.field}
@@ -2506,7 +2531,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             valueDefault={(getValues('duedate') as string)?.replace(' ', 'T')?.substring(0, 16)}
                                             onChange={(value) => setValue('duedate', value)}
                                             error={errors?.duedate?.message}
-                                        />
+                                        />}
                                     </Grid>
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                         <FieldSelect

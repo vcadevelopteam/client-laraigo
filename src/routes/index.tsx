@@ -49,6 +49,11 @@ const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
 const Corporations = lazy(() => import('pages/Corporations'));
 const Partners = lazy(() => import('pages/partners/Partners'));
+const DeliveryConfiguration = lazy(() => import('pages/deliveryconfiguration/DeliveryConfiguration'))
+const OrderList = lazy(() => import('pages/deliveryorderslist/OrderList'))
+const AttentionOrders = lazy(() => import('pages/attentionorders/AttentionOrders'))
+const StoreCoverage = lazy(() => import('pages/storecoverage/StoreCoverage'))
+const StoreOrders = lazy(() => import('pages/storeorders/StoreOrders'))
 const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
@@ -99,6 +104,7 @@ const Privacy = lazy(() => import('pages/Privacy'));
 const TermsOfService = lazy(() => import('pages/TermsOfService'));
 const ActivateUser = lazy(() => import('pages/ActivateUser'));
 const RecoverPassword = lazy(() => import('pages/RecoverPassword'));
+const Conversation = lazy(() => import('pages/Conversation'));
 const CRM = lazy(() => import('pages/crm/CRM'));
 const LeadForm = lazy(() => import('pages/crm/LeadForm'));
 const ServiceDesk = lazy(() => import('pages/servicedesk/ServiceDesk'));
@@ -109,8 +115,9 @@ const PaymentOrder = lazy(() => import('pages/PaymentOrder'));
 const PaymentOrderNiubiz = lazy(() => import('pages/PaymentOrderNiubiz'));
 const PaymentOrderNiubizStatus = lazy(() => import('pages/PaymentOrderNiubizStatus'));
 const PaymentOrderOpenpay = lazy(() => import('pages/PaymentOrderOpenpay'));
-const PaymentOrderIzipay = lazy(() => import('pages/PaymentOrderIzipay'));
 const PaymentOrderOpenpayColombia = lazy(() => import('pages/PaymentOrderOpenpayColombia'));
+const PaymentOrderIzipay = lazy(() => import('pages/PaymentOrderIzipay'));
+const PaymentOrderEpayco = lazy(() => import('pages/PaymentOrderEpayco'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
 const SecurityRules = lazy(() => import('pages/SecurityRules'));
@@ -246,12 +253,14 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.NIUBIZ_PAYMENTORDER.path} render={() => <PaymentOrderNiubiz />} />
 					<Route exact path={paths.NIUBIZ_PAYMENTORDERSTATUS.path} render={() => <PaymentOrderNiubizStatus />} />
 					<Route exact path={paths.OPENPAY_PAYMENTORDER.path} render={() => <PaymentOrderOpenpay />} />
-					<Route exact path={paths.IZIPAY_PAYMENTORDER.path} render={() => <PaymentOrderIzipay />} />
 					<Route exact path={paths.OPENPAYCOLOMBIA_PAYMENTORDER.path} render={() => <PaymentOrderOpenpayColombia />} />
+					<Route exact path={paths.IZIPAY_PAYMENTORDER.path} render={() => <PaymentOrderIzipay />} />
+					<Route exact path={paths.EPAYCO_PAYMENTORDER.path} render={() => <PaymentOrderEpayco />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
 					<Route exact path={paths.TERMSOFSERVICE} render={() => <TermsOfService />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
 					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />
+					<Route exact path={paths.CONVERSATION.path} render={() => <Conversation />} />
 					<ProtectRoute exact path={paths.PRODUCTCATALOG} component={() => (<Layout mainClasses={classes.main}><ProductCatalog /></Layout>)} />
 					<ProtectRoute exact path={paths.CATALOGMASTER} component={() => (<Layout mainClasses={classes.main}><CatalogMaster /></Layout>)} />
 					<ProtectRoute exact path={paths.ORDERS} component={() => (<Layout mainClasses={classes.main}><Orders /></Layout>)} />
@@ -318,6 +327,11 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.PARTNERS} component={() => (<Layout mainClasses={classes.main}><Partners /></Layout>)} />
 					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />
+					<ProtectRoute exact path={paths.CONFIGURATIONDELIVERY} component={() => (<Layout mainClasses={classes.main}><DeliveryConfiguration /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERINSTORE} component={() => (<Layout mainClasses={classes.main}><StoreOrders /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERSINATTENTION} component={() => (<Layout mainClasses={classes.main}><AttentionOrders /></Layout>)} />
+					<ProtectRoute exact path={paths.STORECOVERAGE} component={() => (<Layout mainClasses={classes.main}><StoreCoverage /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERLIST} component={() => (<Layout mainClasses={classes.main}><OrderList /></Layout>)} />
 					<ProtectRoute exact path={paths.SUPERVISOR} component={() => (<Layout ><Supervisor /></Layout>)} />
 					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
 					<ProtectRoute exact path={paths.TIMESHEET} component={() => (<Layout mainClasses={classes.main}><TimeSheet /></Layout>)} />

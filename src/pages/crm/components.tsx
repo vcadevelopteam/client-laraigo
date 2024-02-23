@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField, Typography } from "@material-ui/core";
-import { Add, MoreVert as MoreVertIcon, Traffic } from "@material-ui/icons";
+import { MoreVert as MoreVertIcon, Traffic, Add as AddIcon } from "@material-ui/icons";
 import CloseIcon from "@material-ui/icons/Close";
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from "react-beautiful-dnd";
 import { langKeys } from "lang/keys";
@@ -116,7 +116,7 @@ const useLeadCardStyles = makeStyles((theme) => ({
         borderRadius: 10
     },
     redLight: {
-        backgroundColor: 'red',
+        backgroundColor: '#7721AD',
         color: 'white',
         borderRadius: 10
     },
@@ -131,8 +131,6 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
     lead,
     snapshot,
     onDelete,
-    onClick,
-    onCloseLead,
     configuration,
     ...boxProps
 }) => {
@@ -325,7 +323,8 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
 
     return (
         <Box {...boxProps} style={{ position: "relative" }} pb={1}>
-            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
+            
+            <div    style={{ background: '#FFFFFF'}} className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead.description}</span>
                 {lead.campaign && (
                     <span className={classes.info}>
@@ -338,13 +337,13 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     {user?.currencysymbol || "S/."} {Number(lead.expected_revenue).toLocaleString("en-US")}
                 </span>
                 <span className={classes.info}>{lead.displayname}</span>
-                {!!lead?.persontype && lead?.persontype !== null && (
+                {Boolean(lead?.persontype) && lead?.persontype !== null && (
                     <span style={{ fontWeight: "bold" }} className={classes.info}>
                         {lead.persontype}
                     </span>
                 )}
                 <div className={classes.tagsRow}>
-                    {tags.map((tag: String, index: number) => (
+                    {tags.map((tag: string, index: number) => (
                         <div className={classes.tag} key={index}>
                             <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
                             <div style={{ width: 6 }} />
@@ -354,7 +353,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                 </div>
                 {products.length !== 0 && <div style={{ height: "0.25em" }} />}
                 <div className={classes.tagsRow}>
-                    {products.map((tag: String, index: number) => (
+                    {products.map((tag: string, index: number) => (
                         <div className={classes.tag} key={index}>
                             <div className={classes.tagCircle} style={{ backgroundColor: colors[2] }} />
                             <div style={{ width: 6 }} />
@@ -377,6 +376,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     </div>
                 </div>
             </div>
+
             <div className={classes.floatingMenuIcon}>
                 {!isIncremental && (
                     <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
@@ -395,17 +395,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     PaperProps={{
                         className: classes.popoverPaper,
                     }}
-                >
-                    {/* <Button
-                        variant="text"
-                        color="inherit"
-                        fullWidth
-                        type="button"
-                        onClick={handleCloseLead}
-                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                    >
-                        <Trans i18nKey={langKeys.close} />
-                    </Button> */}
+                >                  
                     <Button
                         variant="text"
                         color="inherit"
@@ -446,7 +436,7 @@ interface InputTitleProps {
     inputClasses?: string;
 }
 
-const useInputTitleStyles = makeStyles((theme) => ({
+const useInputTitleStyles = makeStyles(() => ({
     root: {
         maxHeight: inputTitleHeight,
         height: inputTitleHeight,
@@ -500,6 +490,7 @@ const InputTitle: FC<InputTitleProps> = ({
             <div className={classes.root}>
                 <h2
                     className={classes.title}
+                    style={{fontSize:'18px', fontWeight:'bolder'}}
                     // onClick={() => setEdit(true)}
                 >
                     {value}
@@ -590,14 +581,12 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     total_revenue,
     titleOnChange,
     onDelete,
-    onAddCard,
     deletable,
     total_cards,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
     const edit = useRef(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const handleOnBlur = useCallback(
         (value: string) => {
@@ -609,7 +598,6 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
 
     const handleDelete = useCallback(() => {
         onDelete?.(columnid);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const user = useSelector((state) => state.login.validateToken.user);
     return (
@@ -642,7 +630,7 @@ interface LeadColumnListProps extends BoxProps {
     itemCount: number;
 }
 
-const useLeadColumnListStyles = makeStyles((theme) => ({
+const useLeadColumnListStyles = makeStyles(() => ({
     root: {
         width: 275,
         maxWidth: 275,
@@ -650,7 +638,7 @@ const useLeadColumnListStyles = makeStyles((theme) => ({
         borderRadius: cardBorderRadius,
     },
     draggOver: {
-        background: "rgb(211,211,211, 0.2)", // "lightgrey",
+        background: "rgb(211,211,211, 0.2)", 
     },
 }));
 
@@ -665,11 +653,39 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
         </Box>
     );
 };
+interface AddColumnPopoverProps {
+    id: string | undefined;
+    anchorEl: HTMLButtonElement | null;
+    onClose: () => void;
+    onSubmit: (data: Dictionary) => void;
+}
 
+const AddColumnPopover: FC<AddColumnPopoverProps> = ({ id, anchorEl, onClose, onSubmit }) => {
+    const handleSubmit = (data: Dictionary) => {
+        onSubmit(data);
+        onClose();
+    };
+    return (
+        <Popover
+            id={id}
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={onClose}
+            anchorOrigin={{
+                vertical: "top",
+                horizontal: "left",
+            }}
+        >
+            <ColumnTemplate onSubmit={handleSubmit} />
+        </Popover>
+    );
+};
+
+export default AddColumnPopover;
 interface AddColumnTemplatePops extends Omit<BoxProps, "onSubmit"> {
-    onSubmit: (data: any) => void;
+    onSubmit: (data: Dictionary) => void;
     updateSortParams: (value: any) => void;
-    passConfiguration: (value: Dictionary) => void;
+    passConfiguration: (value: any) => void;
     ordertype: Dictionary;
     orderby: Dictionary;
 }
@@ -698,14 +714,14 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
     addBtn: {
         width: 35,
         height: 35,
-        backgroundColor: theme.palette.primary.light,
+        backgroundColor: '#7721AD',
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        borderRadius: 3,
+        borderRadius: 3,     
     },
 	configBtn: {
-		marginLeft: 'auto',
+		marginLeft: '1rem'       
 	},
     popoverRoot: {
         width: columnWidth,
@@ -715,6 +731,11 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
 		width: '220px',
 		marginLeft: '15px'
 	},
+    filterComponent2: {
+		width: '220px',
+		marginLeft: '15px',
+        marginRight: '2rem'
+	},
 	text: {
 		alignSelf: "center",
 		marginLeft: '25px',
@@ -722,7 +743,7 @@ const useAddColumnTemplateStyles = makeStyles((theme) => ({
 	}
 }));
 
-export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, passConfiguration, ordertype, orderby, ...boxProps }) => {
+export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateSortParams, passConfiguration, ordertype, orderby }) => {
     const classes = useAddColumnTemplateStyles();
     const dispatch = useDispatch();
     const main = useSelector((state) => state.main.mainData);
@@ -730,6 +751,8 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
     const { t } = useTranslation();
     const user = useSelector((state) => state.login.validateToken.user);
 	const [openModal, setOpenModal] = useState(false);
+    const mainMulti = useSelector(state => state.main.multiData);
+    const history = useHistory();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -742,7 +765,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
     const open = Boolean(anchorEl);
     const id = open ? "crm-add-new-column-popover" : undefined;
 
-    const handleSubmit = (data: any) => {
+    const handleSubmit = (data: Dictionary) => {
         onSubmit(data);
         handleClose();
     };
@@ -770,19 +793,18 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
         passConfiguration(configuration)
     }, [configuration, sortParams])
 
+    const goToAddLead = useCallback(() => {
+        history.push(paths.CRM_ADD_LEAD);
+      }, [history]);
+
     return (
         <Box>
-            <div className={classes.root}>
-                <Button color="primary" aria-describedby={id} className={classes.addBtnContainer} onClick={handleClick}>
-                    <div className={classes.addBtn}>
-                        <Add style={{ height: "75%", width: "auto" }} color="secondary" />
-                    </div>
-                    <div style={{ width: 12 }} />
-                    <span>{t(langKeys.addacolumn)}</span>
-                </Button>
-				<div className={classes.text}>
+            <div className={classes.root} >
+
+				<div className={classes.text} style={{marginLeft:4}}>
 					<Typography/>{t(langKeys.orderby)}
 				</div>
+
 				<FieldSelect
 					variant="outlined"
 					label={t(langKeys.type)}
@@ -799,12 +821,13 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                         }
                     }}
 				/>
-				<FieldSelect
+
+				<FieldSelect                  
                     variant="outlined"
                     label={t(langKeys.order)}
                     valueDefault={sortParams.order}
                     data={orderby || []}
-                    className={classes.filterComponent}
+                    className={classes.filterComponent2}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                     onChange={(value) => {
@@ -815,29 +838,54 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
                         }
                     }}
                 />
+
+          
+                 <Button
+					variant="outlined"
+					color="primary"
+                    aria-describedby={id}
+					startIcon={<AddIcon color="primary" />}					
+					onClick={handleClick}
+                    style={{marginRight:'1rem'}}    
+				>                    
+					<Trans i18nKey={langKeys.addacolumn} />
+				</Button>
+       
+          
 				<Button
-					variant="contained"
+					variant="outlined"
 					color="primary"
 					className={classes.configBtn}
-					startIcon={<Traffic color="secondary" />}
-					style={{ backgroundColor: "#55BD84" }}
+					startIcon={<Traffic color="primary" />}					
 					onClick={() => setOpenModal(true)}
+                    style={{ marginLeft: 'auto'  }}
 				>
 					<Trans i18nKey={langKeys.configuration} />
 				</Button>
-                <Popover
+
+                {!isIncremental &&            
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.configBtn}
+                        disabled={mainMulti.loading}
+                        startIcon={<AddIcon color="secondary" />}
+                        onClick={goToAddLead}
+                        style={{ backgroundColor: "#55BD84" }}
+                       
+                    >
+                        <Trans i18nKey={langKeys.register} />
+                    </Button>
+                }
+
+                <AddColumnPopover
                     id={id}
-                    open={open}
                     anchorEl={anchorEl}
                     onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                    }}
-                >
-                    <ColumnTemplate onSubmit={handleSubmit} />
-                </Popover>
+                    onSubmit={handleSubmit}
+                />      
             </div>
+            
 			<TrafficLightConfigurationModal
 				openModal={openModal}
 				setOpenModal={setOpenModal}
@@ -849,7 +897,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, updateS
 };
 
 interface ColumnTemplateProps {
-    onSubmit: (title: any) => void;
+    onSubmit: (title: Dictionary) => void;
 }
 
 const useColumnTemplateStyles = makeStyles((theme) => ({
@@ -926,7 +974,7 @@ const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
     );
 };
 
-const useTabPanelStyles = makeStyles((theme) => ({
+const useTabPanelStyles = makeStyles(() => ({
     root: {
         border: "#A59F9F 1px solid",
         borderRadius: 6,

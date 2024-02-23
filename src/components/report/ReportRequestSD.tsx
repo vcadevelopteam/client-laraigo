@@ -41,6 +41,10 @@ const ReportRequestSD: FC = () => {
                 accessor: 'sd_request',
             },
             {
+                Header: t(langKeys.ticket_number),
+                accessor: 'ticketnum',
+            },
+            {
                 Header: t(langKeys.type),
                 accessor: 'type',
             },

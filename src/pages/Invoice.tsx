@@ -5650,7 +5650,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                     )}
                                     {data?.paymentprovider === "OPENPAY COLOMBIA" && (
                                         <OpenpayModal
-                                            amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                            amount={Math.round((totalPay + Number.EPSILON) * 100) / 100}
                                             buttontitle={t(langKeys.proceedpayment)}
                                             comments={comments}
                                             corpid={data?.corpid}
@@ -7117,7 +7117,7 @@ const BillingOperation: FC<DetailProps> = ({
     const dataPaymentMethod = [
         { value: "Tarjeta Crédito", description: t(langKeys.billig_creditcard) },
         { value: "Tarjeta Débito", description: t(langKeys.billig_debitcard) },
-        { value: "Transferencia", description: t(langKeys.billig_transfer) },
+        { value: "Crédito", description: t(langKeys.billig_credit) },
         { value: "Efectivo", description: t(langKeys.billig_cash) },
     ];
 
@@ -7607,19 +7607,33 @@ const BillingOperation: FC<DetailProps> = ({
                                 )}
                             </div>
                             <div className="row-zyx">
+                                <FieldSelect
+                                    className="col-3"
+                                    data={dataPaymentMethod || []}
+                                    disabled={data?.invoicestatus === "INVOICED"}
+                                    error={errors?.paymentmethod?.message}
+                                    label={t(langKeys.billig_paymentmethod)}
+                                    optionDesc="description"
+                                    optionValue="value"
+                                    orderbylabel={true}
+                                    valueDefault={getValues("paymentmethod")}
+                                    onChange={(value) => {
+                                        setValue("paymentmethod", value?.value);
+                                    }}
+                                />
                                 <FieldView label={t(langKeys.currency)} value={data?.currency} className="col-3" />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.taxbase)}
                                     value={formatNumber(data?.subtotal || 0)}
                                 />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.billingtax)}
                                     value={formatNumber(data?.taxes || 0)}
                                 />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.totalamount)}
                                     value={formatNumber(data?.totalamount || 0)}
                                 />
@@ -7643,7 +7657,7 @@ const BillingOperation: FC<DetailProps> = ({
                             {creditNote ? (
                                 <div className="row-zyx">
                                     <FieldSelect
-                                        className="col-6"
+                                        className="col-3"
                                         data={datacreditnote}
                                         error={errors?.creditnotetype?.message}
                                         label={t(langKeys.creditnotetype)}
@@ -7676,21 +7690,6 @@ const BillingOperation: FC<DetailProps> = ({
                                     ) : null}
                                 </div>
                             ) : null}
-                            <div className="row-zyx">
-                                <FieldSelect
-                                    className="col-6"
-                                    data={dataPaymentMethod}
-                                    error={errors?.paymentmethod?.message}
-                                    label={t(langKeys.billig_paymentmethod)}
-                                    optionDesc="description"
-                                    optionValue="value"
-                                    orderbylabel={true}
-                                    valueDefault={getValues("paymentmethod")}
-                                    onChange={(value) => {
-                                        setValue("paymentmethod", value?.value);
-                                    }}
-                                />
-                            </div>
                             <div className="row-zyx">
                                 <TableContainer>
                                     <Table>
@@ -8215,7 +8214,7 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
     const dataPaymentMethod = [
         { value: "Tarjeta Crédito", description: t(langKeys.billig_creditcard) },
         { value: "Tarjeta Débito", description: t(langKeys.billig_debitcard) },
-        { value: "Transferencia", description: t(langKeys.billig_transfer) },
+        { value: "Crédito", description: t(langKeys.billig_credit) },
         { value: "Efectivo", description: t(langKeys.billig_cash) },
     ];
 
@@ -8604,15 +8603,11 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
     };
 
     const getDocumentResult = (country: string, documenttype: string) => {
-        if ((country === "PE" && documenttype === "6") || (country !== "PE" && documenttype === "0")) {
-            return "emissorinvoice";
-        }
-
         if (country === "PE" && (documenttype === "1" || documenttype === "4" || documenttype === "7")) {
             return "emissorticket";
+        } else {
+            return "emissorinvoice";
         }
-
-        return "";
     };
 
     const getInvoiceType = (invoicetype: string) => {
@@ -9070,6 +9065,19 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
                             <div className="row-zyx">
                                 <FieldSelect
                                     className="col-3"
+                                    data={dataPaymentMethod || []}
+                                    error={errors?.paymentmethod?.message}
+                                    label={t(langKeys.billig_paymentmethod)}
+                                    optionDesc="description"
+                                    optionValue="value"
+                                    orderbylabel={true}
+                                    valueDefault={getValues("paymentmethod")}
+                                    onChange={(value) => {
+                                        setValue("paymentmethod", value?.value);
+                                    }}
+                                />
+                                <FieldSelect
+                                    className="col-3"
                                     data={dataAllCurrency ?? []}
                                     disabled={invoicehasreport}
                                     error={errors?.invoicecurrency?.message}
@@ -9081,36 +9089,21 @@ const BillingRegister: FC<DetailProps> = ({ data, dataAllCurrency, setViewSelect
                                     valueDefault={getValues("invoicecurrency")}
                                 />
                                 <FieldEdit
-                                    className="col-3"
+                                    className="col-2"
                                     disabled={true}
                                     error={errors?.invoicetotalamount?.message}
                                     label={t(langKeys.taxbase)}
                                     valueDefault={formatNumber(getValues("invoicetotalamount") || 0)}
                                 />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.billingtax)}
                                     value={formatNumber(amountTax || 0)}
                                 />
                                 <FieldView
-                                    className="col-3"
+                                    className="col-2"
                                     label={t(langKeys.totalamount)}
                                     value={formatNumber(amountTotal || 0)}
-                                />
-                            </div>
-                            <div className="row-zyx">
-                                <FieldSelect
-                                    className="col-6"
-                                    data={dataPaymentMethod}
-                                    error={errors?.paymentmethod?.message}
-                                    label={t(langKeys.billig_paymentmethod)}
-                                    optionDesc="description"
-                                    optionValue="value"
-                                    orderbylabel={true}
-                                    valueDefault={getValues("paymentmethod")}
-                                    onChange={(value) => {
-                                        setValue("paymentmethod", value?.value);
-                                    }}
                                 />
                             </div>
                             <div className="row-zyx">
@@ -10168,7 +10161,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 )}
                                 {currentPaymentProvider === "OPENPAY COLOMBIA" && (
                                     <OpenpayModal
-                                        amount={Math.round((totalPay * 100 + Number.EPSILON) * 100) / 100}
+                                        amount={Math.round((totalPay + Number.EPSILON) * 100) / 100}
                                         buttontitle={t(langKeys.proceedpayment)}
                                         buyamount={buyAmount}
                                         comments={comments}

@@ -1,4 +1,4 @@
-const ENV = import.meta.env.VITE_ENV || 'TESTING';
+const ENV = import.meta.env.VITE_ENV || 'LOCAL';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
@@ -288,6 +288,7 @@ export const apiUrls = {
 
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
+    INVOKE_INCREMENTAL: `${BASE_URL}/auth/incremental/invoke/token`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
     LOGOUT_URL: `${BASE_URL}/auth/logout`,
     MAIN_URL: `${BASE_URL}/main`,
@@ -297,8 +298,9 @@ export const apiUrls = {
     MAIN_URL_PAYMENTORDER: `${BASE_URL}/main/public/paymentorder`,
     MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,
     MAIN_URL_PAYMENTORDEROPENPAY: `${BASE_URL}/main/public/paymentorderopenpay`,
-    MAIN_URL_PAYMENTORDERIZIPAY: `${BASE_URL}/main/public/paymentorderizipay`,
     MAIN_URL_PAYMENTORDEROPENPAYCOLOMBIA: `${BASE_URL}/main/public/paymentorderopenpaycolombia`,
+    MAIN_URL_PAYMENTORDERIZIPAY: `${BASE_URL}/main/public/paymentorderizipay`,
+    MAIN_URL_PAYMENTORDEREPAYCO: `${BASE_URL}/main/public/paymentorderepayco`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
@@ -359,6 +361,7 @@ export const apiUrls = {
     CHECK_PAYMENTPLAN: `${BASE_URL}/channel/checkpaymentplan`,
     REESCHEDULECALL: `${BASE_URL}/campaign/hsmcall`,
     SEND_INVOICE: `${BASE_URL}/billing/sendinvoice`,
+    CONVERSATION: `${BASE_URL}/ticket`,
 
     PERSON: `${BASE_URL}/person`,
 
@@ -430,4 +433,20 @@ export const apiUrls = {
 
     PAYMENTORDER_IZIPAY_GETPAYMENTORDER: `${BASE_URL}/paymentizipay/getpaymentorder`,
     PAYMENTORDER_IZIPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentizipay/processtransaction`,
+
+    PAYMENTORDER_EPAYCO_GETPAYMENTORDER: `${BASE_URL}/paymentepayco/getpaymentorder`,
+    PAYMENTORDER_EPAYCO_PROCESSTRANSACTION: `${BASE_URL}/paymentepayco/processtransaction`,
+
+    GPT_THREADS: `${BASE_URL}/gpt/threads`,
+    GPT_THREADS_DELETE: `${BASE_URL}/gpt/threads/delete`,
+    GPT_ASSISTANT_NEW: `${BASE_URL}/gpt/assistants/new`,
+    GPT_MESSAGES: `${BASE_URL}/gpt/assistants/messages`,
+    GPT_FILE_DELETE: `${BASE_URL}/gpt/files/delete`,
+
+    GPT_FILES: `${BASE_URL}/gpt/files`,
+    GPT_ASSISTANTS_FILES: `${BASE_URL}/gpt/assistants/files`,
+    GPT_ASSISTANTS_FILES_LIST: `${BASE_URL}/gpt/assistants/files/list`,
+    GPT_ASSISTANTS_UPDATE: `${BASE_URL}/gpt/assistants/update`,
+    GPT_ASSISTANTS_DELETE: `${BASE_URL}/gpt/assistants/delete`,
+    GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
 };

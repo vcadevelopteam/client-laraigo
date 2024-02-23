@@ -29,6 +29,11 @@ export function exportData(requestBody: IRequestBody) {
 export function validateToken(firstLoad: string) {
     return APIManager.get(apiUrls.LOGIN_URL + `?firstload=${firstLoad ?? ""}`, {}, true);
 }
+
+export function incrementalInvokeToken() {
+    return APIManager.get(apiUrls.INVOKE_INCREMENTAL, {}, true);
+}
+
 export function reeschedulecall(requestBody: Dictionary) {
     return APIManager.post(apiUrls.REESCHEDULECALL, { data: requestBody }, true);
 }
@@ -100,4 +105,8 @@ export function request_send(request: any) {
     else {
         return ExternalRequestManager.get(url, { auth: authorization, headers: headersjson });
     }
+}
+
+export function conversation(token:string) {
+    return APIManager.get(apiUrls.CONVERSATION + "/" + token, {  }, true);
 }

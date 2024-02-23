@@ -1,11 +1,11 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import Popover from '@material-ui/core/Popover';
 import { ArrowDropDownIcon } from "icons";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from 'hooks';
-import { logout } from 'store/login/actions';
+import { invokeIncremental, logout } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
@@ -78,8 +78,9 @@ const AccountMenu: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const voxiConnection = useSelector(state => state.voximplant.connection);
-
+    const [waitResInvokeIncremental, setwaitResInvokeIncremental] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
+    const resInvokeIncremental = useSelector(state => state.login.invokeIncremental);
     const userConnected = useSelector(state => state.inbox.userConnected);
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -113,19 +114,30 @@ const AccountMenu: FC = () => {
         window.open("/privacy", '_blank');
     }
 
+    React.useEffect(() => {
+		if (waitResInvokeIncremental && !resInvokeIncremental.error && !resInvokeIncremental.loading) {
+            const accessToken = localStorage.accessToken
+			if (window.location.hostname === 'claro.laraigo.com') {
+                window.open(`https://incremental-claro.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
+            } else {
+                window.open(`https://incremental-prod.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
+            }
+            setwaitResInvokeIncremental(false);
+		}
+	}, [resInvokeIncremental.loading])
+
     const consultHistoricalData = () => {
+        const accessToken = localStorage.accessToken
         if (isIncremental) {
             if (window.location.hostname === 'incremental-claro.laraigo.com') {
-                window.open("https://claro.laraigo.com/sign-in", '_blank');
+                window.open(`https://claro.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
             } else {
-                window.open("https://app.laraigo.com/sign-in", '_blank');
+                window.open(`https://app.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
             }
         } else {
-            if (window.location.hostname === 'claro.laraigo.com') {
-                window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
-            } else {
-                window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
-            }
+            setAnchorEl(null);
+            dispatch(invokeIncremental())
+            setwaitResInvokeIncremental(true);
         }
     }
 

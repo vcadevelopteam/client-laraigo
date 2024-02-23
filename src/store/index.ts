@@ -15,6 +15,7 @@ import personReducer, { IState as IPerson } from './person/reducer';
 import settingReducer, { IState as ISetting } from './setting/reducer';
 import activationUserReducer, { IState as IActivationUser } from './activationuser/reducer';
 import leadReducer, { IState as ILead } from './lead/reducer';
+import gptReducer, { IState as IGpt } from './gpt/reducer';
 import servicedeskReducer, { IState as IServiceDesk } from './servicedesk/reducer';
 import culqiReducer, { IState as ICulqi } from './culqi/reducer';
 import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
@@ -30,6 +31,7 @@ import postHistoryReducer, { IState as IPostHistory } from './posthistory/reduce
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import paymentReducer, { IState as IPayment } from './payment/reducer';
 import rasaiaReducer, { IState as IRasaia } from './rasaia/reducer';
+import conversationReducer, { IState as IConversation } from './conversation/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -51,6 +53,7 @@ export interface IRootState {
     subscription: ISubscription;
     voximplant: IVoximplant;
     google: IGoogle;
+    gpt: IGpt;
     witai: IWitai;
     calendar: ICalendar;
     product: IProduct;
@@ -59,6 +62,7 @@ export interface IRootState {
     payment: IPayment;
     servicedesk: IServiceDesk;
     rasaia: IRasaia
+    conversation: IConversation
 }
 
 declare global {
@@ -86,6 +90,7 @@ const rootReducer = combineReducers<IRootState>({
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,
     google: googleReducer,
+    gpt: gptReducer,
     witai: witaiReducer,
     product: productReducer,
     postHistory: postHistoryReducer,
@@ -95,6 +100,7 @@ const rootReducer = combineReducers<IRootState>({
     payment: paymentReducer,
     servicedesk: servicedeskReducer,
     rasaia: rasaiaReducer,
+    conversation: conversationReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

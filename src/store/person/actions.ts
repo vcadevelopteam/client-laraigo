@@ -1,5 +1,5 @@
 import { IActionCall, IRequestBody, IRequestBodyPaginated, ITransaction } from "@types";
-import { getValuesFromDomain, adviserSel, getMessageTemplateLst, getCommChannelLst, getRolesByOrg, getPropertySelByName } from "common/helpers";
+import { getValuesFromDomain, adviserSel, getMessageTemplateLst, getCommChannelLst, getRolesByOrg, getPropertySelByName, selCalendar } from "common/helpers";
 import { CommonService, PersonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -129,6 +129,7 @@ export const getDomainsByTypename = (): IActionCall => ({
         getRolesByOrg(),
         getValuesFromDomain("GRUPOS"),
         getPropertySelByName("OCUPACION"),
+        selCalendar(0),
     ]),
     types: {
         loading: actionTypes.GET_DOMAINS_BY_TYPENAME,
