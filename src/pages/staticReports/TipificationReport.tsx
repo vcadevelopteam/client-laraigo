@@ -6,31 +6,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import CategoryIcon from "@material-ui/icons/Category";
-import {
-    TemplateBreadcrumbs,
-    FieldSelect,
-    DialogZyx,
-} from "components";
+import { TemplateBreadcrumbs, FieldSelect, DialogZyx,} from "components";
 import { useSelector } from "hooks";
 import { Dictionary, IFetchData } from "@types";
-import {
-    getPaginatedForReports,
-    getReportExport,
-    convertLocalDate,
-    getReportGraphic,
-    getCommChannelLstTypeDesc,
-    getClassificationLevel1,
-} from "common/helpers";
-import {
-    getCollectionPaginated,
-    resetCollectionPaginated,
-    exportData,
-    getMultiCollection,
-    resetMultiMain,
-    getMainGraphic,
-    cleanViewChange,
-    setViewChange,
-} from "store/main/actions";
+import { getPaginatedForReports, getReportExport, convertLocalDate, getReportGraphic, getCommChannelLstTypeDesc, getClassificationLevel1 } from "common/helpers";
+import { getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, getMainGraphic, cleanViewChange, setViewChange } from "store/main/actions";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -39,12 +19,7 @@ import { useForm } from "react-hook-form";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { ListItemIcon } from "@material-ui/core";
 import { columnsHideShow } from "common/helpers/columnsReport";
-import {
-    getTipificationLevel2,
-    getTipificationLevel3,
-    resetGetTipificationLevel2,
-    resetGetTipificationLevel3,
-} from "store/inbox/actions";
+import { getTipificationLevel2, getTipificationLevel3, resetGetTipificationLevel2, resetGetTipificationLevel3 } from "store/inbox/actions";
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -456,7 +431,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                                 <ListItemIcon>
                                     <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
                                 </ListItemIcon>
-                                <Typography variant="inherit">{t(langKeys.filter)}</Typography>
+                                <Typography variant="inherit">{t(langKeys.filters) + " - " + t(langKeys.tipifications)}</Typography>
                             </MenuItem>
                         }
                         FiltersElement={
@@ -743,18 +718,3 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
 };
 
 export default TipificationReport;
-
-/*
-    const groupingFields = [
-        "ticket",
-        "enddate",
-        "firstinteractiondate",
-        "person",
-        "closedby",
-        "agent",
-        "closetype",
-        "channel",
-        "classificationlevel1",
-        "classificationlevel2",
-        "classificationlevel3",
-    ];*/

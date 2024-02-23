@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -8,34 +7,19 @@ import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, get
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
-import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Grid,
-    IconButton,
-    ListItemIcon,
-    MenuItem,
-    Paper,
-    Popper,
-    Tooltip,
-    Typography,
-} from "@material-ui/core";
+import { Box, Button, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon } from "icons";
-import InfoRoundedIcon from "@material-ui/icons/InfoRounded";
 import { Range } from "react-date-range";
 import CategoryIcon from "@material-ui/icons/Category";
 import TableZyx from "components/fields/table-simple";
 import { exportExcel } from "common/helpers";
 import { langKeys } from "lang/keys";
-import { Dictionary, MultiData } from "@types";
+import { Dictionary } from "@types";
 import { useForm } from "react-hook-form";
 import Graphic from "components/fields/Graphic";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import ListIcon from "@material-ui/icons/List";
-import { MoreVert, Settings } from "@material-ui/icons";
-import InfoIcon from "@material-ui/icons/Info";
+import { Settings } from "@material-ui/icons";
 
 interface Assessor {
     row: Dictionary | null;
@@ -118,7 +102,7 @@ const columnsTemp = [
     "groups",
 ];
 
-const AssessorProductivity: FC<Assessor> = ({ row, allFilters }) => {
+const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -646,7 +630,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, allFilters }) => {
                             <ListItemIcon>
                                 <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
                             </ListItemIcon>
-                            <Typography variant="inherit">{t(langKeys.filters)}</Typography>
+                            <Typography variant="inherit">{t(langKeys.filters) + " - " + t(langKeys.report_userproductivity)}</Typography>
                         </MenuItem>
                     }
                 />
@@ -793,9 +777,7 @@ interface SummaryGraphicProps {
 const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
     openModal,
     setOpenModal,
-    setView,
-    row,
-    daterange,
+    setView,  
     filters,
     columns,
     setColumnGraphic,
@@ -901,4 +883,4 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
     );
 };
 
-export default AssessorProductivity;
+export default AssesorProductivityReport;

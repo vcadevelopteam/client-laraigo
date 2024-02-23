@@ -20,7 +20,7 @@ import { getCollection, getCollectionAux, execute, resetMain, getCollectionPagin
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
-import AssessorProductivity from 'components/report/AssessorProductivity';
+import AssesorProductivityReport from 'pages/staticReports/AssesorProductivityReport';
 import DetailReportDesigner from 'pages/ReportTemplate';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
@@ -40,18 +40,15 @@ import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
 import HSMHistoryReport from './HSMHistoryReport';
 import UniqueContactsReport from './UniqueContactsReport';
-import { CampaignReport } from 'pages/campaign/CampaignReport';
+import { CampaignReport } from 'pages/staticReports/CampaignReport';
 import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'components/report/ReportRequestSD';
 import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
-import { Checkbox, Divider, FormControlLabel, ListItemIcon, Paper, Popper } from '@material-ui/core';
 const isIncremental = window.location.href.includes("incremental")
-import AllInboxIcon from '@material-ui/icons/AllInbox'; 
-import ViewWeekIcon from '@material-ui/icons/ViewWeek';
-import { columnsHideGraphic, columnsHideShow } from 'common/helpers/columnsReport';
-import TipificationReport from './TipificationReport';
+import { columnsHideShow } from 'common/helpers/columnsReport';
+import TipificationReport from './staticReports/TipificationReport';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -464,7 +461,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
             </div>
             
             {customReport ?
-                        <AssessorProductivity
+                        <AssesorProductivityReport
                             row={row}
                             allFilters={allFilters}
                         />:
