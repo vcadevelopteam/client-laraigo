@@ -3703,6 +3703,7 @@ export const getAdvisorListVoxi = (): IRequestBody => ({
 
 export const getUserAsesorByOrgID = (): IRequestBody => ({
     method: "UFN_USER_ASESORBYORGID_LST",
+    key: "UFN_USER_ASESORBYORGID_LST",
     parameters: {}
 });
 

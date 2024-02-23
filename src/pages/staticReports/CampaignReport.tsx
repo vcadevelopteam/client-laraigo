@@ -400,8 +400,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             dispatch(showBackdrop(false));
         }
     }, [mainPaginated]);  
-
-   
    
     //channel Filter ----------------------------------------------------------------------------------
     const channelTypeList = filterChannel.data || [];
@@ -417,8 +415,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     });
    
     const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
-
-
 
     //groupedBy  ----------------------------------------------------------------------------------
     type VisibleColumns2 = Record<string, boolean>;

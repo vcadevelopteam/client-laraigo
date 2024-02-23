@@ -6,31 +6,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import CategoryIcon from "@material-ui/icons/Category";
-import {
-    TemplateBreadcrumbs,
-    FieldSelect,
-    DialogZyx,
-} from "components";
+import { TemplateBreadcrumbs, FieldSelect, DialogZyx, FieldMultiSelect,} from "components";
 import { useSelector } from "hooks";
 import { Dictionary, IFetchData } from "@types";
-import {
-    getPaginatedForReports,
-    getReportExport,
-    convertLocalDate,
-    getReportGraphic,
-    getCommChannelLstTypeDesc,
-    getClassificationLevel1,
-} from "common/helpers";
-import {
-    getCollectionPaginated,
-    resetCollectionPaginated,
-    exportData,
-    getMultiCollection,
-    resetMultiMain,
-    getMainGraphic,
-    cleanViewChange,
-    setViewChange,
-} from "store/main/actions";
+import { getPaginatedForReports, getReportExport, convertLocalDate, getReportGraphic, getUserAsesorByOrgID, getReportFilterSel, getCommChannelLstTypeDesc } from "common/helpers";
+import { getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, getMainGraphic, cleanViewChange, setViewChange } from "store/main/actions";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -39,12 +19,6 @@ import { useForm } from "react-hook-form";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { ListItemIcon } from "@material-ui/core";
 import { columnsHideShow } from "common/helpers/columnsReport";
-import {
-    getTipificationLevel2,
-    getTipificationLevel3,
-    resetGetTipificationLevel2,
-    resetGetTipificationLevel3,
-} from "store/inbox/actions";
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -125,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row }) => {
+const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -135,12 +109,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
     const [pageCount, setPageCount] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
-    const [isTypificationFilterModalOpen, setTypificationFilterModalOpen] = useState(false);
-    const [tipification1, setTipification1] = useState("");
-    const [tipification2, setTipification2] = useState("");
-    const [tipification3, setTipification3] = useState("");
-    const tipificationLevel2 = useSelector((state) => state.inbox.tipificationsLevel2);
-    const tipificationLevel3 = useSelector((state) => state.inbox.tipificationsLevel3);
+    const [isTypificationFilterModalOpen, setTypificationFilterModalOpen] = useState(false);   
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
         pageSize: 0,
         pageIndex: 0,
@@ -153,8 +122,8 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
     const [view, setView] = useState("GRID");
 
     useEffect(() => {
-        dispatch(getMultiCollection([getCommChannelLstTypeDesc(), getClassificationLevel1("TIPIFICACION")]));
-        dispatch(setViewChange(`report_${"tipification"}`));
+        dispatch(getMultiCollection([getReportFilterSel("UFN_REPORT_HOURS_SEL", "UFN_REPORT_HOURS_SEL", ""), getUserAsesorByOrgID(), getCommChannelLstTypeDesc()]));
+        dispatch(setViewChange(`report_${"userproductivityhours"}`));
         return () => {
             dispatch(cleanViewChange());
         };
@@ -162,96 +131,91 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
 
     const reportColumns = [
         {
-            proargnames: "ticket",
-            proargmodes: "t",
-            proargtype: "character varying",
+        "proargnames": "datehour",
+        "proargmodes": "t",
+        "proargtype": "date"
         },
         {
-            proargnames: "datehour",
-            proargmodes: "t",
-            proargtype: "timestamp without time zone",
+        "proargnames": "agent",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "enddate",
-            proargmodes: "t",
-            proargtype: "text",
+        "proargnames": "hoursrange",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "endtime",
-            proargmodes: "t",
-            proargtype: "text",
+        "proargnames": "worktime",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "firstinteractiondate",
-            proargmodes: "t",
-            proargtype: "text",
+        "proargnames": "busytimewithinwork",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "firstinteractiontime",
-            proargmodes: "t",
-            proargtype: "text",
+        "proargnames": "freetimewithinwork",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "person",
-            proargmodes: "t",
-            proargtype: "character varying",
+        "proargnames": "busytimeoutsidework",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "phone",
-            proargmodes: "t",
-            proargtype: "character varying",
+        "proargnames": "onlinetime",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "closedby",
-            proargmodes: "t",
-            proargtype: "character varying",
+        "proargnames": "availabletime",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "agent",
-            proargmodes: "t",
-            proargtype: "text",
+        "proargnames": "idletime",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "closetype",
-            proargmodes: "t",
-            proargtype: "character varying",
+        "proargnames": "idletimewithoutattention",
+        "proargmodes": "t",
+        "proargtype": "text"
         },
         {
-            proargnames: "channel",
-            proargmodes: "t",
-            proargtype: "character varying",
+        "proargnames": "qtytickets",
+        "proargmodes": "t",
+        "proargtype": "bigint"
         },
         {
-            proargnames: "classificationlevel1",
-            proargmodes: "t",
-            proargtype: "character varying",
+        "proargnames": "qtyconnection",
+        "proargmodes": "t",
+        "proargtype": "bigint"
         },
         {
-            proargnames: "classificationlevel2",
-            proargmodes: "t",
-            proargtype: "character varying",
-        },
-        {
-            proargnames: "classificationlevel3",
-            proargmodes: "t",
-            proargtype: "character varying",
-        },
+        "proargnames": "qtydisconnection",
+        "proargmodes": "t",
+        "proargtype": "bigint"
+        }
     ];
 
     const columns = React.useMemo(
         () =>
             reportColumns.map((x) => {
-                const showColumn = columnsHideShow["tipification"]?.[x.proargnames] ?? false;
+                const showColumn = columnsHideShow["userproductivityhours"]?.[x.proargnames] ?? false;
                 switch (x.proargtype) {
                     case "timestamp without time zone":
                         return {
-                            Header: t("report_" + "tipification" + "_" + x.proargnames || ""),
+                            Header: t("report_" + "userproductivityhours" + "_" + x.proargnames || ""),
                             accessor: x.proargnames,
                             helpText:
-                                t("report_" + "tipification" + "_" + x.proargnames + "_help") ===
-                                "report_" + "tipification" + "_" + x.proargnames + "_help"
+                                t("report_" + "userproductivityhours" + "_" + x.proargnames + "_help") ===
+                                "report_" + "userproductivityhours" + "_" + x.proargnames + "_help"
                                     ? ""
-                                    : t("report_" + "tipification" + "_" + x.proargnames + "_help"),
+                                    : t("report_" + "userproductivityhours" + "_" + x.proargnames + "_help"),
                             type: "date",
                             showColumn,
                             Cell: (props: any) => {
@@ -272,16 +236,39 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                                 );
                             },
                         };
+                    case "date":
+                        return {
+                            Header: t('report_' + "userproductivityhours" + '_' + x.proargnames || ''),
+                            accessor: x.proargnames,
+                            helpText: t('report_' + "userproductivityhours" + '_' + x.proargnames + "_help") === ('report_' + "userproductivityhours" + '_' + x.proargnames + "_help") ? "" : t('report_' + "userproductivityhours" + '_' + x.proargnames + "_help"),
+                            type: "date",
+                            showColumn,
+                            Cell: (props: any) => {
+                                const column = props.cell.column;
+                                const row = props.cell.row.original;
+                                return (<div>
+                                    {new Date(
+                                        row[column.id].split('-')[0],
+                                        row[column.id].split('-')[1] - 1,
+                                        row[column.id].split('-')[2]
+                                    ).toLocaleString(undefined, {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit"
+                                    })}
+                                </div>)
+                            }
+                        }
                     default:
                         return {
-                            Header: t("report_tipification_" + x.proargnames || ""),
+                            Header: t("report_userproductivityhours_" + x.proargnames || ""),
                             accessor: x.proargnames,
                             showColumn,
                             helpText:
-                                t("report_tipification_" + x.proargnames + "_help") ===
-                                "report_tipification_" + x.proargnames + "_help"
+                                t("report_userproductivityhours_" + x.proargnames + "_help") ===
+                                "report_userproductivityhours_" + x.proargnames + "_help"
                                     ? ""
-                                    : t("report_tipification_" + x.proargnames + "_help"),
+                                    : t("report_userproductivityhours_" + x.proargnames + "_help"),
                             type: "string",
                         };
                 }
@@ -320,7 +307,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
         }));
         dispatch(
             exportData(
-                getReportExport("UFN_REPORT_TIPIFICATION_EXPORT", "tipification", {
+                getReportExport("UFN_REPORT_USERPRODUCTIVITYHOURS_EXPORT", "userproductivityhours", {
                     filters,
                     sorts,
                     startdate: daterange.startDate!,
@@ -342,27 +329,16 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
         dispatch(
             getCollectionPaginated(
                 getPaginatedForReports(
-                    "UFN_REPORT_TIPIFICATION_SEL",
-                    "UFN_REPORT_TIPIFICATION_TOTALRECORDS",
-                    "tipification",
+                    "UFN_REPORT_USERPRODUCTIVITYHOURS_SEL",
+                    "UFN_REPORT_USERPRODUCTIVITYHOURS_TOTALRECORDS",
+                    "userproductivityhours",
                     {
                         startdate: daterange.startDate!,
                         enddate: daterange.endDate!,
                         take: pageSize,
                         skip: pageIndex * pageSize,
                         sorts: sorts,
-                        filters: {
-                            ...(tipification1
-                                ? { classificationlevel1: { value: tipification1, operator: "equals" } }
-                                : {}),
-                            ...(tipification2
-                                ? { classificationlevel2: { value: tipification2, operator: "equals" } }
-                                : {}),
-                            ...(tipification3
-                                ? { classificationlevel3: { value: tipification3, operator: "equals" } }
-                                : {}),
-                            ...filters,
-                        },
+                        filters: {...filters},
                         ...allParameters,
                     }
                 )
@@ -374,7 +350,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
         setfetchDataAux((prev) => ({ ...prev, daterange }));
         dispatch(
             getMainGraphic(
-                getReportGraphic("UFN_REPORT_TIPIFICATION_GRAPHIC", "tipification", {
+                getReportGraphic("UFN_REPORT_USERPRODUCTIVITYHOURS_GRAPHIC", "userproductivityhours", {
                     filters: {},
                     sorts: {},
                     startdate: daterange?.startDate!,
@@ -433,7 +409,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
         <div style={{ width: "100%", display: "flex", flex: 1, flexDirection: "column" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <TemplateBreadcrumbs
-                    breadcrumbs={getArrayBread(t("report_" + "tipification"), t(langKeys.report_plural))}
+                    breadcrumbs={getArrayBread(t("report_" + "userproductivityhours"), t(langKeys.report_plural))}
                     handleClick={handleSelected}
                 />
             </div>
@@ -456,13 +432,13 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                                 <ListItemIcon>
                                     <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
                                 </ListItemIcon>
-                                <Typography variant="inherit">{t(langKeys.filter)}</Typography>
+                                <Typography variant="inherit">{t(langKeys.filters) + " - " + t(langKeys.report_userproductivityhours)}</Typography>
                             </MenuItem>
                         }
                         FiltersElement={
                             <FieldSelect
                                 valueDefault={allParameters["channel"]}
-                                label={t("report_tipification_filter_channels")}
+                                label={t("report_userproductivityhours_filter_channels")}
                                 className={classes.filterComponent}
                                 key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
                                 variant="outlined"
@@ -511,7 +487,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                             FiltersElement={
                                 <FieldSelect
                                     valueDefault={allParameters["channel"]}
-                                    label={t("report_tipification_filter_channels")}
+                                    label={t("report_userproductivityhours_filter_channels")}
                                     className={classes.filterComponent}
                                     key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
                                     variant="outlined"
@@ -540,73 +516,48 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                 daterange={fetchDataAux.daterange}
                 filters={fetchDataAux.filters}
                 columns={reportColumns.map((x) => x.proargnames)}
-                columnsprefix={"report_" + "tipification" + "_"}
+                columnsprefix={"report_" + "userproductivityhours" + "_"}
                 allParameters={allParameters}
             />
             <DialogZyx
                 open={isTypificationFilterModalOpen}
-                title={t(langKeys.typify)}
-                buttonText1={t(langKeys.close)}
-                buttonText2={t(langKeys.apply)}
-                handleClickButton1={() => setTypificationFilterModalOpen(false)}
+                title={t(langKeys.filters)}
+                buttonText1={t(langKeys.close)}         
+                buttonText2={t(langKeys.apply)}         
+                handleClickButton1={() => setTypificationFilterModalOpen(false)}      
                 handleClickButton2={() => {
                     setTypificationFilterModalOpen(false);
-                    fetchData(fetchDataAux);
-                }}
+                    fetchData(fetchDataAux)
+                }}           
                 maxWidth="sm"
                 buttonStyle1={{ marginBottom: "0.3rem" }}
                 buttonStyle2={{ marginRight: "1rem", marginBottom: "0.3rem" }}
             >
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginBottom: "1rem" }}>
-                    <FieldSelect
-                        label={t(langKeys.report_tipification_classificationlevel1)}
-                        className="col-12"
-                        loading={multiData.loading}
-                        data={
-                            multiData?.data?.[
-                                multiData?.data.findIndex(
-                                    (x) => x.key === "UFN_CONVERSATIONCLASSIFICATIONLIST_LEVEL1_SEL"
-                                )
-                            ]?.data
+                <div className="row-zyx">
+                    <FieldMultiSelect
+                        limitTags={1}
+                        label={t(langKeys.hours)}
+                        className={classes.filterComponent + " col-6"}
+                        valueDefault={allParameters?.hours || ""}
+                        key={"UFN_REPORT_HOURS_SEL"}
+                        onChange={(value) =>
+                            setValue("hours", value ? value.map((o: Dictionary) => o["hours"]).join() : "")
                         }
-                        valueDefault={tipification1}
-                        onChange={(e) => {
-                            setTipification1(e?.description || "");
-                            setTipification2("");
-                            setTipification3("");
-
-                            if (e?.classificationid) dispatch(getTipificationLevel2(e.classificationid));
-                            else dispatch(resetGetTipificationLevel2());
-                        }}
-                        optionDesc="description"
-                        optionValue="description"
+                        variant="outlined"
+                        data={multiData?.data?.find(x=>x.key==="UFN_REPORT_HOURS_SEL")?.data || []}
+                        optionDesc={"hourdescription"}
+                        optionValue={"hours"}
                     />
-                    <FieldSelect
-                        label={t(langKeys.report_tipification_classificationlevel2)}
-                        className="col-12"
-                        valueDefault={tipification2}
-                        onChange={(value) => {
-                            setTipification2(value?.description || "");
-                            setTipification3("");
-                            if (value?.classificationid) dispatch(getTipificationLevel3(value.classificationid));
-                            else dispatch(resetGetTipificationLevel3());
-                        }}
-                        data={tipificationLevel2.data}
-                        loading={tipificationLevel2.loading}
-                        optionDesc="description"
-                        optionValue="description"
-                    />
-                    <FieldSelect
-                        label={t(langKeys.report_tipification_classificationlevel3)}
-                        className="col-12"
-                        valueDefault={tipification3}
-                        onChange={(value) => {
-                            setTipification3(value?.description || "");
-                        }}
-                        data={tipificationLevel3.data}
-                        loading={tipificationLevel3.loading}
-                        optionDesc="description"
-                        optionValue="description"
+                    <FieldSelect 
+                        label={t(langKeys.agent)}
+                        className={classes.filterComponent + " col-6"}
+                        valueDefault={allParameters?.asesorid || ""}
+                        key={"UFN_USER_ASESORBYORGID_LST"}
+                        onChange={(value) => setValue("asesorid", value?.userid || 0) }
+                        variant="outlined"
+                        data={multiData?.data?.find(x=>x.key==="UFN_USER_ASESORBYORGID_LST")?.data || []}
+                        optionDesc={"userdesc"}
+                        optionValue={"userid"}
                     />
                 </div>
             </DialogZyx>
@@ -671,7 +622,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
         setOpenModal(false);
         dispatch(
             getMainGraphic(
-                getReportGraphic("UFN_REPORT_TIPIFICATION_GRAPHIC" || "", "tipification" || "", {
+                getReportGraphic("UFN_REPORT_USERPRODUCTIVITYHOURS_GRAPHIC" || "", "userproductivityhours" || "", {
                     filters,
                     sorts: {},
                     startdate: daterange?.startDate!,
@@ -684,17 +635,17 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
         );
     };
 
-    const excludeTypification = [
-        "ticket",
-        "datehour",
-        "enddate",
-        "endtime",
-        "firstinteractiondate",
-        "firstinteractiontime",
-        "phone"
+    const excludeProductivityHours = [
+        "busytimewithinwork",
+        "freetimewithinwork",  
+        "busytimeoutsidework",
+        "availabletime",
+        "idletime",
+        "idletimewithoutattention",
+        "qtydisconnection",   
     ];
 
-    const filteredColumns = columns.filter((column) => !excludeTypification.includes(column));
+    const filteredColumns = columns.filter((column) => !excludeProductivityHours.includes(column));
     return (
         <DialogZyx
             open={openModal}
@@ -742,19 +693,4 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
     );
 };
 
-export default TipificationReport;
-
-/*
-    const groupingFields = [
-        "ticket",
-        "enddate",
-        "firstinteractiondate",
-        "person",
-        "closedby",
-        "agent",
-        "closetype",
-        "channel",
-        "classificationlevel1",
-        "classificationlevel2",
-        "classificationlevel3",
-    ];*/
+export default ProductivityHoursReport;
