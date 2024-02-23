@@ -879,7 +879,7 @@ const translation: LangKeys = {
   smstitle2: "Para conectar tu SMS, necesitamos que nos proveas de la siguiente información. Puedas encontrarla desde el dashboard de Infobip.",
   emailtitle2: "Para conectar tu correo electrónico, necesitamos que nos proveas de la siguiente información. Puedas encontrarla desde el dashboard de Infobip.",
   twittertitle: "Conecta tu página de Twitter",
-  twittertitle2: "Para conectar su página de Twitter, necesitamos los datos de autenticación de la aplicación que desea enlazar. Esta información se puede encontrar en el portal de desarrolladores de Twitter",
+  twittertitle2: "Para conectar su página de Twitter necesitamos el código generado por la autenticación de inicio de sesión o el token de autenticación ya generado junto con su token de renovación",
   devenvironment: "Ingrese el Entorno de Desarrollo",
   consumerapikey: "Ingrese la Llave API del Consumidor",
   consumerapisecret: "Ingrese la Contraseña API del Consumidor",
@@ -2052,7 +2052,7 @@ const translation: LangKeys = {
   reschedule_event: "Reprogramar evento",
   successfully_scheduled: "Ha programado el evento con éxito",
   confirmed: "Confirmado",
-  enter_details: "Ingrese los detalles",  
+  enter_details: "Ingrese los detalles",
   warehouse: "Almacén",
   warehouses: "Almacenes",
   standard_cost: "Costo estándar",
@@ -5789,6 +5789,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billing_iva: 'IVA',
   billing_paymentcardnotvalid: "Esta tarjeta no es válida para este medio de pago",
   current_language: 'es',
+  twitter_code: 'Código',
+  twitter_or: 'Ó',
+  twitter_accesstoken: 'Token de Acceso',
+  twitter_refreshtoken: 'Token de Renovación',
 };
 
 const esResource: ResourceLanguage = {
