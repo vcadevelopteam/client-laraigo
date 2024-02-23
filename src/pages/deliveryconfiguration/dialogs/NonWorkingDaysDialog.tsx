@@ -78,10 +78,12 @@ const NonWorkingDaysDialog: React.FC<{
     const [tempSelectedDates, setTempSelectedDates] = useState<DayProp | null>(null);
     const [dateError, setDateError] = useState(false)
     const [filtering, setFiltering] = useState(false)
+    const [filteringRecurrent, setFilteringRecurrent] = useState(false)
     const [filterData, setFilterData] = useState({
         year: '',
         month: '',
     })
+    const [filterDataRecurrent, setFilterDataRecurrent] = useState('')
 
     const handleDateChange = (date: DayProp) => {
         setTempSelectedDates(date[0]);
@@ -130,6 +132,13 @@ const NonWorkingDaysDialog: React.FC<{
         setOpenModal(false);
         setDateError(false)
         setTempSelectedDates(null);
+        setFiltering(false)
+        setFilteringRecurrent(false)
+        setFilterData({
+            year: '',
+            month: '',
+        })
+        setFilterDataRecurrent('')
     };
 
     const months = [
@@ -183,6 +192,51 @@ const NonWorkingDaysDialog: React.FC<{
         },
     ]
 
+    const filterByYear = (year: string) => {
+        return nonWorkingDates.filter(date => date.substring(0, 4) === year);
+    }
+
+    const filterByMonth = (month: string) => {
+        return nonWorkingDates.filter(date => date.substring(5, 7) === month);
+    }
+
+    const filterByYearAndMonth = (year: string, month: string) => {
+        return nonWorkingDates.filter(date => {
+            const dateYear = date.substring(0, 4);
+            const dateMonth = date.substring(5, 7);
+            return dateYear === year && dateMonth === month;
+        });
+    }
+
+    const filterByMonthRecurrent = (month: string) => {
+        return recurrentNonWorkingDates.filter(date => date.substring(0, 2) === month);
+    }
+
+    const handleFilterUnique = () => {
+        if(filtering) {
+            setFiltering(false)
+            setFilterData({
+                year: '',
+                month: '',
+            })
+        } else {
+            if(filterData.year !== '' || filterData.month !== '') {
+                setFiltering(true)
+            }
+        }
+    }
+
+    const handleFilterRecurrent = () => {
+        if(filteringRecurrent) {
+            setFilteringRecurrent(false)
+            setFilterDataRecurrent('')
+        } else {
+            if(filterDataRecurrent !== '') {
+                setFilteringRecurrent(true)
+            }
+        }
+    }
+
     return (
         <DialogZyx
             open={openModal}
@@ -228,20 +282,8 @@ const NonWorkingDaysDialog: React.FC<{
                         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
                             <IconButton
                                 style={{ backgroundColor: filtering ? '#90CAF9' : '', color: 'black', borderRadius: 25, padding: 5, marginRight: 5}}
-                                onClick={() => {
-                                    if(filtering) {
-                                        setFiltering(false)
-                                        setFilterData({
-                                            year: '',
-                                            month: '',
-                                        })
-                                    } else {
-                                        if(filterData.year !== '' || filterData.month !== '') {
-                                            setFiltering(true)
-                                        }
-                                    }
-                                }
-                            }>
+                                onClick={handleFilterUnique}
+                            >
                                 <FilterListIcon/>
                             </IconButton>
                             <FieldSelect
@@ -281,16 +323,63 @@ const NonWorkingDaysDialog: React.FC<{
                                 <>
                                     <h3>{t(langKeys.uniquedates)}</h3>
                                     <div className={classes.selectedDatesContainer}>
-                                        {nonWorkingDates.map((date) => (
+                                        {filtering ? (
                                             <>
-                                                <div className={classes.dateItem}>
-                                                    <span className={classes.dateSpan}>{date}</span>
-                                                    <IconButton onClick={() => handleDeleteDate(date)}>
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                </div>
+                                                {(filterData.year !== '' && filterData.month !== '') ? (
+                                                    <>
+                                                        {filterByYearAndMonth(filterData.year, filterData.month).map((date) => (
+                                                            <>
+                                                                <div className={classes.dateItem}>
+                                                                    <span className={classes.dateSpan}>{date}</span>
+                                                                    <IconButton onClick={() => handleDeleteDate(date)}>
+                                                                        <DeleteIcon />
+                                                                    </IconButton>
+                                                                </div>
+                                                            </>
+                                                        ))}
+                                                    </>
+                                                ) : filterData.year !== '' ? (
+                                                    <>
+                                                        {filterByYear(filterData.year).map((date) => (
+                                                            <>
+                                                                <div className={classes.dateItem}>
+                                                                    <span className={classes.dateSpan}>{date}</span>
+                                                                    <IconButton onClick={() => handleDeleteDate(date)}>
+                                                                        <DeleteIcon />
+                                                                    </IconButton>
+                                                                </div>
+                                                            </>
+                                                        ))}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {filterByMonth(filterData.month).map((date) => (
+                                                            <>
+                                                                <div className={classes.dateItem}>
+                                                                    <span className={classes.dateSpan}>{date}</span>
+                                                                    <IconButton onClick={() => handleDeleteDate(date)}>
+                                                                        <DeleteIcon />
+                                                                    </IconButton>
+                                                                </div>
+                                                            </>
+                                                        ))}
+                                                    </>
+                                                )}
                                             </>
-                                        ))}
+                                        ) : (
+                                            <>
+                                                {nonWorkingDates.map((date) => (
+                                                    <>
+                                                        <div className={classes.dateItem}>
+                                                            <span className={classes.dateSpan}>{date}</span>
+                                                            <IconButton onClick={() => handleDeleteDate(date)}>
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </div>
+                                                    </>
+                                                ))}
+                                            </>
+                                        )}
                                     </div>
                                 </>
                             ) : (
@@ -303,7 +392,10 @@ const NonWorkingDaysDialog: React.FC<{
                     <div style={{width: 20}}/>
                     <div style={{width: '50%'}}>
                         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
-                            <IconButton style={{ color: 'black', borderRadius: 25, padding: 5, marginRight: 5}}>
+                            <IconButton
+                                style={{ backgroundColor: filteringRecurrent ? '#90F9BF' : '', color: 'black', borderRadius: 25, padding: 5, marginRight: 5}}
+                                onClick={handleFilterRecurrent}
+                            >
                                 <FilterListIcon/>
                             </IconButton>
                             <FieldSelect
@@ -312,6 +404,14 @@ const NonWorkingDaysDialog: React.FC<{
                                 data={months}
                                 optionDesc="domainvalue"
                                 optionValue="domainvalue"
+                                valueDefault={filterDataRecurrent}
+                                onChange={(value) => {
+                                    if(value) {
+                                        setFilterDataRecurrent(value.domainvalue)
+                                    } else {
+                                        setFilterDataRecurrent('')
+                                    }
+                                }}
                             />
                         </div>
                         <div className={classes.col4}>
@@ -319,16 +419,33 @@ const NonWorkingDaysDialog: React.FC<{
                                 <>
                                     <h3>{t(langKeys.recurringdates)}</h3>
                                     <div className={classes.selectedDatesContainer}>
-                                        {recurrentNonWorkingDates.map((date) => (
+                                        {filteringRecurrent ? (
                                             <>
-                                                <div className={classes.dateItem}>
-                                                    <span className={classes.dateSpan}>{date}</span>
-                                                    <IconButton onClick={() => handleDeleteRecurrent(date)}>
-                                                        <DeleteIcon/>
-                                                    </IconButton>
-                                                </div>
+                                                {filterByMonthRecurrent(filterDataRecurrent).map((date) => (
+                                                    <>
+                                                        <div className={classes.dateItem}>
+                                                            <span className={classes.dateSpan}>{date}</span>
+                                                            <IconButton onClick={() => handleDeleteRecurrent(date)}>
+                                                                <DeleteIcon/>
+                                                            </IconButton>
+                                                        </div>
+                                                    </>
+                                                ))}
                                             </>
-                                        ))}
+                                        ) : (
+                                            <>
+                                                {recurrentNonWorkingDates.map((date) => (
+                                                    <>
+                                                        <div className={classes.dateItem}>
+                                                            <span className={classes.dateSpan}>{date}</span>
+                                                            <IconButton onClick={() => handleDeleteRecurrent(date)}>
+                                                                <DeleteIcon/>
+                                                            </IconButton>
+                                                        </div>
+                                                    </>
+                                                ))}
+                                            </>
+                                        )}
                                     </div>
                                 </>
                             ) : (
