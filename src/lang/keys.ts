@@ -3625,6 +3625,7 @@ export const langKeys = {
   max_limit: 'max_limit',
   max_limit_file_per_upload: 'max_limit_file_per_upload',
   type_activitylead_call: 'type_activitylead_call',
+  type_activitylead_appointment: 'type_activitylead_appointment',
   type_activitylead_automated: 'type_activitylead_automated',
   type_activitylead_automatedmail: 'type_activitylead_automatedmail',
   duein: "duein",
@@ -5779,6 +5780,7 @@ export const langKeys = {
   twitter_or: 'twitter_or',
   twitter_accesstoken: 'twitter_accesstoken',
   twitter_refreshtoken: 'twitter_refreshtoken',
+  catalogmaster_haslink: 'catalogmaster_haslink',
 };
 
 export type LangKeys = typeof langKeys;

@@ -33,6 +33,7 @@ export interface IState {
     leadProductsDomain: IListState<IProduct>;
     leadTagsDomain: IListState<IDomain>;
     personTypeDomain: IListState<IDomain>;
+    calendar: IListState<any>;
 }
 
 export const initialState: IState = {
@@ -54,6 +55,7 @@ export const initialState: IState = {
     leadProductsDomain: initialListState,
     leadTagsDomain: initialListState,
     personTypeDomain: initialListState,
+    calendar: initialListState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -134,6 +136,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_PERSON_TYPE_SUCCESS]: caseFUnctions.getPersonTypeSuccess,
     [actionTypes.GET_PERSON_TYPE_FAILURE]: caseFUnctions.getPersonTypeFailure,
     [actionTypes.GET_PERSON_TYPE_RESET]: caseFUnctions.getPersonTypeReset,
+
+    [actionTypes.GET_CALENDAR]: caseFUnctions.getCalendar,
+    [actionTypes.GET_CALENDAR_SUCCESS]: caseFUnctions.getCalendarSuccess,
+    [actionTypes.GET_CALENDAR_FAILURE]: caseFUnctions.getCalendarFailure,
+    [actionTypes.GET_CALENDAR_RESET]: caseFUnctions.getCalendarReset,
 
     [actionTypes.GET_LEAD_TEMPLATES]: caseFUnctions.getLeadTemplates,
     [actionTypes.GET_LEAD_TEMPLATES_SUCCESS]: caseFUnctions.getLeadTemplatesSuccess,
