@@ -97,7 +97,6 @@ interface ConfigurationTabDetailProps {
     setOpenModalDeliveryOrderPhoto: (flag: boolean) => void;
     setOpenModalAutomaticDelivery: (flag: boolean) => void;
     setOpenModalMotiveDialog: (flag: boolean) => void;
-    setOpenModalSubmotiveDialog: (flag: boolean) => void;
     fetchConfiguration: () => void;
     fetchVehicles: () => void;
     setConfigjson: (data: any) => void;
@@ -117,7 +116,6 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     setOpenModalDeliveryOrderPhoto,
     setOpenModalAutomaticDelivery,
     setOpenModalMotiveDialog,
-    setOpenModalSubmotiveDialog,
     fetchConfiguration,
     fetchVehicles,
     setConfigjson,
@@ -747,16 +745,10 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         />
                     </div>
                 </div>
-                <div className='col-6'>
-                    <CustomTitleHelper title={`${t(langKeys.ticket_reason)} ${t(langKeys.undelivered)}`}/>
+                <div className='col-12'>
+                    <CustomTitleHelper title={`${t(langKeys.ticket_reason)} y ${t(langKeys.submotive)} de ${t(langKeys.undelivered)}`}/>
                     <span className={classes.span} onClick={() => setOpenModalMotiveDialog(true)}>
-                        {t(langKeys.edit) + ' ' + t(langKeys.ticket_reason) + ' ' + t(langKeys.undelivered)}
-                    </span>
-                </div>
-                <div className='col-6'>
-                    <CustomTitleHelper title={`${t(langKeys.submotive)} ${t(langKeys.undelivered)}`}/>
-                    <span className={classes.span} onClick={() => setOpenModalSubmotiveDialog(true)}>
-                        {t(langKeys.edit) + ' ' + t(langKeys.submotive) + ' ' + t(langKeys.undelivered)}
+                        {t(langKeys.edit) + ' ' + t(langKeys.ticket_reason) + ' y ' + t(langKeys.submotive)}
                     </span>
                 </div>
             </div>

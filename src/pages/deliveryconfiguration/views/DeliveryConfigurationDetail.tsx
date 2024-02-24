@@ -10,11 +10,11 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
-import { getCollection, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
+import { getCollection, getCollectionAux, getCollectionAux2, getMultiCollection } from 'store/main/actions';
 import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
-import { deliveryAppUsersSel, deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
+import { deliveryAppUsersSel, deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel, reasonNonDeliverySel, subReasonNonDeliverySel } from 'common/helpers';
 import { execute } from "store/main/actions";
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import AutomaticDeliveryDialog from '../dialogs/AutomaticDeliveryDialog';
@@ -203,12 +203,15 @@ const DeliveryConfigurationDetail: React.FC = () => {
 
     const fetchConfiguration = () => dispatch(getCollection(deliveryConfigurationSel({id: 0, all: true})));
     const fetchVehicles = () => dispatch(getCollectionAux(deliveryVehicleSel({id: 0, all: true})));
-    const fetchDrivers = () => dispatch(getCollectionAux2(deliveryAppUsersSel()));
+    const fetchMotiveAndDrivers = () => dispatch(getMultiCollection([
+        reasonNonDeliverySel(0),
+        deliveryAppUsersSel()
+    ]))
 
     useEffect(() => {
         fetchConfiguration()
         fetchVehicles()
-        fetchDrivers()
+        fetchMotiveAndDrivers()
         setWaitSave2(true)
     }, [])
 
@@ -325,7 +328,6 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
                     setOpenModalAutomaticDelivery={setOpenModalAutomaticDelivery}
                     setOpenModalMotiveDialog={setOpenModalMotiveDialog}
-                    setOpenModalSubmotiveDialog={setOpenModalSubmotiveDialog}
                     fetchConfiguration={fetchConfiguration}
                     fetchVehicles={fetchVehicles}
                     setConfigjson={setConfigjson}
@@ -378,10 +380,6 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 <MotiveDialog
                     openModal={openModalMotiveDialog}
                     setOpenModal={setOpenModalMotiveDialog}
-                />
-                <SubmotiveDialog
-                    openModal={openModalSubmotiveDialog}
-                    setOpenModal={setOpenModalSubmotiveDialog}
                 />
             </form>
         </>

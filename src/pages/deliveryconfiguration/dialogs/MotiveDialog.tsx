@@ -3,7 +3,9 @@ import { makeStyles } from "@material-ui/core";
 import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import TableZyx from "components/fields/table-simple";
+import { getCollectionAux2 } from "store/main/actions";
+import { subReasonNonDeliverySel } from "common/helpers";
+import { useSelector } from "hooks";
 
 const useStyles = makeStyles(() => ({
 }));
@@ -17,52 +19,27 @@ const MotiveDialog = ({
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const subreasons = useSelector(state => state.main.mainAux2);
 
-    const columns = React.useMemo(
-        () => [
-          {
-            accessor: 'motiveid',
-            NoFilter: true,
-            disableGlobalFilter: true,
-            isComponent: true,
-            minWidth: 60,
-            width: '1%',
-          },
-          {
-            Header: t(langKeys.ticket_reason),
-            accessor: "motive",
-            width: "auto",
-          },
-          {
-            Header: t(langKeys.type),
-            accessor: "type",
-            width: "auto",
-          },
-        ],
-        []
-    );
+    const fetchSubReasons = (id: number) => dispatch(getCollectionAux2(subReasonNonDeliverySel(id)));
 
     return (
         <DialogZyx
             open={openModal}
             title={`${t(langKeys.ticket_reason)} ${t(langKeys.undelivered)}`}
-            maxWidth="sm"
+            maxWidth="md"
             buttonText0={t(langKeys.close)}
             buttonText1={t(langKeys.save)}
             handleClickButton0={() => setOpenModal(false)}
         >
             <div>
-                <TableZyx
-                    columns={columns}
-                    data={[]}
-                    download={false}
-                    toolsFooter={false}
-                    filterGeneral={false}
-                    register={true}
-                />
             </div>
         </DialogZyx>
     );
 };
 
 export default MotiveDialog;
+function dispatch(arg0: any) {
+    throw new Error("Function not implemented.");
+}
+

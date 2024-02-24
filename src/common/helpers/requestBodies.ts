@@ -4145,3 +4145,27 @@ export const listOrderSel = (ordersinattention: boolean) => ({
     key: "UFN_LISTORDER_SEL",
     parameters: { ordersinattention },
 });
+
+export const reasonNonDeliverySel = (id: number) => ({
+    method: "UFN_REASONNONDELIVERY_SEL",
+    key: "UFN_REASONNONDELIVERY_SEL",
+    parameters: { id, all: id === 0 },
+});
+
+export const reasonNonDeliveryIns = ({ id, status, type, description, operation }: Dictionary) => ({
+    method: "UFN_REASONNONDELIVERY_INS",
+    key: "UFN_REASONNONDELIVERY_INS",
+    parameters: { id, status, type, description, operation },
+});
+
+export const subReasonNonDeliverySel = (reasonnondeliveryid: number) => ({
+    method: "UFN_SUBREASONNONDELIVERY_SEL",
+    key: "UFN_SUBREASONNONDELIVERY_SEL",
+    parameters: { reasonnondeliveryid },
+});
+
+export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, operation }: Dictionary) => ({
+    method: "UFN_SUBREASONNONDELIVERY_INS",
+    key: "UFN_SUBREASONNONDELIVERY_INS",
+    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, operation },
+});
