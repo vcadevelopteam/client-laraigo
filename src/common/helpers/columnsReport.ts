@@ -83,5 +83,11 @@ export const columnsHideShow = {
         idletime: true,
         qtyconnection: true,
         qtydisconnection: true,   
+    },
+    reportrequestsd: {
+        channel: true,
+        resolution: true,  
+        reportdate: true,
+        dateofresolution: true,       
     }
 }
