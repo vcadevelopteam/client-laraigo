@@ -14,6 +14,19 @@ export const login = (usr: string | null, password: string | null, facebookid?: 
 
 export const resetLogin = (): IActionCall => ({ type: actionTypes.LOGIN_RESET });
 
+
+export const invokeIncremental = (): IActionCall => ({
+    callAPI: () => CommonService.incrementalInvokeToken(),
+    types: {
+        loading: actionTypes.INVOKE_INCREMENTAL,
+        success: actionTypes.INVOKE_INCREMENTAL_SUCCESS,
+        failure: actionTypes.INVOKE_INCREMENTAL_FAILURE,
+    },
+    type: null,
+});
+
+export const resetInvokeIncremental = (): IActionCall => ({ type: actionTypes.INVOKE_INCREMENTAL });
+
 export const validateToken = (firstLoad: string): IActionCall => ({
     callAPI: () => CommonService.validateToken(firstLoad),
     types: {

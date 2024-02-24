@@ -109,7 +109,9 @@ const PaymentOrder = lazy(() => import('pages/PaymentOrder'));
 const PaymentOrderNiubiz = lazy(() => import('pages/PaymentOrderNiubiz'));
 const PaymentOrderNiubizStatus = lazy(() => import('pages/PaymentOrderNiubizStatus'));
 const PaymentOrderOpenpay = lazy(() => import('pages/PaymentOrderOpenpay'));
+const PaymentOrderOpenpayColombia = lazy(() => import('pages/PaymentOrderOpenpayColombia'));
 const PaymentOrderIzipay = lazy(() => import('pages/PaymentOrderIzipay'));
+const PaymentOrderEpayco = lazy(() => import('pages/PaymentOrderEpayco'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
 const SecurityRules = lazy(() => import('pages/SecurityRules'));
@@ -240,7 +242,9 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.NIUBIZ_PAYMENTORDER.path} render={() => <PaymentOrderNiubiz />} />
 					<Route exact path={paths.NIUBIZ_PAYMENTORDERSTATUS.path} render={() => <PaymentOrderNiubizStatus />} />
 					<Route exact path={paths.OPENPAY_PAYMENTORDER.path} render={() => <PaymentOrderOpenpay />} />
+					<Route exact path={paths.OPENPAYCOLOMBIA_PAYMENTORDER.path} render={() => <PaymentOrderOpenpayColombia />} />
 					<Route exact path={paths.IZIPAY_PAYMENTORDER.path} render={() => <PaymentOrderIzipay />} />
+					<Route exact path={paths.EPAYCO_PAYMENTORDER.path} render={() => <PaymentOrderEpayco />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
 					<Route exact path={paths.TERMSOFSERVICE} render={() => <TermsOfService />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />

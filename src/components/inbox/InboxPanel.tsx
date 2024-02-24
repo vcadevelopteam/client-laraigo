@@ -601,7 +601,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
-    
+
     return (
         <div className={classes.containerPanel}>
             <TicketsPanel

@@ -15,7 +15,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Popus from 'components/layout/Popus';
 import { useDispatch } from 'react-redux';
 import { login } from 'store/login/actions';
-import { getAccessToken, loadScripts } from 'common/helpers';
+import { getAccessToken, loadScripts, saveAuthorizationToken } from 'common/helpers';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -312,8 +312,14 @@ const SignIn = () => {
         if (getAccessToken()) {
             history.push('/');
         } else {
-            localStorage.removeItem("firstLoad")
-            localStorage.removeItem("firstloadeddialog")
+            const externalToken = new URLSearchParams(window.location.search).get('accesstoken')
+            if(externalToken && isIncremental){
+                saveAuthorizationToken(externalToken)
+                history.push('/');
+            }else{
+                localStorage.removeItem("firstLoad")
+                localStorage.removeItem("firstloadeddialog")
+            }
         }
         const scriptsToLoad = ["recaptcha", "google"];
         // if (apiUrls.LOGIN_URL.includes("https://apiprd.laraigo.com")) {

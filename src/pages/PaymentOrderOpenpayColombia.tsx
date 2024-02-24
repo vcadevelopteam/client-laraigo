@@ -7,7 +7,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Popus from 'components/layout/Popus';
 import React, { FC, useEffect, useState } from 'react';
 
-import { apiUrls } from 'common/constants';
 import { Dictionary } from '@types';
 import { formatNumber } from 'common/helpers';
 import { langKeys } from 'lang/keys';
@@ -82,8 +81,8 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
     },
     textTitle: {
-        border: apiUrls.BODEGAACME ? '1px solid #6127B1' : '1px solid #7721AD',
-        background: apiUrls.BODEGAACME ? '#6127B1' : '#7721AD',
+        border: '1px solid #7721AD',
+        background: '#7721AD',
         padding: '8px',
         fontWeight: 'bold',
         color: 'white',
@@ -172,7 +171,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const PaymentOrderOpenpay: FC = () => {
+export const PaymentOrderOpenpayColombia: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -195,7 +194,7 @@ export const PaymentOrderOpenpay: FC = () => {
     }
 
     const fetchData = () => {
-        dispatch(openpayGetPaymentOrder({ corpid: corpid, orgid: orgid, ordercode: ordercode }));
+        dispatch(openpayGetPaymentOrder({ corpid: corpid, orgid: orgid, ordercode: ordercode, colombia: true }));
         setWaitData(true);
     }
 
@@ -227,13 +226,11 @@ export const PaymentOrderOpenpay: FC = () => {
             OpenPay.setId('${authCredentials.merchantId}');
             OpenPay.setApiKey('${authCredentials.publicKey}');
             OpenPay.setSandboxMode(${authCredentials.sandbox});
-            
-            var deviceSessionId = OpenPay.deviceData.setup("payment-form", "deviceIdHiddenFieldName");
 
             $('#pay-button').on('click', function(event) {
                 event.preventDefault();
                 $("#pay-button").prop("disabled", true);
-                OpenPay.token.extractFormAndCreate('payment-form', sucess_callbak, error_callbak);                
+                OpenPay.token.extractFormAndCreate($("#payment-form"), sucess_callbak, error_callbak);                
             });
 
             var sucess_callbak = function(response) {
@@ -242,10 +239,10 @@ export const PaymentOrderOpenpay: FC = () => {
                 let transactiondata = {
                     transactionresponse: response,
                     formdata: formdata,
-                    devicesessionid: deviceSessionId,
                     corpid: ${data.corpid},
                     orgid: ${data.orgid},
                     paymentorderid: ${data.paymentorderid},
+                    colombia: true,
                 }
                 document.getElementById('send-form-data').innerHTML = JSON.stringify(transactiondata);
                 document.getElementById("send-form").click();
@@ -275,8 +272,7 @@ export const PaymentOrderOpenpay: FC = () => {
                 if (resultGetPaymentOrder.data) {
                     setPaymentData(resultGetPaymentOrder.data);
                     importUrlScript('https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js');
-                    importUrlScript('https://js.openpay.pe/openpay.v1.min.js');
-                    importUrlScript('https://js.openpay.pe/openpay-data.v1.min.js');
+                    importUrlScript('https://resources.openpay.co/openpay.v1.min.js');
                 }
             } else if (resultGetPaymentOrder.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(resultGetPaymentOrder.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
@@ -318,8 +314,7 @@ export const PaymentOrderOpenpay: FC = () => {
                                 <div className={classes.back}>
                                     <div className={classes.containerSuccess}>
                                         <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                            {!apiUrls.BODEGAACME && <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />}
-                                            {apiUrls.BODEGAACME && <img src={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/BODEGA%20ACME/40016109-be7d-4aa7-9287-743d35fcc05d/470e9a59-bbaa-4742-ba5b-e4aa1c21d865_waifu2x_art_noise3_scale.png'} style={{ height: 120, margin: '20px' }} />}
+                                            <LaraigoLogo style={{ height: 120, margin: '20px' }} />
                                         </div>
                                         <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_success)}</div>
                                         {paymentData.ordercode && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
@@ -330,7 +325,7 @@ export const PaymentOrderOpenpay: FC = () => {
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                                 <div className={classes.textField}>
-                                                    {apiUrls.BODEGAACME ? paymentData?.paymentorderid : paymentData?.ordercode}
+                                                    {paymentData?.ordercode}
                                                 </div>
                                             </div>
                                         </div>}
@@ -611,4 +606,4 @@ export const PaymentOrderOpenpay: FC = () => {
     }
 }
 
-export default PaymentOrderOpenpay;
+export default PaymentOrderOpenpayColombia;

@@ -156,7 +156,7 @@ const Orders: FC = () => {
 				/>
 				<FieldSelect
 					variant="outlined"
-					label={"Tipo de entrega"}
+					label={t(langKeys.deliverytype)}
 					className={classes.filterComponent}
 					data={dataTypes}
 					valueDefault={type}

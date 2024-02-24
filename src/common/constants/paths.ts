@@ -60,9 +60,17 @@ const paths = {
         path: "/paymentorderopenpay/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpay/${corpid}/${orgid}/${ordercode}`,
     },
+    OPENPAYCOLOMBIA_PAYMENTORDER: {
+        path: "/paymentorderopenpaycolombia/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpaycolombia/${corpid}/${orgid}/${ordercode}`,
+    },
     IZIPAY_PAYMENTORDER: {
         path: "/paymentorderizipay/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderizipay/${corpid}/${orgid}/${ordercode}`,
+    },
+    EPAYCO_PAYMENTORDER: {
+        path: "/paymentorderepayco/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderepayco/${corpid}/${orgid}/${ordercode}`,
     },
     LOCATION: {
         path: "/getLocations/:token",

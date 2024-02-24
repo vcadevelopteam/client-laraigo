@@ -189,6 +189,7 @@ export interface ICrmLeadActivitySave {
     hsmtemplatename?: string;
     hsmtemplatetype?: string;
     variables?: any[]
+    calendar?: number
 }
 export interface AutomatizationRuleSave {
 	id: number,
@@ -256,6 +257,7 @@ export interface IcrmLeadActivity {
     communicationchannelid?: number;
     hsmtemplateid?: number;
     hsmtemplatetype?: string;
+    calendar?:number;
 }
 
 export interface ICrmColumn {
