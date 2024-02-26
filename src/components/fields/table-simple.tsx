@@ -551,8 +551,18 @@ const TableZyx = React.memo(({
                             data={listSelectFilter}
                         /> :
                         <React.Fragment>
-                            {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
-                            {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                             {type === 'date' && 
+                                <DateOptionsMenuComponent
+                                    value
+                                    handleDate
+                                />
+                            }
+                            {type === 'time' && 
+                                <TimeOptionsMenuComponent
+                                    value
+                                    handleTime
+                                />
+                            }
                             {!['date', 'time'].includes(type) &&
                                 <Input
                                     // disabled={loading}

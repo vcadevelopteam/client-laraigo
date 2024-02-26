@@ -549,8 +549,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                                         multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
                                                     }
                                                     loading={multiData.loading}
-                                                    optionDesc={"type"}
-                                                    optionValue={"typedesc"}
+                                                    optionDesc={"typedesc"}
+                                                    optionValue={"type"}
                                                 />
                                             </div>
                                         </Box>
