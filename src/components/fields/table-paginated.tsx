@@ -346,8 +346,18 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                     /> :
 
                     <React.Fragment>
-                        {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
-                        {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                        {type === 'date' && 
+                            <DateOptionsMenuComponent
+                                value
+                                handleDate
+                            />
+                        }
+                        {type === 'time' && 
+                            <TimeOptionsMenuComponent
+                                value
+                                handleTime
+                            />
+                        }
                         {!['date', 'time'].includes(type) &&
                             <Input
                                 style={{ fontSize: '15px', minWidth: '100px' }}
