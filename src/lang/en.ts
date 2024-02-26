@@ -551,6 +551,11 @@ const translation: LangKeys = {
   registrationdate: "Registration date",
   report_reportcompliancesla: "SLA compliance report",
   report_reportrequestsd: "SD request report",
+
+
+
+
+  
   type_org_22: 'Manufacture of rubber products',
   type_org_23: 'Manufacture of metallurgical products',
   type_org_24: 'Weapons manufacturing',
@@ -823,10 +828,9 @@ const translation: LangKeys = {
   type_ocupation_38: "JANITOR / GOALKEEPER / GUARDIAN / WATCHMAN",
   type_ocupation_39: "BUILDER",
   type_ocupation_40: "COUNTER",
-  transferdate:"Transfer date",
+  transferdate: "Transfer date",
   dispatchedquantity: "Dispatched quantity",
-  error_generate_label:"The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",
-  type_ocupation_41: "CONTRACTOR",
+  error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",  type_ocupation_41: "CONTRACTOR",
   type_ocupation_42: "CLOTHING AND CUTTING / GARMENT MANUFACTURER",
   type_ocupation_43: "COSMETOLOGIST, HAIRDRESSER AND BARBER",
   type_ocupation_44: "DECORATOR, DRAWER, ADVERTISER",
@@ -2484,8 +2488,6 @@ const translation: LangKeys = {
   report_productivity_holdingholdtime_help: 'It is the time that a ticket was found in holding, until being referred to an advisor.',
   report_productivity_tags: 'Tags',
   report_productivity_tags_help: 'Tag(s) associated to the ticket through a flow to know the path(s) that the conversation followed. All tags will be displayed in order from left to right from the most recent to the oldest.',
-
-
   report_tipification: 'Classifications',
   report_tipification_filter_channels: 'Channels',
   report_tipification_ticket: 'Ticket',
@@ -2589,8 +2591,10 @@ const translation: LangKeys = {
   corporationdetail: "Corporation detail",
   organizationdetail: "Organization detail",
   messagetemplatedetail: "Message template detail",
+  
   report_userproductivity_totaltickets: 'Ticket quantity',
-  report_userproductivity_totaltickets_help: 'Cantidad de tickets que ha atendido el usuario.',
+  eport_userproductivity_totaltickets_help: 'Number of tickets handled by the user.',
+
   report_userproductivity_closedtickets: 'Closed',
   report_userproductivity_closedtickets_help: 'Number of tickets in “Closed” status that the user has attended to',
   report_userproductivity_asignedtickets: 'In atention',
@@ -2619,6 +2623,7 @@ const translation: LangKeys = {
   report_userproductivity_userconnectedduration: 'Minutes connected',
   report_userproductivity_userstatus: 'Actual state',
   report_userproductivity_groups: 'Attetion group',
+
   report_userproductivity_tmravg: "TMR AVG",
   report_userproductivity_tmradviseravg: "TMR Agent",
   report_userproductivity_tmravg_help: "Average response time of the agent/bot",
@@ -5880,10 +5885,15 @@ const translation: LangKeys = {
   billig_paymentmethod: 'Payment Method',
   billig_creditcard: 'Credit Card',
   billig_debitcard: 'Debit Card',
-  billig_transfer: 'Transfer',
+  billig_credit: 'Credit',
   billig_cash: 'Cash',
   billing_iva: 'IVA',
   billing_paymentcardnotvalid: "This card is not valid for this payment method",
+  current_language: 'en',
+  catalogmaster_haslink: 'Link to Business',
+  entereddata: 'Entered Data',
+  coordinate: 'Coordinate',
+  area: 'Area',
   executingUser: "Executing User",
   executingUserProfile: "Executing User Profile",
   groupedBy: "Grouped By",

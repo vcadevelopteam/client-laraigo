@@ -85,21 +85,21 @@ export const langKeys = {
   warehouse: "warehouse",
   warehouses: "warehouses",
   add_product_to_warehouse: "add_product_to_warehouse",
-  standard_cost:"standard_cost",
-  average_cost:"average_cost",
-  current_balance:"current_balance",
-  default_shelf:"default_shelf",
-  dealers:"dealers",
-  taxcodes:"taxcodes",
-  attribute:"attribute",
-  specifications:"specifications",
-  averagedeliverytime:"averagedeliverytime",
-  dealer:"dealer",
-  manufacturer:"manufacturer",
-  catalog_nro:"catalog_nro",
-  catalog_nrotooltip:"catalog_nrotooltip",
-  last_price:"last_price",
-  last_order_date:"last_order_date",
+  standard_cost: "standard_cost",
+  average_cost: "average_cost",
+  current_balance: "current_balance",
+  default_shelf: "default_shelf",
+  dealers: "dealers",
+  taxcodes: "taxcodes",
+  attribute: "attribute",
+  specifications: "specifications",
+  averagedeliverytime: "averagedeliverytime",
+  dealer: "dealer",
+  manufacturer: "manufacturer",
+  catalog_nro: "catalog_nro",
+  catalog_nrotooltip: "catalog_nrotooltip",
+  last_price: "last_price",
+  last_order_date: "last_order_date",
   delivered: "delivered",
   phasechange: "phasechange",
   ticket_originalpublicationdate: "ticket_originalpublicationdate",
@@ -162,6 +162,7 @@ export const langKeys = {
   availablequantity: "availablequantity",
   reservedquantity: "reservedquantity",
   dispatchedquantity: "dispatchedquantity",
+  
   dispatchhistory: "dispatchhistory",
   dateoflastshipment: "dateoflastshipment",
   dateoflastshipmenttooltip: "dateoflastshipmenttooltip",
@@ -815,6 +816,7 @@ export const langKeys = {
   report_recordhsmreport: "report_recordhsmreport",
   report_reportcompliancesla: "report_reportcompliancesla",
   report_reportrequestsd: "report_reportrequestsd",
+
   report_invoice: "report_invoice",
   origin: "origin",
   unitaryprice: "unitaryprice",
@@ -2639,7 +2641,6 @@ export const langKeys = {
   report_productivity_holdingholdtime_help: 'report_productivity_holdingholdtime_help',
   report_productivity_tags: 'report_productivity_tags',
   report_productivity_tags_help: 'report_productivity_tags',
-
   report_tipification: 'report_tipification',
   report_tipification_filter_channels: 'report_tipification_filter_channels',
   report_tipification_ticket: 'report_tipification_ticket',
@@ -2750,8 +2751,14 @@ export const langKeys = {
   report_userproductivity_user: 'report_userproductivity_user',
   report_userproductivity_fullname: 'report_userproductivity_fullname',
   report_userproductivity_hourfirstlogin: 'report_userproductivity_hourfirstlogin',
+  
   report_userproductivity_totaltickets: 'report_userproductivity_totaltickets',
-  report_userproductivity_totaltickets_help: 'report_userproductivity_totaltickets_help',
+  eport_userproductivity_totaltickets_help: 'report_userproductivity_totaltickets_help',
+
+
+
+
+
   report_userproductivity_closedtickets: 'report_userproductivity_closedtickets',
   report_userproductivity_closedtickets_help: 'report_userproductivity_closedtickets_help',
   report_userproductivity_asignedtickets: 'report_userproductivity_asignedtickets',
@@ -2770,7 +2777,7 @@ export const langKeys = {
   report_userproductivity_maxtotalduration_help: 'report_userproductivity_maxtotalduration_help',
   report_userproductivity_mintotalduration: 'report_userproductivity_mintotalduration',
   report_userproductivity_mintotalduration_help: 'report_userproductivity_mintotalduration_help',
-  report_userproductivity_avgtotalasesorduration: 'report_userproductivity_avgtotalasesorduration',
+ report_userproductivity_avgtotalasesorduration: 'report_userproductivity_avgtotalasesorduration',
   report_userproductivity_avgtotalasesorduration_help: 'report_userproductivity_avgtotalasesorduration_help',
   report_userproductivity_maxtotalasesorduration_help: 'report_userproductivity_maxtotalasesorduration_help',
   report_userproductivity_mintotalasesorduration_help: 'report_userproductivity_mintotalasesorduration_help',
@@ -2779,6 +2786,12 @@ export const langKeys = {
   report_userproductivity_userconnectedduration: 'report_userproductivity_userconnectedduration',
   report_userproductivity_userstatus: 'report_userproductivity_userstatus',
   report_userproductivity_groups: 'report_userproductivity_groups',
+  
+
+
+
+
+  
 
   report_userproductivity_cardtme: 'report_userproductivity_cardtme',
   report_userproductivity_cardtmo: 'report_userproductivity_cardtmo',
@@ -5791,10 +5804,16 @@ export const langKeys = {
   billig_paymentmethod: 'billig_paymentmethod',
   billig_creditcard: 'billig_creditcard',
   billig_debitcard: 'billig_debitcard',
-  billig_transfer: 'billig_transfer',
+  billig_credit: 'billig_credit',
   billig_cash: 'billig_cash',
   billing_iva: 'billing_iva',
   billing_paymentcardnotvalid: "billing_paymentcardnotvalid",
+  current_language: 'current_language',
+  catalogmaster_haslink: 'catalogmaster_haslink',
+  entereddata: 'entereddata',
+  coordinate: 'coordinate',
+  area: 'area',
+
   executingUser: "executingUser",
   executingUserProfile: "executingUserProfile",
   groupedBy: "groupedBy",
