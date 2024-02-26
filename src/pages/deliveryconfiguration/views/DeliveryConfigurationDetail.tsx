@@ -20,6 +20,7 @@ import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
 import AutomaticDeliveryDialog from '../dialogs/AutomaticDeliveryDialog';
 import MotiveDialog from '../dialogs/MotiveDialog';
 import SubmotiveDialog from '../dialogs/SubmotiveDialog';
+import { Dictionary } from '@types';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -127,6 +128,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const [deliveryPhotos, setDeliveryPhotos] = useState<string[]>([])
     const [automaticSchedules, setAutomaticSchedules] = useState<AutomaticSchedule[]>([])
     const [deliveryShifts, setDeliveryShifts] = useState<DeliveryShift[]>([])
+    const [row, setRow] = useState<Dictionary|null>(null)
 
     const fetchOriginalConfig = () => {
         if(main.data.length) {
@@ -381,6 +383,14 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     openModal={openModalMotiveDialog}
                     setOpenModal={setOpenModalMotiveDialog}
                     fetchData={fetchMotiveAndDrivers}
+                    setOpenSubmotiveModal={setOpenModalSubmotiveDialog}
+                    row={row}
+                    setRow={setRow}
+                />
+                <SubmotiveDialog
+                    openModal={openModalSubmotiveDialog}
+                    setOpenModal={setOpenModalSubmotiveDialog}
+                    row={row}
                 />
             </form>
         </>

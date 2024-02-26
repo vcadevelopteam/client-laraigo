@@ -5517,6 +5517,7 @@ export const langKeys = {
   nodatesselected: 'nodatesselected',
   norecurringdatesselected: 'norecurringdatesselected',
   nodateselected: 'nodateselected',
+  managesubmotives: 'managesubmotives',
 };
 
 export type LangKeys = typeof langKeys;

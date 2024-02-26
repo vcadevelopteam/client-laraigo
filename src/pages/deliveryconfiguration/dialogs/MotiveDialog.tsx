@@ -24,16 +24,50 @@ const useStyles = makeStyles(() => ({
           backgroundColor: 'white'
         }
     },
+    cancelButton: {
+        marginLeft: 10,
+        backgroundColor: 'red',
+        color: 'white',
+        '&:hover': {
+            backgroundColor: '#850000',
+        }
+    },
+    motiveForm: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    motiveRow: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    motiveText: {
+        width: 200,
+        border: '1px solid black',
+        padding: 5,
+        borderRadius: 5
+    },
+    actionButtons: {
+        marginRight: 20, 
+        marginLeft: 20
+    },
 }));
 
 const MotiveDialog = ({
     openModal,
     setOpenModal,
-    fetchData
+    fetchData,
+    setOpenSubmotiveModal,
+    row,
+    setRow,
 }: {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
     fetchData: () => void;
+    setOpenSubmotiveModal: (value: boolean) => void;
+    row: Dictionary | null;
+    setRow: (value: Dictionary | null) => void;
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -42,9 +76,10 @@ const MotiveDialog = ({
     const subreasons = useSelector(state => state.main.mainAux2);
     const multiData = useSelector(state => state.main.multiData);
     const [newMotive, setNewMotive] = useState('')
-    const [row, setRow] = useState<Dictionary|null>(null)
     const [isEditing, setIsEditing] = useState(false)
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSave2, setWaitSave2] = useState(false);
+    const [motiveError, setMotiveError] = useState(false)
 
     const fetchSubReasons = (id: number) => dispatch(getCollectionAux2(subReasonNonDeliverySel(id)));
 
@@ -78,6 +113,8 @@ const MotiveDialog = ({
                 callback
             }))
             cancelEdit()
+        } else {
+            setMotiveError(true)
         }
     });
 
@@ -115,6 +152,7 @@ const MotiveDialog = ({
     }, [executeRes, waitSave]);
 
     const handleEdit = (row2: Dictionary) => {
+        setMotiveError(false)
         setIsEditing(true)
         setRow(row2)
         setNewMotive(row2.description)
@@ -124,7 +162,39 @@ const MotiveDialog = ({
         setIsEditing(false)
         setRow(null)
         setNewMotive('')
+        setMotiveError(false)
     }
+
+    const handleCloseModal = () => {
+        setOpenModal(false)
+        cancelEdit()
+    }
+
+    const handleSubmotives = (row2: Dictionary) => {
+        dispatch(showBackdrop(true));
+        setRow(row2)
+        setIsEditing(false)
+        setNewMotive('')
+        setMotiveError(false)
+        fetchSubReasons(row2.reasonnondeliveryid)
+        setWaitSave2(true)
+    }
+
+    useEffect(() => {
+        if (waitSave2) {
+            if (!subreasons.loading && !subreasons.error) {
+                setOpenSubmotiveModal(true)
+                dispatch(showBackdrop(false));
+            } else if (subreasons.error) {
+                const errormessage = t(subreasons.code ?? "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSave2(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [subreasons, waitSave2]);
 
     return (
         <DialogZyx
@@ -132,16 +202,20 @@ const MotiveDialog = ({
             title={`${t(langKeys.ticket_reason)} ${t(langKeys.undelivered)}`}
             maxWidth="md"
             buttonText0={t(langKeys.back)}
-            handleClickButton0={() => setOpenModal(false)}
+            handleClickButton0={handleCloseModal}
         >
             <div>
-                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <div className={classes.motiveForm}>
                     <FieldEdit
                         variant="outlined"
                         label={t(langKeys.ticket_reason)}
                         width={280}
+                        error={motiveError}
                         valueDefault={newMotive}
-                        onChange={(value) => setNewMotive(value)}
+                        onChange={(value) => {
+                            setNewMotive(value)
+                            setMotiveError(false)
+                        }}
                     />
                     <Button
                         variant="contained"
@@ -154,7 +228,7 @@ const MotiveDialog = ({
                     {isEditing && (
                         <Button
                             variant="contained"
-                            style={{marginLeft: 10, backgroundColor: 'red', color: 'white'}}
+                            className={classes.cancelButton}
                             onClick={cancelEdit}
                         >
                             {t(langKeys.cancel)}
@@ -165,9 +239,9 @@ const MotiveDialog = ({
                     {multiData?.data?.[0]?.data.length > 0 && (
                         <div style={{marginTop: 20}}>
                             {multiData?.data?.[0]?.data.map((motive) => (
-                                <div key={motive.reasonnondeliveryid} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    <span style={{width: 200, border: '1px solid black', padding: 5, borderRadius: 5}}>{motive.description}</span>
-                                    <div style={{marginRight: 20, marginLeft: 20}}>
+                                <div key={motive.reasonnondeliveryid} className={classes.motiveRow}>
+                                    <span className={classes.motiveText}>{motive.description}</span>
+                                    <div className={classes.actionButtons}>
                                         <IconButton onClick={() => handleEdit(motive)}>
                                             <EditIcon/>
                                         </IconButton>
@@ -177,8 +251,9 @@ const MotiveDialog = ({
                                     </div>
                                     <Button
                                         className={classes.submotiveButton}
+                                        onClick={() => handleSubmotives(motive)}
                                     >
-                                        Gestionar submotivos
+                                        {t(langKeys.managesubmotives)}
                                     </Button>
                                 </div>
                             ))}
