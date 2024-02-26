@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, createStyles, IconButton, makeStyles, Tabs, TextField, Theme, Tooltip } from '@material-ui/core';
 import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
 import { langKeys } from 'lang/keys';
@@ -7,7 +6,7 @@ import { FieldMultiSelect } from "components";
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { getasesoresbyorgid, getCommChannelLst, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage2detail1, heatmappage2detail2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
+import { getasesoresbyorgid, getCommChannelLstTypeDesc, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage2detail1, heatmappage2detail2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
 import { cleanViewChange, getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMainAux, resetMultiMain, resetMultiMainAux, resetMultiMainAux2, setViewChange } from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
@@ -45,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 )
 function capitalize(word:string){
-    let wordlower = word.toLowerCase()
+    const wordlower = word.toLowerCase()
     const words = wordlower.split(" ");
     let wordresult = "";
     for (let i = 0; i < words.length; i++) {
@@ -60,7 +59,7 @@ function capitalize(word:string){
 
 interface ModalProps {
     openModal: boolean;
-    setOpenModal: (value: boolean) => any;
+    setOpenModal: (value: boolean) => void;
     title: string;
     row: Dictionary | null;
     columns: Dictionary[];
@@ -138,7 +137,6 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     const downloadCallRecord = async (ticket: Dictionary) => {
@@ -1182,11 +1180,11 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                         label={t(langKeys.channel)}
                         className={classes.fieldsfilter}
                         variant="outlined"
-                        onChange={(value) => { setdataMainHeatMap(p => ({ ...p, communicationchannel: value.map((o: Dictionary) => o.communicationchannelid).join() })) }}
+                        onChange={(value) => { setdataMainHeatMap(p => ({ ...p, communicationchannel: value.map((o: Dictionary) => o.type).join() })) }}
                         valueDefault={dataMainHeatMap.communicationchannel}
                         data={dataChannels}
-                        optionDesc="communicationchanneldesc"
-                        optionValue="communicationchannelid"
+                        optionDesc="typedesc"
+                        optionValue="type"
                     />
                 </div>
                 <div style={{flex:1}}>
@@ -2605,7 +2603,7 @@ const Heatmap: FC = () => {
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("EMPRESA"),
             getValuesFromDomain("GRUPOS"),
-            getCommChannelLst(),
+            getCommChannelLstTypeDesc(),
         ]))
         return () => {
             dispatch(resetMainAux());
