@@ -829,9 +829,7 @@ const translation: LangKeys = {
   type_ocupation_39: "BUILDER",
   type_ocupation_40: "COUNTER",
   transferdate: "Transfer date",
-  transferdate: "Transfer date",
   dispatchedquantity: "Dispatched quantity",
-  error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",  type_ocupation_41: "CONTRACTOR",
   error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",  type_ocupation_41: "CONTRACTOR",
   type_ocupation_42: "CLOTHING AND CUTTING / GARMENT MANUFACTURER",
   type_ocupation_43: "COSMETOLOGIST, HAIRDRESSER AND BARBER",
@@ -2597,9 +2595,6 @@ const translation: LangKeys = {
   
   report_userproductivity_totaltickets: 'Ticket quantity',
   eport_userproductivity_totaltickets_help: 'Number of tickets handled by the user.',
-
-  eport_userproductivity_totaltickets_help: 'Number of tickets handled by the user.',
-
   report_userproductivity_closedtickets: 'Closed',
   report_userproductivity_closedtickets_help: 'Number of tickets in “Closed” status that the user has attended to',
   report_userproductivity_asignedtickets: 'In atention',
@@ -5891,7 +5886,6 @@ const translation: LangKeys = {
   billig_paymentmethod: 'Payment Method',
   billig_creditcard: 'Credit Card',
   billig_debitcard: 'Debit Card',
-  billig_credit: 'Credit',
   billig_credit: 'Credit',
   billig_cash: 'Cash',
   billing_iva: 'IVA',

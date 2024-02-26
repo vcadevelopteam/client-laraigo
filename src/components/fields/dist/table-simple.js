@@ -21,16 +21,21 @@ exports.__esModule = true;
 exports.OptionsMenuComponent = exports.TimeOptionsMenuComponent = exports.DateOptionsMenuComponent = exports.SelectFilterTmp = exports.BooleanOptionsMenuComponent = exports.booleanOptionsMenu = exports.dateOptionsMenu = exports.numberOptionsMenu = exports.stringOptionsMenu = void 0;
 var react_1 = require("react");
 var Table_1 = require("@material-ui/core/Table");
+var core_1 = require("@material-ui/core");
 var Button_1 = require("@material-ui/core/Button");
 var TableBody_1 = require("@material-ui/core/TableBody");
 var TableCell_1 = require("@material-ui/core/TableCell");
 var TableContainer_1 = require("@material-ui/core/TableContainer");
 var TableHead_1 = require("@material-ui/core/TableHead");
+var KeyboardArrowRight_1 = require("@material-ui/icons/KeyboardArrowRight");
+var KeyboardArrowUp_1 = require("@material-ui/icons/KeyboardArrowUp");
 var TableRow_1 = require("@material-ui/core/TableRow");
 var Menu_1 = require("@material-ui/core/Menu");
 var helpers_1 = require("common/helpers");
 var actions_1 = require("store/main/actions");
 var react_redux_1 = require("react-redux");
+var AllInbox_1 = require("@material-ui/icons/AllInbox");
+var ViewWeek_1 = require("@material-ui/icons/ViewWeek");
 var icons_1 = require("@material-ui/icons");
 var Select_1 = require("@material-ui/core/Select");
 var MenuItem_1 = require("@material-ui/core/MenuItem");
@@ -56,7 +61,7 @@ var react_window_1 = require("react-window");
 var date_fns_1 = require("@date-io/date-fns");
 var InfoRounded_1 = require("@material-ui/icons/InfoRounded");
 var pickers_1 = require("@material-ui/pickers");
-var core_1 = require("@material-ui/core");
+var core_2 = require("@material-ui/core");
 var useStyles = styles_1.makeStyles(function (theme) {
     var _a, _b, _c, _d;
     return ({
@@ -140,13 +145,37 @@ var useStyles = styles_1.makeStyles(function (theme) {
             _d),
         containerHeaderColumn: {
             display: 'flex',
-            justifyContent: 'space-between',
+            gap: '0.5rem',
             alignItems: 'center'
         },
         iconHelpText: {
             width: 15,
             height: 15,
             cursor: 'pointer'
+        },
+        headerIcon: {
+            '& svg': {
+                width: 16,
+                height: 16,
+                marginTop: -2,
+                marginRight: 4,
+                marginLeft: -6
+            }
+        },
+        iconDirectionAsc: {
+            transform: 'rotate(90deg)'
+        },
+        iconDirectionDesc: {
+            transform: 'rotate(180deg)'
+        },
+        cellIcon: {
+            '& svg': {
+                width: 16,
+                height: 16,
+                marginTop: -2,
+                marginRight: 4,
+                marginLeft: -6
+            }
         }
     });
 });
@@ -230,10 +259,44 @@ exports.OptionsMenuComponent = function (type, operator, handleClickItemMenu) {
     }
 };
 var TableZyx = react_1["default"].memo(function (_a) {
-    var titlemodule = _a.titlemodule, columns = _a.columns, data = _a.data, fetchData = _a.fetchData, _b = _a.download, download = _b === void 0 ? false : _b, _c = _a.importData, importData = _c === void 0 ? false : _c, importDataFunction = _a.importDataFunction, _d = _a.deleteData, deleteData = _d === void 0 ? false : _d, deleteDataFunction = _a.deleteDataFunction, register = _a.register, handleRegister = _a.handleRegister, _e = _a.calculate, calculate = _e === void 0 ? false : _e, handleCalculate = _a.handleCalculate, HeadComponent = _a.HeadComponent, ButtonsElement = _a.ButtonsElement, triggerExportPersonalized = _a.triggerExportPersonalized, exportPersonalized = _a.exportPersonalized, _f = _a.pageSizeDefault, pageSizeDefault = _f === void 0 ? 20 : _f, importCSV = _a.importCSV, handleTemplate = _a.handleTemplate, _g = _a.filterGeneral, filterGeneral = _g === void 0 ? true : _g, _h = _a.loading, loading = _h === void 0 ? false : _h, useSelection = _a.useSelection, selectionKey = _a.selectionKey, initialSelectedRows = _a.initialSelectedRows, setSelectedRows = _a.setSelectedRows, allRowsSelected = _a.allRowsSelected, setAllRowsSelected = _a.setAllRowsSelected, onClickRow = _a.onClickRow, _j = _a.toolsFooter, toolsFooter = _j === void 0 ? true : _j, _k = _a.initialPageIndex, initialPageIndex = _k === void 0 ? 0 : _k, _l = _a.helperText, helperText = _l === void 0 ? "" : _l, initialStateFilter = _a.initialStateFilter, registertext = _a.registertext, setDataFiltered = _a.setDataFiltered, _m = _a.useFooter, useFooter = _m === void 0 ? false : _m, _o = _a.heightWithCheck, heightWithCheck = _o === void 0 ? 43 : _o, _p = _a.checkHistoryCenter, checkHistoryCenter = _p === void 0 ? false : _p, _q = _a.acceptTypeLoad, acceptTypeLoad = _q === void 0 ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv" : _q;
+    var titlemodule = _a.titlemodule, columns = _a.columns, data = _a.data, fetchData = _a.fetchData, _b = _a.download, download = _b === void 0 ? false : _b, _c = _a.importData, importData = _c === void 0 ? false : _c, importDataFunction = _a.importDataFunction, _d = _a.deleteData, deleteData = _d === void 0 ? false : _d, deleteDataFunction = _a.deleteDataFunction, register = _a.register, handleRegister = _a.handleRegister, _e = _a.calculate, calculate = _e === void 0 ? false : _e, handleCalculate = _a.handleCalculate, HeadComponent = _a.HeadComponent, ButtonsElement = _a.ButtonsElement, triggerExportPersonalized = _a.triggerExportPersonalized, exportPersonalized = _a.exportPersonalized, _f = _a.pageSizeDefault, pageSizeDefault = _f === void 0 ? 20 : _f, importCSV = _a.importCSV, handleTemplate = _a.handleTemplate, _g = _a.filterGeneral, filterGeneral = _g === void 0 ? true : _g, _h = _a.loading, loading = _h === void 0 ? false : _h, useSelection = _a.useSelection, selectionKey = _a.selectionKey, initialSelectedRows = _a.initialSelectedRows, setSelectedRows = _a.setSelectedRows, allRowsSelected = _a.allRowsSelected, setAllRowsSelected = _a.setAllRowsSelected, onClickRow = _a.onClickRow, _j = _a.toolsFooter, toolsFooter = _j === void 0 ? true : _j, _k = _a.initialPageIndex, initialPageIndex = _k === void 0 ? 0 : _k, _l = _a.helperText, helperText = _l === void 0 ? "" : _l, initialStateFilter = _a.initialStateFilter, registertext = _a.registertext, setDataFiltered = _a.setDataFiltered, _m = _a.useFooter, useFooter = _m === void 0 ? false : _m, _o = _a.heightWithCheck, heightWithCheck = _o === void 0 ? 43 : _o, _p = _a.checkHistoryCenter, checkHistoryCenter = _p === void 0 ? false : _p, showHideColumns = _a.showHideColumns, groupedBy = _a.groupedBy, ExtraMenuOptions = _a.ExtraMenuOptions, _q = _a.acceptTypeLoad, acceptTypeLoad = _q === void 0 ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv" : _q;
     var classes = useStyles();
     var dispatch = react_redux_1.useDispatch();
     var _r = react_1.useState(true), initial = _r[0], setInitial = _r[1];
+    var showExtraButtonIcon = showHideColumns || groupedBy || ExtraMenuOptions;
+    var _s = react_1.useState(false), isGroupedByModalOpen = _s[0], setGroupedByModalOpen = _s[1];
+    var _t = react_1.useState(false), isShowColumnsModalOpen = _t[0], setShowColumnsModalOpen = _t[1];
+    var _u = react_1["default"].useState(null), anchorElSeButtons = _u[0], setAnchorElSeButtons = _u[1];
+    var _v = react_1.useState(false), openSeButtons = _v[0], setOpenSeButtons = _v[1];
+    var _w = react_1.useState({}), columnVisibility = _w[0], setColumnVisibility = _w[1];
+    var t = react_i18next_1.useTranslation().t;
+    var handleClickSeButtons = function (event) {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons(function (prevOpen) { return !prevOpen; });
+    };
+    var handleOpenGroupedByModal = function () {
+        setGroupedByModalOpen(true);
+    };
+    var handleOpenShowColumnsModal = function () {
+        setShowColumnsModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
+    };
+    react_1.useEffect(function () {
+        var handleClickOutside = function (event) {
+            var target = event.target;
+            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null);
+                setOpenSeButtons(false);
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return function () {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
     var DefaultColumnFilter = function (_a) {
         var _b = _a.column, header = _b.id, $setFilter = _b.setFilter, _c = _b.listSelectFilter, listSelectFilter = _c === void 0 ? [] : _c, _d = _b.type, type = _d === void 0 ? "string" : _d;
         var iSF = initialStateFilter === null || initialStateFilter === void 0 ? void 0 : initialStateFilter.filter(function (x) { return x.id === header; })[0];
@@ -282,7 +345,6 @@ var TableZyx = react_1["default"].memo(function (_a) {
             if (e.keyCode === 13) {
                 setFilter({ value: value, operator: operator, type: type });
             }
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value, operator]);
         var handleDate = function (date) {
             if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
@@ -450,7 +512,7 @@ var TableZyx = react_1["default"].memo(function (_a) {
         Filter: function (props) { return DefaultColumnFilter(__assign(__assign({}, props), { data: data })); },
         filter: filterCellValue
     }); }, []);
-    var _s = react_table_1.useTable({
+    var _x = react_table_1.useTable({
         columns: columns,
         data: data,
         initialState: { pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
@@ -458,11 +520,12 @@ var TableZyx = react_1["default"].memo(function (_a) {
         getRowId: function (row, relativeIndex, parent) { return selectionKey
             ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
             : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex); }
-    }, react_table_1.useFilters, react_table_1.useGlobalFilter, react_table_1.useSortBy, react_table_1.usePagination, react_table_1.useRowSelect, function (hooks) {
+    }, react_table_1.useFilters, react_table_1.useGlobalFilter, react_table_1.useGroupBy, react_table_1.useSortBy, react_table_1.useExpanded, react_table_1.usePagination, react_table_1.useRowSelect, function (hooks) {
         useSelection && hooks.visibleColumns.push(function (columns) { return __spreadArrays([
             {
                 id: 'selection',
                 width: 80,
+                disableGroupBy: true,
                 Header: function (_a) {
                     var getToggleAllPageRowsSelectedProps = _a.getToggleAllPageRowsSelectedProps;
                     return (react_1["default"].createElement("div", null,
@@ -476,8 +539,14 @@ var TableZyx = react_1["default"].memo(function (_a) {
                 NoFilter: true
             }
         ], columns); });
-    }), getTableProps = _s.getTableProps, getTableBodyProps = _s.getTableBodyProps, headerGroups = _s.headerGroups, footerGroups = _s.footerGroups, prepareRow = _s.prepareRow, page = _s.page, // Instead of using 'rows', we'll use page,
-    canPreviousPage = _s.canPreviousPage, canNextPage = _s.canNextPage, pageOptions = _s.pageOptions, pageCount = _s.pageCount, gotoPage = _s.gotoPage, nextPage = _s.nextPage, previousPage = _s.previousPage, setPageSize = _s.setPageSize, globalFilteredRows = _s.globalFilteredRows, setGlobalFilter = _s.setGlobalFilter, _t = _s.state, pageIndex = _t.pageIndex, pageSize = _t.pageSize, selectedRowIds = _t.selectedRowIds, toggleAllRowsSelected = _s.toggleAllRowsSelected;
+        hooks.useInstanceBeforeDimensions.push(function (_a) {
+            var headerGroups = _a.headerGroups;
+            // fix the parent group of the selection button to not be resizable
+            var selectionGroupHeader = headerGroups[0].headers[0];
+            selectionGroupHeader.canResize = false;
+        });
+    }), getTableProps = _x.getTableProps, getTableBodyProps = _x.getTableBodyProps, headerGroups = _x.headerGroups, footerGroups = _x.footerGroups, prepareRow = _x.prepareRow, page = _x.page, // Instead of using 'rows', we'll use page,
+    canPreviousPage = _x.canPreviousPage, canNextPage = _x.canNextPage, pageOptions = _x.pageOptions, pageCount = _x.pageCount, gotoPage = _x.gotoPage, nextPage = _x.nextPage, previousPage = _x.previousPage, setPageSize = _x.setPageSize, globalFilteredRows = _x.globalFilteredRows, setGlobalFilter = _x.setGlobalFilter, allColumns = _x.allColumns, _y = _x.state, pageIndex = _y.pageIndex, pageSize = _y.pageSize, selectedRowIds = _y.selectedRowIds, toggleAllRowsSelected = _x.toggleAllRowsSelected;
     react_1.useEffect(function () {
         setDataFiltered && setDataFiltered(globalFilteredRows.map(function (x) { return x.original; }));
     }, [globalFilteredRows]);
@@ -531,12 +600,12 @@ var TableZyx = react_1["default"].memo(function (_a) {
             titlemodule ? react_1["default"].createElement("span", { className: classes.title },
                 titlemodule,
                 helperText !== "" ? react_1["default"].createElement(Tooltip_1["default"], { title: react_1["default"].createElement("div", { style: { fontSize: 12 } }, helperText), arrow: true, placement: "top" },
-                    react_1["default"].createElement(InfoRounded_1["default"], { color: "action", className: classes.iconHelpText })) : "") : (react_1["default"].createElement("div", { style: { flexGrow: 1 } }, typeof ButtonsElement === 'function' ? ((react_1["default"].createElement(ButtonsElement, null))) : (ButtonsElement))),
+                    react_1["default"].createElement(InfoRounded_1["default"], { color: "action", className: classes.iconHelpText })) : "") : (react_1["default"].createElement("div", { style: { flexGrow: 1 } }, typeof ButtonsElement === 'function' ? (ButtonsElement()) : (ButtonsElement))),
             react_1["default"].createElement("span", { className: classes.containerButtons },
                 fetchData && (react_1["default"].createElement(Tooltip_1["default"], { title: "Refresh" },
                     react_1["default"].createElement(Fab_1["default"], { size: "small", "aria-label": "add", color: "primary", disabled: loading, style: { marginLeft: '1rem' }, onClick: function () { return fetchData && fetchData({}); } },
                         react_1["default"].createElement(icons_1.Refresh, null)))),
-                typeof ButtonsElement === 'function' ? ((react_1["default"].createElement(ButtonsElement, null))) : (ButtonsElement),
+                (ButtonsElement && !!titlemodule) && react_1["default"].createElement(ButtonsElement, null),
                 importCSV && (react_1["default"].createElement(react_1["default"].Fragment, null,
                     react_1["default"].createElement("input", { name: "file", accept: acceptTypeLoad, id: "laraigo-upload-csv-file", type: "file", style: { display: 'none' }, onChange: function (e) { return importCSV(e.target.files); } }),
                     react_1["default"].createElement("label", { htmlFor: "laraigo-upload-csv-file" },
@@ -551,6 +620,25 @@ var TableZyx = react_1["default"].memo(function (_a) {
                     react_1["default"].createElement(react_i18next_1.Trans, { i18nKey: keys_1.langKeys.calculate }))),
                 download && (react_1["default"].createElement(Button_1["default"], { className: classes.button, variant: "contained", color: "primary", disabled: loading, onClick: function () { return triggerExportPersonalized ? exportPersonalized && exportPersonalized() : helpers_1.exportExcel(String(titlemodule || '') + "Report", globalFilteredRows.map(function (x) { return x.original; }), columns.filter(function (x) { return (!x.isComponent && !x.activeOnHover); })); }, startIcon: react_1["default"].createElement(icons_2.DownloadIcon, null) },
                     react_1["default"].createElement(react_i18next_1.Trans, { i18nKey: keys_1.langKeys.download }))),
+                showExtraButtonIcon && (react_1["default"].createElement("div", null,
+                    react_1["default"].createElement(IconButton_1["default"], { "aria-label": "more", id: "long-button", onClick: function (event) { return handleClickSeButtons(event); }, style: { backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined } },
+                        react_1["default"].createElement(icons_1.MoreVert, null)),
+                    react_1["default"].createElement("div", { style: { display: 'flex', gap: 8 } },
+                        react_1["default"].createElement(core_1.Popper, { open: openSeButtons, anchorEl: anchorElSeButtons, placement: "bottom", transition: true, style: { marginRight: '1rem' } }, function (_a) {
+                            var TransitionProps = _a.TransitionProps;
+                            return (react_1["default"].createElement(core_1.Paper, __assign({}, TransitionProps, { elevation: 5 }),
+                                groupedBy && (react_1["default"].createElement("div", null,
+                                    react_1["default"].createElement(MenuItem_1["default"], { style: { padding: '0.7rem 1rem', fontSize: '0.96rem' }, onClick: handleOpenGroupedByModal },
+                                        react_1["default"].createElement(core_1.ListItemIcon, null,
+                                            react_1["default"].createElement(AllInbox_1["default"], { fontSize: "small", style: { fill: 'grey', height: '23px' } })),
+                                        react_1["default"].createElement(core_1.Typography, { variant: "inherit" }, t(keys_1.langKeys.groupedBy))),
+                                    react_1["default"].createElement(core_1.Divider, null))),
+                                showHideColumns && (react_1["default"].createElement(MenuItem_1["default"], { style: { padding: '0.7rem 1rem', fontSize: '0.96rem' }, onClick: handleOpenShowColumnsModal },
+                                    react_1["default"].createElement(core_1.ListItemIcon, null,
+                                        react_1["default"].createElement(ViewWeek_1["default"], { fontSize: "small", style: { fill: 'grey', height: '25px' } })),
+                                    react_1["default"].createElement(core_1.Typography, { variant: "inherit" }, t(keys_1.langKeys.showHideColumns)))),
+                                ExtraMenuOptions));
+                        })))),
                 deleteData && (react_1["default"].createElement(Button_1["default"], { className: classes.button, variant: "outlined", color: "primary", disabled: loading, onClick: deleteDataFunction, startIcon: react_1["default"].createElement(Delete_1["default"], { color: 'secondary' }), style: { backgroundColor: "#FB5F5F", color: "white" } },
                     react_1["default"].createElement(react_i18next_1.Trans, { i18nKey: keys_1.langKeys.deletedata }))),
                 importData && (react_1["default"].createElement(react_1["default"].Fragment, null,
@@ -570,11 +658,28 @@ var TableZyx = react_1["default"].memo(function (_a) {
             react_1["default"].createElement("span", null),
             react_1["default"].createElement("div", { className: classes.containerSearch },
                 react_1["default"].createElement(components_1.SearchField, { disabled: loading, colorPlaceHolder: '#FFF', handleChangeOther: setGlobalFilter, lazy: true })))),
+        isGroupedByModalOpen && (react_1["default"].createElement(components_1.DialogZyx, { open: isGroupedByModalOpen, title: t(keys_1.langKeys.groupedBy), buttonText1: t(keys_1.langKeys.close), buttonText2: t(keys_1.langKeys.apply), handleClickButton1: function () { return setGroupedByModalOpen(false); }, handleClickButton2: function () { return setGroupedByModalOpen(false); }, maxWidth: "sm", buttonStyle1: { marginBottom: '0.3rem' }, buttonStyle2: { marginRight: '1rem', marginBottom: '0.3rem' } })),
+        isShowColumnsModalOpen && (react_1["default"].createElement(components_1.DialogZyx, { open: isShowColumnsModalOpen, title: t(keys_1.langKeys.showHideColumns), buttonText2: t(keys_1.langKeys.close), handleClickButton2: function () { return setShowColumnsModalOpen(false); }, maxWidth: "sm", buttonStyle1: { marginBottom: '0.3rem' }, buttonStyle2: { marginRight: '1rem', marginBottom: '0.3rem' } },
+            react_1["default"].createElement(core_1.Grid, { container: true, spacing: 1, style: { marginTop: '0.5rem' } }, allColumns.filter(function (column) {
+                var isColumnInstance = 'accessor' in column && 'Header' in column;
+                if ("fixed" in column)
+                    return false;
+                return isColumnInstance && 'showColumn' in column && column.showColumn === true;
+            })
+                .map(function (column) { return (react_1["default"].createElement(core_1.Grid, { item: true, xs: 4, key: column.id },
+                react_1["default"].createElement(core_1.FormControlLabel, { control: react_1["default"].createElement(Checkbox_1["default"], { color: "primary", checked: !columnVisibility[column.id], onChange: function () {
+                            column.toggleHidden();
+                            setColumnVisibility(function (prevVisibility) {
+                                var _a;
+                                return (__assign(__assign({}, prevVisibility), (_a = {}, _a[column.id] = !prevVisibility[column.id], _a)));
+                            });
+                        } }), label: t(column.Header) }))); })))),
         HeadComponent && react_1["default"].createElement(HeadComponent, null),
         react_1["default"].createElement(TableContainer_1["default"], { style: { position: "relative", flex: 1, display: "flex", flexDirection: "column" } },
             react_1["default"].createElement(Box_1["default"], { overflow: "auto", style: { flex: 1 } },
                 react_1["default"].createElement(Table_1["default"], __assign({ size: "small" }, getTableProps(), { "aria-label": "enhanced table", "aria-labelledby": "tableTitle" }),
-                    react_1["default"].createElement(TableHead_1["default"], { style: { display: 'table-header-group' } }, headerGroups.map(function (headerGroup) { return (react_1["default"].createElement(TableRow_1["default"], __assign({}, headerGroup.getHeaderGroupProps(), { style: useSelection ? { display: 'flex' } : {} }), headerGroup.headers.map(function (column, ii) { return (column.activeOnHover ?
+                    react_1["default"].createElement(TableHead_1["default"], { style: { display: 'table-header-group' } }, headerGroups.map(function (headerGroup) { return ( //eslint-disable-next-line
+                    react_1["default"].createElement(TableRow_1["default"], __assign({}, headerGroup.getHeaderGroupProps(), { style: useSelection ? { display: 'flex' } : {} }), headerGroup.headers.map(function (column, ii) { return (column.activeOnHover ?
                         react_1["default"].createElement("th", { style: { width: "0px" }, key: "header-floating" }) :
                         react_1["default"].createElement(TableCell_1["default"], { key: ii, style: useSelection ? __assign({}, (column.width === 'auto' ? {
                                 flex: 1
@@ -586,7 +691,9 @@ var TableZyx = react_1["default"].memo(function (_a) {
                             column.render('Header') :
                             (react_1["default"].createElement(react_1["default"].Fragment, null,
                                 react_1["default"].createElement("div", { className: classes.containerHeaderColumn },
-                                    react_1["default"].createElement(Box_1["default"], __assign({}, column.getHeaderProps(column.getSortByToggleProps({ title: 'ordenar' })), { style: {
+                                    column.canGroupBy === true && (react_1["default"].createElement(Tooltip_1["default"], { title: '' },
+                                        react_1["default"].createElement("div", { style: { whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' } }, column.canGroupBy === true && (react_1["default"].createElement(core_1.TableSortLabel, __assign({ active: true, direction: column.isGrouped ? 'desc' : 'asc', IconComponent: KeyboardArrowRight_1["default"], className: classes.headerIcon }, column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar' })))))))),
+                                    react_1["default"].createElement(Box_1["default"], __assign({}, column.getHeaderProps(column.getSortByToggleProps({ title: 'Ordenar' })), { style: {
                                             whiteSpace: 'nowrap',
                                             wordWrap: 'break-word',
                                             display: 'flex',
@@ -606,16 +713,31 @@ var TableZyx = react_1["default"].memo(function (_a) {
                         (!loading && useSelection) && (react_1["default"].createElement(react_window_1.FixedSizeList, { style: { overflowX: 'hidden' }, direction: "vertical", width: "auto", height: page.length * 43, itemCount: page.length, itemSize: heightWithCheck }, RenderRow)),
                         (!loading && !useSelection) && page.map(function (row) {
                             prepareRow(row);
-                            return (react_1["default"].createElement(TableRow_1["default"], __assign({}, row.getRowProps(), { hover: true, style: { cursor: onClickRow ? 'pointer' : 'default' } }), row.cells.map(function (cell, i) {
+                            return ( //eslint-disable-next-line
+                            react_1["default"].createElement(TableRow_1["default"], __assign({}, row.getRowProps(), { hover: true, style: { cursor: onClickRow ? 'pointer' : 'default' } }), row.cells.map(function (cell) {
                                 var _a;
                                 return react_1["default"].createElement(TableCell_1["default"], __assign({}, cell.getCellProps({
                                     style: __assign(__assign({ minWidth: cell.column.minWidth, width: cell.column.width, maxWidth: cell.column.maxWidth, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }, (toolsFooter ? {} : { padding: '0px' })), { textAlign: cell.column.type === "number" ? "right" : (((_a = cell.column.type) === null || _a === void 0 ? void 0 : _a.includes('centered')) ? "center" : "left") })
-                                }), { onClick: function () { var _a; return cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, (_a = cell === null || cell === void 0 ? void 0 : cell.column) === null || _a === void 0 ? void 0 : _a.id) : null; } }), cell.render('Cell'));
+                                }), { onClick: function () { var _a; return cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, (_a = cell === null || cell === void 0 ? void 0 : cell.column) === null || _a === void 0 ? void 0 : _a.id) : null; } }), cell.isGrouped ? (react_1["default"].createElement(react_1["default"].Fragment, null,
+                                    react_1["default"].createElement(core_1.TableSortLabel, __assign({ classes: {
+                                            iconDirectionAsc: classes.iconDirectionAsc,
+                                            iconDirectionDesc: classes.iconDirectionDesc
+                                        }, active: true, direction: row.isExpanded ? 'desc' : 'asc', IconComponent: KeyboardArrowUp_1["default"] }, row.getToggleRowExpandedProps(), { onClick: function (e) {
+                                            e.stopPropagation();
+                                            row.toggleRowExpanded();
+                                        }, className: classes.cellIcon })),
+                                    ' ',
+                                    cell.render('Cell', { editable: false }),
+                                    " (",
+                                    row.subRows.length,
+                                    ")")) : (columns.isGrouped ? (cell.isAggregated ? (cell.render('Aggregated')) : cell.isPlaceholder ? null : (cell.render('Cell'))) : (cell.render('Cell'))));
                             })));
                         })),
-                    useFooter && react_1["default"].createElement(core_1.TableFooter, null, footerGroups.map(function (group) { return (react_1["default"].createElement(TableRow_1["default"], __assign({}, group.getFooterGroupProps()), group.headers.map(function (column) {
+                    useFooter && react_1["default"].createElement(core_2.TableFooter, null, footerGroups.map(function (group) { return ( //eslint-disable-next-line
+                    react_1["default"].createElement(TableRow_1["default"], __assign({}, group.getFooterGroupProps()), group.headers.map(function (column) {
                         var _a;
-                        return (react_1["default"].createElement(TableCell_1["default"], __assign({}, column.getFooterProps({
+                        return ( //eslint-disable-next-line
+                        react_1["default"].createElement(TableCell_1["default"], __assign({}, column.getFooterProps({
                             style: {
                                 fontWeight: "bold",
                                 color: "black",

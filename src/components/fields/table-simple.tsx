@@ -866,7 +866,7 @@ const TableZyx = React.memo(({
                     </Tooltip> : ""}
                 </span> : (<div style={{ flexGrow: 1 }}>
                     {typeof ButtonsElement === 'function' ? (
-                        (<ButtonsElement />)
+                        ButtonsElement()
                         ) : (
                         ButtonsElement
                     )}
@@ -886,11 +886,7 @@ const TableZyx = React.memo(({
                             </Fab>
                         </Tooltip>
                     )}
-                    {typeof ButtonsElement === 'function' ? (
-                        (<ButtonsElement />)
-                        ) : (
-                        ButtonsElement
-                    )}
+                    {(ButtonsElement && !!titlemodule) && <ButtonsElement />}
                     {importCSV && (
                         <>
                             <input
