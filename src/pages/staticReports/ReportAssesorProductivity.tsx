@@ -542,15 +542,15 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                                     key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
                                                     valueDefault={allParameters?.channel || ""}
                                                     onChange={(value) =>
-                                                        setValue("channel", value?.type || "")
+                                                        setValue("channel", value?.typedesc || "")
                                                     }
                                                     variant="outlined"
                                                     data={
                                                         multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
                                                     }
                                                     loading={multiData.loading}
-                                                    optionDesc={"typedesc"}
-                                                    optionValue={"type"}
+                                                    optionDesc={"type"}
+                                                    optionValue={"typedesc"}
                                                 />
                                             </div>
                                         </Box>
