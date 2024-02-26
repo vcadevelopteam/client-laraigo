@@ -164,7 +164,7 @@ const DeliverySchedulesDialog: React.FC<{
             handleClickButton1={handleSave}
         >
             <div className="row-zyx" style={{marginBottom: 0, display: 'flex', justifyContent: 'center'}}>
-                {deliveryShifts.length > 0 && (
+                {deliveryShifts?.length > 0 && (
                     <>
                         <span className="col-4">{t(langKeys.shift)}</span>
                         <span className="col-3">{t(langKeys.from)}</span>

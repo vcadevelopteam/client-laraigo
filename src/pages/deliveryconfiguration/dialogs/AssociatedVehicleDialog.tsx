@@ -73,10 +73,10 @@ const AssociatedVehicleDialog: React.FC<{
         const callback = () => {
             dispatch(showBackdrop(true));
             if (edit) {
-                dispatch(execute(deliveryVehicleIns({...data, operation: 'UPDATE'})));           
+                dispatch(execute(deliveryVehicleIns({...data, operation: 'UPDATE'})));
             }
             else {
-                dispatch(execute(deliveryVehicleIns({...data, operation: 'INSERT'})));           
+                dispatch(execute(deliveryVehicleIns({...data, operation: 'INSERT'})));
             }
             setWaitSave(true);
         }

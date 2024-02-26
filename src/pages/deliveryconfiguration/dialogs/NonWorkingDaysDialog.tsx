@@ -415,7 +415,7 @@ const NonWorkingDaysDialog: React.FC<{
                             />
                         </div>
                         <div className={classes.col4}>
-                            {recurrentNonWorkingDates.length > 0 ? (
+                            {recurrentNonWorkingDates?.length > 0 ? (
                                 <>
                                     <h3>{t(langKeys.recurringdates)}</h3>
                                     <div className={classes.selectedDatesContainer}>

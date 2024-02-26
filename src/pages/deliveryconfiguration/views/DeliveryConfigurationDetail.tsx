@@ -380,6 +380,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 <MotiveDialog
                     openModal={openModalMotiveDialog}
                     setOpenModal={setOpenModalMotiveDialog}
+                    fetchData={fetchMotiveAndDrivers}
                 />
             </form>
         </>
