@@ -2053,6 +2053,7 @@ const translation: LangKeys = {
   successfully_scheduled: "Ha programado el evento con éxito",
   confirmed: "Confirmado",
   enter_details: "Ingrese los detalles",
+  enter_details: "Ingrese los detalles",
   warehouse: "Almacén",
   warehouses: "Almacenes",
   standard_cost: "Costo estándar",
@@ -2440,7 +2441,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_userproductivity_fullname: 'Asesor',
   report_userproductivity_hourfirstlogin: 'Hora de primer logueo',
   
+  
   report_userproductivity_totaltickets: 'Cantidad de tickets',
+  eport_userproductivity_totaltickets_help: 'Cantidad de tickets que ha atendido el usuario.',
+
   eport_userproductivity_totaltickets_help: 'Cantidad de tickets que ha atendido el usuario.',
 
   report_userproductivity_closedtickets: 'Cerrados',
@@ -2471,6 +2475,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_userproductivity_userconnectedduration: 'Minutos conectados',
   report_userproductivity_userstatus: 'Estado actual',
   report_userproductivity_groups: 'Grupo de atención',
+
 
   report_userproductivity_tmravg: "TMR promedio",
   report_userproductivity_tmradviseravg: "TMR Asesor",
@@ -3272,6 +3277,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   sdrequestcode: "Código de solicitud SD",
   report_reportcompliancesla: "Reporte de cumplimiento de SLAs",
   report_reportrequestsd: "Reporte de solicitudes SD",
+
+
+
+
+  
   manageClassification_plural: 'Gestionar clasificaciones',
   manageRestrictedEmoji: 'Gestionar emoji restringido',
   manageRestrictedEmoji_plural: 'Gestionar emojis restringidos',
@@ -5807,6 +5817,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billig_paymentmethod: 'Método de Pago',
   billig_creditcard: 'Tarjeta de Crédito',
   billig_debitcard: 'Tarjeta de Débito',
+  billig_credit: 'Crédito',
   billig_credit: 'Crédito',
   billig_cash: 'Efectivo',
   billing_iva: 'IVA',

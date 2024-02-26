@@ -20,7 +20,7 @@ import { getCollection, getCollectionAux, execute, resetMain, getCollectionPagin
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
-import AssesorProductivityReport from 'pages/staticReports/AssesorProductivityReport';
+import AssesorProductivityReport from 'pages/staticReports/ReportAssesorProductivity';
 import DetailReportDesigner from 'pages/ReportTemplate';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
@@ -40,16 +40,16 @@ import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
 import HSMHistoryReport from './HSMHistoryReport';
 import UniqueContactsReport from './UniqueContactsReport';
-import { CampaignReport } from 'pages/staticReports/CampaignReport';
+import { CampaignReport } from 'pages/staticReports/ReportCampaign';
 import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
-import ReportRequestSD from 'components/report/ReportRequestSD';
+import ReportRequestSD from 'pages/staticReports/ReportRequestSD';
 import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
 import { columnsHideShow } from 'common/helpers/columnsReport';
-import TipificationReport from './staticReports/TipificationReport';
-import ProductivityHoursReport from './staticReports/ProductivityHoursReport';
+import TipificationReport from './staticReports/ReportTipification';
+import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean

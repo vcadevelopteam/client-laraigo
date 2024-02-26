@@ -551,6 +551,11 @@ const translation: LangKeys = {
   registrationdate: "Registration date",
   report_reportcompliancesla: "SLA compliance report",
   report_reportrequestsd: "SD request report",
+
+
+
+
+  
   type_org_22: 'Manufacture of rubber products',
   type_org_23: 'Manufacture of metallurgical products',
   type_org_24: 'Weapons manufacturing',
@@ -824,7 +829,9 @@ const translation: LangKeys = {
   type_ocupation_39: "BUILDER",
   type_ocupation_40: "COUNTER",
   transferdate: "Transfer date",
+  transferdate: "Transfer date",
   dispatchedquantity: "Dispatched quantity",
+  error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",  type_ocupation_41: "CONTRACTOR",
   error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",  type_ocupation_41: "CONTRACTOR",
   type_ocupation_42: "CLOTHING AND CUTTING / GARMENT MANUFACTURER",
   type_ocupation_43: "COSMETOLOGIST, HAIRDRESSER AND BARBER",
@@ -2587,7 +2594,10 @@ const translation: LangKeys = {
   organizationdetail: "Organization detail",
   messagetemplatedetail: "Message template detail",
   
+  
   report_userproductivity_totaltickets: 'Ticket quantity',
+  eport_userproductivity_totaltickets_help: 'Number of tickets handled by the user.',
+
   eport_userproductivity_totaltickets_help: 'Number of tickets handled by the user.',
 
   report_userproductivity_closedtickets: 'Closed',
@@ -2618,6 +2628,7 @@ const translation: LangKeys = {
   report_userproductivity_userconnectedduration: 'Minutes connected',
   report_userproductivity_userstatus: 'Actual state',
   report_userproductivity_groups: 'Attetion group',
+
 
   report_userproductivity_tmravg: "TMR AVG",
   report_userproductivity_tmradviseravg: "TMR Agent",
@@ -5880,6 +5891,7 @@ const translation: LangKeys = {
   billig_paymentmethod: 'Payment Method',
   billig_creditcard: 'Credit Card',
   billig_debitcard: 'Debit Card',
+  billig_credit: 'Credit',
   billig_credit: 'Credit',
   billig_cash: 'Cash',
   billing_iva: 'IVA',

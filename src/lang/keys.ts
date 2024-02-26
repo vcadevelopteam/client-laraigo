@@ -816,6 +816,7 @@ export const langKeys = {
   report_recordhsmreport: "report_recordhsmreport",
   report_reportcompliancesla: "report_reportcompliancesla",
   report_reportrequestsd: "report_reportrequestsd",
+
   report_invoice: "report_invoice",
   origin: "origin",
   unitaryprice: "unitaryprice",
