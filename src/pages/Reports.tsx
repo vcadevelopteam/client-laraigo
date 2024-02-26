@@ -49,7 +49,7 @@ import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
 import { columnsHideShow } from 'common/helpers/columnsReport';
 import TipificationReport from './staticReports/TipificationReport';
-import ProductivityHoursReport from './staticReports/ProductivityHoursreport';
+import ProductivityHoursReport from './staticReports/ProductivityHoursReport';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
