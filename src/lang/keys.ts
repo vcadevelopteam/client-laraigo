@@ -2667,9 +2667,9 @@ export const langKeys = {
 
   report_ticketvsasesor: 'report_ticketvsasesor',
   report_userproductivityhours: 'report_userproductivityhours',
-  report_userproductivityhours_datehour: 'report_userproductivityhours_datestr',
+  report_userproductivityhours_datehour: 'report_userproductivityhours_datehour',
   report_userproductivityhours_idletimewithoutattention: 'report_userproductivityhours_idletimewithoutattention',
-  report_userproductivityhours_agent: 'report_userproductivityhours_fullname',
+  report_userproductivityhours_agent: 'report_userproductivityhours_agent',
   report_userproductivityhours_hoursrange: 'report_userproductivityhours_hoursrange',
   report_userproductivityhours_worktime: 'report_userproductivityhours_worktime',
   report_userproductivityhours_worktime_help: 'report_userproductivityhours_worktime_help',
@@ -2759,7 +2759,7 @@ export const langKeys = {
   report_userproductivity_hourfirstlogin: 'report_userproductivity_hourfirstlogin',
   
   report_userproductivity_totaltickets: 'report_userproductivity_totaltickets',
-  eport_userproductivity_totaltickets_help: 'report_userproductivity_totaltickets_help',
+  report_userproductivity_totaltickets_help: 'report_userproductivity_totaltickets_help',
 
 
 
@@ -5816,6 +5816,10 @@ export const langKeys = {
   billing_iva: 'billing_iva',
   billing_paymentcardnotvalid: "billing_paymentcardnotvalid",
   current_language: 'current_language',
+  twitter_code: 'twitter_code',
+  twitter_or: 'twitter_or',
+  twitter_accesstoken: 'twitter_accesstoken',
+  twitter_refreshtoken: 'twitter_refreshtoken',
   catalogmaster_haslink: 'catalogmaster_haslink',
   entereddata: 'entereddata',
   coordinate: 'coordinate',
