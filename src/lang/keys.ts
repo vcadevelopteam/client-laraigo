@@ -2759,7 +2759,7 @@ export const langKeys = {
   report_userproductivity_hourfirstlogin: 'report_userproductivity_hourfirstlogin',
   
   report_userproductivity_totaltickets: 'report_userproductivity_totaltickets',
-  eport_userproductivity_totaltickets_help: 'report_userproductivity_totaltickets_help',
+  report_userproductivity_totaltickets_help: 'report_userproductivity_totaltickets_help',
 
 
 

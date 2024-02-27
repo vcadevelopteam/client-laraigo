@@ -2445,9 +2445,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   
   
   report_userproductivity_totaltickets: 'Cantidad de tickets',
-  eport_userproductivity_totaltickets_help: 'Cantidad de tickets que ha atendido el usuario.',
+  report_userproductivity_totaltickets_help: 'Cantidad de tickets que ha atendido el usuario.',
 
-  eport_userproductivity_totaltickets_help: 'Cantidad de tickets que ha atendido el usuario.',
 
   report_userproductivity_closedtickets: 'Cerrados',
   report_userproductivity_closedtickets_help: 'Cantidad de tickets en estado “Cerrado” que ha atendido el usuario',

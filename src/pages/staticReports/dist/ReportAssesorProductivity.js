@@ -118,31 +118,29 @@ var columnsTemp = [
     "groups",
 ];
 var AssesorProductivityReport = function (_a) {
-    var _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    var _b, _c, _d, _e, _f, _g, _h, _j;
     var allFilters = _a.allFilters;
     var t = react_i18next_1.useTranslation().t;
     var classes = useStyles();
     var dispatch = react_redux_1.useDispatch();
     var multiData = hooks_1.useSelector(function (state) { return state.main.multiData; });
-    var user = hooks_1.useSelector(function (state) { return state.login.validateToken.user; });
-    var groups = ((_b = user === null || user === void 0 ? void 0 : user.groups) === null || _b === void 0 ? void 0 : _b.split(",").filter(function (x) { return !!x; })) || [];
     var mainAux = hooks_1.useSelector(function (state) { return state.main.mainAux; });
-    var _l = react_1.useState([]), groupsdata = _l[0], setgroupsdata = _l[1];
-    var _m = react_1.useState({}), allParameters = _m[0], setAllParameters = _m[1];
-    var _o = react_1.useState({
+    var _k = react_1.useState([]), groupsdata = _k[0], setgroupsdata = _k[1];
+    var _l = react_1.useState({}), allParameters = _l[0], setAllParameters = _l[1];
+    var _m = react_1.useState({
         startDate: new Date(new Date().setDate(1)),
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: "selection"
-    }), dateRange = _o[0], setdateRange = _o[1];
-    var _p = react_1.useState(false), openDateRangeModal = _p[0], setOpenDateRangeModal = _p[1];
-    var _q = react_1.useState({ checkedA: false, checkedB: false }), state = _q[0], setState = _q[1];
-    var _r = react_1.useState(false), checkedA = _r[0], setcheckedA = _r[1];
-    var _s = react_1.useState(false), isday = _s[0], setisday = _s[1];
-    var _t = react_1.useState(""), columnGraphic = _t[0], setColumnGraphic = _t[1];
-    var _u = react_1["default"].useState(null), anchorElSeButtons = _u[0], setAnchorElSeButtons = _u[1];
-    var _v = react_1.useState(false), openSeButtons = _v[0], setOpenSeButtons = _v[1];
-    var _w = react_1.useState(false), openFilterModal = _w[0], setOpenFilterModal = _w[1];
-    var _x = react_1.useState({
+    }), dateRange = _m[0], setdateRange = _m[1];
+    var _o = react_1.useState(false), openDateRangeModal = _o[0], setOpenDateRangeModal = _o[1];
+    var _p = react_1.useState({ checkedA: false, checkedB: false }), state = _p[0], setState = _p[1];
+    var _q = react_1.useState(false), checkedA = _q[0], setcheckedA = _q[1];
+    var _r = react_1.useState(false), isday = _r[0], setisday = _r[1];
+    var _s = react_1.useState(""), columnGraphic = _s[0], setColumnGraphic = _s[1];
+    var _t = react_1["default"].useState(null), anchorElSeButtons = _t[0], setAnchorElSeButtons = _t[1];
+    var _u = react_1.useState(false), openSeButtons = _u[0], setOpenSeButtons = _u[1];
+    var _v = react_1.useState(false), openFilterModal = _v[0], setOpenFilterModal = _v[1];
+    var _w = react_1.useState({
         maxticketsclosed: 0,
         maxticketsclosedasesor: "",
         minticketsclosed: 0,
@@ -151,15 +149,15 @@ var AssesorProductivityReport = function (_a) {
         maxtimeconnectedasesor: "",
         mintimeconnected: "0",
         mintimeconnectedasesor: ""
-    }), maxmin = _x[0], setmaxmin = _x[1];
-    var _y = react_1.useState([]), desconectedmotives = _y[0], setDesconectedmotives = _y[1];
-    var _z = react_1.useState(false), openModal = _z[0], setOpenModal = _z[1];
-    var _0 = react_1.useState("GRID"), view = _0[0], setView = _0[1];
-    var _1 = react_1.useState([]), dataGrid = _1[0], setdataGrid = _1[1];
-    var _2 = react_1.useState({
+    }), maxmin = _w[0], setmaxmin = _w[1];
+    var _x = react_1.useState([]), desconectedmotives = _x[0], setDesconectedmotives = _x[1];
+    var _y = react_1.useState(false), openModal = _y[0], setOpenModal = _y[1];
+    var _z = react_1.useState("GRID"), view = _z[0], setView = _z[1];
+    var _0 = react_1.useState([]), dataGrid = _0[0], setdataGrid = _0[1];
+    var _1 = react_1.useState({
         loading: false,
         data: []
-    }), detailCustomReport = _2[0], setDetailCustomReport = _2[1];
+    }), detailCustomReport = _1[0], setDetailCustomReport = _1[1];
     react_1.useEffect(function () {
         dispatch(actions_1.setViewChange("report_userproductivity"));
         dispatch(actions_1.getMultiCollection([
@@ -331,9 +329,7 @@ var AssesorProductivityReport = function (_a) {
                             ((groupitem_1 === null || groupitem_1 === void 0 ? void 0 : groupitem_1.values[0].isListDomains) ? (groupitem_1 === null || groupitem_1 === void 0 ? void 0 : groupitem_1.values[0].filter) + "_" + (groupitem_1 === null || groupitem_1 === void 0 ? void 0 : groupitem_1.values[0].domainname)
                                 : groupitem_1 === null || groupitem_1 === void 0 ? void 0 : groupitem_1.values[0].filter);
                     })];
-                    setgroupsdata(groups.length > 0
-                        ? arraygroups.data.filter(function (x) { return groups.includes(x.domainvalue); })
-                        : arraygroups.data);
+                    setgroupsdata(arraygroups.data);
                 }
             }
         }
@@ -464,8 +460,8 @@ var AssesorProductivityReport = function (_a) {
                             react_1["default"].createElement(core_1.Box, { className: classes.containerHeader, justifyContent: "space-between", alignItems: "center" },
                                 react_1["default"].createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
                                     react_1["default"].createElement(components_1.FieldSelect, { label: t("report_userproductivity_filter_channels"), className: classes.filterComponent, key: "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC", valueDefault: (allParameters === null || allParameters === void 0 ? void 0 : allParameters.channel) || "", onChange: function (value) {
-                                            return setValue("channel", (value === null || value === void 0 ? void 0 : value.type) || "");
-                                        }, variant: "outlined", data: ((_d = (_c = multiData === null || multiData === void 0 ? void 0 : multiData.data) === null || _c === void 0 ? void 0 : _c.find(function (x) { return x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"; })) === null || _d === void 0 ? void 0 : _d.data) || [], loading: multiData.loading, optionDesc: "type", optionValue: "typedesc" }))))),
+                                            return setValue("channel", (value === null || value === void 0 ? void 0 : value.typedesc) || "");
+                                        }, variant: "outlined", data: ((_c = (_b = multiData === null || multiData === void 0 ? void 0 : multiData.data) === null || _b === void 0 ? void 0 : _b.find(function (x) { return x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"; })) === null || _c === void 0 ? void 0 : _c.data) || [], loading: multiData.loading, optionDesc: "type", optionValue: "typedesc" }))))),
                     react_1["default"].createElement("div", { style: { display: "flex" } },
                         react_1["default"].createElement(core_1.Box, { width: 1 },
                             react_1["default"].createElement(core_1.Box, { className: classes.containerHeader, justifyContent: "space-between", alignItems: "center" },
@@ -489,9 +485,9 @@ var AssesorProductivityReport = function (_a) {
             react_1["default"].createElement(core_1.Box, { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, className: classes.containerHeaderItem },
                 react_1["default"].createElement(core_1.Button, { className: classes.button, variant: "contained", color: "primary", disabled: detailCustomReport.loading || !(detailCustomReport.data.length > 0), onClick: function () { return setOpenModal(true); }, startIcon: react_1["default"].createElement(icons_2.Settings, null) }, t(keys_1.langKeys.configuration)),
                 react_1["default"].createElement(core_1.Button, { className: classes.button, variant: "contained", color: "primary", onClick: function () { return setView("GRID"); }, startIcon: react_1["default"].createElement(List_1["default"], null) }, t(keys_1.langKeys.grid_view))),
-            react_1["default"].createElement(Graphic_1["default"], { graphicType: ((_e = view.split("-")) === null || _e === void 0 ? void 0 : _e[1]) || "BAR", column: ((_f = view.split("-")) === null || _f === void 0 ? void 0 : _f[2]) || "summary", openModal: openModal, setOpenModal: setOpenModal, daterange: {
-                    startDate: (_g = dateRange.startDate) === null || _g === void 0 ? void 0 : _g.toISOString().substring(0, 10),
-                    endDate: (_h = dateRange.endDate) === null || _h === void 0 ? void 0 : _h.toISOString().substring(0, 10)
+            react_1["default"].createElement(Graphic_1["default"], { graphicType: ((_d = view.split("-")) === null || _d === void 0 ? void 0 : _d[1]) || "BAR", column: ((_e = view.split("-")) === null || _e === void 0 ? void 0 : _e[2]) || "summary", openModal: openModal, setOpenModal: setOpenModal, daterange: {
+                    startDate: (_f = dateRange.startDate) === null || _f === void 0 ? void 0 : _f.toISOString().substring(0, 10),
+                    endDate: (_g = dateRange.endDate) === null || _g === void 0 ? void 0 : _g.toISOString().substring(0, 10)
                 }, withFilters: false, setView: setView, withButtons: false, row: { origin: "userproductivity" }, handlerSearchGraphic: handlerSearchGraphic }))),
         react_1["default"].createElement(SummaryGraphic, { openModal: openModal, setOpenModal: setOpenModal, setColumnGraphic: setColumnGraphic, setView: setView, daterange: dateRange, filters: allParameters, columns: __spreadArrays(columnsTemp.map(function (c) { return ({
                 key: c,
@@ -510,7 +506,7 @@ var AssesorProductivityReport = function (_a) {
                     }, variant: "outlined", data: groupsdata, optionDesc: "domaindesc", optionValue: "domainvalue" }),
                 react_1["default"].createElement(components_1.FieldMultiSelect, { limitTags: 1, label: t("report_userproductivity_filter_status"), className: classes.filterComponent + " col-6", key: "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER", valueDefault: (allParameters === null || allParameters === void 0 ? void 0 : allParameters.userstatus) || "", onChange: function (value) {
                         return setValue("userstatus", value ? value.map(function (o) { return o["domainvalue"]; }).join() : "");
-                    }, variant: "outlined", data: ((_k = (_j = multiData === null || multiData === void 0 ? void 0 : multiData.data) === null || _j === void 0 ? void 0 : _j.find(function (x) { return x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER"; })) === null || _k === void 0 ? void 0 : _k.data) || [], loading: multiData.loading, optionDesc: "domaindesc", optionValue: "domainvalue" }),
+                    }, variant: "outlined", data: ((_j = (_h = multiData === null || multiData === void 0 ? void 0 : multiData.data) === null || _h === void 0 ? void 0 : _h.find(function (x) { return x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER"; })) === null || _j === void 0 ? void 0 : _j.data) || [], loading: multiData.loading, optionDesc: "domaindesc", optionValue: "domainvalue" }),
                 react_1["default"].createElement("div", { style: { alignItems: "center" }, className: "col-6" },
                     react_1["default"].createElement("div", null,
                         react_1["default"].createElement(core_1.Box, { fontWeight: 500, lineHeight: "18px", fontSize: 16, color: "textPrimary", padding: "10px 0 8px 2px" }, t(keys_1.langKeys.report_userproductivity_filter_includebot)),

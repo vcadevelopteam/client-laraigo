@@ -2601,7 +2601,7 @@ const translation: LangKeys = {
   
   
   report_userproductivity_totaltickets: 'Ticket quantity',
-  eport_userproductivity_totaltickets_help: 'Number of tickets handled by the user.',
+  report_userproductivity_totaltickets_help: 'Number of tickets handled by the user.',
   report_userproductivity_closedtickets: 'Closed',
   report_userproductivity_closedtickets_help: 'Number of tickets in “Closed” status that the user has attended to',
   report_userproductivity_asignedtickets: 'In atention',
