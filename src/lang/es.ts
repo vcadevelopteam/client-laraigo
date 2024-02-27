@@ -1015,6 +1015,8 @@ const translation: LangKeys = {
   in_white: 'En blanco',
   containeridExplained: "El campo containerid debe ser reemplazado por el nombre del contenedor de la etiqueta",
   shippingchannel: "Canal de envío",
+  originchannel: "Canal origen",
+  originchannel_help: "Selecciona el canal en el que se aplicará la regla de automatización.",
   view_table: 'Ver tabla',
   reportscheduler: "Envíos Automáticos",
   reportscheduler_singular: "Envío Automático",
