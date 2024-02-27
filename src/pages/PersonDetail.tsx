@@ -1963,7 +1963,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         </DialogZyx>)
 }
 
-const PersonDetail2: FC<{ person: any; }> = ({ person }) => {
+const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ person, setrefresh }) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const { t } = useTranslation();
@@ -2216,6 +2216,7 @@ const PersonDetail2: FC<{ person: any; }> = ({ person }) => {
                     }))
                 }
                 setWaitValidation(false);
+                setrefresh(true)
             } else if (executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
                 dispatch(showBackdrop(false));
@@ -2571,17 +2572,21 @@ const PersonDetail: FC = () => {
     const location = useLocation<IPerson>();
     const executeResult = useSelector(state => state.main.execute);
     const [person, setperson] = useState<any>(location.state as IPerson | null);
+    const [refresh, setrefresh] = useState<boolean>(false);
+
     const [waitLoading, setWaitLoading] = useState(false);
     const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
 
     useEffect(() => {
-        if (!person) {
+        if (!person || refresh) {
             dispatch(showBackdrop(true));
             setWaitLoading(true)
             dispatch(execute(getPersonOne({ personid: match.params.id })));
+            setrefresh(false)
+            debugger
             //agregale la candicion para que llame al person sel
         }
-    }, [person]);
+    }, [person, refresh]);
 
     useEffect(() => {
         if (waitLoading && !executeResult.loading) {
@@ -2600,7 +2605,7 @@ const PersonDetail: FC = () => {
     return (
         <>
             {!!person &&
-                <PersonDetail2 person={person} />
+                <PersonDetail2 person={person} setrefresh={setrefresh}/>
             }
         </>
     );

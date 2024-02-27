@@ -725,7 +725,13 @@ const CRM: FC = () => {
                 </div>
             </div>
             )
-        default:
+        case 'phase':
+        return (
+          <div style={{ cursor: 'pointer' }}>
+            {(t((row[column.id]).toLowerCase())).toUpperCase()}
+          </div>
+        )
+      default:
             return (
             <div style={{ cursor: 'pointer' }}>
                 {
