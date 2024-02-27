@@ -2376,6 +2376,8 @@ const translation: LangKeys = {
   report_loginhistory_username: "Username",
   report_loginhistory_status: "Status",
   shippingchannel: "Shipping channel",
+  originchannel: "Source channel",
+  originchannel_help: "Select the channel on which the automation rule will be applied.",
   uniqueclients: "Unique contacts",
   report_loginhistory_status_help: `- Inbox: In receipt tray.
 - Login: Session initiated.
