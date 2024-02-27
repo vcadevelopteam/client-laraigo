@@ -4290,3 +4290,13 @@ export const updateAssistantAiDocumentTraining = (assistantaiid: number, documen
     key: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
     parameters: { assistantaiid, documentsid },
 });
+export const getHeatmapConfig = () => ({
+    method: "UFN_REPORT_CONFIGURATION_SEL",
+    key: "UFN_REPORT_CONFIGURATION_SEL",
+    parameters: { reportname: "" },
+});
+export const heatmapConfigIns = ({reportname, configuration}:Dictionary) => ({
+    method: "UFN_REPORT_CONFIGURATION_INS",
+    key: "UFN_REPORT_CONFIGURATION_INS",
+    parameters: { reportname, configuration: JSON.stringify(configuration)},
+});
