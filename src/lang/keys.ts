@@ -553,6 +553,8 @@ export const langKeys = {
   iaservices: 'iaservices',
   iaservices_plural: 'iaservices_plural',
   shippingchannel: "shippingchannel",
+  originchannel: "originchannel",
+  originchannel_help: "originchannel_help",
   iaservice_already_exist: 'iaservice_already_exist',
   iaservice_must_select: 'iaservice_must_select',
   error_already_exists_channel: 'error_already_exists_channel',
