@@ -20,6 +20,7 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 import { ListItemIcon } from "@material-ui/core";
 import { columnsHideShow } from "common/helpers/columnsReport";
 import { getTipificationLevel2, getTipificationLevel3, resetGetTipificationLevel2, resetGetTipificationLevel3 } from "store/inbox/actions";
+import { CellProps } from 'react-table';
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -127,6 +128,8 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState("GRID");
 
+    const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
+
     useEffect(() => {
         dispatch(getMultiCollection([getCommChannelLstTypeDesc(), getClassificationLevel1("TIPIFICACION")]));
         dispatch(setViewChange(`report_${"tipification"}`));
@@ -135,11 +138,34 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
         };
     }, []);
 
+
+    const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
+        const column = props.cell.column;// eslint-disable-next-line react/prop-types
+        const row = props.cell.row.original;
+        return (
+            <div onClick={() => {
+                setSelectedRow(row);
+                setOpenModal(true);
+            }}>             
+                {column.sortType === "datetime" && !!row[column.id] 
+                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                })// eslint-disable-next-line react/prop-types
+                : row[column.id]}
+            </div>
+        )
+    }
+
     const reportColumns = [
         {
-            proargnames: "ticket",
+            proargnames: "ticket", //accesor
             proargmodes: "t",
-            proargtype: "character varying",
+            proargtype: "character varying", //type
         },
         {
             proargnames: "datehour",
@@ -214,55 +240,117 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
     ];
 
     const columns = React.useMemo(
-        () =>
-            reportColumns.map((x) => {
-                const showColumn = columnsHideShow["tipification"]?.[x.proargnames] ?? false;
-                switch (x.proargtype) {
-                    case "timestamp without time zone":
-                        return {
-                            Header: t("report_" + "tipification" + "_" + x.proargnames || ""),
-                            accessor: x.proargnames,
-                            helpText:
-                                t("report_" + "tipification" + "_" + x.proargnames + "_help") ===
-                                "report_" + "tipification" + "_" + x.proargnames + "_help"
-                                    ? ""
-                                    : t("report_" + "tipification" + "_" + x.proargnames + "_help"),
-                            type: "date",
-                            showColumn,
-                            Cell: (props: any) => {
-                                const column = props.cell.column;
-                                const row = props.cell.row.original;
-                                return (
-                                    <div>
-                                        {convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                                            year: "numeric",
-                                            month: "2-digit",
-                                            day: "2-digit",
-                                            hour: "numeric",
-                                            minute: "numeric",
-                                            second: "numeric",
-                                            hour12: false,
-                                        })}
-                                    </div>
-                                );
-                            },
-                        };
-                    default:
-                        return {
-                            Header: t("report_tipification_" + x.proargnames || ""),
-                            accessor: x.proargnames,
-                            showColumn,
-                            helpText:
-                                t("report_tipification_" + x.proargnames + "_help") ===
-                                "report_tipification_" + x.proargnames + "_help"
-                                    ? ""
-                                    : t("report_tipification_" + x.proargnames + "_help"),
-                            type: "string",
-                        };
+        () => [      
+                          
+            {
+                Header: t(langKeys.report_tipification_ticket),
+                accessor: 'ticket',
+                groupedBy: false,  
+                showColumn: true,   
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_datehour),
+                accessor: 'datehour',
+                type: 'date',                
+                sortType: 'datetime',
+                groupedBy: false,  
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { datehour } = props.cell.row.original;
+                    return new Date(datehour).toLocaleString()
                 }
-            }),
-        [reportColumns]
+            },
+            {
+                Header: t(langKeys.report_tipification_enddate),
+                accessor: 'enddate',
+                groupedBy: false,           
+                showColumn: true,     
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_endtime),
+                accessor: 'endtime',
+                showColumn: true, 
+                
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_firstinteractiondate),
+                accessor: 'firstinteractiondate',
+                groupedBy: false,  
+                showColumn: true,               
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_firstinteractiontime),
+                accessor: 'firstinteractiontime',              
+                showColumn: true, 
+                Cell: cell
+                
+            },
+            {
+                Header: t(langKeys.report_tipification_person),
+                accessor: 'person',
+                groupedBy: false,  
+                showColumn: true,                
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_phone),
+                accessor: 'phone',
+                showColumn: true, 
+                groupedBy: false,  
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_closedby),
+                accessor: 'closedby',
+                showColumn: true, 
+                groupedBy: false,  
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_agent),
+                accessor: 'agent',
+                showColumn: true, 
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_closetype),
+                accessor: 'closetype',
+                groupedBy: false,  
+                showColumn: true, 
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_channel),
+                accessor: 'channel',
+               
+                showColumn: true, 
+              
+                Cell: cell
+            }, {
+                Header: t(langKeys.report_tipification_classificationlevel1),
+                accessor: 'classificationlevel1',
+                groupedBy: false,          
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_classificationlevel2),
+                accessor: 'classificationlevel2',
+                groupedBy: false,          
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_tipification_classificationlevel3),
+                accessor: 'classificationlevel3',
+                groupedBy: false,  
+                Cell: cell
+            },  
+        ],
+        []
     );
+
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {

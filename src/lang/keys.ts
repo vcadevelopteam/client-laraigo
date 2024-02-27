@@ -2667,9 +2667,9 @@ export const langKeys = {
 
   report_ticketvsasesor: 'report_ticketvsasesor',
   report_userproductivityhours: 'report_userproductivityhours',
-  report_userproductivityhours_datehour: 'report_userproductivityhours_datestr',
+  report_userproductivityhours_datehour: 'report_userproductivityhours_datehour',
   report_userproductivityhours_idletimewithoutattention: 'report_userproductivityhours_idletimewithoutattention',
-  report_userproductivityhours_agent: 'report_userproductivityhours_fullname',
+  report_userproductivityhours_agent: 'report_userproductivityhours_agent',
   report_userproductivityhours_hoursrange: 'report_userproductivityhours_hoursrange',
   report_userproductivityhours_worktime: 'report_userproductivityhours_worktime',
   report_userproductivityhours_worktime_help: 'report_userproductivityhours_worktime_help',
