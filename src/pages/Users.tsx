@@ -170,6 +170,14 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         loading: false,
         data: [],
     });
+    const [dataStores, setDataStores] = useState<{ loading: boolean; data: Dictionary[] }>({
+        loading: false,
+        data: [],
+    });
+    const [dataWarehouses, setDataWarehouses] = useState<{ loading: boolean; data: Dictionary[] }>({
+        loading: false,
+        data: [],
+    });
 
     const {
         register,
@@ -223,6 +231,14 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         const indexApplications = resFromOrg.data.findIndex(
             (x: MultiData) => x.key === "UFN_APPS_DATA_SEL" + (index + 1)
         );
+        
+        const indexStores = resFromOrg.data.findIndex(
+            (x: MultiData) => x.key === "UFN_STORE_SEL"
+        );
+
+        const indexWarehouses = resFromOrg.data.findIndex(
+            (x: MultiData) => x.key === "UFN_WAREHOUSE_SEL"
+        );
 
         if (indexSupervisor > -1)
             setDataSupervisors({
@@ -248,6 +264,24 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 data:
                     resFromOrg.data[indexGroups] && resFromOrg.data[indexGroups].success
                         ? resFromOrg.data[indexGroups].data
+                        : [],
+            });
+
+        if (indexStores > -1)
+            setDataStores({
+                loading: false,
+                data:
+                    resFromOrg.data[indexStores] && resFromOrg.data[indexStores].success
+                        ? resFromOrg.data[indexStores].data
+                        : [],
+            });
+
+        if (indexWarehouses > -1)
+            setDataWarehouses({
+                loading: false,
+                data:
+                    resFromOrg.data[indexWarehouses] && resFromOrg.data[indexWarehouses].success
+                        ? resFromOrg.data[indexWarehouses].data
                         : [],
             });
 
@@ -354,6 +388,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             setDataSupervisors({ loading: true, data: [] });
             setDataChannels({ loading: true, data: [] });
             setDataGroups({ loading: true, data: [] });
+            setDataStores({ loading: true, data: [] });
+            setDataWarehouses({ loading: true, data: [] });
             dispatch(
                 getMultiCollectionAux([
                     getSupervisors(value.orgid, 0, index + 1),
@@ -367,6 +403,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             setDataSupervisors({ loading: false, data: [] });
             setDataChannels({ loading: false, data: [] });
             setDataGroups({ loading: false, data: [] });
+            setDataStores({ loading: false, data: [] });
+            setDataWarehouses({ loading: false, data: [] });
         }
     };
 
@@ -495,9 +533,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 className={classes.mb2}
                                 valueDefault={getValues('storeid')}
                                 error={errors?.storeid?.message}
-                                data={resFromOrg?.data?.[4]?.data || []}
+                                data={dataStores.data}
                                 onChange={(value) => setValue('storeid', value.storeid)}
-                                loading={dataApplications.loading}
+                                loading={dataStores.loading}
                                 triggerOnChangeOnFirst={true}
                                 optionDesc="description"
                                 optionValue="storeid"
@@ -576,9 +614,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 className={classes.mb2}
                                 valueDefault={getValues('warehouseid')}
                                 error={errors?.warehouseid?.message}
-                                data={resFromOrg?.data?.[3]?.data || []}
+                                data={dataWarehouses.data}
                                 onChange={(value) => setValue('warehouseid', value.warehouseid)}
-                                loading={dataApplications.loading}
+                                loading={dataWarehouses.loading}
                                 triggerOnChangeOnFirst={true}
                                 optionDesc="description"
                                 optionValue="warehouseid"
