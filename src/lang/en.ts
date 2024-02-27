@@ -823,9 +823,9 @@ const translation: LangKeys = {
   type_ocupation_38: "JANITOR / GOALKEEPER / GUARDIAN / WATCHMAN",
   type_ocupation_39: "BUILDER",
   type_ocupation_40: "COUNTER",
-  transferdate:"Transfer date",
+  transferdate: "Transfer date",
   dispatchedquantity: "Dispatched quantity",
-  error_generate_label:"The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",
+  error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",
   type_ocupation_41: "CONTRACTOR",
   type_ocupation_42: "CLOTHING AND CUTTING / GARMENT MANUFACTURER",
   type_ocupation_43: "COSMETOLOGIST, HAIRDRESSER AND BARBER",
@@ -3633,6 +3633,7 @@ const translation: LangKeys = {
   max_limit: 'Max limit {{n}}',
   max_limit_file_per_upload: 'Max limit {{n}} files per upload',
   type_activitylead_call: 'Call',
+  type_activitylead_appointment: 'APPOINTMENT (Scheduling)',
   type_activitylead_automated: 'Automate message',
   type_activitylead_automatedmail: 'Automate message email',
   type_activitylead_automatedhsm: 'Automate message hsm',
@@ -5863,6 +5864,7 @@ const translation: LangKeys = {
   billing_iva: 'IVA',
   billing_paymentcardnotvalid: "This card is not valid for this payment method",
   current_language: 'en',
+  catalogmaster_haslink: 'Link to Business',
 };
 
 const enResource: ResourceLanguage = {

@@ -2052,7 +2052,7 @@ const translation: LangKeys = {
   reschedule_event: "Reprogramar evento",
   successfully_scheduled: "Ha programado el evento con éxito",
   confirmed: "Confirmado",
-  enter_details: "Ingrese los detalles",  
+  enter_details: "Ingrese los detalles",
   warehouse: "Almacén",
   warehouses: "Almacenes",
   standard_cost: "Costo estándar",
@@ -3444,6 +3444,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   invitation_date: "{{day}} {{date}} de {{month}} de {{year}}",
 
   type_activitylead_call: 'Llamada',
+  type_activitylead_appointment: 'CITA (Calendarización)',
   'type_activitylead_call for demo': 'Demo de llamada',
   'type_activitylead_email: welcome demo': 'Correo: Demostración de bienvenida',
   'type_activitylead_follow-up quote': 'Cotización de seguimiento',
@@ -5789,6 +5790,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billing_iva: 'IVA',
   billing_paymentcardnotvalid: "Esta tarjeta no es válida para este medio de pago",
   current_language: 'es',
+  catalogmaster_haslink: 'Enlazar a Negocio',
 };
 
 const esResource: ResourceLanguage = {
