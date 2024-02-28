@@ -10,13 +10,17 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeliveryConfigurationTabDetail from './detailTabs/DeliveryConfigurationTabDetail';
-import { getCollection, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
+import { getCollection, getCollectionAux, getCollectionAux2, getMultiCollection } from 'store/main/actions';
 import VehicleTypeDialog from '../dialogs/VehicleTypeDialog';
 import DeliverySchedulesDialog from '../dialogs/DeliverySchedulesDialog';
 import DeliveryPhotoDialog from '../dialogs/DeliveryPhotoDialog';
-import { deliveryAppUsersSel, deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel } from 'common/helpers';
+import { deliveryAppUsersSel, deliveryConfigurationIns, deliveryConfigurationSel, deliveryVehicleSel, reasonNonDeliverySel, subReasonNonDeliverySel } from 'common/helpers';
 import { execute } from "store/main/actions";
 import NonWorkingDaysDialog from '../dialogs/NonWorkingDaysDialog';
+import AutomaticDeliveryDialog from '../dialogs/AutomaticDeliveryDialog';
+import MotiveDialog from '../dialogs/MotiveDialog';
+import SubmotiveDialog from '../dialogs/SubmotiveDialog';
+import { Dictionary } from '@types';
 
 const useStyles = makeStyles(() => ({      
     corporationNameAndButtons: {
@@ -54,12 +58,6 @@ interface ConfigJson {
     sunday: boolean;
     validationdistance: null | number;
     deliveryphoto: boolean;
-    morningstarttime: string | null;
-    morningendtime: string | null;
-    afternoonstarttime: string | null;
-    afternoonendtime: string | null;
-    nightstarttime: string | null;
-    nightendtime: string | null;
 }
 
 interface VehicleType {
@@ -68,10 +66,22 @@ interface VehicleType {
     speed: number;
     capacity: number;
 }
+interface AutomaticSchedule {
+    starttime: string;
+    endtime: string;
+    shift: string;
+    deliveryday: string;
+}
+interface DeliveryShift {
+    shiftname: string;
+    starttime: string;
+    endtime: string;
+}
 
 const DeliveryConfigurationDetail: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
     const [waitSave2, setWaitSave2] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -80,6 +90,9 @@ const DeliveryConfigurationDetail: React.FC = () => {
     const [openModalVehicleType, setOpenModalVehicleType] = useState(false)
     const [openModalDeliverySchedules, setOpenModalDeliverySchedules] = useState(false)
     const [openModalDeliverPhoto, setOpenModalDeliverPhoto] = useState(false)
+    const [openModalAutomaticDelivery, setOpenModalAutomaticDelivery] = useState(false)
+    const [openModalMotiveDialog, setOpenModalMotiveDialog] = useState(false)
+    const [openModalSubmotiveDialog, setOpenModalSubmotiveDialog] = useState(false)
     const main = useSelector((state) => state.main.mainData);
     const [configjson, setConfigjson] = useState<ConfigJson>({
         automatica: false,
@@ -108,16 +121,14 @@ const DeliveryConfigurationDetail: React.FC = () => {
         sunday: false,
         validationdistance: null,
         deliveryphoto: false,
-        morningstarttime: null,
-        morningendtime: null,
-        afternoonstarttime: null,
-        afternoonendtime: null,
-        nightstarttime: null,
-        nightendtime: null,
     })
     const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
+    const [recurrentNonWorkingDates, setRecurrentNonWorkingDates] = useState<string[]>([])
     const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([])
     const [deliveryPhotos, setDeliveryPhotos] = useState<string[]>([])
+    const [automaticSchedules, setAutomaticSchedules] = useState<AutomaticSchedule[]>([])
+    const [deliveryShifts, setDeliveryShifts] = useState<DeliveryShift[]>([])
+    const [row, setRow] = useState<Dictionary|null>(null)
 
     const fetchOriginalConfig = () => {
         if(main.data.length) {
@@ -148,16 +159,13 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 sunday: main?.data?.[0]?.config?.sunday,
                 validationdistance: main?.data?.[0]?.config?.validationdistance,
                 deliveryphoto: main?.data?.[0]?.config?.deliveryphoto,
-                morningstarttime: main?.data?.[0]?.config?.morningstarttime,
-                morningendtime: main?.data?.[0]?.config?.morningendtime,
-                afternoonstarttime: main?.data?.[0]?.config?.afternoonstarttime,
-                afternoonendtime: main?.data?.[0]?.config?.afternoonendtime,
-                nightstarttime: main?.data?.[0]?.config?.nightstarttime,
-                nightendtime: main?.data?.[0]?.config?.nightendtime,
             })
             setNonWorkingDates(main?.data?.[0]?.config?.nonworkingdates)
             setVehicleTypes(main?.data?.[0]?.config?.vehicletypes)
             setDeliveryPhotos(main?.data?.[0]?.config?.deliveryphotos)
+            setAutomaticSchedules(main?.data?.[0]?.config?.automaticschedules)
+            setDeliveryShifts(main?.data?.[0]?.config?.deliveryshifts)
+            setRecurrentNonWorkingDates(main?.data?.[0]?.config?.recurrentnonworkingdates)
         } else {
             setConfigjson({
                 automatica: false,
@@ -169,8 +177,8 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 guided: true,
                 wspi: false,
                 emaili: false,
-                sendschedulen: false,
-                senddispatchn: false,
+                sendschedulen: true,
+                senddispatchn: true,
                 smsn: false,
                 wspn: false,
                 emailn: false,
@@ -186,12 +194,6 @@ const DeliveryConfigurationDetail: React.FC = () => {
                 sunday: false,
                 validationdistance: null,
                 deliveryphoto: false,
-                morningstarttime: null,
-                morningendtime: null,
-                afternoonstarttime: null,
-                afternoonendtime: null,
-                nightstarttime: null,
-                nightendtime: null,
             })
         }
     }
@@ -203,12 +205,15 @@ const DeliveryConfigurationDetail: React.FC = () => {
 
     const fetchConfiguration = () => dispatch(getCollection(deliveryConfigurationSel({id: 0, all: true})));
     const fetchVehicles = () => dispatch(getCollectionAux(deliveryVehicleSel({id: 0, all: true})));
-    const fetchDrivers = () => dispatch(getCollectionAux2(deliveryAppUsersSel()));
+    const fetchMotiveAndDrivers = () => dispatch(getMultiCollection([
+        reasonNonDeliverySel(0),
+        deliveryAppUsersSel()
+    ]))
 
     useEffect(() => {
         fetchConfiguration()
         fetchVehicles()
-        fetchDrivers()
+        fetchMotiveAndDrivers()
         setWaitSave2(true)
     }, [])
 
@@ -232,7 +237,15 @@ const DeliveryConfigurationDetail: React.FC = () => {
             if(existingConfig) {
                 dispatch(execute(deliveryConfigurationIns({
                     id: existingConfig?.deliveryconfigurationid,
-                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos}),
+                    config: JSON.stringify({
+                        ...configjson,
+                        nonworkingdates: nonWorkingDates,
+                        recurrentnonworkingdates: recurrentNonWorkingDates,
+                        vehicletypes: vehicleTypes,
+                        deliveryphotos: deliveryPhotos,
+                        automaticschedules: automaticSchedules,
+                        deliveryshifts: deliveryShifts
+                    }),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'UPDATE',
@@ -240,7 +253,15 @@ const DeliveryConfigurationDetail: React.FC = () => {
             } else {
                 dispatch(execute(deliveryConfigurationIns({
                     id: 0,
-                    config: JSON.stringify({...configjson, nonworkingdates: nonWorkingDates, vehicletypes: vehicleTypes, deliveryphotos: deliveryPhotos}),
+                    config: JSON.stringify({
+                        ...configjson,
+                        nonworkingdates: nonWorkingDates,
+                        recurrentnonworkingdates: recurrentNonWorkingDates,
+                        vehicletypes: vehicleTypes,
+                        deliveryphotos: deliveryPhotos,
+                        automaticschedules: automaticSchedules,
+                        deliveryshifts: deliveryShifts
+                    }),
                     status: 'ACTIVO',
                     type: '',              
                     operation: 'INSERT',
@@ -279,7 +300,7 @@ const DeliveryConfigurationDetail: React.FC = () => {
                             breadcrumbs={arrayBread}
                         />
                         <TitleDetail
-                            title={`${t(langKeys.name)} ${t(langKeys.corporation)}`}
+                            title={user?.corpdesc}
                         />
                     </div>
                     <div className={classes.corporationNameAndButtons}>
@@ -307,6 +328,8 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     setOpenModalDeliveryShifts={setOpenModalDeliverySchedules}
                     setOpenModalVehicleType={setOpenModalVehicleType}
                     setOpenModalDeliveryOrderPhoto={setOpenModalDeliverPhoto}
+                    setOpenModalAutomaticDelivery={setOpenModalAutomaticDelivery}
+                    setOpenModalMotiveDialog={setOpenModalMotiveDialog}
                     fetchConfiguration={fetchConfiguration}
                     fetchVehicles={fetchVehicles}
                     setConfigjson={setConfigjson}
@@ -328,14 +351,16 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     setNonWorkingDates={setNonWorkingDates}
                     onMainSubmit={onMainSubmit}
                     fetchOriginalConfig={fetchOriginalConfig}
+                    recurrentNonWorkingDates={recurrentNonWorkingDates}
+                    setRecurrentNonWorkingDates={setRecurrentNonWorkingDates}
                 />
                 <DeliverySchedulesDialog
                     openModal={openModalDeliverySchedules}
                     setOpenModal={setOpenModalDeliverySchedules}
                     onMainSubmit={onMainSubmit}
-                    configjson={configjson}
-                    setConfigjson={setConfigjson}
                     fetchOriginalConfig={fetchOriginalConfig}
+                    deliveryShifts={deliveryShifts}
+                    setDeliveryShifts={setDeliveryShifts}
                 />
                 <DeliveryPhotoDialog
                     openModal={openModalDeliverPhoto}
@@ -344,6 +369,28 @@ const DeliveryConfigurationDetail: React.FC = () => {
                     deliveryPhotos={deliveryPhotos}
                     setDeliveryPhotos={setDeliveryPhotos}
                     fetchOriginalConfig={fetchOriginalConfig}
+                />
+                <AutomaticDeliveryDialog
+                    openModal={openModalAutomaticDelivery}
+                    setOpenModal={setOpenModalAutomaticDelivery}
+                    automaticSchedules={automaticSchedules}
+                    setAutomaticSchedules={setAutomaticSchedules}
+                    onMainSubmit={onMainSubmit}
+                    fetchOriginalConfig={fetchOriginalConfig}
+                    deliveryShifts={deliveryShifts}
+                />
+                <MotiveDialog
+                    openModal={openModalMotiveDialog}
+                    setOpenModal={setOpenModalMotiveDialog}
+                    fetchData={fetchMotiveAndDrivers}
+                    setOpenSubmotiveModal={setOpenModalSubmotiveDialog}
+                    row={row}
+                    setRow={setRow}
+                />
+                <SubmotiveDialog
+                    openModal={openModalSubmotiveDialog}
+                    setOpenModal={setOpenModalSubmotiveDialog}
+                    row={row}
                 />
             </form>
         </>

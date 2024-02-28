@@ -66,16 +66,23 @@ const DeliveryPhotoDialog = ({
     const classes = useStyles();
     const [isAding, setIsAding] = useState(false);
     const [newPhoto, setNewPhoto] = useState('');
+    const [photoNameError, setPhotoNameError] = useState(false);
 
     const handleCancelNewPhoto = () => {
         setNewPhoto('')
         setIsAding(false)
+        setPhotoNameError(false)
     }
 
     const handleSaveNewPhoto = () => {
-        setDeliveryPhotos([...deliveryPhotos, newPhoto])
-        setNewPhoto('')
-        setIsAding(false)
+        if(!deliveryPhotos.some(photo => photo === newPhoto) && newPhoto !== '') {
+            setDeliveryPhotos([...deliveryPhotos, newPhoto])
+            setNewPhoto('')
+            setIsAding(false)
+            setPhotoNameError(false)
+        } else {
+            setPhotoNameError(true)
+        }
     }
 
     const handleDeletePhoto = (photo: string) => {
@@ -134,8 +141,13 @@ const DeliveryPhotoDialog = ({
                             label={t(langKeys.name)}
                             variant="outlined"
                             valueDefault={newPhoto}
-                            onChange={(value) => setNewPhoto(value)}
+                            onChange={(value) => {
+                                setNewPhoto(value)
+                                setPhotoNameError(false)
+                            }}
+                            error={photoNameError}
                         />
+                        {photoNameError && (<span style={{color: 'red'}}>{newPhoto === '' ? t(langKeys.field_required) : t(langKeys.photonamealreadyexist)}</span>)}
                         <div style={{display: 'flex', justifyContent: 'center'}}>
                             <Button
                                 className={classes.addbutton}
@@ -143,7 +155,6 @@ const DeliveryPhotoDialog = ({
                                 color="primary"
                                 startIcon={<AddIcon color="secondary"/>}
                                 onClick={handleSaveNewPhoto}
-                                disabled={newPhoto === '' || deliveryPhotos.some(photo => photo === newPhoto)}
                             >
                                 {t(langKeys.add)}
                             </Button>

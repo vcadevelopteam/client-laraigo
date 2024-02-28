@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { ListItemIcon } from "@material-ui/core";
 import { columnsHideShow } from "common/helpers/columnsReport";
+import { CellProps } from 'react-table';
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -108,6 +109,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
     const resExportData = useSelector((state) => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
+    const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
     const [totalrow, settotalrow] = useState(0);
     const [isTypificationFilterModalOpen, setTypificationFilterModalOpen] = useState(false);   
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
@@ -202,79 +204,131 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
         }
     ];
 
+    const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
+        const column = props.cell.column;// eslint-disable-next-line react/prop-types
+        const row = props.cell.row.original;
+        return (
+            <div onClick={() => {
+                setSelectedRow(row);
+                setOpenModal(true);
+            }}>             
+                {column.sortType === "datetime" && !!row[column.id] 
+                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                }) // eslint-disable-next-line react/prop-types
+                : row[column.id]}
+            </div>
+        )
+    }
+  
     const columns = React.useMemo(
-        () =>
-            reportColumns.map((x) => {
-                const showColumn = columnsHideShow["userproductivityhours"]?.[x.proargnames] ?? false;
-                switch (x.proargtype) {
-                    case "timestamp without time zone":
-                        return {
-                            Header: t("report_" + "userproductivityhours" + "_" + x.proargnames || ""),
-                            accessor: x.proargnames,
-                            helpText:
-                                t("report_" + "userproductivityhours" + "_" + x.proargnames + "_help") ===
-                                "report_" + "userproductivityhours" + "_" + x.proargnames + "_help"
-                                    ? ""
-                                    : t("report_" + "userproductivityhours" + "_" + x.proargnames + "_help"),
-                            type: "date",
-                            showColumn,
-                            Cell: (props: any) => {
-                                const column = props.cell.column;
-                                const row = props.cell.row.original;
-                                return (
-                                    <div>
-                                        {convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                                            year: "numeric",
-                                            month: "2-digit",
-                                            day: "2-digit",
-                                            hour: "numeric",
-                                            minute: "numeric",
-                                            second: "numeric",
-                                            hour12: false,
-                                        })}
-                                    </div>
-                                );
-                            },
-                        };
-                    case "date":
-                        return {
-                            Header: t('report_' + "userproductivityhours" + '_' + x.proargnames || ''),
-                            accessor: x.proargnames,
-                            helpText: t('report_' + "userproductivityhours" + '_' + x.proargnames + "_help") === ('report_' + "userproductivityhours" + '_' + x.proargnames + "_help") ? "" : t('report_' + "userproductivityhours" + '_' + x.proargnames + "_help"),
-                            type: "date",
-                            showColumn,
-                            Cell: (props: any) => {
-                                const column = props.cell.column;
-                                const row = props.cell.row.original;
-                                return (<div>
-                                    {new Date(
-                                        row[column.id].split('-')[0],
-                                        row[column.id].split('-')[1] - 1,
-                                        row[column.id].split('-')[2]
-                                    ).toLocaleString(undefined, {
-                                        year: "numeric",
-                                        month: "2-digit",
-                                        day: "2-digit"
-                                    })}
-                                </div>)
-                            }
-                        }
-                    default:
-                        return {
-                            Header: t("report_userproductivityhours_" + x.proargnames || ""),
-                            accessor: x.proargnames,
-                            showColumn,
-                            helpText:
-                                t("report_userproductivityhours_" + x.proargnames + "_help") ===
-                                "report_userproductivityhours_" + x.proargnames + "_help"
-                                    ? ""
-                                    : t("report_userproductivityhours_" + x.proargnames + "_help"),
-                            type: "string",
-                        };
+        () => [                    
+            {
+                Header: t(langKeys.report_userproductivityhours_datehour),
+                accessor: 'datehour',                          
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { datehour } = props.cell.row.original;
+                    return new Date(datehour).toLocaleDateString();
                 }
-            }),
-        [reportColumns]
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_agent),
+                accessor: 'agent',            
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_hoursrange),
+                accessor: 'hoursrange',            
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_worktime),
+                helpText: t(langKeys.report_userproductivityhours_worktime_help),
+                accessor: 'worktime',
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_busytimeoutsidework),
+                helpText: t(langKeys.report_userproductivityhours_busytimeoutsidework),
+                accessor: 'busytimeoutsidework',
+                showColumn: true,  
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_busytimewithinwork),
+                accessor: 'busytimewithinwork',
+                helpText: t(langKeys.report_userproductivityhours_busytimewithinwork_help),             
+                showColumn: true,                     
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_freetimewithinwork),
+                accessor: 'freetimewithinwork',
+                showColumn: true,                   
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_onlinetime),
+                accessor: 'onlinetime',         
+                helpText: t(langKeys.report_userproductivityhours_onlinetime_help),            
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_availabletime),
+                accessor: 'availabletime',
+                helpText: t(langKeys.report_userproductivityhours_availabletime_help),
+                groupedBy: false,  
+                showColumn: true, 
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_idletime),
+                accessor: 'idletime',
+                groupedBy: false,  
+                helpText: t(langKeys.report_userproductivityhours_idletime_help),
+                showColumn: true,     
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_idletimewithoutattention),
+                accessor: 'idletimewithoutattention',                 
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_qtytickets),
+                accessor: 'qtytickets',
+                helpText: t(langKeys.report_userproductivityhours_qtytickets_help),
+                groupedBy: false,  
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_qtyconnection),
+                accessor: 'qtyconnection',         
+                helpText: t(langKeys.report_userproductivityhours_qtyconnection_help),      
+                showColumn: true,     
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.report_userproductivityhours_qtydisconnection),
+                helpText: t(langKeys.report_userproductivityhours_qtydisconnection_help),      
+                accessor: 'qtydisconnection',
+                showColumn: true,     
+                groupedBy: false,  
+                Cell: cell
+            },
+        ],
+        []
     );
+
+
+   
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {

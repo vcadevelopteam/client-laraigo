@@ -107,8 +107,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
-    const user = useSelector((state) => state.login.validateToken.user);
-    const groups = user?.groups?.split(",").filter((x) => !!x) || [];
     const mainAux = useSelector((state) => state.main.mainAux);
     const [groupsdata, setgroupsdata] = useState<any>([]);
     const [allParameters, setAllParameters] = useState({});
@@ -332,11 +330,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                         : groupitem?.values[0].filter)
                             )
                         ];
-                    setgroupsdata(
-                        groups.length > 0
-                            ? arraygroups.data.filter((x) => groups.includes(x.domainvalue))
-                            : arraygroups.data
-                    );
+                    setgroupsdata(arraygroups.data);
                 }
             }
         }
@@ -542,7 +536,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                                     key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
                                                     valueDefault={allParameters?.channel || ""}
                                                     onChange={(value) =>
-                                                        setValue("channel", value?.type || "")
+                                                        setValue("channel", value?.typedesc || "")
                                                     }
                                                     variant="outlined"
                                                     data={

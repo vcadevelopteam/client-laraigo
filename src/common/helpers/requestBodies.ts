@@ -4853,6 +4853,16 @@ export const updateAssistantAiDocumentTraining = (assistantaiid: number, documen
     key: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
     parameters: { assistantaiid, documentsid },
 });
+export const getHeatmapConfig = () => ({
+    method: "UFN_REPORT_CONFIGURATION_SEL",
+    key: "UFN_REPORT_CONFIGURATION_SEL",
+    parameters: { reportname: "" },
+});
+export const heatmapConfigIns = ({reportname, configuration}:Dictionary) => ({
+    method: "UFN_REPORT_CONFIGURATION_INS",
+    key: "UFN_REPORT_CONFIGURATION_INS",
+    parameters: { reportname, configuration: JSON.stringify(configuration)},
+});
 
 export const getWarehouseSel = () => ({
     method: "UFN_WAREHOUSE_SEL",
@@ -4888,4 +4898,34 @@ export const deliveryAppUsersSel = () => ({
     method: "UFN_USERS_APP_DELIVERY_SEL",
     key: "UFN_USERS_APP_DELIVERY_SEL",
     parameters: {},
+});
+
+export const listOrderSel = (ordersinattention: boolean) => ({
+    method: "UFN_LISTORDER_SEL",
+    key: "UFN_LISTORDER_SEL",
+    parameters: { ordersinattention },
+});
+
+export const reasonNonDeliverySel = (id: number) => ({
+    method: "UFN_REASONNONDELIVERY_SEL",
+    key: "UFN_REASONNONDELIVERY_SEL",
+    parameters: { id, all: id === 0 },
+});
+
+export const reasonNonDeliveryIns = ({ id, status, type, description, operation }: Dictionary) => ({
+    method: "UFN_REASONNONDELIVERY_INS",
+    key: "UFN_REASONNONDELIVERY_INS",
+    parameters: { id, status, type, description, operation },
+});
+
+export const subReasonNonDeliverySel = (reasonnondeliveryid: number) => ({
+    method: "UFN_SUBREASONNONDELIVERY_SEL",
+    key: "UFN_SUBREASONNONDELIVERY_SEL",
+    parameters: { reasonnondeliveryid },
+});
+
+export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, operation }: Dictionary) => ({
+    method: "UFN_SUBREASONNONDELIVERY_INS",
+    key: "UFN_SUBREASONNONDELIVERY_INS",
+    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, operation },
 });

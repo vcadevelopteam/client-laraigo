@@ -8,6 +8,7 @@ import { FieldErrors } from 'react-hook-form';
 import { FieldEdit } from 'components';
 import { Button, IconButton, Typography } from '@material-ui/core';
 import GoogleMaps, {IsOrderCoordinateInsidePolygon } from 'components/fields/GoogleMaps';
+import { Dictionary } from '@types';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -41,10 +42,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface InventoryTabDetailProps {
-errors: FieldErrors;
+    errors: FieldErrors;
+    row: Dictionary | null;
 }
 
-const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors }) => {
+const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors, row }) => {
     const { t } = useTranslation();
     const classes = useStyles();    
     const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>([
@@ -81,25 +83,15 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors })
                 label={`${t(langKeys.latitude)} de Orden`}
                 type="number"
                 className="col-6"
-                valueDefault={orderCoordinate.latitude}
-                onChange={(newValue) => {
-                    setOrderCoordinate({
-                        ...orderCoordinate,
-                        latitude: Number(newValue),
-                    });
-                }}
+                valueDefault={row?.latitude}
+                disabled={true}
             />
             <FieldEdit
                 label={`${t(langKeys.longitude)} de Orden`}
                 type="number"
                 className="col-6"
-                valueDefault={orderCoordinate.longitude}
-                onChange={(newValue) => {
-                    setOrderCoordinate({
-                        ...orderCoordinate,
-                        longitude: Number(newValue),
-                    });
-                }}
+                valueDefault={row?.longitude}
+                disabled={true}
             />
             <FieldEdit
                 label={t(langKeys.message)}

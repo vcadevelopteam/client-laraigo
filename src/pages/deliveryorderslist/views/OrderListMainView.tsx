@@ -10,9 +10,8 @@ import { useSelector } from "hooks";
 import PrintIcon from "@material-ui/icons/Print";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import ReceiptIcon from "@material-ui/icons/Receipt";
-import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
+import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
-
 import UndeliveredDialog from "../dialogs/UndeliveredDialog";
 import CanceledDialog from "../dialogs/CanceledDialog";
 import AssignCarrierDialog from "../dialogs/AssignCarrierDialog";
@@ -22,6 +21,7 @@ import ElectronicTicketAndInvoiceDialog from "../dialogs/ElectronicTicketAndInvo
 import PrintDialog from "../dialogs/PrintDialog";
 import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
+import { reportPdf } from "store/culqi/actions";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -41,6 +41,11 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 12,
         marginTop: 4,
     },
+    orderNumber: {
+        textDecoration: 'underline',
+        color: 'blue',
+        cursor: "pointer",
+    },
 }));
 
 interface RowSelected {
@@ -50,9 +55,11 @@ interface RowSelected {
 
 interface InventoryTabDetailProps {
     setViewSelected: (view: string) => void;
-    fetchData: () => void;
+    fetchData: (flag: boolean) => void;
     setRowSelected: (rowdata: RowSelected) => void;
 }
+
+const selectionKey = 'orderid';
 
 const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     setViewSelected,
@@ -62,7 +69,6 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const { t } = useTranslation();
     const [attentionOrders, setAttentionOrders] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
-    const mainPaginated = useSelector((state) => state.main.mainPaginated);
     const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
     const [openModalCanceled, setOpenModalCanceled] = useState(false);
     const [openModalAssignCarrier, setOpenModalAssignCarrier] = useState(false);
@@ -71,83 +77,28 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const [openModalElectronicTicketAndInvoice, setOpenModalElectronicTicketAndInvoice] = useState(false);
     const [openModalPrint, setOpenModalPrint] = useState(false);
     const classes = useStyles();
-
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [waitExport, setWaitExport] = useState(false);
-    const resExportData = useSelector((state) => state.main.exportData);
-    const [waitUpload, setWaitUpload] = useState(false);
-    const importRes = useSelector((state) => state.main.execute);
+    const main = useSelector((state) => state.main.mainData);
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const culqiReportResult = useSelector((state) => state.culqi.requestReportPdf);
+    const [waitPdf, setWaitPdf] = useState(false);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
         { id: "detail-view", name: t(langKeys.orderlist) },
     ];
 
-    const handleEdit = (row: Dictionary) => {
-        setRowSelected({ row, edit: true });
-    };
-
-	useEffect(() => {
-		fetchData()
-	},[]);
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => main?.data.find(y => y.orderid === parseInt(x)) || p.find((y) => y.orderid === parseInt(x)) || {}))
+        }
+    }, [selectedRows])
 
     useEffect(() => {
-        if (waitUpload) {
-            if (!importRes.loading && !importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_import),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            } else if (importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(importRes.code || "error_unexpected_error"),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            }
-        }
-    }, [importRes, waitUpload]);
-
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        };
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_delete),
-                callback,
-            })
-        );
-    };
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", {
-                    module: t(langKeys.person).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [resExportData, waitExport]);
+		fetchData(attentionOrders)
+	},[attentionOrders]);
 
     useEffect(() => {
         if (waitSave) {
@@ -183,7 +134,9 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
+                        <TemplateIcons
+                            editFunction={() => moveDetailView2(row)}
+                        />
                     );
                 },
             },
@@ -196,15 +149,31 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 Header: t(langKeys.ordernumber),
                 accessor: "ordernumber",
                 width: "auto",
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    const orderNumber = props.cell.value;
+                    const handleClickOrderNumber = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+                        event.stopPropagation();
+                        moveDetailView(row);
+                    };
+                    return (
+                        <span
+                            className={classes.orderNumber}
+                            onClick={handleClickOrderNumber}
+                        >
+                            {orderNumber}
+                        </span>
+                    );
+                },
             },
             {
                 Header: t(langKeys.uniqueroutingcode),
-                accessor: "uniqueroutingcode",
+                accessor: "code",
                 width: "auto",
             },
             {
                 Header: t(langKeys.clientname),
-                accessor: "clientname",
+                accessor: "name",
                 width: "auto",
             },
             {
@@ -214,7 +183,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.totalamount),
-                accessor: "totalamount",
+                accessor: "amount",
                 width: "auto",
             },
             {
@@ -229,7 +198,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.appointmenttype),
-                accessor: "appointmenttype",
+                accessor: "schedulingtype",
                 width: "auto",
             },
             {
@@ -244,7 +213,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.scheduledshift),
-                accessor: "scheduledshift",
+                accessor: "deliveryshift",
                 width: "auto",
             },
             {
@@ -254,22 +223,64 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.ordertime),
-                accessor: "ordertime",
+                accessor: "timeorder",
                 width: "auto",
             },
         ],
         []
     );
 
-    function moveDetailView() {
+    function moveDetailView(row: Dictionary) {
         setViewSelected("detail-view");
-        setRowSelected({ row: null, edit: false });
+        setRowSelected({ row, edit: true });
     }
 
-    function moveDetailView2() {
+    function moveDetailView2(row: Dictionary) {
         setViewSelected("detail-view2");
-        setRowSelected({ row: null, edit: false });
+        setRowSelected({ row, edit: true });
     }
+
+    const handleReportPdf = () => {
+        const reportBody = {
+            dataonparameters: true,
+            key: "period-report",
+            method: "",
+            reportname: "period-report",
+            template: 'orderlist.html',
+            parameters: {
+                reporttitle: 'Test',
+                orders: rowWithDataSelected,
+            },
+        };
+
+        dispatch(reportPdf(reportBody));
+        dispatch(showBackdrop(true));
+        setWaitPdf(true);
+    }
+
+    useEffect(() => {
+        if (waitPdf) {
+            if (!culqiReportResult.loading && !culqiReportResult.error) {
+                dispatch(showBackdrop(false));
+                setWaitPdf(false);
+                if (culqiReportResult.datacard) {
+                    window.open(culqiReportResult.datacard, "_blank");
+                }
+            } else if (culqiReportResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(culqiReportResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.person).toLocaleLowerCase(),
+                        }),
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setWaitPdf(false);
+            }
+        }
+    }, [culqiReportResult, waitPdf]);
 
     return (
         <div className={classes.container}>
@@ -294,17 +305,18 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             />
             <TableZyx
                 columns={columns}
-                data={[]}
+                data={main.data || []}
                 filterGeneral={true}
                 useSelection={true}
-                register={true}
-                handleRegister={moveDetailView}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
+                onClickRow={moveDetailView2}
                 ButtonsElement={() => (
                     <div style={{ justifyContent: "right", display: "flex" }}>
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={mainPaginated.loading}
+                            disabled={main.loading}
                             startIcon={<LocationOnIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                         >
@@ -322,15 +334,15 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 cancelundelivered={() => setOpenModalCanceled(true)}
                             />
                         </div>
-
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={mainPaginated.loading}
+                            disabled={main.loading || Object.keys(selectedRows).length === 0}
                             startIcon={<PrintIcon color="secondary" />}
                             className={classes.button}
                             onClick={() => {
-                                setOpenModalPrint(true);
+                                //setOpenModalPrint(true);
+                                handleReportPdf()
                             }}
                         >
                             <Trans i18nKey={langKeys.print} />
@@ -338,7 +350,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={mainPaginated.loading}
+                            disabled={main.loading}
                             startIcon={<ReceiptIcon color="secondary" />}
                             className={classes.button}
                             onClick={() => {
@@ -347,19 +359,9 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         >
                             <Trans i18nKey={langKeys.electronic_ticket_and_invoice} />
                         </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            startIcon={<ReceiptIcon color="secondary" />}
-                            className={classes.button}
-                            onClick={() => moveDetailView2()}
-                        >
-                            <Trans i18nKey={langKeys.test} />
-                        </Button>
                     </div>
                 )}
-                loading={mainPaginated.loading}
+                loading={main.loading}
             />
             <UndeliveredDialog
 				openModal={openModalUndelivered}

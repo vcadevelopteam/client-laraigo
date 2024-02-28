@@ -453,6 +453,7 @@ const TableZyx = React.memo(({
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
         const [operator, setoperator] = useState(iSF?.value.operator || "contains");
+        const [valueOnFocus, setValueOnFocus] = useState(''); // El valor cuando el input recibió el foco
 
         const setFilter = (filter: any) => {
             $setFilter(filter);
@@ -493,8 +494,15 @@ const TableZyx = React.memo(({
         const keyPress = React.useCallback((e) => {
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
-            }            
+            }
         }, [value, operator])
+
+        const onBlur = () => {
+            if (value !== valueOnFocus) {
+                setFilter({ value, operator, type });
+            }
+        }
+
         const handleDate = (date: Date) => {
             if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
                 setValue(date?.toISOString() || '');
@@ -551,11 +559,20 @@ const TableZyx = React.memo(({
                             data={listSelectFilter}
                         /> :
                         <React.Fragment>
-                            {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
-                            {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                            {type === 'date' &&
+                                <DateOptionsMenuComponent
+                                    value={value}
+                                    handleDate={handleDate} />
+                            }
+                            {type === 'time' &&
+                                <TimeOptionsMenuComponent
+                                    value={value}
+                                    handleTime={handleTime} />
+                            }
                             {!['date', 'time'].includes(type) &&
                                 <Input
-                                    // disabled={loading}
+                                    onBlur={onBlur}
+                                    onFocus={e => setValueOnFocus(e.target.value)}
                                     type={type}
                                     style={{ fontSize: '15px', minWidth: '100px' }}
                                     fullWidth
@@ -778,8 +795,10 @@ const TableZyx = React.memo(({
             ])
             hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {
                 // fix the parent group of the selection button to not be resizable
-                const selectionGroupHeader = headerGroups[0].headers[0]
-                selectionGroupHeader.canResize = false
+                const selectionGroupHeader = headerGroups[0]?.headers[0]
+                if (selectionGroupHeader) {
+                    selectionGroupHeader.canResize = false
+                }
             })
         }
     )
@@ -866,7 +885,7 @@ const TableZyx = React.memo(({
                     </Tooltip> : ""}
                 </span> : (<div style={{ flexGrow: 1 }}>
                     {typeof ButtonsElement === 'function' ? (
-                        (<ButtonsElement />)
+                        ButtonsElement()
                         ) : (
                         ButtonsElement
                     )}
@@ -886,11 +905,7 @@ const TableZyx = React.memo(({
                             </Fab>
                         </Tooltip>
                     )}
-                    {typeof ButtonsElement === 'function' ? (
-                        (<ButtonsElement />)
-                        ) : (
-                        ButtonsElement
-                    )}
+                    {(ButtonsElement && !!titlemodule) && <ButtonsElement />}
                     {importCSV && (
                         <>
                             <input
