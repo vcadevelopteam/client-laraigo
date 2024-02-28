@@ -5599,6 +5599,7 @@ const translation: LangKeys = {
   norecurringdatesselected: 'No recurring dates selected',
   nodateselected: 'You have not selected a date',
   managesubmotives: 'Manage submotives',
+  rejected: 'Rejected',
 };
 
 const enResource: ResourceLanguage = {

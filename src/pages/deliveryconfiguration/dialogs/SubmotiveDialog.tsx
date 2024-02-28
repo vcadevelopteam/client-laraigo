@@ -68,21 +68,23 @@ const SubmotiveDialog = ({
 
     const statusOptions = [
         {
+            description: t(langKeys.dispatched),
             value: 'dispatched'
         },
         {
+            description: t(langKeys.prepared),
             value: 'prepared'
         },
         {
+            description: t(langKeys.rejected),
             value: 'rejected'
         },
         {
-            value: 'reject'
-        },
-        {
+            description: t(langKeys.delivered),
             value: 'delivered'
         },
         {
+            description: t(langKeys.new),
             value: 'new'
         },
     ]
@@ -209,7 +211,7 @@ const SubmotiveDialog = ({
                         label={t(langKeys.status)}
                         data={statusOptions}
                         error={submotiveError}
-                        optionDesc="value"
+                        optionDesc="description"
                         optionValue="value"
                         valueDefault={newSubmotive.status}
                         onChange={(value) => {
@@ -247,7 +249,7 @@ const SubmotiveDialog = ({
                                 <div key={submotive.subreasonnondeliveryid} className={classes.submotiveRow}>
                                     <span className={classes.submotiveText}>{submotive.description}</span>
                                     <div style={{width: 20}}/>
-                                    <span className={classes.submotiveText}>{submotive.statustypified}</span>
+                                    <span className={classes.submotiveText}>{t(langKeys[submotive.statustypified])}</span>
                                     <div style={{width: 10}}/>
                                     <div>
                                         <IconButton onClick={() => handleEdit(submotive)}>

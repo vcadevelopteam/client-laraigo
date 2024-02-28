@@ -5528,6 +5528,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   norecurringdatesselected: 'No hay fechas recurrentes seleccionadas',
   nodateselected: 'No ha seleccionado una fecha',
   managesubmotives: 'Gestionar submotivos',
+  rejected: 'Cancelado',
 };
 
 const esResource: ResourceLanguage = {
