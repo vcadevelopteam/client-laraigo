@@ -51,7 +51,7 @@ const AssociatedVehicleDialog: React.FC<{
     const [speedAux, setSpeedAux] = useState(0)
     const [insuredAux, setInsuredAux] = useState(0)
     const [typeAux, setTypeAux] = useState('')
-    const mainDrivers = useSelector(state => state.main.mainAux2);
+    const multiData = useSelector(state => state.main.multiData);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -73,10 +73,10 @@ const AssociatedVehicleDialog: React.FC<{
         const callback = () => {
             dispatch(showBackdrop(true));
             if (edit) {
-                dispatch(execute(deliveryVehicleIns({...data, operation: 'UPDATE'})));           
+                dispatch(execute(deliveryVehicleIns({...data, operation: 'UPDATE'})));
             }
             else {
-                dispatch(execute(deliveryVehicleIns({...data, operation: 'INSERT'})));           
+                dispatch(execute(deliveryVehicleIns({...data, operation: 'INSERT'})));
             }
             setWaitSave(true);
         }
@@ -245,7 +245,7 @@ const AssociatedVehicleDialog: React.FC<{
                 <FieldSelect
                     label={t(langKeys.carriername)}
                     className="col-6"
-                    data={mainDrivers.data || []}
+                    data={multiData?.data?.[1]?.data || []}
                     valueDefault={row2?.userid}
                     onChange={(value)=> setValue('userid', value.userid)}
                     error={typeof errors?.userid?.message === 'string' ? errors?.userid?.message : ''}

@@ -62,54 +62,7 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [waitExport, setWaitExport] = useState(false);
-    const resExportData = useSelector((state) => state.main.exportData);
-    const [waitUpload, setWaitUpload] = useState(false);
-    const importRes = useSelector((state) => state.main.execute);
     const [openModalInvoiceA4, setOpenModalInvoiceA4] = useState(false);
-
-    useEffect(() => {
-        if (waitUpload) {
-            if (!importRes.loading && !importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_import),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            } else if (importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(importRes.code || "error_unexpected_error"),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            }
-        }
-    }, [importRes, waitUpload]);
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", {
-                    module: t(langKeys.person).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [resExportData, waitExport]);
 
     useEffect(() => {
         if (waitSave) {
@@ -169,14 +122,35 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
         <div className={classes.containerDetail}>
             <div className="row-zyx">
                 <div className="row-zyx">
-                    <FieldEdit label={t(langKeys.clientfullname)} className="col-8" type="text" disabled={true} />
-                    <FieldEdit label={t(langKeys.contactnum)} className="col-4" type="number" disabled={true} />
+                    <FieldEdit
+                        label={t(langKeys.clientfullname)}
+                        className="col-8"
+                        type="text"
+                        disabled={true}
+                        valueDefault={row?.name}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.contactnum)}
+                        className="col-4"
+                        type="number"
+                        disabled={true}
+                        valueDefault={row?.phone}
+                    />
                 </div>
 
                 <div className="row-zyx">
-                    <FieldEdit label={t(langKeys.deliverydate)} className="col-4" type="date" />
-                    <FieldEdit label={t(langKeys.ticket_number)} className="col-4" type="number" disabled={true} />
-
+                    <FieldEdit
+                        label={t(langKeys.deliverydate)}
+                        className="col-4"
+                        type="date"
+                        valueDefault={row?.deliverydate}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.ticket_number)}
+                        className="col-4"
+                        type="number"
+                        disabled={true}
+                    />
                     <div className="col-4">
                         <Typography className={classes.paymentreceipt}>{t(langKeys.paymentreceipt)}</Typography>
                         <span className={classes.span} onClick={() => setOpenModalInvoiceA4(true)}>
@@ -184,7 +158,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                         </span>
                     </div>
                 </div>
-
                 <div className="row-zyx">
                     <div style={{ paddingBottom: "2rem" }}>
                         <FieldEdit
@@ -192,9 +165,9 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                             className="col-12"
                             type="text"
                             disabled={true}
+                            valueDefault={row?.deliveryaddress}
                         />
                     </div>
-
                     <div className="col-4">
                         <img
                             className={classes.mapimage}
@@ -202,19 +175,34 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                             alt="map"
                         ></img>
                     </div>
-
                     <div className="col-4" style={{ padding: "0rem 2rem 1rem 0" }}>
                         <div style={{ paddingBottom: "2rem" }}>
-                            <FieldEdit label={t(langKeys.latitude)} className="col-3" type="number" disabled={true} />
+                            <FieldEdit
+                                label={t(langKeys.latitude)}
+                                className="col-3"
+                                type="number"
+                                disabled={true}
+                                valueDefault={row?.latitude}
+                            />
                         </div>
                         <div style={{ paddingBottom: "2rem" }}>
-                            <FieldEdit label={t(langKeys.longitude)} className="col-3" type="number" disabled={true} />
+                            <FieldEdit
+                                label={t(langKeys.longitude)}
+                                className="col-3"
+                                type="number"
+                                disabled={true}
+                                valueDefault={row?.longitude}
+                            />
                         </div>
                     </div>
-
                     <div className="col-4" style={{ padding: "0rem 2rem 1rem 0" }}>
                         <div style={{ paddingBottom: "2rem" }}>
-                            <FieldEdit label={t(langKeys.carriername)} className="col-3" type="text" disabled={true} />
+                            <FieldEdit
+                                label={t(langKeys.carriername)}
+                                className="col-3"
+                                type="text"
+                                disabled={true}
+                            />
                         </div>
                         <div style={{ paddingBottom: "1rem" }}>
                             <FieldEdit
@@ -222,12 +210,12 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                                 className="col-3"
                                 type="text"
                                 disabled={true}
+                                valueDefault={row?.deliveryaddress}
                             />
                         </div>
                     </div>
                 </div>
             </div>
-
             <Typography className={classes.subtitle}>{t(langKeys.orderlist)}</Typography>
             <div className="row-zyx">
                 <TableZyx columns={columns} data={[]} filterGeneral={false} toolsFooter={false} />
