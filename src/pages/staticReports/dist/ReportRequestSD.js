@@ -67,7 +67,7 @@ var ReportRequestSD = function () {
         {
             Header: t(keys_1.langKeys.sdrequestcode),
             accessor: 'sd_request',
-            tooltip: t(keys_1.langKeys.sdrequestcode)
+            helpText: t(keys_1.langKeys.sdrequestcode_help)
         },
         {
             Header: t(keys_1.langKeys.ticket_number),
@@ -75,7 +75,8 @@ var ReportRequestSD = function () {
         },
         {
             Header: t(keys_1.langKeys.type),
-            accessor: 'type'
+            accessor: 'type',
+            helpText: t(keys_1.langKeys.report_requestsd_type_help)
         },
         {
             Header: t(keys_1.langKeys.channel),
@@ -84,15 +85,18 @@ var ReportRequestSD = function () {
         },
         {
             Header: t(keys_1.langKeys.applicant),
-            accessor: 'display_name'
+            accessor: 'display_name',
+            helpText: t(keys_1.langKeys.report_requestsd_applicant_help)
         },
         {
             Header: t(keys_1.langKeys.business),
-            accessor: 'company'
+            accessor: 'company',
+            helpText: t(keys_1.langKeys.report_requestsd_business_help)
         },
         {
             Header: t(keys_1.langKeys.resume),
-            accessor: 'description'
+            accessor: 'description',
+            helpText: t(keys_1.langKeys.report_requestsd_resume_help)
         },
         {
             Header: t(keys_1.langKeys.priority),
@@ -100,11 +104,13 @@ var ReportRequestSD = function () {
         },
         {
             Header: t(keys_1.langKeys.status),
-            accessor: 'phase'
+            accessor: 'phase',
+            helpText: t(keys_1.langKeys.report_requestsd_status_help)
         },
         {
             Header: t(keys_1.langKeys.resolution),
             accessor: 'resolution',
+            helpText: t(keys_1.langKeys.report_requestsd_resolution_help),
             showColumn: true
         },
         {

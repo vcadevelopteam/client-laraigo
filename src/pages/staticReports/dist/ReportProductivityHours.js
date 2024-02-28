@@ -230,7 +230,6 @@ var ProductivityHoursReport = function (_a) {
         {
             Header: t(keys_1.langKeys.report_userproductivityhours_datehour),
             accessor: 'datehour',
-            groupedBy: false,
             type: 'date',
             sortType: 'datetime',
             Cell: function (props) {
@@ -241,13 +240,11 @@ var ProductivityHoursReport = function (_a) {
         {
             Header: t(keys_1.langKeys.report_userproductivityhours_agent),
             accessor: 'agent',
-            groupedBy: false,
             Cell: cell
         },
         {
             Header: t(keys_1.langKeys.report_userproductivityhours_hoursrange),
             accessor: 'hoursrange',
-            groupedBy: false,
             Cell: cell
         },
         {
@@ -257,12 +254,17 @@ var ProductivityHoursReport = function (_a) {
             Cell: cell
         },
         {
+            Header: t(keys_1.langKeys.report_userproductivityhours_busytimeoutsidework),
+            helpText: t(keys_1.langKeys.report_userproductivityhours_busytimeoutsidework),
+            accessor: 'busytimeoutsidework',
+            showColumn: true,
+            Cell: cell
+        },
+        {
             Header: t(keys_1.langKeys.report_userproductivityhours_busytimewithinwork),
             accessor: 'busytimewithinwork',
             helpText: t(keys_1.langKeys.report_userproductivityhours_busytimewithinwork_help),
-            groupedBy: false,
             showColumn: true,
-            showHide: true,
             Cell: cell
         },
         {
@@ -274,9 +276,7 @@ var ProductivityHoursReport = function (_a) {
         {
             Header: t(keys_1.langKeys.report_userproductivityhours_onlinetime),
             accessor: 'onlinetime',
-            groupedBy: false,
             helpText: t(keys_1.langKeys.report_userproductivityhours_onlinetime_help),
-            showColumn: true,
             Cell: cell
         },
         {
@@ -284,6 +284,7 @@ var ProductivityHoursReport = function (_a) {
             accessor: 'availabletime',
             helpText: t(keys_1.langKeys.report_userproductivityhours_availabletime_help),
             groupedBy: false,
+            showColumn: true,
             Cell: cell
         },
         {
@@ -297,7 +298,6 @@ var ProductivityHoursReport = function (_a) {
         {
             Header: t(keys_1.langKeys.report_userproductivityhours_idletimewithoutattention),
             accessor: 'idletimewithoutattention',
-            showColumn: true,
             Cell: cell
         },
         {
