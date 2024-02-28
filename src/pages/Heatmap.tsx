@@ -3,6 +3,7 @@ import {
     createStyles,
     IconButton,
     Input,
+    InputAdornment,
     makeStyles,
     Table,
     TableBody,
@@ -117,6 +118,33 @@ const hoursProm = [
 
 const LIMITHOUR = 24;
 
+function numberToTime(seconds: number) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    let formattedTime = "";
+    if (hours > 0) {
+        formattedTime += `${hours}h`;
+    }
+    if (minutes > 0) {
+        formattedTime += `${minutes}m`;
+    }
+    if (remainingSeconds > 0 || formattedTime === "") {
+        formattedTime += `${remainingSeconds}s`;
+    }
+    return formattedTime;
+}
+const timetonumber = (formattedTime: string) => {
+    const regex = /(\d+h)?(\d+m)?(\d+s)?/;
+    const matches = formattedTime.match(regex);
+
+    const hours = parseInt(matches?.[1] || "0");
+    const minutes = parseInt(matches?.[2] || "0");
+    const seconds = parseInt(matches?.[3] || "0");
+
+    return hours * 3600 + minutes * 60 + seconds;
+};
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         itemDate: {
@@ -192,24 +220,25 @@ const ModalHeatMap: React.FC<ModalProps> = ({
     );
 };
 
-const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat: boolean) => void, setTableName: (d:string)=>void}> = ({
-    dataChannels,
-    setOpenModalConfiguration,
-    setTableName
-}) => {
+const MainHeatMap: React.FC<{
+    dataChannels: Dictionary[];
+    setOpenModalConfiguration: (dat: boolean) => void;
+    setTableName: (d: string) => void;
+    dataTableConfig: Dictionary[];
+}> = ({ dataChannels, setOpenModalConfiguration, setTableName, dataTableConfig }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [realizedsearch, setrealizedsearch] = useState(false);
-    const [heatMapConversations, setheatMapConversations] = useState<any>([]);
-    const [heatMapConversationsData, setheatMapConversationsData] = useState<any>([]);
-    const [averageHeatMapTMOTitle, setaverageHeatMapTMOTitle] = useState<any>([]);
-    const [averageHeatMapTMOData, setaverageHeatMapTMOData] = useState<any>([]);
-    const [heatmapaverageagentTMETitle, setheatmapaverageagentTMETitle] = useState<any>([]);
-    const [heatmapaverageagentTMEData, setheatmapaverageagentTMEData] = useState<any>([]);
-    const [userAverageReplyTimexFechaTitle, setuserAverageReplyTimexFechaTitle] = useState<any>([]);
-    const [userAverageReplyTimexFechaData, setuserAverageReplyTimexFechaData] = useState<any>([]);
-    const [personAverageReplyTimexFechaTitle, setpersonAverageReplyTimexFechaTitle] = useState<any>([]);
-    const [personAverageReplyTimexFechaData, setpersonAverageReplyTimexFechaData] = useState<any>([]);
+    const [heatMapConversations, setheatMapConversations] = useState<Dictionary[]>([]);
+    const [heatMapConversationsData, setheatMapConversationsData] = useState<Dictionary[]>([]);
+    const [averageHeatMapTMOTitle, setaverageHeatMapTMOTitle] = useState<Dictionary[]>([]);
+    const [averageHeatMapTMOData, setaverageHeatMapTMOData] = useState<Dictionary[]>([]);
+    const [heatmapaverageagentTMETitle, setheatmapaverageagentTMETitle] = useState<Dictionary[]>([]);
+    const [heatmapaverageagentTMEData, setheatmapaverageagentTMEData] = useState<Dictionary[]>([]);
+    const [userAverageReplyTimexFechaTitle, setuserAverageReplyTimexFechaTitle] = useState<Dictionary[]>([]);
+    const [userAverageReplyTimexFechaData, setuserAverageReplyTimexFechaData] = useState<Dictionary[]>([]);
+    const [personAverageReplyTimexFechaTitle, setpersonAverageReplyTimexFechaTitle] = useState<Dictionary[]>([]);
+    const [personAverageReplyTimexFechaData, setpersonAverageReplyTimexFechaData] = useState<Dictionary[]>([]);
     const dispatch = useDispatch();
     const multiData = useSelector((state) => state.main.multiData);
     const multiDataAux2 = useSelector((state) => state.main.multiDataAux2);
@@ -234,9 +263,9 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
     const [openModalTicket, setOpenModalTicket] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
     const [modalRow, setModalRow] = useState<Dictionary | null>(null);
-    const [modalColumns, setModalColumns] = useState<any>([]);
+    const [modalColumns, setModalColumns] = useState<Dictionary[]>([]);
     const openDialogInteractions = useCallback(
-        (row: any) => {
+        (row: Dictionary) => {
             setOpenModalTicket(true);
             setRowSelected({ ...row, displayname: row.asesor, ticketnum: row.ticketnum });
         },
@@ -255,12 +284,12 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                 call_session_history_id: ticket.postexternalid,
             });
             if (axios_result.status === 200) {
-                let buff = Buffer.from(axios_result.data, "base64");
+                const buff = Buffer.from(axios_result.data, "base64");
                 const blob = new Blob([buff], {
                     type: axios_result.headers["content-type"].split(";").find((x: string) => x.includes("audio")),
                 });
                 const objectUrl = window.URL.createObjectURL(blob);
-                let a = document.createElement("a");
+                const a = document.createElement("a");
                 a.href = objectUrl;
                 a.download = ticket.ticketnum;
                 a.click();
@@ -556,13 +585,13 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
         }
     }
 
-    function initAtencionesxFechaAsesorGrid(data: any) {
-        let arrayfree: any = [];
-        let mes = dataMainHeatMap.startdate?.getMonth() + 1;
-        let year = dataMainHeatMap.startdate?.getFullYear();
+    function initAtencionesxFechaAsesorGrid(data: Dictionary[]) {
+        let arrayfree: Dictionary[] = [];
+        const mes = dataMainHeatMap.startdate?.getMonth() + 1;
+        const year = dataMainHeatMap.startdate?.getFullYear();
         let rowmax = 0;
-        let dateend = new Date(year, mes, 0).getDate();
-        let arrayvalidvalues = new Array(24).fill(0);
+        const dateend = new Date(year, mes, 0).getDate();
+        const arrayvalidvalues = new Array(24).fill(0);
 
         for (let i = 1; i <= LIMITHOUR + 1; i++) {
             const objectfree: Dictionary = {
@@ -602,63 +631,59 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
         setheatMapConversationsData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
-
+            const rules = dataTableConfig?.find((x) => x.report_name === "conversations")?.report_configuration || [];
             if (rowcounter >= 24) {
-                return "FFFFFF";
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
-
-        let rowcounter = 0;
 
         const arraytemplate =
             arrayfree.length > 0
                 ? Object.entries(arrayfree[0])
                       .filter(([key]) => !/hour|horanum/gi.test(key))
-                      .map(([key, value]) => ({
-                          Header: key.includes("day") ? `${key.split("day")[1]}/${mes}` : "Promedio",
-                          accessor: key,
-                          NoFilter: true,
-                          NoSort: true,
-                          Cell: (props: any) => {
-                              const column = props.cell.column;
-                              const row = props.cell.row.original;
-                              if (key !== "totalcol") {
-                                  let color = "white";
-                                  if (props.data[rowcounter]) {
-                                      color = gradient(parseInt(props.data[rowcounter][key]), rowcounter);
+                      .map(([key, value]) => {
+                          const isDayColumn = key.includes("day");
+                          return {
+                              Header: isDayColumn ? `${key.split("day")[1]}/${mes}` : "Promedio",
+                              accessor: key,
+                              NoFilter: true,
+                              NoSort: true,
+                              Cell: (props: any) => {
+                                  const column = props.cell.column;
+                                  const row = props.cell.row.original;
+                                  if (key !== "totalcol") {
+                                      const color = gradient(
+                                          parseInt(props.data[props.cell.row.index][key]),
+                                          props.cell.row.index
+                                      );
+                                      return (
+                                          <div
+                                              style={{ background: `${color}`, textAlign: "center", color: "black" }}
+                                              onClick={() => fetchDetail("1.1", column, row, mes, year)}
+                                          >
+                                              {props.data[props.cell.row.index][key]}
+                                          </div>
+                                      );
+                                  } else {
+                                      return (
+                                          <div style={{ textAlign: "center", fontWeight: "bold", background: "white" }}>
+                                              {props.data[props.cell.row.index][key] > 0
+                                                  ? props.data[props.cell.row.index][key].toFixed(2)
+                                                  : "0"}
+                                          </div>
+                                      );
                                   }
-                                  return (
-                                      <div
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
-                                          onClick={() => fetchDetail("1.1", column, row, mes, year)}
-                                      >
-                                          {props.data[rowcounter][key]}
-                                      </div>
-                                  );
-                              } else {
-                                  if (rowcounter < 24) rowcounter++;
-                                  return (
-                                      <div style={{ textAlign: "center", fontWeight: "bold", background: "white" }}>
-                                          {props.data[rowcounter - 1][key] > 0
-                                              ? props.data[rowcounter - 1][key].toFixed(2)
-                                              : "0"}
-                                      </div>
-                                  );
-                              }
-                          },
-                      }))
+                              },
+                          };
+                      })
                 : [];
+
         setheatMapConversations([
             {
                 Header: `Hora`,
@@ -786,24 +811,17 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
         setaverageHeatMapTMOData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
-
+            const rules = dataTableConfig?.find((x) => x.report_name === "averagetmo")?.report_configuration || [];
             if (rowcounter >= 24) {
-                return "FFFFFF";
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            for (const item of rules) {
+                if (num >= timetonumber(item.min) && num < timetonumber(item.max)) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
-
-        let rowcounter = 0;
 
         const arraytemplate =
             arrayfree.length > 0
@@ -818,30 +836,28 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                               const column = props.cell.column;
                               const row = props.cell.row.original;
                               if (key !== "totalcol") {
-                                  let color = "white";
-                                  let timespenttotal = props.cell.row.original[key].split(":");
-                                  let hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  let mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  let ss = timespenttotal[2];
-                                  let seconds =
+                                  const timespenttotal = props.cell.row.original[key].split(":");
+                                  const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                                  const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                                  const ss = timespenttotal[2];
+                                  const seconds =
                                       parseInt(timespenttotal[0]) * 3600 +
                                       parseInt(timespenttotal[1]) * 60 +
                                       parseInt(timespenttotal[2]);
-                                  color = gradient(seconds, rowcounter);
+                                  const color = gradient(seconds, props.cell.row.index);
                                   return (
                                       <div
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
                                           onClick={() => fetchDetail("1.2", column, row, mes, year)}
                                       >
                                           {`${hh}${mm}${ss}s`}
                                       </div>
                                   );
                               } else {
-                                  if (rowcounter < 24) rowcounter++;
-                                  let timespenttotal = props.cell.row.original[key].split(":");
-                                  let hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  let mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  let ss = timespenttotal[2];
+                                  const timespenttotal = props.cell.row.original[key].split(":");
+                                  const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                                  const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                                  const ss = timespenttotal[2];
                                   return (
                                       <div
                                           style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
@@ -975,24 +991,17 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
         setheatmapaverageagentTMEData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
+            const rules = dataTableConfig?.find((x) => x.report_name === "averageagenttme")?.report_configuration || [];
             if (rowcounter >= 24) {
-                return "FFFFFF";
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            for (const item of rules) {
+                if (num >= timetonumber(item.min) && num < timetonumber(item.max)) {
+                    return item.color;
+                }
             }
-
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
-
-        let rowcounter = 0;
 
         const arraytemplate =
             arrayfree.length > 0
@@ -1006,33 +1015,26 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                           Cell: (props: any) => {
                               const column = props.cell.column;
                               const row = props.cell.row.original;
+                              const rowcounter = props.cell.row.index;
+                              const timespenttotal = props.cell.row.original[key].split(":");
+                              const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                              const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                              const ss = timespenttotal[2];
                               if (key !== "totalcol") {
-                                  let color = "white";
-                                  let timespenttotal = props.cell.row.original[key].split(":");
-                                  let hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  let mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  let ss = timespenttotal[2];
-                                  let seconds =
+                                  const seconds =
                                       parseInt(timespenttotal[0]) * 3600 +
                                       parseInt(timespenttotal[1]) * 60 +
                                       parseInt(timespenttotal[2]);
-                                  if (props.data[rowcounter]) {
-                                      color = gradient(seconds, rowcounter);
-                                  }
+                                  const color = gradient(seconds, rowcounter);
                                   return (
                                       <div
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                          style={{ background: color, textAlign: "center", color: "black" }}
                                           onClick={() => fetchDetail("1.3", column, row, mes, year)}
                                       >
                                           {`${hh}${mm}${ss}s`}
                                       </div>
                                   );
                               } else {
-                                  if (rowcounter < 24) rowcounter++;
-                                  let timespenttotal = props.cell.row.original[key].split(":");
-                                  let hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  let mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  let ss = timespenttotal[2];
                                   return (
                                       <div
                                           style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
@@ -1166,24 +1168,18 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
         setuserAverageReplyTimexFechaData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
-
+            const rules =
+                dataTableConfig?.find((x) => x.report_name === "averagereplytimexfecha")?.report_configuration || [];
             if (rowcounter >= 24) {
-                return "FFFFFF";
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            for (const item of rules) {
+                if (num >= timetonumber(item.min) && num < timetonumber(item.max)) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
-
-        let rowcounter = 0;
 
         const arraytemplate =
             arrayfree.length > 0
@@ -1197,33 +1193,26 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                           Cell: (props: any) => {
                               const column = props.cell.column;
                               const row = props.cell.row.original;
+                              const rowcounter = props.cell.row.index;
+                              const timespenttotal = props.cell.row.original[key].split(":");
+                              const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                              const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                              const ss = timespenttotal[2];
                               if (key !== "totalcol") {
-                                  let color = "white";
-                                  let timespenttotal = props.cell.row.original[key].split(":");
-                                  let hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  let mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  let ss = timespenttotal[2];
-                                  let seconds =
+                                  const seconds =
                                       parseInt(timespenttotal[0]) * 3600 +
                                       parseInt(timespenttotal[1]) * 60 +
                                       parseInt(timespenttotal[2]);
-                                  if (props.data[rowcounter]) {
-                                      color = gradient(seconds, rowcounter);
-                                  }
+                                  const color = gradient(seconds, rowcounter);
                                   return (
                                       <div
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
                                           onClick={() => fetchDetail("1.4", column, row, mes, year)}
                                       >
                                           {`${hh}${mm}${ss}s`}
                                       </div>
                                   );
                               } else {
-                                  if (rowcounter < 24) rowcounter++;
-                                  let timespenttotal = props.cell.row.original[key].split(":");
-                                  let hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  let mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  let ss = timespenttotal[2];
                                   return (
                                       <div
                                           style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
@@ -1357,24 +1346,19 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
         setpersonAverageReplyTimexFechaData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
-
+            const rules =
+                dataTableConfig?.find((x) => x.report_name === "averagereplytimexfechaclient")?.report_configuration ||
+                [];
             if (rowcounter >= 24) {
-                return "FFFFFF";
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            for (const item of rules) {
+                if (num >= timetonumber(item.min) && num < timetonumber(item.max)) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
-
-        let rowcounter = 0;
 
         const arraytemplate =
             arrayfree.length > 0
@@ -1388,33 +1372,26 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                           Cell: (props: any) => {
                               const column = props.cell.column;
                               const row = props.cell.row.original;
+                              const rowcounter = props.cell.row.index;
+                              const timespenttotal = props.cell.row.original[key].split(":");
+                              const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                              const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                              const ss = timespenttotal[2];
                               if (key !== "totalcol") {
-                                  let color = "white";
-                                  let timespenttotal = props.cell.row.original[key].split(":");
-                                  let hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  let mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  let ss = timespenttotal[2];
-                                  let seconds =
+                                  const seconds =
                                       parseInt(timespenttotal[0]) * 3600 +
                                       parseInt(timespenttotal[1]) * 60 +
                                       parseInt(timespenttotal[2]);
-                                  if (props.data[rowcounter]) {
-                                      color = gradient(seconds, rowcounter);
-                                  }
+                                  const color = gradient(seconds, rowcounter);
                                   return (
                                       <div
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
                                           onClick={() => fetchDetail("1.5", column, row, mes, year)}
                                       >
                                           {`${hh}${mm}${ss}s`}
                                       </div>
                                   );
                               } else {
-                                  if (rowcounter < 24) rowcounter++;
-                                  let timespenttotal = props.cell.row.original[key].split(":");
-                                  let hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  let mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  let ss = timespenttotal[2];
                                   return (
                                       <div
                                           style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
@@ -1506,16 +1483,15 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                             <Button
                                 variant="outlined"
                                 color="primary"
-                                onClick={() => {setOpenModalConfiguration(true); setTableName("conversations")}}
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("conversations");
+                                }}
                                 startIcon={<TrafficIcon />}
                             >
                                 {t(langKeys.configuration)}
                             </Button>
                         )}
-                        //triggerExportPersonalized={true}
-                        //exportPersonalized={()=>{
-                        //    exportexcelwithgradient(t(langKeys.conversationheatmap) + "Report", heatMapConversationsData, heatMapConversations.filter((x: any) => (!x.isComponent && !x.activeOnHover)),24,"day")
-                        //}}
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
@@ -1532,6 +1508,19 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                         titlemodule={t(langKeys.averageheatmapTMOdata)}
                         data={averageHeatMapTMOData}
                         download={true}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("averagetmo");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
@@ -1548,6 +1537,19 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                         titlemodule={t(langKeys.heatmapaverageagentTME)}
                         data={heatmapaverageagentTMEData}
                         download={true}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("averageagenttme");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
@@ -1566,6 +1568,19 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("averagereplytimexfecha");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         toolsFooter={false}
                         helperText={t(langKeys.userAverageReplyTimexFechatooltip)}
                     />
@@ -1583,6 +1598,19 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("averagereplytimexfechaclient");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         helperText={t(langKeys.personAverageReplyTimexFechatooltip)}
                     />
                 </div>
@@ -1602,11 +1630,14 @@ const MainHeatMap: React.FC<{ dataChannels: any; setOpenModalConfiguration: (dat
     );
 };
 
-const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdomain: any }> = ({
-    dataChannels,
-    companydomain,
-    groupsdomain,
-}) => {
+const HeatMapAsesor: React.FC<{
+    dataChannels: any;
+    companydomain: any;
+    groupsdomain: any;
+    setOpenModalConfiguration: (dat: boolean) => void;
+    setTableName: (d: string) => void;
+    dataTableConfig: Dictionary[];
+}> = ({ dataChannels, companydomain, groupsdomain, setOpenModalConfiguration, setTableName, dataTableConfig }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [realizedsearch, setrealizedsearch] = useState(false);
@@ -1960,23 +1991,19 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
         setCompletadosxAsesorData(arrayfree);
 
         let m = 0;
-        function gradient(num: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
 
-            m++;
-            if (tempadviserlist.length * dateend < m) {
-                return "FFFFFF";
+        
+        function gradient(num: number, rowcount: number) {
+            if(rowcount >= tempadviserlist.length){
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            const rules = dataTableConfig?.find((x) => x.report_name === "completeconversations")?.report_configuration || [];
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
 
         const arraytemplate =
@@ -1995,12 +2022,13 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                           Cell: (props: any) => {
                               const column = props.cell.column;
                               const row = props.cell.row.original;
+                              const rowcount = props.cell.row.index
                               if (key !== "totalcol") {
-                                  let color = gradient(props.cell.row.original[key]);
+                                  const color = gradient(props.cell.row.original[key], rowcount);
 
                                   return (
                                       <div
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
                                           onClick={() => fetchDetail("COMPLETED", column, row, false, mes, year)}
                                       >
                                           {props.cell.row.original[key]}
@@ -2061,23 +2089,20 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
         setabandonosxAsesorData(arrayfree);
 
         let m = 0;
-        function gradient(num: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
 
-            m++;
-            if (tempadviserlist.length * dateend < m) {
-                return "FFFFFF";
+        
+        
+        function gradient(num: number, rowcount: number) {
+            if(rowcount >= tempadviserlist.length){
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            const rules = dataTableConfig?.find((x) => x.report_name === "quantityabandonos")?.report_configuration || [];
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
 
         const arraytemplate =
@@ -2094,15 +2119,16 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                           NoFilter: true,
                           NoSort: true,
                           Cell: (props: any) => {
+                              const rowcount = props.cell.row.index
                               if (key !== "totalcol") {
-                                  let color = gradient(props.cell.row.original[key]);
+                                  const color = gradient(props.cell.row.original[key], rowcount);
                                   const column = props.cell.column;
                                   const row = props.cell.row.original;
 
                                   return (
                                       <div
                                           onClick={() => fetchDetail("ABANDONED", column, row, false, mes, year)}
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
                                       >
                                           {props.cell.row.original[key]}
                                       </div>
@@ -2140,17 +2166,15 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
         });
 
         settasaAbandonosxAsesorData(arrayfree);
-
+        
         function gradient(num: number) {
-            let scale = 255 / (1 / 2);
-            if (isNaN(scale)) scale = 0;
-
-            if (num <= 1 / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            const rules = dataTableConfig?.find((x) => x.report_name === "tasaabandonos")?.report_configuration || [];
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            let number = Math.floor(255 - (num - 1 / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
 
         const arraytemplate =
@@ -2168,10 +2192,10 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                           NoSort: true,
                           type: "porcentage",
                           Cell: (props: any) => {
-                              let color = gradient(Number(props.cell.row.original[key]));
-                              let number = `${(Number(props.cell.row.original[key]) * 100).toFixed(0)} %`;
+                              const color = gradient(Number(props.cell.row.original[key])*100);
+                              const number = `${(Number(props.cell.row.original[key]) * 100).toFixed(0)} %`;
                               return (
-                                  <div style={{ background: `#${color}`, textAlign: "center", color: "black" }}>
+                                  <div style={{ background: `${color}`, textAlign: "center", color: "black" }}>
                                       {number}
                                   </div>
                               );
@@ -2225,23 +2249,17 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
 
         let m = 0;
 
-        function gradient(num: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
-
-            m++;
-            if (tempadviserlist.length * dateend < m) {
-                return "FFFFFF";
+        function gradient(num: number, rowcount: number) {
+            if(rowcount >= tempadviserlist.length){
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            const rules = dataTableConfig?.find((x) => x.report_name === "quantityoportunities")?.report_configuration || [];
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
 
         const arraytemplate =
@@ -2259,14 +2277,15 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                           NoSort: true,
                           Cell: (props: any) => {
                               if (key !== "totalcol") {
-                                  let color = gradient(props.cell.row.original[key]);
+                                    const rowcount = props.cell.row.index
+                                  const color = gradient(props.cell.row.original[key], rowcount);
                                   const column = props.cell.column;
                                   const row = props.cell.row.original;
 
                                   return (
                                       <div
                                           onClick={() => fetchDetail("OPPORTUNITY", column, row, true, mes, year)}
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
                                       >
                                           {props.cell.row.original[key]}
                                       </div>
@@ -2306,18 +2325,16 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
 
         setTasaOportunidadesData(arrayfree);
 
+        
         function gradient(num: number) {
-            let scale = 255 / (1 / 2);
-            if (isNaN(scale)) scale = 0;
-
-            if (num <= 1 / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            const rules = dataTableConfig?.find((x) => x.report_name === "tasaoportunities")?.report_configuration || [];
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            let number = Math.floor(255 - (num - 1 / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
-
         const arraytemplate =
             arrayfree.length > 0
                 ? Object.entries(arrayfree[0])
@@ -2333,10 +2350,10 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                           NoSort: true,
                           type: "porcentage",
                           Cell: (props: any) => {
-                              let color = gradient(Number(props.cell.row.original[key]));
-                              let number = `${(Number(props.cell.row.original[key]) * 100).toFixed(0)} %`;
+                              const color = gradient(Number(props.cell.row.original[key])*100);
+                              const number = `${(Number(props.cell.row.original[key]) * 100).toFixed(0)} %`;
                               return (
-                                  <div style={{ background: `#${color}`, textAlign: "center", color: "black" }}>
+                                  <div style={{ background: `${color}`, textAlign: "center", color: "black" }}>
                                       {number}
                                   </div>
                               );
@@ -2393,24 +2410,20 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
 
         let m = 0;
 
-        function gradient(num: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
 
-            m++;
-            if (tempadviserlist.length * dateend < m) {
-                return "FFFFFF";
+        function gradient(num: number, rowcount: number) {
+            if(rowcount >= tempadviserlist.length){
+                return "#FFFFFF";
             }
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            const rules = dataTableConfig?.find((x) => x.report_name === "quantityventas")?.report_configuration || [];
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
+
 
         const arraytemplate =
             arrayfree.length > 0
@@ -2427,14 +2440,15 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                           NoSort: true,
                           Cell: (props: any) => {
                               if (key !== "totalcol") {
-                                  let color = gradient(props.cell.row.original[key]);
+                                const rowcount = props.cell.row.index
+                                  const color = gradient(props.cell.row.original[key], rowcount);
                                   const column = props.cell.column;
                                   const row = props.cell.row.original;
 
                                   return (
                                       <div
                                           onClick={() => fetchDetail("OPPORTUNITYWON", column, row, true, mes, year)}
-                                          style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
                                       >
                                           {props.cell.row.original[key]}
                                       </div>
@@ -2474,15 +2488,13 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
         setefectividadxAsesorData(arrayfree);
 
         function gradient(num: number) {
-            let scale = 255 / (1 / 2);
-            if (isNaN(scale)) scale = 0;
-
-            if (num <= 1 / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            const rules = dataTableConfig?.find((x) => x.report_name === "tasaventasporasesor")?.report_configuration || [];
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            let number = Math.floor(255 - (num - 1 / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
 
         const arraytemplate =
@@ -2500,10 +2512,10 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                           NoSort: true,
                           type: "porcentage",
                           Cell: (props: any) => {
-                              let color = gradient(Number(props.cell.row.original[key]));
-                              let number = `${(Number(props.cell.row.original[key]) * 100).toFixed(0)} %`;
+                              const color = gradient(Number(props.cell.row.original[key])*100);
+                              const number = `${(Number(props.cell.row.original[key]) * 100).toFixed(0)} %`;
                               return (
-                                  <div style={{ background: `#${color}`, textAlign: "center", color: "black" }}>
+                                  <div style={{ background: `${color}`, textAlign: "center", color: "black" }}>
                                       {number}
                                   </div>
                               );
@@ -2720,6 +2732,19 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("completeconversations");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         toolsFooter={false}
                         helperText={t(langKeys.notecompletedasesors)}
                     />
@@ -2735,6 +2760,19 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                         data={abandonosxAsesorData}
                         download={true}
                         pageSizeDefault={50}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("quantityabandonos");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         filterGeneral={false}
                         toolsFooter={false}
                         helperText={t(langKeys.noteabandonedasesors)}
@@ -2751,6 +2789,19 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                         data={tasaAbandonosxAsesorData}
                         download={true}
                         pageSizeDefault={50}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("tasaabandonos");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         filterGeneral={false}
                         toolsFooter={false}
                         helperText={t(langKeys.tasaAbandonosxAsesortooltip)}
@@ -2768,6 +2819,19 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("quantityoportunities");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         toolsFooter={false}
                         helperText={t(langKeys.oportunidadesxAsesortooltip)}
                     />
@@ -2783,6 +2847,19 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                         data={tasaOportunidadesData}
                         download={true}
                         pageSizeDefault={50}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("tasaoportunities");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         filterGeneral={false}
                         toolsFooter={false}
                         helperText={t(langKeys.tasaOportunidadestooltip)}
@@ -2800,6 +2877,19 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                         data={ventasxAsesorData}
                         download={true}
                         pageSizeDefault={50}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("quantityventas");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         filterGeneral={false}
                         toolsFooter={false}
                         helperText={t(langKeys.ventasxAsesortooltip)}
@@ -2829,6 +2919,17 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
                                     labelPlacement="start"
                                     style={{ padding: 10 }}
                                 />
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => {
+                                        setOpenModalConfiguration(true);
+                                        setTableName("tasaventasporasesor");
+                                    }}
+                                    startIcon={<TrafficIcon />}
+                                >
+                                    {t(langKeys.configuration)}
+                                </Button>
                             </>
                         )}
                     />
@@ -2848,7 +2949,11 @@ const HeatMapAsesor: React.FC<{ dataChannels: any; companydomain: any; groupsdom
         </div>
     );
 };
-const HeatMapTicket: React.FC<{ dataChannels: Dictionary }> = ({ dataChannels }) => {
+
+const HeatMapTicket: React.FC<{ dataChannels: Dictionary,
+    setOpenModalConfiguration: (dat: boolean) => void;
+    setTableName: (d: string) => void;
+    dataTableConfig: Dictionary[]; }> = ({ dataChannels, setOpenModalConfiguration, setTableName, dataTableConfig }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -2977,21 +3082,16 @@ const HeatMapTicket: React.FC<{ dataChannels: Dictionary }> = ({ dataChannels })
             arrayfree = arrayfree.map((x: any) => (x.hournum === hour ? { ...x, [`day${day}`]: row.value } : x));
             rowmax = row.value > rowmax ? row.value : rowmax;
         });
+        
         function gradient(num: number) {
-            let scale = 255 / (rowmax / 2);
-            if (isNaN(scale) || rowmax === 0) scale = 0;
-
-            if (num <= rowmax / 2) {
-                let number = Math.floor(num * scale).toString(16);
-                return "00".slice(number.length) + number + "ff00";
+            const rules = dataTableConfig?.find((x) => x.report_name === "asesorsatleastone")?.report_configuration || [];
+            for (const item of rules) {
+                if (num >= item.min && num < item.max) {
+                    return item.color;
+                }
             }
-            if (rowmax === num) {
-                return "FF0000";
-            }
-            let number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-            return "FF" + "00".slice(number.length) + number + "00";
+            return "#7721ad";
         }
-
         setasesoresConectadosData(arrayfree);
 
         const arraytemplate =
@@ -3006,10 +3106,10 @@ const HeatMapTicket: React.FC<{ dataChannels: Dictionary }> = ({ dataChannels })
                           Cell: (props: any) => {
                               const column = props.cell.column;
                               const row = props.cell.row.original;
-                              let color = gradient(props.cell.row.original[key]);
+                              const color = gradient(props.cell.row.original[key]);
                               return (
                                   <div
-                                      style={{ background: `#${color}`, textAlign: "center", color: "black" }}
+                                      style={{ background: `${color}`, textAlign: "center", color: "black" }}
                                       onClick={() => fetchDetail("3.1", column, row, mes, year)}
                                   >
                                       {props.cell.row.original[key]}
@@ -3081,6 +3181,19 @@ const HeatMapTicket: React.FC<{ dataChannels: Dictionary }> = ({ dataChannels })
                         data={asesoresConectadosData}
                         download={true}
                         pageSizeDefault={50}
+                        ButtonsElement={() => (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalConfiguration(true);
+                                    setTableName("asesorsatleastone");
+                                }}
+                                startIcon={<TrafficIcon />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                        )}
                         filterGeneral={false}
                         toolsFooter={false}
                     />
@@ -3100,26 +3213,20 @@ const HeatMapTicket: React.FC<{ dataChannels: Dictionary }> = ({ dataChannels })
     );
 };
 
-const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boolean) => void, reportname: string, filterData: Dictionary[], SetFilterData: (a:Dictionary[])=>void }> = ({
-    openModal,
-    setOpenModal,
-    reportname,
-    filterData,
-    SetFilterData
-}) => {
-    const colorgroup = ["#FF0000","#FF6600","#FFFF00", "#6FE775", "#47FF47"]
+const ConfigurationModalNumber: React.FC<{
+    openModal: boolean;
+    setOpenModal: (b: boolean) => void;
+    reportname: string;
+    filterData: Dictionary[];
+    SetFilterData: (a: Dictionary[]) => void;
+    data: Dictionary[];
+    setData: (a: Dictionary[]) => void;
+}> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
+    const colorgroup = ["#FF0000", "#FF6600", "#FFFF00", "#6FE775", "#47FF47"];
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [hoveredIndex, setHoveredIndex] = useState<number|null>(null);
-    const [data, setData] = useState<Dictionary[]>([]);
-
-    useEffect(() => {
-        if(openModal){
-            setData(filterData.find(x=>x.report_name === reportname)?.report_configuration||[])
-        }
-    }, [filterData, reportname, openModal])
-
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     function changeData(index: number, key: string, value: string | number) {
         const newData = [...data];
@@ -3127,35 +3234,35 @@ const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boole
             ...newData[index],
             [key]: value,
         };
-        if(key==="min" && index!==0){
-            newData[index-1] = {
-                ...newData[index-1],
+        if (key === "min" && index !== 0) {
+            newData[index - 1] = {
+                ...newData[index - 1],
                 max: value,
             };
         }
-        if(key==="max" && index!==(newData.length-1)){
-            newData[index+1] = {
-                ...newData[index+1],
+        if (key === "max" && index !== newData.length - 1) {
+            newData[index + 1] = {
+                ...newData[index + 1],
                 min: value,
             };
         }
         setData(newData);
     }
 
-    function handlesubmit(){
-        setOpenModal(false)
-        const auxdata= filterData
-        const foundregister = auxdata.find(x=>x.report_name === reportname)
-        if(foundregister){
-            foundregister.report_configuration = data
-        }else{
+    function handlesubmit() {
+        setOpenModal(false);
+        const auxdata = filterData;
+        const foundregister = auxdata.find((x) => x.report_name === reportname);
+        if (foundregister) {
+            foundregister.report_configuration = data;
+        } else {
             auxdata.push({
                 report_name: reportname,
-                report_configuration: data
-            })
+                report_configuration: data,
+            });
         }
-        SetFilterData(auxdata)
-        dispatch(execute(heatmapConfigIns({reportname, configuration:data})))
+        SetFilterData(auxdata);
+        dispatch(execute(heatmapConfigIns({ reportname, configuration: data })));
     }
 
     return (
@@ -3186,7 +3293,7 @@ const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boole
                                             {hoveredIndex === i && (
                                                 <IconButton
                                                     onClick={() => {
-                                                        const auxData = data
+                                                        const auxData = data;
                                                         setData([...auxData.slice(0, i), ...auxData.slice(i + 1)]);
                                                     }}
                                                     style={{ position: "absolute", top: 0, left: "50%" }}
@@ -3217,9 +3324,9 @@ const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boole
                         <TableBody>
                             <TableRow>
                                 <TableCell>
-                                    {t(langKeys.number)} {t(langKeys.function_minimum)}{" "}
+                                    {t("number")} {t(langKeys.function_minimum)}
                                     <Tooltip
-                                        title={<div style={{ fontSize: 12 }}>{t(langKeys.numberminimun_helper)}</div>}
+                                        title={<div style={{ fontSize: 12 }}>{t(`${"number"}minimun_helper`)}</div>}
                                         arrow
                                         placement="top"
                                     >
@@ -3230,9 +3337,10 @@ const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boole
                                     return (
                                         <TableCell key={`min-${i}`}>
                                             <TextField
-                                                type="number"
+                                                type={"number"}
                                                 value={x.min}
-                                                style={{width:"100%"}}
+                                                style={{ width: "100%" }}
+                                                //helperText={}
                                                 onChange={(e) => {
                                                     changeData(i, "min", Number(e?.target?.value || "0"));
                                                 }}
@@ -3243,9 +3351,9 @@ const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boole
                             </TableRow>
                             <TableRow>
                                 <TableCell>
-                                    {t(langKeys.number)} {t(langKeys.function_maximum)}{" "}
+                                    {t("number")} {t(langKeys.function_maximum)}{" "}
                                     <Tooltip
-                                        title={<div style={{ fontSize: 12 }}>{t(langKeys.numbermaximum_helper)}</div>}
+                                        title={<div style={{ fontSize: 12 }}>{t(`${"number"}maximum_helper`)}</div>}
                                         arrow
                                         placement="top"
                                     >
@@ -3255,10 +3363,10 @@ const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boole
                                 {data.map((x, i) => {
                                     return (
                                         <TableCell key={`max-${i}`}>
-                                            <Input
-                                                type="number"
+                                            <TextField
+                                                type={"number"}
                                                 value={x.max}
-                                                style={{width:"100%"}}
+                                                style={{ width: "100%" }}
                                                 onChange={(e) => {
                                                     changeData(i, "max", Number(e?.target?.value || "0"));
                                                 }}
@@ -3276,8 +3384,15 @@ const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boole
                     color="primary"
                     disabled={data.length >= 10}
                     onClick={() => {
-                        const lastitem = data.length - 1 
-                        setData([...data, { color: colorgroup[lastitem+1]||"#FFFFFF", min: data?.[lastitem]?.max||0, max: (data?.[lastitem]?.max||0) + 5 },])
+                        const lastitem = data.length - 1;
+                        setData([
+                            ...data,
+                            {
+                                color: colorgroup[lastitem + 1] || "#FFFFFF",
+                                min: data?.[lastitem]?.max || 0,
+                                max: (data?.[lastitem]?.max || 0) + 5,
+                            },
+                        ]);
                     }}
                     style={{ marginTop: 65 }}
                     startIcon={<AddIcon />}
@@ -3288,11 +3403,489 @@ const ConfigurationModal: React.FC<{ openModal: boolean; setOpenModal: (b: boole
         </DialogZyx>
     );
 };
+const ConfigurationModalTime: React.FC<{
+    openModal: boolean;
+    setOpenModal: (b: boolean) => void;
+    reportname: string;
+    filterData: Dictionary[];
+    SetFilterData: (a: Dictionary[]) => void;
+    data: Dictionary[];
+    setData: (a: Dictionary[]) => void;
+}> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
+    const colorgroup = ["#FF0000", "#FF6600", "#FFFF00", "#6FE775", "#47FF47"];
+    const { t } = useTranslation();
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+    function changeData(index: number, key: string, value: string | number) {
+        const newData = [...data];
+        newData[index] = {
+            ...newData[index],
+            [key]: value,
+        };
+        if (key === "min" && index !== 0) {
+            newData[index - 1] = {
+                ...newData[index - 1],
+                max: value,
+            };
+        }
+        if (key === "max" && index !== newData.length - 1) {
+            newData[index + 1] = {
+                ...newData[index + 1],
+                min: value,
+            };
+        }
+        setData(newData);
+    }
+    const validateInput = (value) => {
+        const regex = /^(\d+h)?(\d+m)?(\d+s)?$/;
+        return regex.test(value);
+    };
+    const validateTimeRange = (data: Dictionary[]) => {
+        for (const item of data) {
+            if (!validateInput(item.min) || !validateInput(item.max)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    function handlesubmit() {
+        if (validateTimeRange(data)) {
+            setOpenModal(false);
+            const auxdata = filterData;
+            const foundregister = auxdata.find((x) => x.report_name === reportname);
+            if (foundregister) {
+                foundregister.report_configuration = data;
+            } else {
+                auxdata.push({
+                    report_name: reportname,
+                    report_configuration: data,
+                });
+            }
+            SetFilterData(auxdata);
+            dispatch(execute(heatmapConfigIns({ reportname, configuration: data })));
+        }
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.trafficlightconfig)}
+            buttonText1={t(langKeys.close)}
+            buttonText2={t(langKeys.refresh)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={() => handlesubmit()}
+            maxWidth="md"
+        >
+            <div className="row-zyx">
+                <div>{t(langKeys.colorandlimitsettings)}</div>
+                <div>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Color</TableCell>
+                                {data.map((x, i) => {
+                                    return (
+                                        <TableCell
+                                            key={`color-${i}`}
+                                            style={{ textAlign: "center", position: "relative" }}
+                                            onMouseEnter={() => setHoveredIndex(i)}
+                                            onMouseLeave={() => setHoveredIndex(null)}
+                                        >
+                                            {hoveredIndex === i && (
+                                                <IconButton
+                                                    onClick={() => {
+                                                        const auxData = data;
+                                                        setData([...auxData.slice(0, i), ...auxData.slice(i + 1)]);
+                                                    }}
+                                                    style={{ position: "absolute", top: 0, left: "50%" }}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            )}
+
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <ColorInputCircular
+                                                    hex={x.color}
+                                                    onChange={(e) => {
+                                                        changeData(i, "color", e.hex);
+                                                    }}
+                                                />
+                                            </div>
+                                        </TableCell>
+                                    );
+                                })}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>
+                                    {t("time")} {t(langKeys.function_minimum)}
+                                    <Tooltip
+                                        title={<div style={{ fontSize: 12 }}>{t(`${"time"}minimun_helper`)}</div>}
+                                        arrow
+                                        placement="top"
+                                    >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </TableCell>
+                                {data.map((x, i) => {
+                                    return (
+                                        <TableCell key={`min-${i}`}>
+                                            <TextField
+                                                type={"string"}
+                                                value={x.min}
+                                                error={!validateInput(x.min)}
+                                                helperText={!validateInput(x.min) ? t(langKeys.invalid_data) : ""}
+                                                style={{ width: "100%" }}
+                                                //helperText={}
+                                                onChange={(e) => {
+                                                    changeData(i, "min", e?.target?.value || "0");
+                                                }}
+                                            />
+                                        </TableCell>
+                                    );
+                                })}
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    {t("time")} {t(langKeys.function_maximum)}{" "}
+                                    <Tooltip
+                                        title={<div style={{ fontSize: 12 }}>{t(`${"time"}maximum_helper`)}</div>}
+                                        arrow
+                                        placement="top"
+                                    >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </TableCell>
+                                {data.map((x, i) => {
+                                    return (
+                                        <TableCell key={`max-${i}`}>
+                                            <TextField
+                                                type={"string"}
+                                                value={x.max}
+                                                error={!validateInput(x.max)}
+                                                helperText={!validateInput(x.max) ? t(langKeys.invalid_data) : ""}
+                                                style={{ width: "100%" }}
+                                                onChange={(e) => {
+                                                    changeData(i, "max", e?.target?.value || "0");
+                                                }}
+                                            />
+                                        </TableCell>
+                                    );
+                                })}
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </div>
+
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    disabled={data.length >= 10}
+                    onClick={() => {
+                        const lastitem = data.length - 1;
+                        setData([
+                            ...data,
+                            {
+                                color: colorgroup[lastitem + 1] || "#FFFFFF",
+                                min: data?.[lastitem]?.max || "0s",
+                                max: numberToTime(timetonumber(data?.[lastitem]?.max || "0s") + 30),
+                            },
+                        ]);
+                    }}
+                    style={{ marginTop: 65 }}
+                    startIcon={<AddIcon />}
+                >
+                    {t(langKeys.addsection)}
+                </Button>
+            </div>
+        </DialogZyx>
+    );
+};
+const ConfigurationModalPercentage: React.FC<{
+    openModal: boolean;
+    setOpenModal: (b: boolean) => void;
+    reportname: string;
+    filterData: Dictionary[];
+    SetFilterData: (a: Dictionary[]) => void;
+    data: Dictionary[];
+    setData: (a: Dictionary[]) => void;
+}> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
+    const colorgroup = ["#FF0000", "#FF6600", "#FFFF00", "#6FE775", "#47FF47"];
+    const { t } = useTranslation();
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+    function changeData(index: number, key: string, value: string | number) {
+        const newData = [...data];
+        newData[index] = {
+            ...newData[index],
+            [key]: value,
+        };
+        if (key === "min" && index !== 0) {
+            newData[index - 1] = {
+                ...newData[index - 1],
+                max: value,
+            };
+        }
+        if (key === "max" && index !== newData.length - 1) {
+            newData[index + 1] = {
+                ...newData[index + 1],
+                min: value,
+            };
+        }
+        setData(newData);
+    }
+
+    function handlesubmit() {
+        setOpenModal(false);
+        const auxdata = filterData;
+        const foundregister = auxdata.find((x) => x.report_name === reportname);
+        if (foundregister) {
+            foundregister.report_configuration = data;
+        } else {
+            auxdata.push({
+                report_name: reportname,
+                report_configuration: data,
+            });
+        }
+        SetFilterData(auxdata);
+        dispatch(execute(heatmapConfigIns({ reportname, configuration: data })));
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.trafficlightconfig)}
+            buttonText1={t(langKeys.close)}
+            buttonText2={t(langKeys.refresh)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={() => handlesubmit()}
+            maxWidth="md"
+        >
+            <div className="row-zyx">
+                <div>{t(langKeys.colorandlimitsettings)}</div>
+                <div>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Color</TableCell>
+                                {data.map((x, i) => {
+                                    return (
+                                        <TableCell
+                                            key={`color-${i}`}
+                                            style={{ textAlign: "center", position: "relative" }}
+                                            onMouseEnter={() => setHoveredIndex(i)}
+                                            onMouseLeave={() => setHoveredIndex(null)}
+                                        >
+                                            {hoveredIndex === i && (
+                                                <IconButton
+                                                    onClick={() => {
+                                                        const auxData = data;
+                                                        setData([...auxData.slice(0, i), ...auxData.slice(i + 1)]);
+                                                    }}
+                                                    style={{ position: "absolute", top: 0, left: "50%" }}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            )}
+
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <ColorInputCircular
+                                                    hex={x.color}
+                                                    onChange={(e) => {
+                                                        changeData(i, "color", e.hex);
+                                                    }}
+                                                />
+                                            </div>
+                                        </TableCell>
+                                    );
+                                })}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>
+                                    {t(langKeys.percentage)} {t(langKeys.function_minimum)}
+                                    <Tooltip
+                                        title={<div style={{ fontSize: 12 }}>{t(`porcentageminimun_helper`)}</div>}
+                                        arrow
+                                        placement="top"
+                                    >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </TableCell>
+                                {data.map((x, i) => {
+                                    return (
+                                        <TableCell key={`min-${i}`}>
+                                            <TextField
+                                                type={"number"}
+                                                value={x.min}
+                                                style={{ width: "100%" }}
+                                                InputProps={{
+                                                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                                                }}
+                                                onChange={(e) => {
+                                                    changeData(i, "min", Number(e?.target?.value || "0"));
+                                                }}
+                                            />
+                                        </TableCell>
+                                    );
+                                })}
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    {t(langKeys.percentage)} {t(langKeys.function_maximum)}{" "}
+                                    <Tooltip
+                                        title={<div style={{ fontSize: 12 }}>{t(`porcentagemaximum_helper`)}</div>}
+                                        arrow
+                                        placement="top"
+                                    >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </TableCell>
+                                {data.map((x, i) => {
+                                    return (
+                                        <TableCell key={`max-${i}`}>
+                                            <TextField
+                                                type={"number"}
+                                                value={x.max}
+                                                style={{ width: "100%" }}
+                                                InputProps={{
+                                                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                                                }}
+                                                onChange={(e) => {
+                                                    changeData(i, "max", Number(e?.target?.value || "0"));
+                                                }}
+                                            />
+                                        </TableCell>
+                                    );
+                                })}
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </div>
+
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    disabled={data.length >= 10}
+                    onClick={() => {
+                        const lastitem = data.length - 1;
+                        setData([
+                            ...data,
+                            {
+                                color: colorgroup[lastitem + 1] || "#FFFFFF",
+                                min: data?.[lastitem]?.max || 0,
+                                max: (data?.[lastitem]?.max || 0) + 10,
+                            },
+                        ]);
+                    }}
+                    style={{ marginTop: 65 }}
+                    startIcon={<AddIcon />}
+                >
+                    {t(langKeys.addsection)}
+                </Button>
+            </div>
+        </DialogZyx>
+    );
+};
+const ConfigurationModal: React.FC<{
+    openModal: boolean;
+    setOpenModal: (b: boolean) => void;
+    reportname: string;
+    filterData: Dictionary[];
+    SetFilterData: (a: Dictionary[]) => void;
+}> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData }) => {
+    const [data, setData] = useState<Dictionary[]>([]);
+    const [typeData, setTypeData] = useState<string>("number");
+
+    useEffect(() => {
+        if (openModal) {
+            setData(filterData.find((x) => x.report_name === reportname)?.report_configuration || []);
+            switch (reportname) {
+                case "averagetmo":
+                case "averageagenttme":
+                case "averagereplytimexfecha":
+                case "averagereplytimexfechaclient":
+                    setTypeData("time");
+                    break;
+                case "tasaabandonos":
+                case "tasaoportunities":
+                case "tasaventasporasesor":
+                    setTypeData("percentage")
+                    break;
+                case "conversations":
+                case "completeconversations":
+                case "quantityabandonos":
+                case "quantityoportunities":
+                case "quantityventas":
+                case "asesorsatleastone":
+                default:
+                    setTypeData("number");
+            }
+        }
+    }, [filterData, reportname, openModal]);
+
+    return (
+        <>
+            {typeData === "number" && (
+                <ConfigurationModalNumber
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    reportname={reportname}
+                    filterData={filterData}
+                    SetFilterData={SetFilterData}
+                    data={data}
+                    setData={setData}
+                />
+            )}
+            {typeData === "time" && (
+                <ConfigurationModalTime
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                reportname={reportname}
+                filterData={filterData}
+                SetFilterData={SetFilterData}
+                data={data}
+                setData={setData}
+                />
+                )}
+            {typeData === "percentage" && (
+                <ConfigurationModalPercentage
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    reportname={reportname}
+                    filterData={filterData}
+                    SetFilterData={SetFilterData}
+                    data={data}
+                    setData={setData}
+                />
+            )}
+        </>
+    );
+};
 const Heatmap: FC = () => {
     const [pageSelected, setPageSelected] = useState(0);
     const [companydomain, setcompanydomain] = useState<Dictionary>([]);
     const [groupsdomain, setgroupsdomain] = useState<Dictionary>([]);
-    const [dataChannels, setDataChannels] = useState<Dictionary>([]);
+    const [dataChannels, setDataChannels] = useState<Dictionary[]>([]);
     const [dataTableConfig, setDataTableConfig] = useState<Dictionary[]>([]);
     const [openModalConfiguration, setOpenModalConfiguration] = useState(false);
     const [reportTableName, setReportTableName] = useState("");
@@ -3303,7 +3896,7 @@ const Heatmap: FC = () => {
             setcompanydomain(multiDataAux.data[0]?.data || []);
             setgroupsdomain(multiDataAux.data[1]?.data || []);
             setDataChannels(multiDataAux.data[2]?.data || []);
-            setDataTableConfig(multiDataAux.data[3]?.data || [])
+            setDataTableConfig(multiDataAux.data[3]?.data || []);
         }
     }, [multiDataAux]);
     useEffect(() => {
@@ -3312,7 +3905,7 @@ const Heatmap: FC = () => {
                 getValuesFromDomain("EMPRESA"),
                 getValuesFromDomain("GRUPOS"),
                 getCommChannelLstTypeDesc(),
-                getHeatmapConfig()
+                getHeatmapConfig(),
             ])
         );
         return () => {
@@ -3338,13 +3931,34 @@ const Heatmap: FC = () => {
                 <AntTab label={t(langKeys.heatmapticket)} />
             </Tabs>
             {pageSelected === 0 && (
-                <MainHeatMap dataChannels={dataChannels} setOpenModalConfiguration={setOpenModalConfiguration} setTableName={setReportTableName}/>
+                <MainHeatMap
+                    dataChannels={dataChannels}
+                    setOpenModalConfiguration={setOpenModalConfiguration}
+                    setTableName={setReportTableName}
+                    dataTableConfig={dataTableConfig}
+                />
             )}
             {pageSelected === 1 && (
-                <HeatMapAsesor dataChannels={dataChannels} companydomain={companydomain} groupsdomain={groupsdomain} />
+                <HeatMapAsesor
+                    dataChannels={dataChannels}
+                    companydomain={companydomain}
+                    groupsdomain={groupsdomain}
+                    setOpenModalConfiguration={setOpenModalConfiguration}
+                    setTableName={setReportTableName}
+                    dataTableConfig={dataTableConfig}
+                />
             )}
-            {pageSelected === 2 && <HeatMapTicket dataChannels={dataChannels} />}
-            <ConfigurationModal openModal={openModalConfiguration} setOpenModal={setOpenModalConfiguration} reportname={reportTableName} filterData={dataTableConfig} SetFilterData={setDataTableConfig}/>
+            {pageSelected === 2 && <HeatMapTicket dataChannels={dataChannels}
+                    setOpenModalConfiguration={setOpenModalConfiguration}
+                    setTableName={setReportTableName}
+                    dataTableConfig={dataTableConfig} />}
+            <ConfigurationModal
+                openModal={openModalConfiguration}
+                setOpenModal={setOpenModalConfiguration}
+                reportname={reportTableName}
+                filterData={dataTableConfig}
+                SetFilterData={setDataTableConfig}
+            />
         </Fragment>
     );
 };
