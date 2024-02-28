@@ -147,6 +147,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const [operator, setoperator] = useState("contains");
+    const [valueOnFocus, setValueOnFocus] = useState(''); // El valor cuando el input recibió el foco
 
     useEffect(() => {
         switch (type) {
@@ -166,11 +167,11 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     useEffect(() => {
         if (['number', 'number-centered'].includes(type))
             setoperator("equals");
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type])
 
     const keyPress = (e: any) => {
         if (e.keyCode === 13) {
+            setValueOnFocus(value)
             if (value || operator === "noempty" || operator === "empty")
                 setFilters({
                     ...filters,
@@ -179,11 +180,31 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                         operator
                     },
                 }, 0)
-            else
+            else {
                 setFilters({
                     ...filters,
                     [header]: undefined,
                 }, 0)
+            }
+        }
+    }
+
+    const onBlur = () => {
+        if (value !== valueOnFocus) {
+            if (value || operator === "noempty" || operator === "empty")
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
+                        operator
+                    },
+                }, 0)
+            else {
+                setFilters({
+                    ...filters,
+                    [header]: undefined,
+                }, 0)
+            }
         }
     }
 
@@ -282,7 +303,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     const handleDate = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
-            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
+            if (date || ['isnull', 'isnotnull'].includes(operator)) {
                 setFilters({
                     ...filters,
                     [header]: {
@@ -303,7 +324,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     const handleTime = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
-            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
+            if (date || ['isnull', 'isnotnull'].includes(operator)) {
                 setFilters({
                     ...filters,
                     [header]: {
@@ -327,7 +348,6 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
             setValue(filters?.[header]?.value || '');
             if (filters?.[header]) setoperator(filters[header].operator);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
     return (
@@ -346,17 +366,28 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                     /> :
 
                     <React.Fragment>
-                        {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
-                        {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                        {type === 'date' &&
+                            <DateOptionsMenuComponent
+                                value={value}
+                                handleDate={handleDate} />
+                        }
+                        {type === 'time' &&
+                            <TimeOptionsMenuComponent
+                                value={value}
+                                handleTime={handleTime} />
+                        }
                         {!['date', 'time'].includes(type) &&
                             <Input
                                 style={{ fontSize: '15px', minWidth: '100px' }}
                                 type={['number', 'number-centered'].includes(type) ? "number" : "text"}
                                 fullWidth
                                 value={value}
+                                onFocus={e => setValueOnFocus(e.target.value)}
+                                onBlur={onBlur}
                                 onKeyDown={keyPress}
                                 onChange={e => setValue(e.target.value)}
-                            />}
+                            />
+                        }
                         <IconButton
                             onClick={handleClickMenu}
                             size="small"
