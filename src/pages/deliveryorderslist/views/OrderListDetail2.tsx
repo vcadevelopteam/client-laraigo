@@ -151,7 +151,7 @@ const OrderListDetail2: React.FC<DetailProps> = ({ data: { row, edit }, setViewS
                             }}
                         />
                         <div>
-                            <TitleDetail title={t(langKeys.ordernum)} />
+                            <TitleDetail title={`${t(langKeys.ordernum)}: ${row?.ordernumber}`} />
                         </div>
                     </div>
                     <div className={classes.button}>

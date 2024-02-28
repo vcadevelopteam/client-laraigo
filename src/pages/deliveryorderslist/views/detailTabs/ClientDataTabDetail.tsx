@@ -30,53 +30,6 @@ const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [waitExport, setWaitExport] = useState(false);
-    const resExportData = useSelector((state) => state.main.exportData);
-    const [waitUpload, setWaitUpload] = useState(false);
-    const importRes = useSelector((state) => state.main.execute);
-
-    useEffect(() => {
-        if (waitUpload) {
-            if (!importRes.loading && !importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_import),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            } else if (importRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(importRes.code || "error_unexpected_error"),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitUpload(false);
-            }
-        }
-    }, [importRes, waitUpload]);
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", {
-                    module: t(langKeys.person).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [resExportData, waitExport]);
 
     useEffect(() => {
         if (waitSave) {
@@ -112,17 +65,42 @@ const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                 </div>
             </div>
             <div className="row-zyx">
-                <FieldEdit label={t(langKeys.documenttype)} disabled={true} className="col-4" />
-                <FieldEdit label={t(langKeys.contactnum)} disabled={true} className="col-4" />
+                <FieldEdit
+                    label={t(langKeys.documenttype)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.documenttype}
+                />
+                <FieldEdit
+                    label={t(langKeys.contactnum)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.phone}
+                />
                 <FieldEdit label={t(langKeys.documenttype)} disabled={true} className="col-4" />
             </div>
             <div className="row-zyx">
-                <FieldEdit label={t(langKeys.documentnumber)} disabled={true} className="col-4" />
-                <FieldEdit label={t(langKeys.email)} disabled={true} className="col-4" />
+                <FieldEdit
+                    label={t(langKeys.documentnumber)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.documentnumber}
+                />
+                <FieldEdit
+                    label={t(langKeys.email)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.email}
+                />
                 <FieldEdit label={t(langKeys.documentnumber)} disabled={true} className="col-4" />
             </div>
             <div className="row-zyx">
-                <FieldEdit label={t(langKeys.clientfullname)} disabled={true} className="col-4" />
+                <FieldEdit
+                    label={t(langKeys.clientfullname)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.name}
+                />
                 <FieldEdit label={t(langKeys.willdeliveryhappen)} disabled={true} className="col-4" />
                 <FieldEdit
                     label={t(langKeys.fullname) + " (" + t(langKeys.optional) + ")"}
@@ -131,17 +109,47 @@ const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                 />
             </div>
             <div className="row-zyx" style={{ paddingTop: "20px" }}>
-                <FieldEdit label={t(langKeys.paymentmethod)} disabled={true} className="col-4" />
-                <FieldEdit label={t(langKeys.deliverytype)} disabled={true} className="col-4" />
-                <FieldEdit label={t(langKeys.vouchertype)} disabled={true} className="col-4" />
+                <FieldEdit
+                    label={t(langKeys.paymentmethod)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.paymentmethod}
+                />
+                <FieldEdit
+                    label={t(langKeys.deliverytype)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.deliverytype}
+                />
+                <FieldEdit
+                    label={t(langKeys.vouchertype)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.payment_document_type}
+                />
             </div>
             <div className="row-zyx">
                 <TitleDetail title={t(langKeys.data4voucher)} />
             </div>
             <div className="row-zyx">
-                <FieldEdit label={t(langKeys.rucnumber)} disabled={true} className="col-4" />
-                <FieldEdit label={t(langKeys.businessname)} disabled={true} className="col-4" />
-                <FieldEdit label={t(langKeys.address)} disabled={true} className="col-4" />
+                <FieldEdit
+                    label={t(langKeys.rucnumber)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.payment_document_number}
+                />
+                <FieldEdit
+                    label={t(langKeys.businessname)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.payment_businessname}
+                />
+                <FieldEdit
+                    label={t(langKeys.address)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.payment_fiscal_address}
+                />
             </div>
         </div>
     );

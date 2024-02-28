@@ -87,6 +87,10 @@ const SubmotiveDialog = ({
             description: t(langKeys.new),
             value: 'new'
         },
+        {
+            description: t(langKeys.nondelivered),
+            value: 'nondelivered'
+        },
     ]
 
     const handleCreateSubmotive = (() => {

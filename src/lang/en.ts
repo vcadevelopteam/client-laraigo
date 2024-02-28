@@ -5600,6 +5600,7 @@ const translation: LangKeys = {
   nodateselected: 'You have not selected a date',
   managesubmotives: 'Manage submotives',
   rejected: 'Rejected',
+  nondelivered: 'Undelivered',
 };
 
 const enResource: ResourceLanguage = {

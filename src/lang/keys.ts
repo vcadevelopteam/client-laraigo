@@ -5519,6 +5519,7 @@ export const langKeys = {
   nodateselected: 'nodateselected',
   managesubmotives: 'managesubmotives',
   rejected: 'rejected',
+  nondelivered: 'nondelivered',
 };
 
 export type LangKeys = typeof langKeys;

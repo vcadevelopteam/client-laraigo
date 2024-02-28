@@ -149,7 +149,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             }}
                         />
                         <div>
-                            <TitleDetail title={t(langKeys.ordernum)} />
+                            <TitleDetail title={`${t(langKeys.ordernum)}: ${row?.ordernumber}`} />
                         </div>
                     </div>
                     <div className={classes.button}>
@@ -214,7 +214,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     <OrderListTabDetail row={row} />
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <DeliveryAddressTabDetail errors={errors} />
+                    <DeliveryAddressTabDetail row={row} errors={errors} />
                 </AntTabPanel>
             </form>
         </>

@@ -5529,6 +5529,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   nodateselected: 'No ha seleccionado una fecha',
   managesubmotives: 'Gestionar submotivos',
   rejected: 'Cancelado',
+  nondelivered: 'No Entregado',
 };
 
 const esResource: ResourceLanguage = {
