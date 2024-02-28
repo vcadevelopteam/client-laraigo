@@ -22,10 +22,12 @@ const useStyles = makeStyles((theme) => ({
 const PrintDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
-}> = ({ openModal, setOpenModal }) => {
+    pdfRender: string;
+    setPdfRender: (pdf: string) => void;
+}> = ({ openModal, setOpenModal, pdfRender, setPdfRender }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-
+    console.log(pdfRender)
     return (
         <DialogZyx open={openModal} title="" maxWidth="sm">
             <div className={classes.buttonspace}>
@@ -37,16 +39,14 @@ const PrintDialog: React.FC<{
                     style={{ backgroundColor: "#FB5F5F" }}
                     onClick={() => {
                         setOpenModal(false);
+                        setPdfRender('')
                     }}
                 >
                     {t(langKeys.back)}
                 </Button>
             </div>
-            <img
-                style={{ textAlign: "center" }}
-                src="https://www.invoiceowl.com/wp-content/uploads/2023/02/freight-invoice-banner-template.svg"
-                alt="Invoice"
-            ></img>
+
+            <iframe title="Document Viewer" src={pdfRender} width="100%" height="700" />
 
             <div className="row-zyx">
                 <Button

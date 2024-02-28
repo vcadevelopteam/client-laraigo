@@ -84,6 +84,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const culqiReportResult = useSelector((state) => state.culqi.requestReportPdf);
     const [waitPdf, setWaitPdf] = useState(false);
+    const [pdfRender, setPdfRender] = useState('');
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
@@ -264,7 +265,9 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 dispatch(showBackdrop(false));
                 setWaitPdf(false);
                 if (culqiReportResult.datacard) {
-                    window.open(culqiReportResult.datacard, "_blank");
+                    //window.open(culqiReportResult.datacard, "_blank");
+                    setPdfRender(culqiReportResult.datacard);
+                    setOpenModalPrint(true)
                 }
             } else if (culqiReportResult.error) {
                 dispatch(
@@ -390,6 +393,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             <PrintDialog
 				openModal={openModalPrint}
 				setOpenModal={setOpenModalPrint}
+                pdfRender={pdfRender}
+                setPdfRender={setPdfRender}
 			/>
         </div>
     );
