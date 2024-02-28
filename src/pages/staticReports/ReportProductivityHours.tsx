@@ -230,7 +230,8 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
         () => [                    
             {
                 Header: t(langKeys.report_userproductivityhours_datehour),
-                accessor: 'datehour',                          
+                accessor: 'datehour',
+                groupedBy: false,                  
                 type: 'date',
                 sortType: 'datetime',
                 Cell: (props: CellProps<Dictionary>) => {
@@ -240,12 +241,14 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
             },
             {
                 Header: t(langKeys.report_userproductivityhours_agent),
-                accessor: 'agent',            
+                accessor: 'agent',
+                groupedBy: false,  
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_hoursrange),
-                accessor: 'hoursrange',            
+                accessor: 'hoursrange',
+                groupedBy: false,  
                 Cell: cell
             },
             {
@@ -255,17 +258,12 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 Cell: cell
             },
             {
-                Header: t(langKeys.report_userproductivityhours_busytimeoutsidework),
-                helpText: t(langKeys.report_userproductivityhours_busytimeoutsidework),
-                accessor: 'busytimeoutsidework',
-                showColumn: true,  
-                Cell: cell
-            },
-            {
                 Header: t(langKeys.report_userproductivityhours_busytimewithinwork),
                 accessor: 'busytimewithinwork',
-                helpText: t(langKeys.report_userproductivityhours_busytimewithinwork_help),             
-                showColumn: true,                     
+                helpText: t(langKeys.report_userproductivityhours_busytimewithinwork_help),
+                groupedBy: false,  
+                showColumn: true,     
+                showHide: true,
                 Cell: cell
             },
             {
@@ -276,8 +274,10 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
             },
             {
                 Header: t(langKeys.report_userproductivityhours_onlinetime),
-                accessor: 'onlinetime',         
-                helpText: t(langKeys.report_userproductivityhours_onlinetime_help),            
+                accessor: 'onlinetime',
+                groupedBy: false,  
+                helpText: t(langKeys.report_userproductivityhours_onlinetime_help),
+                showColumn: true,     
                 Cell: cell
             },
             {
@@ -285,7 +285,6 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 accessor: 'availabletime',
                 helpText: t(langKeys.report_userproductivityhours_availabletime_help),
                 groupedBy: false,  
-                showColumn: true, 
                 Cell: cell
             },
             {
@@ -298,7 +297,8 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
             },
             {
                 Header: t(langKeys.report_userproductivityhours_idletimewithoutattention),
-                accessor: 'idletimewithoutattention',                 
+                accessor: 'idletimewithoutattention',
+                showColumn: true,                  
                 Cell: cell
             },
             {

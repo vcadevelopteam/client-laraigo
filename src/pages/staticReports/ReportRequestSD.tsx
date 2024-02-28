@@ -63,7 +63,7 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.sdrequestcode),
                 accessor: 'sd_request',            
-                helpText: t(langKeys.sdrequestcode_help)
+                tooltip: t(langKeys.sdrequestcode)
             },
             {
                 Header: t(langKeys.ticket_number),
@@ -72,7 +72,6 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                helpText: t(langKeys.report_requestsd_type_help)
             },
             {
                 Header: t(langKeys.channel),
@@ -82,17 +81,14 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.applicant),
                 accessor: 'display_name',
-                helpText: t(langKeys.report_requestsd_applicant_help)
             },
             {
                 Header: t(langKeys.business),
                 accessor: 'company',
-                helpText: t(langKeys.report_requestsd_business_help)
             },
             {
                 Header: t(langKeys.resume),
                 accessor: 'description',
-                helpText: t(langKeys.report_requestsd_resume_help)
             },
             {
                 Header: t(langKeys.priority),
@@ -101,12 +97,10 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.status),
                 accessor: 'phase',
-                helpText: t(langKeys.report_requestsd_status_help)
             },
             {
                 Header: t(langKeys.resolution),  
                 accessor: 'resolution',
-                helpText: t(langKeys.report_requestsd_resolution_help),
                 showColumn: true,   
             },
             {
