@@ -3785,12 +3785,13 @@ export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, e
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, enddate, company }: Dictionary): IRequestBodyPaginated => ({
+export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, enddate, channeltype, company }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_REPORT_REQUESTSD_SEL",
     methodCount: "UFN_REPORT_REQUESTSD_TOTALRECORDS",
     parameters: {
         startdate,
         enddate,
+        channeltype,
         skip,
         take,
         filters,
@@ -3814,7 +3815,7 @@ export const getreportleadgridtracking = ({ skip, take, filters, sorts, startdat
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const getRequestSDExport = ({ filters, sorts, startdate, enddate, company }: Dictionary): IRequestBody => ({
+export const getRequestSDExport = ({ filters, sorts, startdate, enddate, channeltype, company }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_REQUESTSD_EXPORT",
     key: "UFN_REPORT_REQUESTSD_EXPORT",
     parameters: {
@@ -3822,6 +3823,7 @@ export const getRequestSDExport = ({ filters, sorts, startdate, enddate, company
         filters,
         startdate,
         enddate,
+        channeltype,
         company,
         sorts,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
@@ -4898,34 +4900,4 @@ export const deliveryAppUsersSel = () => ({
     method: "UFN_USERS_APP_DELIVERY_SEL",
     key: "UFN_USERS_APP_DELIVERY_SEL",
     parameters: {},
-});
-
-export const listOrderSel = (ordersinattention: boolean) => ({
-    method: "UFN_LISTORDER_SEL",
-    key: "UFN_LISTORDER_SEL",
-    parameters: { ordersinattention },
-});
-
-export const reasonNonDeliverySel = (id: number) => ({
-    method: "UFN_REASONNONDELIVERY_SEL",
-    key: "UFN_REASONNONDELIVERY_SEL",
-    parameters: { id, all: id === 0 },
-});
-
-export const reasonNonDeliveryIns = ({ id, status, type, description, operation }: Dictionary) => ({
-    method: "UFN_REASONNONDELIVERY_INS",
-    key: "UFN_REASONNONDELIVERY_INS",
-    parameters: { id, status, type, description, operation },
-});
-
-export const subReasonNonDeliverySel = (reasonnondeliveryid: number) => ({
-    method: "UFN_SUBREASONNONDELIVERY_SEL",
-    key: "UFN_SUBREASONNONDELIVERY_SEL",
-    parameters: { reasonnondeliveryid },
-});
-
-export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, operation }: Dictionary) => ({
-    method: "UFN_SUBREASONNONDELIVERY_INS",
-    key: "UFN_SUBREASONNONDELIVERY_INS",
-    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, operation },
 });

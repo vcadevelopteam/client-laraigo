@@ -5,7 +5,7 @@ import { getCommChannelLst, getreportrequestSD, getRequestSDExport } from 'commo
 import { Dictionary, IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { cleanViewChange, exportData, getCollectionAux, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
+import { cleanViewChange, exportData, getCollectionAux, getCollectionAux2, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { DialogZyx, FieldSelect } from 'components/fields/templates';
@@ -39,7 +39,7 @@ const ReportRequestSD: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiDataAux);
-    const multiDataFilter = useSelector((state) => state.main.multiData);
+    const filterChannel = useSelector ((state)=> state.main.mainAux2);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
@@ -47,9 +47,7 @@ const ReportRequestSD: FC = () => {
     const [totalrow, settotalrow] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const classes = useStyles();
-
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })   
     
     useEffect(() => {
         dispatch(setViewChange("reportrequestsd"))
@@ -131,12 +129,13 @@ const ReportRequestSD: FC = () => {
         [t]
     );
 
-
-    useEffect(() => {
+    useEffect(() => {    
+        fetchFiltersChannels(); 
         return () => {
             dispatch(resetMultiMain());
         }
     }, [])
+
     useEffect(() => {
         if (!multiData.loading){
             dispatch(showBackdrop(false));
@@ -192,6 +191,7 @@ const ReportRequestSD: FC = () => {
                 startdate: daterange.startDate!,
                 enddate: daterange.endDate!,
                 sorts,
+                channeltype: selectedChannel,
                 filters: filters,
                 company: company,
             }), "", "excel", false, columnsExport));
@@ -225,7 +225,9 @@ const ReportRequestSD: FC = () => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     };
 
-    const filterChannel = useSelector ((state)=> state.main.mainAux)
+    //channel Filter ----------------------------------------------------------------------------------
+
+
     const channelTypeList = filterChannel.data || [];
     const channelTypeFilteredList = new Set();
     const [selectedChannel, setSelectedChannel] = useState("");
@@ -236,14 +238,18 @@ const ReportRequestSD: FC = () => {
         }
         channelTypeFilteredList.add(item.type);
         return true;
-    });   
-    //const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
+    });
+
+    console.log(filterChannel.data)   
+
+    const fetchFiltersChannels = () => dispatch(getCollectionAux2(getCommChannelLst()))
+
 
     return (
         <React.Fragment>
-            <div style={{ height: 10 }}></div>
+            <div style={{ height: 10 }}></div>    
             <TablePaginated    
-                columns={columns} //visibleColumnsList
+                columns={columns}
                 data={mainPaginated.data}
                 totalrow={totalrow}
                 loading={mainPaginated.loading}
@@ -251,19 +257,19 @@ const ReportRequestSD: FC = () => {
                 filterrange={true}
                 download={true}
                 autotrigger
-                FiltersElement={useMemo(() => (
+                FiltersElement={(
                     <div style={{width:200}}>
                         <FieldSelect
-                           label={t(langKeys.channel)}
-                           variant="outlined"                       
-                           data={uniqueTypdescList || []}        
-                           valueDefault={uniqueTypdescList}
-                           onChange={(value) => setSelectedChannel(value?.type||"")}           
-                           optionDesc="typedesc"
-                           optionValue="typedesc"
+                            label={t(langKeys.channel)}
+                            variant="outlined"                           
+                            data={uniqueTypdescList || []}                               
+                            valueDefault={selectedChannel}
+                            onChange={(value) => setSelectedChannel(value?.type||"")}           
+                            optionDesc="typedesc"
+                            optionValue="typedesc"
                         />
                     </div>
-                ), [company, multiData, t])}               
+                )}               
                 fetchData={fetchData}
                 filterGeneral={false}
                 exportPersonalized={triggerExportData}
