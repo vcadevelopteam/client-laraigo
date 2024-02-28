@@ -34,78 +34,23 @@ var getArrayBread = function (nametmp, nameView1) { return [
     { id: "view-1", name: nameView1 || "Reports" },
     { id: "view-2", name: nametmp },
 ]; };
-var useStyles = styles_1.makeStyles(function (theme) {
-    var _a, _b;
-    return ({
-        container: {
-            display: "flex",
-            flexDirection: "column",
-            width: "100%"
-        },
-        containerDetails: {
-            marginTop: theme.spacing(3)
-        },
-        media: {
-            objectFit: "contain"
-        },
-        containerSearch: (_a = {
-                width: "100%",
-                display: "flex",
-                gap: theme.spacing(1),
-                alignItems: "center"
-            },
-            _a[theme.breakpoints.up("sm")] = {
-                width: "50%"
-            },
-            _a),
-        containerFilter: {
-            width: "100%",
-            marginBottom: theme.spacing(2),
-            display: "flex",
-            gap: 16,
-            flexWrap: "wrap"
-        },
-        filterComponent: {
-            minWidth: "220px",
-            maxWidth: "260px"
-        },
-        containerFilterGeneral: {
-            display: "flex",
-            justifyContent: "space-between",
-            backgroundColor: "#FFF",
-            padding: theme.spacing(1)
-        },
-        title: {
-            fontSize: "22px",
-            fontWeight: "bold",
-            color: theme.palette.text.primary
-        },
-        containerHeader: (_b = {
-                display: "block",
-                marginBottom: 0
-            },
-            _b[theme.breakpoints.up("sm")] = {
-                display: "flex"
-            },
-            _b),
-        mb2: {
-            marginBottom: theme.spacing(4)
-        },
-        button: {
-            padding: 12,
-            fontWeight: 500,
-            fontSize: "14px",
-            textTransform: "initial"
-        },
-        itemDate: {
-            minHeight: 40,
-            height: 40,
-            border: "1px solid #bfbfc0",
-            borderRadius: 4,
-            color: "rgb(143, 146, 161)"
-        }
-    });
-});
+var useStyles = styles_1.makeStyles(function () { return ({
+    container: {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%"
+    },
+    filterComponent: {
+        minWidth: "220px",
+        maxWidth: "260px"
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: "14px",
+        textTransform: "initial"
+    }
+}); });
 var ProductivityHoursReport = function (_a) {
     var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     var setViewSelected = _a.setViewSelected, setSearchValue = _a.setSearchValue, row = _a.row;
