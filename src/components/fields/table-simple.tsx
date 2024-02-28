@@ -795,8 +795,10 @@ const TableZyx = React.memo(({
             ])
             hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {
                 // fix the parent group of the selection button to not be resizable
-                const selectionGroupHeader = headerGroups[0].headers[0]
-                selectionGroupHeader.canResize = false
+                const selectionGroupHeader = headerGroups[0]?.headers[0]
+                if (selectionGroupHeader) {
+                    selectionGroupHeader.canResize = false
+                }
             })
         }
     )
