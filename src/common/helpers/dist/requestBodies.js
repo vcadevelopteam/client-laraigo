@@ -3880,13 +3880,14 @@ exports.getasesorvsticketsSel = function (_a) {
     });
 };
 exports.getreportrequestSD = function (_a) {
-    var skip = _a.skip, take = _a.take, filters = _a.filters, sorts = _a.sorts, startdate = _a.startdate, enddate = _a.enddate, company = _a.company;
+    var skip = _a.skip, take = _a.take, filters = _a.filters, sorts = _a.sorts, startdate = _a.startdate, enddate = _a.enddate, channeltype = _a.channeltype, company = _a.company;
     return ({
         methodCollection: "UFN_REPORT_REQUESTSD_SEL",
         methodCount: "UFN_REPORT_REQUESTSD_TOTALRECORDS",
         parameters: {
             startdate: startdate,
             enddate: enddate,
+            channeltype: channeltype,
             skip: skip,
             take: take,
             filters: filters,
@@ -3915,7 +3916,7 @@ exports.getreportleadgridtracking = function (_a) {
     });
 };
 exports.getRequestSDExport = function (_a) {
-    var filters = _a.filters, sorts = _a.sorts, startdate = _a.startdate, enddate = _a.enddate, company = _a.company;
+    var filters = _a.filters, sorts = _a.sorts, startdate = _a.startdate, enddate = _a.enddate, channeltype = _a.channeltype, company = _a.company;
     return ({
         method: "UFN_REPORT_REQUESTSD_EXPORT",
         key: "UFN_REPORT_REQUESTSD_EXPORT",
@@ -3924,6 +3925,7 @@ exports.getRequestSDExport = function (_a) {
             filters: filters,
             startdate: startdate,
             enddate: enddate,
+            channeltype: channeltype,
             company: company,
             sorts: sorts,
             offset: (new Date().getTimezoneOffset() / 60) * -1
