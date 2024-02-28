@@ -453,6 +453,7 @@ const TableZyx = React.memo(({
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
         const [operator, setoperator] = useState(iSF?.value.operator || "contains");
+        const [valueOnFocus, setValueOnFocus] = useState(''); // El valor cuando el input recibió el foco
 
         const setFilter = (filter: any) => {
             $setFilter(filter);
@@ -493,8 +494,15 @@ const TableZyx = React.memo(({
         const keyPress = React.useCallback((e) => {
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
-            }            
+            }
         }, [value, operator])
+
+        const onBlur = () => {
+            if (value !== valueOnFocus) {
+                setFilter({ value, operator, type });
+            }
+        }
+
         const handleDate = (date: Date) => {
             if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
                 setValue(date?.toISOString() || '');
@@ -551,21 +559,20 @@ const TableZyx = React.memo(({
                             data={listSelectFilter}
                         /> :
                         <React.Fragment>
-                             {type === 'date' && 
+                            {type === 'date' &&
                                 <DateOptionsMenuComponent
-                                    value
-                                    handleDate
-                                />
+                                    value={value}
+                                    handleDate={handleDate} />
                             }
-                            {type === 'time' && 
+                            {type === 'time' &&
                                 <TimeOptionsMenuComponent
-                                    value
-                                    handleTime
-                                />
+                                    value={value}
+                                    handleTime={handleTime} />
                             }
                             {!['date', 'time'].includes(type) &&
                                 <Input
-                                    // disabled={loading}
+                                    onBlur={onBlur}
+                                    onFocus={e => setValueOnFocus(e.target.value)}
                                     type={type}
                                     style={{ fontSize: '15px', minWidth: '100px' }}
                                     fullWidth

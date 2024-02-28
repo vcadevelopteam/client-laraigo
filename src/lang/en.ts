@@ -830,7 +830,8 @@ const translation: LangKeys = {
   type_ocupation_40: "COUNTER",
   transferdate: "Transfer date",
   dispatchedquantity: "Dispatched quantity",
-  error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",  type_ocupation_41: "CONTRACTOR",
+  error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",
+  type_ocupation_41: "CONTRACTOR",
   type_ocupation_42: "CLOTHING AND CUTTING / GARMENT MANUFACTURER",
   type_ocupation_43: "COSMETOLOGIST, HAIRDRESSER AND BARBER",
   type_ocupation_44: "DECORATOR, DRAWER, ADVERTISER",
@@ -3672,6 +3673,7 @@ const translation: LangKeys = {
   max_limit: 'Max limit {{n}}',
   max_limit_file_per_upload: 'Max limit {{n}} files per upload',
   type_activitylead_call: 'Call',
+  type_activitylead_appointment: 'APPOINTMENT (Scheduling)',
   type_activitylead_automated: 'Automate message',
   type_activitylead_automatedmail: 'Automate message email',
   type_activitylead_automatedhsm: 'Automate message hsm',
@@ -5913,7 +5915,7 @@ const translation: LangKeys = {
   executingUser: "Executing User",
   executingUserProfile: "Executing User Profile",
   groupedBy: "Grouped By",
-  showHideColumns: "Show/Hide Columns",
+  showHideColumns: "Show/Hide Columns"
 };
 
 const enResource: ResourceLanguage = {

@@ -24,3 +24,11 @@ export function izipayGetPaymentOrder(request: any) {
 export function izipayProcessTransaction(request: any) {
     return APIManager.post(apiUrls.PAYMENTORDER_IZIPAY_PROCESSTRANSACTION, { data: request }, true);
 }
+
+export function epaycoGetPaymentOrder(request: any) {
+    return APIManager.post(apiUrls.PAYMENTORDER_EPAYCO_GETPAYMENTORDER, { data: request }, true);
+}
+
+export function epaycoProcessTransaction(request: any) {
+    return APIManager.post(apiUrls.PAYMENTORDER_EPAYCO_PROCESSTRANSACTION, { data: request }, true);
+}
