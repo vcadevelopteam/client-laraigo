@@ -67,7 +67,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     fetchData,
 }) => {
     const { t } = useTranslation();
-    const [attentionOrders, setAttentionOrders] = useState(false);
+    const [attentionOrders, setAttentionOrders] = useState(true);
     const executeResult = useSelector((state) => state.main.execute);
     const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
     const [openModalCanceled, setOpenModalCanceled] = useState(false);
@@ -143,7 +143,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.deliverynumber),
-                accessor: "deliverynumber",
+                accessor: "deliveryid",
                 width: "auto",
             },
             {
@@ -249,7 +249,9 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             reportname: "period-report",
             template: 'orderlist.html',
             parameters: {
-                reporttitle: 'Test',
+                reporttitle: 'Lista de Pedido',
+                ordernumber: 'PE93M0',
+                date: '29/02/2024',
                 orders: rowWithDataSelected,
             },
         };

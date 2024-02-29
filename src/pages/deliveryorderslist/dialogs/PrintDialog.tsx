@@ -1,21 +1,18 @@
 import { Button, makeStyles } from "@material-ui/core";
 import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
-import React from "react";
+import React, { useRef } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
+import GetAppIcon from '@material-ui/icons/GetApp';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     buttonspace: {
         display: "flex",
         gap: "10px",
         alignItems: "center",
         justifyContent: "end",
-    },
-    button: {
-        marginRight: theme.spacing(2),
-        justifyContent: "center",
-        margin: "0rem 8rem 1rem 9rem",
+        marginBottom: 10,
     },
 }));
 
@@ -27,15 +24,38 @@ const PrintDialog: React.FC<{
 }> = ({ openModal, setOpenModal, pdfRender, setPdfRender }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    console.log(pdfRender)
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+
+    const handlePrint = () => {
+        window.open(`https://docs.google.com/viewerng/viewer?url=${pdfRender}`, "_blank")
+    };
+
     return (
-        <DialogZyx open={openModal} title="" maxWidth="sm">
+        <DialogZyx open={openModal} title="" maxWidth="md">
             <div className={classes.buttonspace}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="button"
+                    startIcon={<GetAppIcon color="secondary"/>}
+                    style={{ backgroundColor: "#55BD84" }}
+                    onClick={() => window.open(pdfRender, "_blank")}
+                >
+                    {t(langKeys.download)}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="button"
+                    onClick={handlePrint}
+                >
+                    {t(langKeys.print)}
+                </Button>
                 <Button
                     variant="contained"
                     type="button"
                     color="primary"
-                    startIcon={<ClearIcon color="secondary" />}
+                    startIcon={<ClearIcon color="secondary"/>}
                     style={{ backgroundColor: "#FB5F5F" }}
                     onClick={() => {
                         setOpenModal(false);
@@ -45,20 +65,7 @@ const PrintDialog: React.FC<{
                     {t(langKeys.back)}
                 </Button>
             </div>
-
-            <iframe title="Document Viewer" src={pdfRender} width="100%" height="700" />
-
-            <div className="row-zyx">
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    type="button"
-                    style={{ backgroundColor: "#55BD84" }}
-                >
-                    {t(langKeys.print)}
-                </Button>
-            </div>
+            <iframe ref={iframeRef} title="Document Viewer" src={`https://docs.google.com/viewer?url=${encodeURIComponent(pdfRender)}&embedded=true`} width="100%" height="750" />
         </DialogZyx>
     );
 };
