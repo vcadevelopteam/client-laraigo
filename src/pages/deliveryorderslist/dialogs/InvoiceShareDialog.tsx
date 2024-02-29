@@ -8,6 +8,9 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import DoneIcon from "@material-ui/icons/Done";
+import WhatsAppIcon from '@material-ui/icons/WhatsApp';
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -16,20 +19,23 @@ const useStyles = makeStyles(() => ({
         alignItems: "center",
         justifyContent: "end",
     },
+    icon: {
+        marginRight: 10,
+    },
 }));
 
 const InvoiceShareDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
-}> = ({ openModal, setOpenModal }) => {
+    config: Dictionary;
+}> = ({ openModal, setOpenModal, config }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector((state) => state.main.execute);
-
-    const [smsState, setSmsState] = useState(false);
-    const [emailState, setEmailState] = useState(false);
+    const [wspState, setWspState] = useState(config?.wspi);
+    const [emailState, setEmailState] = useState(config?.emaili);
 
     useEffect(() => {
         if (waitSave) {
@@ -57,44 +63,33 @@ const InvoiceShareDialog: React.FC<{
     return (
         <DialogZyx
             open={openModal}
-            title={
-                t(langKeys.postcreator_publish_facebookmockup_share) + " " + t(langKeys.electronic_ticket_and_invoice)
-            }
+            title={t(langKeys.postcreator_publish_facebookmockup_share) + " " + t(langKeys.electronic_ticket_and_invoice)}
             maxWidth="sm"
         >
-            <div className="row-zyx" style={{ justifyContent: "center" }}>
-                <FormControl component="fieldset">
-                    <FormGroup>
-                        <FormControlLabel
-                            style={{ pointerEvents: "none" }}
-                            control={
-                                <Checkbox
-                                    color="primary"
-                                    style={{ pointerEvents: "auto" }}
-                                    checked={smsState}
-                                    onChange={(e) => setSmsState(e.target.checked)}
-                                    name="sun"
-                                />
-                            }
-                            label={t(langKeys.sms)}
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20}}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end', width: 145, }}>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <WhatsAppIcon className={classes.icon}/>
+                        <span>{t(langKeys.WHATSAPP)}</span>
+                        <Checkbox
+                            color="primary"
+                            style={{ pointerEvents: "auto" }}
+                            checked={wspState}
+                            onChange={(e) => setWspState(e.target.checked)}
                         />
-                        <FormControlLabel
-                            style={{ pointerEvents: "none" }}
-                            control={
-                                <Checkbox
-                                    color="primary"
-                                    style={{ pointerEvents: "auto" }}
-                                    checked={emailState}
-                                    onChange={(e) => setEmailState(e.target.checked)}
-                                    name="mon"
-                                />
-                            }
-                            label={t(langKeys.email)}
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <MailOutlineIcon className={classes.icon}/>
+                        <span>{t(langKeys.email)}</span>
+                        <Checkbox
+                            color="primary"
+                            style={{ pointerEvents: "auto" }}
+                            checked={emailState}
+                            onChange={(e) => setEmailState(e.target.checked)}                    
                         />
-                    </FormGroup>
-                </FormControl>
+                    </div>
+                </div>
             </div>
-
             <div className={classes.button}>
                 <Button
                     variant="contained"
