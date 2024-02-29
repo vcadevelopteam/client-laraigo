@@ -80,8 +80,8 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                     delivered: t(langKeys.delivered),
                   };
               
-                  const status = row.values.orderstatus.toLowerCase();
-                  return orderStatusMap[status];
+                  const status = (row?.values?.orderstatus||"")?.toLowerCase();
+                  return orderStatusMap?.[status]||"";
                 },
             },              
             {

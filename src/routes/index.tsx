@@ -49,6 +49,11 @@ const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
 const Corporations = lazy(() => import('pages/Corporations'));
 const Partners = lazy(() => import('pages/partners/Partners'));
+const DeliveryConfiguration = lazy(() => import('pages/deliveryconfiguration/DeliveryConfiguration'))
+const OrderList = lazy(() => import('pages/deliveryorderslist/OrderList'))
+const AttentionOrders = lazy(() => import('pages/attentionorders/AttentionOrders'))
+const StoreCoverage = lazy(() => import('pages/storecoverage/StoreCoverage'))
+const StoreOrders = lazy(() => import('pages/storeorders/StoreOrders'))
 const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
@@ -99,6 +104,7 @@ const Privacy = lazy(() => import('pages/Privacy'));
 const TermsOfService = lazy(() => import('pages/TermsOfService'));
 const ActivateUser = lazy(() => import('pages/ActivateUser'));
 const RecoverPassword = lazy(() => import('pages/RecoverPassword'));
+const Conversation = lazy(() => import('pages/Conversation'));
 const CRM = lazy(() => import('pages/crm/CRM'));
 const LeadForm = lazy(() => import('pages/crm/LeadForm'));
 const ServiceDesk = lazy(() => import('pages/servicedesk/ServiceDesk'));
@@ -116,6 +122,11 @@ const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
 const SecurityRules = lazy(() => import('pages/SecurityRules'));
 const PostCreator = lazy(() => import('pages/PostCreator'));
+const ProductMaster = lazy(() => import('pages/inventory/product/ProductMaster'));
+const Warehouse = lazy(() => import('pages/inventory/warehouse/Warehouse'));
+const Company = lazy(() => import('pages/inventory/company/Company'));
+const Inventory = lazy(() => import('pages/inventory/inventory/Inventory'));
+const InventoryConsumption = lazy(() => import('pages/inventory/inventory_consumption/InventoryConsumption'));
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -249,6 +260,7 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.TERMSOFSERVICE} render={() => <TermsOfService />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
 					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />
+					<Route exact path={paths.CONVERSATION.path} render={() => <Conversation />} />
 					<ProtectRoute exact path={paths.PRODUCTCATALOG} component={() => (<Layout mainClasses={classes.main}><ProductCatalog /></Layout>)} />
 					<ProtectRoute exact path={paths.CATALOGMASTER} component={() => (<Layout mainClasses={classes.main}><CatalogMaster /></Layout>)} />
 					<ProtectRoute exact path={paths.ORDERS} component={() => (<Layout mainClasses={classes.main}><Orders /></Layout>)} />
@@ -315,6 +327,11 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.PARTNERS} component={() => (<Layout mainClasses={classes.main}><Partners /></Layout>)} />
 					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />
+					<ProtectRoute exact path={paths.CONFIGURATIONDELIVERY} component={() => (<Layout mainClasses={classes.main}><DeliveryConfiguration /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERINSTORE} component={() => (<Layout mainClasses={classes.main}><StoreOrders /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERSINATTENTION} component={() => (<Layout mainClasses={classes.main}><AttentionOrders /></Layout>)} />
+					<ProtectRoute exact path={paths.STORECOVERAGE} component={() => (<Layout mainClasses={classes.main}><StoreCoverage /></Layout>)} />
+					<ProtectRoute exact path={paths.ORDERLIST} component={() => (<Layout mainClasses={classes.main}><OrderList /></Layout>)} />
 					<ProtectRoute exact path={paths.SUPERVISOR} component={() => (<Layout ><Supervisor /></Layout>)} />
 					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
 					<ProtectRoute exact path={paths.TIMESHEET} component={() => (<Layout mainClasses={classes.main}><TimeSheet /></Layout>)} />
@@ -360,9 +377,14 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.SECURITYRULES} component={() => <Layout mainClasses={classes.main}><SecurityRules /></Layout>} />
 					<ProtectRoute exact path={paths.EXTRASLOCATION} component={() => <Layout mainClasses={classes.main}><Location /></Layout>} />
 					<ProtectRoute exact path={paths.POSTCREATOR} component={() => (<Layout mainClasses={classes.main}><PostCreator /></Layout>)} />
+					<ProtectRoute exact path={paths.PRODUCTMASTER} component={() => (<Layout mainClasses={classes.main}><ProductMaster /></Layout>)} />
+					<ProtectRoute exact path={paths.WAREHOUSE} component={() => (<Layout mainClasses={classes.main}><Warehouse /></Layout>)} />
 					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><IntelligentModels /></Layout>)} />
 					<ProtectRoute exact path={paths.IACONFIGURATION} component={() => (<Layout mainClasses={classes.main}><IAConfiguration /></Layout>)} />
 					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
+					<ProtectRoute exact path={paths.INVENTORY} component={() => (<Layout mainClasses={classes.main}><Inventory /></Layout>)} />
+					<ProtectRoute exact path={paths.COMPANIES} component={() => (<Layout mainClasses={classes.main}><Company /></Layout>)} />
+					<ProtectRoute exact path={paths.INVENTORYCONSUMPTION} component={() => (<Layout mainClasses={classes.main}><InventoryConsumption /></Layout>)} />
 					<ProtectRoute exact path={paths.IATRAINING2} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />

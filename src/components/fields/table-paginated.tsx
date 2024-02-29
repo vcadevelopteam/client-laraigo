@@ -793,7 +793,7 @@ const TableZyx = React.memo(({
                     )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {typeof ButtonsElement === 'function' ? (
-                            ButtonsElement()
+                            (<ButtonsElement />)
                             ) : (
                             ButtonsElement
                         )}
@@ -1117,7 +1117,7 @@ const TableZyx = React.memo(({
         </Box >
     )
 })
-
+TableZyx.displayName = 'TableZyx';
 export default TableZyx;
 TableZyx.displayName="TableZyx"
 
