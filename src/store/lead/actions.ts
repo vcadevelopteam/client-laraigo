@@ -238,6 +238,18 @@ export const getPersonType = (body: IRequestBody): IActionCall => ({
 
 export const resetGetPersonType = (): IActionCall => ({ type: actionTypes.GET_PERSON_TYPE_RESET });
 
+export const getCalendar = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_CALENDAR,
+        success: actionTypes.GET_CALENDAR_SUCCESS,
+        failure: actionTypes.GET_CALENDAR_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetCalendar = (): IActionCall => ({ type: actionTypes.GET_CALENDAR_RESET });
+
 export const getLeadTemplates = (): IActionCall => ({
     callAPI: () => CommonService.main(getMessageTemplateLst('')),
     types: {

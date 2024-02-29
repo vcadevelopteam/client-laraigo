@@ -1,5 +1,6 @@
 import { IActionCall } from "@types";
 import { CulqiService } from "network";
+
 import actionTypes from "./actionTypes";
 
 export const charge = (request: any): IActionCall => ({
@@ -37,42 +38,6 @@ export const paymentOrder = (request: any): IActionCall => ({
 });
 
 export const resetPaymentOrder = (): IActionCall => ({ type: actionTypes.PAYMENTORDER_RESET });
-
-export const subscribe = (request: any): IActionCall => ({
-    callAPI: () => CulqiService.subscribe(request),
-    types: {
-        loading: actionTypes.SUBSCRIBE,
-        success: actionTypes.SUBSCRIBE_SUCCESS,
-        failure: actionTypes.SUBSCRIBE_FAILURE,
-    },
-    type: null,
-});
-
-export const resetSubscribe = (): IActionCall => ({ type: actionTypes.SUBSCRIBE_RESET });
-
-export const unsubscribe = (request: any): IActionCall => ({
-    callAPI: () => CulqiService.unsubscribe(request),
-    types: {
-        loading: actionTypes.UNSUBSCRIBE,
-        success: actionTypes.UNSUBSCRIBE_SUCCESS,
-        failure: actionTypes.UNSUBSCRIBE_FAILURE,
-    },
-    type: null,
-});
-
-export const resetUnsubscribe = (): IActionCall => ({ type: actionTypes.UNSUBSCRIBE_RESET });
-
-export const sendInvoice = (invoiceid: number): IActionCall => ({
-    callAPI: () => CulqiService.sendInvoice({ parameters: { invoiceid } }),
-    types: {
-        loading: actionTypes.SEND_INVOICE,
-        success: actionTypes.SEND_INVOICE_SUCCESS,
-        failure: actionTypes.SEND_INVOICE_FAILURE,
-    },
-    type: null,
-});
-
-export const resetSendInvoice = (): IActionCall => ({ type: actionTypes.SEND_INVOICE_RESET });
 
 export const createInvoice = (request: any): IActionCall => ({
     callAPI: () => CulqiService.createInvoice(request),
@@ -157,18 +122,6 @@ export const cardDelete = (request: any): IActionCall => ({
 });
 
 export const resetCardDelete = (): IActionCall => ({ type: actionTypes.CARD_DELETE_RESET });
-
-export const cardGet = (request: any): IActionCall => ({
-    callAPI: () => CulqiService.cardGet(request),
-    types: {
-        failure: actionTypes.CARD_GET_FAILURE,
-        loading: actionTypes.CARD_GET,
-        success: actionTypes.CARD_GET_SUCCESS,
-    },
-    type: null,
-});
-
-export const resetCardGet = (): IActionCall => ({ type: actionTypes.CARD_GET_RESET });
 
 export const reportPdf = (request: any): IActionCall => ({
     callAPI: () => CulqiService.reportPdf(request),

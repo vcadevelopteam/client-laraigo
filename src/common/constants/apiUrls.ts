@@ -12,7 +12,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -22,6 +22,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -33,7 +34,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '1872023336244866',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -43,6 +44,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/testing-form.min.js',
         USELARAIGO: false,
         BODEGAACME: true,
+        OPENPAYSANDBOX: true,
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -54,7 +56,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -64,6 +66,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     MARKETING: {
         API: 'https://apimarketing.laraigo.com/api',
@@ -75,7 +78,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -85,6 +88,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     INCREMENTAL_PROD: {
         API: 'https://api-historical-publico.laraigo.com/api',
@@ -96,7 +100,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -106,6 +110,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     INCREMENTAL_CLARO: {
         API: 'https://api-historical-claro.laraigo.com/api',
@@ -117,7 +122,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -127,6 +132,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
@@ -138,7 +144,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -148,6 +154,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     CLAROHISTORICAL: {
         API: 'http://10.240.65.10:6066/api',
@@ -159,13 +166,14 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
@@ -177,7 +185,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -187,6 +195,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -198,7 +207,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -208,6 +217,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -221,7 +231,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
-        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_LOGIN: '283248303891-t9r3irs0rhpsd1pense45mvldesd4bbv.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v16.0',
         DIALOG360PARTNERID: 'nPJXndPA',
@@ -231,6 +241,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
         USELARAIGO: false,
         BODEGAACME: false,
+        OPENPAYSANDBOX: true,
     }
 }
 
@@ -253,6 +264,7 @@ const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 const APIKEY_GMAPS = APIS_URL[ENV].APIKEY_GMAPS
 const USELARAIGO = APIS_URL[ENV].USELARAIGO
 const BODEGAACME = APIS_URL[ENV].BODEGAACME
+const OPENPAYSANDBOX = APIS_URL[ENV].OPENPAYSANDBOX
 
 export const apiUrls = {
     WS_URL,
@@ -272,6 +284,7 @@ export const apiUrls = {
     APIKEY_GMAPS,
     USELARAIGO,
     BODEGAACME,
+    OPENPAYSANDBOX,
 
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
@@ -285,7 +298,9 @@ export const apiUrls = {
     MAIN_URL_PAYMENTORDER: `${BASE_URL}/main/public/paymentorder`,
     MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,
     MAIN_URL_PAYMENTORDEROPENPAY: `${BASE_URL}/main/public/paymentorderopenpay`,
+    MAIN_URL_PAYMENTORDEROPENPAYCOLOMBIA: `${BASE_URL}/main/public/paymentorderopenpaycolombia`,
     MAIN_URL_PAYMENTORDERIZIPAY: `${BASE_URL}/main/public/paymentorderizipay`,
+    MAIN_URL_PAYMENTORDEREPAYCO: `${BASE_URL}/main/public/paymentorderepayco`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
@@ -346,6 +361,7 @@ export const apiUrls = {
     CHECK_PAYMENTPLAN: `${BASE_URL}/channel/checkpaymentplan`,
     REESCHEDULECALL: `${BASE_URL}/campaign/hsmcall`,
     SEND_INVOICE: `${BASE_URL}/billing/sendinvoice`,
+    CONVERSATION: `${BASE_URL}/ticket`,
 
     PERSON: `${BASE_URL}/person`,
 
@@ -358,6 +374,8 @@ export const apiUrls = {
     BILLINGREGULARIZEINVOICE: `${BASE_URL}/payment/regularizeinvoice`,
     GETEXCHANGERATE: `${BASE_URL}/payment/getexchangerate`,
     BILLINGEMITINVOICE: `${BASE_URL}/payment/emitinvoice`,
+    BILLINGCHARGEINVOICE: `${BASE_URL}/payment/chargeinvoice`,
+    BILLINGCREATEBALANCE: `${BASE_URL}/payment/createbalance`,
 
     RECOVERPASSWORD: `${BASE_URL}/subscription/recoverpassword`,
     CHANGEPASSWORD: `${BASE_URL}/subscription/changepassword`,
@@ -415,6 +433,9 @@ export const apiUrls = {
 
     PAYMENTORDER_IZIPAY_GETPAYMENTORDER: `${BASE_URL}/paymentizipay/getpaymentorder`,
     PAYMENTORDER_IZIPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentizipay/processtransaction`,
+
+    PAYMENTORDER_EPAYCO_GETPAYMENTORDER: `${BASE_URL}/paymentepayco/getpaymentorder`,
+    PAYMENTORDER_EPAYCO_PROCESSTRANSACTION: `${BASE_URL}/paymentepayco/processtransaction`,
 
     GPT_THREADS: `${BASE_URL}/gpt/threads`,
     GPT_THREADS_DELETE: `${BASE_URL}/gpt/threads/delete`,

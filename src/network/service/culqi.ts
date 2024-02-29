@@ -1,15 +1,8 @@
-import { apiUrls } from '../../common/constants';
-import { APIManager } from '../manager';
+import { apiUrls } from "../../common/constants";
+import { APIManager } from "../manager";
 
 export function charge(request: any) {
-    if (request.invoiceid) {
-        const uri = `${apiUrls.CULQI}/chargeinvoice`;
-        return APIManager.post(uri, { data: request }, true);
-    }
-    else {
-        const uri = `${apiUrls.CULQI}/charge`;
-        return APIManager.post(uri, { data: request }, true);
-    }
+    return APIManager.post(apiUrls.BILLINGCHARGEINVOICE, { data: request }, true);
 }
 
 export function paymentOrder(request: any) {
@@ -18,22 +11,7 @@ export function paymentOrder(request: any) {
 }
 
 export function balance(request: any) {
-    const uri = `${apiUrls.CULQI}/createbalance`;
-    return APIManager.post(uri, { data: request }, true);
-}
-
-export function subscribe(request: any) {
-    const uri = `${apiUrls.CULQI}/subscribe`;
-    return APIManager.post(uri, { data: request }, true);
-}
-
-export function unsubscribe(request: any) {
-    const uri = `${apiUrls.CULQI}/unsubscribe`;
-    return APIManager.post(uri, { data: request }, true);
-}
-
-export function sendInvoice(request: any) {
-    return APIManager.post(apiUrls.SEND_INVOICE, { data: request }, true);
+    return APIManager.post(apiUrls.BILLINGCREATEBALANCE, { data: request }, true);
 }
 
 export function createInvoice(request: any) {
@@ -62,10 +40,6 @@ export function cardCreate(request: any) {
 
 export function cardDelete(request: any) {
     return APIManager.post(apiUrls.CARDDELETE, { data: request }, true);
-}
-
-export function cardGet(request: any) {
-    return APIManager.post(apiUrls.CARDGET, { data: request }, true);
 }
 
 export function reportPdf(request: any) {

@@ -149,6 +149,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const [operator, setoperator] = useState("contains");
+    const [valueOnFocus, setValueOnFocus] = useState(''); // El valor cuando el input recibió el foco
 
     useEffect(() => {
         switch (type) {
@@ -172,6 +173,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
 
     const keyPress = (e: any) => {
         if (e.keyCode === 13) {
+            setValueOnFocus(value)
             if (value || operator === "noempty" || operator === "empty")
                 setFilters({
                     ...filters,
@@ -180,11 +182,31 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                         operator
                     },
                 }, 0)
-            else
+            else {
                 setFilters({
                     ...filters,
                     [header]: undefined,
                 }, 0)
+            }
+        }
+    }
+
+    const onBlur = () => {
+        if (value !== valueOnFocus) {
+            if (value || operator === "noempty" || operator === "empty")
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
+                        operator
+                    },
+                }, 0)
+            else {
+                setFilters({
+                    ...filters,
+                    [header]: undefined,
+                }, 0)
+            }
         }
     }
 
@@ -283,7 +305,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     const handleDate = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
-            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
+            if (date || ['isnull', 'isnotnull'].includes(operator)) {
                 setFilters({
                     ...filters,
                     [header]: {
@@ -304,7 +326,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     const handleTime = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
-            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
+            if (date || ['isnull', 'isnotnull'].includes(operator)) {
                 setFilters({
                     ...filters,
                     [header]: {
@@ -346,17 +368,15 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                     /> :
 
                     <React.Fragment>
-                        {type === 'date' && 
+                        {type === 'date' &&
                             <DateOptionsMenuComponent
-                                value
-                                handleDate
-                            />
+                                value={value}
+                                handleDate={handleDate} />
                         }
-                        {type === 'time' && 
+                        {type === 'time' &&
                             <TimeOptionsMenuComponent
-                                value
-                                handleTime
-                            />
+                                value={value}
+                                handleTime={handleTime} />
                         }
                         {!['date', 'time'].includes(type) &&
                             <Input
@@ -364,9 +384,12 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                                 type={['number', 'number-centered'].includes(type) ? "number" : "text"}
                                 fullWidth
                                 value={value}
+                                onFocus={e => setValueOnFocus(e.target.value)}
+                                onBlur={onBlur}
                                 onKeyDown={keyPress}
                                 onChange={e => setValue(e.target.value)}
-                            />}
+                            />
+                        }
                         <IconButton
                             onClick={handleClickMenu}
                             size="small"
@@ -770,7 +793,7 @@ const TableZyx = React.memo(({
                     )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {typeof ButtonsElement === 'function' ? (
-                            ButtonsElement()
+                            (<ButtonsElement />)
                             ) : (
                             ButtonsElement
                         )}
@@ -1094,7 +1117,7 @@ const TableZyx = React.memo(({
         </Box >
     )
 })
-
+TableZyx.displayName = 'TableZyx';
 export default TableZyx;
 TableZyx.displayName="TableZyx"
 

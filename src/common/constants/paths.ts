@@ -17,6 +17,9 @@ const paths = {
     REPORTS: '/reports',
     REPORTDESIGNER: '/reportdesigner',
     POSTCREATOR: '/postcreator',
+    PRODUCTMASTER: '/ProductMaster',
+    WAREHOUSE: '/warehouse',
+    COMPANIES: '/companies',
     TICKETS: '/tickets',
     EMAIL_INBOX: '/email_inbox',
     MESSAGE_INBOX: '/message_inbox',
@@ -27,7 +30,11 @@ const paths = {
     IACONECTORS: '/iaconectors',
     IACONFIGURATION: '/iaconfigurations',
     IATRAINING: '/iatraining',
-    IATRAINING2: '/iatraining2',
+    CONFIGURATIONDELIVERY: '/configurationdelivery',
+    ORDERINSTORE: '/ordersinstore', 
+    STORECOVERAGE: '/storecoverage',
+    ORDERSINATTENTION: '/ordersinattention',
+    ORDERLIST: '/orderlist',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUPBASIC: "/sign-up/BASIC",
@@ -60,9 +67,17 @@ const paths = {
         path: "/paymentorderopenpay/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpay/${corpid}/${orgid}/${ordercode}`,
     },
+    OPENPAYCOLOMBIA_PAYMENTORDER: {
+        path: "/paymentorderopenpaycolombia/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpaycolombia/${corpid}/${orgid}/${ordercode}`,
+    },
     IZIPAY_PAYMENTORDER: {
         path: "/paymentorderizipay/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderizipay/${corpid}/${orgid}/${ordercode}`,
+    },
+    EPAYCO_PAYMENTORDER: {
+        path: "/paymentorderepayco/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderepayco/${corpid}/${orgid}/${ordercode}`,
     },
     LOCATION: {
         path: "/getLocations/:token",
@@ -352,6 +367,12 @@ const paths = {
     RECOVER_PASSWORD: {
         path: '/recoverpassword/:token',
         resolve: (token: string) => `/recoverpassword/${token}`
+    },
+    INVENTORY: '/inventory',
+    INVENTORYCONSUMPTION: '/inventoryconsumption',
+    CONVERSATION: {
+        path: '/conversation/:token',
+        resolve: (token: string) => `/conversation/${token}`
     },
 };
 

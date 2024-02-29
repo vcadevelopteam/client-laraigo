@@ -74,3 +74,27 @@ export const izipayProcessTransaction = (request: any): IActionCall => ({
 });
 
 export const resetIzipayProcessTransaction = (): IActionCall => ({ type: actionTypes.PAYMENT_IZIPAY_PROCESSTRANSACTION_RESET });
+
+export const epaycoGetPaymentOrder = (request: any): IActionCall => ({
+    callAPI: () => PaymentService.epaycoGetPaymentOrder(request),
+    types: {
+        loading: actionTypes.PAYMENT_EPAYCO_GETPAYMENTORDER,
+        success: actionTypes.PAYMENT_EPAYCO_GETPAYMENTORDER_SUCCESS,
+        failure: actionTypes.PAYMENT_EPAYCO_GETPAYMENTORDER_FAILURE,
+    },
+    type: null,
+});
+
+export const resetEpaycoGetPaymentOrder = (): IActionCall => ({ type: actionTypes.PAYMENT_EPAYCO_GETPAYMENTORDER_RESET });
+
+export const epaycoProcessTransaction = (request: any): IActionCall => ({
+    callAPI: () => PaymentService.epaycoProcessTransaction(request),
+    types: {
+        loading: actionTypes.PAYMENT_EPAYCO_PROCESSTRANSACTION,
+        success: actionTypes.PAYMENT_EPAYCO_PROCESSTRANSACTION_SUCCESS,
+        failure: actionTypes.PAYMENT_EPAYCO_PROCESSTRANSACTION_FAILURE,
+    },
+    type: null,
+});
+
+export const resetEpaycoProcessTransaction = (): IActionCall => ({ type: actionTypes.PAYMENT_EPAYCO_PROCESSTRANSACTION_RESET });

@@ -18,7 +18,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { useForm } from "react-hook-form";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { ListItemIcon } from "@material-ui/core";
-import { columnsHideShow } from "common/helpers/columnsReport";
 import { CellProps } from 'react-table';
 
 interface ItemProps {
@@ -32,72 +31,22 @@ const getArrayBread = (nametmp: string, nameView1: string) => [
     { id: "view-2", name: nametmp },
 ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     container: {
         display: "flex",
         flexDirection: "column",
         width: "100%",
-    },
-    containerDetails: {
-        marginTop: theme.spacing(3),
-    },
-    media: {
-        objectFit: "contain",
-    },
-    containerSearch: {
-        width: "100%",
-        display: "flex",
-        gap: theme.spacing(1),
-        alignItems: "center",
-        [theme.breakpoints.up("sm")]: {
-            width: "50%",
-        },
-    },
-    containerFilter: {
-        width: "100%",
-        marginBottom: theme.spacing(2),
-        display: "flex",
-        gap: 16,
-        flexWrap: "wrap",
-    },
+    },  
     filterComponent: {
         minWidth: "220px",
         maxWidth: "260px",
-    },
-    containerFilterGeneral: {
-        display: "flex",
-        justifyContent: "space-between",
-        backgroundColor: "#FFF",
-        padding: theme.spacing(1),
-    },
-    title: {
-        fontSize: "22px",
-        fontWeight: "bold",
-        color: theme.palette.text.primary,
-    },
-    containerHeader: {
-        display: "block",
-        marginBottom: 0,
-        [theme.breakpoints.up("sm")]: {
-            display: "flex",
-        },
-    },
-    mb2: {
-        marginBottom: theme.spacing(4),
-    },
+    },   
     button: {
         padding: 12,
         fontWeight: 500,
         fontSize: "14px",
         textTransform: "initial",
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: "1px solid #bfbfc0",
-        borderRadius: 4,
-        color: "rgb(143, 146, 161)",
-    },
+    },   
 }));
 
 const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row }) => {
@@ -230,8 +179,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
         () => [                    
             {
                 Header: t(langKeys.report_userproductivityhours_datehour),
-                accessor: 'datehour',
-                groupedBy: false,                  
+                accessor: 'datehour',                          
                 type: 'date',
                 sortType: 'datetime',
                 Cell: (props: CellProps<Dictionary>) => {
@@ -241,14 +189,12 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
             },
             {
                 Header: t(langKeys.report_userproductivityhours_agent),
-                accessor: 'agent',
-                groupedBy: false,  
+                accessor: 'agent',            
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_hoursrange),
-                accessor: 'hoursrange',
-                groupedBy: false,  
+                accessor: 'hoursrange',            
                 Cell: cell
             },
             {
@@ -258,12 +204,17 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 Cell: cell
             },
             {
+                Header: t(langKeys.report_userproductivityhours_busytimeoutsidework),
+                helpText: t(langKeys.report_userproductivityhours_busytimeoutsidework),
+                accessor: 'busytimeoutsidework',
+                showColumn: true,  
+                Cell: cell
+            },
+            {
                 Header: t(langKeys.report_userproductivityhours_busytimewithinwork),
                 accessor: 'busytimewithinwork',
-                helpText: t(langKeys.report_userproductivityhours_busytimewithinwork_help),
-                groupedBy: false,  
-                showColumn: true,     
-                showHide: true,
+                helpText: t(langKeys.report_userproductivityhours_busytimewithinwork_help),             
+                showColumn: true,                     
                 Cell: cell
             },
             {
@@ -274,10 +225,8 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
             },
             {
                 Header: t(langKeys.report_userproductivityhours_onlinetime),
-                accessor: 'onlinetime',
-                groupedBy: false,  
-                helpText: t(langKeys.report_userproductivityhours_onlinetime_help),
-                showColumn: true,     
+                accessor: 'onlinetime',         
+                helpText: t(langKeys.report_userproductivityhours_onlinetime_help),            
                 Cell: cell
             },
             {
@@ -285,6 +234,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 accessor: 'availabletime',
                 helpText: t(langKeys.report_userproductivityhours_availabletime_help),
                 groupedBy: false,  
+                showColumn: true, 
                 Cell: cell
             },
             {
@@ -297,8 +247,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
             },
             {
                 Header: t(langKeys.report_userproductivityhours_idletimewithoutattention),
-                accessor: 'idletimewithoutattention',
-                showColumn: true,                  
+                accessor: 'idletimewithoutattention',                 
                 Cell: cell
             },
             {

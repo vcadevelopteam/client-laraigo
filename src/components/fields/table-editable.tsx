@@ -617,7 +617,7 @@ const TableZyxEditable = React.memo(({
                         </Tooltip>
                     )}
                     {typeof ButtonsElement === 'function' ? (
-                        ButtonsElement()
+                        (<ButtonsElement />)
                         ) : (
                         ButtonsElement
                     )}

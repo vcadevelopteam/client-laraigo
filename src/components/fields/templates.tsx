@@ -100,18 +100,6 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {deleteFunction &&
-                    <MenuItem onClick={(e) => {
-                        e.stopPropagation();
-                        setAnchorEl(null);
-                        deleteFunction?.(e)
-                    }}>
-                        <ListItemIcon color="inherit">
-                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
-                        </ListItemIcon>
-                        <Trans i18nKey={langKeys.delete} />
-                    </MenuItem>
-                }
                 {extraOption &&
                     <MenuItem onClick={(e) => {
                         e.stopPropagation();
@@ -124,6 +112,18 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                             </ListItemIcon>
                         }
                         {extraOption}
+                    </MenuItem>
+                }
+                {deleteFunction &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        deleteFunction?.(e)
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        <Trans i18nKey={langKeys.delete} />
                     </MenuItem>
                 }
             </Menu>
@@ -175,7 +175,7 @@ export const Title: React.FC = ({ children }) => {
     return <label style={style}>{children}</label>;
 }
 
-export const FieldView: React.FC<{ label: string, value?: string, className?: any, styles?: CSSProperties, tooltip?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick }) => (
+export const FieldView: React.FC<{ label: string, value?: string|number, className?: any, styles?: CSSProperties, tooltip?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick }) => (
     <div className={className}>
         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
             {label}
@@ -1255,7 +1255,7 @@ interface FieldCheckboxProps extends InputProps {
     label: string;
 }
 
-export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label, disabled = false }) => {
+export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label, disabled = false, helperText="" }) => {
     const classes = useCheckboxStyles();
     const [checkedaux, setChecked] = useState(false);
 
@@ -1265,7 +1265,17 @@ export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChang
 
     return (
         <div className={className} style={{ paddingBottom: '3px' }}>
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
+            
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{display: "flex"}}>
+                {label}
+                {!!helperText &&
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                            <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                        </Tooltip>
+                    </div>
+                }
+            </Box>
             <Checkbox
                 checked={checkedaux}
                 checkedIcon={<span className={`${classes.icon} ${classes.checkedIcon}`} />}

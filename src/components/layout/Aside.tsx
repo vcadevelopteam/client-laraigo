@@ -192,7 +192,7 @@ const Aside = ({ classes, headerHeight }: IProps) => {
         setShowViews(
             viewsClassifications.reduce((acc: ViewsClassificationConfig[], view) => {
                 const subroutes = Object.entries(applications as IApplicationsRecord)
-                    .filter(([_, values]) => values[4] === view.id)
+                    .filter(([_, values]) => values[5] === view.key.toUpperCase())
                     .map(([route, values]) => ({ route, menuorder: values[6] }))
                     .sort((a, b) => a.menuorder - b.menuorder)
                     .map(entry => entry.route);
