@@ -32,6 +32,8 @@ export const langKeys = {
   orders: "orders",
   configure: "configure",
   documentlibrary: "documentlibrary",
+  minhighermaxerror: "minhighermaxerror",
+  maxlowerminerror: "maxlowerminerror",
   documentlibraryhelperText: "documentlibraryhelperText",
   number: "number",
   uploadedby: "uploadedby",

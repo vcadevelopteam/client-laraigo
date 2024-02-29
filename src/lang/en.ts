@@ -5896,6 +5896,8 @@ const translation: LangKeys = {
   deliveredordertxt: "Order delivered to customer",
   billig_paymentmethod: 'Payment Method',
   billig_creditcard: 'Credit Card',
+  minhighermaxerror: "The minimum value must be less than the maximum value",
+  maxlowerminerror: "The maximum value must be greater than the minimum value",
   billig_debitcard: 'Debit Card',
   billig_credit: 'Credit',
   billig_cash: 'Cash',
