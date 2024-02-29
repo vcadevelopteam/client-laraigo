@@ -1,88 +1,112 @@
-import FileSaver from "file-saver";
+import ExcelJs from "exceljs";
 import { Dictionary } from "@types";
-import i18n from "i18next";
 
 
-type ColumnTmp = {
-    Header: string;
-    accessor: string;
-    prefixTranslation?: string;
-    type?: string;
+const timetonumber = (formattedTime: string) => {
+    const regex = /(\d+h)?(\d+m)?(\d+s)?/;
+    const matches = formattedTime.match(regex);
+
+    const hours = parseInt(matches?.[1] || "0");
+    const minutes = parseInt(matches?.[2] || "0");
+    const seconds = parseInt(matches?.[3] || "0");
+
+    return hours * 3600 + minutes * 60 + seconds;
 };
 
+function formatDuration(duration:string) {
+    const timeArray = duration.split(':').map(Number);
+    const hours = timeArray[0];
+    const minutes = timeArray[1];
+    const seconds = timeArray[2];
+    let formattedDuration = '';
+    if (hours > 0) {
+        formattedDuration += hours + 'h ';
+    }
+    if (minutes > 0) {
+        formattedDuration += minutes + 'm ';
+    }
+    if (seconds > 0) {
+        formattedDuration += seconds + 's';
+    }
+    return formattedDuration.trim() || "00s";
+}
 
-function gradient(num: number, rowcounter: number, rowmax: number, limit: number) {
-    if (isNaN(num)) {
-        return "FFFFFF";
-    } else {
-        let scale = 255 / (rowmax / 2);
-        if (isNaN(scale) || rowmax === 0) scale = 0;
 
-        if (rowcounter >= limit) {
-            return "FFFFFF";
+const oldtimetonumber = (formattedTime: string) => {
+    const hours = parseInt(formattedTime?.split(":")?.[0] || "0");
+    const minutes = parseInt(formattedTime?.split(":")?.[1] || "0");
+    const seconds = parseInt(formattedTime?.split(":")?.[2] || "0");
+    
+
+    return hours * 3600 + minutes * 60 + seconds;
+};
+
+function gradientTime(num: string, rules: Dictionary[]) {
+    for (const item of rules) {
+        if (oldtimetonumber(num) >= timetonumber(item.min) && oldtimetonumber(num) < timetonumber(item.max)) {
+            return item.color;
         }
-        if (num <= rowmax / 2) {
-            const number = Math.floor(num * scale).toString(16);
-            return "00".slice(number.length) + number + "FF00";
+    }
+    return "7721ad";
+}
+function gradientNumber(num: number, rules: Dictionary[]) {
+    for (const item of rules) {
+        if (num >= item.min && num < item.max) {
+            return item.color;
         }
-        if (rowmax === num) {
-            return "FF0000";
-        }
-        const number = Math.floor(255 - (num - rowmax / 2) * scale).toString(16);
-        return "FF" + "00".slice(number.length) + number + "00";
+    }
+    return "7721ad";
+}
+function gradient(num: number|string, rules: Dictionary[], rowcounter: number, type: string, rowcolimit?: number) {
+    if (rowcolimit) {
+        if (rowcounter >= rowcolimit) return "FFFFFF";
+    }
+    if(type==="time"){
+        return gradientTime(num,rules)
+    }else if( type==="percentage"){
+        return gradientNumber(num*100,rules)
+    }else{
+        return gradientNumber(parseInt(num),rules)
     }
 }
 
 export function exportexcelwithgradient(
     filename: string,
     csvData: Dictionary[],
-    columnsexport: ColumnTmp[],
-    limit: number,
-    valueKey: string
+    columnsexport: Dictionary[],
+    rules: Dictionary[],
+    valueKey: string,
+    type: string,
+    limit?: number,
 ): void {
-    import("xlsx").then((XLSX) => {
-        let rowmax = 0;
 
-        const maxValuesForEachObject = csvData.map((obj) => {
-            const dayValues = Object.keys(obj)
-                .filter((key) => key.startsWith("day"))
-                .map((key) => obj[key]);
-
-            return Math.max(...dayValues);
+    const workbook = new ExcelJs.Workbook();
+    const sheet = workbook.addWorksheet("data")
+    const columns = columnsexport.map(x=>({header: x.Header, key: x.accessor}))
+    sheet.columns = columns
+    csvData.map((x,rowIndex)=>{
+        const valueheader=columns.reduce((acc,x)=>[...acc,x.key],[])
+        valueheader.forEach((y, colIndex) => {
+            const cellValue = x[y];
+            const color =y.includes(valueKey)?gradient(cellValue,rules,rowIndex,type,limit):"FFFFFF"
+            sheet.getCell(rowIndex + 2, colIndex + 1).fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: color.replace(/^#/, '') }
+            };
+            sheet.getCell(rowIndex + 2, colIndex + 1).value = type==="time"?formatDuration(cellValue): type==="percentage"?(cellValue*100) + "%":cellValue;
         });
+    })
 
-        rowmax = Math.max(...maxValuesForEachObject);
-        const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-        const fileExtension = ".xlsx";
-        let datafromtable = csvData;
-        if (columnsexport) {
-            datafromtable = csvData.map((x: Dictionary) => {
-                const newx: Dictionary = {};
-                columnsexport.forEach((y: ColumnTmp) => {
-                    newx[y.Header] =
-                        y.prefixTranslation !== undefined
-                            ? i18n.t(`${y.prefixTranslation}${x[y.accessor]?.toLowerCase()}`).toUpperCase()
-                            : y.type === "porcentage"
-                            ? `${(Number(x[y.accessor]) * 100).toFixed(0)}%`
-                            : x[y.accessor];
-                });
-                return newx;
-            });
-        }
-        const ws = XLSX.utils.json_to_sheet(datafromtable);
-
-        // Loop through the cells and set background color
-        datafromtable.forEach((row, rowIndex) => {
-            columnsexport.forEach((column, colIndex) => {
-                const cellKey = XLSX.utils.encode_cell({ r: rowIndex + 1, c: colIndex });
-                const color = column.accessor.includes(valueKey)?gradient(parseInt(row[column.Header]), rowIndex, rowmax, limit):"FFFFFF" 
-                ws[cellKey].s={ fill: { fgColor: { rgb: color } } }
-            });
+    workbook.xlsx.writeBuffer().then(dat => {
+        const blob = new Blob([dat], {
+            type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
-        console.log(XLSX.version);
-        const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-        const data = new Blob([excelBuffer], { type: fileType });
-        FileSaver.saveAs(data, filename + fileExtension);
-    });
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href=url;
+        anchor.download = filename + '.xlsx';
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+    })
 }
