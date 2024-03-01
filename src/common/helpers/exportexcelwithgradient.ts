@@ -47,7 +47,7 @@ function gradientTime(num: string, rules: Dictionary[]) {
             return item.color;
         }
     }
-    return "7721ad";
+    return "ffffff";
 }
 function gradientNumber(num: number, rules: Dictionary[]) {
     for (const item of rules) {
@@ -55,7 +55,7 @@ function gradientNumber(num: number, rules: Dictionary[]) {
             return item.color;
         }
     }
-    return "7721ad";
+    return "ffffff";
 }
 function gradient(num: number|string, rules: Dictionary[], rowcounter: number, type: string, rowcolimit?: number) {
     if (rowcolimit) {

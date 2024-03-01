@@ -522,6 +522,7 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
     parameters: {
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
+        distinct: allParameters['distinct'] ? allParameters['distinct'] : "",
         userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
         bot: allParameters['bot'] ? allParameters['bot'] : false,

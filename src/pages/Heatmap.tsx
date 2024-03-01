@@ -638,7 +638,7 @@ const MainHeatMap: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -818,7 +818,7 @@ const MainHeatMap: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -998,7 +998,7 @@ const MainHeatMap: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -1176,7 +1176,7 @@ const MainHeatMap: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -1355,7 +1355,7 @@ const MainHeatMap: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -2070,7 +2070,7 @@ const HeatMapAsesor: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -2166,7 +2166,7 @@ const HeatMapAsesor: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -2238,7 +2238,7 @@ const HeatMapAsesor: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -2322,7 +2322,7 @@ const HeatMapAsesor: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -2396,7 +2396,7 @@ const HeatMapAsesor: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
         const arraytemplate =
             arrayfree.length > 0
@@ -2481,7 +2481,7 @@ const HeatMapAsesor: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -2554,7 +2554,7 @@ const HeatMapAsesor: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
 
         const arraytemplate =
@@ -3248,7 +3248,7 @@ const HeatMapTicket: React.FC<{
                     return item.color;
                 }
             }
-            return "#7721ad";
+            return "#ffffff";
         }
         setasesoresConectadosData(arrayfree);
 
