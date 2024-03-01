@@ -508,7 +508,7 @@ exports.getUserProductivitySel = function (_a) {
     return ({
         method: "UFN_REPORT_USERPRODUCTIVITY_SEL",
         key: "UFN_REPORT_USERPRODUCTIVITY_SEL",
-        parameters: __assign(__assign({}, allParameters), { channel: allParameters['channel'] ? allParameters['channel'] : "", userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "", usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "", bot: allParameters['bot'] ? allParameters['bot'] : false, offset: (new Date().getTimezoneOffset() / 60) * -1 })
+        parameters: __assign(__assign({}, allParameters), { channel: allParameters['channel'] ? allParameters['channel'] : "", distinct: allParameters['distinct'] ? allParameters['distinct'] : "", userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "", usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "", bot: allParameters['bot'] ? allParameters['bot'] : false, offset: (new Date().getTimezoneOffset() / 60) * -1 })
     });
 };
 exports.getUserProductivityGraphic = function (_a) {

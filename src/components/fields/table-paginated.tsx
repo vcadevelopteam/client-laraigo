@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, MouseEventHandler } from 'react';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -7,6 +7,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import IconButton from '@material-ui/core/IconButton';
 import Select from '@material-ui/core/Select';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowUp from '@material-ui/icons/KeyboardArrowUp'
+
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import Input from '@material-ui/core/Input';
@@ -43,12 +46,30 @@ import {
     useGlobalFilter,
     usePagination,
     useRowSelect,
+    TableInstance,
+    TableOptions, 
+    Row, 
+    useSortBy,
+    CellProps,   
+    useExpanded,
+    useGroupBy,
+
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DialogZyx, DateRangePicker, FieldSelect } from 'components';
-import { Checkbox, Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Typography } from '@material-ui/core';
+import { Checkbox, Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, TableSortLabel, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
+
+
+export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
+    name: string
+    onAdd?: (instance: TableInstance<T>) => MouseEventHandler
+    onDelete?: (instance: TableInstance<T>) => MouseEventHandler
+    onEdit?: (instance: TableInstance<T>) => MouseEventHandler
+    onClick?: (row: Row<T>) => void
+}
+
 declare module "react-table" {
     // eslint-disable-next-line
     interface UseTableColumnProps<D extends object> {
@@ -133,14 +154,39 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeaderColumn: {
         display: 'flex',
-        justifyContent: 'space-between',
+        //justifyContent: 'space-between',
+        gap: '0.5rem',
         alignItems: 'center'
     },
     iconHelpText: {
         width: 15,
         height: 15,
         cursor: 'pointer',
-    }
+    },
+    headerIcon: {
+        '& svg': {
+          width: 16,
+          height: 16,
+          marginTop: -2,
+          marginRight: 4,
+          marginLeft: -6
+        },
+    },
+    iconDirectionAsc: {
+        transform: 'rotate(90deg)',
+    },
+    iconDirectionDesc: {
+        transform: 'rotate(180deg)',
+    },
+    cellIcon: {
+        '& svg': {
+          width: 16,
+          height: 16,
+          marginTop: -2,
+          marginRight: 4,
+          marginLeft: -6
+        },
+    },
 }));
 
 
@@ -177,7 +223,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
             if (value || operator === "noempty" || operator === "empty")
                 setFilters({
                     ...filters,
-                    [header]: {
+                    [header]: {//nombre columna agr
                         value,
                         operator
                     },
@@ -514,6 +560,9 @@ const TableZyx = React.memo(({
         },
         useFilters,
         useGlobalFilter,
+        useGroupBy,
+        useSortBy,       
+        useExpanded,   
         usePagination,
         useRowSelect,
         hooks => {
@@ -521,6 +570,7 @@ const TableZyx = React.memo(({
                 {
                     id: 'selection',
                     width: 80,
+                    disableGroupBy: true,
                     Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
                         !selectionFilter
                             ?
@@ -567,6 +617,10 @@ const TableZyx = React.memo(({
                 } as any,
                 ...columns,
             ])
+            hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {              
+                const selectionGroupHeader = headerGroups[0].headers[0]
+                selectionGroupHeader.canResize = false
+            })
         }
     )
 
@@ -982,6 +1036,23 @@ const TableZyx = React.memo(({
                                                     :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
+
+                                                            { column.canGroupBy === true && (
+                                                                <Tooltip title={''}>
+                                                                    <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
+                                                                    {column.canGroupBy === true && (
+                                                                        <TableSortLabel
+                                                                        active
+                                                                        direction={column.isGrouped ? 'desc' : 'asc'}
+                                                                        IconComponent={KeyboardArrowRight}
+                                                                        className={classes.headerIcon}
+                                                                        {...column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar' }))}
+                                                                        />
+                                                                    )}
+                                                                    </div>
+                                                                </Tooltip>
+                                                            )}
+
                                                             <Box
                                                                 component="div"
                                                                 {...column.getHeaderProps()}
@@ -1034,13 +1105,13 @@ const TableZyx = React.memo(({
                                 <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
                                 page.map((row: any) => {
                                     prepareRow(row);
-                                    return (
-                                        <TableRow
+                                    return ( //eslint-disable-next-line
+                                        <TableRow 
                                             {...row.getRowProps()}
                                             hover
                                             style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                         >
-                                            {row.cells.map((cell: any, i: number) =>
+                                            {row.cells.map((cell: any, i: number) => //eslint-disable-next-line
                                                 <TableCell
                                                     {...cell.getCellProps({
                                                         style: {
@@ -1054,7 +1125,37 @@ const TableZyx = React.memo(({
                                                     })}
                                                     onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
                                                 >
-                                                    {cell.render('Cell')}
+
+                                                    {cell.isGrouped ? (
+                                                        <>
+                                                            <TableSortLabel
+                                                                classes={{
+                                                                    iconDirectionAsc: classes.iconDirectionAsc,
+                                                                    iconDirectionDesc: classes.iconDirectionDesc,
+                                                                }}
+                                                                active
+                                                                direction={row.isExpanded ? 'desc' : 'asc'}
+                                                                IconComponent={KeyboardArrowUp}
+                                                                {...row.getToggleRowExpandedProps()}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); 
+                                                                    row.toggleRowExpanded();
+                                                                }}
+                                                                className={classes.cellIcon}
+                                                            />{' '}
+                                                            {cell.render('Cell', { editable: false })} ({row.subRows.length})
+                                                        </>
+                                                    ) : (
+                                                        columns.isGrouped ? ( 
+                                                            cell.isAggregated ? (
+                                                                cell.render('Aggregated')
+                                                            ) : cell.isPlaceholder ? null : (
+                                                                cell.render('Cell')
+                                                            )
+                                                        ) : (
+                                                            cell.render('Cell')
+                                                        )
+                                                    )}
                                                 </TableCell>
                                             )}
                                         </TableRow>

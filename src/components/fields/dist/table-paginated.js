@@ -28,6 +28,8 @@ var TableHead_1 = require("@material-ui/core/TableHead");
 var TableRow_1 = require("@material-ui/core/TableRow");
 var IconButton_1 = require("@material-ui/core/IconButton");
 var Select_1 = require("@material-ui/core/Select");
+var KeyboardArrowRight_1 = require("@material-ui/icons/KeyboardArrowRight");
+var KeyboardArrowUp_1 = require("@material-ui/icons/KeyboardArrowUp");
 var MenuItem_1 = require("@material-ui/core/MenuItem");
 var Box_1 = require("@material-ui/core/Box");
 var Input_1 = require("@material-ui/core/Input");
@@ -132,13 +134,38 @@ var useStyles = styles_1.makeStyles(function (theme) {
             _c),
         containerHeaderColumn: {
             display: 'flex',
-            justifyContent: 'space-between',
+            //justifyContent: 'space-between',
+            gap: '0.5rem',
             alignItems: 'center'
         },
         iconHelpText: {
             width: 15,
             height: 15,
             cursor: 'pointer'
+        },
+        headerIcon: {
+            '& svg': {
+                width: 16,
+                height: 16,
+                marginTop: -2,
+                marginRight: 4,
+                marginLeft: -6
+            }
+        },
+        iconDirectionAsc: {
+            transform: 'rotate(90deg)'
+        },
+        iconDirectionDesc: {
+            transform: 'rotate(180deg)'
+        },
+        cellIcon: {
+            '& svg': {
+                width: 16,
+                height: 16,
+                marginTop: -2,
+                marginRight: 4,
+                marginLeft: -6
+            }
         }
     });
 });
@@ -148,6 +175,7 @@ var DefaultColumnFilter = function (_a) {
     var _c = react_1["default"].useState(null), anchorEl = _c[0], setAnchorEl = _c[1];
     var open = Boolean(anchorEl);
     var _d = react_1.useState("contains"), operator = _d[0], setoperator = _d[1];
+    var _e = react_1.useState(''), valueOnFocus = _e[0], setValueOnFocus = _e[1]; // El valor cuando el input recibió el foco
     react_1.useEffect(function () {
         switch (type) {
             case "number":
@@ -175,13 +203,28 @@ var DefaultColumnFilter = function (_a) {
     var keyPress = function (e) {
         var _a, _b;
         if (e.keyCode === 13) {
+            setValueOnFocus(value);
             if (value || operator === "noempty" || operator === "empty")
                 setFilters(__assign(__assign({}, filters), (_a = {}, _a[header] = {
                     value: value,
                     operator: operator
                 }, _a)), 0);
-            else
+            else {
                 setFilters(__assign(__assign({}, filters), (_b = {}, _b[header] = undefined, _b)), 0);
+            }
+        }
+    };
+    var onBlur = function () {
+        var _a, _b;
+        if (value !== valueOnFocus) {
+            if (value || operator === "noempty" || operator === "empty")
+                setFilters(__assign(__assign({}, filters), (_a = {}, _a[header] = {
+                    value: value,
+                    operator: operator
+                }, _a)), 0);
+            else {
+                setFilters(__assign(__assign({}, filters), (_b = {}, _b[header] = undefined, _b)), 0);
+            }
         }
     };
     var handleCloseMenu = function () {
@@ -264,7 +307,7 @@ var DefaultColumnFilter = function (_a) {
         var _a, _b;
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue((date === null || date === void 0 ? void 0 : date.toISOString()) || '');
-            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
+            if (date || ['isnull', 'isnotnull'].includes(operator)) {
                 setFilters(__assign(__assign({}, filters), (_a = {}, _a[header] = {
                     value: (date === null || date === void 0 ? void 0 : date.toISOString().split('T')[0]) || '',
                     operator: operator
@@ -279,7 +322,7 @@ var DefaultColumnFilter = function (_a) {
         var _a, _b;
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue((date === null || date === void 0 ? void 0 : date.toISOString()) || '');
-            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
+            if (date || ['isnull', 'isnotnull'].includes(operator)) {
                 setFilters(__assign(__assign({}, filters), (_a = {}, _a[header] = {
                     value: date === null || date === void 0 ? void 0 : date.toLocaleTimeString(),
                     operator: operator
@@ -306,10 +349,12 @@ var DefaultColumnFilter = function (_a) {
             (type === "select" ?
                 react_1["default"].createElement(table_simple_1.SelectFilterTmp, { value: value, handleClickItemMenu: handleClickItemMenu, data: listSelectFilter || [] }) :
                 react_1["default"].createElement(react_1["default"].Fragment, null,
-                    type === 'date' && table_simple_1.DateOptionsMenuComponent(value, handleDate),
-                    type === 'time' && table_simple_1.TimeOptionsMenuComponent(value, handleTime),
+                    type === 'date' &&
+                        react_1["default"].createElement(table_simple_1.DateOptionsMenuComponent, { value: value, handleDate: handleDate }),
+                    type === 'time' &&
+                        react_1["default"].createElement(table_simple_1.TimeOptionsMenuComponent, { value: value, handleTime: handleTime }),
                     !['date', 'time'].includes(type) &&
-                        react_1["default"].createElement(Input_1["default"], { style: { fontSize: '15px', minWidth: '100px' }, type: ['number', 'number-centered'].includes(type) ? "number" : "text", fullWidth: true, value: value, onKeyDown: keyPress, onChange: function (e) { return setValue(e.target.value); } }),
+                        react_1["default"].createElement(Input_1["default"], { style: { fontSize: '15px', minWidth: '100px' }, type: ['number', 'number-centered'].includes(type) ? "number" : "text", fullWidth: true, value: value, onFocus: function (e) { return setValueOnFocus(e.target.value); }, onBlur: onBlur, onKeyDown: keyPress, onChange: function (e) { return setValue(e.target.value); } }),
                     react_1["default"].createElement(IconButton_1["default"], { onClick: handleClickMenu, size: "small" },
                         react_1["default"].createElement(icons_2.MoreVert, { style: { cursor: 'pointer' }, "aria-label": "more", "aria-controls": "long-menu", "aria-haspopup": "true", color: "action", fontSize: "small" })),
                     react_1["default"].createElement(Menu_1["default"], { id: "long-menu", anchorEl: anchorEl, open: open, onClose: handleCloseMenu, PaperProps: {
@@ -321,7 +366,7 @@ var DefaultColumnFilter = function (_a) {
 };
 var TableZyx = react_1["default"].memo(function (_a) {
     var _b;
-    var titlemodule = _a.titlemodule, columns = _a.columns, data = _a.data, fetchData = _a.fetchData, filterrange = _a.filterrange, totalrow = _a.totalrow, controlledPageCount = _a.pageCount, download = _a.download, register = _a.register, handleRegister = _a.handleRegister, HeadComponent = _a.HeadComponent, ButtonsElement = _a.ButtonsElement, exportPersonalized = _a.exportPersonalized, loading = _a.loading, importCSV = _a.importCSV, _c = _a.autotrigger, autotrigger = _c === void 0 ? false : _c, autoRefresh = _a.autoRefresh, useSelection = _a.useSelection, selectionKey = _a.selectionKey, selectionFilter = _a.selectionFilter, initialSelectedRows = _a.initialSelectedRows, cleanSelection = _a.cleanSelection, setCleanSelection = _a.setCleanSelection, setSelectedRows = _a.setSelectedRows, onClickRow = _a.onClickRow, FiltersElement = _a.FiltersElement, _d = _a.filterRangeDate, filterRangeDate = _d === void 0 ? "month" : _d, onFilterChange = _a.onFilterChange, _e = _a.initialEndDate, initialEndDate = _e === void 0 ? null : _e, _f = _a.initialStartDate, initialStartDate = _f === void 0 ? null : _f, _g = _a.initialFilters, initialFilters = _g === void 0 ? {} : _g, _h = _a.initialPageIndex, initialPageIndex = _h === void 0 ? 0 : _h, groupedBy = _a.groupedBy, showHideColumns = _a.showHideColumns;
+    var titlemodule = _a.titlemodule, columns = _a.columns, data = _a.data, fetchData = _a.fetchData, filterrange = _a.filterrange, totalrow = _a.totalrow, controlledPageCount = _a.pageCount, download = _a.download, register = _a.register, handleRegister = _a.handleRegister, HeadComponent = _a.HeadComponent, ButtonsElement = _a.ButtonsElement, exportPersonalized = _a.exportPersonalized, loading = _a.loading, importCSV = _a.importCSV, _c = _a.autotrigger, autotrigger = _c === void 0 ? false : _c, autoRefresh = _a.autoRefresh, useSelection = _a.useSelection, selectionKey = _a.selectionKey, selectionFilter = _a.selectionFilter, initialSelectedRows = _a.initialSelectedRows, cleanSelection = _a.cleanSelection, setCleanSelection = _a.setCleanSelection, setSelectedRows = _a.setSelectedRows, onClickRow = _a.onClickRow, FiltersElement = _a.FiltersElement, _d = _a.filterRangeDate, filterRangeDate = _d === void 0 ? "month" : _d, onFilterChange = _a.onFilterChange, _e = _a.initialEndDate, initialEndDate = _e === void 0 ? null : _e, _f = _a.initialStartDate, initialStartDate = _f === void 0 ? null : _f, _g = _a.initialFilters, initialFilters = _g === void 0 ? {} : _g, _h = _a.initialPageIndex, initialPageIndex = _h === void 0 ? 0 : _h, groupedBy = _a.groupedBy, showHideColumns = _a.showHideColumns, ExtraMenuOptions = _a.ExtraMenuOptions;
     var classes = useStyles();
     var _j = react_1.useState({ sorts: {}, filters: initialFilters, pageIndex: initialPageIndex }), pagination = _j[0], setPagination = _j[1];
     var _k = react_1.useState(false), openDateRangeModal = _k[0], setOpenDateRangeModal = _k[1];
@@ -353,11 +398,12 @@ var TableZyx = react_1["default"].memo(function (_a) {
                     return newState;
             }
         }
-    }, react_table_1.useFilters, react_table_1.useGlobalFilter, react_table_1.usePagination, react_table_1.useRowSelect, function (hooks) {
+    }, react_table_1.useFilters, react_table_1.useGlobalFilter, react_table_1.useGroupBy, react_table_1.useSortBy, react_table_1.useExpanded, react_table_1.usePagination, react_table_1.useRowSelect, function (hooks) {
         useSelection && hooks.visibleColumns.push(function (columns) { return __spreadArrays([
             {
                 id: 'selection',
                 width: 80,
+                disableGroupBy: true,
                 Header: function (_a) {
                     var getToggleAllPageRowsSelectedProps = _a.getToggleAllPageRowsSelectedProps, filteredRows = _a.filteredRows;
                     return (!selectionFilter
@@ -387,6 +433,11 @@ var TableZyx = react_1["default"].memo(function (_a) {
                 isComponent: true
             }
         ], columns); });
+        hooks.useInstanceBeforeDimensions.push(function (_a) {
+            var headerGroups = _a.headerGroups;
+            var selectionGroupHeader = headerGroups[0].headers[0];
+            selectionGroupHeader.canResize = false;
+        });
     }), getTableProps = _o.getTableProps, getTableBodyProps = _o.getTableBodyProps, headerGroups = _o.headerGroups, prepareRow = _o.prepareRow, page = _o.page, // Instead of using 'rows', we'll use page,
     canPreviousPage = _o.canPreviousPage, canNextPage = _o.canNextPage, pageOptions = _o.pageOptions, pageCount = _o.pageCount, setPageSize = _o.setPageSize, toggleAllRowsSelected = _o.toggleAllRowsSelected, allColumns = _o.allColumns, _p = _o.state, pageIndex = _p.pageIndex, pageSize = _p.pageSize, selectedRowIds = _p.selectedRowIds;
     var setFilters = function (filters, page) {
@@ -475,7 +526,7 @@ var TableZyx = react_1["default"].memo(function (_a) {
             } }));
     };
     var t = react_i18next_2.useTranslation().t;
-    var showExtraButtonIcon = showHideColumns || groupedBy;
+    var showExtraButtonIcon = showHideColumns || groupedBy || ExtraMenuOptions;
     var _r = react_1["default"].useState(null), anchorElSeButtons = _r[0], setAnchorElSeButtons = _r[1];
     var _s = react_1.useState(false), openSeButtons = _s[0], setOpenSeButtons = _s[1];
     var _t = react_1.useState(false), isGroupedByModalOpen = _t[0], setGroupedByModalOpen = _t[1];
@@ -562,7 +613,8 @@ var TableZyx = react_1["default"].memo(function (_a) {
                                     showHideColumns && (react_1["default"].createElement(MenuItem_1["default"], { style: { padding: '0.7rem 1rem', fontSize: '0.96rem' }, onClick: handleOpenShowColumnsModal },
                                         react_1["default"].createElement(core_1.ListItemIcon, null,
                                             react_1["default"].createElement(ViewWeek_1["default"], { fontSize: "small", style: { fill: 'grey', height: '25px' } })),
-                                        react_1["default"].createElement(core_1.Typography, { variant: "inherit" }, t(keys_1.langKeys.showHideColumns))))));
+                                        react_1["default"].createElement(core_1.Typography, { variant: "inherit" }, t(keys_1.langKeys.showHideColumns)))),
+                                    ExtraMenuOptions));
                             })))),
                     isShowColumnsModalOpen && (react_1["default"].createElement(components_1.DialogZyx, { open: isShowColumnsModalOpen, title: t(keys_1.langKeys.showHideColumns), buttonText2: t(keys_1.langKeys.close), handleClickButton2: function () { return setShowColumnsModalOpen(false); }, maxWidth: "sm", buttonStyle1: { marginBottom: '0.3rem' }, buttonStyle2: { marginRight: '1rem', marginBottom: '0.3rem' } },
                         react_1["default"].createElement(core_1.Grid, { container: true, spacing: 1, style: { marginTop: '0.5rem' } }, allColumns.filter(function (column) {
@@ -589,6 +641,8 @@ var TableZyx = react_1["default"].memo(function (_a) {
                             :
                                 (react_1["default"].createElement(react_1["default"].Fragment, null,
                                     react_1["default"].createElement("div", { className: classes.containerHeaderColumn },
+                                        column.canGroupBy === true && (react_1["default"].createElement(Tooltip_1["default"], { title: '' },
+                                            react_1["default"].createElement("div", { style: { whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' } }, column.canGroupBy === true && (react_1["default"].createElement(core_1.TableSortLabel, __assign({ active: true, direction: column.isGrouped ? 'desc' : 'asc', IconComponent: KeyboardArrowRight_1["default"], className: classes.headerIcon }, column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar' })))))))),
                                         react_1["default"].createElement(Box_1["default"], __assign({ component: "div" }, column.getHeaderProps(), { onClick: function () { return !column.NoSort && handleClickSort(column.id); }, style: {
                                                 whiteSpace: 'nowrap',
                                                 wordWrap: 'break-word',
@@ -612,7 +666,8 @@ var TableZyx = react_1["default"].memo(function (_a) {
                         react_1["default"].createElement(LoadingSkeleton, { columns: headerGroups[0].headers.length }) :
                         page.map(function (row) {
                             prepareRow(row);
-                            return (react_1["default"].createElement(TableRow_1["default"], __assign({}, row.getRowProps(), { hover: true, style: { cursor: onClickRow ? 'pointer' : 'default' } }), row.cells.map(function (cell, i) {
+                            return ( //eslint-disable-next-line
+                            react_1["default"].createElement(TableRow_1["default"], __assign({}, row.getRowProps(), { hover: true, style: { cursor: onClickRow ? 'pointer' : 'default' } }), row.cells.map(function (cell, i) {
                                 var _a;
                                 return react_1["default"].createElement(TableCell_1["default"], __assign({}, cell.getCellProps({
                                     style: {
@@ -623,7 +678,19 @@ var TableZyx = react_1["default"].memo(function (_a) {
                                         whiteSpace: 'nowrap',
                                         textAlign: cell.column.type === "number" ? "right" : (((_a = cell.column.type) === null || _a === void 0 ? void 0 : _a.includes('centered')) ? "center" : "left")
                                     }
-                                }), { onClick: function () { return cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null; } }), cell.render('Cell'));
+                                }), { onClick: function () { return cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null; } }), cell.isGrouped ? (react_1["default"].createElement(react_1["default"].Fragment, null,
+                                    react_1["default"].createElement(core_1.TableSortLabel, __assign({ classes: {
+                                            iconDirectionAsc: classes.iconDirectionAsc,
+                                            iconDirectionDesc: classes.iconDirectionDesc
+                                        }, active: true, direction: row.isExpanded ? 'desc' : 'asc', IconComponent: KeyboardArrowUp_1["default"] }, row.getToggleRowExpandedProps(), { onClick: function (e) {
+                                            e.stopPropagation();
+                                            row.toggleRowExpanded();
+                                        }, className: classes.cellIcon })),
+                                    ' ',
+                                    cell.render('Cell', { editable: false }),
+                                    " (",
+                                    row.subRows.length,
+                                    ")")) : (columns.isGrouped ? (cell.isAggregated ? (cell.render('Aggregated')) : cell.isPlaceholder ? null : (cell.render('Cell'))) : (cell.render('Cell'))));
                             })));
                         })))),
             react_1["default"].createElement(Box_1["default"], { className: classes.footerTable },
