@@ -3392,7 +3392,7 @@ const ConfigurationModalNumber: React.FC<{
     data: Dictionary[];
     setData: (a: Dictionary[]) => void;
 }> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
-    const colorgroup = ["#FF0000", "#FF6600", "#FFFF00", "#6FE775", "#47FF47"];
+    const colorgroup = ["#47FF47", "#6FE775", "#FFFF00", "#FF6600", "#FF0000"];
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -3609,7 +3609,7 @@ const ConfigurationModalTime: React.FC<{
     data: Dictionary[];
     setData: (a: Dictionary[]) => void;
 }> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
-    const colorgroup = ["#FF0000", "#FF6600", "#FFFF00", "#6FE775", "#47FF47"];
+    const colorgroup = ["#47FF47", "#6FE775", "#FFFF00", "#FF6600", "#FF0000"];
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -3834,7 +3834,7 @@ const ConfigurationModalPercentage: React.FC<{
     data: Dictionary[];
     setData: (a: Dictionary[]) => void;
 }> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
-    const colorgroup = ["#FF0000", "#FF6600", "#FFFF00", "#6FE775", "#47FF47"];
+    const colorgroup = ["#47FF47", "#6FE775", "#FFFF00", "#FF6600", "#FF0000"];
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
