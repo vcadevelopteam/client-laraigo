@@ -350,10 +350,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                     <div style={{ justifyContent: "right", display: "flex" }}>
                         <Button
                             variant="contained"
+                            className={classes.button}
                             color="primary"
-                            disabled={main.loading}
+                            disabled={main.loading || Object.keys(selectedRows).length === 0}
                             startIcon={<LocationOnIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
                         >
                             <Trans i18nKey={langKeys.routinglogic} />
                         </Button>
@@ -361,12 +361,13 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             <ExtrasMenu
                                 schedulesth={() => setOpenModalManualScheduling(true)}
                                 prepare={() => setOpenModalAssignCarrier(true)}
-                                dispatch={() => setOpenModalCanceled(true)}
+                                dispatch={() => setOpenModalAssignCarrier(true)}
                                 reschedule={() => setOpenModalReschedulingUndelivered(true)}
                                 deliver={() => setOpenModalCanceled(true)}
                                 undelivered={() => setOpenModalReschedulingUndelivered(true)}
                                 cancel={() => setOpenModalCanceled(true)}
                                 cancelundelivered={() => setOpenModalCanceled(true)}
+                                rows={selectedRows}
                             />
                         </div>
                         <Button
@@ -418,6 +419,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             <ReschedulingUndeliveredDialog
                 openModal={openModalReschedulingUndelivered}
                 setOpenModal={setOpenModalReschedulingUndelivered}
+                config={config}
             />
             <ElectronicTicketAndInvoiceDialog
                 openModal={openModalElectronicTicketAndInvoice}

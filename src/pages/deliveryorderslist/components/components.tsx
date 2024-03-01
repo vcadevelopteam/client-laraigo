@@ -3,12 +3,14 @@ import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Button, Menu, MenuItem, makeStyles } from "@material-ui/core";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
     button: {
-        display: "flex",
-        gap: "10px",
-        alignItems: "center",
+        backgroundColor: "#55BD84",
+        "&:hover": {
+            backgroundColor: "#55BD84",
+        },
     },
 	main : {
 		whiteSpace: "nowrap",
@@ -25,6 +27,7 @@ interface TemplateIconsProps {
     undelivered?: (param: boolean) => void;
     cancel?: (param: boolean) => void;
     cancelundelivered?: (param: boolean) => void;
+    rows: Dictionary;
 }
 
 export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
@@ -36,6 +39,7 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
     undelivered,
     cancel,
     cancelundelivered,
+    rows,
 }) => {
     const classes = useStyles();
     const { t } = useTranslation();
@@ -88,9 +92,8 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
                 className={classes.button}
                 variant="contained"
                 color="primary"
-                type="submit"
                 startIcon={<LocalShippingIcon color="secondary" />}
-                style={{ backgroundColor: "#55BD84" }}
+                disabled={Object.keys(rows).length === 0 || Object.keys(rows).length > 1}
                 onClick={handleClickTyping}
             >
                 <Trans i18nKey={langKeys.typing} />
