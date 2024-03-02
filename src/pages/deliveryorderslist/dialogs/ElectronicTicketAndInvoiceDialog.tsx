@@ -1,15 +1,17 @@
 import { Button, makeStyles } from "@material-ui/core";
 import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { Trans, useTranslation } from "react-i18next";
 import ShareIcon from "@material-ui/icons/Share";
 import ReceiptIcon from "@material-ui/icons/Receipt";
-import InvoiceA4Dialog from "./InvoiceA4Dialog";
-import InvoiceTicketDialog from "./InvoiceTicketDialog";
 import InvoiceShareDialog from "./InvoiceShareDialog";
 import { Dictionary } from "@types";
+import { useSelector } from "hooks";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { reportPdf } from "store/culqi/actions";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles(() => ({
     buttonspace: {
@@ -29,13 +31,61 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
     config: Dictionary;
-}> = ({ openModal, setOpenModal, config }) => {
+    rows: Dictionary[];
+    pdfRender: string;
+    setPdfRender: (pdf: string) => void;
+    setOpenModalInvoiceA4: (value: boolean) => void;
+}> = ({ openModal, setOpenModal, config, rows, pdfRender, setPdfRender, setOpenModalInvoiceA4 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-
-    const [openModalInvoiceA4, setOpenModalInvoiceA4] = useState(false);
-    const [openModalInvoiceTicket, setOpenModalInvoiceTicket] = useState(false);
+    const dispatch = useDispatch();
+    const culqiReportResult = useSelector((state) => state.culqi.requestReportPdf);
+    const [waitPdf, setWaitPdf] = useState(false);
     const [openModalInvoiceShare, setOpenModalInvoiceShare] = useState(false);
+
+    const generateInvoicePdf = () => {
+        const reportBody = {
+            dataonparameters: true,
+            key: "period-report",
+            method: "",
+            reportname: "period-report",
+            template: 'delivery-receipt.html',
+            parameters: {
+                reporttitle: 'BOLETA DE VENTA ELECTRÓNICA',
+                ruc: rows?.[0]?.documentnumber,
+                ordernumber: rows?.[0]?.ordernumber,
+            },
+        };
+
+        dispatch(reportPdf(reportBody));
+        dispatch(showBackdrop(true));
+        setWaitPdf(true);
+    }
+
+    useEffect(() => {
+        if (waitPdf) {
+            if (!culqiReportResult.loading && !culqiReportResult.error) {
+                dispatch(showBackdrop(false));
+                setWaitPdf(false);
+                if (culqiReportResult.datacard) {
+                    setPdfRender(culqiReportResult.datacard);
+                    setOpenModalInvoiceA4(true)
+                }
+            } else if (culqiReportResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(culqiReportResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.person).toLocaleLowerCase(),
+                        }),
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setWaitPdf(false);
+            }
+        }
+    }, [culqiReportResult, waitPdf]);
 
     return (
         <DialogZyx open={openModal} title={t(langKeys.electronic_ticket_and_invoice)} maxWidth="sm">
@@ -44,23 +94,10 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
                     variant="contained"
                     color="primary"
                     startIcon={<ReceiptIcon color="secondary" />}
-                    style={{ backgroundColor: "#55BD84" }}
-                    onClick={() => {
-                        setOpenModalInvoiceA4(true);
-                    }}
+                    style={{ backgroundColor: "#55BD84", width: 220 }}
+                    onClick={generateInvoicePdf}
                 >
                     <Trans i18nKey={t(langKeys.receipt) + " - " + t(langKeys.billingfield_billinga4)} />
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<ReceiptIcon color="secondary" />}
-                    style={{ backgroundColor: "#55BD84" }}
-                    onClick={() => {
-                        setOpenModalInvoiceTicket(true);
-                    }}
-                >
-                    <Trans i18nKey={t(langKeys.receipt) + " - " + t(langKeys.ticket)} />
                 </Button>
             </div>
             {config?.shareinvoiced && (
@@ -69,7 +106,7 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
                         variant="contained"
                         color="primary"
                         startIcon={<ShareIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}
+                        style={{ backgroundColor: "#55BD84", width: 220 }}
                         onClick={() => {
                             setOpenModalInvoiceShare(true);
                         }}
@@ -92,8 +129,6 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
                     {t(langKeys.back)}
                 </Button>
             </div>
-            <InvoiceA4Dialog openModal={openModalInvoiceA4} setOpenModal={setOpenModalInvoiceA4} />
-            <InvoiceTicketDialog openModal={openModalInvoiceTicket} setOpenModal={setOpenModalInvoiceTicket} />
             <InvoiceShareDialog openModal={openModalInvoiceShare} setOpenModal={setOpenModalInvoiceShare} config={config} />
         </DialogZyx>
     );

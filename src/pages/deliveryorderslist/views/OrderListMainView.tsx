@@ -386,7 +386,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={main.loading}
+                                disabled={main.loading || Object.keys(selectedRows).length === 0 || Object.keys(selectedRows).length > 1}
                                 startIcon={<ReceiptIcon color="secondary" />}
                                 className={classes.button}
                                 onClick={() => {
@@ -425,6 +425,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 openModal={openModalElectronicTicketAndInvoice}
                 setOpenModal={setOpenModalElectronicTicketAndInvoice}
                 config={config}
+                rows={rowWithDataSelected}
+                pdfRender={pdfRender}
+                setPdfRender={setPdfRender}
+                setOpenModalInvoiceA4={setOpenModalPrint}
             />
             <PrintDialog
 				openModal={openModalPrint}

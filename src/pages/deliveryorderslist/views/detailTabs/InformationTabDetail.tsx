@@ -10,7 +10,6 @@ import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import TableZyx from "components/fields/table-simple";
 import { Typography } from "@material-ui/core";
-import InvoiceA4Dialog from "../../dialogs/InvoiceA4Dialog";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -221,7 +220,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                 <TableZyx columns={columns} data={[]} filterGeneral={false} toolsFooter={false} />
             </div>
             <Typography className={classes.totalammount}>{t(langKeys.total) + ": S/0.00"}</Typography>
-            <InvoiceA4Dialog openModal={openModalInvoiceA4} setOpenModal={setOpenModalInvoiceA4} />
         </div>
     );
 };
