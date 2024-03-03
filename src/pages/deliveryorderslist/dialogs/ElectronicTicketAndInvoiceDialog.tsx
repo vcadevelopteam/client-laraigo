@@ -54,6 +54,27 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
                 reporttitle: 'BOLETA DE VENTA ELECTRÓNICA',
                 ruc: rows?.[0]?.documentnumber,
                 ordernumber: rows?.[0]?.ordernumber,
+                companyname: rows?.[0]?.payment_businessname || 'COMPANY TEST',
+                address: rows?.[0]?.payment_fiscal_address || 'Av Prueba test 2993',
+                date: rows?.[0]?.orderdate,
+                client: rows?.[0]?.name,
+                docnumber: rows?.[0]?.documentnumber,
+                products: [
+                    {
+                        quantity: 2,
+                        unit: 'unidad',
+                        code: '28b',
+                        description: 'product 1',
+                        unitprice: 10,
+                    },
+                    {
+                        quantity: 3,
+                        unit: 'unidad',
+                        code: '29b',
+                        description: 'product 2',
+                        unitprice: 15,
+                    },
+                ]
             },
         };
 
