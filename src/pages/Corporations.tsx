@@ -11,13 +11,14 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, execute, getMultiCollection, resetAllMain } from 'store/main/actions';
+import { getCollection, getMultiCollection, resetAllMain, resetUploadFile, uploadFile } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { CommonService } from 'network';
 import { getCountryList } from 'store/signup/actions';
 import { IconButton, Tabs } from '@material-ui/core';
 import { Close, CloudUpload } from '@material-ui/icons';
+import { executeCorp } from 'store/corp/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -73,30 +74,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-type ImageType = File | string | null;
-
-const getImgUrl = (file: ImageType): string | null => {
-    if (!file) return null;
-
-    try {
-        if (typeof file === "string") {
-            return file;
-        } else if (typeof file === "object") {
-            return URL.createObjectURL(file);
-        }
-        return null;
-    } catch (ex) {
-        console.error(ex);
-        return null;
-    }
-};
-
 const Corporations: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
+    const executeResult = useSelector(state => state.corporation.executecorp);
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.corporation_plural) },
@@ -210,7 +193,7 @@ const Corporations: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insCorp({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.corpid })));
+            dispatch(executeCorp(insCorp({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.corpid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -269,12 +252,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const [waitSave, setWaitSave] = useState(false);
     const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
     const [doctype, setdoctype] = useState(row?.doctype || "")
-    const [iconImg, setIconImg] = useState<ImageType>(row?.iconurl || "")
-    const [logoImg, setLogoImg] = useState<ImageType>(row?.logourl || "")
-    const [startLogoImg, setStartLogoImg] = useState<ImageType>(row?.startlogourl || "")
     const [pageSelected, setPageSelected] = useState(0);
+    const [waitUpload, setWaitUpload] = useState("");
+    const [whiteBrand, setWhiteBrand] = useState(row?.domainname||false);
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const executeRes = useSelector(state => state.main.execute);
+    const executeRes = useSelector(state => state.corporation.executecorp);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
@@ -286,6 +268,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const partnerType = multiData[5] && multiData[5].success ? multiData[5].data : [];
     const locationList = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const cityList = multiData[7] && multiData[7].success ? multiData[7].data : [];
+    const upload = useSelector(state => state.main.uploadFile);
 
     const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -311,13 +294,13 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             credittype: row?.credittype || "typecredit_alcontado",
             operation: row ? "UPDATE" : "INSERT",
             paymentmethod: row?.paymentmethod || "",
-            ispoweredbylaraigo: row?.ispoweredbylaraigo || false,
-            domainname: row?.domainname || "",
             companysize: null,
             partner: row?.partner || "",
             iconurl: row?.iconurl || "",
             logourl: row?.logourl || "",
             startlogourl: row?.startlogourl || "",
+            ispoweredbylaraigo: row?.ispoweredbylaraigo || false,
+            domainname: row?.domainname || "",
             appsettingid: row ? row.appsettingid : null,
             citybillingid: row ? row.citybillingid : null,
         }
@@ -330,15 +313,18 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     };
     const onChangeIconInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
-        setIconImg(e.target.files[0]);
-        setValue("iconurl", e.target.files[0]);
+        uploadFileField("iconurl",e.target.files[0])
     };
+
+    function uploadFileField(field:string, file: any){
+        const fd = new FormData();
+        fd.append('file', file, file.name);
+        dispatch(uploadFile(fd));
+        dispatch(showBackdrop(true));
+        setWaitUpload(field)
+    }
     const handleCleanIconInput = () => {
-        if (!iconImg) return;
-        const input = document.getElementById("IconImgInput") as HTMLInputElement;
-        input.value = "";
-        setIconImg(null);
-        setValue("iconurl", null);
+        setValue("iconurl", "");
     };
     const handleLogoImgClick = () => {
         const input = document.getElementById("LogoImgInput");
@@ -346,15 +332,10 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     };
     const onChangeLogoInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
-        setLogoImg(e.target.files[0]);
-        setValue("logourl", e.target.files[0]);
+        uploadFileField("logourl",e.target.files[0])
     };
     const handleCleanLogoInput = () => {
-        if (!logoImg) return;
-        const input = document.getElementById("StartLogoImgInput") as HTMLInputElement;
-        input.value = "";
-        setLogoImg(null);
-        setValue("logourl", null);
+        setValue("logourl", "");
     };
     const handleStartLogoImgClick = () => {
         const input = document.getElementById("StartLogoImgInput");
@@ -362,17 +343,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     };
     const onChangeStartLogoInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
-        setStartLogoImg(e.target.files[0]);
-        setValue("startlogourl", e.target.files[0]);
+        uploadFileField("startlogourl",e.target.files[0])
     };
     const handleCleanStartLogoInput = () => {
-        if (!startLogoImg) return;
-        const input = document.getElementById("StartLogoImgInput") as HTMLInputElement;
-        input.value = "";
-        setStartLogoImg(null);
-        setValue("startlogourl", null);
+        setValue("logourl", "");
     };
-
     React.useEffect(() => {
         const docTypeValidate = (docnum: string): string | undefined => {
             if (!docnum) {
@@ -421,7 +396,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('partner');
         register('appsettingid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('citybillingid');
-    }, [register, billbyorg, doctype, getValues, t]);
+        register('iconurl', {validate: (value)=> whiteBrand? ((value && value.length) || t(langKeys.field_required)):true})
+        register('logourl', {validate: (value)=> whiteBrand? ((value && value.length) || t(langKeys.field_required)):true})
+        register('startlogourl', {validate: (value)=> whiteBrand? ((value && value.length) || t(langKeys.field_required)):true})
+        register('ispoweredbylaraigo')
+        register('domainname', {validate: (value)=> whiteBrand? ((value && value.length) || t(langKeys.field_required)):true})
+    }, [register, billbyorg, doctype, getValues, t, whiteBrand]);
 
     useEffect(() => {
         if (waitSave) {
@@ -438,6 +418,26 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             }
         }
     }, [executeRes, waitSave])
+
+    useEffect(() => {
+        if (waitUpload) {
+            if (upload.loading) return;
+            if (upload.error) {
+                const message = t(upload.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+                dispatch(showSnackbar({
+                    message,
+                    show: true,
+                    severity: "error"
+                }));
+                setWaitUpload("");
+            } else if (upload.url && upload.url.length > 0) {
+                setValue(waitUpload, upload.url)
+                dispatch(resetUploadFile());
+                setWaitUpload("");
+            }
+            dispatch(showBackdrop(false));
+        }
+    }, [waitUpload,upload, dispatch]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = async () => {
@@ -469,7 +469,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                 }
             }
             setWaitSave(true)
-            dispatch(execute(insCorp(data)));
+            dispatch(executeCorp(insCorp(data)));
         }
 
         dispatch(manageConfirmation({
@@ -496,10 +496,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         });
     }, [dataDocType, getValues("sunatcountry")]);
 
-    const iconImgUrl = getImgUrl(iconImg);
-    const logoImgUrl = getImgUrl(logoImg);
-    const startLogoImgUrl = getImgUrl(startLogoImg);
-    
     return (
         <div style={{ width: '100%', }}>
             <form onSubmit={onSubmit}>
@@ -779,11 +775,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                 {pageSelected === 1 && <div className={classes.containerDetail}>
                         <div className="row-zyx">
                             <TemplateSwitch
-                                label={t(langKeys.logopoweredbylaraigo)}
+                                label={t(langKeys.usewhitebrand)}
                                 className="col-6"
-                                valueDefault={getValues('ispoweredbylaraigo')}
+                                valueDefault={whiteBrand}
                                 onChange={(value) => {
-                                    setValue('ispoweredbylaraigo', value)
+                                    setWhiteBrand(value)
+                                    setValue('ispoweredbylaraigo', false)
                                     setValue('domainname', "")
                                     handleCleanIconInput()
                                     handleCleanLogoInput()
@@ -791,10 +788,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 }}
                             />
                         </div>
-                        <div className="row-zyx">
+                        <div className="row-zyx" style={{display: whiteBrand?"flex":"none"}}>
                             <FieldEdit
                                 label={t(langKeys.domainname)}
                                 className="col-6"
+                                disabled={Boolean(row)}
                                 valueDefault={getValues('domainname')}
                                 onChange={(value) => setValue('domainname', value)}
                                 error={errors?.domainname?.message}
@@ -805,16 +803,25 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 placeholder={"https://"}
                                 valueDefault={getValues('domainname')}
                                 disabled={true}
-                                error={errors?.contactemail?.message}
                             />
                         </div>
-                        <div className="row-zyx">
+                        <div className="row-zyx" style={{display: whiteBrand?"flex":"none"}}>
+                            <TemplateSwitch
+                                label={t(langKeys.logopoweredbylaraigo)}
+                                className="col-6"
+                                valueDefault={getValues('ispoweredbylaraigo')}
+                                onChange={(value) => {
+                                    setValue('ispoweredbylaraigo', value)
+                                }}
+                            />
+                        </div>
+                        <div className="row-zyx" style={{display: whiteBrand?"flex":"none"}}>
                             
                             <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className='col-4'>
                                 <div className={classes.text}>{t(langKeys.uploadicon)} 32 x 32px</div>
                                 <div className={classes.containerCompImg}>
                                     <div className={classes.imgContainer}>
-                                        {iconImgUrl && <img src={iconImgUrl} alt="icon button" className={classes.img} />}
+                                        {getValues("iconurl") && <img src={getValues("iconurl")} alt="icon button" className={classes.img} />}
                                     </div>
                                     <div
                                         style={{
@@ -839,12 +846,15 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                         </IconButton>
                                     </div>
                                 </div>
+                                {Boolean(errors?.iconurl?.message) || <div style={{color: "red"}}>
+                                    {errors?.iconurl?.message||""}
+                                </div>}
                             </div>
                             <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className='col-4'>
                                 <div className={classes.text}>{t(langKeys.uploadlogo)} 37 x 300px</div>
                                 <div className={classes.containerCompImg}>
                                     <div className={classes.imgContainer}>
-                                        {logoImgUrl && <img src={logoImgUrl} alt="icon button" className={classes.img} />}
+                                        {getValues("logourl") && <img src={getValues("logourl")} alt="icon button" className={classes.img} />}
                                     </div>
                                     <div
                                         style={{
@@ -869,12 +879,15 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                         </IconButton>
                                     </div>
                                 </div>
+                                {Boolean(errors?.logourl?.message) || <div style={{color: "red"}}>
+                                    {errors?.logourl?.message||""}
+                                </div>}
                             </div>
                             <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className='col-4'>
                                 <div className={classes.text}>{t(langKeys.uploadlogostarticon)} 42 x 150px</div>
                                 <div className={classes.containerCompImg}>
                                     <div className={classes.imgContainer}>
-                                        {startLogoImgUrl && <img src={startLogoImgUrl} alt="icon button" className={classes.img} />}
+                                        {getValues("startlogourl") && <img src={getValues("startlogourl")} alt="icon button" className={classes.img} />}
                                     </div>
                                     <div
                                         style={{
@@ -899,6 +912,9 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                         </IconButton>
                                     </div>
                                 </div>
+                                {Boolean(errors?.startlogourl?.message) || <div style={{color: "red"}}>
+                                    {errors?.startlogourl?.message||""}
+                                </div>}
                             </div>
                         </div>
                    

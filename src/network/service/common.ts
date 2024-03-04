@@ -106,3 +106,7 @@ export function request_send(request: any) {
         return ExternalRequestManager.get(url, { auth: authorization, headers: headersjson });
     }
 }
+
+export function corporation(requestBody: IRequestBody | ITransaction) {
+    return APIManager.post(apiUrls.CORP_URL, { data: requestBody }, true);
+}

@@ -829,6 +829,7 @@ const translation: LangKeys = {
   tasaAbandonosxAsesor: "Mapa de calor de tasa de abandono",
   completadosxAsesor: "Mapa de calor de conversaciones completadas",
   currency: "Moneda",
+  usewhitebrand: "Usar Marca Blanca",
   informationorganization: "Información organización",
   informationcorporation: "Información corporación",
   emailconfiguration: "Configuración de Correo",

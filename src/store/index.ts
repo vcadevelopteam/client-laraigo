@@ -31,6 +31,7 @@ import postHistoryReducer, { IState as IPostHistory } from './posthistory/reduce
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import paymentReducer, { IState as IPayment } from './payment/reducer';
 import rasaiaReducer, { IState as IRasaia } from './rasaia/reducer';
+import corporationReducer, { IState as ICorporation } from './corp/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -61,6 +62,7 @@ export interface IRootState {
     payment: IPayment;
     servicedesk: IServiceDesk;
     rasaia: IRasaia
+    corporation: ICorporation
 }
 
 declare global {
@@ -98,6 +100,7 @@ const rootReducer = combineReducers<IRootState>({
     payment: paymentReducer,
     servicedesk: servicedeskReducer,
     rasaia: rasaiaReducer,
+    corporation: corporationReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {
