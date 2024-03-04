@@ -1686,7 +1686,7 @@ const Users: FC = () => {
             "balanced",
             'showbots',
         ];
-        if (mainMultiResult.data[12].data[0].propertyvalue !== "1") {
+        if (mainMultiResult?.data?.[12]?.data?.[0]?.propertyvalue !== "1") {
             data.pop();
             header.pop();
         }
@@ -2015,7 +2015,8 @@ const Users: FC = () => {
                                             orgid: user?.orgid,
                                             bydefault: true,
                                             labels: "",
-                                            groups: d.groups || "",
+                                            warehouseid: "0",
+                                            storeid: "0",
                                             channels: d.channels || "",
                                             status: "DESCONECTADO",
                                             type: type,
