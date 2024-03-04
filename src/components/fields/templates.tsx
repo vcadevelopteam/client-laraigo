@@ -339,6 +339,7 @@ interface InputProps {
     size?: "small" | "medium" | undefined;
     width?: number | "string";
     helperText?: "string";
+    placeholder?: string;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -353,7 +354,7 @@ interface TemplateAutocompleteProps extends InputProps {
     orderbylabel?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -384,6 +385,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                 style={{ width: width }}
                 value={value}
                 variant={variant}
+                placeholder={placeholder}
                 error={!!error}
                 helperText={error || null}
                 minRows={rows}
