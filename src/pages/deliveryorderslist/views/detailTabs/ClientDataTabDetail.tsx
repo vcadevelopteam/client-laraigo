@@ -77,7 +77,12 @@ const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                     className="col-4"
                     valueDefault={row?.phone}
                 />
-                <FieldEdit label={t(langKeys.documenttype)} disabled={true} className="col-4" />
+                <FieldEdit
+                    label={t(langKeys.documenttype)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.documenttypereceiver}
+                />
             </div>
             <div className="row-zyx">
                 <FieldEdit
@@ -92,7 +97,12 @@ const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                     className="col-4"
                     valueDefault={row?.email}
                 />
-                <FieldEdit label={t(langKeys.documentnumber)} disabled={true} className="col-4" />
+                <FieldEdit
+                    label={t(langKeys.documentnumber)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.documentnumberreceiver}
+                />
             </div>
             <div className="row-zyx">
                 <FieldEdit
@@ -101,11 +111,17 @@ const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue,
                     className="col-4"
                     valueDefault={row?.name}
                 />
-                <FieldEdit label={t(langKeys.willdeliveryhappen)} disabled={true} className="col-4" />
+                <FieldEdit
+                    label={t(langKeys.willdeliveryhappen)}
+                    disabled={true}
+                    className="col-4"
+                    valueDefault={row?.deliveryreceiver}
+                />
                 <FieldEdit
                     label={t(langKeys.fullname) + " (" + t(langKeys.optional) + ")"}
                     disabled={true}
                     className="col-4"
+                    valueDefault={row?.fullnamereceiver}
                 />
             </div>
             <div className="row-zyx" style={{ paddingTop: "20px" }}>

@@ -22,8 +22,8 @@ import PrintDialog from "../dialogs/PrintDialog";
 import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
 import { reportPdf } from "store/culqi/actions";
-import { getCollectionAux } from "store/main/actions";
-import { deliveryConfigurationSel } from "common/helpers";
+import { getCollectionAux, getCollectionAux2 } from "store/main/actions";
+import { deliveryConfigurationSel, orderLineSel } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -82,8 +82,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const [waitSave2, setWaitSave2] = useState(false);
+    const [waitSave3, setWaitSave3] = useState(false);
     const main = useSelector((state) => state.main.mainData);
     const configData = useSelector(state => state.main.mainAux);
+    const productsData = useSelector(state => state.main.mainAux2);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const culqiReportResult = useSelector((state) => state.culqi.requestReportPdf);
@@ -97,6 +99,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     ];
 
     const fetchConfig = () => dispatch(getCollectionAux(deliveryConfigurationSel({id: 0, all: true})));
+    const fetchProducts = (orderid: number) => dispatch(getCollectionAux2(orderLineSel(orderid)))
 
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
@@ -272,32 +275,41 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     }
 
     const handleReportPdf = () => {
-        const reportBody = {
-            dataonparameters: true,
-            key: "period-report",
-            method: "",
-            reportname: "order-list",
-            template: 'orderlist.html',
-            parameters: {
-                ordernumber: rowWithDataSelected?.[0]?.ordernumber,
-                date: rowWithDataSelected?.[0]?.orderdate,
-                orders: [
-                    {
-                        code: 'product273y',
-                        amount: 20,
-                    },
-                    {
-                        code: 'product904M',
-                        amount: 8,
-                    },
-                ]
-            },
-        };
-
-        dispatch(reportPdf(reportBody));
         dispatch(showBackdrop(true));
-        setWaitPdf(true);
+        fetchProducts(rowWithDataSelected?.[0]?.orderid)
+        setWaitSave3(true);
     }
+
+    useEffect(() => {
+        if (waitSave3) {
+            if (!productsData.loading && !productsData.error) {
+                const reportBody = {
+                    dataonparameters: true,
+                    key: "period-report",
+                    method: "",
+                    reportname: "order-list",
+                    template: 'orderlist.html',
+                    parameters: {
+                        ordernumber: rowWithDataSelected?.[0]?.ordernumber,
+                        client: rowWithDataSelected?.[0]?.name,
+                        date: rowWithDataSelected?.[0]?.orderdate.split(" ")[0],
+                        orders: productsData.data,
+                    },
+                };
+        
+                dispatch(reportPdf(reportBody));
+                setWaitPdf(true);
+                setWaitSave3(false);
+            } else if (productsData.error) {
+                const errormessage = t(productsData.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSave3(false);
+            }
+        }
+    }, [productsData, waitSave3]);
 
     useEffect(() => {
         if (waitPdf) {
@@ -362,6 +374,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             color="primary"
                             disabled={main.loading || Object.keys(selectedRows).length === 0}
                             startIcon={<LocationOnIcon color="secondary" />}
+                            style={{backgroundColor: '#55BD84'}}
                         >
                             <Trans i18nKey={langKeys.routinglogic} />
                         </Button>
@@ -381,9 +394,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={main.loading || Object.keys(selectedRows).length === 0}
+                            disabled={main.loading || Object.keys(selectedRows).length === 0 || Object.keys(selectedRows).length > 1}
                             startIcon={<PrintIcon color="secondary" />}
                             className={classes.button}
+                            style={{backgroundColor: '#55BD84'}}
                             onClick={() => {
                                 handleReportPdf()
                             }}
@@ -397,6 +411,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 disabled={main.loading || Object.keys(selectedRows).length === 0 || Object.keys(selectedRows).length > 1}
                                 startIcon={<ReceiptIcon color="secondary" />}
                                 className={classes.button}
+                                style={{backgroundColor: '#55BD84'}}
                                 onClick={() => {
                                     setOpenModalElectronicTicketAndInvoice(true);
                                 }}
@@ -437,6 +452,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 pdfRender={pdfRender}
                 setPdfRender={setPdfRender}
                 setOpenModalInvoiceA4={setOpenModalPrint}
+                fetchProducts={fetchProducts}
             />
             <PrintDialog
 				openModal={openModalPrint}

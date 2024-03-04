@@ -5530,6 +5530,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   managesubmotives: 'Gestionar submotivos',
   rejected: 'Cancelado',
   nondelivered: 'No Entregado',
+  carriercoord: 'Coordenadas del Transportista',
 };
 
 const esResource: ResourceLanguage = {

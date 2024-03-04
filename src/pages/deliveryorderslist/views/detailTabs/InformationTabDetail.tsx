@@ -3,7 +3,6 @@ import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { FieldEdit } from "components";
 import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
@@ -17,12 +16,9 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: "#fff",
     },
-    button: {
-        marginRight: theme.spacing(2),
-    },
     paymentreceipt: {
         fontSize: "0.9rem",
-        fontWeight: "lighter",
+        fontWeight: 'bold',
         padding: "0 0 0.3rem 0",
     },
     span: {
@@ -43,22 +39,21 @@ const useStyles = makeStyles((theme) => ({
     },
     totalammount: {
         textAlign: "right",
-        padding: "2rem 2rem 0 0",
+        marginTop: "1rem",
+        paddingRight: "2rem",
         fontSize: "1rem",
     },
 }));
 
 interface InformationTabDetailProps {
     row: Dictionary | null;
-    setValue: UseFormSetValue<any>;
-    getValues: UseFormGetValues<any>;
-    errors: FieldErrors;
 }
 
-const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setValue, getValues, errors }) => {
+const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
+    const productsData = useSelector((state) => state.main.mainAux2);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
 
@@ -95,22 +90,22 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
             {
                 Header: t(langKeys.quantity),
                 accessor: "quantity",
-                width: "auto",
+                width: "10%",
             },
             {
                 Header: t(langKeys.currency),
                 accessor: "currency",
-                width: "auto",
+                width: "10%",
             },
             {
                 Header: t(langKeys.unitaryprice),
-                accessor: "unitaryprice",
-                width: "auto",
+                accessor: "unitprice",
+                width: "10%",
             },
             {
                 Header: t(langKeys.totalamount),
-                accessor: "totalamount",
-                width: "auto",
+                accessor: "amount",
+                width: "10%",
             },
         ],
         []
@@ -158,14 +153,8 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                     </div>
                 </div>
                 <div className="row-zyx">
-                    <div style={{ paddingBottom: "2rem" }}>
-                        <FieldEdit
-                            label={t(langKeys.registeredaddress)}
-                            className="col-12"
-                            type="text"
-                            disabled={true}
-                            valueDefault={row?.deliveryaddress}
-                        />
+                    <div style={{ paddingBottom: "1rem" }}>
+                        <Typography className={classes.paymentreceipt}>{t(langKeys.registeredaddress)}</Typography>
                     </div>
                     <div className="col-4">
                         <img
@@ -197,11 +186,10 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                     <div className="col-4" style={{ padding: "0rem 2rem 1rem 0" }}>
                         <div style={{ paddingBottom: "2rem" }}>
                             <FieldEdit
-                                label={t(langKeys.carriername)}
+                                label={t(langKeys.carriercoord)}
                                 className="col-3"
                                 type="text"
                                 disabled={true}
-                                valueDefault={`${row?.firstname} ${row?.lastname}`}
                             />
                         </div>
                         <div style={{ paddingBottom: "1rem" }}>
@@ -217,10 +205,15 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                 </div>
             </div>
             <Typography className={classes.subtitle}>{t(langKeys.orderlist)}</Typography>
-            <div className="row-zyx">
-                <TableZyx columns={columns} data={[]} filterGeneral={false} toolsFooter={false} />
+            <div className="row-zyx" style={{marginBottom: 0}}>
+                <TableZyx
+                    columns={columns}
+                    data={productsData.data || []}
+                    filterGeneral={false}
+                    toolsFooter={false}
+                />
             </div>
-            <Typography className={classes.totalammount}>{t(langKeys.total) + ": S/0.00"}</Typography>
+            <Typography className={classes.totalammount}>{t(langKeys.total) + ': ' + productsData.data.reduce((acc, curr) => acc + curr.amount, 0).toFixed(2)}</Typography>
         </div>
     );
 };

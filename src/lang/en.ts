@@ -5601,6 +5601,7 @@ const translation: LangKeys = {
   managesubmotives: 'Manage submotives',
   rejected: 'Rejected',
   nondelivered: 'Undelivered',
+  carriercoord: 'Carrier coordinates',
 };
 
 const enResource: ResourceLanguage = {

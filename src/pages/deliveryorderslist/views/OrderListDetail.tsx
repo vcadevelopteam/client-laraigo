@@ -12,10 +12,11 @@ import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import ClientDataTabDetail from "./detailTabs/ClientDataTabDetail";
-import { resetMainAux } from "store/main/actions";
+import { getCollectionAux2, resetMainAux } from "store/main/actions";
 import { Tabs } from "@material-ui/core";
 import OrderListTabDetail from "./detailTabs/OrderListTabDetail";
 import DeliveryAddressTabDetail from "./detailTabs/DeliveryAddressTabDetail";
+import { orderLineSel } from "common/helpers";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -26,6 +27,7 @@ interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     fetchData?: (flag: boolean) => void;
+    setRowSelected: (rowdata: RowSelected) => void;
 }
 
 const useStyles = makeStyles(() => ({
@@ -49,7 +51,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
+const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, setRowSelected }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -61,6 +63,12 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
         { id: "main-view", name: t(langKeys.orderlist) },
         { id: "detail-view", name: t(langKeys.orderdetail) },
     ];
+
+    const fetchOrderLine = (orderid: number) => dispatch(getCollectionAux2(orderLineSel(orderid)));
+
+    useEffect(() => {
+        if(row) fetchOrderLine(row.orderid)
+    },[row])
 
     const {
         register,
@@ -161,6 +169,7 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => {
                                 setViewSelected("main-view");
+                                setRowSelected({ row: null, edit: false });
                             }}
                         >
                             {t(langKeys.back)}
@@ -185,27 +194,9 @@ const OrderListDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSe
                     indicatorColor="primary"
                     variant="fullWidth"
                 >
-                    <AntTab
-                        label={
-                            <div>
-                                <Trans i18nKey={langKeys.clientdata} />
-                            </div>
-                        }
-                    />
-                    <AntTab
-                        label={
-                            <div>
-                                <Trans i18nKey={langKeys.orderlist} />
-                            </div>
-                        }
-                    />
-                    <AntTab
-                        label={
-                            <div>
-                                <Trans i18nKey={langKeys.deliveryaddress} />
-                            </div>
-                        }
-                    />
+                    <AntTab label={<div><Trans i18nKey={langKeys.clientdata} /></div>} />
+                    <AntTab label={<div><Trans i18nKey={langKeys.orderlist} /></div>} />
+                    <AntTab label={<div><Trans i18nKey={langKeys.deliveryaddress} /></div>} />
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <ClientDataTabDetail row={row} setValue={setValue} getValues={getValues} errors={errors} />

@@ -4169,3 +4169,9 @@ export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type,
     key: "UFN_SUBREASONNONDELIVERY_INS",
     parameters: { id, reasonnondeliveryid, status, type, description, statustypified, operation },
 });
+
+export const orderLineSel = (orderid: number) => ({
+    method: "UFN_ORDERLINE_SEL",
+    key: "UFN_ORDERLINE_SEL",
+    parameters: { orderid },
+});

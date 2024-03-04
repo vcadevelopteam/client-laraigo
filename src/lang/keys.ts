@@ -5520,6 +5520,7 @@ export const langKeys = {
   managesubmotives: 'managesubmotives',
   rejected: 'rejected',
   nondelivered: 'nondelivered',
+  carriercoord: 'carriercoord',
 };
 
 export type LangKeys = typeof langKeys;
