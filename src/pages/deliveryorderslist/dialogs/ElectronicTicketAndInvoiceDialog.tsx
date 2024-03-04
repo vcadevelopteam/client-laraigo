@@ -44,14 +44,13 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
     const [openModalInvoiceShare, setOpenModalInvoiceShare] = useState(false);
 
     const generateInvoicePdf = () => {
-        const reportBody = {
+        const reportBodyInvoice = {
             dataonparameters: true,
             key: "period-report",
             method: "",
-            reportname: "period-report",
-            template: 'delivery-receipt.html',
+            reportname: "electronic-invoice",
+            template: 'delivery-invoice.html',
             parameters: {
-                reporttitle: 'BOLETA DE VENTA ELECTRÓNICA',
                 ruc: rows?.[0]?.documentnumber,
                 ordernumber: rows?.[0]?.ordernumber,
                 companyname: rows?.[0]?.payment_businessname || 'COMPANY TEST',
@@ -78,7 +77,7 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
             },
         };
 
-        dispatch(reportPdf(reportBody));
+        dispatch(reportPdf(reportBodyInvoice));
         dispatch(showBackdrop(true));
         setWaitPdf(true);
     }

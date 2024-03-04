@@ -61,7 +61,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [openModalInvoiceA4, setOpenModalInvoiceA4] = useState(false);
 
     useEffect(() => {
         if (waitSave) {
@@ -149,10 +148,11 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                         className="col-4"
                         type="number"
                         disabled={true}
+                        valueDefault={row?.ticketnum}
                     />
                     <div className="col-4">
                         <Typography className={classes.paymentreceipt}>{t(langKeys.paymentreceipt)}</Typography>
-                        <span className={classes.span} onClick={() => setOpenModalInvoiceA4(true)}>
+                        <span className={classes.span} onClick={() => window.open(row?.url_payment)}>
                             {t(langKeys.viewonlinepayment)}
                         </span>
                     </div>
@@ -201,6 +201,7 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                                 className="col-3"
                                 type="text"
                                 disabled={true}
+                                valueDefault={`${row?.firstname} ${row?.lastname}`}
                             />
                         </div>
                         <div style={{ paddingBottom: "1rem" }}>

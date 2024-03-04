@@ -276,13 +276,21 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             dataonparameters: true,
             key: "period-report",
             method: "",
-            reportname: "period-report",
+            reportname: "order-list",
             template: 'orderlist.html',
             parameters: {
-                reporttitle: 'Lista de Pedido',
-                ordernumber: 'PE93M0',
-                date: '29/02/2024',
-                orders: rowWithDataSelected,
+                ordernumber: rowWithDataSelected?.[0]?.ordernumber,
+                date: rowWithDataSelected?.[0]?.orderdate,
+                orders: [
+                    {
+                        code: 'product273y',
+                        amount: 20,
+                    },
+                    {
+                        code: 'product904M',
+                        amount: 8,
+                    },
+                ]
             },
         };
 
