@@ -22,6 +22,8 @@ import PrintDialog from "../dialogs/PrintDialog";
 import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
 import { reportPdf } from "store/culqi/actions";
+import { getCollectionAux } from "store/main/actions";
+import { deliveryConfigurationSel } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -67,7 +69,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     fetchData,
 }) => {
     const { t } = useTranslation();
-    const [attentionOrders, setAttentionOrders] = useState(false);
+    const [attentionOrders, setAttentionOrders] = useState(true);
     const executeResult = useSelector((state) => state.main.execute);
     const [openModalUndelivered, setOpenModalUndelivered] = useState(false);
     const [openModalCanceled, setOpenModalCanceled] = useState(false);
@@ -79,22 +81,51 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const classes = useStyles();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSave2, setWaitSave2] = useState(false);
     const main = useSelector((state) => state.main.mainData);
+    const configData = useSelector(state => state.main.mainAux);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const culqiReportResult = useSelector((state) => state.culqi.requestReportPdf);
     const [waitPdf, setWaitPdf] = useState(false);
+    const [pdfRender, setPdfRender] = useState('');
+    const [config, setConfig] = useState<Dictionary>({})
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
         { id: "detail-view", name: t(langKeys.orderlist) },
     ];
 
+    const fetchConfig = () => dispatch(getCollectionAux(deliveryConfigurationSel({id: 0, all: true})));
+
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
             setRowWithDataSelected(p => Object.keys(selectedRows).map(x => main?.data.find(y => y.orderid === parseInt(x)) || p.find((y) => y.orderid === parseInt(x)) || {}))
         }
     }, [selectedRows])
+
+    useEffect(() => {
+		fetchConfig()
+        dispatch(showBackdrop(true));
+        setWaitSave2(true)
+	},[]);
+
+    useEffect(() => {
+        if (waitSave2) {
+            if (!configData.loading && !configData.error) {
+                setConfig(configData?.data?.[0]?.config)
+                dispatch(showBackdrop(false));
+                setWaitSave2(false);
+            } else if (configData.error) {
+                const errormessage = t(configData.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSave2(false);
+            }
+        }
+    }, [configData, waitSave2]);
 
     useEffect(() => {
 		fetchData(attentionOrders)
@@ -142,7 +173,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.deliverynumber),
-                accessor: "deliverynumber",
+                accessor: "deliveryid",
                 width: "auto",
             },
             {
@@ -245,11 +276,21 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             dataonparameters: true,
             key: "period-report",
             method: "",
-            reportname: "period-report",
+            reportname: "order-list",
             template: 'orderlist.html',
             parameters: {
-                reporttitle: 'Test',
-                orders: rowWithDataSelected,
+                ordernumber: rowWithDataSelected?.[0]?.ordernumber,
+                date: rowWithDataSelected?.[0]?.orderdate,
+                orders: [
+                    {
+                        code: 'product273y',
+                        amount: 20,
+                    },
+                    {
+                        code: 'product904M',
+                        amount: 8,
+                    },
+                ]
             },
         };
 
@@ -264,7 +305,9 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 dispatch(showBackdrop(false));
                 setWaitPdf(false);
                 if (culqiReportResult.datacard) {
-                    window.open(culqiReportResult.datacard, "_blank");
+                    //window.open(culqiReportResult.datacard, "_blank");
+                    setPdfRender(culqiReportResult.datacard);
+                    setOpenModalPrint(true)
                 }
             } else if (culqiReportResult.error) {
                 dispatch(
@@ -315,10 +358,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                     <div style={{ justifyContent: "right", display: "flex" }}>
                         <Button
                             variant="contained"
+                            className={classes.button}
                             color="primary"
-                            disabled={main.loading}
+                            disabled={main.loading || Object.keys(selectedRows).length === 0}
                             startIcon={<LocationOnIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
                         >
                             <Trans i18nKey={langKeys.routinglogic} />
                         </Button>
@@ -326,12 +369,13 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             <ExtrasMenu
                                 schedulesth={() => setOpenModalManualScheduling(true)}
                                 prepare={() => setOpenModalAssignCarrier(true)}
-                                dispatch={() => setOpenModalCanceled(true)}
+                                dispatch={() => setOpenModalAssignCarrier(true)}
                                 reschedule={() => setOpenModalReschedulingUndelivered(true)}
                                 deliver={() => setOpenModalCanceled(true)}
                                 undelivered={() => setOpenModalReschedulingUndelivered(true)}
                                 cancel={() => setOpenModalCanceled(true)}
                                 cancelundelivered={() => setOpenModalCanceled(true)}
+                                rows={selectedRows}
                             />
                         </div>
                         <Button
@@ -341,24 +385,25 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             startIcon={<PrintIcon color="secondary" />}
                             className={classes.button}
                             onClick={() => {
-                                //setOpenModalPrint(true);
                                 handleReportPdf()
                             }}
                         >
                             <Trans i18nKey={langKeys.print} />
                         </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={main.loading}
-                            startIcon={<ReceiptIcon color="secondary" />}
-                            className={classes.button}
-                            onClick={() => {
-                                setOpenModalElectronicTicketAndInvoice(true);
-                            }}
-                        >
-                            <Trans i18nKey={langKeys.electronic_ticket_and_invoice} />
-                        </Button>
+                        {config?.invoiced && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={main.loading || Object.keys(selectedRows).length === 0 || Object.keys(selectedRows).length > 1}
+                                startIcon={<ReceiptIcon color="secondary" />}
+                                className={classes.button}
+                                onClick={() => {
+                                    setOpenModalElectronicTicketAndInvoice(true);
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.electronic_ticket_and_invoice} />
+                            </Button>
+                        )}
                     </div>
                 )}
                 loading={main.loading}
@@ -382,14 +427,22 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             <ReschedulingUndeliveredDialog
                 openModal={openModalReschedulingUndelivered}
                 setOpenModal={setOpenModalReschedulingUndelivered}
+                config={config}
             />
             <ElectronicTicketAndInvoiceDialog
                 openModal={openModalElectronicTicketAndInvoice}
                 setOpenModal={setOpenModalElectronicTicketAndInvoice}
+                config={config}
+                rows={rowWithDataSelected}
+                pdfRender={pdfRender}
+                setPdfRender={setPdfRender}
+                setOpenModalInvoiceA4={setOpenModalPrint}
             />
             <PrintDialog
 				openModal={openModalPrint}
 				setOpenModal={setOpenModalPrint}
+                pdfRender={pdfRender}
+                setPdfRender={setPdfRender}
 			/>
         </div>
     );

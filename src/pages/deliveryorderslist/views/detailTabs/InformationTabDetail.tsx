@@ -10,7 +10,6 @@ import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import TableZyx from "components/fields/table-simple";
 import { Typography } from "@material-ui/core";
-import InvoiceA4Dialog from "../../dialogs/InvoiceA4Dialog";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -62,7 +61,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [openModalInvoiceA4, setOpenModalInvoiceA4] = useState(false);
 
     useEffect(() => {
         if (waitSave) {
@@ -150,10 +148,11 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                         className="col-4"
                         type="number"
                         disabled={true}
+                        valueDefault={row?.ticketnum}
                     />
                     <div className="col-4">
                         <Typography className={classes.paymentreceipt}>{t(langKeys.paymentreceipt)}</Typography>
-                        <span className={classes.span} onClick={() => setOpenModalInvoiceA4(true)}>
+                        <span className={classes.span} onClick={() => window.open(row?.url_payment)}>
                             {t(langKeys.viewonlinepayment)}
                         </span>
                     </div>
@@ -202,6 +201,7 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                                 className="col-3"
                                 type="text"
                                 disabled={true}
+                                valueDefault={`${row?.firstname} ${row?.lastname}`}
                             />
                         </div>
                         <div style={{ paddingBottom: "1rem" }}>
@@ -221,7 +221,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                 <TableZyx columns={columns} data={[]} filterGeneral={false} toolsFooter={false} />
             </div>
             <Typography className={classes.totalammount}>{t(langKeys.total) + ": S/0.00"}</Typography>
-            <InvoiceA4Dialog openModal={openModalInvoiceA4} setOpenModal={setOpenModalInvoiceA4} />
         </div>
     );
 };
