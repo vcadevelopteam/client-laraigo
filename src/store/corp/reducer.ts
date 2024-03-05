@@ -32,10 +32,12 @@ export interface IUpload extends ITemplate {
 
 export interface IState {
     executecorp: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    mainData: IListStatePaginated<Dictionary> & { key?: string };
 }
 
 export const initialState: IState = {
     executecorp: { success: undefined, ...initialListPaginatedState },
+    mainData: initialListPaginatedState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -43,4 +45,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.EXECUTECORP_MAIN_SUCCESS]: caseFunctions.executeCorpSuccess,
     [actionTypes.EXECUTECORP_MAIN_FAILURE]: caseFunctions.executeCorpFailure,
     [actionTypes.EXECUTECORP_MAIN_RESET]: caseFunctions.executeCorpReset,
+
+    [actionTypes.CORP_MAIN]: caseFunctions.corpGet,
+    [actionTypes.CORP_MAIN_SUCCESS]: caseFunctions.corpGetSuccess,
+    [actionTypes.CORP_MAIN_FAILURE]: caseFunctions.corpGetFailure,
+    [actionTypes.CORP_MAIN_RESET]: caseFunctions.corpGetReset,
 });

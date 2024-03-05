@@ -18,6 +18,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { answerCall, holdCall, setHold } from 'store/voximplant/actions';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import { notCustomUrl } from 'pages/dashboard/constants';
 
 type IProps = {
     classes: any;
@@ -235,15 +236,12 @@ const TimeConnected: React.FC = () => {
     )
 }
 
-const excludedurls = ["/dev.laraigo.com","/testing.laraigo.com","/app.laraigo.com","/claro.laraigo.com","/localhost"]
-
 const Header = ({ classes }: IProps) => {
     const dispatch = useDispatch();
     const myClasses = useToolbarStyles();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const user = useSelector(state => state.login.validateToken.user);
-    const customDomain = !excludedurls.some(url => window.location.href.includes(url));
-    debugger
+    const customDomain = !notCustomUrl.some(url => window.location.href.includes(url));
 
     if(customDomain){
         const existingFavicon = document.querySelector('link[rel="icon"]');
@@ -262,7 +260,7 @@ const Header = ({ classes }: IProps) => {
                     <Menu />
                 </IconButton>
                 <img
-                    style={{ height: 37, marginLeft: 8, backgroundImage: customDomain?user?.logourl:"" }}
+                    style={{ height: 37, marginLeft: 8, backgroundImage: customDomain?`url(${user?.logourl}))`:"" }}
                     className={customDomain?myClasses.customImageLaraigo:myClasses.imageLaraigo}
                     alt="logo"
                 />
