@@ -243,6 +243,7 @@ const Header = ({ classes }: IProps) => {
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const user = useSelector(state => state.login.validateToken.user);
     const customDomain = !excludedurls.some(url => window.location.href.includes(url));
+    debugger
 
     if(customDomain){
         const existingFavicon = document.querySelector('link[rel="icon"]');
