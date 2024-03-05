@@ -37,6 +37,7 @@ export const langKeys = {
   documentlibraryhelperText: "documentlibraryhelperText",
   number: "number",
   uploadedby: "uploadedby",
+  usewhitebrand: "usewhitebrand",
   finish: "finish",
   file: "file",
   automaticclosingtime: "automaticclosingtime",

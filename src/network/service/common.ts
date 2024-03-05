@@ -110,3 +110,6 @@ export function request_send(request: any) {
 export function conversation(token:string) {
     return APIManager.get(apiUrls.CONVERSATION + "/" + token, {  }, true);
 }
+export function corporation(requestBody: IRequestBody | ITransaction) {
+    return APIManager.post(apiUrls.CORP_URL, { data: requestBody }, true);
+}
