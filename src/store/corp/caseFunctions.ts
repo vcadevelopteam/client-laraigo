@@ -39,3 +39,38 @@ export const executeCorpReset = (state: IState): IState => ({
 });
 
 
+
+export const corpGet = (state: IState): IState => ({
+    ...state,
+    mainData: { ...state.mainData, data: [], loading: true, error: false }
+});
+
+export const corpGetSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        mainData: {
+            key: action.payload.key,
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const corpGetFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    mainData: {
+        ...state.mainData,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const corpGetReset = (state: IState): IState => ({
+    ...state,
+    mainData: initialState.mainData,
+});
+
