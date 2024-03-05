@@ -110,3 +110,9 @@ export function request_send(request: any) {
 export function corporation(requestBody: IRequestBody | ITransaction) {
     return APIManager.post(apiUrls.CORP_URL, { data: requestBody }, true);
 }
+
+export function corporationGet(domain: string) {
+    return APIManager.post(`${apiUrls.CORP_URL}/getinfodomain`, { data: {
+        "subdomain":domain
+    } }, true);
+}
