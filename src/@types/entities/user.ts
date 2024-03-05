@@ -80,6 +80,9 @@ export interface IUser {
     voximplantcallsupervision: boolean;
     partnerid: number;
     companyuser?: string;
+    logourl?: string;
+    startlogourl?: string;
+    iconurl?: string;
     // notifications: Notification[];
 }
 

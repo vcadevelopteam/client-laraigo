@@ -801,7 +801,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 label={t(langKeys.bond)}
                                 className="col-6"
                                 placeholder={"https://"}
-                                valueDefault={getValues('domainname')}
+                                valueDefault={getValues('domainname')?`https://${getValues('domainname')}.laraigo.com`:""}
                                 disabled={true}
                             />
                         </div>
