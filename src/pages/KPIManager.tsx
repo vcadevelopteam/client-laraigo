@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -24,6 +23,7 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -865,7 +865,7 @@ const KPIManager: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return (
                         <IconOptions
@@ -914,9 +914,9 @@ const KPIManager: FC = () => {
                 accessor: 'status',
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { status } = props.cell.row.original || {};
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                 }
             },
         ],

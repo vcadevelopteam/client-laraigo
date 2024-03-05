@@ -26,6 +26,7 @@ import { useForm } from 'react-hook-form';
 import Zoom from '@material-ui/core/Zoom';
 import TablePaginated from 'components/fields/table-paginated';
 import DialogInteractions from 'components/inbox/DialogInteractions';
+import { CellProps } from 'react-table';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -107,7 +108,7 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 Header: t(langKeys.month),
                 accessor: 'name',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
 
                     if (graphicType === "BAR")
@@ -131,7 +132,7 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 accessor: 'percentage',
                 NoFilter: true,
                 type: 'number',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.percentage.toFixed(2) + "%";
                 }
@@ -275,7 +276,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
             {
                 Header: t(langKeys.communicationchannel),
                 accessor: 'channels',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     <div className={classes.fieldElipsis}>{row?.channels}</div>
                     return <Tooltip TransitionComponent={Zoom} title={row?.channels}>
@@ -291,7 +292,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
                 width: 'auto',
                 type: 'date',
                 sortType: 'datetime',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
                 }
@@ -302,7 +303,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
                 width: 'auto',
                 type: 'date',
                 sortType: 'datetime',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
                 }
@@ -416,15 +417,17 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
     const cell = (props: any) => {
         const column = props.cell.column;
         const row = props.cell.row.original;
-        if(row.client === "Total"){
-            return <div><b>{row[column.id]}</b></div>
-        }else if(column.id.includes('_')){
-            return <div onClick={()=>handleView(row,column.id.split('_')[1])}>{row[column.id]}</div>
-        }else{
-            return <div>{row[column.id]}</div>
+        if (row && row.client === "Total") {
+            return <div><b>{row[column.id]}</b></div>;
+        } else if (row && column.id.includes('_')) {
+            return <div onClick={() => handleView(row, column.id.split('_')[1])}>{row[column.id]}</div>;
+        } else if (row) {
+            return <div>{row[column.id]}</div>;
         }
-    }
     
+        return "";
+    }
+
     const handleView = (row: Dictionary, month:number) => {
         setRowSelected({
             row,
@@ -440,14 +443,18 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Header: t(langKeys.client),
                 accessor: 'client',
                 width: 'auto',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const column = props.cell.column;
                     const row = props.cell.row.original;
-                    if(row.client === "Total"){
-                        return <div><b>{row[column.id]}</b></div>
-                    }else{
-                        return <div>{row[column.id]}</div>
+
+                    if (row && 'client' in row) {
+                        if (row.client === "Total") {
+                            return <div><b>{row[column.id]}</b></div>;
+                        } else {
+                            return <div>{row[column.id]}</div>;
+                        }
                     }
+                    return "";
                 }
             },
             {
@@ -539,9 +546,10 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 accessor: 'total',
                 width: 'auto',
                 type: 'number',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
-                    return <b>{row.total}</b>
+                    const totalValue = row ? row.total : undefined;
+                    return <b>{totalValue}</b>;
                 }
             },
         ],
@@ -788,7 +796,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 Header: t(langKeys.ticket_number),
                 accessor: 'ticketnum',
                 width: 'auto',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return (
                         <label
@@ -806,7 +814,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 width: 'auto',
                 type: 'date',
                 sortType: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.startdate ? dateToLocalDate(row.startdate) : ""
                 }
@@ -822,7 +830,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 width: 'auto',
                 type: 'date',
                 sortType: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.finishdate ? dateToLocalDate(row.finishdate) : ""
                 }
@@ -883,7 +891,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 width: 'auto',
                 type: 'date',
                 sortType: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.handoffdate ? dateToLocalDate(row.handoffdate) : ""
                 }
@@ -916,7 +924,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             },
             {
                 Header: t(langKeys.report_productivity_suspensiontime),
-                accessor: 'pauseduration', //preguntar por el campo
+                accessor: 'pauseduration',
                 width: 'auto',
             },
             {
@@ -1031,13 +1039,15 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
     const cell = (props: any) => {
         const column = props.cell.column;
         const row = props.cell.row.original;
-        if(row.client === "Total"){
-            return <div><b>{row[column.id]}</b></div>
-        }else if(column.id.includes('_')){
-            return <div onClick={()=>handleView(row,column.id.split('_')[1])}>{row[column.id]}</div>
-        }else{
-            return <div>{row[column.id]}</div>
+        if (row && row.client === "Total") {
+            return <div><b>{row[column.id]}</b></div>;
+        } else if (row && column.id.includes('_')) {
+            return <div onClick={() => handleView(row, column.id.split('_')[1])}>{row[column.id]}</div>;
+        } else if (row) {
+            return <div>{row[column.id]}</div>;
         }
+    
+        return "";
     }
     
     const handleView = (row: Dictionary, month:number) => {
@@ -1055,7 +1065,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 Header: t(langKeys.client),
                 accessor: 'client',
                 width: 'auto',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const column = props.cell.column;
                     const row = props.cell.row.original;
                     if(row.client === "Total"){
@@ -1154,9 +1164,10 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'total',
                 width: 'auto',
                 type: 'number',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
-                    return <b>{row.total}</b>
+                    const totalValue = row ? row.total : undefined;
+                    return <b>{totalValue}</b>;
                 }
             },
         ],

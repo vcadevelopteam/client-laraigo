@@ -64,7 +64,7 @@ const Corporations: FC = () => {
                 minWidth: 60,
                 width: '1%',
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}

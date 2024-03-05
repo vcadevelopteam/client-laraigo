@@ -27,6 +27,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
+import { CellProps } from 'react-table';
 
 const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().substring(0, 10)
 
@@ -410,11 +411,11 @@ export const Person: FC = () => {
             isComponent: true,
             minWidth: 60,
             width: '1%',
-            Cell: (props: any) => {
+            Cell: (props: CellProps<Dictionary>) => {
                 const person = props.cell.row.original as IPerson;
                 return (
                     <TemplateIcons
-                        sendHSM={person.phonewhatsapp ? (e) => {
+                        sendHSM={person && person.phonewhatsapp ? (e) => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
@@ -433,6 +434,7 @@ export const Person: FC = () => {
                             setTypeTemplate("MAIL");
                         }}
                     />
+                    
                 )
             }
         },
@@ -459,8 +461,9 @@ export const Person: FC = () => {
             sortType: 'datetime',
             Cell: (props: any) => {
                 const row = props.cell.row.original;
-                return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
+                     return row && row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : "";
             }
+            
         },
         {
             Header: t(langKeys.lastuser),
@@ -482,9 +485,14 @@ export const Person: FC = () => {
             //     value: `${x.index},${x.description}`,
             // })),
             Cell: (props: any) => {
-                const { phasejson } = props.cell.row.original;
-                if (!phasejson)
+                const { row } = props.cell;                
+                if (!row || !row.original) {
                     return null;
+                }            
+                const { phasejson } = row.original;            
+                if (!phasejson) {
+                    return null;
+                }            
                 return (
                     <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
                         {Object.entries(phasejson).sort(([aKey], [bKey]) => {
@@ -500,17 +508,26 @@ export const Person: FC = () => {
                             />
                         ))}
                     </div>
-                )
-            }
+                );
+            }            
         },
         {
             Header: t(langKeys.status),
             accessor: 'status',
             prefixTranslation: 'status_',
-            Cell: (props: any) => {
-                const { status } = props.cell.row.original;
-                return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+            Cell: (props: CellProps<Dictionary>) => {
+                const { cell } = props;                
+                if (!cell || !cell.row) {
+                    return null;
+                }            
+                const { original } = cell.row;            
+                if (!original) {
+                    return null;
+                }            
+                const { status } = original;
+                return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
             }
+            
         },
         {
             Header: t(langKeys.address),
@@ -528,14 +545,23 @@ export const Person: FC = () => {
             Header: t(langKeys.comments),
             accessor: 'datenote',
             Cell: (props: any) => {
-                const { datenote, note, dateactivity, leadactivity } = props.cell.row.original;
+                const { cell } = props;                
+                if (!cell || !cell.row) {
+                    return null;
+                }            
+                const { original } = cell.row;            
+                if (!original) {
+                    return null;
+                }            
+                const { datenote, note, dateactivity, leadactivity } = original;            
                 return (
                     <div>
                         {datenote && <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {note}</div>}
                         {dateactivity && <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>}
                     </div>
-                )
+                );
             }
+            
         },
     ]), [t, setPersonsSelected]);
 
@@ -555,7 +581,6 @@ export const Person: FC = () => {
             setPageCount(Math.ceil(personList.count / fetchDataAux.pageSize));
             settotalrow(personList.count);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [personList]);
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {

@@ -469,7 +469,7 @@ exports.getReportFilterSel = function (filter, key, domainname) { return ({
     }
 }); };
 exports.getPaginatedForReports = function (methodCollection, methodCount, origin, _a) {
-    var skip = _a.skip, take = _a.take, filters = _a.filters, sorts = _a.sorts, startdate = _a.startdate, enddate = _a.enddate, allParameters = __rest(_a, ["skip", "take", "filters", "sorts", "startdate", "enddate"]);
+    var skip = _a.skip, take = _a.take, filters = _a.filters, sorts = _a.sorts, distinct = _a.distinct, startdate = _a.startdate, enddate = _a.enddate, allParameters = __rest(_a, ["skip", "take", "filters", "sorts", "distinct", "startdate", "enddate"]);
     return ({
         methodCollection: methodCollection,
         methodCount: methodCount,
@@ -478,7 +478,7 @@ exports.getPaginatedForReports = function (methodCollection, methodCount, origin
             skip: skip,
             take: take,
             filters: filters,
-            sorts: sorts, origin: origin }, allParameters), { channel: allParameters['channel'] ? allParameters['channel'] : "", hours: allParameters['hours'] ? allParameters['hours'] : "", asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0, offset: (new Date().getTimezoneOffset() / 60) * -1 })
+            sorts: sorts, distinct: allParameters['distinct'] ? allParameters['distinct'] : "", origin: origin }, allParameters), { channel: allParameters['channel'] ? allParameters['channel'] : "", hours: allParameters['hours'] ? allParameters['hours'] : "", asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0, offset: (new Date().getTimezoneOffset() / 60) * -1 })
     });
 };
 exports.getReportExport = function (methodExport, origin, _a) {

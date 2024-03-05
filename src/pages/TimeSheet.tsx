@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Box } from "@material-ui/core";
 import { Dictionary, MultiData } from "@types";
 import { DialogZyx, FieldEdit, FieldSelect, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
@@ -203,7 +202,7 @@ const TimeSheet: FC = () => {
                 NoFilter: true,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
                     );
@@ -214,7 +213,7 @@ const TimeSheet: FC = () => {
                 Header: t(langKeys.timesheet_startdate),
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return <div>{dateToLocalDate(row.startdate)}</div>;
                 },
             },
@@ -228,7 +227,7 @@ const TimeSheet: FC = () => {
                 Header: t(langKeys.timesheet_registerdate),
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return <div>{dateToLocalDate(row.registerdate)}</div>;
                 },
             },
@@ -247,7 +246,7 @@ const TimeSheet: FC = () => {
                 Header: t(langKeys.timesheet_registerprofile),
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (t(`${row.registerprofile}`.toLowerCase()) || "").toUpperCase();
                 },
             },
@@ -262,7 +261,7 @@ const TimeSheet: FC = () => {
                 Header: t(langKeys.timesheet_registerdetail),
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const { registerdetail } = props.cell.row.original;
+                    const { registerdetail } = props.cell.row.original || {};
                     return (
                         <Fragment>
                             <div style={{ display: "inline-block" }}>{(registerdetail || "").substring(0, 50)}... </div>
@@ -276,7 +275,7 @@ const TimeSheet: FC = () => {
                 NoFilter: true,
                 prefixTranslation: "status_",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (t(`status_${row.status}`.toLowerCase()) || "").toUpperCase();
                 },
             },

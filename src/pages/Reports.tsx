@@ -50,6 +50,10 @@ const isIncremental = window.location.href.includes("incremental")
 import { columnsHideShow } from 'common/helpers/columnsReport';
 import TipificationReport from './staticReports/ReportTipification';
 import ProductivityHoursReport from './staticReports/ReportProductivityHours';
+import { CellProps } from 'react-table';
+import PropTypes from 'prop-types';
+import { IRootState } from 'store';
+
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -62,6 +66,7 @@ interface ItemProps {
     multiData: MultiData[];
     allFilters: Dictionary[];
     customReport: boolean;
+    selectedColumn: string | null;     
 }
 
 
@@ -138,7 +143,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport }) => {
+
+
+const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport, selectedColumn }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -148,7 +155,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const [pageCount, setPageCount] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null })
     const [allParameters, setAllParameters] = useState<any>({});
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
@@ -159,6 +166,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
             dispatch(cleanViewChange());
         }
     }, [])
+  
+    
 
     const columns = React.useMemo(() => reportColumns.map(x => {
         const showColumn = columnsHideShow[row?.origin]?.[x.proargnames] ?? false;
@@ -189,11 +198,15 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "boolean",
                     showColumn,
-                    Cell: (props: any) => {
-                        const column = props.cell.column;
-                        const row = props.cell.row.original;
-                        return (t(`${row[column.id]}`.toLowerCase()) || "").toUpperCase()
+                    Cell: (props: CellProps<Dictionary>) => {/* eslint-disable react/prop-types */
+                        const { cell } = props;
+                        const { column, row } = cell || {};
+                        const { id } = column || {};
+                        const { original } = row || {};                        
+                        const cellValue = original && id && original[id];                        
+                        return (t(`${cellValue || ''}`.toLowerCase()) || '').toUpperCase();
                     }
+                    
                 }
             case "timestamp without time zone":
                 return {
@@ -202,20 +215,26 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
                     showColumn,
-                    Cell: (props: any) => {
+                    Cell: (props: CellProps<Dictionary>)  => {
                         const column = props.cell.column;
-                        const row = props.cell.row.original;
-                        return (<div>
-                            {convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit",
-                                hour: "numeric",
-                                minute: "numeric",
-                                second: "numeric",
-                                hour12: false
-                            })}
-                        </div>)
+                        const row = props.cell.row.original;                    
+                        const cellValue = row && column && column.id ? row[column.id] : null;                    
+                        return (
+                            <div>
+                                {cellValue ? 
+                                    convertLocalDate(cellValue).toLocaleString(undefined, {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        hour: "numeric",
+                                        minute: "numeric",
+                                        second: "numeric",
+                                        hour12: false
+                                    }) 
+                                    : null
+                                }
+                            </div>
+                        );
                     }
                 }
             case "date":
@@ -225,7 +244,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
                     showColumn,
-                    Cell: (props: any) => {
+                    Cell: (props: CellProps<Dictionary>)  => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;
                         return (<div>
@@ -252,10 +271,15 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     showColumn,
-                                    Cell: (props: any) => {
-                                        const { status } = props.cell.row.original;
-                                        return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                                    Cell: (props: CellProps<Dictionary>) => {
+                                        const { row } = props.cell;                                        
+                                        if (row && row.original && 'status' in row.original) {
+                                            const { status } = row.original;
+                                            return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                                        }                                    
+                                        return ""; 
                                     }
+                                    
                                 }
                             default:
                                 return {
@@ -276,10 +300,13 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     showColumn,
-                                    Cell: (props: any) => {
-                                        const { interactiontext } = props.cell.row.original;
-                                        let texttoshow = interactiontext.length < 40 ? interactiontext : interactiontext.substring(0, 40) + "... "
-                                        return texttoshow
+                                    Cell: (props: CellProps<Dictionary>) => {
+                                        const { row } = props.cell || {};
+                                        const { original } = row || {};                                    
+                                        const { interactiontext } = original || {};                                    
+                                        const textToShow = interactiontext ? interactiontext : "Texto no disponible";
+                                        const truncatedText = textToShow.length < 40 ? textToShow : textToShow.substring(0, 40) + "... ";                                    
+                                        return truncatedText;
                                     }
                                 }
                             case "question":
@@ -289,11 +316,12 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     showColumn,
-                                    Cell: (props: any) => {
-                                        const { question } = props.cell.row.original;
-                                        let texttoshow = question.length < 40 ? question : question.substring(0, 40) + "... "
-                                        return texttoshow
-                                    }
+                                    Cell: (props: CellProps<Dictionary>) => {
+                                        const { question } = props.cell.row.original || {};
+                                        const textToShow = question ? (question.length < 40 ? question : question.substring(0, 40) + "... ") : "";
+                                        return textToShow;
+                                    },
+                                    
                                 }
                             default:
                                 return {
@@ -357,8 +385,9 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         setWaitSave(true);
     };
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange });
+
         dispatch(getCollectionPaginated(getPaginatedForReports(
             row?.methodcollection || '',
             row?.methodcount || '',
@@ -368,7 +397,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 enddate: daterange.endDate!,
                 take: pageSize,
                 skip: pageIndex * pageSize,
-                sorts: sorts,
+                sorts: sorts,      
+                distinct: distinct,           
                 filters: filters,
                 ...allParameters
             }
@@ -403,31 +433,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         setAllParameters({ ...allParameters, [parameterName]: value });
     }
 
-    //filter channel
-    const filterChannel = useSelector ((state)=> state.main.mainAux)
     const [waitExport, setWaitExport] = useState(false);
-
-    const channelTypeList = filterChannel.data || [];
-    const channelTypeFilteredList = new Set();
-    const [selectedChannel, setSelectedChannel] = useState("");
-
-    const uniqueTypdescList = channelTypeList.filter(item => {
-        if (channelTypeFilteredList.has(item.type)) {
-            return false; 
-        }
-        channelTypeFilteredList.add(item.type);
-        return true;
-    });
-   
-    // const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
-    // useEffect(() => {
-    //     dispatch(resetCollectionPaginated());
-    //     fetchData(fetchDataAux);
-    //     fetchFiltersChannels();
-    //     return () => {
-    //         dispatch(resetCollectionPaginated());
-    //     };
-    // }, []);
 
     useEffect(() => {
         if (waitExport) {
@@ -652,38 +658,10 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
             }
         )));
     }
-    const excludeConversation = [
-        "email",
-        "starttime",
-        "endtime",
-        "derivationdate",
-        "derivationtime",
-        "firstinteractiondate",
-        "firstinteractiontime",
-        "tmo",
-        "tmoagent",
-        "tmeagent",
-        "holdingholdtime",
-        "suspensiontime",
-        "avgagentresponse",
-        "swingingtimes",
-        "tags",
-        "firstinteractiondateagent",        
-    ];
 
-    const excludeInteractions = [
-        "ticketdatehour",
-        "interactionid",
-        "interactiondatehour",
-        "originalname",  
-        "interactiontext",
-        "email",       
-    ];
     
-    let filteredColumns = columns
 
-    if(row?.reportname==="CONVERSATION") filteredColumns = columns.filter(column => !excludeConversation.includes(column));
-    if(row?.reportname==="INTERACTION") filteredColumns = columns.filter(column => !excludeInteractions.includes(column));
+
 
     return (
         <DialogZyx
@@ -717,7 +695,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('column')}                    
                     error={(errors?.column?.message as string) ?? ""}
                     onChange={(value) => setValue('column', value?.key)}
-                    data={filteredColumns.map(x => ({ key: x, value: x }))}
+                    data={columns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}
@@ -818,9 +796,13 @@ const ReportConversationWhatsapp: FC = () => {
             {
                 Header: t(langKeys.paymentmethod),
                 accessor: 'paymenttype',
-                Cell: (props: any) => {
-                    const { paymenttype } = props.cell.row.original;
-                    return (t(`${paymenttype}`.toLowerCase()) || "").toUpperCase()
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const { row } = props.cell;                
+                    if (row && row.original && 'paymenttype' in row.original) {
+                        const { paymenttype } = row.original;
+                        return (t(`${paymenttype}`.toLowerCase()) || "").toUpperCase();
+                    }                
+                    return ""; 
                 }
             },
         ],

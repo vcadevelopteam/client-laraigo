@@ -773,7 +773,6 @@ const TableZyx = React.memo(({
                         </div>
                     ),
                     Cell: ({ row }: CellProps<Dictionary>) => (
-
                         <div>
                             {checkHistoryCenter === true ? <Checkbox
                                 color="primary"

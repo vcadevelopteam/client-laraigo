@@ -21,7 +21,13 @@ export const columnsHideGraphic = {
     }
 }
 
-export const columnsHideShow = {
+export interface ColumnsHideShowType {
+    [key: string]: {
+      [key: string]: boolean;
+    };
+}
+
+export const columnsHideShow: ColumnsHideShowType = {
     productivity: {
         email: true,
         starttime: true,

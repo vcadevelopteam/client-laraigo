@@ -128,7 +128,7 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
                 accessor: 'columnname',
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
 
                     if (graphicType === "BAR")
                         return row?.columnname;
@@ -152,7 +152,7 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
                 NoFilter: true,
                 type: 'number',
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return row.percentage + "%";
                 }
             },

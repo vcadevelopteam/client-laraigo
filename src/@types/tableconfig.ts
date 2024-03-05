@@ -90,6 +90,7 @@ export interface TableConfig {
 
 export interface Pagination {
   sorts: Dictionary;
+  distinct?: string;
   filters: Dictionary;
   pageIndex: number;
   trigger?: boolean;
@@ -97,6 +98,7 @@ export interface Pagination {
 
 export interface IFetchData {
   sorts: Dictionary;
+  distinct: Dictionary;
   filters: Dictionary;
   pageIndex: number;
   pageSize: number;

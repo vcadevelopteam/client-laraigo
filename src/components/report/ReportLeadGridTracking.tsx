@@ -34,7 +34,7 @@ const ReportRequestSD: FC = () => {
                 Header: t(langKeys.registrationdate),
                 accessor: 'createdate',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { createdate } = props.cell.row.original;
+                    const { createdate } = props.cell.row.original || {};
                     return new Date(createdate).toLocaleString()
                 }
             },
@@ -50,7 +50,7 @@ const ReportRequestSD: FC = () => {
                 Header: t(langKeys.statusdate),
                 accessor: 'changedate',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { changedate } = props.cell.row.original;
+                    const { changedate } = props.cell.row.original || {};
                     return new Date(changedate).toLocaleString()
                 }
             },
@@ -62,7 +62,7 @@ const ReportRequestSD: FC = () => {
                 Header: t(langKeys.currentphase),
                 accessor: 'phase',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { phase } = props.cell.row.original;
+                    const { phase } = props.cell.row.original || {};
                     //capitalize la primer aletra
                     return t(`${phase}`.toLocaleLowerCase()).replace(/^[a-z]/, (match) => match.toUpperCase());
                 }
@@ -83,21 +83,24 @@ const ReportRequestSD: FC = () => {
                 Header: t(langKeys.estimatedimplementationdate),
                 accessor: 'estimatedimplementationdate',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { estimatedimplementationdate } = props.cell.row.original;
-                    if (!estimatedimplementationdate)
-                        return null;
-                    return new Date(estimatedimplementationdate + " 00:00:00").toLocaleDateString()
+                    const { estimatedimplementationdate } = props.cell.row.original || {};                    
+                    if (!estimatedimplementationdate) {
+                        return null; 
+                    }                
+                    return new Date(estimatedimplementationdate + " 00:00:00").toLocaleDateString();
                 }
             },
             {
                 Header: t(langKeys.estimatedbillingdate),
                 accessor: 'estimatedbillingdate',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { estimatedbillingdate } = props.cell.row.original;
-                    if (!estimatedbillingdate)
-                        return null;
-                    return new Date(estimatedbillingdate + " 00:00:00").toLocaleDateString()
+                    const { estimatedbillingdate } = props.cell.row.original || {};                    
+                    if (!estimatedbillingdate) {
+                        return null; 
+                    }                
+                    return new Date(estimatedbillingdate + " 00:00:00").toLocaleDateString();
                 }
+                
             },            
         ],
         [t]

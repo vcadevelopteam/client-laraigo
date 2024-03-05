@@ -21,6 +21,7 @@ import { getCountryList } from 'store/signup/actions';
 import clsx from 'clsx';
 import { formatNumber } from 'common/helpers';
 import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updateScenario } from "store/voximplant/actions";
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1272,8 +1273,8 @@ const Organizations: FC = () => {
                 accessor: 'type',
                 prefixTranslation: 'type_org_',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const { type } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { type } = props.cell.row.original || {}; 
                     return (t(`type_org_${type}`.toLowerCase()) || "").toUpperCase()
                 }
             },
@@ -1282,8 +1283,8 @@ const Organizations: FC = () => {
                 accessor: 'status',
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { status } = props.cell.row.original || {}; 
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
