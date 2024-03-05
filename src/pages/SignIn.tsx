@@ -380,7 +380,7 @@ const SignIn = () => {
                 <div className={classes.container}>
                     <Container component="main" className={classes.containerLogin}>
                         <div className={classes.childContainer} style={{ height: '100%' }}>
-                            {isCustomDomain? <div  className={classes.image} style={{backgroundImage: `url(${customLogoUrl?.startlogourl})`, height: 42.8, backgroundSize: "cover"}}></div>
+                            {isCustomDomain? <div  className={classes.image} style={{backgroundImage: `url(${customLogoUrl?.startlogourl})`, height: 42.8, backgroundSize: "contain"}}></div>
                             :<div className={classes.image}>
                                 <LaraigoLogo height={42.8} />
                             </div>}

@@ -45,7 +45,7 @@ const useToolbarStyles = makeStyles(theme => ({
         },
     },
     customImageLaraigo: {
-        backgroundSize: "cover",
+        backgroundSize: "contain",
         minWidth: 120
     },
     statusConnection: {
