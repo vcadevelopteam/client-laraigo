@@ -45,10 +45,8 @@ const useToolbarStyles = makeStyles(theme => ({
         },
     },
     customImageLaraigo: {
-        [theme.breakpoints.down('xs')]: {
-            width: 40,
-            height: 40
-        },
+        backgroundSize: "cover",
+        minWidth: 120
     },
     statusConnection: {
         display: 'block',
@@ -242,7 +240,7 @@ const Header = ({ classes }: IProps) => {
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const user = useSelector(state => state.login.validateToken.user);
     const customDomain = !notCustomUrl.some(url => window.location.href.includes(url));
-
+    
     if(customDomain){
         const existingFavicon = document.querySelector('link[rel="icon"]');
         existingFavicon.href = user?.iconurl||"";
@@ -260,7 +258,8 @@ const Header = ({ classes }: IProps) => {
                     <Menu />
                 </IconButton>
                 <img
-                    style={{ height: 37, marginLeft: 8, backgroundImage: customDomain?`url(${user?.logourl}))`:"" }}
+                    style={{ height: 37, marginLeft: 8 }}
+                    src = {customDomain?user?.logourl:""}
                     className={customDomain?myClasses.customImageLaraigo:myClasses.imageLaraigo}
                     alt="logo"
                 />
