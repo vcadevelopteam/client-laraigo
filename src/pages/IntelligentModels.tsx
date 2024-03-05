@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -15,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, execute, getMultiCollection } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -323,8 +323,8 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                 accessor: 'status',
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { status } = props.cell.row.original|| {}; 
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },

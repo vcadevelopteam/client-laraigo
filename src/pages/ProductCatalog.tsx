@@ -1,5 +1,4 @@
 
-/* eslint-disable react-hooks/exhaustive-deps */
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -28,6 +27,7 @@ import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { catalogManageProduct, catalogDeleteProduct, catalogSynchroProduct, catalogImportProduct, catalogDownloadProduct } from "store/catalog/actions";
 import { useLocation } from 'react-router';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     edit: boolean;
@@ -387,89 +387,142 @@ const ProductCatalog: FC = () => {
             {
                 accessor: 'description',
                 Header: t(langKeys.description),
-                Cell: (props: any) => {
-                    const { description } = props.cell.row.original;
-                    return description?.substring(0, 50) + "... ";
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;                  
+                    if (row && row.original && row.original.description) {
+                      const { description } = row.original;
+                      return description.substring(0, 50) + "... ";
+                    } else {
+                      return ""; 
+                    }
+                }                  
             },
             {
                 accessor: 'availability',
                 Header: t(langKeys.availability),
                 type: 'select',
                 listSelectFilter: getValues('availabilityList') || [],
-                Cell: (props: any) => {
-                    const { availability } = props.cell.row.original;
-                    return (t(`productcatalog_domain_availability_${availability?.replaceAll(' ', '_')}`.toLowerCase()) || '').toUpperCase()
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;                  
+                    if (row && row.original && row.original.availability) {
+                      const { availability } = row.original;
+                      const formattedAvailability = t(`productcatalog_domain_availability_${availability?.replaceAll(' ', '_')}`.toLowerCase()) || '';
+                      return formattedAvailability.toUpperCase();
+                    } else {
+                      return "";
+                    }
+                }                  
             },
             {
                 accessor: 'link',
                 Header: t(langKeys.website),
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (<label
-                        className={classes.labellink}
-                        onClick={(e) => { e.stopPropagation(); window.open(`${row.link}`, '_blank')?.focus() }}
-                    >{row.link ? t(langKeys.website) : ''}
-                    </label>)
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;                  
+                    if (row && row.original && row.original.link) {
+                      const { link } = row.original;
+                      return (
+                        <label
+                          className={classes.labellink}
+                          onClick={(e) => { e.stopPropagation(); window.open(`${link}`, '_blank')?.focus() }}
+                        >
+                          {t(langKeys.website)}
+                        </label>
+                      );
+                    } else {
+                      return null;
+                    }
+                }                  
             },
             {
                 accessor: 'currency',
                 Header: t(langKeys.currency),
                 type: 'select',
                 listSelectFilter: getValues('currencyList') || [],
-                Cell: (props: any) => {
-                    const { currency } = props.cell.row.original;
-                    return (t(`productcatalog_domain_currency_${currency}`.toLowerCase()) || '').toUpperCase()
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;                  
+                    if (row && row.original && row.original.currency) {
+                      const { currency } = row.original;
+                      return (
+                        <span>
+                          {t(`productcatalog_domain_currency_${currency}`.toLowerCase()) || ''}
+                        </span>
+                      );
+                    } else {
+                      return null; 
+                    }
+                }                  
             },
             {
                 accessor: 'price',
                 Header: t(langKeys.productcatalogunitprice),
                 sortType: 'number',
                 type: 'number',
-                Cell: (props: any) => {
-                    const { price } = props.cell.row.original;
-                    return formatNumber(price || 0);
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { price } = props.cell.row.original || {};
+                    const formattedPrice = price !== undefined ? formatNumber(price) : '';                  
+                    return (
+                      <span>
+                        {formattedPrice}
+                      </span>
+                    );
                 }
+                  
             },
             {
                 accessor: 'saleprice',
                 Header: t(langKeys.saleprice),
                 sortType: 'number',
                 type: 'number',
-                Cell: (props: any) => {
-                    const { saleprice } = props.cell.row.original;
-                    return formatNumber(saleprice || 0);
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { saleprice } = props.cell.row.original || {};
+                    const formattedSalePrice = saleprice !== undefined ? formatNumber(saleprice) : '';                  
+                    return (
+                      <span>
+                        {formattedSalePrice}
+                      </span>
+                    );
+                }                  
             },
             {
                 accessor: 'imagelink',
                 Header: t(langKeys.image),
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (<label
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { imagelink } = props.cell.row.original || {};                   
+                    const openImageLink = (e) => {
+                      e.stopPropagation();
+                      imagelink && window.open(imagelink, '_blank')?.focus();
+                    };                  
+                    return (
+                      <label
                         className={classes.labellink}
-                        onClick={(e) => { e.stopPropagation(); window.open(`${row.imagelink}`, '_blank')?.focus() }}
-                    >{row.imagelink ? t(langKeys.imagelink) : ''}
-                    </label>)
-                }
+                        onClick={openImageLink}
+                      >
+                        {imagelink ? t(langKeys.imagelink) : ''}
+                      </label>
+                    );
+                }                  
             },
             {
                 accessor: 'additionalimagelink',
                 Header: t(langKeys.additionalimage),
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (<label
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { additionalimagelink } = props.cell.row.original || {};                  
+                    const openAdditionalImageLink = (e) => {
+                      e.stopPropagation();
+                      additionalimagelink && window.open(additionalimagelink, '_blank')?.focus();
+                    };                  
+                    return (
+                      <label
                         className={classes.labellink}
-                        onClick={(e) => { e.stopPropagation(); window.open(`${row.additionalimagelink}`, '_blank')?.focus() }}
-                    >{row.additionalimagelink ? t(langKeys.additionalimagelink) : ''}
-                    </label>)
-                }
+                        onClick={openAdditionalImageLink}
+                      >
+                        {additionalimagelink ? t(langKeys.additionalimagelink) : ''}
+                      </label>
+                    );
+                }                  
             },
             {
                 accessor: 'pattern',
@@ -492,8 +545,8 @@ const ProductCatalog: FC = () => {
                 Header: t(langKeys.gender),
                 type: 'select',
                 listSelectFilter: getValues('genderList') || [],
-                Cell: (props: any) => {
-                    const { gender } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { gender } = props.cell.row.original || {};
                     return (t(`productcatalog_domain_gender_${gender}`.toLowerCase()) || '').toUpperCase()
                 }
             },
@@ -550,8 +603,8 @@ const ProductCatalog: FC = () => {
                 Header: t(langKeys.status),
                 type: 'select',
                 listSelectFilter: getValues('statusList') || [],
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { status } = props.cell.row.original || {};
                     return (t(`status_${status}`.toLowerCase()) || '').toUpperCase();
                 }
             },
@@ -560,8 +613,8 @@ const ProductCatalog: FC = () => {
                 Header: t(langKeys.productcatalog_reviewstatus),
                 type: 'select',
                 listSelectFilter: getValues('reviewStatusList') || [],
-                Cell: (props: any) => {
-                    const { reviewstatus } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { reviewstatus } = props.cell.row.original || {};
                     return (t(`productcatalog_reviewstatus_${reviewstatus}`.toLowerCase()) || '').toUpperCase()
                 }
             },
@@ -579,7 +632,7 @@ const ProductCatalog: FC = () => {
                 sortType: 'number',
                 type: 'number',
                 Cell: (props: any) => {
-                    const { quantity } = props.cell.row.original;
+                    const { quantity } = props.cell.row.original || {};
                     return formatNumber(quantity || 0);
                 }
             },

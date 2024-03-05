@@ -21,6 +21,7 @@ import { useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { catalogBusinessList, catalogManageCatalog, resetCatalogBusinessList, catalogSynchroCatalog } from "store/catalog/actions";
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     edit: boolean;
@@ -74,7 +75,7 @@ const CatalogMaster: FC = () => {
                 NoFilter: true,
                 width: '1%',
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
@@ -104,10 +105,15 @@ const CatalogMaster: FC = () => {
                 Header: t(langKeys.type),
                 NoFilter: true,
                 prefixTranslation: 'type_domain_mastercatalog_',
-                Cell: (props: any) => {
-                    const { catalogtype } = props.cell.row.original;
-                    return (t(`type_domain_mastercatalog_${catalogtype}`.toLowerCase()) || "").toUpperCase()
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;                  
+                    if (row && row.original && row.original.catalogtype) {
+                      const { catalogtype } = row.original;
+                      return (t(`type_domain_mastercatalog_${catalogtype}`.toLowerCase()) || "").toUpperCase();
+                    } else {
+                      return ""; 
+                    }
+                }                  
             },
             {
                 accessor: 'businessid',
@@ -124,10 +130,16 @@ const CatalogMaster: FC = () => {
                 Header: t(langKeys.status),
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;                  
+                    if (row && row.original && row.original.status) {
+                      const { status } = row.original;
+                      return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                    } else {
+                      return ""; 
+                    }
                 }
+                  
             }
         ],
         []
