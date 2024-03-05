@@ -270,6 +270,7 @@ const translation: LangKeys = {
   closedby: "Closed by",
   property: 'Property',
   property_plural: 'Properties',
+  usewhitebrand: "Use White Brand",
 
   groupconfig: "Group Configuration",
   emailconfiguration: "Email configuration",
