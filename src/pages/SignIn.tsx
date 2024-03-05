@@ -260,6 +260,10 @@ const SignIn = () => {
 	React.useEffect(() => {
         if(getCustomDomain && !customDomainData.loading && !customDomainData.error){
             setCustomLogoURL(customDomainData?.data?.[0]||null)
+            
+            const existingFavicon = document.querySelector('link[rel="icon"]');
+            existingFavicon.href = customDomainData?.data?.[0]?.iconurl||"";
+
             setGetCustomDomain(false)
             dispatch(showBackdrop(false))
         }
