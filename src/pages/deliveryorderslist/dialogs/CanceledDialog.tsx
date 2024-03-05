@@ -9,9 +9,8 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     button: {
-        marginRight: theme.spacing(2),
         display: "flex",
         gap: "10px",
         alignItems: "center",

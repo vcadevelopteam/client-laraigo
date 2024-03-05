@@ -34,6 +34,12 @@ const ReschedulingUndeliveredDialog: React.FC<{
     const signatureDateDefault = format(new Date(), "yyyy-MM-dd");
     const [dateSelected, setDateSelected] = useState(signatureDateDefault)
     const [shift, setShift] = useState('')
+
+    const handleClose = () => {
+        setOpenModal(false);
+        setDateSelected(signatureDateDefault)
+        setShift('')
+    }
     
     return (
         <DialogZyx open={openModal} title={t(langKeys.rescheduling) + " - " + t(langKeys.undelivered)} maxWidth="sm">
@@ -70,9 +76,7 @@ const ReschedulingUndeliveredDialog: React.FC<{
                     color="primary"
                     startIcon={<ClearIcon color="secondary" />}
                     style={{ backgroundColor: "#FB5F5F" }}
-                    onClick={() => {
-                        setOpenModal(false);
-                    }}
+                    onClick={handleClose}
                 >
                     {t(langKeys.back)}
                 </Button>
