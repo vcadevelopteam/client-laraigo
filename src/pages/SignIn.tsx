@@ -260,6 +260,10 @@ const SignIn = () => {
 	React.useEffect(() => {
         if(getCustomDomain && !customDomainData.loading && !customDomainData.error){
             setCustomLogoURL(customDomainData?.data?.[0]||null)
+            
+            const existingFavicon = document.querySelector('link[rel="icon"]');
+            existingFavicon.href = customDomainData?.data?.[0]?.iconurl||"";
+
             setGetCustomDomain(false)
             dispatch(showBackdrop(false))
         }
@@ -380,7 +384,7 @@ const SignIn = () => {
                 <div className={classes.container}>
                     <Container component="main" className={classes.containerLogin}>
                         <div className={classes.childContainer} style={{ height: '100%' }}>
-                            {isCustomDomain? <div  className={classes.image} style={{backgroundImage: `url(${customLogoUrl?.startlogourl})`, height: 42.8, backgroundSize: "contain"}}></div>
+                            {isCustomDomain? <div  className={classes.image} style={{backgroundImage: `url(${customLogoUrl?.startlogourl})`, height: 42.8, backgroundSize: "100% 100%"}}></div>
                             :<div className={classes.image}>
                                 <LaraigoLogo height={42.8} />
                             </div>}

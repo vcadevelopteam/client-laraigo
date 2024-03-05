@@ -463,7 +463,7 @@ export const getReportFilterSel = (filter: string, key: string, domainname: stri
     }
 });
 
-export const getPaginatedForReports = (methodCollection: string, methodCount: string, origin: string, { skip, take, filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedForReports = (methodCollection: string, methodCount: string, origin: string, { skip, take, filters, sorts, distinct, startdate, enddate, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: methodCollection,
     methodCount: methodCount,
     parameters: {
@@ -473,6 +473,7 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         take,
         filters,
         sorts,
+        distinct: allParameters['distinct'] ? allParameters['distinct'] : "",
         origin: origin,
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",

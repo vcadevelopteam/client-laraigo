@@ -298,7 +298,7 @@ const GeneralConfiguration: React.FC<{ dataPlan: any; currencyList: any }> = ({ 
                 minWidth: 60,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
                     );
@@ -1283,7 +1283,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any; currencyList: any }> = (
                 minWidth: 60,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
                     );
@@ -2213,7 +2213,7 @@ const ConversationCost: React.FC<{ dataPlan: any; currencyList: any }> = ({ data
                 minWidth: 60,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
                     );
@@ -2876,7 +2876,7 @@ const ArtificialIntelligence: React.FC<{ providerData: any; planData: any }> = (
                 minWidth: 60,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
                     );
@@ -3513,7 +3513,7 @@ const SupportPlan: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPlan,
                 minWidth: 60,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
                     );
@@ -4044,7 +4044,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 minWidth: 60,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
                     );

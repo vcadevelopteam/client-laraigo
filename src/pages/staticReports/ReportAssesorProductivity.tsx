@@ -121,9 +121,9 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const [isday, setisday] = useState(false);
     const [columnGraphic, setColumnGraphic] = useState("");
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const [openSeButtons, setOpenSeButtons] = useState(false);
+    const [, setOpenSeButtons] = useState(false);
     const [openFilterModal, setOpenFilterModal] = useState(false);
-    const [maxmin, setmaxmin] = useState({
+    const [, setmaxmin] = useState({
         maxticketsclosed: 0,
         maxticketsclosedasesor: "",
         minticketsclosed: 0,
@@ -150,7 +150,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         dispatch(setViewChange("report_userproductivity"));
         dispatch(getMultiCollection([
             getReportColumnSel("UFN_REPORT_USERPRODUCTIVITY_SEL"),
-            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC",""),
+            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","probando"),
             getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_GRUPOS","GRUPOS"),
             getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_ESTADOORGUSER","ESTADOORGUSER"),
         ]));
@@ -534,9 +534,9 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                                     label={t("report_userproductivity_filter_channels")}
                                                     className={classes.filterComponent}
                                                     key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
-                                                    valueDefault={allParameters?.channel || ""}
+                                                    valueDefault={allParameters?.channel || "ayuda"}
                                                     onChange={(value) =>
-                                                        setValue("channel", value?.typedesc || "")
+                                                        setValue("channel", value?.typedesc || "ayuda2")
                                                     }
                                                     variant="outlined"
                                                     data={
@@ -788,7 +788,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
     } = useForm<any>({
         defaultValues: {
             graphictype: "BAR",
-            column: "",
+            column: "chamare",
         },
     });
 

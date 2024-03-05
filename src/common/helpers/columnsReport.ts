@@ -18,10 +18,32 @@ export const columnsHideGraphic = {
         idletime: true,
         idletimewithoutattention: true,
         qtydisconnection: true,   
-    }
+    },   
+    reportvoicecall: {
+        ticketnum: true,
+        tickettime: true,  
+        finishtime: true,
+        handoffdate: true,
+        phone: true,
+        totalduration: true,
+        agentduration: true,  
+        customerwaitingduration: true,
+        holdingtime: true,  
+        transferduration: true,
+    },
+    loginhistory: {
+        datehour: true,
+        motivedescription: true,         
+    },
 }
 
-export const columnsHideShow = {
+export interface ColumnsHideShowType {
+    [key: string]: {
+        [key: string]: boolean;
+    };
+}
+
+export const columnsHideShow: ColumnsHideShowType = {
     productivity: {
         email: true,
         starttime: true,
@@ -89,5 +111,10 @@ export const columnsHideShow = {
         resolution: true,  
         reportdate: true,
         dateofresolution: true,       
-    }
+    },
+    loginhistory: {
+        user: true,
+        type: true,  
+        motivedescription: true,
+    },      
 }

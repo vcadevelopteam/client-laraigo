@@ -773,7 +773,6 @@ const TableZyx = React.memo(({
                         </div>
                     ),
                     Cell: ({ row }: CellProps<Dictionary>) => (
-
                         <div>
                             {checkHistoryCenter === true ? <Checkbox
                                 color="primary"
@@ -1179,24 +1178,6 @@ const TableZyx = React.memo(({
                                                     column.render('Header') :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
-
-                                                            { column.canGroupBy === true && (
-                                                                <Tooltip title={''}>
-                                                                    <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
-                                                                    {column.canGroupBy === true && (
-                                                                        <TableSortLabel
-                                                                        active
-                                                                        direction={column.isGrouped ? 'desc' : 'asc'}
-                                                                        IconComponent={KeyboardArrowRight}
-                                                                        className={classes.headerIcon}
-                                                                        {...column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar' }))}
-                                                                        />
-                                                                    )}
-                                                                    </div>
-                                                                </Tooltip>
-                                                            )}
-
-
                                                             <Box
                                                                 {...column.getHeaderProps(column.getSortByToggleProps({ title: 'Ordenar' }))}
                                                                 style={{

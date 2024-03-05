@@ -318,7 +318,7 @@ const MainHeatMap: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -334,7 +334,7 @@ const MainHeatMap: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -356,7 +356,7 @@ const MainHeatMap: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -372,7 +372,7 @@ const MainHeatMap: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -395,7 +395,7 @@ const MainHeatMap: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -411,7 +411,7 @@ const MainHeatMap: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -434,7 +434,7 @@ const MainHeatMap: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -450,7 +450,7 @@ const MainHeatMap: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -473,7 +473,7 @@ const MainHeatMap: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -489,7 +489,7 @@ const MainHeatMap: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -654,7 +654,7 @@ const MainHeatMap: React.FC<{
                               NoSort: true,
                               Cell: (props: Dictionary) => {
                                   const column = props.cell.column;
-                                  const row = props.cell.row.original;
+                                  const row = props.cell.row.original || {};
                                   if (key !== "totalcol") {
                                       const color = gradient(
                                           parseInt(props.data[props.cell.row.index][key]),
@@ -831,38 +831,40 @@ const MainHeatMap: React.FC<{
                           NoFilter: true,
                           NoSort: true,
                           Cell: (props: Dictionary) => {
-                              const column = props.cell.column;
-                              const row = props.cell.row.original;
-                              if (key !== "totalcol") {
-                                  const timespenttotal = props.cell.row.original[key].split(":");
-                                  const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  const ss = timespenttotal[2];
-                                  const seconds =
-                                      parseInt(timespenttotal[0]) * 3600 +
-                                      parseInt(timespenttotal[1]) * 60 +
-                                      parseInt(timespenttotal[2]);
-                                  const color = gradient(seconds, props.cell.row.index);
-                                  return (
-                                      <div
-                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
-                                          onClick={() => fetchDetail("1.2", column, row, mes, year)}
-                                      >
-                                          {`${hh}${mm}${ss}s`}
-                                      </div>
-                                  );
-                              } else {
-                                  const timespenttotal = props.cell.row.original[key].split(":");
-                                  const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                                  const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                                  const ss = timespenttotal[2];
-                                  return (
-                                      <div
-                                          style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
-                                      >{`${hh}${mm}${ss}s`}</div>
-                                  );
-                              }
-                          },
+                            const column = props.cell.column;
+                            const row = props.cell.row.original || {};
+                            const rowcounter = props.cell.row.index;
+                            const timespenttotal = row && row[key] ? row[key].split(":") : ["00", "00", "00"];
+                            const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                            const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                            const ss = timespenttotal[2];
+                        
+                            if (key !== "totalcol") {
+                                const seconds =
+                                    parseInt(timespenttotal[0]) * 3600 +
+                                    parseInt(timespenttotal[1]) * 60 +
+                                    parseInt(timespenttotal[2]);
+                                const color = gradient(seconds, rowcounter);
+                        
+                                return (
+                                    <div
+                                        style={{ background: color, textAlign: "center", color: "black" }}
+                                        onClick={() => fetchDetail("1.3", column, row, mes, year)}
+                                    >
+                                        {`${hh}${mm}${ss}s`}
+                                    </div>
+                                );
+                            } else {
+                                return (
+                                    <div
+                                        style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
+                                    >{`${hh}${mm}${ss}s`}</div>
+                                );
+                            }
+                        },
+                        
+                        
+                        
                       }))
                 : [];
         setaverageHeatMapTMOTitle([
@@ -1011,35 +1013,39 @@ const MainHeatMap: React.FC<{
                           NoFilter: true,
                           NoSort: true,
                           Cell: (props: Dictionary) => {
-                              const column = props.cell.column;
-                              const row = props.cell.row.original;
-                              const rowcounter = props.cell.row.index;
-                              const timespenttotal = props.cell.row.original[key].split(":");
-                              const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                              const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                              const ss = timespenttotal[2];
-                              if (key !== "totalcol") {
-                                  const seconds =
-                                      parseInt(timespenttotal[0]) * 3600 +
-                                      parseInt(timespenttotal[1]) * 60 +
-                                      parseInt(timespenttotal[2]);
-                                  const color = gradient(seconds, rowcounter);
-                                  return (
-                                      <div
-                                          style={{ background: color, textAlign: "center", color: "black" }}
-                                          onClick={() => fetchDetail("1.3", column, row, mes, year)}
-                                      >
-                                          {`${hh}${mm}${ss}s`}
-                                      </div>
-                                  );
-                              } else {
-                                  return (
-                                      <div
-                                          style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
-                                      >{`${hh}${mm}${ss}s`}</div>
-                                  );
-                              }
-                          },
+                            const column = props.cell.column;
+                            const row = props.cell.row.original || {};
+                            const rowcounter = props.cell.row.index;
+                            const timespenttotal = row && row[key] ? row[key].split(":") : ["00", "00", "00"];
+                            const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                            const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                            const ss = timespenttotal[2];
+                        
+                            if (key !== "totalcol") { 
+                                const seconds =
+                                    parseInt(timespenttotal[0]) * 3600 +
+                                    parseInt(timespenttotal[1]) * 60 +
+                                    parseInt(timespenttotal[2]);
+                                const color = gradient(seconds, rowcounter);
+                        
+                                return (
+                                    <div
+                                        style={{ background: color, textAlign: "center", color: "black" }}
+                                        onClick={() => fetchDetail("1.3", column, row, mes, year)}
+                                    >
+                                        {`${hh}${mm}${ss}s`}
+                                    </div>
+                                );
+                            } else {
+                                return (
+                                    <div
+                                        style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
+                                    >{`${hh}${mm}${ss}s`}</div>
+                                );
+                            }
+                        },
+                        
+                        
                       }))
                 : [];
 
@@ -1189,35 +1195,43 @@ const MainHeatMap: React.FC<{
                           NoFilter: true,
                           NoSort: true,
                           Cell: (props: Dictionary) => {
-                              const column = props.cell.column;
-                              const row = props.cell.row.original;
-                              const rowcounter = props.cell.row.index;
-                              const timespenttotal = props.cell.row.original[key].split(":");
-                              const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                              const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                              const ss = timespenttotal[2];
-                              if (key !== "totalcol") {
-                                  const seconds =
-                                      parseInt(timespenttotal[0]) * 3600 +
-                                      parseInt(timespenttotal[1]) * 60 +
-                                      parseInt(timespenttotal[2]);
-                                  const color = gradient(seconds, rowcounter);
-                                  return (
-                                      <div
-                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
-                                          onClick={() => fetchDetail("1.4", column, row, mes, year)}
-                                      >
-                                          {`${hh}${mm}${ss}s`}
-                                      </div>
-                                  );
-                              } else {
-                                  return (
-                                      <div
-                                          style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
-                                      >{`${hh}${mm}${ss}s`}</div>
-                                  );
-                              }
-                          },
+                            const column = props.cell.column;
+                            const row = props.cell.row.original || {};
+                            const rowcounter = props.cell.row.index;
+                            const timespenttotal = row && row.original && row.original[key] !== undefined
+                                ? row.original[key].split(":")
+                                : ["00", "00", "00"];
+                        
+                            const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                            const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                            const ss = timespenttotal[2];
+                        
+                            if (key !== "totalcol") {
+                                const seconds =
+                                    parseInt(timespenttotal[0]) * 3600 +
+                                    parseInt(timespenttotal[1]) * 60 +
+                                    parseInt(timespenttotal[2]);
+                                const color = gradient(seconds, rowcounter);
+                        
+                                return (
+                                    <div
+                                        style={{ background: `${color}`, textAlign: "center", color: "black" }}
+                                        onClick={() => fetchDetail("1.4", column, row, mes, year)}
+                                    >
+                                        {`${hh}${mm}${ss}s`}
+                                    </div>
+                                );
+                            } else {
+                                return (
+                                    <div
+                                        style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
+                                    >{`${hh}${mm}${ss}s`}</div>
+                                );
+                            }
+                        },
+                        
+                        
+                        
                       }))
                 : [];
 
@@ -1368,35 +1382,43 @@ const MainHeatMap: React.FC<{
                           NoFilter: true,
                           NoSort: true,
                           Cell: (props: Dictionary) => {
-                              const column = props.cell.column;
-                              const row = props.cell.row.original;
-                              const rowcounter = props.cell.row.index;
-                              const timespenttotal = props.cell.row.original[key].split(":");
-                              const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
-                              const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
-                              const ss = timespenttotal[2];
-                              if (key !== "totalcol") {
-                                  const seconds =
-                                      parseInt(timespenttotal[0]) * 3600 +
-                                      parseInt(timespenttotal[1]) * 60 +
-                                      parseInt(timespenttotal[2]);
-                                  const color = gradient(seconds, rowcounter);
-                                  return (
-                                      <div
-                                          style={{ background: `${color}`, textAlign: "center", color: "black" }}
-                                          onClick={() => fetchDetail("1.5", column, row, mes, year)}
-                                      >
-                                          {`${hh}${mm}${ss}s`}
-                                      </div>
-                                  );
-                              } else {
-                                  return (
-                                      <div
-                                          style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
-                                      >{`${hh}${mm}${ss}s`}</div>
-                                  );
-                              }
-                          },
+                            const column = props.cell.column;
+                            const row = props.cell.row.original || {};
+                            const rowcounter = props.cell.row.index;
+                            const timespenttotal = row !== undefined && row.original !== undefined && key in row.original
+                                ? row.original[key].split(":")
+                                : ["00", "00", "00"];
+                        
+                            const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
+                            const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
+                            const ss = timespenttotal[2];
+                        
+                            if (key !== "totalcol") {
+                                const seconds =
+                                    parseInt(timespenttotal[0]) * 3600 +
+                                    parseInt(timespenttotal[1]) * 60 +
+                                    parseInt(timespenttotal[2]);
+                                const color = gradient(seconds, rowcounter);
+                        
+                                return (
+                                    <div
+                                        style={{ background: `${color}`, textAlign: "center", color: "black" }}
+                                        onClick={() => fetchDetail("1.5", column, row, mes, year)}
+                                    >
+                                        {`${hh}${mm}${ss}s`}
+                                    </div>
+                                );
+                            } else {
+                                return (
+                                    <div
+                                        style={{ textAlign: "center", fontWeight: "bold", background: "white" }}
+                                    >{`${hh}${mm}${ss}s`}</div>
+                                );
+                            }
+                        },
+                        
+                        
+                        
                       }))
                 : [];
 
@@ -1794,7 +1816,7 @@ const HeatMapAsesor: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -1810,7 +1832,7 @@ const HeatMapAsesor: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -1831,7 +1853,7 @@ const HeatMapAsesor: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -1847,7 +1869,7 @@ const HeatMapAsesor: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -1869,7 +1891,7 @@ const HeatMapAsesor: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -1885,7 +1907,7 @@ const HeatMapAsesor: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -1908,7 +1930,7 @@ const HeatMapAsesor: React.FC<{
                             minWidth: 60,
                             width: "1%",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return row.communicationchanneltype === "VOXI" &&
                                     row.postexternalid &&
                                     row.callanswereddate ? (
@@ -1924,7 +1946,7 @@ const HeatMapAsesor: React.FC<{
                             Header: t(langKeys.ticket),
                             accessor: "ticketnum",
                             Cell: (props: Dictionary) => {
-                                const row = props.cell.row.original;
+                                const row = props.cell.row.original || {};
                                 return (
                                     <label className={classes.labellink} onClick={() => openDialogInteractions(row)}>
                                         {row.ticketnum}
@@ -2088,7 +2110,7 @@ const HeatMapAsesor: React.FC<{
                           NoSort: true,
                           Cell: (props: Dictionary) => {
                               const column = props.cell.column;
-                              const row = props.cell.row.original;
+                              const row = props.cell.row.original || {};
                               const rowcount = props.cell.row.index;
                               if (key !== "totalcol") {
                                   const color = gradient(props.cell.row.original[key], rowcount);
@@ -2187,7 +2209,7 @@ const HeatMapAsesor: React.FC<{
                               if (key !== "totalcol") {
                                   const color = gradient(props.cell.row.original[key], rowcount);
                                   const column = props.cell.column;
-                                  const row = props.cell.row.original;
+                                  const row = props.cell.row.original || {};
 
                                   return (
                                       <div
@@ -2343,7 +2365,7 @@ const HeatMapAsesor: React.FC<{
                                   const rowcount = props.cell.row.index;
                                   const color = gradient(props.cell.row.original[key], rowcount);
                                   const column = props.cell.column;
-                                  const row = props.cell.row.original;
+                                  const row = props.cell.row.original || {};
 
                                   return (
                                       <div
@@ -2502,7 +2524,7 @@ const HeatMapAsesor: React.FC<{
                                   const rowcount = props.cell.row.index;
                                   const color = gradient(props.cell.row.original[key], rowcount);
                                   const column = props.cell.column;
-                                  const row = props.cell.row.original;
+                                  const row = props.cell.row.original || {};
 
                                   return (
                                       <div
@@ -3263,7 +3285,7 @@ const HeatMapTicket: React.FC<{
                           NoSort: true,
                           Cell: (props: Dictionary) => {
                               const column = props.cell.column;
-                              const row = props.cell.row.original;
+                              const row = props.cell.row.original || {};
                               const color = gradient(props.cell.row.original[key]);
                               return (
                                   <div

@@ -2569,12 +2569,18 @@ export const langKeys = {
   dashboard_operationalpush_disconnections_percDesconnected: "dashboard_operationalpush_disconnections_percDesconnected",
 
   report_loginhistory: 'report_loginhistory',
+  report_loginhistory_advisor: 'report_loginhistory_advisor',
+  report_loginhistory_channel: 'report_loginhistory_channel',
+  report_loginhistory_closedby: 'report_loginhistory_closedby',
+  report_loginhistory_closetype: 'report_loginhistory_closetype',
+
   report_loginhistory_datehour: 'report_loginhistory_datehour',
   report_loginhistory_user: 'report_loginhistory_user',
   report_loginhistory_username: 'report_loginhistory_username',
   report_loginhistory_status: 'report_loginhistory_status',
   report_loginhistory_status_help: 'report_loginhistory_status_help',
   report_loginhistory_type: 'report_loginhistory_type',
+  report_loginhistory_type_help: 'report_loginhistory_type_help',
   report_loginhistory_motivedescription: 'report_loginhistory_motivedescription',
   report_loginhistory_motivedescription_help: 'report_loginhistory_motivedescription_help',
 
@@ -2768,6 +2774,7 @@ export const langKeys = {
 
   report_userproductivityhours_filter_adviser: 'report_userproductivityhours_filter_adviser',
   report_userproductivityhours_filter_channels: 'report_userproductivityhours_filter_channels',
+  report_reportvoicecall_filter_channels: 'report_reportvoicecall_filter_channels',
   report_userproductivityhours_filter_hours: 'report_userproductivityhours_filter_hours',
 
   report_userproductivity: 'report_userproductivity',

@@ -78,8 +78,6 @@ const DealerTab: React.FC<DealerTabProps> = ({row, fetchData, tabIndex, setTabIn
   const handleDelete = (row: Dictionary, i:number) => {
     if(edit){
       const callback = () => {
-        console.log(row)
-        debugger
         dispatch(
           execute(insProductDealer({ ...row, p_tableid: row.productid, operation: "DELETE", status: "ELIMINADO" }))
         );

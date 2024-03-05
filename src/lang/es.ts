@@ -2264,15 +2264,18 @@ const translation: LangKeys = {
   dashboard_operationalpush_disconnections_percDesconnected: "Porcentaje de tiempo desconectado",
 
   report_loginhistory: 'Conexión de usuario',
+  report_loginhistory_advisor: 'Nombre del asesor o bot que atendió el ticket.',
+  report_loginhistory_channel: 'Medio por el cual se contactó el cliente.',
+  report_loginhistory_closedby: 'Nombre del asesor o bot que cerró el ticket.',
+  report_loginhistory_closetype: 'Indica el tipo de cierre de la conversación.',
   report_loginhistory_datehour: 'Fecha - Hora',
   report_loginhistory_user: 'Nombre del usuario',
   report_loginhistory_username: 'Usuario',
   report_loginhistory_status: 'Estado',
   warningnoquickreplies: "No se puede eliminar una clasificación porque se encuentra asociada a una respuesta rápida.",
-  report_loginhistory_status_help: `- Inbox: En bandeja de tickets.
-- Login: Sesión iniciada.
-- Expiracion: Sesión expirada.`,
+  report_loginhistory_status_help: "El estado nos indica si el usuario se encuentra CONECTADO o DESCONECTADO.",
   report_loginhistory_type: "Tipo",
+  report_loginhistory_type_help: 'Nos indica el tipo por la que el usuario se conectó o desconecto del sistema.',
   report_loginhistory_motivedescription: 'Motivo',
   report_loginhistory_motivedescription_help: 'Motivo de desconexión.',
 
@@ -2435,6 +2438,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   assigned_agent: 'Agente asignado',
   agent_email: 'Agente correo',
   report_userproductivityhours_filter_channels: 'Canal',
+  report_reportvoicecall_filter_channels: 'Canal',
   report_userproductivityhours_filter_hours: 'Hora',
 
   report_userproductivity: 'Productividad de asesores',
