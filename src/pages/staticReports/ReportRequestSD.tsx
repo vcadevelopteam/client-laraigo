@@ -1,39 +1,17 @@
-import React, { FC, useEffect, useMemo, useState } from 'react'; 
+import React, { FC, useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getCommChannelLst, getreportrequestSD, getRequestSDExport } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { cleanViewChange, exportData, getCollectionAux, getCollectionAux2, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
+import { cleanViewChange, exportData, getCollectionAux2, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { DialogZyx, FieldSelect } from 'components/fields/templates';
 import { CellProps } from 'react-table';
 import { ListItemIcon, MenuItem, Typography } from '@material-ui/core';
 import CategoryIcon from "@material-ui/icons/Category";
-import { makeStyles } from "@material-ui/core/styles";
-import { columnsHideShow } from "common/helpers/columnsReport";
-
-const useStyles = makeStyles(() => ({        
-    filterComponent: {
-        minWidth: "220px",
-        maxWidth: "260px",
-    },     
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: "14px",
-        textTransform: "initial",
-    },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: "1px solid #bfbfc0",
-        borderRadius: 4,
-        color: "rgb(143, 146, 161)",
-    },
-}));
 
 const ReportRequestSD: FC = () => {
     const dispatch = useDispatch();
@@ -112,8 +90,8 @@ const ReportRequestSD: FC = () => {
                 accessor: 'report_date',
                 showColumn: true,   
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { report_date } = props.cell.row.original;
-                    return new Date(report_date).toLocaleString()
+                    const { report_date } = props.cell.row.original|| {};
+                    return report_date ? new Date(report_date).toLocaleDateString() : null;                   
                 }
             },
             {
@@ -121,8 +99,8 @@ const ReportRequestSD: FC = () => {
                 accessor: 'resolution_date',
                 showColumn: true,   
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { resolution_date } = props.cell.row.original;
-                    return new Date(resolution_date).toLocaleString()
+                    const { resolution_date } = props.cell.row.original|| {};
+                    return resolution_date ? new Date(resolution_date).toLocaleDateString() : null;                    
                 }
             },            
         ],
@@ -220,14 +198,6 @@ const ReportRequestSD: FC = () => {
         setFilterModalOpen(true);
     };
 
-    const [allParameters, setAllParameters] = useState<any>({});
-    const setValue = (parameterName: any, value: any) => {
-        setAllParameters({ ...allParameters, [parameterName]: value });
-    };
-
-    //channel Filter ----------------------------------------------------------------------------------
-
-
     const channelTypeList = filterChannel.data || [];
     const channelTypeFilteredList = new Set();
     const [selectedChannel, setSelectedChannel] = useState("");
@@ -239,11 +209,8 @@ const ReportRequestSD: FC = () => {
         channelTypeFilteredList.add(item.type);
         return true;
     });
-
-    console.log(filterChannel.data)   
-
+    
     const fetchFiltersChannels = () => dispatch(getCollectionAux2(getCommChannelLst()))
-
 
     return (
         <React.Fragment>

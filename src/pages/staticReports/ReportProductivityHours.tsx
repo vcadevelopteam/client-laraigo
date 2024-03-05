@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { ListItemIcon } from "@material-ui/core";
 import { CellProps } from 'react-table';
+import PropTypes from 'prop-types';
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -66,6 +67,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
         pageIndex: 0,
         filters: {},
         sorts: {},
+        distinct: {},
         daterange: null,
     });
     const [allParameters, setAllParameters] = useState<any>({});
@@ -183,51 +185,73 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 type: 'date',
                 sortType: 'datetime',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { datehour } = props.cell.row.original;
-                    return new Date(datehour).toLocaleDateString();
-                }
+                    const { datehour } = props.cell.row.original || {};
+                    return datehour ? new Date(datehour).toLocaleDateString() : null;
+                }            
+               
             },
             {
                 Header: t(langKeys.report_userproductivityhours_agent),
                 accessor: 'agent',            
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { agent } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{agent}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_hoursrange),
                 accessor: 'hoursrange',            
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { hoursrange } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{hoursrange}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_worktime),
                 helpText: t(langKeys.report_userproductivityhours_worktime_help),
                 accessor: 'worktime',
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { worktime } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{worktime}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_busytimeoutsidework),
                 helpText: t(langKeys.report_userproductivityhours_busytimeoutsidework),
                 accessor: 'busytimeoutsidework',
                 showColumn: true,  
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { busytimeoutsidework } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{busytimeoutsidework}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_busytimewithinwork),
                 accessor: 'busytimewithinwork',
                 helpText: t(langKeys.report_userproductivityhours_busytimewithinwork_help),             
                 showColumn: true,                     
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { busytimewithinwork } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{busytimewithinwork}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_freetimewithinwork),
                 accessor: 'freetimewithinwork',
                 showColumn: true,                   
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { freetimewithinwork } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{freetimewithinwork}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_onlinetime),
                 accessor: 'onlinetime',         
                 helpText: t(langKeys.report_userproductivityhours_onlinetime_help),            
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { onlinetime } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{onlinetime}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_availabletime),
@@ -235,7 +259,10 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 helpText: t(langKeys.report_userproductivityhours_availabletime_help),
                 groupedBy: false,  
                 showColumn: true, 
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { availabletime } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{availabletime}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_idletime),
@@ -243,26 +270,38 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 groupedBy: false,  
                 helpText: t(langKeys.report_userproductivityhours_idletime_help),
                 showColumn: true,     
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { idletime } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{idletime}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_idletimewithoutattention),
                 accessor: 'idletimewithoutattention',                 
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { idletimewithoutattention } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{idletimewithoutattention}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_qtytickets),
                 accessor: 'qtytickets',
                 helpText: t(langKeys.report_userproductivityhours_qtytickets_help),
                 groupedBy: false,  
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { qtytickets } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{qtytickets}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_qtyconnection),
                 accessor: 'qtyconnection',         
                 helpText: t(langKeys.report_userproductivityhours_qtyconnection_help),      
                 showColumn: true,     
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { qtyconnection } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{qtyconnection}</div>;
+                },
             },
             {
                 Header: t(langKeys.report_userproductivityhours_qtydisconnection),
@@ -270,14 +309,14 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 accessor: 'qtydisconnection',
                 showColumn: true,     
                 groupedBy: false,  
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { qtydisconnection } = props.cell.row.original || {};
+                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{qtydisconnection}</div>;
+                },
             },
         ],
         []
     );
-
-
-   
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {

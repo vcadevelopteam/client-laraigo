@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -20,6 +19,7 @@ import { Accordion, AccordionDetails, AccordionSummary } from '@material-ui/core
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { CellProps } from 'react-table';
 
 const serviceTypes = [
     {
@@ -667,7 +667,7 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                 minWidth: 60,
                 width: '1%',
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
@@ -697,8 +697,8 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                 accessor: 'status',
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { status } = props.cell.row.original || {}; 
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },

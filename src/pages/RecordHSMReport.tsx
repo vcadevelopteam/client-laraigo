@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -21,6 +20,7 @@ import {
 import { useForm } from 'react-hook-form';
 import Graphic from 'components/fields/Graphic';
 import AssessmentIcon from '@material-ui/icons/Assessment';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -130,7 +130,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 accessor: 'status',
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
@@ -205,7 +205,6 @@ const RecordHSMRecord: FC = () => {
         return () => {
             dispatch(cleanViewChange());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     const columns = React.useMemo(
@@ -251,10 +250,15 @@ const RecordHSMRecord: FC = () => {
                 NoFilter: true,
                 type: 'number',
                 sortType: 'number',
-                Cell: (props: any) => {
-                    const { satisfactoryp } = props.cell.row.original;
-                    return `${parseInt(satisfactoryp)} %`;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const { row } = props.cell;                    
+                    if (row && row.original && 'satisfactoryp' in row.original) {
+                        const { satisfactoryp } = row.original;
+                        return `${parseInt(satisfactoryp)} %`;
+                    }                
+                    return ""; 
                 }
+                
             },
             {
                 Header: `% ${t(langKeys.failed)}`,
@@ -262,10 +266,15 @@ const RecordHSMRecord: FC = () => {
                 NoFilter: true,
                 type: 'number',
                 sortType: 'number',
-                Cell: (props: any) => {
-                    const { failedp } = props.cell.row.original;
-                    return `${parseInt(failedp)} %`;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const { row } = props.cell;                
+                    if (row && row.original && 'failedp' in row.original) {
+                        const { failedp } = row.original;
+                        return `${parseInt(failedp)} %`;
+                    }                
+                    return "";
                 }
+                
             },
             
         ],

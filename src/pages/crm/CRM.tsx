@@ -679,14 +679,16 @@ const CRM: FC = () => {
         case 'status':
             return (
             <div style={{ cursor: 'pointer' }}>
-                {(t(`status_${row[column.id]}`.toLowerCase()) || "").toUpperCase()}
-            </div>
+                {row[column.id] ? (t(`status_${row[column.id]}`.toLowerCase()) || "").toUpperCase() : ""}
+            </div>            
             )
         case 'contact_name':
             return (
             <div style={{ cursor: 'pointer' }}>
-                <div>{t(langKeys.name)}: {row['contact_name']}</div>
-                {Boolean(row['persontype']) && <div>{t(langKeys.personType)}: {row['persontype']}</div>}
+<div>{t(langKeys.name)}: {row && row['contact_name'] !== undefined ? row['contact_name'] : ""}</div>
+
+{Boolean(row['persontype']) && <div>{t(langKeys.personType)}: {row['persontype'] || ""}</div>}
+
                 <div>{t(langKeys.email)}: {row['email']}</div>
                 <div>{t(langKeys.phone)}: {row['phone']}</div>
                 <Rating
@@ -701,9 +703,10 @@ const CRM: FC = () => {
         case 'tags':
             return (
             <div style={{ cursor: 'pointer' }}>
-                {row[column.id] !== '' && row[column.id].split(',').map((t: string, i: number) => (
+              {row[column.id] && row[column.id] !== '' && row[column.id].split(',').map((t: string, i: number) => (
                 <span key={`lead${row['leadid']}${row[column.id]}${i}`} className={classes.tag}>{t}</span>
                 ))}
+
             </div>
             )
         case 'comments':
@@ -728,24 +731,25 @@ const CRM: FC = () => {
         case 'phase':
         return (
           <div style={{ cursor: 'pointer' }}>
-            {(t((row[column.id]).toLowerCase())).toUpperCase()}
+           {row && column.id && (t((row[column.id]).toLowerCase()) || '').toUpperCase() }
           </div>
         )
       default:
             return (
             <div style={{ cursor: 'pointer' }}>
                 {
-                column.sortType === "datetime" && Boolean(row[column.id])
-                    ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                    })
-                    : row[column.id]
+                    column.sortType === "datetime" && row && column.id && Boolean(row[column.id])
+                        ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "numeric",
+                            minute: "numeric",
+                            second: "numeric"
+                        })
+                        : row && column.id && row[column.id]
                 }
+
             </div>
             )
         }

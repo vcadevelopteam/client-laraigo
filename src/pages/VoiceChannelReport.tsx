@@ -41,7 +41,11 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
-    },   
+    }, 
+    filterComponent: {
+        minWidth: "220px",
+        maxWidth: "260px",
+    },  
 }));
 
 const columnsTemp = [
@@ -164,7 +168,7 @@ const DetailVoiceChannelReport: React.FC<DetailVoiceChannelReportProps> = ({ dat
                     )}
                     columns={columns}
                     data={multiDataAux2.data[0]?.data||[]}
-                    download={true}
+                    download={true}                   
                     loading={multiDataAux2.loading}
                     register={false}
                     filterGeneral={false}                
@@ -179,18 +183,18 @@ const VoiceChannelReport: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiData);
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [openModal, setOpenModal] = useState(false);
-    const [view, setView] = useState('GRID');
-    const classes = useStyles()
-
     const mainPaginated = useSelector(state => state.main.mainPaginated);
+    const [viewSelected, setViewSelected] = useState("view-1");  
+    const classes = useStyles()    
     const resExportData = useSelector(state => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null })
+    const [allParameters, setAllParameters] = useState<any>({});
+    const [openModal, setOpenModal] = useState(false);
+    const [view, setView] = useState('GRID');
 
     useEffect(() => {
         dispatch(setViewChange("voicecallreport"))
@@ -226,7 +230,7 @@ const VoiceChannelReport: FC = () => {
                 minWidth: 60,
                 width: '1%',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.postexternalid
                         && row.callanswereddate ?
                         <Tooltip title={t(langKeys.download_record) || ""}>
@@ -260,7 +264,7 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'tickettime',
                 NoFilter: false,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.tickettime||"00:00:00")
                 }
             },
@@ -269,7 +273,7 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'finishtime',
                 NoFilter: false,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.finishtime||"00:00:00")
                 }
             },
@@ -279,7 +283,7 @@ const VoiceChannelReport: FC = () => {
                 NoFilter: false,
                 helpText: t(langKeys.transfertimecall_tooltip),
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.handoffdate||"00:00:00")
                 }
             },
@@ -291,12 +295,14 @@ const VoiceChannelReport: FC = () => {
             {
                 Header: t(langKeys.person),
                 accessor: 'name',
-                NoFilter: false
+                NoFilter: false,
+                showColumn: true,   
             },
             {
                 Header: t(langKeys.phone),
                 accessor: 'phone',
-                NoFilter: false
+                NoFilter: false,
+                showColumn: true, 
             },
             {
                 Header: t(langKeys.origin),
@@ -312,15 +318,17 @@ const VoiceChannelReport: FC = () => {
                 Header: t(langKeys.tipification),
                 accessor: 'classification',
                 NoFilter: false,
-                helpText: t(langKeys.tipification_tooltip)
+                helpText: t(langKeys.tipification_tooltip),
+                showColumn: true, 
             },
             {
                 Header: t(langKeys.totalTime),
                 accessor: 'totalduration',
                 NoFilter: false,
                 helpText: t(langKeys.totalTime_tooltip),
+                showColumn: true, 
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.totalduration||"00:00:00")
                 }
             },
@@ -329,8 +337,9 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'agentduration',
                 NoFilter: false,
                 helpText: t(langKeys.advisorattentiontime_tooltip),
+                showColumn: true, 
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.agentduration||"00:00:00")
                 }
             },
@@ -339,8 +348,9 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'customerwaitingduration',
                 NoFilter: false,
                 helpText: t(langKeys.customerwaitingtime_tooltip),
+                showColumn: true, 
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.customerwaitingduration||"00:00:00")
                 }
             },
@@ -349,8 +359,9 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'holdingtime',
                 NoFilter: false,
                 helpText: t(langKeys.callwaitingtime_tooltip),
+                showColumn: true, 
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.holdingtime||"00:00:00")
                 }
             },
@@ -359,8 +370,9 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'transferduration',
                 NoFilter: false,
                 helpText: t(langKeys.transfertime_tooltip),
+                showColumn: true, 
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (row.transferduration||"00:00:00")
                 }
             },
@@ -374,17 +386,16 @@ const VoiceChannelReport: FC = () => {
         }
     }, [multiData])
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange })
         dispatch(getCollectionPaginated(getPaginatedReportVoiceCall({
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,
             take: pageSize,
             skip: pageIndex * pageSize,
             sorts: sorts,
-            filters: {
-                ...filters,
-            },
+            filters: {...filters},
+            ...allParameters,
         })))
     };
     
@@ -458,8 +469,7 @@ const VoiceChannelReport: FC = () => {
     const handlerSearchGraphic = (daterange: any, column: string) => {
         setfetchDataAux(prev => ({ ...prev, daterange }));
         dispatch(getMainGraphic(getReportGraphic(
-            "UFN_REPORT_VOICECALL_GRAPHIC",
-            "voicecall",
+            "UFN_REPORT_VOICECALL_GRAPHIC", "voicecall",
             {
                 filters: {},
                 sorts: {},
@@ -467,9 +477,14 @@ const VoiceChannelReport: FC = () => {
                 enddate: daterange?.endDate!,
                 column,
                 summarization: 'COUNT',
+                ...allParameters,
             }
         )));
     }
+
+    const setValue = (parameterName: any, value: any) => {
+        setAllParameters({ ...allParameters, [parameterName]: value });
+    };
 
     if (viewSelected === "view-1") {
 
@@ -486,11 +501,33 @@ const VoiceChannelReport: FC = () => {
                         pageCount={pageCount}
                         autotrigger={true}                        
                         filterGeneral={false}
-                        FiltersElement={<></>}
                         exportPersonalized={triggerExportData}
                         loading={mainPaginated.loading}
                         filterrange={true} 
+                        showHideColumns={true}
                         register={false}
+                        FiltersElement={                            
+                            <FieldSelect                              
+                                valueDefault={allParameters["channel"]}
+                                label={t("report_reportvoicecall_filter_channels")}
+                                className={classes.filterComponent}
+                                key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
+                                variant="outlined"
+                                loading={multiData.loading}
+                                onChange={(value) => setValue("channel", value ? value["typedesc"] : "")}                                
+                                data={
+                                    // multiData?.data[
+                                    //     multiData?.data?.findIndex(
+                                    //         (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
+                                    //     )
+                                    // ]?.data
+                                    []
+                                }
+                                optionDesc={"type"}
+                                optionValue={"typedesc"}
+                            />
+                            
+                        }
                         ButtonsElement={() => (
                             <Button
                                 className={classes.button}
@@ -551,9 +588,10 @@ interface SummaryGraphicProps {
     filters?: Dictionary;
     columns: any[];
     columnsprefix: string;
+    allParameters?: any;
 }
 
-const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix }) => {
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix, allParameters = {}, }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -585,10 +623,28 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 startdate: daterange?.startDate!,
                 enddate: daterange?.endDate!,
                 column: data.column,
-                summarization: 'COUNT'
+                summarization: 'COUNT',
+                ...allParameters,
             }
         )));
     }
+
+    const excludeVoiceCall= [      
+        "ticketnum",
+        "tickettime",  
+        "finishtime",
+        "handoffdate",
+        "phone",
+        "totalduration",
+        "agentduration",  
+        "customerwaitingduration",
+        "holdingtime",  
+        "transferduration",
+    ];
+
+    const filteredColumns = columns.filter((column) => !excludeVoiceCall.includes(column.key));
+
+
 
     return (
         <DialogZyx
@@ -608,7 +664,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('graphictype')}
                     error={errors?.graphictype?.message}
                     onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }, { key: 'LINE', value: 'LINEA' },]}
                     uset={true}
                     prefixTranslation="graphic_"
                     optionDesc="value"
@@ -622,7 +678,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('column')}
                     error={errors?.column?.message}
                     onChange={(value) => setValue('column', value?.key)}
-                    data={columns}
+                    data={filteredColumns}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}

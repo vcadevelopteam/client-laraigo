@@ -152,6 +152,7 @@ import Typography from "@material-ui/core/Typography";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import PartnerPeriodReport from "./PartnerPeriodReport";
+import { CellProps } from "recharts";
 
 interface RowSelected {
     edit: boolean;
@@ -367,8 +368,8 @@ const CostPerPeriod: React.FC<{
             {
                 accessor: "billingstartdate",
                 Header: t(langKeys.billingperiod_plandate),
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     return <div>{dateToLocalDate(row.billingstartdate)}</div>;
                 },
             },
@@ -378,7 +379,7 @@ const CostPerPeriod: React.FC<{
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { billingtotalfeenet } = props.cell.row.original;
+                    const { billingtotalfeenet } = props.cell.row.original || {};
                     return formatNumber(billingtotalfeenet || 0);
                 },
             },
@@ -388,7 +389,7 @@ const CostPerPeriod: React.FC<{
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { billingtotalfee } = props.cell.row.original;
+                    const { billingtotalfee } = props.cell.row.original || {};
                     return formatNumber(billingtotalfee || 0);
                 },
             },
@@ -398,7 +399,7 @@ const CostPerPeriod: React.FC<{
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { contactuniquequantity } = props.cell.row.original;
+                    const { contactuniquequantity } = props.cell.row.original || {};
                     return formatNumberNoDecimals(contactuniquequantity || 0);
                 },
             },
@@ -408,7 +409,7 @@ const CostPerPeriod: React.FC<{
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { conversationquantity } = props.cell.row.original;
+                    const { conversationquantity } = props.cell.row.original || {};
                     return formatNumberNoDecimals(conversationquantity || 0);
                 },
             },
@@ -418,7 +419,7 @@ const CostPerPeriod: React.FC<{
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { conversationinteractionquantity } = props.cell.row.original;
+                    const { conversationinteractionquantity } = props.cell.row.original || {};
                     return formatNumberNoDecimals(conversationinteractionquantity || 0);
                 },
             },
@@ -428,7 +429,7 @@ const CostPerPeriod: React.FC<{
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { agentsupervisoractivequantity } = props.cell.row.original;
+                    const { agentsupervisoractivequantity } = props.cell.row.original || {};
                     return formatNumberNoDecimals(agentsupervisoractivequantity || 0);
                 },
             },
@@ -438,7 +439,7 @@ const CostPerPeriod: React.FC<{
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { agentadviseractivequantity } = props.cell.row.original;
+                    const { agentadviseractivequantity } = props.cell.row.original || {};
                     return formatNumberNoDecimals(agentadviseractivequantity || 0);
                 },
             },
@@ -702,7 +703,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 Header: t(langKeys.timesheet_startdate),
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return <div>{dateToLocalDate(row.startdate)}</div>;
                 },
             },
@@ -716,7 +717,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 Header: t(langKeys.timesheet_registerdate),
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return <div>{dateToLocalDate(row.registerdate)}</div>;
                 },
             },
@@ -735,7 +736,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 Header: t(langKeys.timesheet_registerprofile),
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (t(`${row.registerprofile}`.toLowerCase()) || "").toUpperCase();
                 },
             },
@@ -750,7 +751,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 Header: t(langKeys.timesheet_registerdetail),
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const { registerdetail } = props.cell.row.original;
+                    const { registerdetail } = props.cell.row.original || {};
                     return (
                         <Fragment>
                             <div style={{ display: "inline-block" }}>{(registerdetail || "").substring(0, 50)}... </div>
@@ -764,7 +765,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 NoFilter: true,
                 prefixTranslation: "status_",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (t(`status_${row.status}`.toLowerCase()) || "").toUpperCase();
                 },
             },
@@ -5015,7 +5016,7 @@ const Payments: React.FC<{
                 NoFilter: true,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
 
                     let showPayButton = false;
                     let showUpdateButton = false;
@@ -5100,7 +5101,7 @@ const Payments: React.FC<{
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { totalamount } = props.cell.row.original;
+                    const { totalamount } = props.cell.row.original || {};
                     return formatNumber(totalamount || 0);
                 },
             },
@@ -5116,7 +5117,7 @@ const Payments: React.FC<{
                 accessor: "hasreportcolumn",
                 Header: t(langKeys.gotoreport),
                 Cell: (props: any) => {
-                    const selectedrow = props.cell.row.original;
+                    const selectedrow = props.cell.row.original || {};
                     const hasreport = selectedrow?.hasreport;
                     if (hasreport) {
                         return (
@@ -6041,7 +6042,7 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                 NoFilter: true,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     if (
                         (row.hasreport === false || row.hasreport === true) &&
                         row.invoicestatus !== "INVOICED" &&
@@ -6152,7 +6153,7 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                 accessor: "invoicedate",
                 Header: t(langKeys.invoicedate),
                 Cell: (props: any) => {
-                    const { invoicedate } = props.cell.row.original;
+                    const { invoicedate } = props.cell.row.original || {};
                     return invoicedate || null;
                 },
             },
@@ -6160,7 +6161,7 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                 accessor: "expirationdate",
                 Header: t(langKeys.expirationdate),
                 Cell: (props: any) => {
-                    const { expirationdate } = props.cell.row.original;
+                    const { expirationdate } = props.cell.row.original || {};
                     return expirationdate || null;
                 },
             },
@@ -6174,7 +6175,7 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { subtotal } = props.cell.row.original;
+                    const { subtotal } = props.cell.row.original || {};
                     return formatNumber(subtotal || 0);
                 },
             },
@@ -6184,7 +6185,7 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { taxes } = props.cell.row.original;
+                    const { taxes } = props.cell.row.original || {};
                     return formatNumber(taxes || 0);
                 },
             },
@@ -6194,7 +6195,7 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { totalamount } = props.cell.row.original;
+                    const { totalamount } = props.cell.row.original || {};
                     return formatNumber(totalamount || 0);
                 },
             },
@@ -6202,8 +6203,8 @@ const Billing: React.FC<{ dataAllCurrency: any; dataCorp: any; dataOrg: any }> =
                 accessor: "commentcontent",
                 Header: t(langKeys.comments),
                 Cell: (props: any) => {
-                    const { commentcontent } = props.cell.row.original;
-                    const rowdata = props.cell.row.original;
+                    const { commentcontent } = props.cell.row.original || {};
+                    const rowdata = props.cell.row.original || {};
                     if (commentcontent) {
                         return (
                             <Fragment>
@@ -9432,7 +9433,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { amount } = props.cell.row.original;
+                    const { amount } = props.cell.row.original || {};
                     return formatNumber(amount || 0);
                 },
             },
@@ -9442,7 +9443,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { balance } = props.cell.row.original;
+                    const { balance } = props.cell.row.original || {};
                     return formatNumber(balance || 0);
                 },
             },
@@ -10920,7 +10921,7 @@ const PaymentMethods: React.FC<{}> = () => {
                 NoFilter: true,
                 width: "1%",
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}

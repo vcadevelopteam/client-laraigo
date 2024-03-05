@@ -16,6 +16,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { showSnackbar, manageConfirmation } from 'store/popus/actions';
 import { dataYears } from 'common/helpers';
 import { FieldEditMulti, DialogZyx } from 'components';
+import { CellProps } from "react-table";
 
 interface RowSelected {
     row: Dictionary | null,
@@ -139,8 +140,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: `${t(langKeys.client)}`,
                 accessor: 'client',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     return <span style={{ color: row["color"] }}>{row.corpdesc}</span>
                 },
             },
@@ -148,8 +149,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.year),
                 accessor: 'year',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original|| {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -158,8 +159,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.month),
                 accessor: 'month',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -168,7 +169,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: `${t(langKeys.corporation)}`,
                 accessor: 'corpdesc',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
@@ -178,8 +179,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: `${t(langKeys.organization)}`,
                 accessor: 'orgdesc',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -188,8 +189,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.receipt),
                 accessor: 'seriecorrelative',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const urlpdf = props.cell.row.original.urlpdf;
                     const docnumber = (props.cell.row.original.serie && props.cell.row.original.correlative) ? (props.cell.row.original.serie + '-' + props.cell.row.original.correlative.toString().padStart(8, '0')) : null;
                     return <>
@@ -215,8 +216,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.currency),
                 accessor: 'currency',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -225,8 +226,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.reportinvoice_location),
                 accessor: 'location',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -236,8 +237,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 accessor: 'subtotal',
                 NoFilter: true,
                 type: 'number',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{formatCurrency(row[column])}</span>
                 },
@@ -247,8 +248,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 accessor: 'taxes',
                 NoFilter: true,
                 type: 'number',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{formatCurrency(row[column])}</span>
                 },
@@ -258,8 +259,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 accessor: 'totalamount',
                 NoFilter: true,
                 type: 'number',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{formatCurrency(row[column])}</span>
                 },
@@ -268,8 +269,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.statusofinvoice),
                 accessor: 'invoicestatus',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -278,8 +279,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.paymentstatus),
                 accessor: 'paymentstatus',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -288,8 +289,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.dateofissue),
                 accessor: 'invoicedate',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -298,8 +299,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.dueDate),
                 accessor: 'expirationdate',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -308,8 +309,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.paymentdate),
                 accessor: 'paymentdate',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
@@ -318,8 +319,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Header: t(langKeys.comments),
                 accessor: 'commentcontent',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const { commentcontent } = props.cell.row.original;
                     if (commentcontent) {
                         return (<span style={{ color: row["color"] }}><Fragment>
@@ -641,11 +642,13 @@ const ReportInvoice: FC = () => {
                 type: 'number',
                 sortType: 'number',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
-                    const color = row[`color_${i + 1}`] || "gray"
-                    return <span style={{ color: color }}>{formatCurrencyNoDecimals(row[column])}</span>
+                    const colorKey = `color_${i + 1}`;
+                    const color = row && colorKey in row ? row[colorKey] : "gray";
+                    const cellValue = row && column in row ? formatCurrencyNoDecimals(row[column]) : "";
+                    return <span style={{ color: color }}>{cellValue}</span>;                    
                 },
                 Footer: (props: any) => {
                     const total = React.useMemo(
@@ -662,11 +665,13 @@ const ReportInvoice: FC = () => {
                 type: 'number',
                 sortType: 'number',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     const column = props.cell.column.id;
-                    return <>{formatCurrencyNoDecimals(row[column])}</>
+                    const cellValue = row && column in row ? formatCurrencyNoDecimals(row[column]) : "";
+                    return <>{cellValue}</>;
                 },
+                
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>

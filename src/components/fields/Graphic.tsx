@@ -128,7 +128,7 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
                 accessor: 'columnname',
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
 
                     if (graphicType === "BAR")
                         return row?.columnname;
@@ -152,7 +152,7 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
                 NoFilter: true,
                 type: 'number',
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return row.percentage + "%";
                 }
             },
@@ -241,20 +241,6 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
         };
     };    
     const randomColorGeneratorPerPage = getNextColorGeneratorPerPage();
-
-    
-
-
-    const pruebaColor = [ 
-        "#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00"
-    ]
-
-    const assignColor = (index: any) => {
-        const colorIndex = index % pruebaColor.length;
-        return pruebaColor[colorIndex];
-    };
-
-
 
     useEffect(() => {
         if (dataGraphic.length > 0) {
@@ -398,6 +384,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                 <KeyboardArrowRightIcon />
                             </Button>
                         </div>
+
                         <ResponsiveContainer aspect={4.0 / 2}>
                             <BarChart
                                 data={slicedData}
@@ -419,21 +406,20 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                         slicedData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={randomColorGeneratorPerPage()} />
                                         ))
-                                    }
-                                    
+                                    }                                    
                                 </Bar>
-
-
                             </BarChart>
                         </ResponsiveContainer>
+
+
                     </div>
                     <div style={{ overflowX: 'auto' }}>
                         <TableResume
                             row={row}
                             column={column}
                             graphicType={graphicType}
-                            data={dataGraphic}
                             columnDesc={columnDesc}
+                            data={dataGraphic}
                         />
                     </div>
                 </div>  
@@ -454,7 +440,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                     innerRadius={40}
                                     fill="#8884d8"
                                 >
-                                    {dataGraphic.map((item, i) => (
+                                    {dataGraphic.map((item) => (
                                         <Cell
                                             key={item.columnname}
                                             fill={item.color}

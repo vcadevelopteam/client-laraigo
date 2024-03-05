@@ -602,7 +602,7 @@ const Tipifications: FC = () => {
                 minWidth: 60,
                 width: '1%',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original  || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
@@ -628,7 +628,7 @@ const Tipifications: FC = () => {
                 prefixTranslation: 'type_',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { type } = props.cell.row.original;
+                    const { type } = props.cell.row.original || {};
                     return (t(`type_${type}`) || "").toUpperCase()
                 }
             },
@@ -647,7 +647,7 @@ const Tipifications: FC = () => {
                 accessor: 'order',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     if(row.type === 'CATEGORIA') return row.order
                     else return ''
                 }
@@ -669,7 +669,7 @@ const Tipifications: FC = () => {
                 NoFilter: true,
                 prefixTranslation: 'status_',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { status } = props.cell.row.original;
+                    const { status } = props.cell.row.original || {};
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             }

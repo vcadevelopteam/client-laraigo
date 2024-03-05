@@ -80,7 +80,6 @@ React.useEffect(() => {
 }, [register, openModal]);
   
 const submitData = handleMainSubmit((data) => {
-  debugger
   const callback = () => {
       dispatch(showBackdrop(true));
       dispatch(execute(insInventoryBalance(data)));

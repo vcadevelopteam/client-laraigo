@@ -16,6 +16,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getLeadTemplates } from 'store/lead/actions';
+import { CellProps } from 'react-table';
 
 
 interface RowSelected {
@@ -503,8 +504,8 @@ const AutomatizationRules: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
@@ -529,7 +530,7 @@ const AutomatizationRules: FC = () => {
                 accessor: 'tags',
                 NoFilter: false,
                 Cell: (props: any) => {
-                    const { tags, products } = props.cell.row.original;
+                    const { tags, products } = props.cell.row.original || {};
                     return (
                         <>
                             <div><b>Tags:</b> {tags}</div>
@@ -549,7 +550,7 @@ const AutomatizationRules: FC = () => {
                 NoFilter: false,
                 prefixTranslation: 'xdays_',
                 Cell: (props: any) => {
-                    const { shippingtype } = props.cell.row.original;
+                    const { shippingtype } = props.cell.row.original || {};
                     return (t(`xdays_${shippingtype}`.toLowerCase()) || "").toUpperCase()
                 }
             },
@@ -569,7 +570,7 @@ const AutomatizationRules: FC = () => {
                 NoFilter: false,
                 prefixTranslation: 'status_',
                 Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
+                    const { status } = props.cell.row.original || {};
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },

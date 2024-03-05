@@ -122,8 +122,6 @@ const SelectProductsForReturnDialog: React.FC<{
                       ticketnumber: item.ticketid,
                       transactiontype: "DEVOLUCION",
                   }));
-
-                  debugger
               updateRecords((p: Dictionary[]) => [...p, ...dataTosend]);
               setOpenModal(false);
               setSelectedRows({});
