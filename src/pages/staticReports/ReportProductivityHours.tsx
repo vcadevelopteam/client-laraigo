@@ -67,6 +67,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
         pageIndex: 0,
         filters: {},
         sorts: {},
+        distinct: {},
         daterange: null,
     });
     const [allParameters, setAllParameters] = useState<any>({});

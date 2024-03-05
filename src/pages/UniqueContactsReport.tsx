@@ -25,10 +25,7 @@ import Zoom from '@material-ui/core/Zoom';
 import TablePaginated from 'components/fields/table-paginated';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import { CellProps } from 'react-table';
-import { Button, Checkbox, FormControlLabel, Grid, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ViewWeekIcon from '@material-ui/icons/ViewWeek';
-
+import { Button } from '@material-ui/core';
 
 const UNIQUECONTACTS = 'UNIQUECONTACTS';
 
@@ -133,7 +130,7 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 NoFilter: true,
                 type: 'number',
                 Cell: (props: CellProps<Dictionary>)  => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return row.percentage.toFixed(2) + "%";
                 }
             },
@@ -225,7 +222,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal,setView, setO
 }
 
 const RADIAN = Math.PI / 180;
-export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value, ...rest }: Dictionary) => {
+export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, value, ...rest }: Dictionary) => {
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -238,7 +235,7 @@ export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadi
 };
 
 const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewSelected }) => {
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null })
     // const [allParameters, setAllParameters] = useState<Dictionary>({});
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const [totalrow, settotalrow] = useState(0);
@@ -249,8 +246,8 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
     const classes = useStyles()
     const { t } = useTranslation();
     
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange })
         dispatch(getCollectionPaginated(selUniqueContactsPcc({
             take: pageSize,
             skip: pageIndex * pageSize,
@@ -293,7 +290,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
                 type: 'date',
                 sortType: 'datetime',
                 Cell: (props: CellProps<Dictionary>)  => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
                 }
             },
@@ -304,7 +301,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
                 type: 'date',
                 sortType: 'datetime',
                 Cell: (props: CellProps<Dictionary>)  => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
                 }
             },
@@ -571,11 +568,11 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
     
     useEffect(() => {
         if (!mainResult.loading && mainResult?.key?.includes("UFN_REPORT_UNIQUECONTACTS_SEL")){
-            let mainTotal:any = {
+            const mainTotal: Dictionary = {
                 client: "Total",
                 month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
             }
-            let rawdata: any[] = [];
+            const rawdata: Dictionary[] = [];
             multiData.data[1].data.forEach((x)=>{
                 rawdata.push({
                     client: `${x.corpdesc} - ${x.orgdesc}`,
@@ -607,7 +604,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 }
             })
             setGridData([...rawdata,mainTotal]||[]);
-            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:randomColorGeneratorPerPage()}],[]))
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:Dictionary, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:randomColorGeneratorPerPage()}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
@@ -659,6 +656,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                                 </Box>
                             )}
                             download={true}
+                            showHideColumns={true}
                             filterGeneral={false}
                             loading={mainResult.loading}
                             register={false}
@@ -735,12 +733,12 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                                         <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
                                         <YAxis />
                                         <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
-                                        <Line type="linear" dataKey="value" stroke="#8884d8" />
+                                        <Line type="linear" dataKey="value" stroke="#7721AD" />
                                         </LineChart>
                                     </ResponsiveContainer>
                                     </div>
                                     <div style={{ overflowX: 'auto' }}>
-                                    <TableResume
+                                    <TableResume                                    
                                         graphicType={graphicType}
                                         data={dataGraph}
                                     />
@@ -763,7 +761,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                                                 innerRadius={40}
                                                 fill="#7721AD"
                                             >
-                                                {dataGraph.map((item:any, i:number) => (
+                                                {dataGraph.map((item:Dictionary) => (
                                                     <Cell
                                                         key={item.name}
                                                         fill={item.color}
@@ -812,7 +810,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
 
 
 const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, setViewSelected }) => {
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null })
     // const [allParameters, setAllParameters] = useState<Dictionary>({});
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const mainResult = useSelector(state => state.main.mainAux2);
@@ -831,8 +829,8 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
         setRowSelected({ ...row, displayname: row?.name||"" })
     }, [mainResult]);
     
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange })
         dispatch(getCollectionPaginated(selUniqueContactsConversation({
             take: pageSize,
             skip: pageIndex * pageSize,
@@ -1051,7 +1049,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 totalrow={totalrow}
                 loading={mainPaginated.loading}
                 pageCount={pageCount}
-                autotrigger={true}
+                autotrigger={true}             
                 download={true}
                 ButtonsElement={() => (
                     <>
@@ -1123,15 +1121,16 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 Header: t(langKeys.client),
                 accessor: 'client',
                 width: 'auto',
-                Cell: (props: CellProps<Dictionary>)  => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const column = props.cell.column;
-                    const row = props.cell.row.original;
-                    if(row.client === "Total"){
-                        return <div><b>{row[column.id]}</b></div>
-                    }else{
-                        return <div>{row[column.id]}</div>
+                    const row = props.cell.row.original || {}; 
+                  
+                    if (row.client === "Total") {
+                      return <div><b>{row[column.id]}</b></div>;
+                    } else {                  
+                      return <div>{row[column.id] !== undefined ? row[column.id] : ''}</div>;
                     }
-                }
+                }                  
             },
             {
                 Header: t(langKeys.month_01),
@@ -1302,7 +1301,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 }
             })
             setGridData([...rawdata,mainTotal]||[]);
-            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color: randomColorGeneratorPerPage()}],[]))
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color: randomColorGeneratorPerPage()}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
@@ -1332,6 +1331,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                 </Box>
                             )}
                             download={true}
+                            showHideColumns={true}
                             filterGeneral={false}
                             loading={mainResult.loading}
                             register={false}
@@ -1532,39 +1532,6 @@ const UniqueContactsReport: FC = () => {
         ))
     }
 
-    //showHide ----------------------------------------------------------------------------------
-    
-   
-    //open close modals dialogs ----------------------------------------------------------------------------------
-    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const [openSeButtons, setOpenSeButtons] = useState(false);
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
-        setOpenSeButtons((prevOpen) => !prevOpen);
-    };     
-    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
-    const handleOpenGroupedByModal = () => {
-        setGroupedByModalOpen(true);
-        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
-    };
-    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
-    const handleOpenShowColumnsModal = () => { 
-        setShowColumnsModalOpen(true);        
-        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
-    };
-    
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node;    
-            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
-                setAnchorElSeButtons(null); setOpenSeButtons(false);
-            }
-        };    
-        document.addEventListener('click', handleClickOutside);
-        return () => { document.removeEventListener('click', handleClickOutside); };
-    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
-
-
     return (
         <Fragment>            
             <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
@@ -1601,57 +1568,6 @@ const UniqueContactsReport: FC = () => {
                         >{t(langKeys.search)}
                         </Button>
                     </div>
-
-                    <div>
-                        <IconButton
-                            aria-label="more"
-                            id="long-button"
-                            //onClick={(event) => handleClickSeButtons(event)}
-                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                        >
-                            <MoreVertIcon />
-                        </IconButton>
-
-                        <div style={{ display: 'flex', gap: 8 }}>                               
-                            <Popper
-                                open={openSeButtons}
-                                anchorEl={anchorElSeButtons}
-                                placement="bottom"
-                                transition
-                                style={{marginRight:'1rem'}}
-                            >
-                                {({ TransitionProps }) => (
-                                    <Paper {...TransitionProps} elevation={5}>
-                                        <MenuItem 
-                                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                            onClick={handleOpenShowColumnsModal}                                           
-                                        >
-                                            <ListItemIcon>
-                                                <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                            </ListItemIcon>
-                                            <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
-                                        </MenuItem>   
-
-                                    </Paper>
-                                )}
-                            </Popper>
-                        </div>   
-                      
-                        {isShowColumnsModalOpen && (
-                                <DialogZyx 
-                                    open={isShowColumnsModalOpen}
-                                    title={t(langKeys.showHideColumns)}
-                                    buttonText1={t(langKeys.close)}
-                                    handleClickButton1={() => setShowColumnsModalOpen(false)}
-                                    maxWidth="sm"
-                                    buttonStyle1={{ marginBottom: '0.3rem' }}
-                                >                                    
-                                </DialogZyx>               
-                            )}
-                                            
-                    </div>  
-
-
                 </div>
             </div>
             <Tabs

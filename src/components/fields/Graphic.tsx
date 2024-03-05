@@ -418,8 +418,8 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                             row={row}
                             column={column}
                             graphicType={graphicType}
-                            data={dataGraphic}
                             columnDesc={columnDesc}
+                            data={dataGraphic}
                         />
                     </div>
                 </div>  

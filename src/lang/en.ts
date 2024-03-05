@@ -2379,6 +2379,10 @@ const translation: LangKeys = {
   newinterval: "New interval",
 
   report_loginhistory: "User login",
+  report_loginhistory_advisor: 'Name of the advisor or bot that attended the ticket.',
+  report_loginhistory_channel: 'Means by which the client was contacted.',
+  report_loginhistory_closedby: 'Name of the advisor or bot that closed the ticket.',
+  report_loginhistory_closetype: 'Indicates the type of conversation closure.',
   availability: " Availability",
   sunday: "Sunday",
   monday: "Monday",
@@ -2397,10 +2401,9 @@ const translation: LangKeys = {
   originchannel: "Source channel",
   originchannel_help: "Select the channel on which the automation rule will be applied.",
   uniqueclients: "Unique contacts",
-  report_loginhistory_status_help: `- Inbox: In receipt tray.
-- Login: Session initiated.
-- Expiration: Session expired.`,
+  report_loginhistory_status_help: `The status indicates whether the user is CONNECTED or DISCONNECTED.`,
   report_loginhistory_type: "Type",
+  report_loginhistory_type_help: "It indicates the type of connection or disconnection of the user from the system.",
   report_loginhistory_motivedescription: 'Motive',
   report_loginhistory_motivedescription_help: 'Reason for disconnection.',
 
@@ -2564,6 +2567,7 @@ const translation: LangKeys = {
 
   report_userproductivityhours_filter_adviser: 'Agent',
   report_userproductivityhours_filter_channels: 'Channels',
+  report_reportvoicecall_filter_channels: 'Channels',
   report_userproductivityhours_filter_hours: 'Hour',
 
   report_survey: 'Satisfaction surveys',

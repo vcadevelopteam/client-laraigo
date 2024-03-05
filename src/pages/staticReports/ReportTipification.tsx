@@ -122,6 +122,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
         pageIndex: 0,
         filters: {},
         sorts: {},
+        distinct: {},
         daterange: null,
     });
     const [allParameters, setAllParameters] = useState<any>({});
@@ -440,8 +441,8 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
         setWaitSave(true);
     };
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange });
         dispatch(
             getCollectionPaginated(
                 getPaginatedForReports(
