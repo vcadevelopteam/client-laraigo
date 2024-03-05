@@ -43,6 +43,12 @@ const useToolbarStyles = makeStyles(theme => ({
             height: 40
         },
     },
+    customImageLaraigo: {
+        [theme.breakpoints.down('xs')]: {
+            width: 40,
+            height: 40
+        },
+    },
     statusConnection: {
         display: 'block',
         [theme.breakpoints.down('xs')]: {
@@ -229,10 +235,20 @@ const TimeConnected: React.FC = () => {
     )
 }
 
+const excludedurls = ["/dev.laraigo.com","/testing.laraigo.com","/app.laraigo.com","/claro.laraigo.com","/localhost"]
+
 const Header = ({ classes }: IProps) => {
     const dispatch = useDispatch();
     const myClasses = useToolbarStyles();
     const openDrawer = useSelector(state => state.popus.openDrawer);
+    const user = useSelector(state => state.login.validateToken.user);
+    const customDomain = !excludedurls.some(url => window.location.href.includes(url));
+    debugger
+
+    if(customDomain){
+        const existingFavicon = document.querySelector('link[rel="icon"]');
+        existingFavicon.href = user?.iconurl||"";
+    }
 
     return (
         <AppBar
@@ -246,8 +262,8 @@ const Header = ({ classes }: IProps) => {
                     <Menu />
                 </IconButton>
                 <img
-                    style={{ height: 37, marginLeft: 8 }}
-                    className={myClasses.imageLaraigo}
+                    style={{ height: 37, marginLeft: 8, backgroundImage: customDomain?user?.logourl:"" }}
+                    className={customDomain?myClasses.customImageLaraigo:myClasses.imageLaraigo}
                     alt="logo"
                 />
                 {/* <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} /> */}
