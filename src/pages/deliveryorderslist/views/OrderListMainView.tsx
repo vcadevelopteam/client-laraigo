@@ -23,7 +23,7 @@ import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
 import { reportPdf } from "store/culqi/actions";
 import { getCollectionAux, getCollectionAux2, getMultiCollection } from "store/main/actions";
-import { deliveryConfigurationSel, orderLineSel, reasonNonDeliverySel } from "common/helpers";
+import { deliveryAppUsersSel, deliveryConfigurationSel, orderLineSel, reasonNonDeliverySel } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -100,7 +100,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 
     const fetchMulti = () => dispatch(getMultiCollection([
         reasonNonDeliverySel(0),
-        deliveryConfigurationSel({id: 0, all: true})
+        deliveryConfigurationSel({id: 0, all: true}),
+        deliveryAppUsersSel()
     ]))
     const fetchProducts = (orderid: number) => dispatch(getCollectionAux2(orderLineSel(orderid)))
 
