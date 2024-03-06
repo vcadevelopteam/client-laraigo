@@ -486,7 +486,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                         loading={mainPaginated.loading}
                                                         pageCount={pageCount}
                                                         filterrange={true}
-                                                        showHideColumns={true}
+                                                        showHideColumns={true}                                                     
                                                         FiltersElement={(
                                                             <>
                                                                 {!allFilters ? null : allFilters.map(filtro => (

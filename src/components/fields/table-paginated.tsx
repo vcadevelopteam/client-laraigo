@@ -162,7 +162,6 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeaderColumn: {
         display: 'flex',
-        //justifyContent: 'space-between',
         gap: '0.5rem',
         alignItems: 'center'
     },
@@ -791,15 +790,8 @@ const TableZyx = React.memo(({
         };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
-    // const [, setSelectedColumn] = useState<string | null>(null);
-    // const [, setSelectedRow] = useState<string | null>(null);
-
-
     const handleColumnByToggle = (column: ColumnInstance) => {
-        const columnName = column.id as string;
-        // setSelectedColumn(columnName);
-        // column.toggleGroupBy();
-        // randomizeColumns()
+        const columnName = column.id as string;       
         setPagination(prev => ({ ...prev, distinct: columnName, pageIndex: 0, trigger: true }));
         setColumnOrder?.(prev => {
             const newArray = [...prev];
@@ -810,11 +802,13 @@ const TableZyx = React.memo(({
         });
     };
 
+    const handleOrderRest = React.useCallback(()=>{
+        setColumnOrder(columns.map(column=>column.accessor))     
+    },[columns])
+
     const handleRowByToggle = (cell: Cell, column: ColumnInstance) => {
         const columnName = column.id as string;
-        // setSelectedColumn(columnName);        
         const selectedRowValue = cell.row.original[columnName] as string;
-        // column.toggleGroupBy();
 
         setPagination(prev => ({
             ...prev,
@@ -830,6 +824,7 @@ const TableZyx = React.memo(({
             trigger: true
         }));
     };
+
 
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
@@ -941,7 +936,6 @@ const TableZyx = React.memo(({
                                 color="primary"
                                 disabled={loading}
                                 onClick={exportData}
-                                // exportPersonalized
                                 startIcon={<DownloadIcon />}
                             ><Trans i18nKey={langKeys.download} />
                             </Button>
@@ -1098,12 +1092,25 @@ const TableZyx = React.memo(({
                                                                     </div>
                                                                 </Tooltip>
                                                             )}
-                                                            {column.id === pagination.distinct && (
-                                                                <KeyboardArrowRightIcon 
-                                                                    fontSize='small'
+                                                            <div
+                                                                style={{ cursor: 'pointer' }}
+                                                                onClick={() => {
+                                                                    setPagination(prev => ({
+                                                                    ...prev,
+                                                                    distinct: "",
+                                                                    pageIndex: 0,
+                                                                    trigger: true
+                                                                    }));
+                                                                    handleOrderRest()
+                                                                }}
+                                                            >
+                                                                {column.id === pagination.distinct && (
+                                                                    <KeyboardArrowRightIcon 
+                                                                    fontSize="small"
                                                                     color="action"
-                                                                />
-                                                            )}
+                                                                    />
+                                                                )}
+                                                            </div>
                                                             <Box
                                                                 component="div"
                                                                 {...column.getHeaderProps()}
