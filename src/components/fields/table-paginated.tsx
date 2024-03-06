@@ -54,7 +54,8 @@ import {
     useGroupBy,
     ColumnInstance,
     Cell,
-    useColumnOrder
+    useColumnOrder,
+    CellProps
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DialogZyx, DateRangePicker } from 'components';
@@ -679,6 +680,7 @@ const TableZyx = React.memo(({
         key: 'selection'
     });
 
+    
     const triggertmp = (fromButton: boolean = false) => {
         if (fromButton)
             setPagination(prev => ({ ...prev, pageIndex: initialPageIndex, trigger: false }));
@@ -790,8 +792,12 @@ const TableZyx = React.memo(({
         };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
+
+
+
     const handleColumnByToggle = (column: ColumnInstance) => {
         const columnName = column.id as string;       
+      
         setPagination(prev => ({ ...prev, distinct: columnName, pageIndex: 0, trigger: true }));
         setColumnOrder?.(prev => {
             const newArray = [...prev];
@@ -802,14 +808,14 @@ const TableZyx = React.memo(({
         });
     };
 
-    const handleOrderRest = React.useCallback(()=>{
+    const handleOrderReset = React.useCallback(()=>{
         setColumnOrder(columns.map(column=>column.accessor))     
     },[columns])
 
     const handleRowByToggle = (cell: Cell, column: ColumnInstance) => {
         const columnName = column.id as string;
         const selectedRowValue = cell.row.original[columnName] as string;
-
+       
         setPagination(prev => ({
             ...prev,
             distinct: "",
@@ -823,6 +829,27 @@ const TableZyx = React.memo(({
             pageIndex: 0,
             trigger: true
         }));
+    };
+
+    const handleNoGroupedBy = (columnId: string) => {
+        const excludedColumns = [          
+            "email",         
+            "enddate",
+            "endtime",
+            "derivationdate",
+            "derivationtime",
+            "firstinteractiondateagent",
+            "firstinteractiontime",
+            "tmo",
+            "tmoagent",
+            "tmeagent",
+            "holdingholdtime",
+            "suspensiontime",
+            "avgagentresponse",
+            "swingingtimes",
+            "tags"
+        ];
+        return !excludedColumns.includes(columnId);
     };
 
 
@@ -1077,21 +1104,23 @@ const TableZyx = React.memo(({
                                                     :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
-                                                            {column.id !== pagination.distinct && (
-                                                                <Tooltip title={''}>
-                                                                    <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
-                                                                        {column.canGroupBy === true && (
-                                                                            <TableSortLabel
-                                                                                active
-                                                                                direction={column.isGrouped ? 'desc' : 'asc'}
-                                                                                IconComponent={KeyboardArrowRight}
-                                                                                className={classes.headerIcon}
-                                                                                {...column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar', onClick: () => handleColumnByToggle(column) }))}
-                                                                            />
-                                                                        )}
-                                                                    </div>
-                                                                </Tooltip>
-                                                            )}
+                                                        {column.id !== pagination.distinct && handleNoGroupedBy(column.id) && (
+                                                            <Tooltip title={''}>
+                                                                <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
+                                                                    {column.canGroupBy === true && (
+                                                                        <TableSortLabel
+                                                                            active
+                                                                            direction={column.isGrouped ? 'desc' : 'asc'}
+                                                                            IconComponent={KeyboardArrowRight}
+                                                                            className={classes.headerIcon}
+                                                                            {...column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar', onClick: () => handleColumnByToggle(column) }))}
+                                                                        />
+                                                                    )}
+                                                                </div>
+                                                            </Tooltip>
+                                                        )}
+
+
                                                             <div
                                                                 style={{ cursor: 'pointer' }}
                                                                 onClick={() => {
@@ -1101,7 +1130,7 @@ const TableZyx = React.memo(({
                                                                     pageIndex: 0,
                                                                     trigger: true
                                                                     }));
-                                                                    handleOrderRest()
+                                                                    handleOrderReset()
                                                                 }}
                                                             >
                                                                 {column.id === pagination.distinct && (
@@ -1169,7 +1198,7 @@ const TableZyx = React.memo(({
                                             hover
                                             style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                         >
-                                            {row.cells.map((cell: any, i: number) => //eslint-disable-next-line
+                                            {row.cells.map((cell: CellProps<Dictionary>) => //eslint-disable-next-line
                                                 <TableCell
                                                     {...cell.getCellProps({
                                                         style: {

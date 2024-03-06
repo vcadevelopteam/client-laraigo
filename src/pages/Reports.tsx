@@ -386,7 +386,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
-        console.log("distinct", distinct)
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange });
 
         dispatch(getCollectionPaginated(getPaginatedForReports(
