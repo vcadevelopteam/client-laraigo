@@ -113,7 +113,7 @@ export const columnsHideShow: ColumnsHideShowType = {
         dateofresolution: true,       
     },
     loginhistory: {
-        user: true,
+        username: true,
         type: true,  
         motivedescription: true,
     },      
