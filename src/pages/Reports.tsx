@@ -383,6 +383,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        console.log("distinct", distinct)
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange });
 
         dispatch(getCollectionPaginated(getPaginatedForReports(
@@ -482,7 +483,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                         loading={mainPaginated.loading}
                                                         pageCount={pageCount}
                                                         filterrange={true}
-                                                        showHideColumns={true}
+                                                        showHideColumns={true}                                                     
                                                         FiltersElement={(
                                                             <>
                                                                 {!allFilters ? null : allFilters.map(filtro => (

@@ -473,7 +473,7 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         take,
         filters,
         sorts,
-        distinct: allParameters['distinct'] ? allParameters['distinct'] : "",
+        distinct: distinct || "",
         origin: origin,
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
