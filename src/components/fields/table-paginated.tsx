@@ -537,6 +537,7 @@ const TableZyx = React.memo(({
         toggleAllRowsSelected,
         allColumns,
         state: { pageIndex, pageSize, selectedRowIds },
+        setColumnOrder
     } = useTable(
         {
             columns,
