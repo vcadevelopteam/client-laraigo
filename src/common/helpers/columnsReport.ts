@@ -35,7 +35,7 @@ export const columnsHideGraphic = {
         datehour: true,
         motivedescription: true,         
     },
-}
+};
 
 export interface ColumnsHideShowType {
     [key: string]: {
