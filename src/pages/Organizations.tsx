@@ -18,7 +18,6 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { Box, Grid, IconButton, InputAdornment, Tabs, FormControlLabel } from '@material-ui/core';
 import { Close, CloudUpload, Visibility, VisibilityOff, Refresh as RefreshIcon, CompareArrows } from '@material-ui/icons';
 import { getCountryList } from 'store/signup/actions';
-import clsx from 'clsx';
 import { formatNumber } from 'common/helpers';
 import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updateScenario } from "store/voximplant/actions";
 import { CellProps } from 'react-table';

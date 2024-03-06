@@ -316,7 +316,7 @@ const TimeSheet: FC = () => {
             return (
                 <TableZyx
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: 10 }}>
                             <MuiPickersUtilsProvider
                                 locale={localesLaraigo()[navigator.language.split("-")[0]]}
                                 utils={DateFnsUtils}

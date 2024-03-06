@@ -123,7 +123,18 @@ const DeliveryConfigurationDetail: React.FC = () => {
         deliveryphoto: false,
     })
     const [nonWorkingDates, setNonWorkingDates] = useState<string[]>([])
-    const [recurrentNonWorkingDates, setRecurrentNonWorkingDates] = useState<string[]>([])
+    const [recurrentNonWorkingDates, setRecurrentNonWorkingDates] = useState<string[]>([
+        '01-01',
+        '05-01',
+        '06-29',
+        '07-28',
+        '07-29',
+        '08-30',
+        '10-08',
+        '11-01',
+        '12-08',
+        '12-25'
+    ])
     const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([])
     const [deliveryPhotos, setDeliveryPhotos] = useState<string[]>([])
     const [automaticSchedules, setAutomaticSchedules] = useState<AutomaticSchedule[]>([])

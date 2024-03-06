@@ -47,12 +47,10 @@ import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'pages/staticReports/ReportRequestSD';
 import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
-import { columnsHideShow } from 'common/helpers/columnsReport';
+import { columnsHideShow, columnsHideGraphic } from 'common/helpers/columnsReport';
 import TipificationReport from './staticReports/ReportTipification';
 import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 import { CellProps } from 'react-table';
-import PropTypes from 'prop-types';
-import { IRootState } from 'store';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -278,8 +276,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                             return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                                         }                                    
                                         return ""; 
-                                    }
-                                    
+                                    }                                    
                                 }
                             default:
                                 return {
@@ -582,9 +579,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                         )}
                                                     />
                                                     </div>
-                                                )}
-                                                
-                                        
+                                                )}                                               
                                 </>
                                 :
                                 <SkeletonReport />
@@ -659,10 +654,12 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         )));
     }
 
-    
-
-
-
+    const hideGraphic = Object.entries((columnsHideGraphic as Dictionary)[row?.origin] || {})
+    .filter(([, shouldHide]) => shouldHide)
+    .map(([column]) => column);
+  
+    const visibleColumns = columns.filter(column => !hideGraphic.includes(column));
+  
     return (
         <DialogZyx
             open={openModal}
@@ -695,7 +692,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('column')}                    
                     error={(errors?.column?.message as string) ?? ""}
                     onChange={(value) => setValue('column', value?.key)}
-                    data={columns.map(x => ({ key: x, value: x }))}
+                    data={visibleColumns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}
@@ -905,15 +902,17 @@ const Reports: FC = () => {
 
     useEffect(() => {
         if (searchValue.length >= 3 || searchValue.length === 0) {
-            let temparray = allReports.filter((el: any) => {
-                if (el.reporttype === "default")
-                    return (t((langKeys as any)[`report_${el.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase())
-                return el.description.toLowerCase().includes(searchValue.toLowerCase())
-            })
-            setallReportsToShow(temparray)
+            const temparray = allReports
+                .filter((x: any) => x.reportname !== "CONVERSATIONWHATSAPP")
+                .filter((x: any) => {
+                    if (x.reporttype === "default")
+                        return (t((langKeys as any)[`report_${x.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase())
+                    return x.description.toLowerCase().includes(searchValue.toLowerCase())
+                });
+            setallReportsToShow(temparray);
         }
-    }, [searchValue]);
-
+    }, [searchValue, allReports]);
+    
     useEffect(() => {
         setallReportsToShow(allReports);
     }, [viewSelected])
@@ -1001,7 +1000,7 @@ const Reports: FC = () => {
         setViewSelected(key);
     }
 
-    const reportSwitch = (report: any, index: number) => {        
+    const reportSwitch = (report: any, index: number) => {   
         switch (report.reportname) {
             case 'HEATMAP':
                 return (

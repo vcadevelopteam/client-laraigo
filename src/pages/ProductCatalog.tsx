@@ -559,10 +559,6 @@ const ProductCatalog: FC = () => {
                 Header: t(langKeys.size),
             },
             {
-                accessor: 'standardfeatures0',
-                Header: `${t(langKeys.standardfeature)} 0`,
-            },
-            {
                 accessor: 'customlabel0',
                 Header: `${t(langKeys.customlabel)}${isClaro ? ' 0' : ''}`,
             },
@@ -1432,16 +1428,6 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             onChange={(value) => setValue('quantity', value)}
                             type="number"
                             valueDefault={row?.quantity || 0.0}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-12"
-                            disabled={!edit}
-                            /*error={errors?.standardfeatures0?.message}*/
-                            label={`${t(langKeys.standardfeature)} 0`}
-                            onChange={(value) => setValue('standardfeatures0', value)}
-                            valueDefault={row?.standardfeatures0 || ''}
                         />
                     </div>
                     <div className="row-zyx">
