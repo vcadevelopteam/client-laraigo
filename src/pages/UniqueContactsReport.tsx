@@ -604,30 +604,36 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 }
             })
             setGridData([...rawdata,mainTotal]||[]);
-            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:Dictionary, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:randomColorGeneratorPerPage()}],[]))
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:Dictionary, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:randomColorGenerator()}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
 
-    const getNextColorGeneratorPerPage = (): (() => string) => {
-        const predefinedColorsPerPage = [
-            "#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00"
-        ];
-    
-        const getNextColor = (index: number): string => {
-            const colorIndex = index % predefinedColorsPerPage.length;
-            return predefinedColorsPerPage[colorIndex];
-        };
-    
+    const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+
+
+    const getNextColorGenerator = (): (() => string) => {
+        const predefinedColors = ["#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00", "#0F7F13", "#00CFE5", "#1D1856", "#FB5F5F", "#B061E1"];
         let currentIndex = 0;
+        const usedColors = [...predefinedColors];
     
         return () => {
-            const color = getNextColor(currentIndex);
-            currentIndex++;
-            return color;
+            if (currentIndex < predefinedColors.length) {
+                const color = predefinedColors[currentIndex];
+                currentIndex++;
+                return color;
+            } else {
+                const randomColor = generateRandomColor();
+                if (!usedColors.includes(randomColor)) {
+                    usedColors.push(randomColor);
+                    return randomColor;
+                } else {
+                    return getNextColorGenerator()();
+                }
+            }
         };
     };    
-    const randomColorGeneratorPerPage = getNextColorGeneratorPerPage();
+    const randomColorGenerator = getNextColorGenerator();
 
 
 
@@ -707,7 +713,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                                                 <LabelList dataKey="summary" position="top" />
                                                 {
                                                     dataGraph.map((entry: Dictionary, index: Dictionary) => (
-                                                        <Cell key={`cell-${index}`} fill={randomColorGeneratorPerPage()} />
+                                                        <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
                                                     ))
                                                 }    
                                             </Bar>
@@ -1243,25 +1249,30 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
         [t]
     );
 
-    const getNextColorGeneratorPerPage = (): (() => string) => {
-        const predefinedColorsPerPage = [
-            "#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00"
-        ];
-    
-        const getNextColor = (index: number): string => {
-            const colorIndex = index % predefinedColorsPerPage.length;
-            return predefinedColorsPerPage[colorIndex];
-        };
-    
+    const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+
+    const getNextColorGenerator = (): (() => string) => {
+        const predefinedColors = ["#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00", "#0F7F13", "#00CFE5", "#1D1856", "#FB5F5F", "#B061E1"];
         let currentIndex = 0;
+        const usedColors = [...predefinedColors];
     
         return () => {
-            const color = getNextColor(currentIndex);
-            currentIndex++;
-            return color;
+            if (currentIndex < predefinedColors.length) {
+                const color = predefinedColors[currentIndex];
+                currentIndex++;
+                return color;
+            } else {
+                const randomColor = generateRandomColor();
+                if (!usedColors.includes(randomColor)) {
+                    usedColors.push(randomColor);
+                    return randomColor;
+                } else {
+                    return getNextColorGenerator()();
+                }
+            }
         };
     };    
-    const randomColorGeneratorPerPage = getNextColorGeneratorPerPage();
+    const randomColorGenerator = getNextColorGenerator();
 
     useEffect(() => {
         if (!mainResult.loading && mainResult?.key?.includes("UFN_REPORT_UNIQUECONTACTS_SEL")){
@@ -1301,7 +1312,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 }
             })
             setGridData([...rawdata,mainTotal]||[]);
-            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color: randomColorGeneratorPerPage()}],[]))
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color: randomColorGenerator()}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
@@ -1389,7 +1400,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                                 <LabelList dataKey="summary" position="top" />
                                                 {
                                                     dataGraph.map((entry: Dictionary, index: Dictionary) => (
-                                                        <Cell key={`cell-${index}`} fill={randomColorGeneratorPerPage()} />
+                                                        <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
                                                     ))
                                                 }    
                                             </Bar>
@@ -1453,7 +1464,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                         <Line 
                                         type="linear" 
                                         dataKey="value" 
-                                        stroke={randomColorGeneratorPerPage()} 
+                                        stroke={randomColorGenerator()} 
                                     />
                                         </LineChart>
                                     </ResponsiveContainer>
