@@ -1757,7 +1757,7 @@ const translation: LangKeys = {
     "To connect your email, we need you to provide us with the following information. You can find it in the Infobip dashboard.",
   twittertitle: "Connect your Twitter page",
   twittertitle2:
-    "In order to connect your Twitter page we need some authorization data from the app you wish to link. This information can be found in the Twitter developer portal",
+    "In order to connect your Twitter we need either the code generated in the log-in authentication or the access token along with its refresh token",
   devenvironment: "Enter the Development Environment",
   consumerapikey: "Enter the Consumer API Key",
   consumerapisecret: "Enter the Consumer API Secret",
@@ -5864,6 +5864,10 @@ const translation: LangKeys = {
   billing_iva: 'IVA',
   billing_paymentcardnotvalid: "This card is not valid for this payment method",
   current_language: 'en',
+  twitter_code: 'Code',
+  twitter_or: 'Or',
+  twitter_accesstoken: 'Access Token',
+  twitter_refreshtoken: 'Refresh Token',
   catalogmaster_haslink: 'Link to Business',
 };
 

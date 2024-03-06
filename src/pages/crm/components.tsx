@@ -344,13 +344,15 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({
                     </span>
                 )}
                 <div className={classes.tagsRow}>
-                    {tags.map((tag: String, index: number) => (
-                        <div className={classes.tag} key={index}>
+                    {tags.map((tag: String, index: number) => {                        
+                        let tagstr = tag
+                        if(tag.length>25) tagstr = tag.substring(0, 22) + "..."
+                        return (<div className={classes.tag} key={index}>
                             <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
                             <div style={{ width: 6 }} />
-                            <div className={classes.tagtext}>{tag}</div>
+                            <div className={classes.tagtext}>{tagstr}</div>
                         </div>
-                    ))}
+                    )})}
                 </div>
                 {products.length !== 0 && <div style={{ height: "0.25em" }} />}
                 <div className={classes.tagsRow}>

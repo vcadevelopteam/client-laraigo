@@ -38,7 +38,6 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
     const [setins, setSetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [coloricon, setColoricon] = useState("#1D9BF0");
-    const [nextbutton2, setNextbutton2] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
 
     const mainResult = useSelector((state) => state.channel.channelList);
@@ -71,11 +70,9 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
             voximplantcallsupervision: false,
         },
         service: {
-            consumerkey: "",
-            consumersecret: "",
+            code: "",
             accesstoken: "",
-            accesssecret: "",
-            devenvironment: "",
+            refreshtoken: "",
         },
     });
 
@@ -93,7 +90,7 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                setViewSelected("enable-virtual-assistant")
+                setViewSelected("enable-virtual-assistant");
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code ?? "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),
@@ -160,56 +157,31 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(
-                                    value === "" ||
-                                        fields.service.consumersecret === "" ||
-                                        fields.service.accesstoken === "" ||
-                                        fields.service.accesssecret === ""
-                                );
+                                setNextbutton(value === "");
                                 const partialf = fields;
-                                partialf.service.consumerkey = value;
+                                partialf.service.code = value;
                                 setFields(partialf);
                             }}
-                            valueDefault={fields.service.consumerkey}
-                            label={t(langKeys.consumerapikey)}
+                            valueDefault={fields.service.code}
+                            label={t(langKeys.twitter_code)}
                             className="col-6"
                         />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-6"></div>
+                        <b className="col-6">{t(langKeys.twitter_or)}</b>
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(
-                                    value === "" ||
-                                        fields.service.consumerkey === "" ||
-                                        fields.service.accesstoken === "" ||
-                                        fields.service.accesssecret === ""
-                                );
-                                const partialf = fields;
-                                partialf.service.consumersecret = value;
-                                setFields(partialf);
-                            }}
-                            valueDefault={fields.service.consumersecret}
-                            label={t(langKeys.consumerapisecret)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(
-                                    value === "" ||
-                                        fields.service.consumerkey === "" ||
-                                        fields.service.consumersecret === "" ||
-                                        fields.service.accesssecret === ""
-                                );
+                                setNextbutton(value === "" || fields.service.refreshtoken === "");
                                 const partialf = fields;
                                 partialf.service.accesstoken = value;
                                 setFields(partialf);
                             }}
                             valueDefault={fields.service.accesstoken}
-                            label={t(langKeys.authenticationtoken)}
+                            label={t(langKeys.twitter_accesstoken)}
                             className="col-6"
                         />
                     </div>
@@ -217,18 +189,13 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(
-                                    value === "" ||
-                                        fields.service.consumerkey === "" ||
-                                        fields.service.consumersecret === "" ||
-                                        fields.service.accesstoken === ""
-                                );
+                                setNextbutton(value === "" || fields.service.accesstoken === "");
                                 const partialf = fields;
-                                partialf.service.accesssecret = value;
+                                partialf.service.refreshtoken = value;
                                 setFields(partialf);
                             }}
-                            valueDefault={fields.service.accesssecret}
-                            label={t(langKeys.authenticationsecret)}
+                            valueDefault={fields.service.refreshtoken}
+                            label={t(langKeys.twitter_refreshtoken)}
                             className="col-6"
                         />
                     </div>
@@ -247,72 +214,12 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
                     </div>
                 </div>
             </div>
-        )
-    } else if(viewSelected==="enable-virtual-assistant"){
-        return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
-        />
-    } else if (viewSelected === "view2") {
+        );
+    } else if (viewSelected === "enable-virtual-assistant") {
         return (
-            <div style={{ width: "100%" }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link
-                        color="textSecondary"
-                        key={"mainview"}
-                        href="/"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setViewSelected("view1");
-                        }}
-                    >
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div
-                        style={{
-                            textAlign: "center",
-                            fontWeight: "bold",
-                            fontSize: "2em",
-                            color: "#7721ad",
-                            padding: "20px",
-                        }}
-                    >
-                        {t(langKeys.twittertitle)}
-                    </div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>
-                        {t(langKeys.twittertitle2)}
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton2(value === "");
-                                const partialf = fields;
-                                partialf.service.devenvironment = value;
-                                partialf.parameters.communicationchannelowner = "";
-                                setFields(partialf);
-                            }}
-                            valueDefault={fields.service.devenvironment}
-                            label={t(langKeys.devenvironment)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            disabled={nextbutton2}
-                            onClick={() => {
-                                setViewSelected("viewfinishreg");
-                            }}
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                        >
-                            {t(langKeys.next)}
-                        </Button>
-                    </div>
-                </div>
-            </div>
+            <ChannelEnableVirtualAssistant
+                communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
+            />
         );
     } else {
         return (
@@ -324,7 +231,7 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            setViewSelected("view2");
+                            setViewSelected("view1");
                         }}
                     >
                         {t(langKeys.previoustext)}

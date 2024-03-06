@@ -5776,6 +5776,10 @@ export const langKeys = {
   billing_iva: 'billing_iva',
   billing_paymentcardnotvalid: "billing_paymentcardnotvalid",
   current_language: 'current_language',
+  twitter_code: 'twitter_code',
+  twitter_or: 'twitter_or',
+  twitter_accesstoken: 'twitter_accesstoken',
+  twitter_refreshtoken: 'twitter_refreshtoken',
   catalogmaster_haslink: 'catalogmaster_haslink',
 };
 
