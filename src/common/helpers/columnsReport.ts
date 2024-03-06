@@ -116,5 +116,5 @@ export const columnsHideShow: ColumnsHideShowType = {
         username: true,
         type: true,  
         motivedescription: true,
-    },      
+    },     
 }
