@@ -47,7 +47,7 @@ import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'pages/staticReports/ReportRequestSD';
 import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
-import { columnsHideShow } from 'common/helpers/columnsReport';
+import { columnsHideShow, columnsHideGraphic } from 'common/helpers/columnsReport';
 import TipificationReport from './staticReports/ReportTipification';
 import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 import { CellProps } from 'react-table';
@@ -654,10 +654,12 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         )));
     }
 
-    
-
-
-
+    const hideGraphic = Object.entries((columnsHideGraphic as Dictionary)[row?.origin] || {})
+    .filter(([, shouldHide]) => shouldHide)
+    .map(([column]) => column);
+  
+    const visibleColumns = columns.filter(column => !hideGraphic.includes(column));
+  
     return (
         <DialogZyx
             open={openModal}
@@ -690,7 +692,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('column')}                    
                     error={(errors?.column?.message as string) ?? ""}
                     onChange={(value) => setValue('column', value?.key)}
-                    data={columns.map(x => ({ key: x, value: x }))}
+                    data={visibleColumns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}
@@ -998,7 +1000,7 @@ const Reports: FC = () => {
         setViewSelected(key);
     }
 
-    const reportSwitch = (report: any, index: number) => {        
+    const reportSwitch = (report: any, index: number) => {   
         switch (report.reportname) {
             case 'HEATMAP':
                 return (
