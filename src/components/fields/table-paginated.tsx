@@ -794,42 +794,36 @@ const TableZyx = React.memo(({
         };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
     
-    const [, setSelectedColumn] = useState<string | null>(null);
+    // const [, setSelectedColumn] = useState<string | null>(null);
     const [, setSelectedRow] = useState<string | null>(null);
 
 
     const handleColumnByToggle = (column: ColumnInstance) => {
         const columnName = column.id as string;
-        setSelectedColumn(columnName);
+        // setSelectedColumn(columnName);
         column.toggleGroupBy();
-        setPagination(prev => {
-            return { ...prev, distinct: columnName, pageIndex: 0, trigger: true }
-        });
+        setPagination(prev => ({ ...prev, distinct: columnName, pageIndex: 0, trigger: true }));
     };
 
     const handleRowByToggle = (cell: Cell, column: ColumnInstance) => {
         const columnName = column.id as string;
-        setSelectedColumn(columnName);        
+        // setSelectedColumn(columnName);        
         const selectedRowValue = cell.row.original[columnName] as string;    
-        column.toggleGroupBy();
+        // column.toggleGroupBy();
 
-        setPagination(prev => {
-            const updatedFilters = {
+        setPagination(prev => ({
+            ...prev,
+            distinct: "",
+            filters: {
                 ...prev.filters,
                 [columnName]: {
                     "value": selectedRowValue,
                     "operator": "equals"
                 }
-            };
-    
-            const { distinct, ...paginationWithoutDistinct } = prev;    
-            return { 
-                ...paginationWithoutDistinct,  
-                filters: updatedFilters,
-                pageIndex: 0, 
-                trigger: true 
-            };
-        });
+            },
+            pageIndex: 0, 
+            trigger: true 
+    }));
     };
     
     return (
