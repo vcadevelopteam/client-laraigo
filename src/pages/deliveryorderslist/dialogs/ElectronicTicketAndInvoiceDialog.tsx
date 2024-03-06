@@ -59,7 +59,7 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
                     dataonparameters: true,
                     key: "period-report",
                     method: "",
-                    reportname: (rows?.[0]?.payment_document_type === 'Boleta' || !rows?.[0]?.payment_document_type) ? "electronic-receipt" : 'electronic-invoice',
+                    reportname: `${rows?.[0]?.ordernumber}_${rows?.[0]?.documentnumber}`,
                     template: (rows?.[0]?.payment_document_type === 'Boleta' || !rows?.[0]?.payment_document_type) ? 'delivery-receipt.html' : 'delivery-invoice.html',
                     parameters: {
                         ruc: rows?.[0]?.payment_document_number || 'RUC938942N423N',

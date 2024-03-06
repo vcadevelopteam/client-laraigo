@@ -68,28 +68,12 @@ const SubmotiveDialog = ({
 
     const statusOptions = [
         {
-            description: t(langKeys.dispatched),
-            value: 'dispatched'
+            description: t(langKeys.reschedule),
+            value: 'reschedule'
         },
         {
-            description: t(langKeys.prepared),
-            value: 'prepared'
-        },
-        {
-            description: t(langKeys.rejected),
-            value: 'rejected'
-        },
-        {
-            description: t(langKeys.delivered),
-            value: 'delivered'
-        },
-        {
-            description: t(langKeys.new),
-            value: 'new'
-        },
-        {
-            description: t(langKeys.nondelivered),
-            value: 'nondelivered'
+            description: t(langKeys.cancel),
+            value: 'cancel'
         },
     ]
 

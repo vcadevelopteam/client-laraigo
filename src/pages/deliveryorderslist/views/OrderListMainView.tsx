@@ -391,7 +391,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 deliver={() => console.log('test')}
                                 undelivered={() => setOpenModalUndelivered(true)}
                                 cancel={() => setOpenModalCanceled(true)}
-                                cancelundelivered={() => console.log('test')}
+                                cancelundelivered={() => setOpenModalCanceled(true)}
                                 rows={selectedRows}
                             />
                         </div>

@@ -1,13 +1,10 @@
 import { Button, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
-import { useDispatch } from "react-redux";
-import { useSelector } from "hooks";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -24,32 +21,21 @@ const CanceledDialog: React.FC<{
 }> = ({ openModal, setOpenModal }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector((state) => state.main.execute);
+    const [motive, setMotive] = useState('')
 
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_edit),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setOpenModal(false);
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code ?? "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave]);
+    const cancelMotives= [
+        {
+            value: 'Cliente cancela pedido'
+        },
+        {
+            value: 'Cancelado por quiebre de stock'
+        },
+    ]
+
+    const handleClose = () => {
+        setOpenModal(false);
+        setMotive('')
+    }
 
     return (
         <DialogZyx open={openModal} title={t(langKeys.cancel)} maxWidth="sm">
@@ -57,9 +43,17 @@ const CanceledDialog: React.FC<{
                 <FieldSelect
                     label={t(langKeys.selectcancellationreason)}
                     className="col-12"
-                    data={[]}
-                    optionValue="warehouseid"
-                    optionDesc="name"
+                    data={cancelMotives}
+                    valueDefault={motive}
+                    onChange={(value) => {
+                        if(value) {
+                            setMotive(value.value)
+                        } else {
+                            setMotive('')
+                        }
+                    }}
+                    optionValue="value"
+                    optionDesc="value"
                 />
             </div>
             <div className={classes.button}>
@@ -69,9 +63,7 @@ const CanceledDialog: React.FC<{
                     color="primary"
                     startIcon={<ClearIcon color="secondary" />}
                     style={{ backgroundColor: "#FB5F5F" }}
-                    onClick={() => {
-                        setOpenModal(false);
-                    }}
+                    onClick={handleClose}
                 >
                     {t(langKeys.back)}
                 </Button>
