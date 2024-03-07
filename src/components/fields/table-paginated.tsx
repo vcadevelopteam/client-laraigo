@@ -24,6 +24,7 @@ import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
 import AllInboxIcon from '@material-ui/icons/AllInbox';
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
+import { columnGroupedBy } from 'common/helpers/columnsReport';
 import clsx from 'clsx';
 import { Skeleton } from '@material-ui/lab';
 import {
@@ -62,11 +63,13 @@ import { DialogZyx, DateRangePicker } from 'components';
 import { Checkbox, Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, TableSortLabel, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
+import { report } from 'process';
 
 interface Column {
     Header: string;
     accessor: string;
     showColumn?: boolean;
+    showGroupedBy?: boolean;
 }
 interface ColumnVisibility {
     [key: string]: boolean;
@@ -831,27 +834,15 @@ const TableZyx = React.memo(({
         }));
     };
 
-    const handleNoGroupedBy = (columnId: string) => {
-        const excludedColumns = [          
-            "email",         
-            "enddate",
-            "endtime",
-            "derivationdate",
-            "derivationtime",
-            "firstinteractiondateagent",
-            "firstinteractiontime",
-            "tmo",
-            "tmoagent",
-            "tmeagent",
-            "holdingholdtime",
-            "suspensiontime",
-            "avgagentresponse",
-            "swingingtimes",
-            "tags"
-        ];
-        return !excludedColumns.includes(columnId);
+    const handleNoGroupedBy = (column: Column) => {
+        const includedColumns = allColumns.filter(col => {
+          const isColumnInstance = 'id' in col && 'Header' in col;
+          return isColumnInstance && 'showGroupedBy' in col && col.showGroupedBy === true;
+        });
+      
+        return includedColumns.some(col => col.id === column.accessor);
     };
-
+          
 
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
@@ -1104,7 +1095,7 @@ const TableZyx = React.memo(({
                                                     :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
-                                                        {column.id !== pagination.distinct && handleNoGroupedBy(column.id) && (
+                                                        {column.id !== pagination.distinct && handleNoGroupedBy({ ...column, accessor: column.id, Header: column.Header as string }) && (
                                                             <Tooltip title={''}>
                                                                 <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
                                                                     {column.canGroupBy === true && (
