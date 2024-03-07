@@ -1964,6 +1964,7 @@ export const langKeys = {
 
   send_quickreply: 'send_quickreply',
   send_enrich_response: 'send_enrich_response',
+  record_audio: 'record_audio',
   send_image: 'send_image',
   send_file: 'send_file',
   send_gif: 'send_gif',
