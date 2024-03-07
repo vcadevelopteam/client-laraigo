@@ -22,8 +22,8 @@ import PrintDialog from "../dialogs/PrintDialog";
 import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
 import { reportPdf } from "store/culqi/actions";
-import { getCollectionAux, getCollectionAux2, getMultiCollection } from "store/main/actions";
-import { deliveryAppUsersSel, deliveryConfigurationSel, orderLineSel, reasonNonDeliverySel } from "common/helpers";
+import { execute, getCollectionAux, getCollectionAux2, getMultiCollection } from "store/main/actions";
+import { deliveryAppUsersSel, deliveryConfigurationSel, orderLineSel, reasonNonDeliverySel, updateOrderOnlyStatus } from "common/helpers";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -83,6 +83,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const [waitSave, setWaitSave] = useState(false);
     const [waitSave2, setWaitSave2] = useState(false);
     const [waitSave3, setWaitSave3] = useState(false);
+    const [waitSaveChangeStatus, setWaitSaveChangeStatus] = useState(false);
     const main = useSelector((state) => state.main.mainData);
     const productsData = useSelector(state => state.main.mainAux2);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
@@ -160,6 +161,69 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             }
         }
     }, [executeResult, waitSave]);
+
+    const scheduleOrder = () => {
+        if(rowWithDataSelected[0].orderstatus === 'new') setOpenModalManualScheduling(true)
+        else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.badtipification),
+                })
+            );
+        }
+    }
+
+    const changeStatus = () => {
+        if(rowWithDataSelected[0].orderstatus === 'scheduled') {
+            dispatch(showBackdrop(true));
+            dispatch(execute(updateOrderOnlyStatus({
+                orderid: rowWithDataSelected[0].orderid,
+                orderstatus: 'prepared',
+            })))
+            setWaitSave(true);
+        } else if (rowWithDataSelected[0].orderstatus === 'shipped') {
+            dispatch(showBackdrop(true));
+            dispatch(execute(updateOrderOnlyStatus({
+                orderid: rowWithDataSelected[0].orderid,
+                orderstatus: 'delivered',
+            })))
+            setWaitSave(true);
+        } else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.badtipification),
+                })
+            );
+        }
+    }
+
+    useEffect(() => {
+        if (waitSaveChangeStatus) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveChangeStatus(false);
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "success",
+                        message: t(langKeys.successful_update),
+                    })
+                );
+                fetchData(attentionOrders)
+                dispatch(showBackdrop(false));
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveChangeStatus(false);
+            }
+        }
+    }, [executeResult, waitSaveChangeStatus]);
 
     const columns = React.useMemo(
         () => [
@@ -384,11 +448,11 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         </Button>
                         <div style={{ marginLeft: "0.6rem" }}>
                             <ExtrasMenu
-                                schedulesth={() => setOpenModalManualScheduling(true)}
-                                prepare={() => console.log('test')}
+                                schedulesth={scheduleOrder}
+                                prepare={changeStatus}
                                 dispatch={() => setOpenModalAssignCarrier(true)}
                                 reschedule={() => setOpenModalReschedulingUndelivered(true)}
-                                deliver={() => console.log('test')}
+                                deliver={changeStatus}
                                 undelivered={() => setOpenModalUndelivered(true)}
                                 cancel={() => setOpenModalCanceled(true)}
                                 cancelundelivered={() => setOpenModalCanceled(true)}
@@ -443,6 +507,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 				openModal={openModalManualScheduling}
 				setOpenModal={setOpenModalManualScheduling}
                 config={config}
+                fetchData={fetchData}
+                row={rowWithDataSelected}
 			/>
             <ReschedulingUndeliveredDialog
                 openModal={openModalReschedulingUndelivered}

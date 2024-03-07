@@ -8,6 +8,7 @@ import { useSelector } from "hooks";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import TableZyx from "components/fields/table-simple";
+import GoogleMaps from 'components/fields/GoogleMaps';
 import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -56,6 +57,13 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
     const productsData = useSelector((state) => state.main.mainAux2);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
+    const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>([
+        { latitude: row?.latitude, longitude: row?.longitude },
+    ]);
+
+    const handleCoordinatesChange = (newCoordinates: Array<{ latitude: number; longitude: number }>) => {
+        setCoordinates(newCoordinates);
+    };
 
     useEffect(() => {
         if (waitSave) {
@@ -113,7 +121,7 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
 
     return (
         <div className={classes.containerDetail}>
-            <div className="row-zyx">
+            <div className="row-zyx" style={{marginBottom: 0}}>
                 <div className="row-zyx">
                     <FieldEdit
                         label={t(langKeys.clientfullname)}
@@ -152,18 +160,17 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
                         </span>
                     </div>
                 </div>
-                <div className="row-zyx">
-                    <div style={{ paddingBottom: "1rem" }}>
-                        <Typography className={classes.paymentreceipt}>{t(langKeys.registeredaddress)}</Typography>
+                <div style={{ paddingBottom: "0.5rem" }}>
+                    <Typography className={classes.paymentreceipt}>{t(langKeys.registeredaddress)}</Typography>
+                </div>
+                <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
+                    <div className="col-6">
+                        <GoogleMaps
+                            coordinates={coordinates}
+                            onCoordinatesChange={handleCoordinatesChange}
+                        />
                     </div>
-                    <div className="col-4">
-                        <img
-                            className={classes.mapimage}
-                            src="https://i0.wp.com/www.cssscript.com/wp-content/uploads/2018/03/Simple-Location-Picker.png?fit=561%2C421&ssl=1"
-                            alt="map"
-                        ></img>
-                    </div>
-                    <div className="col-4" style={{ padding: "0rem 2rem 1rem 0" }}>
+                    <div className="col-3">
                         <div style={{ paddingBottom: "2rem" }}>
                             <FieldEdit
                                 label={t(langKeys.latitude)}
@@ -173,17 +180,15 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
                                 valueDefault={row?.latitude}
                             />
                         </div>
-                        <div style={{ paddingBottom: "2rem" }}>
-                            <FieldEdit
-                                label={t(langKeys.longitude)}
-                                className="col-3"
-                                type="number"
-                                disabled={true}
-                                valueDefault={row?.longitude}
-                            />
-                        </div>
+                        <FieldEdit
+                            label={t(langKeys.longitude)}
+                            className="col-3"
+                            type="number"
+                            disabled={true}
+                            valueDefault={row?.longitude}
+                        />
                     </div>
-                    <div className="col-4" style={{ padding: "0rem 2rem 1rem 0" }}>
+                    <div className="col-3">
                         <div style={{ paddingBottom: "2rem" }}>
                             <FieldEdit
                                 label={t(langKeys.carriercoord)}
@@ -192,15 +197,13 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
                                 disabled={true}
                             />
                         </div>
-                        <div style={{ paddingBottom: "1rem" }}>
-                            <FieldEdit
-                                label={t(langKeys.deliveryaddress)}
-                                className="col-3"
-                                type="text"
-                                disabled={true}
-                                valueDefault={row?.deliveryaddress}
-                            />
-                        </div>
+                        <FieldEdit
+                            label={t(langKeys.deliveryaddress)}
+                            className="col-3"
+                            type="text"
+                            disabled={true}
+                            valueDefault={row?.deliveryaddress}
+                        />
                     </div>
                 </div>
             </div>

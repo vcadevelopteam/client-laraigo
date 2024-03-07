@@ -4175,3 +4175,15 @@ export const orderLineSel = (orderid: number) => ({
     key: "UFN_ORDERLINE_SEL",
     parameters: { orderid },
 });
+
+export const updateOrderSchedule = ({ orderid, deliveryshift, scheduledeliverydate, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERSCHEDULE",
+    key: "UFN_UPDATE_ORDERSCHEDULE",
+    parameters: { orderid, deliveryshift, scheduledeliverydate, orderstatus },
+});
+
+export const updateOrderOnlyStatus = ({ orderid, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERSTATUS",
+    key: "UFN_UPDATE_ORDERSTATUS",
+    parameters: { orderid, orderstatus },
+});
