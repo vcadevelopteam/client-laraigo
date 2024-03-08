@@ -37,7 +37,7 @@ import DragDropFile from "components/fields/DragDropFile";
 import MailRecipients from "./MailRecipients";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { ListItemIcon } from "@material-ui/core";
+import { ListItemIcon, debounce } from "@material-ui/core";
 import { LibraryBooks, Publish } from "@material-ui/icons";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from "icons";
@@ -563,11 +563,11 @@ const RecordComponent: React.FC<{
     const uploadResult = useSelector((state) => state.main.uploadFile);
     const recorderControls = useAudioRecorder(
         {
-          noiseSuppression: true,
-          echoCancellation: true,
+            noiseSuppression: true,
+            echoCancellation: true,
         },
         (err) => console.table(err) // onNotAllowedOrFound
-      );
+    );
 
     useEffect(() => {
         if (startRecording) {
@@ -578,13 +578,15 @@ const RecordComponent: React.FC<{
 
     useEffect(() => {
         if (recorderControls.isRecording) {
-            if(recorderControls.isRecording){
+            if (recorderControls.isRecording) {
                 const myElement = document.querySelector(".audio-recorder");
                 const childNodes = myElement?.childNodes;
-                if(childNodes){
-                    if(childNodes[0]) childNodes[0].src ="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgdmlld0JveD0iMCAwIDQ5NC4xNDggNDk0LjE0OCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDk0LjE0OCA0OTQuMTQ4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8Zz4KCQk8Zz4KCQkJPHBhdGggZD0iTTQwNS4yODQsMjAxLjE4OEwxMzAuODA0LDEzLjI4QzExOC4xMjgsNC41OTYsMTA1LjM1NiwwLDk0Ljc0LDBDNzQuMjE2LDAsNjEuNTIsMTYuNDcyLDYxLjUyLDQ0LjA0NHY0MDYuMTI0CgkJCQljMCwyNy41NCwxMi42OCw0My45OCwzMy4xNTYsNDMuOThjMTAuNjMyLDAsMjMuMi00LjYsMzUuOTA0LTEzLjMwOGwyNzQuNjA4LTE4Ny45MDRjMTcuNjYtMTIuMTA0LDI3LjQ0LTI4LjM5MiwyNy40NC00NS44ODQKCQkJCUM0MzIuNjMyLDIyOS41NzIsNDIyLjk2NCwyMTMuMjg4LDQwNS4yODQsMjAxLjE4OHoiLz4KCQk8L2c+Cgk8L2c+Cjwvc3ZnPgo="
-                    if(childNodes[3])  childNodes[3].style.display = "none"
-                    if(childNodes[4]) childNodes[4].style.display = "none"
+                if (childNodes) {
+                    if (childNodes[0])
+                        childNodes[0].src =
+                            "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgdmlld0JveD0iMCAwIDQ5NC4xNDggNDk0LjE0OCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDk0LjE0OCA0OTQuMTQ4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8Zz4KCQk8Zz4KCQkJPHBhdGggZD0iTTQwNS4yODQsMjAxLjE4OEwxMzAuODA0LDEzLjI4QzExOC4xMjgsNC41OTYsMTA1LjM1NiwwLDk0Ljc0LDBDNzQuMjE2LDAsNjEuNTIsMTYuNDcyLDYxLjUyLDQ0LjA0NHY0MDYuMTI0CgkJCQljMCwyNy41NCwxMi42OCw0My45OCwzMy4xNTYsNDMuOThjMTAuNjMyLDAsMjMuMi00LjYsMzUuOTA0LTEzLjMwOGwyNzQuNjA4LTE4Ny45MDRjMTcuNjYtMTIuMTA0LDI3LjQ0LTI4LjM5MiwyNy40NC00NS44ODQKCQkJCUM0MzIuNjMyLDIyOS41NzIsNDIyLjk2NCwyMTMuMjg4LDQwNS4yODQsMjAxLjE4OHoiLz4KCQk8L2c+Cgk8L2c+Cjwvc3ZnPgo=";
+                    if (childNodes[3]) childNodes[3].style.display = "none";
+                    if (childNodes[4]) childNodes[4].style.display = "none";
                 }
             }
         }
@@ -599,6 +601,7 @@ const RecordComponent: React.FC<{
                     type: "audio",
                     url: uploadResult?.url || "",
                 });
+                console.log(uploadResult?.url);
                 setStartRecording(false);
             }
         }
@@ -607,11 +610,16 @@ const RecordComponent: React.FC<{
     useEffect(() => {
         if (previousRecord) {
             const fd = new FormData();
-            const newBlob = new Blob([recorderControls.recordingBlob], { type: 'audio/ogg' });
-            fd.append("file", newBlob, "audio.opus");
-            setUploadAudio(true);
-            dispatch(uploadFile(fd));
-            recorderControls.stopRecording();
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(recorderControls.recordingBlob);
+            reader.onload = () => {
+				const audioBlob = new Blob([reader.result], { type: "audio/amr" });
+				fd.append("file", audioBlob, "audio.amr");
+				dispatch(uploadFile(fd));
+				recorderControls.stopRecording();
+				setUploadAudio(true);
+                //const newBlob = new Blob([oggData], { type: "audio/ogg; codecs=opus" });
+            };
         }
     }, [recorderControls.recordingBlob]);
 
@@ -623,11 +631,16 @@ const RecordComponent: React.FC<{
             if (!previousRecord) {
                 setPreviousRecord(true);
                 const fd = new FormData();
-                const newBlob = new Blob([blob], { type: 'audio/ogg' });
-                fd.append("file", newBlob, "audio.opus");
-                setUploadAudio(true);
-                dispatch(uploadFile(fd));
-                recorderControls.stopRecording();
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(blob);
+                reader.onload = () => {
+                    const audioBlob = new Blob([reader.result], { type: "audio/amr" });
+                    fd.append("file", audioBlob, "audio.amr");
+                    dispatch(uploadFile(fd));
+
+                    recorderControls.stopRecording();
+                    setUploadAudio(true);
+                };
             }
         }
     };
@@ -882,8 +895,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const { t } = useTranslation();
 
     const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
-    const listAllowRecords = ["FBDM","FBMS","WHA","INDM","INMS"]
-    const allowRecording = listAllowRecords.some(record => ticketSelected.communicationchanneltype.includes(record));
+    const listAllowRecords = ["FBDM", "FBMS", "WHA", "INDM", "INMS"];
+    const allowRecording = listAllowRecords.some((record) => ticketSelected.communicationchanneltype.includes(record));
     const [copyEmails, setCopyEmails] = useState<Dictionary>({ cc: false, cco: false, error: false });
 
     const resReplyTicket = useSelector((state) => state.inbox.triggerReplyTicket);
@@ -1023,7 +1036,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         if (copyEmails.error) return;
         const callback = () => {
             let wasSend = false;
-            if ((files.length > 0) && ticketSelected?.communicationchanneltype !== "MAIL") {
+            if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
                 const listMessages = files.map((x) => ({
                     ...ticketSelected!!,
                     interactiontype: x.type,
@@ -1033,7 +1046,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                 wasSend = true;
                 settriggerReply(true);
                 dispatch(replyTicket(listMessages, true));
-                if(files.length > 0){
+                if (files.length > 0) {
                     files.forEach((x, i) => {
                         const newInteractionSocket = {
                             ...ticketSelected!!,
@@ -1059,16 +1072,19 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                     setFiles([]);
                 }
             }
-            if ((record) && ticketSelected?.communicationchanneltype !== "MAIL") {
-                const listMessages = [{
-                    ...ticketSelected!!,
-                    interactiontype: "audio",
-                    validateUserOnTicket: userType === "AGENT",
-                    interactiontext: record.url,
-                }];
+            if (record && ticketSelected?.communicationchanneltype !== "MAIL") {
+                debugger;
+                const listMessages = [
+                    {
+                        ...ticketSelected!!,
+                        interactiontype: "audio",
+                        validateUserOnTicket: userType === "AGENT",
+                        interactiontext: record.url,
+                    },
+                ];
                 wasSend = true;
                 settriggerReply(true);
-                dispatch(replyTicket(listMessages, true));                
+                dispatch(replyTicket(listMessages, true));
                 const newInteractionSocket = {
                     ...ticketSelected!!,
                     interactionid: 0,
@@ -1078,8 +1094,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                     createdate: new Date().toISOString(),
                     userid: 0,
                     usertype: "agent",
-                    ticketWasAnswered: !(ticketSelected!!.isAnswered), //solo enviar el cambio en el primer mensaje
-                    isAnswered: !(ticketSelected!!.isAnswered), //solo enviar el cambio en el primer mensaje
+                    ticketWasAnswered: !ticketSelected!!.isAnswered,
+                    isAnswered: !ticketSelected!!.isAnswered,
                 };
                 if (userType === "AGENT") {
                     dispatch(
@@ -1089,7 +1105,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                         })
                     );
                 }
-                setRecord(null) 
+                setRecord(null);
             }
             if (text) {
                 let textCleaned = text;
@@ -1610,7 +1626,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 </div>
                                 <div
                                     className={clsx(classes.iconSend, {
-                                        [classes.iconSendDisabled]: !(text || files.filter((x) => !!x.url).length > 0 || record),
+                                        [classes.iconSendDisabled]: !(
+                                            text ||
+                                            files.filter((x) => !!x.url).length > 0 ||
+                                            record
+                                        ),
                                     })}
                                     onClick={triggerReplyMessage}
                                 >
