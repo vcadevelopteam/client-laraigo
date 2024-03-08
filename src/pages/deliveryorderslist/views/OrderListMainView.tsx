@@ -226,6 +226,19 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
         }
     }
 
+    const undeliverOrder = () => {
+        if(rowWithDataSelected[0].orderstatus === 'shipped') setOpenModalUndelivered(true)
+        else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.badtipification),
+                })
+            );
+        }
+    }
+
     useEffect(() => {
         if (waitSaveChangeStatus) {
             if (!executeResult.loading && !executeResult.error) {
@@ -478,7 +491,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 dispatch={() => setOpenModalAssignCarrier(true)}
                                 reschedule={rescheduleOrder}
                                 deliver={deliverOrder}
-                                undelivered={() => setOpenModalUndelivered(true)}
+                                undelivered={undeliverOrder}
                                 cancel={() => setOpenModalCanceled(true)}
                                 cancelundelivered={() => setOpenModalCanceled(true)}
                                 rows={selectedRows}
@@ -519,6 +532,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             <UndeliveredDialog
 				openModal={openModalUndelivered}
 				setOpenModal={setOpenModalUndelivered}
+                fetchData={fetchData}
+                row={rowWithDataSelected}
 			/>
             <CanceledDialog
 				openModal={openModalCanceled}

@@ -5603,6 +5603,8 @@ const translation: LangKeys = {
   nondelivered: 'Undelivered',
   carriercoord: 'Carrier coordinates',
   badtipification: 'Incorrect tipification',
+  CANCEL: 'Cancelation',
+  UNDELIVER: 'Undelivered',
 };
 
 const enResource: ResourceLanguage = {

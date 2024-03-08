@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
+import { useSelector } from "hooks";
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -21,16 +22,8 @@ const CanceledDialog: React.FC<{
 }> = ({ openModal, setOpenModal }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const multiData = useSelector(state => state.main.multiData);
     const [motive, setMotive] = useState('')
-
-    const cancelMotives= [
-        {
-            value: 'Cliente cancela pedido'
-        },
-        {
-            value: 'Cancelado por quiebre de stock'
-        },
-    ]
 
     const handleClose = () => {
         setOpenModal(false);
@@ -43,17 +36,17 @@ const CanceledDialog: React.FC<{
                 <FieldSelect
                     label={t(langKeys.selectcancellationreason)}
                     className="col-12"
-                    data={cancelMotives}
+                    data={multiData?.data?.[0]?.data.filter((motive) => { return motive.type === 'CANCEL' }) || []}
                     valueDefault={motive}
                     onChange={(value) => {
                         if(value) {
-                            setMotive(value.value)
+                            setMotive(value.reasonnondeliveryid)
                         } else {
                             setMotive('')
                         }
                     }}
-                    optionValue="value"
-                    optionDesc="value"
+                    optionValue="reasonnondeliveryid"
+                    optionDesc="description"
                 />
             </div>
             <div className={classes.button}>

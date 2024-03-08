@@ -4164,10 +4164,10 @@ export const subReasonNonDeliverySel = (reasonnondeliveryid: number) => ({
     parameters: { reasonnondeliveryid },
 });
 
-export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, operation }: Dictionary) => ({
+export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, viewappmovil, operation }: Dictionary) => ({
     method: "UFN_SUBREASONNONDELIVERY_INS",
     key: "UFN_SUBREASONNONDELIVERY_INS",
-    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, operation },
+    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, viewappmovil, operation },
 });
 
 export const orderLineSel = (orderid: number) => ({
@@ -4186,4 +4186,10 @@ export const updateOrderOnlyStatus = ({ orderid, orderstatus }: Dictionary) => (
     method: "UFN_UPDATE_ORDERSTATUS",
     key: "UFN_UPDATE_ORDERSTATUS",
     parameters: { orderid, orderstatus },
+});
+
+export const updateOrderNonDelivery = ({ orderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERNONDELIVERY",
+    key: "UFN_UPDATE_ORDERNONDELIVERY",
+    parameters: { orderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier },
 });

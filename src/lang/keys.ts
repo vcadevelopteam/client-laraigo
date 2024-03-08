@@ -5522,6 +5522,8 @@ export const langKeys = {
   nondelivered: 'nondelivered',
   carriercoord: 'carriercoord',
   badtipification: 'badtipification',
+  CANCEL: 'CANCEL',
+  UNDELIVER: 'UNDELIVER',
 };
 
 export type LangKeys = typeof langKeys;

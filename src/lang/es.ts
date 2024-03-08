@@ -5532,6 +5532,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   nondelivered: 'No Entregado',
   carriercoord: 'Coordenadas del Transportista',
   badtipification: 'Tipificación incorrecta',
+  CANCEL: 'Cancelación',
+  UNDELIVER: 'No entregado',
 };
 
 const esResource: ResourceLanguage = {
