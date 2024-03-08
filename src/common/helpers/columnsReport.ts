@@ -37,13 +37,13 @@ export const columnsHideGraphic = {
     },
 };
 
-export interface ColumnsHideShowType {
+export interface ColumnsInterface {
     [key: string]: {
         [key: string]: boolean;
     };
 }
 
-export const columnsHideShow: ColumnsHideShowType = {
+export const columnsHideShow: ColumnsInterface = {
     productivity: {
         email: true,
         starttime: true,
@@ -119,13 +119,9 @@ export const columnsHideShow: ColumnsHideShowType = {
     },     
 }
 
-export interface ColumnsGroupedBy {
-    [key: string]: {
-        [key: string]: boolean;
-    };
-}
 
-export const columnGroupedBy: ColumnsGroupedBy = {
+export const columnGroupedBy: ColumnsInterface = {
+
     productivity: { //actualmente visible, //chequear funcionalidad, no funciona en telefono, grupo, fecha fin
         ticket: true,
         ticketyear: true,  
@@ -234,4 +230,5 @@ export const columnGroupedBy: ColumnsGroupedBy = {
         closetype: true,
         classification: true,      
     }
-}
+  };
+
