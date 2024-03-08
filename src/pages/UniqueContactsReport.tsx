@@ -773,7 +773,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                                                     {dataGraph.map((item:Dictionary) => (
                                                         <Cell
                                                             key={item.name}
-                                                            fill={item.color}
+                                                            fill={randomColorGenerator()}
                                                         />
                                                     ))}
                                                 </Pie>
@@ -1440,7 +1440,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                                 {dataGraph.map((item: Dictionary) => (
                                                     <Cell
                                                         key={item.name}
-                                                        fill={item.color}
+                                                        fill={randomColorGenerator()}
                                                     />
                                                 ))}
                                             </Pie>
@@ -1450,7 +1450,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                 <div style={{ overflowX: 'auto' }}>
                                     <TableResume
                                         graphicType={graphicType}
-                                        data={dataGraph}
+                                        data={dataGraph}                                        
                                     />
                                 </div>
                             </div>
