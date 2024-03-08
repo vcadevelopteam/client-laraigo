@@ -144,6 +144,7 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 columns={columns}
                 data={data}
                 download={false}
+                pageSizeDefault={100}
                 filterGeneral={false}
                 toolsFooter={false}
             />
@@ -673,118 +674,120 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 </React.Fragment>):
                 (<div>
                     <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={mainResult.loading || !(gridData.length > 0)}
-                            onClick={() => setOpenModal(true)}
-                            startIcon={<Settings />}
-                        >
-                            {t(langKeys.configuration)}
-                        </Button>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setView('GRID')}
-                            startIcon={<ListIcon />}
-                        >
-                            {t(langKeys.grid_view)}
-                        </Button>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, width: '100%', margin: '8px 0' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.loading || !(gridData.length > 0)}
+                                onClick={() => setOpenModal(true)}
+                                startIcon={<Settings />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setView('GRID')}
+                                startIcon={<ListIcon />}
+                            >
+                                {t(langKeys.grid_view)}
+                            </Button>
+                        </div>
                         <>
-                        {(mainResult.loading) ? (
-                            <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <CircularProgress />
-                            </div>
-                        ) :(graphicType === "BAR" ? (
-                            <div style={{ display: 'flex' }}>
-                                <div style={{ flex: '0 0 70%', height: 500 }}>
-                                    <ResponsiveContainer aspect={4.0 / 2}>
-                                        <BarChart
+                            {(mainResult.loading) ? (
+                                <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <CircularProgress />
+                                </div>
+                            ) :(graphicType === "BAR" ? (
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: '0 0 70%', height: 500 }}>
+                                        <ResponsiveContainer aspect={4.0 / 2}>
+                                            <BarChart
+                                                data={dataGraph}
+                                                margin={{top: 20, right: 30, left: 20, bottom: 5}}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+                                                <YAxis />
+                                                <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
+                                                <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
+                                                    <LabelList dataKey="summary" position="top" />
+                                                    {
+                                                        dataGraph.map((entry: Dictionary, index: Dictionary) => (
+                                                            <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
+                                                        ))
+                                                    }    
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div style={{ overflowX: 'auto' }}>
+                                        <TableResume                                        
+                                            graphicType={graphicType}
                                             data={dataGraph}
-                                            margin={{top: 20, right: 30, left: 20, bottom: 5}}
-                                        >
+                                        />
+                                    </div>
+                                </div>
+                            ) : (graphicType === "LINE" ? (
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: '0 0 70%', height: 500 }}>
+                                        <ResponsiveContainer aspect={4.0 / 2}>
+                                            <LineChart
+                                            data={dataGraph}
+                                            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                            >
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
                                             <YAxis />
                                             <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
-                                            <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
-                                                <LabelList dataKey="summary" position="top" />
-                                                {
-                                                    dataGraph.map((entry: Dictionary, index: Dictionary) => (
-                                                        <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
-                                                    ))
-                                                }    
-                                            </Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <div style={{ overflowX: 'auto' }}>
-                                    <TableResume
-                                        graphicType={graphicType}
-                                        data={dataGraph}
-                                    />
-                                </div>
-                            </div>
-                        ) : (graphicType === "LINE" ? (
-                            <div style={{ display: 'flex' }}>
-                                <div style={{ flex: '0 0 70%', height: 500 }}>
-                                    <ResponsiveContainer aspect={4.0 / 2}>
-                                        <LineChart
-                                        data={dataGraph}
-                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                                        >
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
-                                        <YAxis />
-                                        <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
-                                        <Line type="linear" dataKey="value" stroke="#7721AD" />
-                                        </LineChart>
-                                    </ResponsiveContainer>
+                                            <Line type="linear" dataKey="value" stroke="#7721AD" />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                        </div>
+                                        <div style={{ overflowX: 'auto' }}>
+                                        <TableResume                                    
+                                            graphicType={graphicType}
+                                            data={dataGraph}
+                                        />
+                                    </div>
+                                </div>                       
+                            ) : (
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: '0 0 65%', height: 500 }}>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                <ChartTooltip />
+                                                <Pie
+                                                    data={dataGraph}
+                                                    dataKey="value"
+                                                    labelLine={false}
+                                                    label={RenderCustomizedLabel}
+                                                    nameKey="name"
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={40}
+                                                    fill="#7721AD"
+                                                >
+                                                    {dataGraph.map((item:Dictionary) => (
+                                                        <Cell
+                                                            key={item.name}
+                                                            fill={item.color}
+                                                        />
+                                                    ))}
+                                                </Pie>
+                                            </PieChart>
+                                        </ResponsiveContainer>
                                     </div>
                                     <div style={{ overflowX: 'auto' }}>
-                                    <TableResume                                    
-                                        graphicType={graphicType}
-                                        data={dataGraph}
-                                    />
+                                        <TableResume
+                                            graphicType={graphicType}
+                                            data={dataGraph}
+                                        />
+                                    </div>
                                 </div>
-                            </div>                       
-                        ) : (
-                            <div style={{ display: 'flex' }}>
-                                <div style={{ flex: '0 0 65%', height: 500 }}>
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <ChartTooltip />
-                                            <Pie
-                                                data={dataGraph}
-                                                dataKey="value"
-                                                labelLine={false}
-                                                label={RenderCustomizedLabel}
-                                                nameKey="name"
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius={40}
-                                                fill="#7721AD"
-                                            >
-                                                {dataGraph.map((item:Dictionary) => (
-                                                    <Cell
-                                                        key={item.name}
-                                                        fill={item.color}
-                                                    />
-                                                ))}
-                                            </Pie>
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <div style={{ overflowX: 'auto' }}>
-                                    <TableResume
-                                        graphicType={graphicType}
-                                        data={dataGraph}
-                                    />
-                                </div>
-                            </div>
-                        )))}
+                            )))}
                         </>
                     </Box>
                 </div>
@@ -1353,25 +1356,27 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 </React.Fragment>):
                 (<div>
                     <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={mainResult.loading || !(gridData.length > 0)}
-                            onClick={() => setOpenModal(true)}
-                            startIcon={<Settings />}
-                        >
-                            {t(langKeys.configuration)}
-                        </Button>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setView('GRID')}
-                            startIcon={<ListIcon />}
-                        >
-                            {t(langKeys.grid_view)}
-                        </Button>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, width: '100%', margin: '8px 0' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.loading || !(gridData.length > 0)}
+                                onClick={() => setOpenModal(true)}
+                                startIcon={<Settings />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setView('GRID')}
+                                startIcon={<ListIcon />}
+                            >
+                                {t(langKeys.grid_view)}
+                            </Button>
+                        </div>
                         <>
                         {(mainResult.loading) ? (
                             <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
