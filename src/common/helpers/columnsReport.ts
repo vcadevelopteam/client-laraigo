@@ -37,13 +37,13 @@ export const columnsHideGraphic = {
     },
 };
 
-export interface ColumnsHideShowType {
+export interface ColumnsInterface {
     [key: string]: {
         [key: string]: boolean;
     };
 }
 
-export const columnsHideShow: ColumnsHideShowType = {
+export const columnsHideShow: ColumnsInterface = {
     productivity: {
         email: true,
         starttime: true,
@@ -118,3 +118,117 @@ export const columnsHideShow: ColumnsHideShowType = {
         motivedescription: true,
     },     
 }
+
+
+export const columnGroupedBy: ColumnsInterface = {
+
+    productivity: { //actualmente visible, //chequear funcionalidad, no funciona en telefono, grupo, fecha fin
+        ticket: true,
+        ticketyear: true,  
+        ticketmonth: true,
+        ticketweek: true,
+        ticketday: true,
+        tickethour: true,  
+        channel: true,
+        origin: true,
+        person: true,
+        phone: true,  
+        closedby: true,
+        agent: true,
+        ticketgroup: true,
+        startdate: true,  
+        enddate: true,      
+    },
+    loginhistory: { //actualmente visible //chequear funcionalidad, no funciona en nusuario, usuario, estado, tipo
+        user: true,
+        username: true,
+        status: true,  
+        type: true,
+    }, 
+    interaction: {
+        ticketnum: true,
+        ticketyear: true,  
+        ticketmonth: true,
+        channel: true,
+        agent: true,
+        intent: true,  
+        interactiontype: true,
+        ticketgroup: true,
+        person: true,
+        personcommunicationchannel: true,          
+    },
+    campaignreport: {
+        title: true,
+        description: true,
+        templatetype: true,
+        templatename: true,
+        channel: true,
+        executiontype: true,
+        executionuser: true,
+        executionuserprofile: true,       
+    },
+    productividadasesores: {        
+        fullname: true,
+        totaltickets: true,
+        closedtickets: true,
+        asignedtickets: true,
+        suspendedtickets: true,
+        cardavgmaxtmo: true,
+        cardmaxmaxtmouser: true,
+        cardavgmintmo: true,
+        cardminmintmouser: true,
+        conectadotime: true,
+        userstatus: true,        
+    },
+    tipification: {      
+        ticket: true,
+        enddate: true,
+        firstinteractiondate: true,
+        person: true,
+        closedby: true,
+        agent: true,
+        closetype: true,     
+        channel: true,
+        classificationlevel1: true,
+        classificationlevel2: true,
+        classificationlevel3: true,        
+    },
+    userproductivityhours: {
+        datehour: true,
+        agent: true,
+        hoursrange: true,
+        worktime: true,
+        onlinetime: true,
+        qtytickets: true,
+    },
+    reportrequestsd: {
+        sd_request: true,
+        type: true,
+        channel: true,
+        display_name: true,
+        company: true,
+        description: true,
+        priority: true,  
+        phase: true,
+        resolution: true,
+        report_date: true,
+        resolution_date: true,     
+    },   
+    ticketvsadviser: {
+        fechainicio: true,
+        asesor: true,
+        canal: true,
+        tipocierre: true,
+        fechacierre: true,       
+    },
+    reportvoicecall: {
+        channel: true,
+        ticketdate: true,
+        agent: true,
+        name: true,
+        origin: true,
+        closetype: true,
+        classification: true,      
+    }
+  };
+
