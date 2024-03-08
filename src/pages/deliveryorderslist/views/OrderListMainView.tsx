@@ -175,21 +175,46 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
         }
     }
 
-    const changeStatus = () => {
+    const rescheduleOrder = () => {
+        if(rowWithDataSelected[0].orderstatus === 'undelivered') setOpenModalReschedulingUndelivered(true)
+        else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.badtipification),
+                })
+            );
+        }
+    }
+
+    const prepareOrder = () => {
         if(rowWithDataSelected[0].orderstatus === 'scheduled') {
             dispatch(showBackdrop(true));
             dispatch(execute(updateOrderOnlyStatus({
                 orderid: rowWithDataSelected[0].orderid,
                 orderstatus: 'prepared',
             })))
-            setWaitSave(true);
-        } else if (rowWithDataSelected[0].orderstatus === 'shipped') {
+            setWaitSaveChangeStatus(true);
+        } else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.badtipification),
+                })
+            );
+        }
+    }
+
+    const deliverOrder = () => {
+        if (rowWithDataSelected[0].orderstatus === 'shipped') {
             dispatch(showBackdrop(true));
             dispatch(execute(updateOrderOnlyStatus({
                 orderid: rowWithDataSelected[0].orderid,
                 orderstatus: 'delivered',
             })))
-            setWaitSave(true);
+            setWaitSaveChangeStatus(true);
         } else {
             dispatch(
                 showSnackbar({
@@ -449,10 +474,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                         <div style={{ marginLeft: "0.6rem" }}>
                             <ExtrasMenu
                                 schedulesth={scheduleOrder}
-                                prepare={changeStatus}
+                                prepare={prepareOrder}
                                 dispatch={() => setOpenModalAssignCarrier(true)}
-                                reschedule={() => setOpenModalReschedulingUndelivered(true)}
-                                deliver={changeStatus}
+                                reschedule={rescheduleOrder}
+                                deliver={deliverOrder}
                                 undelivered={() => setOpenModalUndelivered(true)}
                                 cancel={() => setOpenModalCanceled(true)}
                                 cancelundelivered={() => setOpenModalCanceled(true)}
@@ -514,6 +539,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 openModal={openModalReschedulingUndelivered}
                 setOpenModal={setOpenModalReschedulingUndelivered}
                 config={config}
+                fetchData={fetchData}
+                row={rowWithDataSelected}
             />
             <ElectronicTicketAndInvoiceDialog
                 openModal={openModalElectronicTicketAndInvoice}

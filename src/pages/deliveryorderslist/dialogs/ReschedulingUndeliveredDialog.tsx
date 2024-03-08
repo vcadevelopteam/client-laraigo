@@ -1,12 +1,17 @@
 import { Button, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
 import SaveIcon from "@material-ui/icons/Save";
 import { format } from "date-fns";
 import { Dictionary } from "@types";
+import { useSelector } from "hooks";
+import { useDispatch } from "react-redux";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { execute } from "store/main/actions";
+import { updateOrderSchedule } from "common/helpers";
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -28,18 +33,61 @@ const ReschedulingUndeliveredDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
     config: Dictionary;
-}> = ({ openModal, setOpenModal, config }) => {
+    fetchData: (flag: boolean) => void;
+    row: Dictionary[];
+}> = ({ openModal, setOpenModal, config, fetchData, row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const dispatch = useDispatch();
     const signatureDateDefault = format(new Date(), "yyyy-MM-dd");
     const [dateSelected, setDateSelected] = useState(signatureDateDefault)
     const [shift, setShift] = useState('')
+    const [waitSave, setWaitSave] = useState(false);
+    const executeResult = useSelector((state) => state.main.execute);
 
     const handleClose = () => {
         setOpenModal(false);
         setDateSelected(signatureDateDefault)
         setShift('')
     }
+
+    const changeStatus = () => {
+        if(dateSelected >= signatureDateDefault) {
+            dispatch(showBackdrop(true));
+            dispatch(execute(updateOrderSchedule({
+                orderid: row[0].orderid,
+                deliveryshift: shift,
+                scheduledeliverydate: dateSelected,
+                orderstatus: 'prepared',
+            })))
+            setWaitSave(true);
+        }
+    }
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSave(false);
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "success",
+                        message: t(langKeys.successful_update),
+                    })
+                );
+                handleClose()
+                fetchData(true)
+                dispatch(showBackdrop(false));
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave]);
     
     return (
         <DialogZyx open={openModal} title={t(langKeys.rescheduling) + " - " + t(langKeys.undelivered)} maxWidth="sm">
@@ -86,6 +134,7 @@ const ReschedulingUndeliveredDialog: React.FC<{
                     type="button"
                     startIcon={<SaveIcon color="secondary" />}
                     style={{ backgroundColor: "#55BD84" }}
+                    onClick={changeStatus}
                 >
                     {t(langKeys.save)}
                 </Button>
