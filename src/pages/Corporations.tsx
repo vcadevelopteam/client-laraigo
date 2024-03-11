@@ -917,10 +917,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                             <FieldEdit
                                 label={t(langKeys.domainname)}
                                 className="col-6"
-                                disabled={Boolean(row)}
+                                disabled={Boolean(row?.domainname)}
                                 valueDefault={getValues("domainname")}
-                                onChange={(value) => setValue("domainname", value)}
+                                onChange={(value) => {setValue("domainname", value.toLocaleLowerCase().replace(/\s/g, ''))}}
                                 error={errors?.domainname?.message}
+                                inputProps={{ style: { textTransform: 'lowercase' } }}
                             />
                             <FieldEdit
                                 label={t(langKeys.bond)}
