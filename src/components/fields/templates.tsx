@@ -1131,7 +1131,7 @@ interface TemplateSwitchPropsYesNo extends InputProps {
     disabled?: boolean;
 }
 
-export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style }) => {
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style, disabled=false }) => {
     const [checkedaux, setChecked] = useState(false);
 
     useEffect(() => {
@@ -1141,7 +1141,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
     return (
         <div className={className} style={{ ...style, paddingBottom: '3px' }}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
-            <IOSSwitch checked={checkedaux} onChange={(e) => {
+            <IOSSwitch checked={checkedaux} disabled={disabled} onChange={(e) => {
                 setChecked(e.target.checked);
                 onChange && onChange(e.target.checked)
             }} />
