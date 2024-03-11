@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { FieldEdit } from "components";
 import { useSelector } from "hooks";
-import { showSnackbar, showBackdrop } from "store/popus/actions";
-import { useDispatch } from "react-redux";
 import TableZyx from "components/fields/table-simple";
 import GoogleMaps from 'components/fields/GoogleMaps';
 import { Typography } from "@material-ui/core";
@@ -27,13 +25,6 @@ const useStyles = makeStyles((theme) => ({
         textDecoration: "underline solid",
         cursor: "pointer",
     },
-    mapimage: {
-        display: "flex",
-        textAlign: "center",
-        width: "100%",
-        height: "10rem",
-        objectFit: "cover",
-    },
     subtitle: {
         fontSize: "2rem",
         paddingBottom: "0.5rem",
@@ -53,10 +44,7 @@ interface InformationTabDetailProps {
 const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const executeResult = useSelector((state) => state.main.execute);
     const productsData = useSelector((state) => state.main.mainAux2);
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
     const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>([
         { latitude: row?.latitude, longitude: row?.longitude },
     ]);
@@ -64,29 +52,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
     const handleCoordinatesChange = (newCoordinates: Array<{ latitude: number; longitude: number }>) => {
         setCoordinates(newCoordinates);
     };
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_delete),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave]);
 
     const columns = React.useMemo(
         () => [

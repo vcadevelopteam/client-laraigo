@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { FieldEdit, TitleDetail } from "components";
-import { useSelector } from "hooks";
-import { showSnackbar, showBackdrop } from "store/popus/actions";
-import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -19,40 +15,11 @@ const useStyles = makeStyles((theme) => ({
 
 interface InventoryTabDetailProps {
     row: Dictionary | null;
-    setValue: UseFormSetValue<any>;
-    getValues: UseFormGetValues<any>;
-    errors: FieldErrors;
 }
 
-const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row, setValue, getValues, errors }) => {
+const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const executeResult = useSelector((state) => state.main.execute);
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_delete),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave]);
 
     return (
         <div className={classes.containerDetail}>

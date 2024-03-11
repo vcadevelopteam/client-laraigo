@@ -4193,3 +4193,21 @@ export const updateOrderNonDelivery = ({ orderid, subreasonnondeliveryid, orders
     key: "UFN_UPDATE_ORDERNONDELIVERY",
     parameters: { orderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier },
 });
+
+export const updateOrderCanceled = ({ orderid, descriptionreason, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERCANCELED",
+    key: "UFN_UPDATE_ORDERCANCELED",
+    parameters: { orderid, descriptionreason, orderstatus },
+});
+
+export const ordersInAttentionSel = () => ({
+    method: "UFN_ORDERSINATTENTION_SEL",
+    key: "UFN_ORDERSINATTENTION_SEL",
+    parameters: {},
+});
+
+export const ordersInStoreSel = () => ({
+    method: "UFN_ORDERSINSTORE_SEL",
+    key: "UFN_ORDERSINSTORE_SEL",
+    parameters: {},
+});

@@ -5605,6 +5605,7 @@ const translation: LangKeys = {
   badtipification: 'Incorrect tipification',
   CANCEL: 'Cancelation',
   UNDELIVER: 'Undelivered',
+  amountserved: 'Amount Served',
 };
 
 const enResource: ResourceLanguage = {

@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { TitleDetail } from "components";
 import { useSelector } from "hooks";
-import { showSnackbar, showBackdrop } from "store/popus/actions";
-import { useDispatch } from "react-redux";
 import TableZyx from "components/fields/table-simple";
 import { Typography } from "@material-ui/core";
 
@@ -31,33 +29,7 @@ interface InventoryTabDetailProps {
 const OrderListTabDetail: React.FC<InventoryTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const executeResult = useSelector((state) => state.main.execute);
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
     const productsData = useSelector((state) => state.main.mainAux2);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_delete),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave]);
 
     const columns = React.useMemo(
         () => [

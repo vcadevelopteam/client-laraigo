@@ -5524,6 +5524,7 @@ export const langKeys = {
   badtipification: 'badtipification',
   CANCEL: 'CANCEL',
   UNDELIVER: 'UNDELIVER',
+  amountserved: 'amountserved',
 };
 
 export type LangKeys = typeof langKeys;

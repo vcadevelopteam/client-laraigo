@@ -35,9 +35,6 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
     },
     titleandcrumbs: {
         marginBottom: 12,
@@ -239,6 +236,19 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
         }
     }
 
+    const cancelOrder = () => {
+        if(rowWithDataSelected[0].orderstatus === 'shipped') setOpenModalCanceled(true)
+        else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.badtipification),
+                })
+            );
+        }
+    }
+
     useEffect(() => {
         if (waitSaveChangeStatus) {
             if (!executeResult.loading && !executeResult.error) {
@@ -348,7 +358,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             },
             {
                 Header: t(langKeys.scheduleddate),
-                accessor: "scheduleddate",
+                accessor: "scheduledeliverydate",
                 width: "auto",
             },
             {
@@ -492,7 +502,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 reschedule={rescheduleOrder}
                                 deliver={deliverOrder}
                                 undelivered={undeliverOrder}
-                                cancel={() => setOpenModalCanceled(true)}
+                                cancel={cancelOrder}
                                 cancelundelivered={() => setOpenModalCanceled(true)}
                                 rows={selectedRows}
                             />
@@ -538,6 +548,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             <CanceledDialog
 				openModal={openModalCanceled}
 				setOpenModal={setOpenModalCanceled}
+                fetchData={fetchData}
+                row={rowWithDataSelected}
 			/>
             <AssignCarrierDialog
 				openModal={openModalAssignCarrier}

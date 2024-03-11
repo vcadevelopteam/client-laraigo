@@ -5534,6 +5534,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   badtipification: 'Tipificación incorrecta',
   CANCEL: 'Cancelación',
   UNDELIVER: 'No entregado',
+  amountserved: 'Cantidad Atendida',
 };
 
 const esResource: ResourceLanguage = {
