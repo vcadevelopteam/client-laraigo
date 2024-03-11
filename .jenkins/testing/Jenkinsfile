@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         AWS_DEFAULT_REGION="us-south"
-        NODE_OPTIONS = "--max-old-space-size=4096"
+        NODE_OPTIONS = "--max-old-space-size=1024"
     }
     
     tools {
