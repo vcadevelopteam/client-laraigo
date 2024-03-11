@@ -345,7 +345,26 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
     };
     const onChangeIconInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
-        uploadFileField("iconurl", e.target.files[0]);
+        const file = e.target.files[0];
+        if (file) {
+          const image = new Image();
+    
+          image.onload = () => {
+            const maxWidth = 32;
+            const maxHeight = 32;
+            if (image.width > maxWidth || image.height > maxHeight) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: "El ícono debe ser de 32x32px como máximo",
+                    }))
+            } else {
+                uploadFileField("iconurl", file);
+            }
+          };
+          image.src = URL.createObjectURL(file);
+        }
     };
 
     function uploadFileField(field: string, file: any) {
