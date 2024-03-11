@@ -336,6 +336,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
             domainname: row?.domainname || "",
             appsettingid: row ? row.appsettingid : null,
             citybillingid: row ? row.citybillingid : null,
+            olddomainname: row?.domainname || ""
         },
     });
 
