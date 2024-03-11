@@ -923,6 +923,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                 label={t(langKeys.usewhitebrand)}
                                 className="col-6"
                                 valueDefault={whiteBrand}
+                                disabled={row?.domainname}
                                 onChange={(value) => {
                                     setWhiteBrand(value);
                                     setValue("ispoweredbylaraigo", false);
