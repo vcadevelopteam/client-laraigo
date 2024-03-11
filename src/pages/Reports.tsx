@@ -15,7 +15,7 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx, DateRangePicker, SkeletonReport } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp, getDateCleaned, getCommChannelLst } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp, getDateCleaned } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic, cleanViewChange, setViewChange } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -47,7 +47,7 @@ import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'pages/staticReports/ReportRequestSD';
 import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
-import { columnsHideShow } from 'common/helpers/columnsReport';
+import { columnsHideShow, columnsHideGraphic, columnGroupedBy } from 'common/helpers/columnsReport';
 import TipificationReport from './staticReports/ReportTipification';
 import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 import { CellProps } from 'react-table';
@@ -143,7 +143,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport, selectedColumn }) => {
+const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -169,6 +169,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
 
     const columns = React.useMemo(() => reportColumns.map(x => {
         const showColumn = columnsHideShow[row?.origin]?.[x.proargnames] ?? false;
+        const showGroupedBy= columnGroupedBy[row?.origin]?.[x.proargnames] ?? false;
         switch (x.proargtype) {
             case "bigint":
                 if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
@@ -176,6 +177,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                         accessor: x.proargnames,
                         showColumn,
+                        showGroupedBy,
                         type: "number-centered"
                     }
                 }
@@ -184,6 +186,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                         accessor: x.proargnames,
                         showColumn,
+                        showGroupedBy,
                         helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                         type: "number"
                     }
@@ -196,6 +199,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "boolean",
                     showColumn,
+                    showGroupedBy,
                     Cell: (props: CellProps<Dictionary>) => {/* eslint-disable react/prop-types */
                         const { cell } = props;
                         const { column, row } = cell || {};
@@ -213,6 +217,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
                     showColumn,
+                    showGroupedBy,
                     Cell: (props: CellProps<Dictionary>)  => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;                    
@@ -242,6 +247,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
                     showColumn,
+                    showGroupedBy,
                     Cell: (props: CellProps<Dictionary>)  => {
                         const column = props.cell.column;
                         const row = props.cell.row.original;
@@ -269,6 +275,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     showColumn,
+                                    showGroupedBy,
                                     Cell: (props: CellProps<Dictionary>) => {
                                         const { row } = props.cell;                                        
                                         if (row && row.original && 'status' in row.original) {
@@ -283,6 +290,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
                                     showColumn,
+                                    showGroupedBy,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
@@ -297,6 +305,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     showColumn,
+                                    showGroupedBy,
                                     Cell: (props: CellProps<Dictionary>) => {
                                         const { row } = props.cell || {};
                                         const { original } = row || {};                                    
@@ -313,6 +322,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     showColumn,
+                                    showGroupedBy,
                                     Cell: (props: CellProps<Dictionary>) => {
                                         const { question } = props.cell.row.original || {};
                                         const textToShow = question ? (question.length < 40 ? question : question.substring(0, 40) + "... ") : "";
@@ -325,6 +335,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
                                     showColumn,
+                                    showGroupedBy,
                                     helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
@@ -334,6 +345,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                             accessor: x.proargnames,
                             showColumn,
+                            showGroupedBy,
                             helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                             type: "string"
                         }
@@ -482,7 +494,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                         loading={mainPaginated.loading}
                                                         pageCount={pageCount}
                                                         filterrange={true}
-                                                        showHideColumns={true}
+                                                        showHideColumns={true}       
+                                                        groupedBy={true}                                              
                                                         FiltersElement={(
                                                             <>
                                                                 {!allFilters ? null : allFilters.map(filtro => (
@@ -654,10 +667,12 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         )));
     }
 
-    
-
-
-
+    const hideGraphic = Object.entries((columnsHideGraphic as Dictionary)[row?.origin] || {})
+    .filter(([, shouldHide]) => shouldHide)
+    .map(([column]) => column);
+  
+    const visibleColumns = columns.filter(column => !hideGraphic.includes(column));
+  
     return (
         <DialogZyx
             open={openModal}
@@ -690,7 +705,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('column')}                    
                     error={(errors?.column?.message as string) ?? ""}
                     onChange={(value) => setValue('column', value?.key)}
-                    data={columns.map(x => ({ key: x, value: x }))}
+                    data={visibleColumns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}
@@ -998,7 +1013,7 @@ const Reports: FC = () => {
         setViewSelected(key);
     }
 
-    const reportSwitch = (report: any, index: number) => {        
+    const reportSwitch = (report: any, index: number) => {   
         switch (report.reportname) {
             case 'HEATMAP':
                 return (

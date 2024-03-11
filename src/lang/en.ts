@@ -5936,7 +5936,7 @@ const translation: LangKeys = {
   area: 'Area',
   executingUser: "Executing User",
   executingUserProfile: "Executing User Profile",
-  groupedBy: "Grouped By",
+  groupedBy: "Group/Ungroup Columns",
   showHideColumns: "Show/Hide Columns",
   appointmenttype: 'Appointment Type',
   orderdate: 'Order Date',

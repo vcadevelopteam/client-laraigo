@@ -473,7 +473,7 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         take,
         filters,
         sorts,
-        distinct: allParameters['distinct'] ? allParameters['distinct'] : "",
+        distinct: distinct || "",
         origin: origin,
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
@@ -777,10 +777,10 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype = "", paymentmethod = "", automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, domainname, iconurl, logourl, startlogourl, ispoweredbylaraigo }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype = "", paymentmethod = "", automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, domainname, iconurl, logourl, startlogourl, ispoweredbylaraigo, olddomainname }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo, domainname }
+    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo, domainname, olddomainname }
 });
 export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
