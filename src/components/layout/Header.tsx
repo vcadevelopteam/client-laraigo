@@ -243,7 +243,8 @@ const Header = ({ classes }: IProps) => {
     
     if(customDomain){
         const existingFavicon = document.querySelector('link[rel="icon"]');
-        existingFavicon.href = user?.iconurl||"";
+        console.log(user?.iconurl)
+        //existingFavicon.href = user?.iconurl||"";
     }
 
     return (
