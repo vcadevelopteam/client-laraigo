@@ -350,8 +350,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
           const image = new Image();
     
           image.onload = () => {
-            const maxWidth = 37;
-            const maxHeight = 300;
+            const maxWidth = 32;
+            const maxHeight = 32;
             if (image.width > maxWidth || image.height > maxHeight) {
                 dispatch(
                     showSnackbar({
