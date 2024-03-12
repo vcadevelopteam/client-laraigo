@@ -817,7 +817,8 @@ const TableZyx = React.memo(({
             } else {       
                 setPagination(prev => ({ 
                     ...prev, 
-                    distinct: "",                 
+                    distinct: "",   
+                    filters: {},              
                     pageIndex: 0, 
                     trigger: true 
                 }));
