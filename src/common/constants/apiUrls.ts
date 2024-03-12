@@ -398,4 +398,6 @@ export const apiUrls = {
 
     PAYMENTORDER_OPENPAY_GETPAYMENTORDER: `${BASE_URL}/paymentopenpay/getpaymentorder`,
     PAYMENTORDER_OPENPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentopenpay/processtransaction`,
+
+    DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
 };

@@ -22,8 +22,9 @@ import PrintDialog from "../dialogs/PrintDialog";
 import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
 import { reportPdf } from "store/culqi/actions";
-import { execute, getCollectionAux, getCollectionAux2, getMultiCollection } from "store/main/actions";
-import { deliveryAppUsersSel, deliveryConfigurationSel, orderLineSel, ordersByConfigRoutingLogic, reasonNonDeliverySel, updateOrderOnlyStatus } from "common/helpers";
+import { execute, getCollectionAux2 } from "store/main/actions";
+import { orderLineSel, ordersByConfigRoutingLogic, updateOrderOnlyStatus } from "common/helpers";
+import { deliveryRouting } from "store/delivery/actions";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -247,10 +248,12 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     }
 
     const applyRoutingLogic = () => {
-        const allPrepared = rowWithDataSelected.every(row => row.orderstatus === 'prepared');
+        const allPrepared = rowWithDataSelected.every(row => row.orderstatus === 'prepared');rowWithDataSelected.map(row => row.orderid).join(',')
         if (allPrepared) {
             dispatch(showBackdrop(true));
-            dispatch(execute(ordersByConfigRoutingLogic(rowWithDataSelected.map(row => row.orderid).join(','))));
+            dispatch(deliveryRouting({
+                listorderid: rowWithDataSelected.map(row => row.orderid).join(',')
+            }));
             setWaitSave(true);
         } else {
             dispatch(
@@ -597,6 +600,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             <AssignCarrierDialog
 				openModal={openModalAssignCarrier}
 				setOpenModal={setOpenModalAssignCarrier}
+                fetchData={fetchData}
+                row={rowWithDataSelected}
 			/>
             <ManualSchedulingDialog
 				openModal={openModalManualScheduling}
