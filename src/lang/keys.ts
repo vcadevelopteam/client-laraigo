@@ -5975,6 +5975,11 @@ export const langKeys = {
   managesubmotives: 'managesubmotives',
   rejected: 'rejected',
   nondelivered: 'nondelivered',
+  carriercoord: 'carriercoord',
+  badtipification: 'badtipification',
+  CANCEL: 'CANCEL',
+  UNDELIVER: 'UNDELIVER',
+  amountserved: 'amountserved',
 };
 
 export type LangKeys = typeof langKeys;

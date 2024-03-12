@@ -5982,6 +5982,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   managesubmotives: 'Gestionar submotivos',
   rejected: 'Cancelado',
   nondelivered: 'No Entregado',
+  carriercoord: 'Coordenadas del Transportista',
+  badtipification: 'Tipificación incorrecta',
+  CANCEL: 'Cancelación',
+  UNDELIVER: 'No entregado',
+  amountserved: 'Cantidad Atendida',
 };
 
 const esResource: ResourceLanguage = {

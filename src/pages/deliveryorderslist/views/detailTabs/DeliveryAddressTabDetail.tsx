@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { FieldErrors } from 'react-hook-form';
 import { FieldEdit } from 'components';
 import { Typography } from '@material-ui/core';
 import GoogleMaps from 'components/fields/GoogleMaps';
@@ -40,11 +39,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface InventoryTabDetailProps {
-    errors: FieldErrors;
     row: Dictionary | null;
 }
 
-const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors, row }) => {
+const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();    
     const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>([
@@ -56,37 +54,37 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ errors, r
     };
 
     return (
-    <div className={classes.containerDetail}>
-        <Typography style={{fontSize: 30}}>{t(langKeys.deliveryaddress)}</Typography>
-        <Typography className={classes.subtitle}>{`${t(langKeys.geolocation)}:`}</Typography>
-        <div className={classes.centerSelf}>
-            <div style={{ width: '70%' }}>
-                <GoogleMaps 
-                    coordinates={coordinates} 
-                    onCoordinatesChange={handleCoordinatesChange} 
-                />
-            </div>
-        </div>
-        <Typography className={classes.mapFooter}>{t(langKeys.address_found_in_geolocator)}</Typography>
-        {coordinates.map((coord, index) => (
-            <div key={index} className={classes.centerSelf}>
-                <div className={classes.addressForm}>
-                    <FieldEdit
-                        label={t(langKeys.latitude)}
-                        type="number"
-                        disabled={true}
-                        valueDefault={coord.latitude}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.longitude)}
-                        type="number"
-                        disabled={true}
-                        valueDefault={coord.longitude}
+        <div className={classes.containerDetail}>
+            <Typography style={{fontSize: 30}}>{t(langKeys.deliveryaddress)}</Typography>
+            <Typography className={classes.subtitle}>{`${t(langKeys.geolocation)}:`}</Typography>
+            <div className={classes.centerSelf}>
+                <div style={{ width: '70%' }}>
+                    <GoogleMaps 
+                        coordinates={coordinates} 
+                        onCoordinatesChange={handleCoordinatesChange} 
                     />
                 </div>
             </div>
-        ))}
-    </div>
+            <Typography className={classes.mapFooter}>{t(langKeys.address_found_in_geolocator)}</Typography>
+            {coordinates.map((coord, index) => (
+                <div key={index} className={classes.centerSelf}>
+                    <div className={classes.addressForm}>
+                        <FieldEdit
+                            label={t(langKeys.latitude)}
+                            type="number"
+                            disabled={true}
+                            valueDefault={coord.latitude}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.longitude)}
+                            type="number"
+                            disabled={true}
+                            valueDefault={coord.longitude}
+                        />
+                    </div>
+                </div>
+            ))}
+        </div>
     );
 };
 export default DeliveryAddressTabDetail;

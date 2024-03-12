@@ -4928,8 +4928,50 @@ export const subReasonNonDeliverySel = (reasonnondeliveryid: number) => ({
     parameters: { reasonnondeliveryid },
 });
 
-export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, operation }: Dictionary) => ({
+export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, viewappmovil, operation }: Dictionary) => ({
     method: "UFN_SUBREASONNONDELIVERY_INS",
     key: "UFN_SUBREASONNONDELIVERY_INS",
-    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, operation },
+    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, viewappmovil, operation },
+});
+
+export const orderLineSel = (orderid: number) => ({
+    method: "UFN_ORDERLINE_SEL",
+    key: "UFN_ORDERLINE_SEL",
+    parameters: { orderid },
+});
+
+export const updateOrderSchedule = ({ orderid, deliveryshift, scheduledeliverydate, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERSCHEDULE",
+    key: "UFN_UPDATE_ORDERSCHEDULE",
+    parameters: { orderid, deliveryshift, scheduledeliverydate, orderstatus },
+});
+
+export const updateOrderOnlyStatus = ({ orderid, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERSTATUS",
+    key: "UFN_UPDATE_ORDERSTATUS",
+    parameters: { orderid, orderstatus },
+});
+
+export const updateOrderNonDelivery = ({ orderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERNONDELIVERY",
+    key: "UFN_UPDATE_ORDERNONDELIVERY",
+    parameters: { orderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier },
+});
+
+export const updateOrderCanceled = ({ orderid, descriptionreason, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERCANCELED",
+    key: "UFN_UPDATE_ORDERCANCELED",
+    parameters: { orderid, descriptionreason, orderstatus },
+});
+
+export const ordersInAttentionSel = () => ({
+    method: "UFN_ORDERSINATTENTION_SEL",
+    key: "UFN_ORDERSINATTENTION_SEL",
+    parameters: {},
+});
+
+export const ordersInStoreSel = () => ({
+    method: "UFN_ORDERSINSTORE_SEL",
+    key: "UFN_ORDERSINSTORE_SEL",
+    parameters: {},
 });
