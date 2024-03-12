@@ -24,7 +24,6 @@ import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
 import AllInboxIcon from '@material-ui/icons/AllInbox';
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
-import { columnGroupedBy } from 'common/helpers/columnsReport';
 import clsx from 'clsx';
 import { Skeleton } from '@material-ui/lab';
 import {
@@ -55,15 +54,13 @@ import {
     useGroupBy,
     ColumnInstance,
     Cell,
-    useColumnOrder,
-    CellProps
+    useColumnOrder,    
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DialogZyx, DateRangePicker } from 'components';
 import { Checkbox, Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Radio, TableSortLabel, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
-import { report } from 'process';
 
 interface Column {
     Header: string;
@@ -75,9 +72,6 @@ interface ColumnVisibility {
     [key: string]: boolean;
 }
 
-interface ColumnGroupedBy {
-    [key: string]: boolean;
-}
 export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
     name: string
     onAdd?: (instance: TableInstance<T>) => MouseEventHandler
@@ -109,25 +103,7 @@ const useStyles = makeStyles((theme) => ({
                 alignItems: "center",
             },
         }
-    },
-    trdynamic: {
-        '&:hover': {
-            boxShadow: '0 11px 6px -9px rgb(84 84 84 / 78%)',
-            "& $containerfloat": {
-                visibility: 'visible'
-            }
-        },
-    },
-    containerfloat: {
-        borderBottom: 'none',
-        padding: '4px 24px 4px 16px',
-        backgroundColor: 'white',
-        marginTop: '1px',
-        position: 'absolute',
-        zIndex: 9999,
-        left: 0,
-        visibility: 'hidden'
-    },
+    },    
     button: {
         padding: 12,
         fontWeight: 500,
@@ -203,7 +179,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
 
 const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilter }: any) => {
     const [value, setValue] = useState('');
@@ -768,30 +743,9 @@ const TableZyx = React.memo(({
     const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
     const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
     const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
-
     const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
+    const [filterApplied, setFilterApplied] = useState(false);  
 
-    const handleRadioClick = (columnId: string) => {
-        setColumnGroupedBy((prevGroupedBy) => {
-            const isColumnActive = prevGroupedBy.includes(columnId);
-            const updatedGroupedBy = isColumnActive ? [] : [columnId];
-            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));
-            return updatedGroupedBy;
-        });
-    };
-
-    useEffect(() => {
-        const storedColumnGroupedBy = localStorage.getItem('columnGroupedBy');
-        if (storedColumnGroupedBy) {
-            setColumnGroupedBy(JSON.parse(storedColumnGroupedBy));
-        }
-    }, []);
-    
-
-    const handleNoGroupedBy = (column: Column) => {
-        return columnGroupedBy.includes(column.accessor);
-    };
-      
 
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
@@ -800,6 +754,10 @@ const TableZyx = React.memo(({
 
     const handleOpenGroupedByModal = () => {
         setGroupedByModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
     };
 
     const handleOpenShowColumnsModal = () => {
@@ -823,27 +781,71 @@ const TableZyx = React.memo(({
         };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
-    const handleColumnByToggle = (column: ColumnInstance) => {
-        const columnName = column.id as string;       
-      
-        setPagination(prev => ({ ...prev, distinct: columnName, pageIndex: 0, trigger: true }));
+    const handleColumnByToggle = (column: ColumnInstance, activate = true) => {
+        const columnName = column.id as string;   
+        setFilterApplied(false); 
+        setPagination(prev => ({ ...prev, distinct: activate ? columnName : "", filters: {}, pageIndex: 0, trigger: true }));
         setColumnOrder?.(prev => {
             const newArray = [...prev];
-            const columnIndex = newArray.findIndex(id => id === columnName);
-            newArray.splice(columnIndex, 1); // Remueve la columna del lugar actual
-            newArray.unshift(columnName); // Inserta la columna al inicio
-            return newArray; // Actualiza el estado con el nuevo orden
+            const columnIndex = newArray.findIndex(id => id === columnName);    
+            if (activate) {
+                newArray.splice(columnIndex, 1); // Remueve la columna del lugar actual
+                newArray.unshift(columnName); // Inserta la columna al inicio
+            } else {
+                newArray.splice(columnIndex, 1); // Remueve la columna del lugar actual
+            }    
+            return newArray;
         });
-    };
+    };    
+
 
     const handleOrderReset = React.useCallback(()=>{
         setColumnOrder(columns.map(column=>column.accessor))     
     },[columns])
 
-    const handleRowByToggle = (cell: Cell, column: ColumnInstance) => {
+    const handleRadioClick = (columnId: string) => {
+        setColumnGroupedBy((prevGroupedBy) => {
+            const isColumnActive = prevGroupedBy.includes(columnId);
+            const updatedGroupedBy = isColumnActive ? [] : [columnId];
+            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));
+    
+            if (!isColumnActive) {
+                const columnToToggle = allColumns.find(column => column.id === columnId);
+                if (columnToToggle && columnToToggle.canGroupBy) {
+                    handleColumnByToggle(columnToToggle);
+                }
+            } else {       
+                setPagination(prev => ({ 
+                    ...prev, 
+                    distinct: "",                 
+                    pageIndex: 0, 
+                    trigger: true 
+                }));
+                handleOrderReset();
+            }
+    
+            return updatedGroupedBy;
+        });
+    };    
+
+    useEffect(() => {
+        const storedColumnGroupedBy = localStorage.getItem('columnGroupedBy');
+        if (storedColumnGroupedBy) {
+            setColumnGroupedBy(JSON.parse(storedColumnGroupedBy));
+        }
+    }, []);    
+
+    const handleNoGroupedBy = (column: Column) => {     
+        return columnGroupedBy.includes(column.accessor);
+    };   
+ 
+
+    const handleRowByToggle = (cell: Cell, column: ColumnInstance) => {     
+        
         const columnName = column.id as string;
         const selectedRowValue = cell.row.original[columnName] as string;
-       
+        setFilterApplied(true);
+
         setPagination(prev => ({
             ...prev,
             distinct: "",
@@ -856,9 +858,10 @@ const TableZyx = React.memo(({
             },
             pageIndex: 0,
             trigger: true
+            
         }));
     };
-                
+                   
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
@@ -1081,23 +1084,21 @@ const TableZyx = React.memo(({
                                 buttonStyle2={{ marginRight: '1rem', marginBottom: '0.3rem' }}
                             >
                                 <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                    {allColumns .filter(column => {
-                                        const isColumnInstance = 'accessor' in column && 'Header' in column;
-                                        return ( isColumnInstance && 'showGroupedBy' in column && column.showGroupedBy === true );
-                                        })
-                                        .map(column => (
-                                            <Grid item xs={4} key={column.id}>
-                                              <FormControlLabel
-                                                control={
-                                                    <Radio
-                                                        color="primary"
-                                                        checked={columnGroupedBy.includes(column.id)}
-                                                        onClick={() => handleRadioClick(column.id)}
-                                                    />                                                  
-                                                }
-                                                label={column.Header}
-                                              />
-                                            </Grid>
+                                    {columns
+                                        .filter((column: any) => column.showGroupedBy === true)
+                                        .map((column: any) => (
+                                        <Grid item xs={4} key={column.accessor}>
+                                            <FormControlLabel
+                                            control={
+                                                <Radio
+                                                color="primary"
+                                                checked={columnGroupedBy.includes(column.accessor)}
+                                                onClick={() => handleRadioClick(column.accessor)}
+                                                />
+                                            }
+                                            label={column.Header}
+                                            />
+                                        </Grid>
                                         ))}
                                 </Grid>
                             </DialogZyx>
@@ -1135,7 +1136,12 @@ const TableZyx = React.memo(({
                                                                             direction={column.isGrouped ? 'desc' : 'asc'}
                                                                             IconComponent={KeyboardArrowRight}
                                                                             className={classes.headerIcon}
-                                                                            {...column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar', onClick: () => handleColumnByToggle(column) }))}
+                                                                            {...column.getHeaderProps( column.getGroupByToggleProps(
+                                                                                { 
+                                                                                    title: 'Agrupar', 
+                                                                                    onClick: () => handleColumnByToggle(column) 
+                                                                                }
+                                                                            ))}
                                                                         />
                                                                     )}
                                                                 </div>
@@ -1221,46 +1227,72 @@ const TableZyx = React.memo(({
                                             style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                         >
                                             {row.cells.map((cell: any, index: number) => 
-                                                <TableCell
-                                                    key={index}
-                                                    {...cell.getCellProps({
-                                                        style: {
-                                                            minWidth: cell.column.minWidth,
-                                                            width: cell.column.width,
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap',
-                                                            textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
-                                                        },
-                                                    })}
-                                                    onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
+
+                                            <TableCell
+                                                key={index}
+                                                {...cell.getCellProps({
+                                                    style: {
+                                                        minWidth: cell.column.minWidth,
+                                                        width: cell.column.width,
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
+                                                    },
+                                                })}
+                                                onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
                                                 >
-                                                    {(cell.isGrouped || cell.column.id === pagination.distinct) ? (
-                                                        <>
-                                                            <TableSortLabel
-                                                                classes={{
-                                                                    iconDirectionAsc: classes.iconDirectionAsc,
-                                                                    iconDirectionDesc: classes.iconDirectionDesc,
-                                                                }}
-                                                                active
-                                                                direction={row.isExpanded ? 'desc' : 'asc'}
-                                                                IconComponent={KeyboardArrowUp}
-                                                                {...row.getToggleRowExpandedProps()}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    row.toggleRowExpanded();
-                                                                    if (cell.column.id !== "selection") {
-                                                                        onClickRow && onClickRow(row.original);
-                                                                        handleRowByToggle(cell, cell.column);
-                                                                    }
-                                                                }}
-                                                                className={classes.cellIcon}
-                                                            />{' '}
-                                                            {cell.render('Cell')}
-                                                        </>
-                                                    ) : cell.render('Cell')}
-                                                </TableCell>
+                                                {(filterApplied && pagination.filters && cell.column.id in pagination.filters) ? (
+                                                   <>
+                                                        <TableSortLabel
+                                                            className={classes.headerIcon}
+                                                            active
+                                                            direction={'asc'}
+                                                            IconComponent={KeyboardArrowRight}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (cell.column.id !== "selection") {
+                                                                    onClickRow && onClickRow(row.original);
+                                                                    handleRowByToggle(cell, cell.column);
+                                                                    handleColumnByToggle(cell.column);
+                                                                }
+                                                            }}
+                                                            
+                                                        />
+                                                        {''}
+                                                        {cell.render('Cell')}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {(cell.isGrouped || cell.column.id === pagination.distinct) ? (
+                                                            <>
+                                                                <TableSortLabel
+                                                                    classes={{
+                                                                        iconDirectionAsc: classes.iconDirectionAsc,
+                                                                        iconDirectionDesc: classes.iconDirectionDesc,
+                                                                    }}
+                                                                    active
+                                                                    direction={row.isExpanded ? 'desc' : 'asc'}  //asc cuando no está expandida, desc cuando está expandida
+                                                                    IconComponent={KeyboardArrowUp}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        if (cell.column.id !== "selection") {
+                                                                            onClickRow && onClickRow(row.original);
+                                                                            handleRowByToggle(cell, cell.column);
+                                                                        }
+                                                                    }}
+                                                                    className={classes.cellIcon}
+                                                                />
+                                                                {''}
+                                                                {cell.render('Cell')}
+                                                            </>
+                                                        ) : ((cell.column.id !== pagination.distinct && pagination.distinct) ? null : cell.render('Cell'))}
+                                                    </>
+                                                )}
+                                            </TableCell>
+
                                             )}
+                                            
                                         </TableRow>
                                     )
                                 })
