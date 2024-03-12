@@ -24,6 +24,7 @@ interface DetailProps {
     setViewSelected: (view: string) => void;
     fetchData?: (flag: boolean) => void;
     setRowSelected: (rowdata: RowSelected) => void;
+    fetchMulti: (id: number) => void;
 }
 
 const useStyles = makeStyles(() => ({
@@ -51,7 +52,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const OrderListDetail2: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, setRowSelected }) => {
+const OrderListDetail2: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, setRowSelected, fetchMulti }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -65,7 +66,10 @@ const OrderListDetail2: React.FC<DetailProps> = ({ data: { row, edit }, setViewS
     const fetchOrderLine = (orderid: number) => dispatch(getCollectionAux2(orderLineSel(orderid)));
 
     useEffect(() => {
-        if(row) fetchOrderLine(row.orderid)
+        if(row) {
+            fetchOrderLine(row.orderid)
+            fetchMulti(row.orderid)
+        }
     },[row])
 
 	const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {

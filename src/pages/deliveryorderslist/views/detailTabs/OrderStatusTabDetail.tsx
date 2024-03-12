@@ -6,6 +6,7 @@ import { langKeys } from "lang/keys";
 import { TitleDetail } from "components";
 import TableZyx from "components/fields/table-simple";
 import { Typography } from "@material-ui/core";
+import { useSelector } from "hooks";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -27,6 +28,7 @@ interface OrderStatusTabDetailProps {
 const OrderStatusTabDetail: React.FC<OrderStatusTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const multiData = useSelector(state => state.main.multiData);
 
     const columns = React.useMemo(
         () => [
@@ -34,20 +36,27 @@ const OrderStatusTabDetail: React.FC<OrderStatusTabDetailProps> = ({ row }) => {
                 Header: t(langKeys.ticket_number),
                 accessor: "ticket_number",
                 width: "auto",
+                Cell: () => {
+                    return row?.ticketnum;
+                }
             },
             {
                 Header: t(langKeys.status),
-                accessor: "status",
+                accessor: "description",
                 width: "auto",
+                Cell: (props: any) => {
+                    const { description } = props.cell.row.original;
+                    return (t(`deliverystatus_${description}`.toLowerCase()) || description);
+                }
             },
             {
                 Header: t(langKeys.createdBy),
-                accessor: "createdBy",
+                accessor: "createby",
                 width: "auto",
             },
             {
                 Header: t(langKeys.date),
-                accessor: "date",
+                accessor: "createdate",
                 width: "auto",
             },
         ],
@@ -60,7 +69,12 @@ const OrderStatusTabDetail: React.FC<OrderStatusTabDetailProps> = ({ row }) => {
                 <TitleDetail title={t(langKeys.orderstatus)} />
             </div>
             <div className="row-zyx">
-                <TableZyx columns={columns} data={[]} filterGeneral={false} toolsFooter={false} />
+                <TableZyx
+                    columns={columns}
+                    data={multiData?.data?.[3]?.data || []}
+                    filterGeneral={false}
+                    toolsFooter={false}
+                />
             </div>
             <Typography className={classes.totalammount}>{t(langKeys.viewcounter) + ": 03"}</Typography>
         </div>

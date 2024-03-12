@@ -5606,6 +5606,15 @@ const translation: LangKeys = {
   CANCEL: 'Cancelation',
   UNDELIVER: 'Undelivered',
   amountserved: 'Amount Served',
+  deliverystatus_new: 'New',
+  deliverystatus_scheduled: 'Scheduled',
+  deliverystatus_prepared: 'Prepared',
+  deliverystatus_shipped: 'Shipped',
+  deliverystatus_delivered: 'Delivered',
+  deliverystatus_undelivered: 'Undelivered',
+  deliverystatus_canceled: 'Canceled',
+  dispatchtipificationwarning: 'You must apply the routing logic before shipping an order',
+  routinglogicstatuserror: 'Routing logic can only be applied to prepared orders',
 };
 
 const enResource: ResourceLanguage = {

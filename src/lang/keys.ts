@@ -5525,6 +5525,15 @@ export const langKeys = {
   CANCEL: 'CANCEL',
   UNDELIVER: 'UNDELIVER',
   amountserved: 'amountserved',
+  deliverystatus_new: 'deliverystatus_new',
+  deliverystatus_scheduled: 'deliverystatus_scheduled',
+  deliverystatus_prepared: 'deliverystatus_prepared',
+  deliverystatus_shipped: 'deliverystatus_shipped',
+  deliverystatus_delivered: 'deliverystatus_delivered',
+  deliverystatus_undelivered: 'deliverystatus_undelivered',
+  deliverystatus_canceled: 'deliverystatus_canceled',
+  dispatchtipificationwarning: 'dispatchtipificationwarning',
+  routinglogicstatuserror: 'routinglogicstatuserror',
 };
 
 export type LangKeys = typeof langKeys;
