@@ -539,7 +539,7 @@ const SignIn = () => {
                                 </div>
                             </div>
                         </div>
-                        {(isCustomDomain || customLogoUrl?.ispoweredbylaraigo) && <div className={classes.copyright}>
+                        {(!isCustomDomain || customLogoUrl?.ispoweredbylaraigo) && <div className={classes.copyright}>
                             {'Copyright © '} Laraigo {new Date().getFullYear()}
                         </div>}
                     </Container>
