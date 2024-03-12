@@ -24,7 +24,6 @@ import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
 import AllInboxIcon from '@material-ui/icons/AllInbox';
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
-import { columnGroupedBy } from 'common/helpers/columnsReport';
 import clsx from 'clsx';
 import { Skeleton } from '@material-ui/lab';
 import {
@@ -55,15 +54,13 @@ import {
     useGroupBy,
     ColumnInstance,
     Cell,
-    useColumnOrder,
-    CellProps
+    useColumnOrder,    
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DialogZyx, DateRangePicker } from 'components';
 import { Checkbox, Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Radio, TableSortLabel, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
-import { report } from 'process';
 
 interface Column {
     Header: string;
@@ -75,9 +72,6 @@ interface ColumnVisibility {
     [key: string]: boolean;
 }
 
-interface ColumnGroupedBy {
-    [key: string]: boolean;
-}
 export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
     name: string
     onAdd?: (instance: TableInstance<T>) => MouseEventHandler
@@ -109,25 +103,7 @@ const useStyles = makeStyles((theme) => ({
                 alignItems: "center",
             },
         }
-    },
-    trdynamic: {
-        '&:hover': {
-            boxShadow: '0 11px 6px -9px rgb(84 84 84 / 78%)',
-            "& $containerfloat": {
-                visibility: 'visible'
-            }
-        },
-    },
-    containerfloat: {
-        borderBottom: 'none',
-        padding: '4px 24px 4px 16px',
-        backgroundColor: 'white',
-        marginTop: '1px',
-        position: 'absolute',
-        zIndex: 9999,
-        left: 0,
-        visibility: 'hidden'
-    },
+    },    
     button: {
         padding: 12,
         fontWeight: 500,
@@ -885,9 +861,7 @@ const TableZyx = React.memo(({
             
         }));
     };
-   
-  
-                
+                   
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
@@ -1110,23 +1084,21 @@ const TableZyx = React.memo(({
                                 buttonStyle2={{ marginRight: '1rem', marginBottom: '0.3rem' }}
                             >
                                 <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                    {allColumns .filter(column => {
-                                        const isColumnInstance = 'accessor' in column && 'Header' in column;
-                                        return ( isColumnInstance && 'showGroupedBy' in column && column.showGroupedBy === true );
-                                        })
-                                        .map(column => (
-                                            <Grid item xs={4} key={column.id}>
-                                              <FormControlLabel
-                                                control={
-                                                    <Radio
-                                                        color="primary"
-                                                        checked={columnGroupedBy.includes(column.id)}
-                                                        onClick={() => handleRadioClick(column.id)}
-                                                    />                                                  
-                                                }
-                                                label={column.Header}
-                                              />
-                                            </Grid>
+                                    {columns
+                                        .filter((column: any) => column.showGroupedBy === true)
+                                        .map((column: any) => (
+                                        <Grid item xs={4} key={column.accessor}>
+                                            <FormControlLabel
+                                            control={
+                                                <Radio
+                                                color="primary"
+                                                checked={columnGroupedBy.includes(column.accessor)}
+                                                onClick={() => handleRadioClick(column.accessor)}
+                                                />
+                                            }
+                                            label={column.Header}
+                                            />
+                                        </Grid>
                                         ))}
                                 </Grid>
                             </DialogZyx>

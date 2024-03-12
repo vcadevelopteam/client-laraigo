@@ -121,8 +121,7 @@ export const columnsHideShow: ColumnsInterface = {
 
 
 export const columnGroupedBy: ColumnsInterface = {
-
-    productivity: { //actualmente visible, //chequear funcionalidad, no funciona en telefono, grupo, fecha fin
+    productivity: {
         ticket: true,
         ticketyear: true,  
         ticketmonth: true,
@@ -144,6 +143,9 @@ export const columnGroupedBy: ColumnsInterface = {
         username: true,
         status: true,  
         type: true,
+    }, 
+    inputretry: { 
+        person: true,      
     }, 
     interaction: {
         ticketnum: true,
