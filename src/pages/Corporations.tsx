@@ -419,8 +419,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
           const image = new Image();
     
           image.onload = () => {
-            const maxWidth = 5000;
-            const maxHeight = 5000;
+            const maxWidth = 42;
+            const maxHeight = 150;
             if (image.width > maxWidth || image.height > maxHeight) {
                 dispatch(
                     showSnackbar({
@@ -514,7 +514,10 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         });
         register("ispoweredbylaraigo");
         register("domainname", {
-            validate: (value) => (whiteBrand ? (value && value.length) || t(langKeys.field_required) : true),
+            validate: {
+                validate: (value) => (whiteBrand ? (value && value.length) || t(langKeys.field_required) : true),
+                wronginput: (value) => (whiteBrand ? (/^[a-zA-Z][a-zA-Z0-9]*$/.test(value)) || t(langKeys.validatedomainname) : true),
+            }
         });
     }, [register, billbyorg, doctype, getValues, t, whiteBrand]);
 

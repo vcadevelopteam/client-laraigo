@@ -1360,6 +1360,7 @@ const translation: LangKeys = {
   eventname: "Event name",
   campaign_plural: 'Campaigns',
   newcampaign: 'New campaign',
+  validatedomainname: "The domain name must start with a letter and contain only alphanumeric values",
   startdate: 'Start date',
   privacypoliciestitle: "Privacy Policies",
   enddate: 'End date',
