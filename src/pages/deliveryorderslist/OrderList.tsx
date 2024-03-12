@@ -44,6 +44,7 @@ const OrderList: FC = () => {
                 setViewSelected={setViewSelected}
                 data={rowSelected}
                 fetchData={fetchData}
+                setRowSelected={setRowSelected}
             />
         );
     } else {
@@ -52,6 +53,7 @@ const OrderList: FC = () => {
                 setViewSelected={setViewSelected}
                 data={rowSelected}
                 fetchData={fetchData}
+                setRowSelected={setRowSelected}
             />
         );
     }

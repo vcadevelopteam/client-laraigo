@@ -6032,6 +6032,11 @@ const translation: LangKeys = {
   managesubmotives: 'Manage submotives',
   rejected: 'Rejected',
   nondelivered: 'Undelivered',
+  carriercoord: 'Carrier coordinates',
+  badtipification: 'Incorrect tipification',
+  CANCEL: 'Cancelation',
+  UNDELIVER: 'Undelivered',
+  amountserved: 'Amount Served',
 };
 
 const enResource: ResourceLanguage = {

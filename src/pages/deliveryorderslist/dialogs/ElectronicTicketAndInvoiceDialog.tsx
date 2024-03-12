@@ -35,52 +35,57 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
     pdfRender: string;
     setPdfRender: (pdf: string) => void;
     setOpenModalInvoiceA4: (value: boolean) => void;
-}> = ({ openModal, setOpenModal, config, rows, pdfRender, setPdfRender, setOpenModalInvoiceA4 }) => {
+    fetchProducts: (value: number) => void;
+}> = ({ openModal, setOpenModal, config, rows, pdfRender, setPdfRender, setOpenModalInvoiceA4, fetchProducts }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const culqiReportResult = useSelector((state) => state.culqi.requestReportPdf);
     const [waitPdf, setWaitPdf] = useState(false);
     const [openModalInvoiceShare, setOpenModalInvoiceShare] = useState(false);
+    const [waitSave3, setWaitSave3] = useState(false);
+    const productsData = useSelector(state => state.main.mainAux2);
 
     const generateInvoicePdf = () => {
-        const reportBodyInvoice = {
-            dataonparameters: true,
-            key: "period-report",
-            method: "",
-            reportname: "electronic-invoice",
-            template: 'delivery-invoice.html',
-            parameters: {
-                ruc: rows?.[0]?.documentnumber,
-                ordernumber: rows?.[0]?.ordernumber,
-                companyname: rows?.[0]?.payment_businessname || 'COMPANY TEST',
-                address: rows?.[0]?.payment_fiscal_address || 'Av Prueba test 2993',
-                date: rows?.[0]?.orderdate,
-                client: rows?.[0]?.name,
-                docnumber: rows?.[0]?.documentnumber,
-                products: [
-                    {
-                        quantity: 2,
-                        unit: 'unidad',
-                        code: '28b',
-                        description: 'product 1',
-                        unitprice: 10,
-                    },
-                    {
-                        quantity: 3,
-                        unit: 'unidad',
-                        code: '29b',
-                        description: 'product 2',
-                        unitprice: 15,
-                    },
-                ]
-            },
-        };
-
-        dispatch(reportPdf(reportBodyInvoice));
         dispatch(showBackdrop(true));
-        setWaitPdf(true);
+        fetchProducts(rows?.[0]?.orderid)
+        setWaitSave3(true);
     }
+
+    useEffect(() => {
+        if (waitSave3) {
+            if (!productsData.loading && !productsData.error) {
+                const reportBodyInvoice = {
+                    dataonparameters: true,
+                    key: "period-report",
+                    method: "",
+                    reportname: `${rows?.[0]?.ordernumber}_${rows?.[0]?.documentnumber}`,
+                    template: (rows?.[0]?.payment_document_type === 'Boleta' || !rows?.[0]?.payment_document_type) ? 'delivery-receipt.html' : 'delivery-invoice.html',
+                    parameters: {
+                        ruc: rows?.[0]?.payment_document_number || 'RUC938942N423N',
+                        ordernumber: rows?.[0]?.ordernumber,
+                        companyname: rows?.[0]?.storedescription || 'COMPANY TEST',
+                        address: rows?.[0]?.address || 'Av Prueba test 2993',
+                        date: rows?.[0]?.orderdate?.split(" ")[0],
+                        client: rows?.[0]?.name,
+                        docnumber: rows?.[0]?.documentnumber,
+                        products: productsData.data,
+                    },
+                };
+        
+                dispatch(reportPdf(reportBodyInvoice));
+                setWaitPdf(true);
+                setWaitSave3(false);
+            } else if (productsData.error) {
+                const errormessage = t(productsData.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSave3(false);
+            }
+        }
+    }, [productsData, waitSave3]);
 
     useEffect(() => {
         if (waitPdf) {

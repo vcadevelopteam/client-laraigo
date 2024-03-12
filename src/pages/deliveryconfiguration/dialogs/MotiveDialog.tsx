@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, IconButton, makeStyles } from "@material-ui/core";
-import { DialogZyx, FieldEdit } from "components";
+import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { execute, getCollectionAux2 } from "store/main/actions";
@@ -15,6 +15,7 @@ import { Dictionary } from "@types";
 const useStyles = makeStyles(() => ({
     submotiveButton: {
         cursor: 'pointer',
+        width: 166,
         color: 'blue',
         textDecoration: 'underline',
         transition: 'color 0.3s',
@@ -48,6 +49,13 @@ const useStyles = makeStyles(() => ({
         padding: 5,
         borderRadius: 5
     },
+    typeText: {
+        width: 120,
+        border: '1px solid black',
+        padding: 5,
+        borderRadius: 5,
+        marginLeft: 10,
+    },
     actionButtons: {
         marginRight: 20, 
         marginLeft: 20
@@ -80,6 +88,7 @@ const MotiveDialog = ({
     const [waitSave, setWaitSave] = useState(false);
     const [waitSave2, setWaitSave2] = useState(false);
     const [motiveError, setMotiveError] = useState(false)
+    const [type, setType] = useState('')
 
     const fetchSubReasons = (id: number) => dispatch(getCollectionAux2(subReasonNonDeliverySel(id)));
 
@@ -90,7 +99,7 @@ const MotiveDialog = ({
                 dispatch(execute(reasonNonDeliveryIns({
                     id: row?.reasonnondeliveryid,
                     status: row?.status,
-                    type: row?.type,
+                    type: type,
                     description: newMotive,
                     operation: 'UPDATE'
                 })));
@@ -99,7 +108,7 @@ const MotiveDialog = ({
                 dispatch(execute(reasonNonDeliveryIns({
                     id: 0,
                     status: 'ACTIVO',
-                    type: 'NINGUNO',
+                    type: type,
                     description: newMotive,
                     operation: 'INSERT'
                 })));         
@@ -152,16 +161,19 @@ const MotiveDialog = ({
     }, [executeRes, waitSave]);
 
     const handleEdit = (row2: Dictionary) => {
+        console.log(row2)
         setMotiveError(false)
         setIsEditing(true)
         setRow(row2)
         setNewMotive(row2.description)
+        setType(row2.type)
     }
 
     const cancelEdit = () => {
         setIsEditing(false)
         setRow(null)
         setNewMotive('')
+        setType('')
         setMotiveError(false)
     }
 
@@ -196,10 +208,21 @@ const MotiveDialog = ({
         }
     }, [subreasons, waitSave2]);
 
+    const motivesType = [
+        {
+            value: 'UNDELIVER',
+            description: 'No entregado',
+        },
+        {
+            value: 'CANCEL',
+            description: 'Cancelación',
+        },
+    ]
+
     return (
         <DialogZyx
             open={openModal}
-            title={`${t(langKeys.ticket_reason)} ${t(langKeys.undelivered)}`}
+            title={`${t(langKeys.ticket_reason)}s ${t(langKeys.undelivered)} / ${t(langKeys.CANCELED)}`}
             maxWidth="md"
             buttonText0={t(langKeys.back)}
             handleClickButton0={handleCloseModal}
@@ -207,7 +230,6 @@ const MotiveDialog = ({
             <div>
                 <div className={classes.motiveForm}>
                     <FieldEdit
-                        variant="outlined"
                         label={t(langKeys.ticket_reason)}
                         width={280}
                         error={motiveError}
@@ -217,6 +239,22 @@ const MotiveDialog = ({
                             setMotiveError(false)
                         }}
                     />
+                    <div style={{width: 200, marginLeft: 20}}>
+                        <FieldSelect
+                            label={t(langKeys.type)}
+                            data={motivesType}
+                            valueDefault={type}
+                            onChange={(value) => {
+                                if (value) {
+                                    setType(value.value)
+                                } else {
+                                    setType('')
+                                }
+                            }}
+                            optionDesc="description"
+                            optionValue="value"
+                        />
+                    </div>
                     <Button
                         variant="contained"
                         color="primary"
@@ -238,9 +276,10 @@ const MotiveDialog = ({
                 <div>
                     {multiData?.data?.[0]?.data.length > 0 && (
                         <div style={{marginTop: 20}}>
-                            {multiData?.data?.[0]?.data.map((motive) => (
+                            {multiData?.data?.[0]?.data.sort((a,b) => b?.type?.localeCompare(a.type)).map((motive) => (
                                 <div key={motive.reasonnondeliveryid} className={classes.motiveRow}>
                                     <span className={classes.motiveText}>{motive.description}</span>
+                                    <span className={classes.typeText}>{t(langKeys[motive.type])}</span>
                                     <div className={classes.actionButtons}>
                                         <IconButton onClick={() => handleEdit(motive)}>
                                             <EditIcon/>
@@ -249,12 +288,16 @@ const MotiveDialog = ({
                                             <DeleteIcon/>
                                         </IconButton>
                                     </div>
-                                    <Button
-                                        className={classes.submotiveButton}
-                                        onClick={() => handleSubmotives(motive)}
-                                    >
-                                        {t(langKeys.managesubmotives)}
-                                    </Button>
+                                    {motive.type === 'UNDELIVER' ? (
+                                        <Button
+                                            className={classes.submotiveButton}
+                                            onClick={() => handleSubmotives(motive)}
+                                        >
+                                            {t(langKeys.managesubmotives)}
+                                        </Button>
+                                    ) : (
+                                        <div style={{width: 166}}/>
+                                    )}
                                 </div>
                             ))}
                         </div>

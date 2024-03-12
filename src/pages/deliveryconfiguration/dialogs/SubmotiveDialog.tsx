@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, IconButton, makeStyles } from "@material-ui/core";
+import { Button, Checkbox, IconButton, makeStyles } from "@material-ui/core";
 import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,8 @@ import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { execute, getCollectionAux2 } from "store/main/actions";
 import { subReasonNonDeliveryIns, subReasonNonDeliverySel } from "common/helpers";
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 
 const useStyles = makeStyles(() => ({
     submotiveForm: {
@@ -33,7 +35,14 @@ const useStyles = makeStyles(() => ({
         justifyContent: 'center'
     },
     submotiveText: {
-        width: 200,
+        width: 250,
+        border: '1px solid black',
+        padding: 5,
+        borderRadius: 5,
+        fontSize: 17
+    },
+    statusText: {
+        width: 120,
         border: '1px solid black',
         padding: 5,
         borderRadius: 5,
@@ -63,33 +72,18 @@ const SubmotiveDialog = ({
         status: '',
     })
     const [subrow, setSubrow] = useState<Dictionary | null>(null)
+    const [flag, setFlag] = useState(false)
 
     const fetchSubReasons = (id: number) => dispatch(getCollectionAux2(subReasonNonDeliverySel(id)));
 
     const statusOptions = [
         {
-            description: t(langKeys.dispatched),
-            value: 'dispatched'
+            description: t(langKeys.reschedule),
+            value: 'reschedule'
         },
         {
-            description: t(langKeys.prepared),
-            value: 'prepared'
-        },
-        {
-            description: t(langKeys.rejected),
-            value: 'rejected'
-        },
-        {
-            description: t(langKeys.delivered),
-            value: 'delivered'
-        },
-        {
-            description: t(langKeys.new),
-            value: 'new'
-        },
-        {
-            description: t(langKeys.nondelivered),
-            value: 'nondelivered'
+            description: t(langKeys.cancel),
+            value: 'cancel'
         },
     ]
 
@@ -104,6 +98,7 @@ const SubmotiveDialog = ({
                     type: subrow?.type,
                     description: newSubmotive.description,
                     statustypified: newSubmotive.status,
+                    viewappmovil: flag,
                     operation: 'UPDATE'
                 })));
             }
@@ -115,6 +110,7 @@ const SubmotiveDialog = ({
                     type: 'NINGUNO',
                     description: newSubmotive.description,
                     statustypified: newSubmotive.status,
+                    viewappmovil: flag,
                     operation: 'INSERT'
                 })));         
             }
@@ -173,6 +169,7 @@ const SubmotiveDialog = ({
             description: row2.description,
             status: row2.statustypified,
         })
+        setFlag(row2.viewappmovil)
     }
 
     const cancelEdit = () => {
@@ -182,6 +179,7 @@ const SubmotiveDialog = ({
             description: '',
             status: '',
         })
+        setFlag(false)
         setSubmotiveError(false)
     }
 
@@ -211,7 +209,7 @@ const SubmotiveDialog = ({
                         }}
                     />
                     <FieldSelect
-                        className='col-3'
+                        className='col-2'
                         label={t(langKeys.status)}
                         data={statusOptions}
                         error={submotiveError}
@@ -227,9 +225,18 @@ const SubmotiveDialog = ({
                             }
                         }}
                     />
+                    <div className="col-2">
+                        <Checkbox
+                            color="primary"
+                            checked={flag}
+                            onChange={(e) => setFlag(e.target.checked)}
+                        />
+                        <span>Visible en App</span>
+                    </div>        
                     <Button
-                        className="col-3"
+                        className={isEditing ? 'col-2' : 'col-3'}
                         variant="contained"
+                        style={{paddingRight: 10}}
                         color="primary"
                         onClick={handleCreateSubmotive}
                     >
@@ -251,9 +258,14 @@ const SubmotiveDialog = ({
                         <div style={{marginTop: 20}}>
                             {subreasons.data.map((submotive) => (
                                 <div key={submotive.subreasonnondeliveryid} className={classes.submotiveRow}>
+                                    {submotive.viewappmovil ? (
+                                        <VisibilityIcon style={{marginRight: 20}}/>
+                                    ) : (
+                                        <VisibilityOffIcon style={{marginRight: 20}}/>
+                                    )}
                                     <span className={classes.submotiveText}>{submotive.description}</span>
                                     <div style={{width: 20}}/>
-                                    <span className={classes.submotiveText}>{t(langKeys[submotive.statustypified])}</span>
+                                    <span className={classes.statusText}>{t(langKeys[submotive.statustypified])}</span>
                                     <div style={{width: 10}}/>
                                     <div>
                                         <IconButton onClick={() => handleEdit(submotive)}>

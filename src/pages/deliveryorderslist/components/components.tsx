@@ -95,6 +95,7 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
                 startIcon={<LocalShippingIcon color="secondary" />}
                 disabled={Object.keys(rows).length === 0 || Object.keys(rows).length > 1}
                 onClick={handleClickTyping}
+                style={{backgroundColor: '#55BD84'}}
             >
                 <Trans i18nKey={langKeys.typing} />
             </Button>
