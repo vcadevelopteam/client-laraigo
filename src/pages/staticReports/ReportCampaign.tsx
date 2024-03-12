@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon } from 'icons';
-import { Button, Checkbox, FormControlLabel, Grid, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
+import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
@@ -20,6 +20,7 @@ import { CellProps } from 'react-table';
 import { FieldErrors } from "react-hook-form";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ViewWeekIcon from '@material-ui/icons/ViewWeek';
+import AllInboxIcon from '@material-ui/icons/AllInbox';
 
 interface DetailProps {
     setViewSelected?: (view: string) => void;
@@ -518,32 +519,49 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     //open close modals dialogs ----------------------------------------------------------------------------------
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
+    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
+    const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
+    const [filterApplied, setFilterApplied] = useState(false);  
+
+
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
     };     
-    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+
     const handleOpenGroupedByModal = () => {
         setGroupedByModalOpen(true);
-        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
     };
-    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
-    const handleOpenShowColumnsModal = () => { 
-        setShowColumnsModalOpen(true);        
-        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
+
+    const handleOpenShowColumnsModal = () => {
+        setShowColumnsModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
     };
     
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node;    
+            const target = event.target as Node;
             if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
-                setAnchorElSeButtons(null); setOpenSeButtons(false);
+                setAnchorElSeButtons(null);
+                setOpenSeButtons(false);
             }
-        };    
+        };
         document.addEventListener('click', handleClickOutside);
-        return () => { document.removeEventListener('click', handleClickOutside); };
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
+    
 
    
     return (
@@ -654,19 +672,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                             style={{marginRight:'1rem'}}
                         >
                             {({ TransitionProps }) => (
-                                <Paper {...TransitionProps} elevation={5}>
-
-                                    {/* <MenuItem 
-                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                        onClick={handleOpenGroupedByModal}
-                                    >
-                                        <ListItemIcon>
-                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                        </ListItemIcon>
-                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
-                                    </MenuItem>
-                                    <Divider /> */}
-
+                                <Paper {...TransitionProps} elevation={5}>                                   
                                     <MenuItem 
                                         style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
                                         onClick={handleOpenShowColumnsModal}                                           
@@ -675,7 +681,20 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                                             <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
                                         </ListItemIcon>
                                         <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
-                                    </MenuItem>   
+                                    </MenuItem>  
+
+                                    <Divider /> 
+
+                                    <MenuItem
+                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                        onClick={handleOpenGroupedByModal}
+                                    >
+                                        <ListItemIcon>
+                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                        </ListItemIcon>
+                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                    </MenuItem>
+                                  
 
                                 </Paper>
                             )}
