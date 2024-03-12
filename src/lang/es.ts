@@ -291,6 +291,7 @@ const translation: LangKeys = {
   add_cc_email: 'Añadir destinatarios a CC',
   document_library_save: "Debe subir un archivo para poder guardar el registro",
   add_cco_email: 'Añadir destinatarios a CCO',
+  validatedomainname: "El nombre del dominio debe empezar con una letra y contener unicamente valores alfanuméricos",
 
   addressReference: 'Ref. dirección',
   birthday: 'Cumpleaños',
