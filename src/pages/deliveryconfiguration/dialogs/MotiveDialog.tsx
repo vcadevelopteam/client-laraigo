@@ -276,7 +276,7 @@ const MotiveDialog = ({
                 <div>
                     {multiData?.data?.[0]?.data.length > 0 && (
                         <div style={{marginTop: 20}}>
-                            {multiData?.data?.[0]?.data.sort((a,b) => b.type.localeCompare(a.type)).map((motive) => (
+                            {multiData?.data?.[0]?.data.sort((a,b) => b?.type?.localeCompare(a.type)).map((motive) => (
                                 <div key={motive.reasonnondeliveryid} className={classes.motiveRow}>
                                     <span className={classes.motiveText}>{motive.description}</span>
                                     <span className={classes.typeText}>{t(langKeys[motive.type])}</span>

@@ -69,7 +69,7 @@ const NewAttentionOrdersTabDetail: React.FC<NewAttentionOrdersTabDetailProps> = 
 					type="number"
 					disabled={true}
 					className="col-6"
-					valueDefault={row?.personid}
+					valueDefault={row?.documentnumber}
 				/>
                 <FieldEdit
 					label={t(langKeys.telephonenumber)}
@@ -81,7 +81,7 @@ const NewAttentionOrdersTabDetail: React.FC<NewAttentionOrdersTabDetailProps> = 
 					label={t(langKeys.address)}
 					disabled={true}
 					className="col-6"
-					valueDefault={row?.name}
+					valueDefault={row?.deliveryaddress}
 				/>
                 <div style={{ paddingTop: "1rem" }}>
                     <TitleDetail title={t(langKeys.orderlist)} />
