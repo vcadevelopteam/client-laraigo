@@ -434,7 +434,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
           };
           image.src = URL.createObjectURL(file);
         }
-        uploadFileField("startlogourl", e.target.files[0]);
     };
     const handleCleanStartLogoInput = () => {
         setValue("startlogourl", "");
