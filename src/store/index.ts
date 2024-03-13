@@ -30,6 +30,7 @@ import postHistoryReducer, { IState as IPostHistory } from './posthistory/reduce
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import paymentReducer, { IState as IPayment } from './payment/reducer';
 import rasaiaReducer, { IState as IRasaia } from './rasaia/reducer';
+import deliveryReducer, { IState as IDelivery } from './delivery/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -46,6 +47,7 @@ export interface IRootState {
     lead: ILead;
     culqi: ICulqi;
     dashboard: IDashboard;
+    delivery: IDelivery;
     getlocations: IGetLocations;
     getversion: IGetVersion;
     subscription: ISubscription;
@@ -82,6 +84,7 @@ const rootReducer = combineReducers<IRootState>({
     lead: leadReducer,
     culqi: culqiReducer,
     dashboard: dashboardReducer,
+    delivery: deliveryReducer,
     getlocations: getlocationsReducer,
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,

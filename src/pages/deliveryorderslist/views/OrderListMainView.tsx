@@ -93,6 +93,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const [pdfRender, setPdfRender] = useState('');
     const [config, setConfig] = useState<Dictionary>({})
     const multiData = useSelector(state => state.main.multiData);
+    const executeDelivery = useSelector((state) => state.delivery.deliveryResult)
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
@@ -268,7 +269,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!executeDelivery.loading && !executeDelivery.error) {
                 setWaitSave(false);
                 dispatch(
                     showSnackbar({
@@ -279,8 +280,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 );
                 fetchData(attentionOrders)
                 dispatch(showBackdrop(false));
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
+            } else if (executeDelivery.error) {
+                const errormessage = t(executeDelivery.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
@@ -288,7 +289,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave]);
+    }, [executeDelivery, waitSave]);
 
     useEffect(() => {
         if (waitSaveChangeStatus) {
