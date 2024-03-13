@@ -4176,28 +4176,28 @@ export const orderLineSel = (orderid: number) => ({
     parameters: { orderid },
 });
 
-export const updateOrderSchedule = ({ orderid, deliveryshift, scheduledeliverydate, orderstatus }: Dictionary) => ({
+export const updateOrderSchedule = ({ listorderid, deliveryshift, scheduledeliverydate, orderstatus }: Dictionary) => ({
     method: "UFN_UPDATE_ORDERSCHEDULE",
     key: "UFN_UPDATE_ORDERSCHEDULE",
-    parameters: { orderid, deliveryshift, scheduledeliverydate, orderstatus },
+    parameters: { listorderid, deliveryshift, scheduledeliverydate, orderstatus },
 });
 
-export const updateOrderOnlyStatus = ({ orderid, orderstatus }: Dictionary) => ({
+export const updateOrderOnlyStatus = ({ listorderid, orderstatus }: Dictionary) => ({
     method: "UFN_UPDATE_ORDERSTATUS",
     key: "UFN_UPDATE_ORDERSTATUS",
-    parameters: { orderid, orderstatus },
+    parameters: { listorderid, orderstatus },
 });
 
-export const updateOrderNonDelivery = ({ orderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier }: Dictionary) => ({
+export const updateOrderNonDelivery = ({ listorderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier }: Dictionary) => ({
     method: "UFN_UPDATE_ORDERNONDELIVERY",
     key: "UFN_UPDATE_ORDERNONDELIVERY",
-    parameters: { orderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier },
+    parameters: { listorderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier },
 });
 
-export const updateOrderCanceled = ({ orderid, descriptionreason, orderstatus }: Dictionary) => ({
+export const updateOrderCanceled = ({ listorderid, descriptionreason, orderstatus }: Dictionary) => ({
     method: "UFN_UPDATE_ORDERCANCELED",
     key: "UFN_UPDATE_ORDERCANCELED",
-    parameters: { orderid, descriptionreason, orderstatus },
+    parameters: { listorderid, descriptionreason, orderstatus },
 });
 
 export const ordersInAttentionSel = () => ({

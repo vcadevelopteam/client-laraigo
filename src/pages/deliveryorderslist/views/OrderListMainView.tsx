@@ -136,104 +136,15 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 	},[attentionOrders]);
 
     const scheduleOrder = () => {
-        if(rowWithDataSelected[0].orderstatus === 'new') setOpenModalManualScheduling(true)
+        const allNew = rowWithDataSelected.every(row => row.orderstatus === 'new');
+        if(allNew && Object.keys(selectedRows).length !== 0) setOpenModalManualScheduling(true)
         else {
-            dispatch(
-                showSnackbar({
-                    show: true,
-                    severity: "error",
-                    message: t(langKeys.badtipification),
-                })
-            );
-        }
-    }
-
-    const rescheduleOrder = () => {
-        if(rowWithDataSelected[0].orderstatus === 'undelivered') setOpenModalReschedulingUndelivered(true)
-        else {
-            dispatch(
-                showSnackbar({
-                    show: true,
-                    severity: "error",
-                    message: t(langKeys.badtipification),
-                })
-            );
-        }
-    }
-
-    const prepareOrder = () => {
-        if(rowWithDataSelected[0].orderstatus === 'scheduled') {
-            dispatch(showBackdrop(true));
-            dispatch(execute(updateOrderOnlyStatus({
-                orderid: rowWithDataSelected[0].orderid,
-                orderstatus: 'prepared',
-            })))
-            setWaitSaveChangeStatus(true);
-        } else {
-            dispatch(
-                showSnackbar({
-                    show: true,
-                    severity: "error",
-                    message: t(langKeys.badtipification),
-                })
-            );
-        }
-    }
-
-    const deliverOrder = () => {
-        if (rowWithDataSelected[0].orderstatus === 'shipped') {
-            dispatch(showBackdrop(true));
-            dispatch(execute(updateOrderOnlyStatus({
-                orderid: rowWithDataSelected[0].orderid,
-                orderstatus: 'delivered',
-            })))
-            setWaitSaveChangeStatus(true);
-        } else {
-            dispatch(
-                showSnackbar({
-                    show: true,
-                    severity: "error",
-                    message: t(langKeys.badtipification),
-                })
-            );
-        }
-    }
-
-    const undeliverOrder = () => {
-        if(rowWithDataSelected[0].orderstatus === 'shipped') setOpenModalUndelivered(true)
-        else {
-            dispatch(
-                showSnackbar({
-                    show: true,
-                    severity: "error",
-                    message: t(langKeys.badtipification),
-                })
-            );
-        }
-    }
-
-    const cancelOrder = () => {
-        if(rowWithDataSelected[0].orderstatus === 'shipped') setOpenModalCanceled(true)
-        else {
-            dispatch(
-                showSnackbar({
-                    show: true,
-                    severity: "error",
-                    message: t(langKeys.badtipification),
-                })
-            );
-        }
-    }
-
-    const dispatchOrder = () => {
-        if(rowWithDataSelected[0].orderstatus === 'prepared' && rowWithDataSelected[0].code) setOpenModalAssignCarrier(true)
-        else {
-            if(rowWithDataSelected[0].orderstatus === 'prepared') {
+            if(Object.keys(selectedRows).length !== 0) {
                 dispatch(
                     showSnackbar({
                         show: true,
                         severity: "error",
-                        message: t(langKeys.dispatchtipificationwarning),
+                        message: t(langKeys.scheduleerror),
                     })
                 );
             } else {
@@ -241,29 +152,266 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                     showSnackbar({
                         show: true,
                         severity: "error",
-                        message: t(langKeys.badtipification),
+                        message: t(langKeys.mustselectorders),
                     })
                 );
             }
         }
     }
 
+    const rescheduleOrder = () => {
+        const allUndelivered = rowWithDataSelected.every(row => row.orderstatus === 'undelivered');
+        const allCanReschedule = rowWithDataSelected.every(row => row.statustypified === 'reschedule');
+        const firstCode = rowWithDataSelected.length > 0 ? rowWithDataSelected[0].code : null;
+        const allHaveSameCode = rowWithDataSelected.every(row => row.code === firstCode);
+
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.mustselectorders),
+                })
+            );
+        } else if (!allUndelivered) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.rescheduleerror),
+                })
+            );
+        } else if (!allCanReschedule) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.notallcanreschedule),
+                })
+            );
+        } else if (!allHaveSameCode) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.notsamecode),
+                })
+            );
+        } else {
+            setOpenModalReschedulingUndelivered(true)
+        }
+    }
+
+    const prepareOrder = () => {
+        const allScheduled = rowWithDataSelected.every(row => row.orderstatus === 'scheduled');
+        if(allScheduled && Object.keys(selectedRows).length !== 0) {
+            dispatch(showBackdrop(true));
+            dispatch(execute(updateOrderOnlyStatus({
+                listorderid: rowWithDataSelected.map(row => row.orderid).join(','),
+                orderstatus: 'prepared',
+            })))
+            setWaitSaveChangeStatus(true);
+        } else {
+            if(Object.keys(selectedRows).length !== 0) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.prepareerror),
+                    })
+                );
+            } else {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.mustselectorders),
+                    })
+                );
+            }
+        }
+    }
+
+    const deliverOrder = () => {
+        const allShipped = rowWithDataSelected.every(row => row.orderstatus === 'shipped');
+        if (allShipped && Object.keys(selectedRows).length !== 0) {
+            dispatch(showBackdrop(true));
+            dispatch(execute(updateOrderOnlyStatus({
+                listorderid: rowWithDataSelected.map(row => row.orderid).join(','),
+                orderstatus: 'delivered',
+            })))
+            setWaitSaveChangeStatus(true);
+        } else {
+            if(Object.keys(selectedRows).length !== 0) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.delivererror),
+                    })
+                );
+            } else {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.mustselectorders),
+                    })
+                );
+            }
+        }
+    }
+
+    const undeliverOrder = () => {
+        const allShipped = rowWithDataSelected.every(row => row.orderstatus === 'shipped');
+        if(allShipped && Object.keys(selectedRows).length !== 0) setOpenModalUndelivered(true)
+        else {
+            if(Object.keys(selectedRows).length !== 0) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.undelivererror),
+                    })
+                );
+            } else {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.mustselectorders),
+                    })
+                );
+            }
+        }
+    }
+
+    const cancelOrder = () => {
+        const allShipped = rowWithDataSelected.every(row => row.orderstatus === 'shipped');
+        if(allShipped && Object.keys(selectedRows).length !== 0) setOpenModalCanceled(true)
+        else {
+            if(Object.keys(selectedRows).length !== 0) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.cancelerror),
+                    })
+                );
+            } else {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.mustselectorders),
+                    })
+                );
+            }
+        }
+    }
+
+    const cancelUndeliveredOrders = () => {
+        const allUndelivered = rowWithDataSelected.every(row => row.orderstatus === 'undelivered');
+        const allCanCancel = rowWithDataSelected.every(row => row.statustypified === 'cancel');
+
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.mustselectorders),
+                })
+            );
+        } else if (!allUndelivered) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.rescheduleerror),
+                })
+            );
+        } else if (!allCanCancel) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.notallcancancel),
+                })
+            );
+        } else {
+            setOpenModalCanceled(true)
+        }
+    }
+
+    const dispatchOrder = () => {
+        const allPrepared = rowWithDataSelected.every(row => row.orderstatus === 'prepared');
+        const allHaveCode = rowWithDataSelected.every(row => row.code);
+        const firstCode = rowWithDataSelected.length > 0 ? rowWithDataSelected[0].code : null;
+        const allHaveSameCode = rowWithDataSelected.every(row => row.code === firstCode);
+
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.mustselectorders),
+                })
+            );
+        } else if (!allPrepared) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.dispatcherror),
+                })
+            );
+        } else if (!allHaveCode) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.dispatchtipificationwarning),
+                })
+            );
+        } else if (!allHaveSameCode) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.notsamecode),
+                })
+            );
+        } else {
+            setOpenModalAssignCarrier(true);
+        }
+    }
+
     const applyRoutingLogic = () => {
-        const allPrepared = rowWithDataSelected.every(row => row.orderstatus === 'prepared');rowWithDataSelected.map(row => row.orderid).join(',')
-        if (allPrepared) {
+        const allPrepared = rowWithDataSelected.every(row => row.orderstatus === 'prepared');
+        if (allPrepared && Object.keys(selectedRows).length !== 0) {
             dispatch(showBackdrop(true));
             dispatch(deliveryRouting({
                 listorderid: rowWithDataSelected.map(row => row.orderid).join(',')
             }));
             setWaitSave(true);
         } else {
-            dispatch(
-                showSnackbar({
-                    show: true,
-                    severity: "error",
-                    message: t(langKeys.routinglogicstatuserror),
-                })
-            );
+            if(Object.keys(selectedRows).length !== 0) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.routinglogicstatuserror),
+                    })
+                );
+            } else {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.mustselectorders),
+                    })
+                );
+            }
         }
     }
 
@@ -437,9 +585,27 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     }
 
     const handleReportPdf = () => {
-        dispatch(showBackdrop(true));
-        fetchProducts(rowWithDataSelected?.[0]?.orderid)
-        setWaitSave3(true);
+        if(Object.keys(selectedRows).length === 0) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.mustselectaorder),
+                })
+            );
+        } else if(Object.keys(selectedRows).length > 1) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.canprintoneorder),
+                })
+            );
+        } else {
+            dispatch(showBackdrop(true));
+            fetchProducts(rowWithDataSelected?.[0]?.orderid)
+            setWaitSave3(true);
+        }
     }
 
     useEffect(() => {
@@ -530,17 +696,19 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 onClickRow={moveDetailView2}
                 ButtonsElement={() => (
                     <div style={{ justifyContent: "right", display: "flex" }}>
-                        <Button
-                            variant="contained"
-                            className={classes.button}
-                            color="primary"
-                            disabled={main.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<LocationOnIcon color="secondary" />}
-                            style={{backgroundColor: '#55BD84'}}
-                            onClick={applyRoutingLogic}
-                        >
-                            <Trans i18nKey={langKeys.routinglogic} />
-                        </Button>
+                        {config?.routinglogic && (
+                            <Button
+                                variant="contained"
+                                className={classes.button}
+                                color="primary"
+                                disabled={main.loading}
+                                startIcon={<LocationOnIcon color="secondary" />}
+                                style={{backgroundColor: '#55BD84'}}
+                                onClick={applyRoutingLogic}
+                            >
+                                <Trans i18nKey={langKeys.routinglogic} />
+                            </Button>
+                        )}
                         <div style={{ marginLeft: "0.6rem" }}>
                             <ExtrasMenu
                                 schedulesth={scheduleOrder}
@@ -550,14 +718,13 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 deliver={deliverOrder}
                                 undelivered={undeliverOrder}
                                 cancel={cancelOrder}
-                                cancelundelivered={() => setOpenModalCanceled(true)}
-                                rows={selectedRows}
+                                cancelundelivered={cancelUndeliveredOrders}
                             />
                         </div>
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={main.loading || Object.keys(selectedRows).length === 0 || Object.keys(selectedRows).length > 1}
+                            disabled={main.loading}
                             startIcon={<PrintIcon color="secondary" />}
                             className={classes.button}
                             style={{backgroundColor: '#55BD84'}}
@@ -590,13 +757,13 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 				openModal={openModalUndelivered}
 				setOpenModal={setOpenModalUndelivered}
                 fetchData={fetchData}
-                row={rowWithDataSelected}
+                rows={rowWithDataSelected}
 			/>
             <CanceledDialog
 				openModal={openModalCanceled}
 				setOpenModal={setOpenModalCanceled}
                 fetchData={fetchData}
-                row={rowWithDataSelected}
+                rows={rowWithDataSelected}
 			/>
             <AssignCarrierDialog
 				openModal={openModalAssignCarrier}
@@ -609,14 +776,14 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 				setOpenModal={setOpenModalManualScheduling}
                 config={config}
                 fetchData={fetchData}
-                row={rowWithDataSelected}
+                rows={rowWithDataSelected}
 			/>
             <ReschedulingUndeliveredDialog
                 openModal={openModalReschedulingUndelivered}
                 setOpenModal={setOpenModalReschedulingUndelivered}
                 config={config}
                 fetchData={fetchData}
-                row={rowWithDataSelected}
+                rows={rowWithDataSelected}
             />
             <ElectronicTicketAndInvoiceDialog
                 openModal={openModalElectronicTicketAndInvoice}

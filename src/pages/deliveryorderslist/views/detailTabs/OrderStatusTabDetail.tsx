@@ -76,7 +76,7 @@ const OrderStatusTabDetail: React.FC<OrderStatusTabDetailProps> = ({ row }) => {
                     toolsFooter={false}
                 />
             </div>
-            <Typography className={classes.totalammount}>{t(langKeys.viewcounter) + ": 03"}</Typography>
+            <Typography className={classes.totalammount}>{t(langKeys.viewcounter) + ": " + multiData?.data?.[3]?.data.length}</Typography>
         </div>
     );
 };
