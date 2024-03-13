@@ -234,79 +234,105 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 
     const deliverOrder = () => {
         const allShipped = rowWithDataSelected.every(row => row.orderstatus === 'shipped');
-        if (allShipped && Object.keys(selectedRows).length !== 0) {
+        const orderInStore = rowWithDataSelected.some(row => row.deliverytype === 'Recojo en tienda');
+
+        if(Object.keys(selectedRows).length === 0) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.mustselectorders),
+                })
+            );
+        } else if(!allShipped) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.delivererror),
+                })
+            );
+        } else if(orderInStore) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.deliverytypeerror),
+                })
+            );
+        } else {
             dispatch(showBackdrop(true));
             dispatch(execute(updateOrderOnlyStatus({
                 listorderid: rowWithDataSelected.map(row => row.orderid).join(','),
                 orderstatus: 'delivered',
             })))
             setWaitSaveChangeStatus(true);
-        } else {
-            if(Object.keys(selectedRows).length !== 0) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.delivererror),
-                    })
-                );
-            } else {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.mustselectorders),
-                    })
-                );
-            }
         }
     }
 
     const undeliverOrder = () => {
         const allShipped = rowWithDataSelected.every(row => row.orderstatus === 'shipped');
-        if(allShipped && Object.keys(selectedRows).length !== 0) setOpenModalUndelivered(true)
-        else {
-            if(Object.keys(selectedRows).length !== 0) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.undelivererror),
-                    })
-                );
-            } else {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.mustselectorders),
-                    })
-                );
-            }
+        const orderInStore = rowWithDataSelected.some(row => row.deliverytype === 'Recojo en tienda');
+
+        if(Object.keys(selectedRows).length === 0) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.mustselectorders),
+                })
+            );
+        } else if(!allShipped) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.undelivererror),
+                })
+            );
+        } else if(orderInStore) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.deliverytypeerror),
+                })
+            );
+        } else {
+            setOpenModalUndelivered(true)
         }
     }
 
     const cancelOrder = () => {
         const allShipped = rowWithDataSelected.every(row => row.orderstatus === 'shipped');
-        if(allShipped && Object.keys(selectedRows).length !== 0) setOpenModalCanceled(true)
-        else {
-            if(Object.keys(selectedRows).length !== 0) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.cancelerror),
-                    })
-                );
-            } else {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.mustselectorders),
-                    })
-                );
-            }
+        const orderInStore = rowWithDataSelected.some(row => row.deliverytype === 'Recojo en tienda');
+
+        if(Object.keys(selectedRows).length === 0) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.mustselectorders),
+                })
+            );
+        } else if(!allShipped) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.cancelerror),
+                })
+            );
+        } else if(orderInStore) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.deliverytypeerror),
+                })
+            );
+        } else {
+            setOpenModalCanceled(true)
         }
     }
 

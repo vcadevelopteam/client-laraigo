@@ -5548,6 +5548,9 @@ export const langKeys = {
   notallcancancel: 'notallcancancel',
   mustselectaorder: 'mustselectaorder',
   canprintoneorder: 'canprintoneorder',
+  deliverytypeerror: 'deliverytypeerror',
+  allmustbesameorder: 'allmustbesameorder',
+  needtopay: 'needtopay',
 };
 
 export type LangKeys = typeof langKeys;

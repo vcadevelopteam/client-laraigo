@@ -5558,6 +5558,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   notallcancancel: 'Los submotivos elegidos de algunas ordenes seleccionadas no permiten cancelar',
   mustselectaorder: 'Debes seleccionar una orden',
   canprintoneorder: 'Solo puedes imprimir una orden a la vez',
+  deliverytypeerror: 'Uno de los pedidos seleccionados tiene el tipo de entrega Recojo en tienda',
+  allmustbesameorder: 'Los registros seleccionados deben pertenecer a la misma orden',
+  needtopay: 'Falta confirmar el pago',
 };
 
 const esResource: ResourceLanguage = {

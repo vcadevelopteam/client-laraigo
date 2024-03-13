@@ -5629,6 +5629,9 @@ const translation: LangKeys = {
   notallcancancel: 'The selected submotives of some selected orders do not allow canceling',
   mustselectaorder: 'You must select one order',
   canprintoneorder: 'You can print just one order at a time',
+  deliverytypeerror: 'One of the selected orders has the delivery type Store Pickup',
+  allmustbesameorder: 'The selected records must belong to the same order',
+  needtopay: 'Payment to be confirmed',
 };
 
 const enResource: ResourceLanguage = {
