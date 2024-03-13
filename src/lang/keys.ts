@@ -5990,6 +5990,23 @@ export const langKeys = {
   deliverystatus_canceled: 'deliverystatus_canceled',
   dispatchtipificationwarning: 'dispatchtipificationwarning',
   routinglogicstatuserror: 'routinglogicstatuserror',
+  mustselectorders: 'mustselectorders',
+  prepareerror: 'prepareerror',
+  delivererror: 'delivererror',
+  scheduleerror: 'scheduleerror',
+  dispatcherror: 'dispatcherror',
+  rescheduleerror: 'rescheduleerror',
+  undelivererror: 'undelivererror',
+  cancelerror: 'cancelerror',
+  incorrectdate: 'incorrectdate',
+  notsamecode: 'notsamecode',
+  notallcanreschedule: 'notallcanreschedule',
+  notallcancancel: 'notallcancancel',
+  mustselectaorder: 'mustselectaorder',
+  canprintoneorder: 'canprintoneorder',
+  deliverytypeerror: 'deliverytypeerror',
+  allmustbesameorder: 'allmustbesameorder',
+  needtopay: 'needtopay',
 };
 
 export type LangKeys = typeof langKeys;
