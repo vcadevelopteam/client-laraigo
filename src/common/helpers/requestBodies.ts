@@ -4975,3 +4975,15 @@ export const ordersInStoreSel = () => ({
     key: "UFN_ORDERSINSTORE_SEL",
     parameters: {},
 });
+
+export const updateOrderDispatched = ({ code, orderstatus, userid }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERDISPATCHED",
+    key: "UFN_UPDATE_ORDERDISPATCHED",
+    parameters: { code, orderstatus, userid },
+});
+
+export const ordersByConfigRoutingLogic = (listorderid: string) => ({
+    method: "UFN_ORDERS_BY_CONFIGURATION_SEL",
+    key: "UFN_ORDERS_BY_CONFIGURATION_SEL",
+    parameters: { listorderid },
+});

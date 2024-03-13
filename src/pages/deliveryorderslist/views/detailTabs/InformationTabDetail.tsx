@@ -6,8 +6,8 @@ import { langKeys } from "lang/keys";
 import { FieldEdit } from "components";
 import { useSelector } from "hooks";
 import TableZyx from "components/fields/table-simple";
-import GoogleMaps from 'components/fields/GoogleMaps';
 import { Typography } from "@material-ui/core";
+import MapLeaflet from "components/fields/MapLeaflet";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -45,13 +45,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const productsData = useSelector((state) => state.main.mainAux2);
-    const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>([
-        { latitude: row?.latitude, longitude: row?.longitude },
-    ]);
-
-    const handleCoordinatesChange = (newCoordinates: Array<{ latitude: number; longitude: number }>) => {
-        setCoordinates(newCoordinates);
-    };
 
     const columns = React.useMemo(
         () => [
@@ -103,7 +96,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
                         valueDefault={row?.phone}
                     />
                 </div>
-
                 <div className="row-zyx">
                     <FieldEdit
                         label={t(langKeys.deliverydate)}
@@ -130,9 +122,9 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
                 </div>
                 <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
                     <div className="col-6">
-                        <GoogleMaps
-                            coordinates={coordinates}
-                            onCoordinatesChange={handleCoordinatesChange}
+                        <MapLeaflet
+                            height={200}
+                            marker={row && { lat: parseFloat(row?.latitude || 0), lng: parseFloat(row?.longitude || 0) }}
                         />
                     </div>
                     <div className="col-3">

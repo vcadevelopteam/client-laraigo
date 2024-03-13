@@ -1997,6 +1997,7 @@ export const langKeys = {
 
   send_quickreply: 'send_quickreply',
   send_enrich_response: 'send_enrich_response',
+  record_audio: 'record_audio',
   send_image: 'send_image',
   send_file: 'send_file',
   send_gif: 'send_gif',
@@ -5980,6 +5981,15 @@ export const langKeys = {
   CANCEL: 'CANCEL',
   UNDELIVER: 'UNDELIVER',
   amountserved: 'amountserved',
+  deliverystatus_new: 'deliverystatus_new',
+  deliverystatus_scheduled: 'deliverystatus_scheduled',
+  deliverystatus_prepared: 'deliverystatus_prepared',
+  deliverystatus_shipped: 'deliverystatus_shipped',
+  deliverystatus_delivered: 'deliverystatus_delivered',
+  deliverystatus_undelivered: 'deliverystatus_undelivered',
+  deliverystatus_canceled: 'deliverystatus_canceled',
+  dispatchtipificationwarning: 'dispatchtipificationwarning',
+  routinglogicstatuserror: 'routinglogicstatuserror',
 };
 
 export type LangKeys = typeof langKeys;

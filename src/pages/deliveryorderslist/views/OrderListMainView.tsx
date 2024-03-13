@@ -22,8 +22,9 @@ import PrintDialog from "../dialogs/PrintDialog";
 import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
 import { reportPdf } from "store/culqi/actions";
-import { execute, getCollectionAux, getCollectionAux2, getMultiCollection } from "store/main/actions";
-import { deliveryAppUsersSel, deliveryConfigurationSel, orderLineSel, reasonNonDeliverySel, updateOrderOnlyStatus } from "common/helpers";
+import { execute, getCollectionAux2 } from "store/main/actions";
+import { orderLineSel, ordersByConfigRoutingLogic, updateOrderOnlyStatus } from "common/helpers";
+import { deliveryRouting } from "store/delivery/actions";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -56,6 +57,7 @@ interface InventoryTabDetailProps {
     setViewSelected: (view: string) => void;
     fetchData: (flag: boolean) => void;
     setRowSelected: (rowdata: RowSelected) => void;
+    fetchMulti: (id: number) => void;
 }
 
 const selectionKey = 'orderid';
@@ -64,6 +66,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     setViewSelected,
     setRowSelected,
     fetchData,
+    fetchMulti,
 }) => {
     const { t } = useTranslation();
     const [attentionOrders, setAttentionOrders] = useState(true);
@@ -90,17 +93,13 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     const [pdfRender, setPdfRender] = useState('');
     const [config, setConfig] = useState<Dictionary>({})
     const multiData = useSelector(state => state.main.multiData);
+    const executeDelivery = useSelector((state) => state.delivery.deliveryResult)
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
         { id: "detail-view", name: t(langKeys.orderlist) },
     ];
 
-    const fetchMulti = () => dispatch(getMultiCollection([
-        reasonNonDeliverySel(0),
-        deliveryConfigurationSel({id: 0, all: true}),
-        deliveryAppUsersSel()
-    ]))
     const fetchProducts = (orderid: number) => dispatch(getCollectionAux2(orderLineSel(orderid)))
 
     useEffect(() => {
@@ -110,7 +109,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     }, [selectedRows])
 
     useEffect(() => {
-        fetchMulti()
+        fetchMulti(0)
         dispatch(showBackdrop(true));
         setWaitSave2(true)
 	},[]);
@@ -135,29 +134,6 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
     useEffect(() => {
 		fetchData(attentionOrders)
 	},[attentionOrders]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_delete),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave]);
 
     const scheduleOrder = () => {
         if(rowWithDataSelected[0].orderstatus === 'new') setOpenModalManualScheduling(true)
@@ -248,6 +224,72 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             );
         }
     }
+
+    const dispatchOrder = () => {
+        if(rowWithDataSelected[0].orderstatus === 'prepared' && rowWithDataSelected[0].code) setOpenModalAssignCarrier(true)
+        else {
+            if(rowWithDataSelected[0].orderstatus === 'prepared') {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.dispatchtipificationwarning),
+                    })
+                );
+            } else {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.badtipification),
+                    })
+                );
+            }
+        }
+    }
+
+    const applyRoutingLogic = () => {
+        const allPrepared = rowWithDataSelected.every(row => row.orderstatus === 'prepared');rowWithDataSelected.map(row => row.orderid).join(',')
+        if (allPrepared) {
+            dispatch(showBackdrop(true));
+            dispatch(deliveryRouting({
+                listorderid: rowWithDataSelected.map(row => row.orderid).join(',')
+            }));
+            setWaitSave(true);
+        } else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.routinglogicstatuserror),
+                })
+            );
+        }
+    }
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeDelivery.loading && !executeDelivery.error) {
+                setWaitSave(false);
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "success",
+                        message: t(langKeys.successful_update),
+                    })
+                );
+                fetchData(attentionOrders)
+                dispatch(showBackdrop(false));
+            } else if (executeDelivery.error) {
+                const errormessage = t(executeDelivery.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeDelivery, waitSave]);
 
     useEffect(() => {
         if (waitSaveChangeStatus) {
@@ -340,6 +382,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 Header: t(langKeys.orderstatus),
                 accessor: "orderstatus",
                 width: "auto",
+                Cell: (props: any) => {
+                    const { orderstatus } = props.cell.row.original;
+                    return (t(`deliverystatus_${orderstatus}`.toLowerCase()) || '');
+                }
             },
             {
                 Header: t(langKeys.deliverytype),
@@ -491,6 +537,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             disabled={main.loading || Object.keys(selectedRows).length === 0}
                             startIcon={<LocationOnIcon color="secondary" />}
                             style={{backgroundColor: '#55BD84'}}
+                            onClick={applyRoutingLogic}
                         >
                             <Trans i18nKey={langKeys.routinglogic} />
                         </Button>
@@ -498,7 +545,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             <ExtrasMenu
                                 schedulesth={scheduleOrder}
                                 prepare={prepareOrder}
-                                dispatch={() => setOpenModalAssignCarrier(true)}
+                                dispatch={dispatchOrder}
                                 reschedule={rescheduleOrder}
                                 deliver={deliverOrder}
                                 undelivered={undeliverOrder}
@@ -554,6 +601,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             <AssignCarrierDialog
 				openModal={openModalAssignCarrier}
 				setOpenModal={setOpenModalAssignCarrier}
+                fetchData={fetchData}
+                row={rowWithDataSelected}
 			/>
             <ManualSchedulingDialog
 				openModal={openModalManualScheduling}

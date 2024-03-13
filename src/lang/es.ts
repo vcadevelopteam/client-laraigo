@@ -285,6 +285,7 @@ const translation: LangKeys = {
 
   send_quickreply: 'Enviar respuesta rápida',
   send_enrich_response: 'Enviar respuesta enriquecida',
+  record_audio: 'Grabar audio',
   send_image: 'Enviar imagen',
   send_file: 'Enviar un archivo',
   send_gif: 'Enviar gif',
@@ -5987,6 +5988,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   CANCEL: 'Cancelación',
   UNDELIVER: 'No entregado',
   amountserved: 'Cantidad Atendida',
+  deliverystatus_new: 'Nuevo',
+  deliverystatus_scheduled: 'Agendado',
+  deliverystatus_prepared: 'Preparado',
+  deliverystatus_shipped: 'Enviado',
+  deliverystatus_delivered: 'Entregado',
+  deliverystatus_undelivered: 'No Entregado',
+  deliverystatus_canceled: 'Cancelado',
+  dispatchtipificationwarning: 'Debe aplicar la lógica de ruteo antes de despachar un pedido',
+  routinglogicstatuserror: 'Sólo se puede aplicar la lógica de ruteo a los pedidos preparados',
 };
 
 const esResource: ResourceLanguage = {
