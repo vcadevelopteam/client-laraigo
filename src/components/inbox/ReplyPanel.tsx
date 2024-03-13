@@ -37,13 +37,16 @@ import DragDropFile from "components/fields/DragDropFile";
 import MailRecipients from "./MailRecipients";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from "@material-ui/icons/Delete";
 import { ListItemIcon } from "@material-ui/core";
 import { LibraryBooks, Publish } from "@material-ui/icons";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from "icons";
 import StarRateIcon from "@material-ui/icons/StarRate";
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import PauseIcon from "@material-ui/icons/Pause";
+import StopIcon from "@material-ui/icons/Stop";
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -561,6 +564,7 @@ const RecordComponent: React.FC<{
     const [eraseAudio, setEraseAudio] = useState(false);
     const [previousRecord, setPreviousRecord] = useState(false);
     const dispatch = useDispatch();
+    const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
     const uploadResult = useSelector((state) => state.main.uploadFile);
     const recorderControls = useAudioRecorder(
         {
@@ -583,9 +587,7 @@ const RecordComponent: React.FC<{
                 const myElement = document.querySelector(".audio-recorder");
                 const childNodes = myElement?.childNodes;
                 if (childNodes) {
-                    if (childNodes[0])
-                        childNodes[0].src =
-                            "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgdmlld0JveD0iMCAwIDQ5NC4xNDggNDk0LjE0OCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDk0LjE0OCA0OTQuMTQ4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8Zz4KCQk8Zz4KCQkJPHBhdGggZD0iTTQwNS4yODQsMjAxLjE4OEwxMzAuODA0LDEzLjI4QzExOC4xMjgsNC41OTYsMTA1LjM1NiwwLDk0Ljc0LDBDNzQuMjE2LDAsNjEuNTIsMTYuNDcyLDYxLjUyLDQ0LjA0NHY0MDYuMTI0CgkJCQljMCwyNy41NCwxMi42OCw0My45OCwzMy4xNTYsNDMuOThjMTAuNjMyLDAsMjMuMi00LjYsMzUuOTA0LTEzLjMwOGwyNzQuNjA4LTE4Ny45MDRjMTcuNjYtMTIuMTA0LDI3LjQ0LTI4LjM5MiwyNy40NC00NS44ODQKCQkJCUM0MzIuNjMyLDIyOS41NzIsNDIyLjk2NCwyMTMuMjg4LDQwNS4yODQsMjAxLjE4OHoiLz4KCQk8L2c+Cgk8L2c+Cjwvc3ZnPgo=";
+                    if (childNodes[0]) childNodes[0].style.display = "none";
                     if (childNodes[3]) childNodes[3].style.display = "none";
                     if (childNodes[4]) childNodes[4].style.display = "none";
                 }
@@ -610,20 +612,29 @@ const RecordComponent: React.FC<{
 
     useEffect(() => {
         if (previousRecord) {
-            const fd = new FormData();
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(recorderControls.recordingBlob);
-            reader.onload = () => {
-                const audioBlob = new Blob([reader.result], {type: "audio/mp3"})
-                fd.append("file", audioBlob, "audio.mp3");
-                fd.append('convert', true)
-				dispatch(uploadFile(fd));
-				recorderControls.stopRecording();
-				setUploadAudio(true);
-                //const newBlob = new Blob([oggData], { type: "audio/ogg; codecs=opus" });
-            };
+            uploadAudioBlob(recorderControls.recordingBlob);
         }
     }, [recorderControls.recordingBlob]);
+
+    function uploadAudioBlob(blob: any) {
+        const fd = new FormData();
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(blob);
+        reader.onload = () => {
+            const audioBlob = new Blob([blob], { type: "audio/mp3" });
+            const currentDate = new Date();
+            const timestamp = `${currentDate.getFullYear()}-${("0" + (currentDate.getMonth() + 1)).slice(-2)}-${(
+                "0" + currentDate.getDate()
+            ).slice(-2)}_${("0" + currentDate.getHours()).slice(-2)}-${("0" + currentDate.getMinutes()).slice(-2)}-${(
+                "0" + currentDate.getSeconds()
+            ).slice(-2)}`;
+            fd.append("file", audioBlob, `audio_${ticketSelected?.ticketnum || ""}_${timestamp}.mp3`);
+            fd.append("convert", true);
+            dispatch(uploadFile(fd));
+            recorderControls.stopRecording();
+            setUploadAudio(true);
+        };
+    }
 
     const saveAudio = (blob: any) => {
         if (eraseAudio) {
@@ -632,18 +643,7 @@ const RecordComponent: React.FC<{
         } else {
             if (!previousRecord) {
                 setPreviousRecord(true);
-                const fd = new FormData();
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(blob);
-                reader.onload = () => {
-                    const audioBlob = new Blob([blob], {type: "audio/mp3"})
-                    fd.append("file", audioBlob, "audio.mp3");
-                    fd.append('convert', true)
-                    dispatch(uploadFile(fd));
-
-                    recorderControls.stopRecording();
-                    setUploadAudio(true);
-                };
+                uploadAudioBlob(blob);
             }
         }
     };
@@ -654,22 +654,58 @@ const RecordComponent: React.FC<{
     if (!record) {
         return (
             <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
-                <AudioRecorder
-                    onRecordingComplete={(blob) => saveAudio(blob)}
-                    audioTrackConstraints={{
-                        noiseSuppression: true,
-                        echoCancellation: true,
+                <div
+                    style={{
+                        display: "flex",
+                        backgroundColor: "#ebebeb",
+                        borderRadius: 20,
+                        boxShadow: "0 2px 5px #bebebe",
                     }}
-                    onNotAllowedOrFound={(err) => console.table(err)}
-                    recorderControls={recorderControls}
-                    downloadFileExtension="webm"
-                    showVisualizer={true}
-                    mediaRecorderOptions={{
-                        audioBitsPerSecond: 128000,
-                    }}
-                />
+                >
+                    {recorderControls.isPaused ? (
+                        <IconButton
+                            onClick={() => {
+                                recorderControls.togglePauseResume();
+                            }}
+                        >
+                            <PlayArrowIcon />
+                        </IconButton>
+                    ) : (
+                        <IconButton
+                            onClick={() => {
+                                recorderControls.togglePauseResume();
+                            }}
+                        >
+                            <PauseIcon />
+                        </IconButton>
+                    )}
+                    <AudioRecorder
+                        onRecordingComplete={(blob) => saveAudio(blob)}
+                        audioTrackConstraints={{
+                            noiseSuppression: true,
+                            echoCancellation: true,
+                        }}
+                        onNotAllowedOrFound={(err) => console.table(err)}
+                        recorderControls={recorderControls}
+                        downloadFileExtension="webm"
+                        showVisualizer={true}
+                        mediaRecorderOptions={{
+                            audioBitsPerSecond: 128000,
+                        }}
+                    />
+                    <IconButton
+                        onClick={() => {
+                            recorderControls.stopRecording();
+                        }}
+                    >
+                        <StopIcon />
+                    </IconButton>
+                </div>
                 <IconButton
-                    onClick={() => {setEraseAudio(true); recorderControls.stopRecording();}}
+                    onClick={() => {
+                        setEraseAudio(true);
+                        recorderControls.stopRecording();
+                    }}
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -682,7 +718,9 @@ const RecordComponent: React.FC<{
                 <source src={record?.url} type="audio/mp3" />
             </audio>
             <IconButton
-                onClick={() => {setRecord(null);}}
+                onClick={() => {
+                    setRecord(null);
+                }}
             >
                 <DeleteIcon />
             </IconButton>
@@ -1094,7 +1132,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                 }
             }
             if (record && ticketSelected?.communicationchanneltype !== "MAIL") {
-                debugger;
                 const listMessages = [
                     {
                         ...ticketSelected!!,
