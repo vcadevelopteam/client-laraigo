@@ -1,6 +1,6 @@
-import React, { useEffect, useState, PropsWithChildren, MouseEventHandler } from 'react';
+import React, { useEffect, useState, MouseEventHandler } from 'react';
 import Table from '@material-ui/core/Table';
-import { Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, TableSortLabel, Typography } from '@material-ui/core'
+import { Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Radio, TableSortLabel, Typography } from '@material-ui/core'
 import Button from '@material-ui/core/Button';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -403,6 +403,7 @@ const TableZyx = React.memo(({
     ExtraMenuOptions,
     acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
 }: TableConfig) => {
+    const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const [initial, setInitial] = useState(true);
@@ -411,9 +412,10 @@ const TableZyx = React.memo(({
     const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false); 
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
-    const { t } = useTranslation();
-
+    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});  
+    const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
+    const [activeColumn, setActiveColumn] = useState<string | null>(null);
+   
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
@@ -421,6 +423,10 @@ const TableZyx = React.memo(({
 
     const handleOpenGroupedByModal = () => {
         setGroupedByModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
     };
 
     const handleOpenShowColumnsModal = () => {
@@ -433,17 +439,54 @@ const TableZyx = React.memo(({
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node;    
+            const target = event.target as Node;
             if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
                 setAnchorElSeButtons(null);
                 setOpenSeButtons(false);
             }
-        };    
+        };
         document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
+
+    const handleRadioClick = (columnId: string) => {
+        setColumnGroupedBy((prevGroupedBy) => {
+            const isColumnActive = prevGroupedBy.includes(columnId);
+            const updatedGroupedBy = isColumnActive ? [] : [columnId];
+    
+            prevGroupedBy.forEach((prevColumn) => {
+                if (prevColumn !== columnId) {
+                    toggleGroupBy(prevColumn, false);
+                }
+            });
+    
+            setActiveColumn(isColumnActive ? null : columnId);    
+            if (isColumnActive) {
+                localStorage.setItem('activeColumn', columnId);
+            }
+    
+            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));
+    
+            if (!isColumnActive) {
+                const columnToToggle = allColumns.find((column) => column.id === columnId);
+                if (columnToToggle && columnToToggle.canGroupBy) {
+                    toggleGroupBy(columnId);
+                }
+            } else {
+                toggleGroupBy(columnId, false);
+            }    
+            return updatedGroupedBy;
+        });
+    };    
+    
+        
+    useEffect(() => {
+        //console.log('Columna GroupedBy activa:', activeColumn);
+    }, [activeColumn]);
+
+    
 
     const DefaultColumnFilter = ({
         column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" },
@@ -712,8 +755,7 @@ const TableZyx = React.memo(({
     }, []);
 
     const defaultColumn = React.useMemo(
-        () => ({
-            // Let's set up our default Filter UI
+        () => ({          
             Filter: (props: FilterProps<Dictionary>) => DefaultColumnFilter({ ...props, data }),
             filter: filterCellValue,
         }),
@@ -738,19 +780,23 @@ const TableZyx = React.memo(({
         globalFilteredRows,
         setGlobalFilter,
         allColumns,
-        state: { pageIndex, pageSize, selectedRowIds },
-        toggleAllRowsSelected
+        state: { pageIndex, pageSize, selectedRowIds  },
+        toggleAllRowsSelected,
+        toggleGroupBy,
     } = useTable({
         columns,
         data,
-        initialState: { pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
+        initialState: { 
+            pageSize: pageSizeDefault, 
+            selectedRowIds: initialSelectedRows || {}, 
+            filters: initialStateFilter || []         
+        },
         defaultColumn,
         getRowId: (row, relativeIndex: number, parent?: Row<Dictionary>) => selectionKey
             ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
             : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex),
     },
-        useFilters,
-       
+        useFilters,       
         useGlobalFilter,
         useGroupBy,
         useSortBy,       
@@ -846,8 +892,9 @@ const TableZyx = React.memo(({
                     {...row.getRowProps({ style })}
                     hover
                 >
-                    {row.cells.map((cell, _) => //eslint-disable-next-line
+                    {row.cells.map((cell, index) =>
                         <TableCell
+                            key={index}
                             {...cell.getCellProps({
                                 style: {
                                     ...(cell.column.width === 'auto' ? {
@@ -998,9 +1045,22 @@ const TableZyx = React.memo(({
                                     style={{marginRight:'1rem'}}
                                 >
                                     {({ TransitionProps }) => (
-                                        <Paper {...TransitionProps} elevation={5}>
-                                            
-                                            {groupedBy && (
+                                        <Paper {...TransitionProps} elevation={5}>                                           
+                                            {showHideColumns && (
+                                                <>
+                                                <MenuItem 
+                                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                    onClick={handleOpenShowColumnsModal}                                           
+                                                >
+                                                    <ListItemIcon>
+                                                        <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                    </ListItemIcon>
+                                                    <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                                </MenuItem>
+                                                <Divider />
+                                                </>
+                                            )}
+                                             {groupedBy && (
                                                 <div>
                                                     <MenuItem 
                                                         style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
@@ -1013,18 +1073,6 @@ const TableZyx = React.memo(({
                                                     </MenuItem>
                                                     <Divider />
                                                 </div>
-                                            )}
-
-                                            {showHideColumns && (
-                                                <MenuItem 
-                                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                    onClick={handleOpenShowColumnsModal}                                           
-                                                >
-                                                    <ListItemIcon>
-                                                        <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                    </ListItemIcon>
-                                                    <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
-                                                </MenuItem>
                                             )}
                                             {ExtraMenuOptions}
                                         </Paper>
@@ -1096,22 +1144,6 @@ const TableZyx = React.memo(({
                 </Box>
             )}
 
-            {isGroupedByModalOpen && (
-                <DialogZyx 
-                    open={isGroupedByModalOpen} 
-                    title={t(langKeys.groupedBy)} 
-                    buttonText1={t(langKeys.close)}
-                    buttonText2={t(langKeys.apply) }
-                    handleClickButton1={() => setGroupedByModalOpen(false)}                    
-                    handleClickButton2={()=> setGroupedByModalOpen(false)}
-                    maxWidth="sm"
-                    buttonStyle1={{marginBottom:'0.3rem'}}
-                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
-                >                     
-                    {/* Falta */}
-                </DialogZyx>
-            )} 
-
             {isShowColumnsModalOpen && (
                 <DialogZyx 
                     open={isShowColumnsModalOpen} 
@@ -1153,14 +1185,46 @@ const TableZyx = React.memo(({
                 </DialogZyx>               
             )}
 
+            {isGroupedByModalOpen && (
+                <DialogZyx 
+                    open={isGroupedByModalOpen}
+                    title={t(langKeys.groupedBy)}
+                    buttonText2={t(langKeys.close)}
+                    handleClickButton2={() => setGroupedByModalOpen(false)}
+                    maxWidth="sm"
+                    buttonStyle1={{ marginBottom: '0.3rem' }}
+                    buttonStyle2={{ marginRight: '1rem', marginBottom: '0.3rem' }}
+                >                     
+                    <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                        {columns
+                            .filter((column: any) => column.showGroupedBy === true)
+                            .map((column: any) => (
+                            <Grid item xs={4} key={column.accessor}>
+                                <FormControlLabel
+                                    control={
+                                        <Radio
+                                            color="primary"
+                                            checked={columnGroupedBy.includes(column.accessor)}
+                                            onClick={() => handleRadioClick(column.accessor)}
+                                            
+                                        />
+                                    }
+                                    label={column.Header}
+                                />
+                            </Grid>
+                            ))}
+                    </Grid>
+                </DialogZyx>
+            )} 
+
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column" }}>
                 <Box overflow="auto" style={{ flex: 1 }}>
                     <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead style={{ display: 'table-header-group' }}>
-                            {headerGroups.map((headerGroup) => ( //eslint-disable-next-line
-                                <TableRow {...headerGroup.getHeaderGroupProps()} style={useSelection ? { display: 'flex' } : {}}>
+                            {headerGroups.map((headerGroup, index) => ( 
+                                <TableRow {...headerGroup.getHeaderGroupProps()} key={index} style={useSelection ? { display: 'flex' } : {}}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             
@@ -1178,6 +1242,24 @@ const TableZyx = React.memo(({
                                                     column.render('Header') :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
+
+                                                        { activeColumn === column.id && (
+                                                                <Tooltip title={''}>
+                                                                    <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
+                                                                        {column.canGroupBy === true && (
+                                                                            <TableSortLabel
+                                                                                active
+                                                                                direction={column.isGrouped ? 'desc' : 'asc'}
+                                                                                IconComponent={KeyboardArrowRight}
+                                                                                className={classes.headerIcon}
+                                                                                {...column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar' }))}
+                                                                            />
+                                                                        )}
+                                                                    </div>
+                                                                </Tooltip>
+                                                            )
+                                                        }
+
                                                             <Box
                                                                 {...column.getHeaderProps(column.getSortByToggleProps({ title: 'Ordenar' }))}
                                                                 style={{
@@ -1197,6 +1279,7 @@ const TableZyx = React.memo(({
                                                                 )}
                                                                
                                                             </Box>
+
                                                             {!!column.helpText && (
                                                                 <Tooltip title={<div style={{ fontSize: 12 }}>{column.helpText}</div>} arrow placement="top" >
                                                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
