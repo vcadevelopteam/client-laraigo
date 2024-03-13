@@ -181,7 +181,8 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
         () => [                    
             {
                 Header: t(langKeys.report_userproductivityhours_datehour),
-                accessor: 'datehour',                          
+                accessor: 'datehour',   
+                groupedBy: true,                        
                 type: 'date',
                 sortType: 'datetime',
                 Cell: (props: CellProps<Dictionary>) => {
@@ -466,6 +467,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                         pageCount={pageCount}
                         filterrange={true}
                         showHideColumns={true}
+                        groupedBy={true}
                         ExtraMenuOptions={
                             <MenuItem
                                 style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}

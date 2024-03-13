@@ -246,7 +246,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             {
                 Header: t(langKeys.report_tipification_ticket),
                 accessor: 'ticket',
-                groupedBy: false,  
+                showGroupedBy: true,   
                 showColumn: true,   
                 Cell: (props: CellProps<Dictionary>) => {
                     const { ticket } = props.cell.row.original || {};
@@ -258,7 +258,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                 accessor: 'datehour',
                 type: 'date',                
                 sortType: 'datetime',
-                groupedBy: false,  
+                showGroupedBy: true,   
                 Cell: (props: CellProps<Dictionary>) => {
                     const { datehour } = props.cell.row.original || {};
                     return datehour ? new Date(datehour).toLocaleDateString() : null;
@@ -267,7 +267,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             {
                 Header: t(langKeys.report_tipification_enddate),
                 accessor: 'enddate',
-                groupedBy: false,           
+                showGroupedBy: true,            
                 showColumn: true,     
                 Cell: (props: CellProps<Dictionary>) => {
                     const { enddate } = props.cell.row.original || {};
@@ -286,7 +286,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             {
                 Header: t(langKeys.report_tipification_firstinteractiondate),
                 accessor: 'firstinteractiondate',
-                groupedBy: false,  
+                showGroupedBy: true,   
                 showColumn: true,               
                 Cell: (props: CellProps<Dictionary>) => {
                     const { firstinteractiondate } = props.cell.row.original || {};
@@ -306,7 +306,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             {
                 Header: t(langKeys.report_tipification_person),
                 accessor: 'person',
-                groupedBy: false,  
+                showGroupedBy: true,   
                 showColumn: true,                
                 Cell: (props: CellProps<Dictionary>) => {
                     const { person } = props.cell.row.original || {};
@@ -317,7 +317,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                 Header: t(langKeys.report_tipification_phone),
                 accessor: 'phone',
                 showColumn: true, 
-                groupedBy: false,  
+                showGroupedBy: true,   
                 Cell: (props: CellProps<Dictionary>) => {
                     const { phone } = props.cell.row.original || {};
                     return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{phone}</div>;
@@ -327,7 +327,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                 Header: t(langKeys.report_tipification_closedby),
                 accessor: 'closedby',
                 showColumn: true, 
-                groupedBy: false,  
+                showGroupedBy: true,   
                 Cell: (props: CellProps<Dictionary>) => {
                     const { closedby } = props.cell.row.original || {};
                     return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{closedby}</div>;
@@ -345,7 +345,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             {
                 Header: t(langKeys.report_tipification_closetype),
                 accessor: 'closetype',
-                groupedBy: false,  
+                showGroupedBy: true,   
                 showColumn: true, 
                 Cell: (props: CellProps<Dictionary>) => {
                     const { closetype } = props.cell.row.original || {};
@@ -364,7 +364,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             {
                 Header: t(langKeys.report_tipification_classificationlevel1),
                 accessor: 'classificationlevel1',
-                groupedBy: false,          
+                showGroupedBy: true,           
                 Cell: (props: CellProps<Dictionary>) => {
                     const { classificationlevel1 } = props.cell.row.original || {};
                     return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{classificationlevel1}</div>;
@@ -373,7 +373,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             {
                 Header: t(langKeys.report_tipification_classificationlevel2),
                 accessor: 'classificationlevel2',
-                groupedBy: false,          
+                showGroupedBy: true,           
                 Cell: (props: CellProps<Dictionary>) => {
                     const { classificationlevel2 } = props.cell.row.original || {};
                     return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{classificationlevel2}</div>;
@@ -382,7 +382,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             {
                 Header: t(langKeys.report_tipification_classificationlevel3),
                 accessor: 'classificationlevel3',
-                groupedBy: false,  
+                showGroupedBy: true,   
                 Cell: (props: CellProps<Dictionary>) => {
                     const { classificationlevel3 } = props.cell.row.original || {};
                     return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{classificationlevel3}</div>;
@@ -454,6 +454,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                         enddate: daterange.endDate!,
                         take: pageSize,
                         skip: pageIndex * pageSize,
+                        distinct: distinct,
                         sorts: sorts,
                         filters: {
                             ...(tipification1
@@ -552,6 +553,8 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                         pageCount={pageCount}
                         filterrange={true}
                         showHideColumns={true}
+                        groupedBy={true}
+
                         ExtraMenuOptions={
                             <MenuItem
                                 style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}

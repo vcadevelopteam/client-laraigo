@@ -505,6 +505,7 @@ const VoiceChannelReport: FC = () => {
                         loading={mainPaginated.loading}
                         filterrange={true} 
                         showHideColumns={true}
+                        groupedBy={true}
                         register={false}
                         FiltersElement={                            
                             <FieldSelect                              

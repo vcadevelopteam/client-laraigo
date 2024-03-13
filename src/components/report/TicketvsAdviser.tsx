@@ -266,6 +266,7 @@ const TicketvsAdviser: FC = () => {
                 loading={mainPaginated.loading}
                 pageCount={pageCount}
                 showHideColumns={true}
+                groupedBy={true}
                 FiltersElement={                            
                     <FieldSelect                              
                         valueDefault={allParameters["channel"]}
