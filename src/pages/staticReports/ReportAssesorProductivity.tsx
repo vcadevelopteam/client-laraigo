@@ -483,6 +483,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                     data={dataGrid}
                     download={false}
                     showHideColumns={true}
+                    groupedBy={true}
                     loading={detailCustomReport.loading}
                     register={false}
                     ButtonsElement={

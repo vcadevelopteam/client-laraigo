@@ -242,6 +242,7 @@ const ReportRequestSD: FC = () => {
                 exportPersonalized={triggerExportData}
                 register={false}
                 showHideColumns={true}
+                groupedBy={true}
                 ExtraMenuOptions={
                     <MenuItem
                         style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
