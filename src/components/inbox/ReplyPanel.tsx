@@ -37,7 +37,8 @@ import DragDropFile from "components/fields/DragDropFile";
 import MailRecipients from "./MailRecipients";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { ListItemIcon, debounce } from "@material-ui/core";
+import DeleteIcon from '@material-ui/icons/Delete';
+import { ListItemIcon } from "@material-ui/core";
 import { LibraryBooks, Publish } from "@material-ui/icons";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from "icons";
@@ -613,7 +614,8 @@ const RecordComponent: React.FC<{
             const reader = new FileReader();
             reader.readAsArrayBuffer(recorderControls.recordingBlob);
             reader.onload = () => {
-                fd.append("file", reader.result, "audio.webm");
+                const audioBlob = new Blob([reader.result], {type: "audio/mp3"})
+                fd.append("file", audioBlob, "audio.mp3");
                 fd.append('convert', true)
 				dispatch(uploadFile(fd));
 				recorderControls.stopRecording();
@@ -634,7 +636,8 @@ const RecordComponent: React.FC<{
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
                 reader.onload = () => {
-                    fd.append("file", blob, "audio.webm");
+                    const audioBlob = new Blob([blob], {type: "audio/mp3"})
+                    fd.append("file", audioBlob, "audio.mp3");
                     fd.append('convert', true)
                     dispatch(uploadFile(fd));
 
@@ -665,14 +668,24 @@ const RecordComponent: React.FC<{
                         audioBitsPerSecond: 128000,
                     }}
                 />
+                <IconButton
+                    onClick={() => {setEraseAudio(true); recorderControls.stopRecording();}}
+                >
+                    <DeleteIcon />
+                </IconButton>
             </div>
         );
     }
     return (
-        <div>
+        <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
             <audio controls>
                 <source src={record?.url} type="audio/mp3" />
             </audio>
+            <IconButton
+                onClick={() => {setRecord(null);}}
+            >
+                <DeleteIcon />
+            </IconButton>
         </div>
     );
 };
