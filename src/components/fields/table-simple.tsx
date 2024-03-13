@@ -414,7 +414,10 @@ const TableZyx = React.memo(({
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});  
     const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
-    const [activeColumn, setActiveColumn] = useState<string | null>(null);
+    const [activeColumn, setActiveColumn] = useState(
+        localStorage.getItem('activeColumn') || null
+    );
+    
    
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
@@ -460,15 +463,10 @@ const TableZyx = React.memo(({
                 if (prevColumn !== columnId) {
                     toggleGroupBy(prevColumn, false);
                 }
-            });
-    
+            });    
             setActiveColumn(isColumnActive ? null : columnId);    
-            if (isColumnActive) {
-                localStorage.setItem('activeColumn', columnId);
-            }
-    
-            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));
-    
+            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));    
+            localStorage.setItem('activeColumn', isColumnActive ? '' : columnId);    
             if (!isColumnActive) {
                 const columnToToggle = allColumns.find((column) => column.id === columnId);
                 if (columnToToggle && columnToToggle.canGroupBy) {
@@ -476,14 +474,28 @@ const TableZyx = React.memo(({
                 }
             } else {
                 toggleGroupBy(columnId, false);
-            }    
+            }
+    
             return updatedGroupedBy;
         });
-    };    
-    
+    };
         
     useEffect(() => {
-        //console.log('Columna GroupedBy activa:', activeColumn);
+        const activeColumn = localStorage.getItem('activeColumn');
+        if (activeColumn) {
+            setActiveColumn(activeColumn);
+        }
+    }, []);    
+    
+    useEffect(() => {
+        //console.log('Columna activa recuperada del localStorage:', activeColumn);
+    }, [activeColumn]);
+    
+    useEffect(() => {
+        const storedColumnGroupedBy = localStorage.getItem('columnGroupedBy');
+        if (storedColumnGroupedBy) {
+            setColumnGroupedBy(JSON.parse(storedColumnGroupedBy));
+        }
     }, [activeColumn]);
 
     
