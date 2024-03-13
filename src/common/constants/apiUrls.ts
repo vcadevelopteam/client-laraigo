@@ -451,4 +451,5 @@ export const apiUrls = {
     GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
 
     CORP_URL: `${BASE_URL}/corp`,
+    DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
 };

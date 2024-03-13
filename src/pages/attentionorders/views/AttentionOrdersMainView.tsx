@@ -132,6 +132,10 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({ setViewSelected, 
                 Header: t(langKeys.orderstatus),
                 accessor: "orderstatus",
                 width: "auto",
+                Cell: (props: any) => {
+                    const { orderstatus } = props.cell.row.original;
+                    return (t(`deliverystatus_${orderstatus}`.toLowerCase()) || '');
+                }
             },
             {
                 Header: t(langKeys.deliverytype),
