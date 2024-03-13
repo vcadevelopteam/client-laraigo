@@ -592,17 +592,9 @@ const TableZyx = React.memo(({
                                 />
                             </div>
                     ),
-                    Cell: ({ row }: any) => {
-                        if (!row.original) {
-                            return null;
-                        }
-                        const selectionFilterKey = selectionFilter?.key;
-                        const selectionFilterValue = selectionFilter?.value;
-                        if (!selectionFilterKey || !selectionFilterValue) {
-                            return null;
-                        }
-                        return (
-                            <div style={{ textAlign: 'right' }}>
+                    Cell: ({ row }: any) => (
+                        !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
+                            ? <div style={{ textAlign: 'right' }}>
                                 <Checkbox
                                     color="primary"
                                     style={{ padding: 0 }}
@@ -610,8 +602,8 @@ const TableZyx = React.memo(({
                                     onChange={(e) => row.toggleRowSelected()}
                                 />
                             </div>
-                        );
-                    },
+                            : null
+                    ),
                     NoFilter: true,
                     isComponent: true
                 } as any,
