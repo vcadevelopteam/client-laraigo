@@ -6047,6 +6047,23 @@ const translation: LangKeys = {
   deliverystatus_canceled: 'Canceled',
   dispatchtipificationwarning: 'You must apply the routing logic before shipping an order',
   routinglogicstatuserror: 'Routing logic can only be applied to prepared orders',
+  mustselectorders: 'Must select at least one order',
+  prepareerror: 'The selected orders must have scheduled status',
+  delivererror: 'The selected orders must have shipped status',
+  scheduleerror: 'The selected orders must have new status',
+  dispatcherror: 'The selected orders must have prepared status',
+  rescheduleerror: 'The selected orders must have undelivered status',
+  undelivererror: 'The selected orders must have shipped status',
+  cancelerror: 'The selected orders must have shipped status',
+  incorrectdate: 'You cannot select a date in the past',
+  notsamecode: 'The selected orders don`t have the same routing code',
+  notallcanreschedule: 'The selected submotives of some selected orders do not allow rescheduling',
+  notallcancancel: 'The selected submotives of some selected orders do not allow canceling',
+  mustselectaorder: 'You must select one order',
+  canprintoneorder: 'You can print just one order at a time',
+  deliverytypeerror: 'One of the selected orders has the delivery type Store Pickup',
+  allmustbesameorder: 'The selected records must belong to the same order',
+  needtopay: 'Payment to be confirmed',
 };
 
 const enResource: ResourceLanguage = {

@@ -9,6 +9,8 @@ import DeliveredDialog from "../dialogs/DeliveredDialog";
 import UndeliveredDialog from "../dialogs/UndeliveredDialog";
 import { ExtrasMenu } from "../components/components";
 import TableZyx from "components/fields/table-simple";
+import { showSnackbar } from "store/popus/actions";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles(() => ({     
     generalContainer: {       
@@ -26,6 +28,7 @@ interface InventoryMainViewProps {
 
 const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ fetchData }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const main = useSelector((state) => state.main.mainData);    const classes = useStyles();
     const [openModalDelivered, setOpenModalDelivered] = useState(false);
@@ -96,6 +99,10 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ fetchData }) => {
                 Header: t(langKeys.orderstatus),
                 accessor: "orderstatus",
                 width: "auto",
+                Cell: (props: any) => {
+                    const { orderstatus } = props.cell.row.original;
+                    return (t(`deliverystatus_${orderstatus}`.toLowerCase()) || '');
+                }
             },
             {
                 Header: t(langKeys.deliverytype),
@@ -109,7 +116,7 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ fetchData }) => {
             },
             {
                 Header: t(langKeys.deliverydate),
-                accessor: "deliverydate",
+                accessor: "scheduledeliverydate",
                 width: "auto",
             },
             {
@@ -120,6 +127,41 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ fetchData }) => {
         ],
         []
     );
+
+    const handleTipification = (action: string) => {
+        const allShipped = rowWithDataSelected.every(row => row.orderstatus === 'shipped');
+        const ordernumber = rowWithDataSelected.length > 0 ? rowWithDataSelected[0].ordernumber : null;
+        const allAreSameOrder = rowWithDataSelected.every(row => row.ordernumber === ordernumber);
+
+        if(Object.keys(selectedRows).length === 0) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.mustselectorders),
+                })
+            );
+        } else if(!allShipped) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.delivererror),
+                })
+            );
+        } else if(!allAreSameOrder) {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.allmustbesameorder),
+                })
+            );
+        } else {
+            if(action === 'deliver') setOpenModalDelivered(true)
+            else setOpenModalUndelivered(true)
+        }
+    }
 
     return (
         <div className={classes.generalContainer}>
@@ -139,19 +181,23 @@ const StoreOrdersMainView: FC<InventoryMainViewProps> = ({ fetchData }) => {
                 ButtonsElement={() => (
                     <div style={{justifyContent: 'right', display: 'flex'}}>
                         <ExtrasMenu
-                            delivered={() => setOpenModalDelivered(true)}
-                            undelivered={() => setOpenModalUndelivered(true)}
+                            delivered={() => handleTipification('deliver')}
+                            undelivered={() => handleTipification('undeliver')}
                         />
                     </div>
                 )}
             />
             <DeliveredDialog 
                 openModal={openModalDelivered} 
-                setOpenModal={setOpenModalDelivered} 
+                setOpenModal={setOpenModalDelivered}
+                fetchData={fetchData}
+                rows={rowWithDataSelected}
             />
             <UndeliveredDialog 
                 openModal={openModalUndelivered} 
-                setOpenModal={setOpenModalUndelivered} 
+                setOpenModal={setOpenModalUndelivered}
+                fetchData={fetchData}
+                rows={rowWithDataSelected}
             />
         </div>
     );

@@ -25,8 +25,8 @@ const CanceledDialog: React.FC<{
     openModal: boolean;
     setOpenModal: (dat: boolean) => void;
     fetchData: (flag: boolean) => void;
-    row: Dictionary[];
-}> = ({ openModal, setOpenModal, fetchData, row }) => {
+    rows: Dictionary[];
+}> = ({ openModal, setOpenModal, fetchData, rows }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -44,11 +44,19 @@ const CanceledDialog: React.FC<{
         if(motive !== '') {
             dispatch(showBackdrop(true));
             dispatch(execute(updateOrderCanceled({
-                orderid: row[0].orderid,
+                listorderid: rows.map(row => row.orderid).join(','),
                 descriptionreason: motive,
                 orderstatus: 'canceled',
             })))
             setWaitSave(true);
+        } else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.selectField),
+                })
+            );
         }
     }
 

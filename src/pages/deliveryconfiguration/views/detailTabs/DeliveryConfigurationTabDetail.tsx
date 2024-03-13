@@ -125,7 +125,6 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const { t } = useTranslation();
     const classes = useStyles();
     const [openModalAssociatedVehicleDialog, setOpenModalAssociatedVehicleDialog] = useState(false)
-    const [routingLogic, setRoutingLogic] = useState(configjson.routinglogic);
     const mainVehicles = useSelector(state => state.main.mainAux);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -537,7 +536,6 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                             <IOSSwitch
                                 checked={configjson.routinglogic}
                                 onChange={(e) => {
-                                    setRoutingLogic(e.target.checked)
                                     setConfigjson({...configjson, routinglogic: e.target.checked})
                                 }}
                                 name="checkedB"
@@ -558,7 +556,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     />
                                 }
                                 label={t(langKeys.insuredlimit)}
-                                disabled={!routingLogic}
+                                disabled={!configjson.routinglogic}
                             />
                             <FormControlLabel
                                 className={classes.formControlLabelPointer}
@@ -574,7 +572,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                     />
                                 }
                                 label={t(langKeys.CAPACITY)}
-                                disabled={!routingLogic}
+                                disabled={!configjson.routinglogic}
                             />
                         </FormGroup>
                     </FormControl>
@@ -745,7 +743,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         />
                     </div>
                 </div>
-                <div className='col-12'>
+                <div className='col-3'>
                     <CustomTitleHelper title={`${t(langKeys.ticket_reason)} y ${t(langKeys.submotive)} de ${t(langKeys.undelivered)}`}/>
                     <span className={classes.span} onClick={() => setOpenModalMotiveDialog(true)}>
                         {t(langKeys.edit) + ' ' + t(langKeys.ticket_reason) + ' y ' + t(langKeys.submotive)}

@@ -34,8 +34,8 @@ const ManualSchedulingDialog: React.FC<{
     setOpenModal: (dat: boolean) => void;
     config: Dictionary;
     fetchData: (flag: boolean) => void;
-    row: Dictionary[];
-}> = ({ openModal, setOpenModal, config, fetchData, row }) => {
+    rows: Dictionary[];
+}> = ({ openModal, setOpenModal, config, fetchData, rows }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -55,12 +55,20 @@ const ManualSchedulingDialog: React.FC<{
         if(dateSelected >= signatureDateDefault) {
             dispatch(showBackdrop(true));
             dispatch(execute(updateOrderSchedule({
-                orderid: row[0].orderid,
+                listorderid: rows.map(row => row.orderid).join(','),
                 deliveryshift: shift,
                 scheduledeliverydate: dateSelected,
                 orderstatus: 'scheduled',
             })))
             setWaitSave(true);
+        } else {
+            dispatch(
+                showSnackbar({
+                    show: true,
+                    severity: "error",
+                    message: t(langKeys.incorrectdate),
+                })
+            );
         }
     }
 
