@@ -613,8 +613,8 @@ const RecordComponent: React.FC<{
             const reader = new FileReader();
             reader.readAsArrayBuffer(recorderControls.recordingBlob);
             reader.onload = () => {
-				const audioBlob = new Blob([reader.result], { type: "audio/amr" });
-				fd.append("file", audioBlob, "audio.amr");
+                fd.append("file", reader.result, "audio.webm");
+                fd.append('convert', true)
 				dispatch(uploadFile(fd));
 				recorderControls.stopRecording();
 				setUploadAudio(true);
@@ -634,8 +634,8 @@ const RecordComponent: React.FC<{
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
                 reader.onload = () => {
-                    const audioBlob = new Blob([reader.result], { type: "audio/amr" });
-                    fd.append("file", audioBlob, "audio.amr");
+                    fd.append("file", blob, "audio.webm");
+                    fd.append('convert', true)
                     dispatch(uploadFile(fd));
 
                     recorderControls.stopRecording();
@@ -653,9 +653,17 @@ const RecordComponent: React.FC<{
             <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
                 <AudioRecorder
                     onRecordingComplete={(blob) => saveAudio(blob)}
+                    audioTrackConstraints={{
+                        noiseSuppression: true,
+                        echoCancellation: true,
+                    }}
+                    onNotAllowedOrFound={(err) => console.table(err)}
                     recorderControls={recorderControls}
-                    downloadFileExtension="mp3"
+                    downloadFileExtension="webm"
                     showVisualizer={true}
+                    mediaRecorderOptions={{
+                        audioBitsPerSecond: 128000,
+                    }}
                 />
             </div>
         );
