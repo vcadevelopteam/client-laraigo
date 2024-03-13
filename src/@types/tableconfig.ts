@@ -98,7 +98,7 @@ export interface Pagination {
 
 export interface IFetchData {
   sorts: Dictionary;
-  distinct: Dictionary;
+  distinct: any;
   filters: Dictionary;
   pageIndex: number;
   pageSize: number;
