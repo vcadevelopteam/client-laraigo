@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getasesorvsticketsSel, getReportExport, getTicketvsAdviserExport } from 'common/helpers';
+import { getasesorvsticketsSel, getReportExport } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -58,6 +58,7 @@ const TicketvsAdviser: FC = () => {
             {
                 Header: t(langKeys.startDate),
                 accessor: 'fechainicio',
+                showGroupedBy: true,   
             },
             {
                 Header: t(langKeys.starttime),
@@ -65,13 +66,14 @@ const TicketvsAdviser: FC = () => {
             },
             {
                 Header: t(langKeys.advisor),
-                accessor: 'asesor',              
+                accessor: 'asesor',       
+                showGroupedBy: true,   
                 helpText: t(`report_loginhistory_advisor`),
-
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'canal',
+                showGroupedBy: true,   
                 helpText: t(`report_loginhistory_channel`),
             },
             {
@@ -94,6 +96,7 @@ const TicketvsAdviser: FC = () => {
             {
                 Header: t(langKeys.ticket_tipocierre),
                 accessor: 'tipocierre',
+                showGroupedBy: true,   
                 helpText: t(`report_loginhistory_closetype`),                
             },
             {
@@ -115,6 +118,7 @@ const TicketvsAdviser: FC = () => {
             {
                 Header: t(langKeys.closing_date),
                 accessor: 'fechacierre',
+                showGroupedBy: true,   
             },
             {
                 Header: t(langKeys.closing_time),
@@ -184,6 +188,7 @@ const TicketvsAdviser: FC = () => {
             take: pageSize,
             skip: pageIndex * pageSize,
             sorts: sorts,
+            distinct: distinct,
             filters: {
                 ...filters,
             },
