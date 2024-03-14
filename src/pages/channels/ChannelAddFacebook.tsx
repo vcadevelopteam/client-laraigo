@@ -198,7 +198,7 @@ export const ChannelAddFacebook: FC<{ edit: boolean }> = ({ edit }) => {
                             justifyContent: "center",
                         }}
                         fields="name,email,picture"
-                        scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile,pages_manage_posts"
+                        scope="business_management,pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile,pages_manage_posts"
                         callback={processFacebookCallback}
                         textButton={t(langKeys.linkfacebookpage)}
                         icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
@@ -283,9 +283,9 @@ export const ChannelAddFacebook: FC<{ edit: boolean }> = ({ edit }) => {
                 </div>
             </div>
         )
-    }else if(viewSelected==="enable-virtual-assistant"){
+    } else if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     } else {
         return (
