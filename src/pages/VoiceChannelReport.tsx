@@ -515,28 +515,7 @@ const VoiceChannelReport: FC = () => {
                         showHideColumns={true}
                         groupedBy={true}
                         register={false}
-                        FiltersElement={                            
-                            <FieldSelect                              
-                                valueDefault={allParameters["channel"]}
-                                label={t("report_reportvoicecall_filter_channels")}
-                                className={classes.filterComponent}
-                                key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
-                                variant="outlined"
-                                loading={multiData.loading}
-                                onChange={(value) => setValue("channel", value ? value["typedesc"] : "")}                                
-                                data={
-                                    // multiData?.data[
-                                    //     multiData?.data?.findIndex(
-                                    //         (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
-                                    //     )
-                                    // ]?.data
-                                    []
-                                }
-                                optionDesc={"type"}
-                                optionValue={"typedesc"}
-                            />
-                            
-                        }
+                        FiltersElement={<></>}
                         ButtonsElement={() => (
                             <Button
                                 className={classes.button}
