@@ -18,6 +18,7 @@ import ListIcon from '@material-ui/icons/List';
 import SettingsIcon from '@material-ui/icons/Settings';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import { CellProps } from 'react-table';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -126,19 +127,17 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
             {
                 Header: !!columnDesc ? columnDesc : t('report_' + row?.origin + '_' + column),
                 accessor: 'columnname',
-                NoFilter: true,
-                Cell: (props: any) => {
+                NoFilter: true,               
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original || {};
 
-                    if (graphicType === "BAR")
-                        return row?.columnname;
                     return (
-                        <div style={{ display: 'flex', gap: 4 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <div style={{ width: 15, height: 15, backgroundColor: row.color }}></div>
                             {row?.columnname}
                         </div>
-                    )
-                }
+                    );
+                },
             },
             {
                 Header: t(langKeys.quantity),
