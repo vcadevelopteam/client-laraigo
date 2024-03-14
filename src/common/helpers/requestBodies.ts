@@ -3774,7 +3774,7 @@ export const getDisconnectionDataTimes = ({ startdate, enddate, asesorid, superv
 })
 
 //getPaginatedTicket
-export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, enddate, distinct }: Dictionary): IRequestBodyPaginated => ({
+export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, enddate, distinct, channel }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_REPORT_ASESOR_VS_TICKET_SEL",
     methodCount: "UFN_REPORT_ASESOR_VS_TICKET_TOTALRECORDS",
     parameters: {
@@ -3783,6 +3783,7 @@ export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, e
         skip,
         take,
         distinct,
+        channel,
         filters,
         sorts,
         origin: "ticketvsadviser",
