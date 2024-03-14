@@ -455,7 +455,6 @@ const TableZyx = React.memo(({
     }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
 
     const handleRadioClick = (columnId: string) => {
-        console.log('Click en el radio button para la columna:', columnId);
         setColumnGroupedBy((prevGroupedBy) => {
             const isColumnActive = prevGroupedBy.includes(columnId);
             const updatedGroupedBy = isColumnActive ? [] : [columnId];
@@ -489,7 +488,7 @@ const TableZyx = React.memo(({
     }, []);    
     
     useEffect(() => {
-        console.log('Columna activa recuperada del localStorage:', activeColumn);
+        //console.log('Columna activa recuperada del localStorage:', activeColumn);
     }, [activeColumn]);
     
     useEffect(() => {
