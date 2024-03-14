@@ -96,16 +96,7 @@ export const columnsHideShow: ColumnsInterface = {
         clientnumber: true,
         email: true,
         personcommunicationchannel: true,
-    },
-    userproductivityhours: {
-        busytimewithinwork: true,
-        freetimewithinwork: true,  
-        busytimeoutsidework: true,
-        availabletime: true,
-        idletime: true,
-        qtyconnection: true,
-        qtydisconnection: true,   
-    },
+    },   
     reportrequestsd: {
         channel: true,
         resolution: true,  

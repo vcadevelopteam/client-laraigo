@@ -128,8 +128,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
     const [allParameters, setAllParameters] = useState<any>({});
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState("GRID");
-
-    const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
+    const [, setSelectedRow] = useState<Dictionary | undefined>({});
 
     useEffect(() => {
         dispatch(getMultiCollection([getCommChannelLstTypeDesc(), getClassificationLevel1("TIPIFICACION")]));
@@ -138,29 +137,6 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             dispatch(cleanViewChange());
         };
     }, []);
-
-
-    const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
-        const column = props.cell.column;// eslint-disable-next-line react/prop-types
-        const row = props.cell.row.original;
-        return (
-            <div onClick={() => {
-                setSelectedRow(row);
-                setOpenModal(true);
-            }}>             
-                {column.sortType === "datetime" && !!row[column.id] 
-                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                })// eslint-disable-next-line react/prop-types
-                : row[column.id]}
-            </div>
-        )
-    }
 
     const reportColumns = [
         {
