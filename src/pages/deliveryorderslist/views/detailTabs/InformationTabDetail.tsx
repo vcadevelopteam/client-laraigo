@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { FieldEdit } from "components";
 import { useSelector } from "hooks";
-import { showSnackbar, showBackdrop } from "store/popus/actions";
-import { useDispatch } from "react-redux";
 import TableZyx from "components/fields/table-simple";
 import { Typography } from "@material-ui/core";
+import MapLeaflet from "components/fields/MapLeaflet";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -17,12 +15,9 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: "#fff",
     },
-    button: {
-        marginRight: theme.spacing(2),
-    },
     paymentreceipt: {
         fontSize: "0.9rem",
-        fontWeight: "lighter",
+        fontWeight: 'bold',
         padding: "0 0 0.3rem 0",
     },
     span: {
@@ -30,60 +25,26 @@ const useStyles = makeStyles((theme) => ({
         textDecoration: "underline solid",
         cursor: "pointer",
     },
-    mapimage: {
-        display: "flex",
-        textAlign: "center",
-        width: "100%",
-        height: "10rem",
-        objectFit: "cover",
-    },
     subtitle: {
         fontSize: "2rem",
         paddingBottom: "0.5rem",
     },
     totalammount: {
         textAlign: "right",
-        padding: "2rem 2rem 0 0",
+        marginTop: "1rem",
+        paddingRight: "2rem",
         fontSize: "1rem",
     },
 }));
 
 interface InformationTabDetailProps {
     row: Dictionary | null;
-    setValue: UseFormSetValue<any>;
-    getValues: UseFormGetValues<any>;
-    errors: FieldErrors;
 }
 
-const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setValue, getValues, errors }) => {
+const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const executeResult = useSelector((state) => state.main.execute);
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_delete),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave]);
+    const productsData = useSelector((state) => state.main.mainAux2);
 
     const columns = React.useMemo(
         () => [
@@ -95,22 +56,22 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
             {
                 Header: t(langKeys.quantity),
                 accessor: "quantity",
-                width: "auto",
+                width: "10%",
             },
             {
                 Header: t(langKeys.currency),
                 accessor: "currency",
-                width: "auto",
+                width: "10%",
             },
             {
                 Header: t(langKeys.unitaryprice),
-                accessor: "unitaryprice",
-                width: "auto",
+                accessor: "unitprice",
+                width: "10%",
             },
             {
                 Header: t(langKeys.totalamount),
-                accessor: "totalamount",
-                width: "auto",
+                accessor: "amount",
+                width: "10%",
             },
         ],
         []
@@ -118,7 +79,7 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
 
     return (
         <div className={classes.containerDetail}>
-            <div className="row-zyx">
+            <div className="row-zyx" style={{marginBottom: 0}}>
                 <div className="row-zyx">
                     <FieldEdit
                         label={t(langKeys.clientfullname)}
@@ -135,7 +96,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                         valueDefault={row?.phone}
                     />
                 </div>
-
                 <div className="row-zyx">
                     <FieldEdit
                         label={t(langKeys.deliverydate)}
@@ -157,24 +117,17 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                         </span>
                     </div>
                 </div>
-                <div className="row-zyx">
-                    <div style={{ paddingBottom: "2rem" }}>
-                        <FieldEdit
-                            label={t(langKeys.registeredaddress)}
-                            className="col-12"
-                            type="text"
-                            disabled={true}
-                            valueDefault={row?.deliveryaddress}
+                <div style={{ paddingBottom: "0.5rem" }}>
+                    <Typography className={classes.paymentreceipt}>{t(langKeys.registeredaddress)}</Typography>
+                </div>
+                <div className="row-zyx" style={{marginBottom: 0, display: 'flex', alignItems: 'center'}}>
+                    <div className="col-6">
+                        <MapLeaflet
+                            height={200}
+                            marker={row && { lat: parseFloat(row?.latitude || 0), lng: parseFloat(row?.longitude || 0) }}
                         />
                     </div>
-                    <div className="col-4">
-                        <img
-                            className={classes.mapimage}
-                            src="https://i0.wp.com/www.cssscript.com/wp-content/uploads/2018/03/Simple-Location-Picker.png?fit=561%2C421&ssl=1"
-                            alt="map"
-                        ></img>
-                    </div>
-                    <div className="col-4" style={{ padding: "0rem 2rem 1rem 0" }}>
+                    <div className="col-3">
                         <div style={{ paddingBottom: "2rem" }}>
                             <FieldEdit
                                 label={t(langKeys.latitude)}
@@ -184,43 +137,43 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row, setVal
                                 valueDefault={row?.latitude}
                             />
                         </div>
-                        <div style={{ paddingBottom: "2rem" }}>
-                            <FieldEdit
-                                label={t(langKeys.longitude)}
-                                className="col-3"
-                                type="number"
-                                disabled={true}
-                                valueDefault={row?.longitude}
-                            />
-                        </div>
+                        <FieldEdit
+                            label={t(langKeys.longitude)}
+                            className="col-3"
+                            type="number"
+                            disabled={true}
+                            valueDefault={row?.longitude}
+                        />
                     </div>
-                    <div className="col-4" style={{ padding: "0rem 2rem 1rem 0" }}>
+                    <div className="col-3">
                         <div style={{ paddingBottom: "2rem" }}>
                             <FieldEdit
-                                label={t(langKeys.carriername)}
+                                label={t(langKeys.carriercoord)}
                                 className="col-3"
                                 type="text"
                                 disabled={true}
-                                valueDefault={`${row?.firstname} ${row?.lastname}`}
                             />
                         </div>
-                        <div style={{ paddingBottom: "1rem" }}>
-                            <FieldEdit
-                                label={t(langKeys.deliveryaddress)}
-                                className="col-3"
-                                type="text"
-                                disabled={true}
-                                valueDefault={row?.deliveryaddress}
-                            />
-                        </div>
+                        <FieldEdit
+                            label={t(langKeys.deliveryaddress)}
+                            className="col-3"
+                            type="text"
+                            disabled={true}
+                            valueDefault={row?.deliveryaddress}
+                        />
                     </div>
                 </div>
             </div>
             <Typography className={classes.subtitle}>{t(langKeys.orderlist)}</Typography>
-            <div className="row-zyx">
-                <TableZyx columns={columns} data={[]} filterGeneral={false} toolsFooter={false} />
+            <div className="row-zyx" style={{marginBottom: 0}}>
+                <TableZyx
+                    columns={columns}
+                    data={productsData.data || []}
+                    filterGeneral={false}
+                    toolsFooter={false}
+                />
             </div>
-            <Typography className={classes.totalammount}>{t(langKeys.total) + ": S/0.00"}</Typography>
+            <Typography className={classes.totalammount}>{t(langKeys.total) + ': ' + productsData.data.reduce((acc, curr) => acc + curr.amount, 0).toFixed(2)}</Typography>
         </div>
     );
 };

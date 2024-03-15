@@ -62,3 +62,5 @@ export const viewDocumentation = [
     {name: 'configuration', altname: 'configuration', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/configuracion`},
     {name: 'variableconfiguration', altname: 'variableconfiguration', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/configuracion-de-variables`},
 ];
+
+export const notCustomUrl = ["/dev.laraigo.com","/testing.laraigo.com","/app.laraigo.com","/claro.laraigo.com","/localhost"]

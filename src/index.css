@@ -296,3 +296,11 @@ code {
     -ms-transition: background-color 900ms linear;
     transition: background-color 900ms linear;
 }
+
+.audio-recorder{
+    background-color: transparent !important;
+    box-shadow: none!important;
+}
+.recording{
+    width: 200px!important
+}

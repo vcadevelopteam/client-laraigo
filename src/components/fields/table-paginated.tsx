@@ -733,11 +733,47 @@ const TableZyx = React.memo(({
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
-    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);  
     const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
     const [filterApplied, setFilterApplied] = useState(false);  
 
+    const [columnVisibility, setColumnVisibility] = useState(() => {
+        const storedColumnVisibility = localStorage.getItem('columnVisibility');
+        if (storedColumnVisibility) {
+            return JSON.parse(storedColumnVisibility);
+        } else {
+            return initialColumnVisibility;
+        }
+    });
+
+    const initialColumnVisibility = allColumns.reduce((acc, column) => {
+        acc[column.id] = true; 
+        return acc;
+    }, {});
+
+    const handleColumnVisibilityChange = (columnId, isVisible) => {
+        const updatedVisibility = {
+            ...columnVisibility,
+            [columnId]: isVisible,
+        };
+        setColumnVisibility(updatedVisibility);
+        localStorage.setItem('columnVisibility', JSON.stringify(updatedVisibility));    
+        const columnInstance = allColumns.find(column => column.id === columnId);
+        if (columnInstance) {
+            columnInstance.toggleHidden(!isVisible);
+        }
+    }
+
+    useEffect(() => {
+        allColumns.forEach(column => {
+            const isVisible = columnVisibility[column.id] ?? true; 
+            column.toggleHidden(!isVisible); 
+        });
+    }, []); 
+
+    useEffect(() => {
+        localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
+    }, [columnVisibility]);
 
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
@@ -853,7 +889,7 @@ const TableZyx = React.memo(({
             trigger: true
             
         }));
-    };
+    };    
                    
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
@@ -1037,30 +1073,24 @@ const TableZyx = React.memo(({
                                 buttonStyle2={{ marginRight: '1rem', marginBottom: '0.3rem' }}
                             >
                                 <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                    {allColumns.filter(column => {
-                                        const isColumnInstance = 'accessor' in column && 'Header' in column;
-                                        return isColumnInstance && 'showColumn' in column  && column.showColumn === true;
-                                    })
-                                        .map((column) => (
-                                            <Grid item xs={4} key={column.id}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Checkbox
-                                                            color="primary"
-                                                            checked={!columnVisibility[column.id]}
-                                                            onChange={() => {
-                                                                column.toggleHidden();
-                                                                setColumnVisibility(prevVisibility => ({
-                                                                    ...prevVisibility,
-                                                                    [column.id]: !prevVisibility[column.id],
-                                                                }));
-                                                            }}
-                                                        />
-                                                    }
-                                                    label={t(column.Header as string)}
+                                {allColumns.filter(column => {
+                                    const isColumnInstance = 'accessor' in column && 'Header' in column;
+                                    return isColumnInstance && 'showColumn' in column && column.showColumn === true;
+                                })
+                                .map((column) => (
+                                    <Grid item xs={4} key={column.id}>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={columnVisibility[column.id] ?? true}
+                                                    onChange={(e) => handleColumnVisibilityChange(column.id, e.target.checked)}
                                                 />
-                                            </Grid>
-                                        ))}
+                                            }
+                                            label={t(column.Header as string)}
+                                        />
+                                    </Grid>
+                                ))}
                                 </Grid>
 
                             </DialogZyx>
@@ -1265,7 +1295,7 @@ const TableZyx = React.memo(({
                                                                         iconDirectionDesc: classes.iconDirectionDesc,
                                                                     }}
                                                                     active
-                                                                    direction={row.isExpanded ? 'desc' : 'asc'}  //asc cuando no está expandida, desc cuando está expandida
+                                                                    direction={row.isExpanded ? 'desc' : 'asc'}
                                                                     IconComponent={KeyboardArrowUp}
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
@@ -1345,6 +1375,9 @@ const TableZyx = React.memo(({
             </TableContainer >
         </Box >
     )
+
+    
+    
 })
 TableZyx.displayName = 'TableZyx';
 export default TableZyx;

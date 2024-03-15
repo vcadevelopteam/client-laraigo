@@ -777,10 +777,10 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype = "", paymentmethod = "", automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype = "", paymentmethod = "", automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, domainname, iconurl, logourl, startlogourl, ispoweredbylaraigo, olddomainname }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo }
+    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo, domainname, olddomainname }
 });
 export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
@@ -4932,8 +4932,62 @@ export const subReasonNonDeliverySel = (reasonnondeliveryid: number) => ({
     parameters: { reasonnondeliveryid },
 });
 
-export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, operation }: Dictionary) => ({
+export const subReasonNonDeliveryIns = ({ id, reasonnondeliveryid, status, type, description, statustypified, viewappmovil, operation }: Dictionary) => ({
     method: "UFN_SUBREASONNONDELIVERY_INS",
     key: "UFN_SUBREASONNONDELIVERY_INS",
-    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, operation },
+    parameters: { id, reasonnondeliveryid, status, type, description, statustypified, viewappmovil, operation },
+});
+
+export const orderLineSel = (orderid: number) => ({
+    method: "UFN_ORDERLINE_SEL",
+    key: "UFN_ORDERLINE_SEL",
+    parameters: { orderid },
+});
+
+export const updateOrderSchedule = ({ listorderid, deliveryshift, scheduledeliverydate, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERSCHEDULE",
+    key: "UFN_UPDATE_ORDERSCHEDULE",
+    parameters: { listorderid, deliveryshift, scheduledeliverydate, orderstatus },
+});
+
+export const updateOrderOnlyStatus = ({ listorderid, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERSTATUS",
+    key: "UFN_UPDATE_ORDERSTATUS",
+    parameters: { listorderid, orderstatus },
+});
+
+export const updateOrderNonDelivery = ({ listorderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERNONDELIVERY",
+    key: "UFN_UPDATE_ORDERNONDELIVERY",
+    parameters: { listorderid, subreasonnondeliveryid, orderstatus, latitudecarrier, longitudecarrier },
+});
+
+export const updateOrderCanceled = ({ listorderid, descriptionreason, orderstatus }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERCANCELED",
+    key: "UFN_UPDATE_ORDERCANCELED",
+    parameters: { listorderid, descriptionreason, orderstatus },
+});
+
+export const ordersInAttentionSel = () => ({
+    method: "UFN_ORDERSINATTENTION_SEL",
+    key: "UFN_ORDERSINATTENTION_SEL",
+    parameters: {},
+});
+
+export const ordersInStoreSel = () => ({
+    method: "UFN_ORDERSINSTORE_SEL",
+    key: "UFN_ORDERSINSTORE_SEL",
+    parameters: {},
+});
+
+export const updateOrderDispatched = ({ code, orderstatus, userid }: Dictionary) => ({
+    method: "UFN_UPDATE_ORDERDISPATCHED",
+    key: "UFN_UPDATE_ORDERDISPATCHED",
+    parameters: { code, orderstatus, userid },
+});
+
+export const ordersByConfigRoutingLogic = (listorderid: string) => ({
+    method: "UFN_ORDERS_BY_CONFIGURATION_SEL",
+    key: "UFN_ORDERS_BY_CONFIGURATION_SEL",
+    parameters: { listorderid },
 });

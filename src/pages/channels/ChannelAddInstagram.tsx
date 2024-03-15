@@ -224,7 +224,7 @@ export const ChannelAddInstagram: FC<{ edit: boolean }> = ({ edit }) => {
                             justifyContent: "center",
                         }}
                         fields="name,email,picture"
-                        scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile,instagram_content_publish"
+                        scope="business_management,instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile,instagram_content_publish"
                         callback={processFacebookCallback}
                         textButton={t(langKeys.linkinstagrampage)}
                         icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
@@ -308,9 +308,9 @@ export const ChannelAddInstagram: FC<{ edit: boolean }> = ({ edit }) => {
                 </div>
             </div>
         )
-    }else if(viewSelected==="enable-virtual-assistant"){
+    } else if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     } else {
         return (

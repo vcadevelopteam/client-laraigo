@@ -110,7 +110,6 @@ export const columnsHideShow: ColumnsInterface = {
     },     
 }
 
-
 export const columnGroupedBy: ColumnsInterface = {
     productivity: {
         ticket: true,
@@ -129,7 +128,7 @@ export const columnGroupedBy: ColumnsInterface = {
         startdate: true,  
         enddate: true,      
     },
-    loginhistory: { //actualmente visible //chequear funcionalidad, no funciona en nusuario, usuario, estado, tipo
+    loginhistory: { 
         user: true,
         username: true,
         status: true,  

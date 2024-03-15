@@ -3,7 +3,6 @@ import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Button, Menu, MenuItem, makeStyles } from "@material-ui/core";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
-import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -27,7 +26,6 @@ interface TemplateIconsProps {
     undelivered?: (param: boolean) => void;
     cancel?: (param: boolean) => void;
     cancelundelivered?: (param: boolean) => void;
-    rows: Dictionary;
 }
 
 export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
@@ -39,7 +37,6 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
     undelivered,
     cancel,
     cancelundelivered,
-    rows,
 }) => {
     const classes = useStyles();
     const { t } = useTranslation();
@@ -93,8 +90,8 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
                 variant="contained"
                 color="primary"
                 startIcon={<LocalShippingIcon color="secondary" />}
-                disabled={Object.keys(rows).length === 0 || Object.keys(rows).length > 1}
                 onClick={handleClickTyping}
+                style={{backgroundColor: '#55BD84'}}
             >
                 <Trans i18nKey={langKeys.typing} />
             </Button>
