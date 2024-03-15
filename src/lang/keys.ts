@@ -5782,6 +5782,14 @@ export const langKeys = {
   twitter_refreshtoken: 'twitter_refreshtoken',
   catalogmaster_haslink: 'catalogmaster_haslink',
   corporate: 'corporate',
+  cancelassistantcreation: 'cancelassistantcreation',
+  cancelassistantedit: 'cancelassistantedit',
+  personality_table: 'personality_table',
+  personality_client: 'personality_client',
+  personality_sales: 'personality_sales',
+  personality_tech: 'personality_tech',
+  personality_ai: 'personality_ai',
+  personality_personalized: 'personality_personalized',
 };
 
 export type LangKeys = typeof langKeys;

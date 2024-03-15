@@ -10,6 +10,8 @@ import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/acti
 import { Button, Tabs } from "@material-ui/core";
 import SaveIcon from '@material-ui/icons/Save';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ClearIcon from '@material-ui/icons/Clear';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import AssistantTabDetail from "./TabDetails/AssistantTabDetail";
 import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
 import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
@@ -42,10 +44,6 @@ const useStyles = makeStyles(() => ({
         justifyContent: 'flex-end',
         gap: '1rem',
         marginBottom: 10
-    },
-    purpleButton: {
-        backgroundColor: '#ffff',
-        color: '#7721AD'
     },
 }));
 
@@ -91,7 +89,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [assistantaiid, setAssistantaiid] = useState('');
     const newArrayBread = [
         ...arrayBread,
-        { id: "createssistant", name: t(langKeys.createssistant) },       
+        { id: "createssistant", name: edit ? `${t(langKeys.edit)} ${t(langKeys.assistant_singular)}` : t(langKeys.createssistant) },       
     ];      
     const [encryptedApikey, setEncryptedApikey] = useState<string | null>(null)
     const [generalprompt, setGeneralPrompt] = useState<string | null>(null)
@@ -438,9 +436,40 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         setTabIndex(newIndex);
     };
 
+    const mainHandleSubmit = (e: ChangeEvent<NonNullable<unknown>>) => {
+        e.preventDefault();
+        if (tabIndex === 0) {
+            handleChangeTab(e, 1);
+        } else if (tabIndex === 1) {
+            handleChangeTab(e, 2);
+        } else {
+            if (cosFile.name === '' && cosFile.url === '') {
+                onMainSubmit();
+            } else {
+                onMainSubmitWithFiles();
+            }
+        }
+    }
+
+    const handleClose = () => {
+        const callback = () => {
+            setViewSelected('assistantdetail')
+        }
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: edit ? t(langKeys.cancelassistantedit) : t(langKeys.cancelassistantcreation),
+                callback,
+            })
+        );
+    }
+
     return (
         <>
-            <form onSubmit={cosFile.name === '' && cosFile.url === '' ? onMainSubmit : onMainSubmitWithFiles} className={classes.formcontainer}>
+            <form
+                onSubmit={mainHandleSubmit}
+                className={classes.formcontainer}
+            >
                 <div style={{ width: "100%" }}>
                     <div className={classes.titleandcrumbs}>
                         <div style={{ flexGrow: 1 }}>
@@ -448,7 +477,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                 breadcrumbs={newArrayBread}
                                 handleClick={setExternalViewSelected}
                             />
-                            <TitleDetail title={t(langKeys.createssistant)} />
+                            <TitleDetail title={edit ? row?.name : t(langKeys.createssistant)} />
                         </div>
                     </div>
                     <div className={classes.container}>     
@@ -457,22 +486,22 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                 <Button
                                     variant="contained"
                                     type="button"
-                                    startIcon={<ArrowBackIcon color="primary" />}
-                                    className={classes.purpleButton}
-                                    onClick={() => {
-                                        setViewSelected('assistantdetail')
-                                    }}
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={handleClose}
                                 >
-                                    {t(langKeys.return)}
+                                    {t(langKeys.cancel)}
                                 </Button>
                                 <Button
                                     variant="contained"
                                     type="submit"
                                     color="primary"
-                                    startIcon={<SaveIcon color="secondary" />}
+                                    startIcon={tabIndex !== 2 ? <></> : <SaveIcon color="secondary" />}
+                                    endIcon={tabIndex !== 2 ? <ArrowForwardIcon color="secondary" /> : <></>}
                                     style={{ backgroundColor: '#55BD84' }}
                                 >
-                                    {t(langKeys.save)}
+                                    {tabIndex !== 2 ? t(langKeys.continue) : t(langKeys.save)}
                                 </Button>
                             </div>
                         </div>

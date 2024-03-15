@@ -5796,6 +5796,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   twitter_refreshtoken: 'Token de Renovación',
   catalogmaster_haslink: 'Enlazar a Negocio',
   corporate: 'EMPRESARIAL',
+  cancelassistantcreation: '¿Está seguro de cancelar la creación del asistente?',
+  cancelassistantedit: '¿Está seguro de cancelar la edición del asistente?',
+  personality_table: 'Empleado de mesa de ayuda',
+  personality_client: 'Servicio al Cliente',
+  personality_sales: 'Experto en Ventas',
+  personality_tech: 'Soporte Técnico',
+  personality_ai: 'Base AI',
+  personality_personalized: 'Modo Personalizado',
 };
 
 const esResource: ResourceLanguage = {

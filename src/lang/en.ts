@@ -5870,6 +5870,14 @@ const translation: LangKeys = {
   twitter_refreshtoken: 'Refresh Token',
   catalogmaster_haslink: 'Link to Business',
   corporate: 'CORPORATE',
+  cancelassistantcreation: 'Are you sure to cancel the creation of the assistant?',
+  cancelassistantedit: 'Are you sure to cancel the edit of the assistant?',
+  personality_table: 'Help Desk Clerk',
+  personality_client: 'Customer Service',
+  personality_sales: 'Sales Expert',
+  personality_tech: 'Technical Support',
+  personality_ai: 'AI Base',
+  personality_personalized: 'Custom Mode',
 };
 
 const enResource: ResourceLanguage = {
