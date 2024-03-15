@@ -1350,6 +1350,7 @@ const translation: LangKeys = {
   eventname: "Event name",
   campaign_plural: 'Campaigns',
   newcampaign: 'New campaign',
+  warningwhitebrand: "Important: When configuring the domain, the domain name field cannot be edited; however, you will have the possibility to modify the icon images and logos.",
   validatedomainname: "The domain name must start with a letter and contain only alphanumeric values",
   startdate: 'Start date',
   privacypoliciestitle: "Privacy Policies",

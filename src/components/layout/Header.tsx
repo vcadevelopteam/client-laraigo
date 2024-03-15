@@ -243,7 +243,7 @@ const Header = ({ classes }: IProps) => {
     
     if(customDomain){
         const existingFavicon = document.querySelector('link[rel="icon"]');
-        existingFavicon.href = user?.iconurl||"";
+        if(user?.iconurl && existingFavicon) existingFavicon.href = user?.iconurl||"";
     }
 
     return (
@@ -259,8 +259,8 @@ const Header = ({ classes }: IProps) => {
                 </IconButton>
                 <img
                     style={{ height: 37, marginLeft: 8 }}
-                    src = {customDomain?user?.logourl:""}
-                    className={customDomain?myClasses.customImageLaraigo:myClasses.imageLaraigo}
+                    src = {customDomain?(user?.logourl||""):""}
+                    className={(customDomain && Boolean(user?.logourl))?myClasses.customImageLaraigo:myClasses.imageLaraigo}
                     alt="logo"
                 />
                 {/* <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} /> */}

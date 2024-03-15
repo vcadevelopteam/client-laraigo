@@ -280,6 +280,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
     const [doctype, setdoctype] = useState(row?.doctype || "");
     const [pageSelected, setPageSelected] = useState(0);
     const [waitUpload, setWaitUpload] = useState("");
+    const [domainname, setDomainName] = useState(row?.domainname||"");
     const [whiteBrand, setWhiteBrand] = useState(row?.domainname || false);
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const executeRes = useSelector((state) => state.corporation.executecorp);
@@ -345,6 +346,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         input?.click();
     };
     const onChangeIconInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        debugger
         if (!e.target.files) return;
         const file = e.target.files[0];
         if (file) {
@@ -389,14 +391,14 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
           const image = new Image();
     
           image.onload = () => {
-            const maxWidth = 37;
-            const maxHeight = 300;
+            const maxWidth = 300;
+            const maxHeight = 37;
             if (image.width > maxWidth || image.height > maxHeight) {
                 dispatch(
                     showSnackbar({
                         show: true,
                         severity: "error",
-                        message: "El logo debe ser de 37x300px como máximo",
+                        message: "El logo debe ser de 300x37px como máximo",
                     }))
             } else {
                 uploadFileField("logourl", file);
@@ -419,14 +421,14 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
           const image = new Image();
     
           image.onload = () => {
-            const maxWidth = 42;
-            const maxHeight = 150;
+            const maxWidth = 150;
+            const maxHeight = 42;
             if (image.width > maxWidth || image.height > maxHeight) {
                 dispatch(
                     showSnackbar({
                         show: true,
                         severity: "error",
-                        message: "El logo inicio debe ser de 42x150px como máximo",
+                        message: "El logo inicio debe ser de 150x42px como máximo",
                     }))
             } else {
                 uploadFileField("startlogourl", file);
@@ -626,6 +628,42 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
             return a.domaindesc.localeCompare(b.domaindesc);
         });
     }, [dataDocType, getValues("sunatcountry")]);
+
+    
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+    const handleDropIcon = (e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const fileInput = document.getElementById("IconImgInput");
+            fileInput.files = e.dataTransfer.files;
+            const changeEvent = new Event("change", { bubbles: true });
+            fileInput.dispatchEvent(changeEvent);
+        }
+    };
+    const handleDropLogo = (e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const fileInput = document.getElementById("LogoImgInput");
+            fileInput.files = e.dataTransfer.files;
+            const changeEvent = new Event("change", { bubbles: true });
+            fileInput.dispatchEvent(changeEvent);
+        }
+    };
+    const handleDropStartLogo = (e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const fileInput = document.getElementById("StartLogoImgInput");
+            fileInput.files = e.dataTransfer.files;
+            const changeEvent = new Event("change", { bubbles: true });
+            fileInput.dispatchEvent(changeEvent);
+        }
+    };
 
     return (
         <div style={{ width: "100%" }}>
@@ -920,12 +958,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                 )}
                 {pageSelected === 1 && (
                     <div className={classes.containerDetail}>
-                        <div className="row-zyx">
+                        <div className="row-zyx" style={{marginBottom:0}}>
                             <TemplateSwitch
                                 label={t(langKeys.usewhitebrand)}
                                 className="col-6"
                                 valueDefault={whiteBrand}
-                                disabled={row?.domainname}
+                                disabled={row?.domainname || Boolean(row  && !user.roledesc.includes("SUPERADMIN"))}
                                 onChange={(value) => {
                                     setWhiteBrand(value);
                                     setValue("ispoweredbylaraigo", false);
@@ -936,13 +974,16 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                 }}
                             />
                         </div>
+                        <div className="row-zyx" style={{ display: whiteBrand ? "flex" : "none", fontWeight: "bold", color: "red" }}>
+                            *{t(langKeys.warningwhitebrand)}
+                        </div>
                         <div className="row-zyx" style={{ display: whiteBrand ? "flex" : "none" }}>
                             <FieldEdit
                                 label={t(langKeys.domainname)}
                                 className="col-6"
-                                disabled={Boolean(row?.domainname) && !user.roledesc.includes("SUPERADMIN")}
+                                disabled={Boolean(row?.domainname)}
                                 valueDefault={getValues("domainname")}
-                                onChange={(value) => {setValue("domainname", value.toLocaleLowerCase().replace(/\s/g, ''))}}
+                                onChange={(value) => {setValue("domainname", value.toLocaleLowerCase().replace(/\s/g, '')); setDomainName(value.toLocaleLowerCase().replace(/\s/g, ''))}}
                                 error={errors?.domainname?.message}
                                 inputProps={{ style: { textTransform: 'lowercase' } }}
                             />
@@ -951,7 +992,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                 className="col-6"
                                 placeholder={"https://"}
                                 valueDefault={
-                                    getValues("domainname") ? `https://${getValues("domainname")}.laraigo.com` : ""
+                                    domainname? `https://${domainname}.laraigo.com` : ""
                                 }
                                 disabled={true}
                             />
@@ -967,9 +1008,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                             />
                         </div>
                         <div className="row-zyx" style={{ display: whiteBrand ? "flex" : "none" }}>
-                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4">
+                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4"
+                                >
                                 <div className={classes.text}>{t(langKeys.uploadicon)} 32 x 32px</div>
-                                <div className={classes.containerCompImg}>
+                                <div className={classes.containerCompImg} 
+                                    onDragOver={handleDragOver}
+                                    onDrop={handleDropIcon}>
                                     <div className={classes.imgContainer}>
                                         {getValues("iconurl") && (
                                             <img src={getValues("iconurl")} alt="icon button" className={classes.img} />
@@ -1002,9 +1046,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                     <div style={{ color: "red" }}>{errors?.iconurl?.message || ""}</div>
                                 )}
                             </div>
-                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4">
-                                <div className={classes.text}>{t(langKeys.uploadlogo)} 37 x 300px</div>
-                                <div className={classes.containerCompImg}>
+                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4"
+                                onDragOver={handleDragOver}>
+                                <div className={classes.text}>{t(langKeys.uploadlogo)} 300 x 37px</div>
+                                <div className={classes.containerCompImg}
+                                    onDragOver={handleDragOver}
+                                    onDrop={handleDropLogo}>
                                     <div className={classes.imgContainer}>
                                         {getValues("logourl") && (
                                             <img src={getValues("logourl")} alt="icon button" className={classes.img} />
@@ -1037,9 +1084,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                     <div style={{ color: "red" }}>{errors?.logourl?.message || ""}</div>
                                 )}
                             </div>
-                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4">
-                                <div className={classes.text}>{t(langKeys.uploadlogostarticon)} 42 x 150px</div>
-                                <div className={classes.containerCompImg}>
+                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4"
+                                onDragOver={handleDragOver}>
+                                <div className={classes.text}>{t(langKeys.uploadlogostarticon)} 150 x 42px</div>
+                                <div className={classes.containerCompImg}
+                                    onDragOver={handleDragOver}
+                                    onDrop={handleDropStartLogo}>
                                     <div className={classes.imgContainer}>
                                         {getValues("startlogourl") && (
                                             <img
