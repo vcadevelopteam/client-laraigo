@@ -61,7 +61,8 @@ const useStyles = makeStyles((theme) => ({
     imgContainer: {
         borderRadius: 20,
         backgroundColor: "white",
-        width: 157,
+        padding: 10,
+        width: "100%",
         height: 90,
         display: "flex",
         alignItems: "center",
@@ -1016,7 +1017,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                     onDrop={handleDropIcon}>
                                     <div className={classes.imgContainer}>
                                         {getValues("iconurl") && (
-                                            <img src={getValues("iconurl")} alt="icon button" className={classes.img} />
+                                            <img src={getValues("iconurl")} alt="icon button" className={classes.img} 
+                                            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}/>
                                         )}
                                     </div>
                                     <div
@@ -1046,15 +1048,15 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                     <div style={{ color: "red" }}>{errors?.iconurl?.message || ""}</div>
                                 )}
                             </div>
-                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4"
-                                onDragOver={handleDragOver}>
+                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4">
                                 <div className={classes.text}>{t(langKeys.uploadlogo)} 300 x 37px</div>
                                 <div className={classes.containerCompImg}
                                     onDragOver={handleDragOver}
                                     onDrop={handleDropLogo}>
                                     <div className={classes.imgContainer}>
                                         {getValues("logourl") && (
-                                            <img src={getValues("logourl")} alt="icon button" className={classes.img} />
+                                            <img src={getValues("logourl")} alt="icon button" className={classes.img} 
+                                            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}/>
                                         )}
                                     </div>
                                     <div
@@ -1084,8 +1086,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                     <div style={{ color: "red" }}>{errors?.logourl?.message || ""}</div>
                                 )}
                             </div>
-                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4"
-                                onDragOver={handleDragOver}>
+                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className="col-4">
                                 <div className={classes.text}>{t(langKeys.uploadlogostarticon)} 150 x 42px</div>
                                 <div className={classes.containerCompImg}
                                     onDragOver={handleDragOver}
@@ -1096,6 +1097,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                                 src={getValues("startlogourl")}
                                                 alt="icon button"
                                                 className={classes.img}
+                                                style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
                                             />
                                         )}
                                     </div>
