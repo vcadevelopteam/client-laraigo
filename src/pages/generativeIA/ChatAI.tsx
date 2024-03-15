@@ -8,7 +8,7 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import CloseIcon from '@material-ui/icons/Close';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import Avatar from '@material-ui/core/Avatar';
 import { Dictionary } from "@types";
@@ -31,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
     },  
     chatList: {
         borderRight: `1px solid ${theme.palette.divider}`,
-        padding: theme.spacing(2),       
+        padding: theme.spacing(2),
+        width: 320,
     },
     chatMain: {
         flex: 1,           
@@ -53,9 +54,9 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
     },
     buttonscontainer: {
-        display: 'flex',      
-        gap: '1rem',
-        marginBottom: '2rem'
+        display: 'flex',
+        marginBottom: '2rem',
+        justifyContent: 'space-between',
     },
     redbutton: {
         backgroundColor: '#ffff',
@@ -63,12 +64,15 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid red'
     },
     purpleButton: {
+        width: 131,
         backgroundColor: '#7721AD',
-        color: '#fff'
+        color: '#fff',
+        '&:hover': {
+          backgroundColor: '#4C226E',
+        },
     },
     sendicon: {
         backgroundColor: 'none',
-
     },
     newChatContainer: {
         backgroundColor: '#F4EDF8',
@@ -95,11 +99,14 @@ const useStyles = makeStyles((theme) => ({
     },
     threadName: {
         display:'flex',
-        flexDirection:'row'
+        flexDirection:'row',
+        alignItems: 'center',
     },
     chatIcon: {
         color: '#757377',
-        marginRight: '0.5rem'
+        paddingLeft: 2,
+        marginRight: '0.5rem',
+        width: 24,
     },
     messageContainer: {
         display: 'flex',
@@ -133,14 +140,23 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'pre-line'
     },
     initialText: {
+        height: '100%',
         display: 'flex',
-        justifyContent: 'center'
+        flexDirection: 'column',
+        gap: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     loadingIndicator: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '10px',
+    },
+    backButton: {
+        width: 131,
+        backgroundColor: '#ffff',
+        color: '#7721AD',
     },
 }));
 
@@ -165,7 +181,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
     const dataThreads = useSelector(state => state.main.mainAux);
     const messages = useSelector(state => state.main.mainAux2);
-    const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [messageText, setMessageText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [cardDelete, setCardDelete] = useState<Dictionary | null>(null);
@@ -193,7 +208,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         register('assistantaiid');
         register('id');
         register('code');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
         register('type');
         register('status');
         register('operation');
@@ -312,31 +327,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [dataThreads.data]);
 
     const handleCreateChat = () => {
-        setIsCreatingChat(true);
+        dispatch(showBackdrop(true));
+        dispatch(createThread({
+            apikey: row?.apikey,
+        }))
+        setWaitSaveThread(true);
     };
-
-    const handleCancelCreateChat = () => {
-        setIsCreatingChat(false);
-        setValue('description', '');
-    };
-
-    const handleConfirmCreateChat = handleSubmit( async () => {
-        const callback = async () => {
-            dispatch(showBackdrop(true));
-            dispatch(createThread({
-                apikey: row?.apikey,
-            }))
-            setWaitSaveThread(true);
-        };
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback,
-            })
-        )
-        setIsCreatingChat(false);
-    });
 
     const handleSendMessage = async () => {
         setIsLoading(true);
@@ -409,7 +405,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         setSelectedChatForEdit(chat.threadid);
         setValue('assistantaiid', chat.assistantaiid)
         setValue('id', chat.threadid)
-        setValue('description', chat.description)
+        setValue('description', chat.description === '' ? chat.createdate.split('.')[0] : chat.description)
         setValue('code', chat.code)
         setValue('type', chat.type)
     };
@@ -424,18 +420,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     };
 
     const handleSaveEdit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            dispatch(execute(insThread({...data, operation: 'UPDATE'})));
-            setWaitSaveCreateThread(true);
-        };
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback,
-            })
-        )
+        dispatch(showBackdrop(true));
+        dispatch(execute(insThread({...data, operation: 'UPDATE'})));
+        setWaitSaveCreateThread(true);
         handleCloseEdit()
     });
 
@@ -452,11 +439,11 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     <Button
                         variant="contained"
                         type="button"
-                        startIcon={<CloseIcon />}
-                        className={classes.redbutton}
+                        startIcon={<ArrowBackIcon color="primary" />}
+                        className={classes.backButton}
                         onClick={() => setViewSelected('assistantdetail')}
                     >
-                        {t(langKeys.close)}
+                        {t(langKeys.return)}
                     </Button>
                     <Button
                         variant="contained"
@@ -468,30 +455,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                         {t(langKeys.newchat)}
                     </Button>
                 </div>
-                {isCreatingChat && (
-                    <div className={classes.newChatContainer}>
-                        <FieldEdit
-                            label={t(langKeys.name)}
-                            variant="outlined"
-                            valueDefault={getValues('description')}
-                            onChange={(value) => setValue('description', value)}
-                            error={errors?.description?.message}
-                        />
-                        <div className={classes.iconsContainer}>
-                            <IconButton onClick={handleCancelCreateChat}>
-                                <ClearIcon style={{color: '#7721AD'}}/>
-                            </IconButton>
-                            <IconButton onClick={handleConfirmCreateChat}>
-                                <CheckIcon style={{color: '#7721AD'}}/>
-                            </IconButton>
-                        </div>
-                    </div>
-                )}
                 {dataThreads.data.map((chat) => (
                     <div key={chat.threadid} onClick={() => handleChatClick(chat)} className={classes.threadContainer}>
-                        <Typography>
-                            {chat.createdate.split('.')[0]}
-                        </Typography>
                         <div className={classes.threadNameContainer}>
                             {selectedChatForEdit === chat.threadid ? (
                                 <>
@@ -513,15 +478,13 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 </>
                             ) : (
                                 <>
-                                    <div className={classes.threadName}>
+                                    <div className={classes.threadName} style={{ backgroundColor: chat.threadid === selectedChat?.threadid ? '#EEEEEE': ''}}>
                                         <ChatBubbleIcon className={classes.chatIcon}/>
-                                        <Typography style={{ fontSize: '1.1rem' }}>{chat.description}</Typography>
-                                    </div>
-                                    <div>
-                                        <IconButton onClick={() => handleEditChat(chat)}>
-                                            <EditIcon style={{ color: '#757377'}}/>
+                                        <Typography style={{ fontSize: '1rem', width: 182 }}>{chat.description === '' ? chat.createdate.split('.')[0] : chat.description}</Typography>
+                                        <IconButton onClick={() => handleEditChat(chat)} style={{paddingRight: 0, width: 36}}>
+                                            <EditIcon style={{ color: '#757377' }}/>
                                         </IconButton>
-                                        <IconButton onClick={() => handleDeleteChat(chat)}>
+                                        <IconButton onClick={() => handleDeleteChat(chat)} style={{paddingRight: 0, width: 36}}>
                                             <DeleteIcon style={{ color: '#757377' }}/>
                                         </IconButton>
                                     </div>
@@ -531,7 +494,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     </div>
                 ))}
             </Paper>
-
             <div className={classes.chatMain}>
                 <div className={classes.chatMessages}>
                     {selectedChat && (
@@ -565,7 +527,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 </>
                             ) : (
                                 <div className={classes.initialText}>
-                                    <Typography variant="body1">
+                                    <LaraigoChatProfileIcon />
+                                    <Typography variant="body1" style={{fontWeight: 'bold', fontSize: 22, color: '#2E2E2E'}}>
                                         {t(langKeys.howCanIHelpYouToday)}
                                     </Typography>
                                 </div>
