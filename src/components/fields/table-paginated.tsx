@@ -733,11 +733,33 @@ const TableZyx = React.memo(({
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
-    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);  
     const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
     const [filterApplied, setFilterApplied] = useState(false);  
-
+    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});  
+    
+    const handleCheckboxChange = (columnId: any) => {
+        const updatedVisibility = {
+            ...columnVisibility,
+            [columnId]: !columnVisibility[columnId],
+        };
+        setColumnVisibility(updatedVisibility);
+        localStorage.setItem('columnVisibility', JSON.stringify(updatedVisibility));
+    };   
+    
+    useEffect(() => {
+        const storedColumnVisibility = localStorage.getItem('columnVisibility');
+        if (storedColumnVisibility) {
+            setColumnVisibility(JSON.parse(storedColumnVisibility));
+        }
+    }, []);
+    
+    useEffect(() => {
+        allColumns.forEach(column => {
+            const isVisible = columnVisibility[column.id] ?? true;
+            column.toggleHidden(!isVisible);
+        });
+    }, [columnVisibility, allColumns]);
 
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
@@ -1043,18 +1065,12 @@ const TableZyx = React.memo(({
                                     })
                                         .map((column) => (
                                             <Grid item xs={4} key={column.id}>
-                                                <FormControlLabel
+                                                 <FormControlLabel
                                                     control={
                                                         <Checkbox
                                                             color="primary"
-                                                            checked={!columnVisibility[column.id]}
-                                                            onChange={() => {
-                                                                column.toggleHidden();
-                                                                setColumnVisibility(prevVisibility => ({
-                                                                    ...prevVisibility,
-                                                                    [column.id]: !prevVisibility[column.id],
-                                                                }));
-                                                            }}
+                                                            checked={columnVisibility[column.id]} 
+                                                            onChange={() => handleCheckboxChange(column.id)}
                                                         />
                                                     }
                                                     label={t(column.Header as string)}
@@ -1265,7 +1281,7 @@ const TableZyx = React.memo(({
                                                                         iconDirectionDesc: classes.iconDirectionDesc,
                                                                     }}
                                                                     active
-                                                                    direction={row.isExpanded ? 'desc' : 'asc'}  //asc cuando no está expandida, desc cuando está expandida
+                                                                    direction={row.isExpanded ? 'desc' : 'asc'}
                                                                     IconComponent={KeyboardArrowUp}
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();

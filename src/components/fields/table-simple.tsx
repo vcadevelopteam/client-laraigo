@@ -412,11 +412,12 @@ const TableZyx = React.memo(({
     const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false); 
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});  
     const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
-    const [activeColumn, setActiveColumn] = useState(
-        localStorage.getItem('activeColumn') || null
-    );
+    const [activeColumn, setActiveColumn] = useState(localStorage.getItem('activeColumn') || null);
+    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});  
+    
+   
+    
     
    
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -860,6 +861,29 @@ const TableZyx = React.memo(({
         }
     )
 
+    const handleCheckboxChange = (columnId: any) => {
+        const updatedVisibility = {
+            ...columnVisibility,
+            [columnId]: !columnVisibility[columnId],
+        };
+        setColumnVisibility(updatedVisibility);
+        localStorage.setItem('columnVisibility', JSON.stringify(updatedVisibility));
+    };   
+
+    useEffect(() => {
+        const storedColumnVisibility = localStorage.getItem('columnVisibility');
+        if (storedColumnVisibility) {
+            setColumnVisibility(JSON.parse(storedColumnVisibility));
+        }
+    }, []);
+    
+    useEffect(() => {
+        allColumns.forEach(column => {
+            const isVisible = columnVisibility[column.id] ?? true;
+            column.toggleHidden(!isVisible);
+        });
+    }, [columnVisibility, allColumns]);
+
     useEffect(() => {
         setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
     }, [globalFilteredRows])
@@ -1170,22 +1194,16 @@ const TableZyx = React.memo(({
                     {allColumns.filter(column => {
                         const isColumnInstance = 'accessor' in column && 'Header' in column;
                         if("fixed" in column ) return false
-                        return isColumnInstance && 'showColumn' in (column as Column) && (column as Column).showColumn === true;
+                        return isColumnInstance && 'showColumn' in column  && column.showColumn === true;
                     })
                         .map((column) => (
                             <Grid item xs={4} key={column.id}>
-                                <FormControlLabel
+                               <FormControlLabel
                                     control={
                                         <Checkbox
                                             color="primary"
-                                            checked={!columnVisibility[column.id]}  
-                                            onChange={() => {
-                                                column.toggleHidden();
-                                                setColumnVisibility(prevVisibility => ({
-                                                    ...prevVisibility,
-                                                [column.id]: !prevVisibility[column.id],
-                                                }));
-                                            }}
+                                            checked={columnVisibility[column.id]} 
+                                            onChange={() => handleCheckboxChange(column.id)}
                                         />
                                     }
                                     label={t(column.Header as string)}

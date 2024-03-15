@@ -148,8 +148,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         const row = props.cell.row.original;
         return (
             <div onClick={() => {
-                setSelectedRow(row);
-                setOpenModal(true);
+                setSelectedRow(row);               
             }}>             
                 {column.sortType === "datetime" && !!row[column.id] 
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
@@ -171,55 +170,37 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 Header: t(langKeys.campaign),
                 accessor: 'title',
                 showGroupedBy: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { title } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{title}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
                 showGroupedBy: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { description } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{description}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.templatetype),
                 accessor: 'templatetype',
                 showGroupedBy: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { templatetype } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{templatetype}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.templatename),
                 accessor: 'templatename',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { templatename } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{templatename}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
                 showGroupedBy: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { channel } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{channel}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.rundate),
                 accessor: 'rundate',
                 type: 'date',
                 sortType: 'datetime',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { rundate } = props.cell.row.original || {};
-                    return rundate ? new Date(rundate).toLocaleDateString() : null;
-                },     
+                Cell: cell  
             },
             {
                 Header: t(langKeys.executiontype_campaign),
@@ -229,13 +210,9 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showColumn: true,     
                 prefixTranslation: 'executiontype',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { executiontype } = props.cell.row.original || {};
-                    return (
-                        <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>
-                            {executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : ''}
-                        </div>
-                    );
-                },
+                    const { executiontype } = props.cell.row.original;
+                    return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
+                }
             },                
             {
                 Header: t(langKeys.executingUser),
@@ -245,9 +222,9 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showColumn: true,   
                 prefixTranslation: 'executionuser',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { executionuser } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{executionuser !== null ? t(`executionuser_${executionuser}`) : ''}</div>;
-                },
+                    const { executionuser } = props.cell.row.original;
+                    return executionuser !== undefined ? t(`executionuser_${executionuser}`) : '';
+                }
             },
             {
                 Header: t(langKeys.executingUserProfile),
@@ -257,9 +234,9 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showColumn: true,   
                 prefixTranslation: 'executionuserprofile',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { executionuserprofile } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{executionuserprofile !== null ? t(`executionuserprofile_${executionuserprofile}`) : ''}</div>;
-                },
+                    const { executionuserprofile } = props.cell.row.original;
+                    return executionuserprofile !== undefined ? t(`executionuserprofile_${executionuserprofile}`) : '';
+                }
             },
             {
                 Header: t(langKeys.total),
@@ -267,10 +244,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { total } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{total}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.success),
@@ -278,10 +252,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { success } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{success}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.success_percent),
@@ -289,10 +260,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { successp } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{successp}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.failed),
@@ -300,10 +268,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { fail } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{fail}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.failed_percent),
@@ -311,10 +276,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { failp } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{failp}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.attended),
@@ -322,10 +284,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { attended } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{attended}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.locked),
@@ -333,10 +292,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { locked } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{locked}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.blacklisted),
@@ -344,10 +300,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',  
                 showColumn: true,            
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { blacklisted } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{blacklisted}</div>;
-                },
+                Cell: cell
             },
         ],
         []
