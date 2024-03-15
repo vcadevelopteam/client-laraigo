@@ -414,6 +414,12 @@ const TableZyx = React.memo(({
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
     const [activeColumn, setActiveColumn] = useState(localStorage.getItem('activeColumn') || null);
+
+    const initialColumnVisibility = columns.reduce((acc, column) => {
+        acc[column.id] = true; 
+        return acc;
+    }, {});
+
     const [columnVisibility, setColumnVisibility] = useState(() => {
         const storedColumnVisibility = localStorage.getItem('columnVisibility');
         if (storedColumnVisibility) {
@@ -422,12 +428,7 @@ const TableZyx = React.memo(({
             return initialColumnVisibility;
         }
     });
-
-    const initialColumnVisibility = columns.reduce((acc, column) => {
-        acc[column.id] = true; 
-        return acc;
-    }, {});
-
+  
     const handleColumnVisibilityChange = (columnId, isVisible) => {
         const updatedVisibility = {
             ...columnVisibility,
