@@ -5869,6 +5869,7 @@ const translation: LangKeys = {
   twitter_accesstoken: 'Access Token',
   twitter_refreshtoken: 'Refresh Token',
   catalogmaster_haslink: 'Link to Business',
+  corporate: 'CORPORATE',
 };
 
 const enResource: ResourceLanguage = {

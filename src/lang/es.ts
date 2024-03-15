@@ -5795,6 +5795,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   twitter_accesstoken: 'Token de Acceso',
   twitter_refreshtoken: 'Token de Renovación',
   catalogmaster_haslink: 'Enlazar a Negocio',
+  corporate: 'EMPRESARIAL',
 };
 
 const esResource: ResourceLanguage = {

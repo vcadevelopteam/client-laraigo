@@ -5781,6 +5781,7 @@ export const langKeys = {
   twitter_accesstoken: 'twitter_accesstoken',
   twitter_refreshtoken: 'twitter_refreshtoken',
   catalogmaster_haslink: 'catalogmaster_haslink',
+  corporate: 'corporate',
 };
 
 export type LangKeys = typeof langKeys;
