@@ -1558,6 +1558,7 @@ const translation: LangKeys = {
   typify_ticket: 'Clasificar ticket',
   send_hsm: 'Contactar por Whatsapp',
   send_mail: 'Enviar Correo',
+  warningwhitebrand: "Importante: Al realizar la configuración del dominio, el campo del nombre del dominio no podrá ser editado; sin embargo, sí tendrás la posibilidad de modificar las imágenes del ícono y logos.",
   send_sms: 'Enviar SMS',
   app_automatizationrules: "Reglas de automatización",
   app_calendar: "Calendarios",
