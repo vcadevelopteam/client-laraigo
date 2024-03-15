@@ -128,8 +128,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
     const [allParameters, setAllParameters] = useState<any>({});
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState("GRID");
-
-    const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
+    const [, setSelectedRow] = useState<Dictionary | undefined>({});
 
     useEffect(() => {
         dispatch(getMultiCollection([getCommChannelLstTypeDesc(), getClassificationLevel1("TIPIFICACION")]));
@@ -138,29 +137,6 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
             dispatch(cleanViewChange());
         };
     }, []);
-
-
-    const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
-        const column = props.cell.column;// eslint-disable-next-line react/prop-types
-        const row = props.cell.row.original;
-        return (
-            <div onClick={() => {
-                setSelectedRow(row);
-                setOpenModal(true);
-            }}>             
-                {column.sortType === "datetime" && !!row[column.id] 
-                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                })// eslint-disable-next-line react/prop-types
-                : row[column.id]}
-            </div>
-        )
-    }
 
     const reportColumns = [
         {
@@ -240,6 +216,27 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
         },
     ];
 
+    const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
+        const column = props.cell.column;// eslint-disable-next-line react/prop-types
+        const row = props.cell.row.original;
+        return (
+            <div onClick={() => {
+                setSelectedRow(row);               
+            }}>             
+                {column.sortType === "datetime" && !!row[column.id] 
+                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                })// eslint-disable-next-line react/prop-types
+                : row[column.id]}
+            </div>
+        )
+    }
+
     const columns = React.useMemo(
         () => [      
                           
@@ -248,10 +245,7 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                 accessor: 'ticket',
                 showGroupedBy: true,   
                 showColumn: true,   
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { ticket } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{ticket}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_datehour),
@@ -269,38 +263,26 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                 accessor: 'enddate',
                 showGroupedBy: true,         
                 showColumn: true,     
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { enddate } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{enddate}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_endtime),
                 accessor: 'endtime',
                 showColumn: true,                 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { endtime } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{endtime}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_firstinteractiondate),
                 accessor: 'firstinteractiondate',
                 showGroupedBy: true, 
                 showColumn: true,               
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { firstinteractiondate } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{firstinteractiondate}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_firstinteractiontime),
                 accessor: 'firstinteractiontime',              
                 showColumn: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { firstinteractiontime } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{firstinteractiontime}</div>;
-                },
+                Cell: cell
                 
             },
             {
@@ -308,87 +290,59 @@ const TipificationReport: React.FC<ItemProps> = ({ setViewSelected, setSearchVal
                 accessor: 'person',
                 showGroupedBy: true, 
                 showColumn: true,                
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { person } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{person}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_phone),
                 accessor: 'phone',
-                showColumn: true, 
-                  
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { phone } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{phone}</div>;
-                },
+                showColumn: true,                   
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_closedby),
                 accessor: 'closedby',
                 showColumn: true, 
                 showGroupedBy: true,   
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { closedby } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{closedby}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_agent),
                 accessor: 'agent',
                 showColumn: true, 
                 showGroupedBy: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { agent } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{agent}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_closetype),
                 accessor: 'closetype',
                 showGroupedBy: true, 
                 showColumn: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { closetype } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{closetype}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_channel),
                 accessor: 'channel',         
                 showGroupedBy: true,      
                 showColumn: true,               
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { channel } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{channel}</div>;
-                },
+                Cell: cell
             }, 
             {
                 Header: t(langKeys.report_tipification_classificationlevel1),
                 accessor: 'classificationlevel1',
                 showGroupedBy: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { classificationlevel1 } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{classificationlevel1}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_classificationlevel2),
                 accessor: 'classificationlevel2',
                 showGroupedBy: true,     
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { classificationlevel2 } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{classificationlevel2}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.report_tipification_classificationlevel3),
                 accessor: 'classificationlevel3',
                 showGroupedBy: true, 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { classificationlevel3 } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{classificationlevel3}</div>;
-                },
+                Cell: cell
             },  
         ],
         []

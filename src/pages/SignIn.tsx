@@ -384,10 +384,15 @@ const SignIn = () => {
                 <div className={classes.container}>
                     <Container component="main" className={classes.containerLogin}>
                         <div className={classes.childContainer} style={{ height: '100%' }}>
-                            {isCustomDomain? <div  className={classes.image} style={{backgroundImage: `url(${customLogoUrl?.startlogourl})`, height: 42.8, backgroundSize: "100% 100%"}}></div>
-                            :<div className={classes.image}>
+                        {isCustomDomain && customLogoUrl?.startlogourl ? (
+                            <div className={classes.image}>
+                                <img src={customLogoUrl.startlogourl} height={42.8} alt="Custom Logo" />
+                            </div>
+                        ) : (
+                            <div className={classes.image}>
                                 <LaraigoLogo height={42.8} />
-                            </div>}
+                            </div>
+                        )}
                             <div className={classes.paper} style={{ flex: 1 }}>
                                 {(resLogin.error && showError) && (
                                     <Alert className={classes.alertheader} variant="filled" severity="error" >

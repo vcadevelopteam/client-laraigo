@@ -3522,7 +3522,7 @@ export const getPaginatedProductCatalog = ({ metacatalogid, enddate, filters, sk
         metacatalogid, enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "productcatalog", skip, sorts, startdate, take,
     }
 })
-export const getPaginatedReportVoiceCall = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedReportVoiceCall = ({ skip, take, filters, sorts, startdate, enddate, distinct }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_REPORT_VOICECALL_SEL",
     methodCount: "UFN_REPORT_VOICECALL_TOTALRECORDS",
     parameters: {
@@ -3532,6 +3532,7 @@ export const getPaginatedReportVoiceCall = ({ skip, take, filters, sorts, startd
         take,
         filters,
         sorts,
+        distinct,
         origin: "reportvoicecall",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -3773,7 +3774,7 @@ export const getDisconnectionDataTimes = ({ startdate, enddate, asesorid, superv
 })
 
 //getPaginatedTicket
-export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, enddate, distinct, channel }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_REPORT_ASESOR_VS_TICKET_SEL",
     methodCount: "UFN_REPORT_ASESOR_VS_TICKET_TOTALRECORDS",
     parameters: {
@@ -3781,13 +3782,15 @@ export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, e
         enddate,
         skip,
         take,
+        distinct,
+        channel,
         filters,
         sorts,
         origin: "ticketvsadviser",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, enddate, channeltype, company }: Dictionary): IRequestBodyPaginated => ({
+export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, enddate, channeltype, company, distinct }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_REPORT_REQUESTSD_SEL",
     methodCount: "UFN_REPORT_REQUESTSD_TOTALRECORDS",
     parameters: {
@@ -3799,6 +3802,7 @@ export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, endd
         filters,
         sorts,
         company,
+        distinct,
         origin: "reportrequestsd",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }

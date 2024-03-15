@@ -251,12 +251,14 @@ const VoiceChannelReport: FC = () => {
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
+                showGroupedBy: true, 
                 NoFilter: false
             },
             {
                 Header: t(langKeys.date),
                 accessor: 'ticketdate',
                 NoFilter: false, 
+                showGroupedBy: true, 
                 type: 'date'
             },
             {
@@ -291,12 +293,14 @@ const VoiceChannelReport: FC = () => {
                 Header: t(langKeys.lastadvisername),
                 accessor: 'agent',
                 NoFilter: false,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.person),
                 accessor: 'name',
                 NoFilter: false,
                 showColumn: true,   
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.phone),
@@ -307,11 +311,13 @@ const VoiceChannelReport: FC = () => {
             {
                 Header: t(langKeys.origin),
                 accessor: 'origin',
+                showGroupedBy: true, 
                 NoFilter: false
             },
             {
                 Header: t(langKeys.closetype),
                 accessor: 'closetype',
+                showGroupedBy: true, 
                 NoFilter: false
             },
             {
@@ -320,6 +326,7 @@ const VoiceChannelReport: FC = () => {
                 NoFilter: false,
                 helpText: t(langKeys.tipification_tooltip),
                 showColumn: true, 
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.totalTime),
@@ -394,6 +401,7 @@ const VoiceChannelReport: FC = () => {
             take: pageSize,
             skip: pageIndex * pageSize,
             sorts: sorts,
+            distinct: distinct,
             filters: {...filters},
             ...allParameters,
         })))
@@ -507,28 +515,7 @@ const VoiceChannelReport: FC = () => {
                         showHideColumns={true}
                         groupedBy={true}
                         register={false}
-                        FiltersElement={                            
-                            <FieldSelect                              
-                                valueDefault={allParameters["channel"]}
-                                label={t("report_reportvoicecall_filter_channels")}
-                                className={classes.filterComponent}
-                                key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
-                                variant="outlined"
-                                loading={multiData.loading}
-                                onChange={(value) => setValue("channel", value ? value["typedesc"] : "")}                                
-                                data={
-                                    // multiData?.data[
-                                    //     multiData?.data?.findIndex(
-                                    //         (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
-                                    //     )
-                                    // ]?.data
-                                    []
-                                }
-                                optionDesc={"type"}
-                                optionValue={"typedesc"}
-                            />
-                            
-                        }
+                        FiltersElement={<></>}
                         ButtonsElement={() => (
                             <Button
                                 className={classes.button}

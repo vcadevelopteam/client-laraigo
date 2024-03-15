@@ -21,6 +21,7 @@ export const langKeys = {
   error_generate_label:"error_generate_label",
   connected_since: "connected_since",
   validatedomainname: "validatedomainname",
+  warningwhitebrand: "warningwhitebrand",
   transferdate: "transferdate",
   visualizationBotTooltip: "visualizationBotTooltip",
   numberminimun_helper: "numberminimun_helper",
