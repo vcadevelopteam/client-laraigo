@@ -158,7 +158,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
         <div style={{width: '100%'}}>
             <div className={classes.containerDetail}>
                 <TableZyx
-                    titlemodule={`${row?.name_translated} (${row?.shippingdate})` || `${t(langKeys.recordhsmreport)} ${t(langKeys.detail)}`}
+                    titlemodule={`${row?.name_translated} (${row?.shippingdate})` || `${t(langKeys.recordhsmreportexternal)} ${t(langKeys.detail)}`}
                     ButtonsElement={() => (
                         <Button
                             variant="contained"
@@ -171,11 +171,10 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                     )}
                     columns={columns}
                     data={multiDataAux2.data[0]?.data||[]}
-                    download={true}
+                    download={true}                                
                     loading={multiDataAux2.loading}
                     register={false}
-                    filterGeneral={false}
-                // fetchData={fetchData}
+                    filterGeneral={false}               
                 />
             </div>
         </div>
@@ -183,25 +182,20 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
 }
 
 const RecordHSMRecord: FC = () => {
-    // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const multiData = useSelector(state => state.main.multiData);
-    
-    // const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const multiData = useSelector(state => state.main.multiData);    
     const classes = useStyles()
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    // const [shippingTypesData, setshippingTypesData] = useState<any>([]);
     const [viewSelected, setViewSelected] = useState("view-1");
-    // const [shippingtype, setshippingtype] = useState("");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [gridData, setGridData] = useState<any[]>([]);
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
     
     useEffect(() => {
-        dispatch(setViewChange("recordhsmreport"))
+        dispatch(setViewChange("recordhsmreportexternal"))
         return () => {
             dispatch(cleanViewChange());
         }
@@ -212,43 +206,57 @@ const RecordHSMRecord: FC = () => {
             {
                 Header: t(langKeys.shippingreason),
                 accessor: 'name_translated',
+                showGroupedBy: true, 
+            },
+            {
+                Header: t(langKeys.campaign),
+                accessor: 'campaing',
+                showColumn: true,    
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.shippingdate),
                 accessor: 'shippingdate',
-                NoFilter: true
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.shippingfrom),
                 accessor: 'from',
-                NoFilter: true,
+                showColumn: true,    
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.total),
                 accessor: 'total',
-                NoFilter: true,
+                
                 type: 'number',
                 sortType: 'number',
+                helpText: t(langKeys.report_recordhsmreport_total_help),     
             },
             {
                 Header: t(langKeys.satisfactory),
                 accessor: 'satisfactory',
-                NoFilter: true,
+                
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,    
+                helpText: t(langKeys.report_recordhsmreport_satisfactory_help),     
             },
             {
                 Header: t(langKeys.failed),
                 accessor: 'failed',
-                NoFilter: true,
+                
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,    
+                helpText: t(langKeys.report_recordhsmreport_failed_help),    
             },
             {
                 Header: `% ${t(langKeys.satisfactory)}`,
                 accessor: 'satisfactoryp',
-                NoFilter: true,
+                
                 type: 'number',
+                showColumn: true,    
                 sortType: 'number',
                 Cell: (props: CellProps<Dictionary>)  => {
                     const { row } = props.cell;                    
@@ -263,9 +271,10 @@ const RecordHSMRecord: FC = () => {
             {
                 Header: `% ${t(langKeys.failed)}`,
                 accessor: 'failedp',
-                NoFilter: true,
+                
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,    
                 Cell: (props: CellProps<Dictionary>)  => {
                     const { row } = props.cell;                
                     if (row && row.original && 'failedp' in row.original) {
@@ -295,11 +304,8 @@ const RecordHSMRecord: FC = () => {
         ]))
     }
     useEffect(() => {
-        // dispatch(getMultiCollectionAux([getValuesFromDomain("SHIPPINGTYPES")]));
-        // search();
         return () => {
             dispatch(resetMultiMain());
-            // dispatch(resetMultiMainAux());
         }
     }, [])
     useEffect(() => {
@@ -310,12 +316,7 @@ const RecordHSMRecord: FC = () => {
             }))||[]);
             dispatch(showBackdrop(false));
         }
-    }, [multiData])
-    // useEffect(() => {
-    //     if (!multiDataAux.loading){
-    //         setshippingTypesData(multiDataAux.data[0]?.data||[])
-    //     }
-    // }, [multiDataAux])
+    }, [multiData]) 
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
@@ -359,20 +360,7 @@ const RecordHSMRecord: FC = () => {
                                         >
                                             {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                                         </Button>
-                                    </DateRangePicker>
-                                    {/* <FieldSelect
-                                        onChange={(value) => setshippingtype(value?.domainvalue||"")}
-                                        label={t(langKeys.shippingtype)}
-                                        loading={multiDataAux.loading}
-                                        variant="outlined"
-                                        valueDefault={shippingtype}
-                                        style={{width: "170px"}}
-                                        data={shippingTypesData}
-                                        optionValue="domainvalue"
-                                        optionDesc="domainvalue"
-                                        uset={true}
-                                        prefixTranslation='type_shippingtype_'
-                                    /> */}
+                                    </DateRangePicker>                                   
                                     <div>
                                         <Button
                                             disabled={multiData.loading}
@@ -398,10 +386,11 @@ const RecordHSMRecord: FC = () => {
                             </div>
                         )}
                         download={true}
+                        showHideColumns={true}
+                        groupedBy={true}    
                         filterGeneral={false}
                         loading={multiData.loading}
-                        register={false}
-                    // fetchData={fetchData}
+                        register={false}                   
                     />
                 ) : (
                     <Graphic
@@ -492,6 +481,14 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         )));
     }
 
+    const excludeRecordHSM= [      
+        "satisfactory",
+        "failed",        
+    ];
+
+    const filteredColumns = columns.filter((column) => !excludeRecordHSM.includes(column.key));
+
+
     return (
         <DialogZyx
             open={openModal}
@@ -510,7 +507,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('graphictype')}
                     error={errors?.graphictype?.message}
                     onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }, { key: 'LINE', value: 'LINEA' },]}
                     uset={true}
                     prefixTranslation="graphic_"
                     optionDesc="value"
@@ -524,7 +521,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('column')}
                     error={errors?.column?.message}
                     onChange={(value) => setValue('column', value?.key)}
-                    data={columns}
+                    data={filteredColumns}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}

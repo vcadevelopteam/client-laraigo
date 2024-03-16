@@ -1044,11 +1044,11 @@ const Reports: FC = () => {
                                     height="140"
                                     className={classes.media}
                                     image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
-                                    title={t(langKeys.recordhsmreport)}
+                                    title={t(langKeys.recordhsmreportexternal)}
                                 />
                                 <CardContent>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
-                                        {t(langKeys.recordhsmreport)}
+                                        {t(langKeys.recordhsmreportexternal)}
                                     </Typography>
                                 </CardContent>
                             </CardActionArea>

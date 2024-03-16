@@ -833,7 +833,11 @@ export const langKeys = {
   clientfreequantity: "clientfreequantity",
   clientadditionalfee: "clientadditionalfee",
   recordhsmreport: "recordhsmreport",
+  recordhsmreportexternal: "recordhsmreportexternal",
   report_recordhsmreport: "report_recordhsmreport",
+  report_recordhsmreport_total_help: "report_recordhsmreport_total_help",
+  report_recordhsmreport_satisfactory_help: "report_recordhsmreport_satisfactory_help",
+  report_recordhsmreport_failed_help: "report_recordhsmreport_failed_help",
   report_reportcompliancesla: "report_reportcompliancesla",
   report_reportrequestsd: "report_reportrequestsd",
 
