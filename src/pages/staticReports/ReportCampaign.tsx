@@ -168,10 +168,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showGroupedBy: true, 
                 showColumn: true,     
                 prefixTranslation: 'executiontype',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executiontype } = props.cell.row.original;
-                    return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
-                }
+                Cell: cell  
             },                
             {
                 Header: t(langKeys.executingUser),
@@ -180,10 +177,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showGroupedBy: true, 
                 showColumn: true,   
                 prefixTranslation: 'executionuser',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executionuser } = props.cell.row.original;
-                    return executionuser !== undefined ? t(`executionuser_${executionuser}`) : '';
-                }
+                Cell: cell  
             },
             {
                 Header: t(langKeys.executingUserProfile),
@@ -192,10 +186,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showGroupedBy: true, 
                 showColumn: true,   
                 prefixTranslation: 'executionuserprofile',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executionuserprofile } = props.cell.row.original;
-                    return executionuserprofile !== undefined ? t(`executionuserprofile_${executionuserprofile}`) : '';
-                }
+                Cell: cell  
             },
             {
                 Header: t(langKeys.total),
