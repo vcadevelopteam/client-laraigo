@@ -435,7 +435,7 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
 
 const checkUrl = (url: string) => {
     const hasExtension = url.replace(/^.*[\\/]/, '').includes('.');
-    return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) !== null || !hasExtension);
+    return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(`${url}`.toLocaleLowerCase()) !== null || !hasExtension);
 }
 
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy }, classes, userType }) => {
