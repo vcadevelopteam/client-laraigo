@@ -1628,7 +1628,8 @@ const Reports: FC = () => {
             <>
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('report_recordhsmreport'), t(langKeys.report_plural))}
+                        breadcrumbs={getArrayBread(t(langKeys.recordhsmreportexternal), t(langKeys.report_plural))}
+
                         handleClick={handleSelectedString}
                     />
                     <RecordHSMRecord />
