@@ -414,6 +414,7 @@ const translation: LangKeys = {
 
   send_quickreply: 'Send quickreply',
   send_enrich_response: 'Send enrich response',
+  record_audio: 'Record audio',
   send_image: 'Send image',
   send_file: 'Send file',
   send_gif: 'Send gif',

@@ -120,6 +120,8 @@ export { ReactComponent as CalendarIcon } from './calendar.svg';
 export { ReactComponent as GifIcon } from './gif.svg';
 export { ReactComponent as CloseTicketIcon } from './close-ticket.svg';
 export { ReactComponent as RichResponseIcon } from './rich-response.svg';
+export { ReactComponent as RecordIcon } from './record.svg';
+export { ReactComponent as RecordingIcon } from './recording.svg';
 
 export { ReactComponent as GenderIcon } from './gender.svg';
 export { ReactComponent as WifiCalling } from './wifi_calling.svg';
