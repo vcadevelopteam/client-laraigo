@@ -210,7 +210,7 @@ const RecordHSMRecord: FC = () => {
             },
             {
                 Header: t(langKeys.campaign),
-                accessor: 'campaing',
+                accessor: 'campaignname',
                 showColumn: true,    
                 showGroupedBy: true, 
             },
