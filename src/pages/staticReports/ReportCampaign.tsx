@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon } from 'icons';
-import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, ListItemIcon, MenuItem, Paper, Popper, Radio, Typography } from '@material-ui/core';
+import { Button} from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
@@ -18,59 +18,6 @@ import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
 import { FieldErrors } from "react-hook-form";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ViewWeekIcon from '@material-ui/icons/ViewWeek';
-import AllInboxIcon from '@material-ui/icons/AllInbox';
-
-import {
-    UseColumnOrderInstanceProps,
-    UseColumnOrderState,
-    UseExpandedHooks,
-    UseExpandedInstanceProps,
-    UseExpandedOptions,
-    UseExpandedRowProps,
-    UseExpandedState,
-    UseFiltersColumnOptions,
-    UseFiltersColumnProps,
-    UseFiltersInstanceProps,
-    UseFiltersOptions,
-    UseFiltersState,
-    UseGlobalFiltersColumnOptions,
-    UseGlobalFiltersInstanceProps,
-    UseGlobalFiltersOptions,
-    UseGlobalFiltersState,
-    UseGroupByCellProps,
-    UseGroupByColumnOptions,
-    UseGroupByColumnProps,
-    UseGroupByHooks,
-    UseGroupByInstanceProps,
-    UseGroupByOptions,
-    UseGroupByRowProps,
-    UseGroupByState,
-    UsePaginationInstanceProps,
-    UsePaginationOptions,
-    UsePaginationState,
-    UseResizeColumnsColumnOptions,
-    UseResizeColumnsColumnProps,
-    UseResizeColumnsOptions,
-    UseResizeColumnsState,
-    UseRowSelectHooks,
-    UseRowSelectInstanceProps,
-    UseRowSelectOptions,
-    UseRowSelectRowProps,
-    UseRowSelectState,
-    UseRowStateCellProps,
-    UseRowStateInstanceProps,
-    UseRowStateOptions,
-    UseRowStateRowProps,
-    UseRowStateState,
-    UseSortByColumnOptions,
-    UseSortByColumnProps,
-    UseSortByHooks,
-    UseSortByInstanceProps,
-    UseSortByOptions,
-    UseSortByState
-  } from 'react-table'
 
 interface DetailProps {
     setViewSelected?: (view: string) => void;
@@ -163,43 +110,46 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             </div>
         )
     }
+
+    const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
   
     const columns = React.useMemo(
         () => [                    
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
-                showGroupedBy: true, 
+                showGroupedBy: true,                 
                 Cell: cell
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                showGroupedBy: true, 
+                showGroupedBy: true,             
                 Cell: cell
             },
             {
                 Header: t(langKeys.templatetype),
                 accessor: 'templatetype',
-                showGroupedBy: true, 
+                showGroupedBy: true,                            
                 Cell: cell
             },
             {
                 Header: t(langKeys.templatename),
                 accessor: 'templatename',
+                showGroupedBy: true,                 
                 Cell: cell
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
-                showGroupedBy: true, 
+                showGroupedBy: true,                 
                 Cell: cell
             },
             {
                 Header: t(langKeys.rundate),
                 accessor: 'rundate',
                 type: 'date',
-                sortType: 'datetime',
+                sortType: 'datetime',                
                 Cell: cell  
             },
             {
@@ -209,10 +159,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showGroupedBy: true, 
                 showColumn: true,     
                 prefixTranslation: 'executiontype',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executiontype } = props.cell.row.original;
-                    return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
-                }
+                Cell: cell  
             },                
             {
                 Header: t(langKeys.executingUser),
@@ -221,10 +168,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showGroupedBy: true, 
                 showColumn: true,   
                 prefixTranslation: 'executionuser',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executionuser } = props.cell.row.original;
-                    return executionuser !== undefined ? t(`executionuser_${executionuser}`) : '';
-                }
+                Cell: cell  
             },
             {
                 Header: t(langKeys.executingUserProfile),
@@ -233,10 +177,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 showGroupedBy: true, 
                 showColumn: true,   
                 prefixTranslation: 'executionuserprofile',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executionuserprofile } = props.cell.row.original;
-                    return executionuserprofile !== undefined ? t(`executionuserprofile_${executionuserprofile}`) : '';
-                }
+                Cell: cell  
             },
             {
                 Header: t(langKeys.total),
@@ -306,15 +247,20 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         []
     );
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+    React.useEffect(() => {
+        setColumnOrder(columns.map(column => column.accessor));
+    }, [columns]);
+
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct }: IFetchData) => {
         dispatch(showBackdrop(true))
-        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
+        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts, distinct }});
         dispatch(getCollectionPaginated(getCampaignReportPaginated(
             {
                 startdate: dateRangeCreateDate.startDate,
                 enddate: dateRangeCreateDate.endDate,
                 channeltype: selectedChannel,
                 sorts: sorts,
+                distinct: distinct,
                 filters: filters,
                 take: pageSize,
                 skip: pageIndex * pageSize,
@@ -458,167 +404,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
    
     const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
 
-    //showHide ----------------------------------------------------------------------------------
-    const storedVisibleColumns = localStorage.getItem('visibleColumns');
-    type VisibleColumns = Record<string, boolean>;
-    const initialVisibleColumns: VisibleColumns = storedVisibleColumns
-        ? JSON.parse(storedVisibleColumns)
-        : columns.reduce((acc, column) => {
-            if (column.showColumn) {
-                acc[column.accessor] = true;
-            }
-    return acc;
-    }, {} as VisibleColumns);
-
-    const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
-
-    const handleToggleColumnVisibility = (columnName: keyof typeof visibleColumns) => {
-        const updatedVisibleColumns = {
-          ...visibleColumns,
-          [columnName]: !visibleColumns[columnName],
-        };
-      
-        localStorage.setItem('visibleColumns', JSON.stringify(updatedVisibleColumns));
-        setVisibleColumns(updatedVisibleColumns);
-    };
-    const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
-
-
-    //open close modals dialogs ----------------------------------------------------------------------------------
-    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const [openSeButtons, setOpenSeButtons] = useState(false);
-    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
-    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({});
-    const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
-    const [filterApplied, setFilterApplied] = useState(false);  
-
-    interface Column {
-        Header: string;
-        accessor: string;
-        showColumn?: boolean;
-        showGroupedBy?: boolean;
-    }
-    interface ColumnVisibility {
-        [key: string]: boolean;
-    }
-
-    interface ColumnInstance<D extends Record<string, unknown> = Record<string, unknown>>
-    extends UseFiltersColumnProps<D>,
-      UseGroupByColumnProps<D>,
-      UseResizeColumnsColumnProps<D>,
-      UseSortByColumnProps<D> {}
-
-  interface Cell<D extends Record<string, unknown> = Record<string, unknown>, V = any>
-    extends UseGroupByCellProps<D>,
-      UseRowStateCellProps<D> {}
-
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
-        setOpenSeButtons((prevOpen) => !prevOpen);
-    };     
-
-    const handleOpenGroupedByModal = () => {
-        setGroupedByModalOpen(true);
-        if (openSeButtons) {
-            setAnchorElSeButtons(null);
-            setOpenSeButtons(false);
-        }
-    };
-
-    const handleOpenShowColumnsModal = () => {
-        setShowColumnsModalOpen(true);
-        if (openSeButtons) {
-            setAnchorElSeButtons(null);
-            setOpenSeButtons(false);
-        }
-    };
-
-    
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node;
-            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
-                setAnchorElSeButtons(null);
-                setOpenSeButtons(false);
-            }
-        };
-        document.addEventListener('click', handleClickOutside);
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
-
-    const handleColumnByToggle = (columns: Dictionary, activate = true) => {
-        const columnName = columns.id as string;   
-        setFilterApplied(false); 
-        setfetchDataAux(prev => ({ ...prev, distinct: activate ? columnName : "", filters: {}, pageIndex: 0, trigger: true }));
-       
-    };    
-
-    const handleOrderReset = React.useCallback(()=>{
-        //logica
-    },[columns])
-
-    const handleRadioClick = (columnId: string) => {
-        setColumnGroupedBy((prevGroupedBy) => {
-            const isColumnActive = prevGroupedBy.includes(columnId);
-            const updatedGroupedBy = isColumnActive ? [] : [columnId];
-            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));
-    
-            if (!isColumnActive) {
-                const columnToToggle = columns.find(columns => columns.accessor === columnId);
-                if (columnToToggle && columnToToggle.showGroupedBy) {
-                    handleColumnByToggle(columnToToggle);
-                }
-            } else {       
-                setfetchDataAux(prev => ({ 
-                    ...prev, 
-                    distinct: "",   
-                    filters: {},              
-                    pageIndex: 0, 
-                    trigger: true 
-                }));
-                handleOrderReset();
-            }
-    
-            return updatedGroupedBy;
-        });
-    };  
-    
-    useEffect(() => {
-        const storedColumnGroupedBy = localStorage.getItem('columnGroupedBy');
-        if (storedColumnGroupedBy) {
-            setColumnGroupedBy(JSON.parse(storedColumnGroupedBy));
-        }
-    }, []);    
-
-    const handleNoGroupedBy = (column: Column) => {     
-        return columnGroupedBy.includes(column.accessor);
-    };   
-
-    const handleRowByToggle = (cell: Cell, column: Column, props: CellProps<Dictionary>) => {     
-        
-        const columnName = column.accessor;
-        const selectedRowValue = props.cell.row.original[columnName] as string;
-        setFilterApplied(true);
-
-        setfetchDataAux(prev => ({
-            ...prev,
-            distinct: "",
-            filters: {
-                ...prev.filters,
-                [columnName]: {
-                    "value": selectedRowValue,
-                    "operator": "equals"
-                }
-            },
-            pageIndex: 0,
-            trigger: true
-            
-        }));
-    };
-   
     return (
         <div style={{ width: '100%' }}>
             {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -643,195 +428,92 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             </div>}
             {externalUse && <div style={{ height: 10 }}></div>}
 
-            <div style={{ width: '100%', display: 'flex', background:'white', padding:'1rem 0 0 0'  }}>                 
-                
-                <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
-                    <DateRangePicker
-                        open={openDateRangeCreateDateModal}
-                        setOpen={setOpenDateRangeCreateDateModal}
-                        range={dateRangeCreateDate}
-                        onSelect={setDateRangeCreateDate}
-                    >
-                        <Button
-                            className={classes.itemDate}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+         
+            
+            <div style={{position: 'relative', height:'100%'}}>     
+
+                <div style={{ width: 'calc(100% - 60px)', display: 'flex', background:'white', padding:'1rem 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>                 
+                    
+                    <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
+                        <DateRangePicker
+                            open={openDateRangeCreateDateModal}
+                            setOpen={setOpenDateRangeCreateDateModal}
+                            range={dateRangeCreateDate}
+                            onSelect={setDateRangeCreateDate}
                         >
-                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                            <Button
+                                className={classes.itemDate}
+                                startIcon={<CalendarIcon />}
+                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                            >
+                                {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                            </Button>
+                        </DateRangePicker>
+
+                        <FieldSelect
+                            label={t(langKeys.channel)}
+                            variant="outlined"                       
+                            className={classes.filterComponent}                        
+                            data={uniqueTypdescList || []}        
+                            valueDefault={uniqueTypdescList}
+                            onChange={(value) => setSelectedChannel(value?.type||"")}           
+                            optionDesc="typedesc"
+                            optionValue="typedesc"
+                        />
+                    
+                    <Button
+                            disabled={mainPaginated.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            onClick={() => fetchData(fetchDataAux)}
+                        >
+                            {t(langKeys.search)}
                         </Button>
-                    </DateRangePicker>
 
-                    <FieldSelect
-                        label={t(langKeys.channel)}
-                        variant="outlined"                       
-                        className={classes.filterComponent}                        
-                        data={uniqueTypdescList || []}        
-                        valueDefault={uniqueTypdescList}
-                        onChange={(value) => setSelectedChannel(value?.type||"")}           
-                        optionDesc="typedesc"
-                        optionValue="typedesc"
-                    />
-                  
-                   <Button
-                        disabled={mainPaginated.loading}
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                        style={{ width: 120, backgroundColor: "#55BD84" }}
-                        onClick={() => fetchData(fetchDataAux)}
-                    >
-                        {t(langKeys.search)}
-                    </Button>
+                    </div> 
 
+                    <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
+                        <FieldSelect
+                            uset={true}
+                            variant="outlined"
+                            label={t(langKeys.reporttype)}
+                            className={classes.select}
+                            valueDefault={reportType}
+                            onChange={(value) => setReportType(value?.key)}
+                            data={dictToArrayKV(dataReportType)}
+                            optionDesc="value"
+                            optionValue="key"
+                        />
+                        <Button
+                                className={classes.button}
+                                color="primary"
+                                disabled={mainPaginated.loading}
+                                onClick={() => triggerExportData()}                         
+                                startIcon={<DownloadIcon />}
+                                variant="contained"
+                            >
+                                {`${t(langKeys.download)}`}
+                            </Button>                        
+                    </div>     
+
+
+                    
+                    <div>
+                                        
+                    </div>                                                                                
                 </div> 
 
-                <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
-                    <FieldSelect
-                        uset={true}
-                        variant="outlined"
-                        label={t(langKeys.reporttype)}
-                        className={classes.select}
-                        valueDefault={reportType}
-                        onChange={(value) => setReportType(value?.key)}
-                        data={dictToArrayKV(dataReportType)}
-                        optionDesc="value"
-                        optionValue="key"
-                    />
-                      <Button
-                            className={classes.button}
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            onClick={() => triggerExportData()}                         
-                            startIcon={<DownloadIcon />}
-                            variant="contained"
-                        >
-                            {`${t(langKeys.download)}`}
-                        </Button>                        
-                </div>     
-                <div>
-                    <IconButton
-                        aria-label="more"
-                        id="long-button"
-                        onClick={(event) => handleClickSeButtons(event)}
-                        style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                    >
-                        <MoreVertIcon />
-                    </IconButton>
-
-                    <div style={{ display: 'flex', gap: 8 }}>                               
-                        <Popper
-                            open={openSeButtons}
-                            anchorEl={anchorElSeButtons}
-                            placement="bottom"
-                            transition
-                            style={{marginRight:'1rem'}}
-                        >
-                            {({ TransitionProps }) => (
-                                <Paper {...TransitionProps} elevation={5}>                                   
-                                    <MenuItem 
-                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                        onClick={handleOpenShowColumnsModal}                                           
-                                    >
-                                        <ListItemIcon>
-                                            <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                        </ListItemIcon>
-                                        <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
-                                    </MenuItem>  
-
-                                    <Divider /> 
-
-                                    <MenuItem
-                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                        onClick={handleOpenGroupedByModal}
-                                    >
-                                        <ListItemIcon>
-                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
-                                        </ListItemIcon>
-                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
-                                    </MenuItem>
-                                  
-
-                                </Paper>
-                            )}
-                        </Popper>
-                    </div>  
-
-                        {isShowColumnsModalOpen && (
-                            <DialogZyx 
-                                open={isShowColumnsModalOpen}
-                                title={t(langKeys.showHideColumns)}
-                                buttonText1={t(langKeys.close)}
-                                handleClickButton1={() => setShowColumnsModalOpen(false)}
-                                maxWidth="sm"
-                                buttonStyle1={{ marginBottom: '0.3rem' }}
-                            >  
-                                <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                    {columns 
-                                        .filter((column) => column.showColumn === true)
-                                        .map((column) => ( 
-                                        <Grid item xs={4} key={column.accessor}>
-                                            <FormControlLabel
-                                                style={{ pointerEvents: "none" }}
-                                                control={
-                                                    <Checkbox
-                                                        color="primary"
-                                                        style={{ pointerEvents: "auto" }} 
-                                                        checked={visibleColumns[column.accessor]} 
-                                                        onChange={() => handleToggleColumnVisibility(column.accessor)} 
-                                                        name={column.accessor}
-                                                    />
-                                                } 
-                                                label={t(column.Header)}
-                                            />
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </DialogZyx>               
-                        )}
-
-                    {isGroupedByModalOpen && (
-                        <DialogZyx 
-                            open={isGroupedByModalOpen} 
-                            title={t(langKeys.groupedBy)} 
-                            buttonText2={t(langKeys.close)}
-                            handleClickButton2={() => setGroupedByModalOpen(false)}
-                            maxWidth="sm"
-                            buttonStyle1={{ marginBottom: '0.3rem' }}
-                            buttonStyle2={{ marginRight: '1rem', marginBottom: '0.3rem' }}
-                        >                     
-                            <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                {columns 
-                                    .filter((column) => column.showGroupedBy === true)
-                                    .map((column) => ( 
-                                    <Grid item xs={4} key={column.accessor}>
-                                        <FormControlLabel
-                                            control={
-                                                <Radio
-                                                    color="primary"                                           
-                                                    checked={columnGroupedBy.includes(column.accessor)}
-                                                    // onClick={() => handleToggleColumnVisibility2(column.accessor)} 
-                                                    onClick={() => handleRadioClick(column.accessor)}
-                                                />
-                                            }
-                                            label={column.Header}
-                                        />                                       
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </DialogZyx>
-                    )} 
-                                        
-                </div>                                                                                
-            </div>
-            
-            <div style={{width:'100%', height:'100%'}}>       
                 <TablePaginated
-                    columns={visibleColumnsList}
+                    columns={columns}
                     data={mainPaginated.data}
                     totalrow={totalrow}
                     loading={mainPaginated.loading}
                     pageCount={pageCount}                    
                     fetchData={fetchData}               
+                    showHideColumns={true}
+                    groupedBy={true}
                     download={false}
                     hoverShadow={false}
                     exportPersonalized={triggerExportData}

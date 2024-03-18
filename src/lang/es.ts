@@ -3286,6 +3286,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   manageInputValidation_plural: 'Gestionar validaciones de inputs',
   manageClassification: 'Gestionar clasificación',
   recordhsmreport: "Reporte historial de envíos",
+  recordhsmreportexternal: "Reporte historial de envíos externos",
   recipientsname: "Nombre del destinatario",
   namehsm: "Nombre (HMS, SMS, Correo)",
   shippingreason: "Motivo de envío",
@@ -3294,14 +3295,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   clientname: "Nombre del cliente",
   shippingtype: "Tipo de envío",
   report_recordhsmreport: "Reporte historial de envíos",
+  report_recordhsmreport_total_help: "Número total de envíos enviados.",
+  report_recordhsmreport_satisfactory_help: "Número de envíos satisfactorios.",
+  report_recordhsmreport_failed_help: "Número de envíos fallidos.",
   report_invoice: "Reporte de facturación",
   sdrequestcode: "Código de solicitud SD",
   sdrequestcode_help: "Código único de cada solicitud Service Desk.",
   report_reportcompliancesla: "Reporte de cumplimiento de SLAs",
   report_reportrequestsd: "Reporte de solicitudes SD",
-
-
-
 
   
   manageClassification_plural: 'Gestionar clasificaciones',

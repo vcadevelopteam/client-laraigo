@@ -244,7 +244,7 @@ const Header = ({ classes }: IProps) => {
     if(customDomain){
         const existingFavicon = document.querySelector('link[rel="icon"]');
         if(user?.iconurl && existingFavicon) existingFavicon.href = user?.iconurl||"";
-        const str = user?.company || "Laraigo"
+        const str = user?.corpdesc || "Laraigo"
         document.title = str.charAt(0).toUpperCase() + str.slice(1).toLocaleLowerCase();
     }
 

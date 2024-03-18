@@ -3443,6 +3443,7 @@ const translation: LangKeys = {
   manageInputValidation_plural: 'Manage input validations',
   whatsappinformationimportant: "In order to link a WhatsApp channel, you must have the Facebook Business Verification. Otherwise, there will be the following restrictions: You can send a maximum of 50 HSM per day, You can manage a maximum of 2 accounts per Facebook ID, You can not request Green Check to WhatsApp",
   recordhsmreport: "Shipment history report",
+  recordhsmreportexternal: "External Shipment history report",
   recipientsname: "Recipient's name",
   namehsm: "Name (HSM, SMS, Mail)",
   shippingreason: "Shipping reason",
@@ -3457,6 +3458,10 @@ const translation: LangKeys = {
   shippingdate: "Shipping Date",
   shippingtype: "Shipping type",
   report_recordhsmreport: "Shipment history report",
+  report_recordhsmreport_total_help: "Total number of shipments sent.",
+  report_recordhsmreport_satisfactory_help: "Number of satisfactory shipments.",
+  report_recordhsmreport_failed_help: "Number of failed shipments.",
+
   report_invoice: "Invoice report",
   unitaryprice: "Unit Price",
   calculate: "Calculate",
