@@ -19,15 +19,6 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
 import { FieldErrors } from "react-hook-form";
 
-import {   
-    UseFiltersColumnProps,   
-    UseGroupByCellProps,   
-    UseGroupByColumnProps,   
-    UseResizeColumnsColumnProps,   
-    UseRowStateCellProps,    
-    UseSortByColumnProps,   
-  } from 'react-table'
-
 interface DetailProps {
     setViewSelected?: (view: string) => void;
     externalUse?: boolean;
