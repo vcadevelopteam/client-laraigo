@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
     buttonscontainer: {
         display: 'flex',
         justifyContent: 'flex-end',
-        gap: '1rem',
+        gap: '0.5rem',
         marginBottom: 10
     },
 }));
@@ -76,7 +76,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveInsFile, setWaitSaveInsFile] = useState(false);
-    const user = useSelector(state => state.login.validateToken.user);
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
