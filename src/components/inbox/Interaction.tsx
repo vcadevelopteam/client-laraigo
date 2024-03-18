@@ -433,18 +433,12 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
         )
 }
 
-const checkFile = (url: string) => {
-    let newUrl = new URL(url)?.pathname || '';
-    let newUrlSplit = newUrl.split('/') || [];
-    let newUrlSplitPop = newUrlSplit.pop() ?? '';
-    return newUrlSplitPop.indexOf('.') > 0;
-}
-
 const checkUrl = (url: string) => {
-    return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) != null);
+    const hasExtension = url.replace(/^.*[\\/]/, '').includes('.');
+    return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(`${url}`.toLocaleLowerCase()) !== null || !hasExtension);
 }
 
-const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy}, classes, userType }) => {
+const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy }, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -507,7 +501,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     style={{ width: '100%', maxWidth: '100%' }}
                 >
                     <div>RE-LARAIGO: {subject}</div>
-                    {emailcopy && <div style={{borderBottom: '1px solid #dfdfdf'}}>Cc: {emailcopy}</div>}
+                    {emailcopy && <div style={{ borderBottom: '1px solid #dfdfdf' }}>Cc: {emailcopy}</div>}
                     <iframe
                         ref={ref}
                         srcDoc={body}
@@ -554,7 +548,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     } else if (interactiontype === "image" || interactiontype === "comment-image")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
-                {(checkUrl(interactiontext) && checkFile(interactiontext)) && <img
+                {(checkUrl(interactiontext)) && <img
                     className={classes.imageCard}
                     src={interactiontext}
                     alt=""
@@ -563,8 +557,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
                 />}
-                {(!checkUrl(interactiontext) && checkFile(interactiontext)) && <video className={classes.imageCard} width="200" controls src={interactiontext} />}
-                {(!checkFile) && <>{interactiontext}</>}
+                {(!checkUrl(interactiontext)) && <video className={classes.imageCard} width="200" controls src={interactiontext} />}
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );
@@ -738,15 +731,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     } else if (interactiontype === "post-image") {
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage} style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                {(checkUrl(interactiontext) && checkFile(interactiontext)) && <img
+                {(checkUrl(interactiontext)) && <img
                     className={classes.imageCard}
                     src={interactiontext} alt=""
                     onClick={() => {
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
                 />}
-                {(!checkUrl(interactiontext) && checkFile(interactiontext)) && <video className={classes.imageCard} width="200" controls src={interactiontext} />}
-                {(!checkFile) && <>{interactiontext}</>}
+                {(!checkUrl(interactiontext)) && <video className={classes.imageCard} width="200" controls src={interactiontext} />}
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );
