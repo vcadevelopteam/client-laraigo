@@ -438,12 +438,12 @@ const checkUrl = (url: string) => {
     return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(`${url}`.toLocaleLowerCase()) !== null || !hasExtension);
 }
 
-const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy }, classes, userType }) => {
+const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy, reply }, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
-
+    console.log("interactiontype, interactiontext", interactiontype, interactiontext, reply)
     const [height, setHeight] = React.useState("0px");
 
     const onLoad = () => {
@@ -452,13 +452,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
 
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
-    if (interactiontype === "text")
+    if (interactiontype === "text") {
         return (
             <div
                 title={convertLocalDate(createdate).toLocaleString()}
                 className={clsx(classes.interactionText, {
-                    [classes.interactionTextAgent]: userType !== 'client',
+                    [classes.interactionTextAgent]: userType !== 'client'
                 })}
+                style={{ marginLeft: reply ? 16 : 0 }}
             >
                 <span dangerouslySetInnerHTML={{ __html: validateIsUrl(showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ") }}></span>
                 {!showfulltext && (
@@ -469,6 +470,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
+    }
     else if (interactiontype === "html")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
