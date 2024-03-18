@@ -239,7 +239,7 @@ const Header = ({ classes }: IProps) => {
     const myClasses = useToolbarStyles();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const user = useSelector(state => state.login.validateToken.user);
-    const customDomain = notCustomUrl.some(url => window.location.href.includes(url));
+    const customDomain = !notCustomUrl.some(url => window.location.href.includes(url));
     
     if(customDomain){
         const existingFavicon = document.querySelector('link[rel="icon"]');
