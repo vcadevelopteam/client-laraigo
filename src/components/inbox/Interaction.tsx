@@ -22,7 +22,7 @@ import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MapLeaflet from 'components/fields/MapLeaflet';
 
-const useStylesInteraction = makeStyles((theme) => ({
+const useStylesInteraction = makeStyles(() => ({
     containerCarousel: {
         width: 230,
         backgroundColor: '#f0f2f5',
@@ -459,7 +459,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client'
                 })}
-                style={{ marginLeft: reply ? 16 : 0 }}
+                style={{ marginLeft: reply ? 24 : 0 }}
             >
                 <span dangerouslySetInnerHTML={{ __html: validateIsUrl(showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ") }}></span>
                 {!showfulltext && (
@@ -812,7 +812,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     return (
         <div className={clsx(classes.interactionText, {
             [classes.interactionTextAgent]: userType !== 'client',
-        })}>
+        })} style={{ marginTop: interactiontype === "comment-text" ? 16 : 0 }}>
             {interactiontext}
             <PickerInteraction userType={userType} fill={userType === "client" ? "#FFF" : "#eeffde"} />
             <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
