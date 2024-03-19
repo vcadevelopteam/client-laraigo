@@ -4,7 +4,11 @@ import { toTime24HR, convertLocalDate } from 'common/helpers';
 import { keys } from 'common/constants';
 
 const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = false, returnHidden: boolean = false): IGroupInteraction[] => {
-
+    const ticketWall = interactions.some(y => y.interactiontype.includes("post"));
+    interactions = interactions.map(x => ({
+        ...x,
+        reply: ticketWall && ["text", "image"].includes(x.interactiontype) && Boolean(!x.userid)
+    }))
     const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
