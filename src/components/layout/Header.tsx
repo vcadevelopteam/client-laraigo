@@ -240,13 +240,15 @@ const Header = ({ classes }: IProps) => {
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const user = useSelector(state => state.login.validateToken.user);
     const customDomain = !notCustomUrl.some(url => window.location.href.includes(url));
-    
-    if(customDomain){
-        const existingFavicon = document.querySelector('link[rel="icon"]');
-        if(user?.iconurl && existingFavicon) existingFavicon.href = user?.iconurl||"";
-        const str = user?.corpdesc || "Laraigo"
-        document.title = str.charAt(0).toUpperCase() + str.slice(1).toLocaleLowerCase();
-    }
+
+    useEffect(() => {
+        if(customDomain){
+            const existingFavicon = document.querySelector('link[rel="icon"]');
+            if(user?.iconurl && existingFavicon) existingFavicon.href = user?.iconurl||"";
+            const str = user?.corpdesc || "Laraigo"
+            document.title = str.charAt(0).toUpperCase() + str.slice(1).toLocaleLowerCase();
+        }
+    }, [window.location])
 
     return (
         <AppBar
