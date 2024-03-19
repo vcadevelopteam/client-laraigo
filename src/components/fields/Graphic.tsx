@@ -286,7 +286,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             }
         }
     }, [mainGraphicRes, data, loading])
-    
+    console.log(row?.origin)
 
     return (
         <>
@@ -351,12 +351,18 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                         )}
                     </div>
                 </Box>
+            )}           
+            {!data && row?.origin === 'sentmessages' && (
+                <div style={{ fontWeight: 500, padding: 16 }}>
+                    {t(langKeys.graphic_report_of, { report: t(langKeys.recordhsmreportexternal), column: t('report_' + row?.origin + '_' + column) })}
+
+                </div>
             )}
-            {!data && (
+            {!data && row?.origin !== 'sentmessages' && (
                 <div style={{ fontWeight: 500, padding: 16 }}>
                     {t(langKeys.graphic_report_of, { report: t('report_' + row?.origin), column: t('report_' + row?.origin + '_' + column) })}
                 </div>
-            )}
+            )}           
             {(loading || mainGraphicRes.loading) ? (
                 <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <CircularProgress />
