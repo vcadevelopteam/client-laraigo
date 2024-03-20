@@ -53,6 +53,7 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
+import GroupIcon from '@material-ui/icons/Group';
 
 export const viewsClassifications: ViewsClassificationConfig[] = [
     {
@@ -665,7 +666,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.reassignmentrules} />,
         tooltip: "",
         path: paths.REASSIGNMENTRULES,
-        icon: (className) => <ForbiddenWordsIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+        icon: (className) => <GroupIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
 ];
 
