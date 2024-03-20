@@ -119,7 +119,7 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({ data:
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.description}` :  t(langKeys.new) + " " + t(langKeys.reassignmentrule)}
+                            title={row ? `${t(langKeys.reassignmentrule)}` :  "Nueva" + " " + t(langKeys.reassignmentrule)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'}}>
