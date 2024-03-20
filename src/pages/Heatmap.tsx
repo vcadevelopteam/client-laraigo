@@ -60,6 +60,24 @@ import TrafficIcon from "@material-ui/icons/Traffic";
 import ColorInputCircular from "components/fields/ColorInputCircular";
 import { exportexcelwithgradient } from "common/helpers/exportexcelwithgradient";
 
+const defaultNumberTableConfig = [
+    { min: 0, max: 1, color: "#47FF47"},
+    { min: 1, max: 5, color: "#FFFF00"},
+    { min: 5, max: 999, color: "#FF0000"},
+]
+
+const defaultPercentageTableConfig = [
+    { min: 0, max: 10, color: "#47FF47"},
+    { min: 10, max: 60, color: "#FFFF00"},
+    { min: 60, max: 100, color: "#FF0000"},
+]
+
+const defaultTimeTableConfig = [
+    { min: "00s", max: "15m00s", color: "#47FF47"},
+    { min: "15m00s", max: "1h00m00s", color: "#FFFF00"},
+    { min: "1h00m00s", max: "999h00m00s", color: "#FF0000"},
+]
+
 const hours = [
     "00:00 a 01:00",
     "01:00 a 02:00",
@@ -629,7 +647,7 @@ const MainHeatMap: React.FC<{
         setheatMapConversationsData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
-            const rules = dataTableConfig?.find((x) => x.report_name === "conversations")?.report_configuration || [];
+            const rules = dataTableConfig?.find((x) => x.report_name === "conversations")?.report_configuration || defaultNumberTableConfig;
             if (rowcounter >= 24) {
                 return "#FFFFFF";
             }
@@ -809,7 +827,7 @@ const MainHeatMap: React.FC<{
         setaverageHeatMapTMOData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
-            const rules = dataTableConfig?.find((x) => x.report_name === "averagetmo")?.report_configuration || [];
+            const rules = dataTableConfig?.find((x) => x.report_name === "averagetmo")?.report_configuration || defaultTimeTableConfig;
             if (rowcounter >= 24) {
                 return "#FFFFFF";
             }
@@ -991,7 +1009,7 @@ const MainHeatMap: React.FC<{
         setheatmapaverageagentTMEData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
-            const rules = dataTableConfig?.find((x) => x.report_name === "averageagenttme")?.report_configuration || [];
+            const rules = dataTableConfig?.find((x) => x.report_name === "averageagenttme")?.report_configuration || defaultTimeTableConfig;
             if (rowcounter >= 24) {
                 return "#FFFFFF";
             }
@@ -1173,7 +1191,7 @@ const MainHeatMap: React.FC<{
 
         function gradient(num: number, rowcounter: number) {
             const rules =
-                dataTableConfig?.find((x) => x.report_name === "averagereplytimexfecha")?.report_configuration || [];
+                dataTableConfig?.find((x) => x.report_name === "averagereplytimexfecha")?.report_configuration || defaultTimeTableConfig;
             if (rowcounter >= 24) {
                 return "#FFFFFF";
             }
@@ -1360,7 +1378,7 @@ const MainHeatMap: React.FC<{
         function gradient(num: number, rowcounter: number) {
             const rules =
                 dataTableConfig?.find((x) => x.report_name === "averagereplytimexfechaclient")?.report_configuration ||
-                [];
+                defaultTimeTableConfig;
             if (rowcounter >= 24) {
                 return "#FFFFFF";
             }
@@ -1521,7 +1539,7 @@ const MainHeatMap: React.FC<{
                                 heatMapConversationsData,
                                 heatMapConversations.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "conversations")?.report_configuration ||
-                                    [],
+                                    defaultNumberTableConfig,
                                 "day",
                                 "number",
                                 24
@@ -1563,7 +1581,7 @@ const MainHeatMap: React.FC<{
                                 averageHeatMapTMOData,
                                 averageHeatMapTMOTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "averagetmo")?.report_configuration ||
-                                    [],
+                                defaultTimeTableConfig,
                                 "day",
                                 "time",
                                 24
@@ -1606,7 +1624,7 @@ const MainHeatMap: React.FC<{
                                 heatmapaverageagentTMEData,
                                 heatmapaverageagentTMETitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "averageagenttme")?.report_configuration ||
-                                    [],
+                                defaultTimeTableConfig,
                                 "day",
                                 "time",
                                 24
@@ -1651,7 +1669,7 @@ const MainHeatMap: React.FC<{
                                 userAverageReplyTimexFechaData,
                                 userAverageReplyTimexFechaTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "averagereplytimexfecha")?.report_configuration ||
-                                    [],
+                                defaultTimeTableConfig,
                                 "day",
                                 "time",
                                 24
@@ -1695,7 +1713,7 @@ const MainHeatMap: React.FC<{
                                 personAverageReplyTimexFechaData,
                                 personAverageReplyTimexFechaTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "averagereplytimexfechaclient")?.report_configuration ||
-                                    [],
+                                defaultTimeTableConfig,
                                 "day",
                                 "time",
                                 24
@@ -2086,7 +2104,7 @@ const HeatMapAsesor: React.FC<{
                 return "#FFFFFF";
             }
             const rules =
-                dataTableConfig?.find((x) => x.report_name === "completeconversations")?.report_configuration || [];
+                dataTableConfig?.find((x) => x.report_name === "completeconversations")?.report_configuration || defaultNumberTableConfig;
             for (const item of rules) {
                 if (num >= item.min && num < item.max) {
                     return item.color;
@@ -2182,7 +2200,7 @@ const HeatMapAsesor: React.FC<{
                 return "#FFFFFF";
             }
             const rules =
-                dataTableConfig?.find((x) => x.report_name === "quantityabandonos")?.report_configuration || [];
+                dataTableConfig?.find((x) => x.report_name === "quantityabandonos")?.report_configuration || defaultNumberTableConfig;
             for (const item of rules) {
                 if (num >= item.min && num < item.max) {
                     return item.color;
@@ -2254,7 +2272,7 @@ const HeatMapAsesor: React.FC<{
         settasaAbandonosxAsesorData(arrayfree);
 
         function gradient(num: number) {
-            const rules = dataTableConfig?.find((x) => x.report_name === "tasaabandonos")?.report_configuration || [];
+            const rules = dataTableConfig?.find((x) => x.report_name === "tasaabandonos")?.report_configuration || defaultPercentageTableConfig;
             for (const item of rules) {
                 if (num >= item.min && num < item.max) {
                     return item.color;
@@ -2338,7 +2356,7 @@ const HeatMapAsesor: React.FC<{
                 return "#FFFFFF";
             }
             const rules =
-                dataTableConfig?.find((x) => x.report_name === "quantityoportunities")?.report_configuration || [];
+                dataTableConfig?.find((x) => x.report_name === "quantityoportunities")?.report_configuration || defaultNumberTableConfig;
             for (const item of rules) {
                 if (num >= item.min && num < item.max) {
                     return item.color;
@@ -2412,7 +2430,7 @@ const HeatMapAsesor: React.FC<{
 
         function gradient(num: number) {
             const rules =
-                dataTableConfig?.find((x) => x.report_name === "tasaoportunities")?.report_configuration || [];
+                dataTableConfig?.find((x) => x.report_name === "tasaoportunities")?.report_configuration || defaultPercentageTableConfig;
             for (const item of rules) {
                 if (num >= item.min && num < item.max) {
                     return item.color;
@@ -2497,7 +2515,7 @@ const HeatMapAsesor: React.FC<{
             if (rowcount >= tempadviserlist.length) {
                 return "#FFFFFF";
             }
-            const rules = dataTableConfig?.find((x) => x.report_name === "quantityventas")?.report_configuration || [];
+            const rules = dataTableConfig?.find((x) => x.report_name === "quantityventas")?.report_configuration || defaultNumberTableConfig;
             for (const item of rules) {
                 if (num >= item.min && num < item.max) {
                     return item.color;
@@ -2570,7 +2588,7 @@ const HeatMapAsesor: React.FC<{
 
         function gradient(num: number) {
             const rules =
-                dataTableConfig?.find((x) => x.report_name === "tasaventasporasesor")?.report_configuration || [];
+                dataTableConfig?.find((x) => x.report_name === "tasaventasporasesor")?.report_configuration || defaultPercentageTableConfig;
             for (const item of rules) {
                 if (num >= item.min && num < item.max) {
                     return item.color;
@@ -2835,7 +2853,7 @@ const HeatMapAsesor: React.FC<{
                                 completadosxAsesorData,
                                 completadosxAsesorTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "completeconversations")?.report_configuration ||
-                                    [],
+                                defaultNumberTableConfig,
                                 "day",
                                 "number",
                                 multiData.data[1]?.data.length
@@ -2877,7 +2895,7 @@ const HeatMapAsesor: React.FC<{
                                 abandonosxAsesorData,
                                 abandonosxAsesorTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "quantityabandonos")?.report_configuration ||
-                                    [],
+                                defaultNumberTableConfig,
                                 "day",
                                 "number",
                                 multiData.data[1]?.data.length
@@ -2920,7 +2938,7 @@ const HeatMapAsesor: React.FC<{
                                 tasaAbandonosxAsesorData,
                                 tasaAbandonosxAsesorTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "tasaabandonos")?.report_configuration ||
-                                    [],
+                                defaultPercentageTableConfig,
                                 "day",
                                 "percentage"
                             );
@@ -2963,7 +2981,7 @@ const HeatMapAsesor: React.FC<{
                                 cantidadOportunidadesData,
                                 cantidadOportunidadesTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "quantityoportunities")?.report_configuration ||
-                                    [],
+                                defaultNumberTableConfig,
                                 "day",
                                 "number",
                                 multiData.data[1]?.data.length
@@ -3005,7 +3023,7 @@ const HeatMapAsesor: React.FC<{
                                 tasaOportunidadesData,
                                 tasaOportunidadesTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "tasaoportunities")?.report_configuration ||
-                                    [],
+                                defaultPercentageTableConfig,
                                 "day",
                                 "percentage"
                             );
@@ -3048,7 +3066,7 @@ const HeatMapAsesor: React.FC<{
                                 ventasxAsesorData,
                                 ventasxAsesorTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "quantityventas")?.report_configuration ||
-                                    [],
+                                defaultNumberTableConfig,
                                 "day",
                                 "number",
                                 multiData.data[1]?.data.length
@@ -3264,7 +3282,7 @@ const HeatMapTicket: React.FC<{
 
         function gradient(num: number) {
             const rules =
-                dataTableConfig?.find((x) => x.report_name === "asesorsatleastone")?.report_configuration || [];
+                dataTableConfig?.find((x) => x.report_name === "asesorsatleastone")?.report_configuration || defaultNumberTableConfig;
             for (const item of rules) {
                 if (num >= item.min && num < item.max) {
                     return item.color;
@@ -3369,7 +3387,7 @@ const HeatMapTicket: React.FC<{
                                 asesoresConectadosData,
                                 asesoresConectadosTitle.filter((x: Dictionary) => !x.isComponent && !x.activeOnHover),
                                 dataTableConfig?.find((x) => x.report_name === "asesorsatleastone")?.report_configuration ||
-                                    [],
+                                defaultNumberTableConfig,
                                 "day",
                                 "number",
                             );
@@ -3414,7 +3432,7 @@ const ConfigurationModalNumber: React.FC<{
     data: Dictionary[];
     setData: (a: Dictionary[]) => void;
 }> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
-    const colorgroup = ["#47FF47", "#6FE775", "#FFFF00", "#FF6600", "#FF0000"];
+    const colorgroup = ["#47FF47", "#FFFF00", "#FF0000"];
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -3631,7 +3649,7 @@ const ConfigurationModalTime: React.FC<{
     data: Dictionary[];
     setData: (a: Dictionary[]) => void;
 }> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
-    const colorgroup = ["#47FF47", "#6FE775", "#FFFF00", "#FF6600", "#FF0000"];
+    const colorgroup = ["#47FF47", "#FFFF00", "#FF0000"];
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -3856,7 +3874,7 @@ const ConfigurationModalPercentage: React.FC<{
     data: Dictionary[];
     setData: (a: Dictionary[]) => void;
 }> = ({ openModal, setOpenModal, reportname, filterData, SetFilterData, data, setData }) => {
-    const colorgroup = ["#47FF47", "#6FE775", "#FFFF00", "#FF6600", "#FF0000"];
+    const colorgroup = ["#47FF47", "#FFFF00", "#FF0000"];
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -4082,18 +4100,19 @@ const ConfigurationModal: React.FC<{
 
     useEffect(() => {
         if (openModal) {
-            setData(filterData.find((x) => x.report_name === reportname)?.report_configuration || []);
             switch (reportname) {
                 case "averagetmo":
                 case "averageagenttme":
                 case "averagereplytimexfecha":
                 case "averagereplytimexfechaclient":
                     setTypeData("time");
+                    setData(filterData.find((x) => x.report_name === reportname)?.report_configuration || defaultTimeTableConfig);
                     break;
                 case "tasaabandonos":
                 case "tasaoportunities":
                 case "tasaventasporasesor":
                     setTypeData("percentage");
+                    setData(filterData.find((x) => x.report_name === reportname)?.report_configuration || defaultPercentageTableConfig);
                     break;
                 case "conversations":
                 case "completeconversations":
@@ -4103,6 +4122,7 @@ const ConfigurationModal: React.FC<{
                 case "asesorsatleastone":
                 default:
                     setTypeData("number");
+                    setData(filterData.find((x) => x.report_name === reportname)?.report_configuration || defaultNumberTableConfig);
             }
         }
     }, [filterData, reportname, openModal]);
