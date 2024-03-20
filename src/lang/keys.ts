@@ -27,6 +27,8 @@ export const langKeys = {
   documentlibrary: "documentlibrary",
   documentlibraryhelperText: "documentlibraryhelperText",
   uploadedby: "uploadedby",
+  reassignmentrules: "reassignmentrules",
+  assignedgroup: "assignedgroup",
   finish: "finish",
   file: "file",
   automaticclosingtime: "automaticclosingtime",

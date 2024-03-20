@@ -4309,3 +4309,18 @@ export const updateAssistantAiDocumentTraining = (assistantaiid: number, documen
     key: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
     parameters: { assistantaiid, documentsid },
 });
+
+export const getReassignmentRulesSel = (id:number) => ({
+    method: "UFN_ASSIGNMENTRULE_SEl",
+    key: "UFN_ASSIGNMENTRULE_SEl",
+    parameters: { 
+        id: id,
+        all: true 
+    },
+});
+
+export const insReassignmentRules = ({ id, description, group, assignedgroup, type, status, operation }: Dictionary) => ({
+    method: "UFN_ASSIGNMENTRULE_INS",
+    key: "UFN_ASSIGNMENTRULE_INS",
+    parameters: { id, description, group, assignedgroup, type, status, operation },
+});
