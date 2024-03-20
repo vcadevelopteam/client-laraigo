@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect } from 'components';
-import { exportExcel, getReassignmentRulesSel, getValuesFromDomain, insReassignmentRules, templateMaker, uploadExcel } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect } from 'components';
+import { getReassignmentRulesSel, getValuesFromDomain, insReassignmentRules, massDelReassignmentRules } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,6 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
+import DeleteIcon from '@material-ui/icons/Delete';
 import {
     getCollection, resetAllMain, getMultiCollection,
     execute
@@ -87,7 +87,7 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({ data:
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.reassignmentrules).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -115,11 +115,11 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({ data:
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.inappropriatewords)} ${t(langKeys.detail)}` }]}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.reassignmentrule)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.description}` : t(langKeys.newinnapropiateword)}
+                            title={row ? `${row.description}` : t(langKeys.reassignmentrule)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'}}>
@@ -200,18 +200,18 @@ const selectionKey = 'assignmentruleid';
 const ReassignmentRules: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const classes = useStyles();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
-    const [waitImport, setWaitImport] = useState(false);
     const [mainData, setMainData] = useState<any>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
     
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.inappropriatewords) },
+        { id: "view-1", name: t(langKeys.reassignmentrules) },
     ];
     function redirectFunc(view:string){
         setViewSelected(view)
@@ -268,6 +268,7 @@ const ReassignmentRules: FC = () => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
+                setSelectedRows({})
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
@@ -278,22 +279,6 @@ const ReassignmentRules: FC = () => {
         }
     }, [executeResult, waitSave])
 
-    useEffect(() => {
-        if (waitImport) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitImport(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitImport(false);
-            }
-        }
-    }, [executeResult, waitImport]);
-
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -302,19 +287,6 @@ const ReassignmentRules: FC = () => {
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
-    }
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(execute(insReassignmentRules({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.inappropriatewordsid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
     }
 
     useEffect(() => {
@@ -331,7 +303,25 @@ const ReassignmentRules: FC = () => {
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <TableZyx
                     columns={columns}
-                    titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
+                    ButtonsElement={()=>(
+                        
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={!Object.keys(selectedRows).length}
+                            type='button'
+                            style={{ backgroundColor: !Object.keys(selectedRows).length?"#e0e0e0":"#7721ad" }}
+                            startIcon={<DeleteIcon style={{ color: 'white' }} />}
+                            onClick={() => {
+                                const selectedRules = Object.keys(selectedRows).join(',')
+                                setWaitSave(true)
+                                dispatch(execute(massDelReassignmentRules(selectedRules)))
+                                dispatch(showBackdrop(true))
+                            }}
+                        >{t(langKeys.delete)}
+                        </Button>)}
+                    titlemodule={t(langKeys.reassignmentrules, { count: 2 })}
                     data={mainData}
                     download={true}
                     useSelection={true}

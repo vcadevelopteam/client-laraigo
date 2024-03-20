@@ -428,6 +428,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const [waitReassign, setWaitReassign] = useState(false);
 
     const multiData = useSelector(state => state.main.multiData);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const user = useSelector(state => state.login.validateToken.user);
@@ -435,6 +436,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
     const [agentList, setAgentList] = useState<Dictionary[]>([])
+    const [allowedGroups, setAllowedGroups] = useState("")
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
@@ -511,7 +513,12 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            const groups = user?.groups ? user?.groups.split(",") : [];
+            console.log(agentToReassignList)
+            const rules = multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")||[]
+            let groups = user?.groups ? user?.groups.split(",") : [];
+            if(rules?.data){
+                groups = rules.data.map(item => item.assignedgroup)
+            }
             if (user.properties.limit_reassign_group) {
                 setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
             } else {
@@ -525,13 +532,14 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 }))
             }
         }
-    }, [user, multiData, propertyAsesorReassign])
+    }, [user, multiData, multiDataAux, propertyAsesorReassign])
 
     useEffect(() => {
+        const group = getValues('newUserGroup')
         if(!(user?.roledesc?.includes("ASESOR")  && propertyAsesorReassign)){
-            setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (getValues('newUserGroup') ? (x.groups || "").split(",").includes(getValues('newUserGroup')) : (user?.properties.limit_reassign_group && groups.length > 0 ? groups.some(y => (x.groups || "").split(",").includes(y)) : true))))
+            setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (group ? (x.groups || "").split(",").includes(group) : (user?.properties.limit_reassign_group && groups.length > 0 ? groups.some(y => (x.groups || "").split(",").includes(y)) : true))))
         }
-        if(!getValues('newUserGroup')){
+        if(!group){
             setAgentList([])
         }
     }, [propertyAsesorReassign, userToReassign, getValues('newUserGroup')])

@@ -4324,3 +4324,15 @@ export const insReassignmentRules = ({ id, description, group, assignedgroup, ty
     key: "UFN_ASSIGNMENTRULE_INS",
     parameters: { id, description, group, assignedgroup, type, status, operation },
 });
+
+export const massDelReassignmentRules = (groupslistassignmentruleid:string) => ({
+    method: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
+    key: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
+    parameters: { groupslistassignmentruleid },
+});
+
+export const getAssignmentRulesByGroup = (group:string) => ({
+    method: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
+    key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
+    parameters: { group },
+});

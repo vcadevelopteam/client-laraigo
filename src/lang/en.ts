@@ -3890,6 +3890,7 @@ const translation: LangKeys = {
   detractionminimum: 'Detraction Limit Amount',
   tooltipintegrationname: "The name of the table will appear in the URL, therefore special characters, capital letters and spaces cannot be added.",
   tooltipintegrationurl: "The URL will be displayed after saving the table.",
+  reassignmentrule: "Reassignment rule",
 
   propertyenviodehsmformulario: 'Enable and Disable the HSM sending functionality with contact details.',
   propertyplantillahsmformulario: 'Template associated with HSM',

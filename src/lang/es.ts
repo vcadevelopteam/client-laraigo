@@ -393,6 +393,7 @@ const translation: LangKeys = {
   change_password_on_login: 'Cambiar contraseña al entrar',
   accountsettings: "Configuración de la cuenta",
   accountinformation: "Información de la cuenta",
+  reassignmentrule: "Regla de reasignación",
   account: "Cuenta",
   changepersonalinformation: "Actualizar información personal",
   planinformation: "Información del plan",
