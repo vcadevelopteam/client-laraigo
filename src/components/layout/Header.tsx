@@ -242,12 +242,20 @@ const Header = ({ classes }: IProps) => {
     const customDomain = !notCustomUrl.some(url => window.location.href.includes(url));
 
     useEffect(() => {
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        const titleElement = document.createElement('title');
         if(customDomain){
-            const existingFavicon = document.querySelector('link[rel="icon"]');
-            if(user?.iconurl && existingFavicon) existingFavicon.href = user?.iconurl||"";
+            link.href = user?.iconurl||"/favicon.ico";   
+            titleElement.innerText = user?.corpdesc || "Laraigo";
             const str = user?.corpdesc || "Laraigo"
             document.title = str.charAt(0).toUpperCase() + str.slice(1).toLocaleLowerCase();
+        }else{
+            titleElement.innerText = "Laraigo";
+            link.href = '/favicon.ico';
         }
+        document.head.appendChild(link);
+        document.head.appendChild(titleElement);
     }, [window.location])
 
     return (
