@@ -867,6 +867,21 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
         }
     }, [waitUploadFile, uploadResult])
 
+    function downloadXML() {
+        const link = document.createElement("a");
+
+        link.download = 'product-catalog-template.xml';
+        link.href = 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d4f29279-27e9-4f9d-b4a0-095967d1394b/product-catalog-template.xml';
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        setTimeout(function () {
+            document.body.removeChild(link);
+        }, 50);
+    }
+
     return (
         <DialogZyx
             open={openModal}
@@ -903,7 +918,7 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
                         color="primary"
                         style={{ width: 150, backgroundColor: "#55BD84" }}
                         startIcon={<DownloadIcon style={{ color: 'white' }} />}
-                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d4f29279-27e9-4f9d-b4a0-095967d1394b/product-catalog-template.xml", '_blank'); }}
+                        onClick={() => { downloadXML() }}
                     >{t(langKeys.templatexml)}
                     </Button>
                 </div>
