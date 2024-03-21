@@ -258,20 +258,17 @@ const SignIn = () => {
 	}, [])
 
 	React.useEffect(() => {
-        const link = document.createElement('link');
-        link.rel = 'icon';
+        const iconLink = document.querySelector('link[rel="icon"]');
         if(getCustomDomain && !customDomainData.loading && !customDomainData.error){
             setCustomLogoURL(customDomainData?.data?.[0]||null) 
-            document.title  = "Laraigo";    
-            link.href = customDomainData?.data?.[0]?.iconurl||"/favicon.ico";             
+            document.title  = customDomainData?.data?.[0]?.corpdesc || "Laraigo";    
+            iconLink.href = customDomainData?.data?.[0]?.iconurl||"/favicon.ico";             
             setGetCustomDomain(false)
             dispatch(showBackdrop(false))
         }else{
             document.title = "Laraigo";
-            link.href = '/favicon.ico';
+            iconLink.href = '/favicon.ico';
         }
-        document.head.appendChild(link);
-        document.head.removeChild(link);
 	}, [customDomainData, getCustomDomain])
 
 

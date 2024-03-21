@@ -244,11 +244,10 @@ const Header = ({ classes }: IProps) => {
     useEffect(() => {
         const titlestr = localStorage.getItem("title")
         const headeiconstr = localStorage.getItem("headeicon")
+        const iconLink = document.querySelector('link[rel="icon"]');
         if(!(titlestr && headeiconstr)){
-            const link = document.createElement('link');
-            link.rel = 'icon';
             if(customDomain){
-                link.href = user?.iconurl||"/favicon.ico";   
+                iconLink.href  = user?.iconurl||"/favicon.ico";   
                 const str = user?.corpdesc || "Laraigo"
                 const title = str.charAt(0).toUpperCase() + str.slice(1).toLocaleLowerCase()
                 document.title = title;
@@ -256,11 +255,13 @@ const Header = ({ classes }: IProps) => {
                 localStorage.setItem('headeicon', user?.iconurl||"/favicon.ico");
             }else{
                 document.title = "Laraigo";
-                link.href = '/favicon.ico';
+                iconLink.href = '/favicon.ico';
                 localStorage.setItem('title', 'Laraigo');
                 localStorage.setItem('headeicon', '/favicon.ico');
             }
-            document.head.appendChild(link);
+        }else{
+            document.title =  titlestr
+            iconLink.href = headeiconstr
         }
     }, [window.location])
 
