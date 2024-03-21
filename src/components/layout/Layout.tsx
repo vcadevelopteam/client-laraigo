@@ -340,6 +340,18 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const wsConnected = useSelector(state => state.inbox.wsConnected);
     const { t } = useTranslation();
+    
+    useEffect(() => {
+        const title = localStorage.getItem("title")
+        const headeicon = localStorage.getItem("headeicon")
+        if(title && headeicon){
+            const link = document.createElement('link');
+            link.rel = 'icon';
+            link.href = headeicon;  
+            document.head.appendChild(link);
+            document.title = title;
+        }
+    }, [])
 
     return (
         <>

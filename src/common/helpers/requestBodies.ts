@@ -4992,3 +4992,30 @@ export const ordersByConfigRoutingLogic = (listorderid: string) => ({
     key: "UFN_ORDERS_BY_CONFIGURATION_SEL",
     parameters: { listorderid },
 });
+
+export const getReassignmentRulesSel = (id:number) => ({
+    method: "UFN_ASSIGNMENTRULE_SEl",
+    key: "UFN_ASSIGNMENTRULE_SEl",
+    parameters: { 
+        id: id,
+        all: true 
+    },
+});
+
+export const insReassignmentRules = ({ id, description, group, assignedgroup, type, status, operation }: Dictionary) => ({
+    method: "UFN_ASSIGNMENTRULE_INS",
+    key: "UFN_ASSIGNMENTRULE_INS",
+    parameters: { id, description, group, assignedgroup, type, status, operation },
+});
+
+export const massDelReassignmentRules = (groupslistassignmentruleid:string) => ({
+    method: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
+    key: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
+    parameters: { groupslistassignmentruleid },
+});
+
+export const getAssignmentRulesByGroup = (group:string) => ({
+    method: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
+    key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
+    parameters: { group },
+});

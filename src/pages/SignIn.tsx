@@ -258,16 +258,20 @@ const SignIn = () => {
 	}, [])
 
 	React.useEffect(() => {
+        const link = document.createElement('link');
+        link.rel = 'icon';
         if(getCustomDomain && !customDomainData.loading && !customDomainData.error){
-            setCustomLogoURL(customDomainData?.data?.[0]||null)
-            
-            const existingFavicon = document.querySelector('link[rel="icon"]');
-            existingFavicon.href = customDomainData?.data?.[0]?.iconurl||"";
-
+            setCustomLogoURL(customDomainData?.data?.[0]||null) 
+            document.title  = "Laraigo";    
+            link.href = customDomainData?.data?.[0]?.iconurl||"/favicon.ico";             
             setGetCustomDomain(false)
             dispatch(showBackdrop(false))
+        }else{
+            document.title = "Laraigo";
+            link.href = '/favicon.ico';
         }
-		//dispatch(getCorpDetails("testlaraigo8"))
+        document.head.appendChild(link);
+        document.head.removeChild(link);
 	}, [customDomainData, getCustomDomain])
 
 
