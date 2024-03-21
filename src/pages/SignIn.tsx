@@ -259,7 +259,7 @@ const SignIn = () => {
 
 	React.useEffect(() => {
         const iconLink = document.querySelector('link[rel="icon"]');
-        if(getCustomDomain && !customDomainData.loading && !customDomainData.error){
+        if(isCustomDomain && !customDomainData.loading && !customDomainData.error){
             setCustomLogoURL(customDomainData?.data?.[0]||null) 
             document.title  = customDomainData?.data?.[0]?.corpdesc || "Laraigo";    
             iconLink.href = customDomainData?.data?.[0]?.iconurl||"/favicon.ico";             
@@ -269,7 +269,7 @@ const SignIn = () => {
             document.title = "Laraigo";
             iconLink.href = '/favicon.ico';
         }
-	}, [customDomainData, getCustomDomain])
+	}, [customDomainData])
 
 
 
