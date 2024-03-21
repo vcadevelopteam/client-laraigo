@@ -42,13 +42,17 @@ const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = 
 
 const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: IInteraction): IGroupInteraction[] => {
     const listImage = groupsInteraction.length > 0 ? groupsInteraction[0].listImage || [] : [];
+    const ticketWall = (groupsInteraction.length > 0 ? groupsInteraction[0].interactions || [] : []).some(y => y.interactiontype?.includes("post"));
+    const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
+    const lastType = lastGroupInteraction.usertype;
+
+    interaction.reply = ticketWall && ["text", "image"].includes(interaction.interactiontype) && lastType === "client";
+
     interaction.listImage = interaction.interactiontype.includes("image") ? [...listImage, interaction.interactiontext] : listImage;
 
     interaction.onlyTime = toTime24HR(convertLocalDate(interaction.createdate, false, false).toLocaleTimeString())
 
     interaction.indexImage = interaction.interactiontype.includes("image") ? listImage.length : 0;
-    const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
-    const lastType = lastGroupInteraction.usertype;
 
     if (interaction.usertype === "BOT" && (lastType === "BOT")) {
         groupsInteraction[groupsInteraction.length - 1].interactions.push(interaction)
