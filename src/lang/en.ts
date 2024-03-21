@@ -5878,6 +5878,8 @@ const translation: LangKeys = {
   personality_tech: 'Technical Support',
   personality_ai: 'AI Base',
   personality_personalized: 'Custom Mode',
+  contextperconversation: 'Context per conversation',
+  firstinteraction: 'First user interaction',
 };
 
 const enResource: ResourceLanguage = {

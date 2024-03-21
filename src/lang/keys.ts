@@ -5790,6 +5790,8 @@ export const langKeys = {
   personality_tech: 'personality_tech',
   personality_ai: 'personality_ai',
   personality_personalized: 'personality_personalized',
+  contextperconversation: 'contextperconversation',
+  firstinteraction: 'firstinteraction',
 };
 
 export type LangKeys = typeof langKeys;

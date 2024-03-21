@@ -57,15 +57,16 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const [service, setService] = useState('')
+    const [service, setService] = useState( row ? row.type.trim() : '')
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const { getValues, register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            type: 'NINGUNO',
+            type: row ? (row.type || '') : '',
             id: row ? row.id : 0,
             endpoint: row ? (row.endpoint || '') : '',
             modelid: row ? (row.modelid || '') : '',
             apikey: row ? (row.apikey || '') : '',
+            name: row ? (row.name || '') : '',
             description: row ? (row.description || '') : '',
             provider: row ? (row.provider || '') : '',
             status: row ? row.status : 'ACTIVO',
@@ -76,11 +77,27 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     React.useEffect(() => {
         register('type');
         register('id');
-        register('endpoint', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('endpoint', { 
+            validate: (value) =>
+                getValues('type') !== 'LARGE LANGUAGE MODEL'
+                    ? (value && value.length) || String(t(langKeys.field_required))
+                    : true,
+        });
+        register('apikey', {
+            validate: (value) =>
+                getValues('type') !== 'RASA'    
+                    ? (value && value.length) || String(t(langKeys.field_required))
+                    : true,
+        });
+        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('modelid');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('provider', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('provider', {
+            validate: (value) =>
+                getValues('type') !== 'RASA' && getValues('type') !== 'WATSON ASSISTANT'
+                    ? (value && value.length) || String(t(langKeys.field_required))
+                    : true,
+        });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -115,17 +132,22 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     });
 
     const services = [
+        ...dataDomainStatus,
         {
-            description: 'LARGE LANGUAGE MODEL',
-            value:'LLM',
+            domaindesc: 'LARGE LANGUAGE MODEL',
+            domainvalue:'LARGE LANGUAGE MODEL',
+        },
+    ]
+
+    const providers = [
+        {
+            domaindesc: 'Open AI'
         },
         {
-            description: 'RASA',
-            value:'RAS',
+            domaindesc: 'Meta'
         },
         {
-            description: 'WATSON ASSISTANT',
-            value:'WAT',
+            domaindesc: 'Mistral'
         },
     ]
 
@@ -142,7 +164,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.endpoint}` : t(langKeys.newintelligentmodel)}
+                            title={row ? `${row.name}` : t(langKeys.newintelligentmodel)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -174,17 +196,19 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             valueDefault={service}
                             onChange={(value) => {
                                 if(value) {
-                                    setService(value.value)
+                                    setService(value.domainvalue)
+                                    setValue('type', value.domainvalue)
                                 } else {
                                     setService('')
+                                    setValue('type', '')
                                 }
                             }}
                             data={services}
-                            optionDesc='description'
-                            optionValue='value'
+                            optionDesc='domaindesc'
+                            optionValue='domainvalue'
                         />
                     </div>
-                    {service === 'WAT' ? (
+                    {service === 'WATSON ASSISTANT' ? (
                         <>
                             <div className="row-zyx">
                                 <FieldEdit
@@ -215,6 +239,9 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 <FieldEdit
                                     className='col-6'
                                     label={t(langKeys.name)}
+                                    onChange={(value) => setValue('name', value)}
+                                    valueDefault={row ? (row.name || "") : ""}
+                                    error={errors?.name?.message}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.description)}
@@ -225,49 +252,127 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 />
                             </div>
                         </>
-                    ) : service === 'LLM' ? (
+                    ) : service === 'LARGE LANGUAGE MODEL' ? (
                         <div className='row-zyx'>
                             <FieldEdit
                                 className='col-6'
                                 type='password'
                                 label={t(langKeys.apikey)}
+                                onChange={(value) => setValue('apikey', value)}
+                                valueDefault={row ? (row.apikey || "") : ""}
+                                error={errors?.apikey?.message}
                             />
                             <FieldSelect
                                 className='col-6'
                                 label={t(langKeys.provider)}
-                                data={[]}
-                                optionDesc=''
-                                optionValue=''
+                                data={providers}
+                                optionDesc='domaindesc'
+                                optionValue='domaindesc'
+                                onChange={(value) => {
+                                    if(value) {
+                                        setValue('provider', value.domaindesc)
+                                    } else {
+                                        setValue('provider', '')
+                                    }
+                                }}
+                                valueDefault={row ? (row.provider || "") : ""}
+                                error={errors?.provider?.message}
                             />
                             <FieldEdit
                                 className='col-6'
                                 label={t(langKeys.name)}
+                                onChange={(value) => setValue('name', value)}
+                                valueDefault={row ? (row.name || "") : ""}
+                                error={errors?.name?.message}
                             />
                             <FieldEdit
                                 className='col-6'
                                 label={t(langKeys.description)}
+                                onChange={(value) => setValue('description', value)}
+                                valueDefault={row ? (row.description || "") : ""}
+                                error={errors?.description?.message}
                             />
                         </div>
-                    ): service === 'RAS' ? (
+                    ): service === 'RASA' ? (
                         <>
                             <div className='row-zyx'>
                                 <FieldEdit
                                     className='col-6'
                                     label={t(langKeys.endpoint)}
+                                    onChange={(value) => setValue('endpoint', value)}
+                                    valueDefault={row ? (row.endpoint || "") : ""}
+                                    error={errors?.endpoint?.message}
                                 />
                             </div>
                             <div className='row-zyx'>
                                 <FieldEdit
                                     className='col-6'
                                     label={t(langKeys.name)}
+                                    onChange={(value) => setValue('name', value)}
+                                    valueDefault={row ? (row.name || "") : ""}
+                                    error={errors?.name?.message}
                                 />
                                 <FieldEdit
                                     className='col-6'
                                     label={t(langKeys.description)}
+                                    onChange={(value) => setValue('description', value)}
+                                    valueDefault={row ? (row.description || "") : ""}
+                                    error={errors?.description?.message}
                                 />
                             </div>
                         </>
-                    ): (
+                    ): service !== '' ? (
+                        <>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.endpoint)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('endpoint', value)}
+                                    valueDefault={row ? (row.endpoint || "") : ""}
+                                    error={errors?.endpoint?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.modelid)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('modelid', value)}
+                                    valueDefault={row ? (row.modelid || "") : ""}
+                                    error={errors?.modelid?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.apikey)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('apikey', value)}
+                                    valueDefault={row ? (row.apikey || "") : ""}
+                                    error={errors?.apikey?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.provider)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('provider', value)}
+                                    valueDefault={row ? (row.provider || "") : ""}
+                                    error={errors?.provider?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">   
+                                <FieldEdit
+                                    label={t(langKeys.description)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('description', value)}
+                                    valueDefault={row ? (row.description || "") : ""}
+                                    error={errors?.description?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.name)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('name', value)}
+                                    valueDefault={row ? (row.name || "") : ""}
+                                    error={errors?.name?.message}
+                                />
+                            </div>
+                        </>
+                    ) : (
                         <></>
                     )}
                 </div>
@@ -320,29 +425,37 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                 }
             },
             {
-                Header: t(langKeys.endpoint),
-                accessor: 'endpoint',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.modelid),
-                accessor: 'modelid',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.provider),
-                accessor: 'provider',
-                NoFilter: true
+                Header: t(langKeys.name),
+                accessor: 'name',
+                NoFilter: true,
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: true
+                NoFilter: true,
             },
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.endpoint),
+                accessor: 'endpoint',
+                NoFilter: true,
+                Cell: (props: Dictionary) => {
+                    const { endpoint } = props.cell.row.original;
+                    return endpoint !== '' ? endpoint : t(langKeys.none);
+                }
+            },
+            {
+                Header: t(langKeys.provider),
+                accessor: 'provider',
+                NoFilter: true,
+                Cell: (props: Dictionary) => {
+                    const { provider } = props.cell.row.original;
+                    return provider !== '' ? provider : t(langKeys.none);
+                }
             },
             {
                 Header: t(langKeys.status),

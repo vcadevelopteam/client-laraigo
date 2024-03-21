@@ -330,9 +330,9 @@ export const getIntelligentModelsSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insIntelligentModels = ({ id, operation, description, endpoint, modelid, provider, apikey, type, status }: Dictionary): IRequestBody => ({
+export const insIntelligentModels = ({ id, operation, description, endpoint, modelid, provider, name, apikey, type, status }: Dictionary): IRequestBody => ({
     method: "UFN_INTELLIGENTMODELS_INS",
-    parameters: { id, operation, description, endpoint, modelid, provider, apikey, type, status }
+    parameters: { id, operation, description, endpoint, modelid, provider, name, apikey, type, status }
 });
 
 export const getSLASel = (id: number): IRequestBody => ({
