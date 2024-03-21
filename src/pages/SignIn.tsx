@@ -270,7 +270,7 @@ const SignIn = () => {
             document.title = "Laraigo";
             iconLink.href = '/favicon.ico';
         }
-	}, [customDomainData])
+	}, [customDomainData, getCustomDomain])
 
 
 
