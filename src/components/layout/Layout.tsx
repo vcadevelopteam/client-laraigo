@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import IconButton from '@material-ui/core/IconButton';
+import { notCustomUrl } from 'pages/dashboard/constants';
 const drawerWidth = 260;
 const drawerWidthCompressed = 73;
 const headerHeight = 54;
@@ -338,20 +339,9 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
     const openDrawer = useSelector(state => state.popus.openDrawer);
+
     const wsConnected = useSelector(state => state.inbox.wsConnected);
     const { t } = useTranslation();
-    
-    useEffect(() => {
-        const title = localStorage.getItem("title")
-        const headeicon = localStorage.getItem("headeicon")
-        if(title && headeicon){
-            const link = document.createElement('link');
-            link.rel = 'icon';
-            link.href = headeicon;  
-            document.head.appendChild(link);
-            document.title = title;
-        }
-    }, [])
 
     return (
         <>
