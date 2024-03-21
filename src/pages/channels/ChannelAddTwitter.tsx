@@ -33,7 +33,7 @@ const useChannelAddStyles = makeStyles(() => ({
 export const ChannelAddTwitter: FC<{ edit: boolean }> = ({ edit }) => {
     const { t } = useTranslation();
 
-    const [coloricon, setColoricon] = useState("#1D9BF0");
+    const [coloricon, setColoricon] = useState("#000000");
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setSetins] = useState(false);
@@ -66,7 +66,7 @@ export const ChannelAddTwitter: FC<{ edit: boolean }> = ({ edit }) => {
             other: "",
             form: "",
             apikey: "",
-            coloricon: "#1D9BF0",
+            coloricon: "#000000",
             voximplantcallsupervision: false,
         },
         service: {

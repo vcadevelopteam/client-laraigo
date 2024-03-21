@@ -37,7 +37,7 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setSetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
-    const [coloricon, setColoricon] = useState("#1D9BF0");
+    const [coloricon, setColoricon] = useState("#000000");
     const [channelreg, setChannelreg] = useState(true);
 
     const mainResult = useSelector((state) => state.channel.channelList);
@@ -66,7 +66,7 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
             other: "",
             form: "",
             apikey: "",
-            coloricon: "#1D9BF0",
+            coloricon: "#000000",
             voximplantcallsupervision: false,
         },
         service: {
