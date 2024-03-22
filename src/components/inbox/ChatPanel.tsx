@@ -433,10 +433,9 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const user = useSelector(state => state.login.validateToken.user);
     const groups = user?.groups?.split(",") || [];
-
     const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
     const [agentList, setAgentList] = useState<Dictionary[]>([])
-    const [allowedGroups, setAllowedGroups] = useState("")
+    const [usableGroups, setUsableGroups] = useState<Dictionary[]>([])
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
@@ -513,18 +512,18 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            console.log(agentToReassignList)
             const rules = multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")||[]
             let groups = user?.groups ? user?.groups.split(",") : [];
-            if(rules?.data){
+            if(rules?.data && propertyGrupoDelegacion){
                 groups = rules.data.map(item => item.assignedgroup)
             }
+            setUsableGroups(groups)
             if (user.properties.limit_reassign_group) {
                 setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
             } else {
                 setUserToReassign((multiData?.data?.[3]?.data || []))
             }
-            if(user?.roledesc?.includes("ASESOR") && propertyAsesorReassign){
+            if(propertyAsesorReassign && !propertyGrupoDelegacion){
                 const usergroups = (user?.groups||"")?.split(',')
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
@@ -536,13 +535,17 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         const group = getValues('newUserGroup')
-        if(!(user?.roledesc?.includes("ASESOR")  && propertyAsesorReassign)){
-            setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (group ? (x.groups || "").split(",").includes(group) : (user?.properties.limit_reassign_group && groups.length > 0 ? groups.some(y => (x.groups || "").split(",").includes(y)) : true))))
+        if(propertyAsesorReassign){
+            if(!propertyGrupoDelegacion){
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => usableGroups.includes(group))));
+            }else{
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (group ? (x.groups || "").split(",").includes(group) : (user?.properties.limit_reassign_group && groups.length > 0 ? groups.some(y => (x.groups || "").split(",").includes(y)) : true))))
+            }
         }
-        if(!group){
+        else{
             setAgentList([])
         }
-    }, [propertyAsesorReassign, userToReassign, getValues('newUserGroup')])
+    }, [propertyAsesorReassign, userToReassign, getValues('newUserGroup'), usableGroups])
 
     return (
         <DialogZyx
@@ -555,7 +558,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             button2Type="submit"
         >
             <div className="row-zyx">
-                {!(user?.roledesc?.includes("ASESOR") && propertyAsesorReassign) && <FieldSelect
+                {propertyGrupoDelegacion && <FieldSelect
                     label={t(langKeys.group_plural)}
                     className="col-12"
                     valueDefault={getValues('newUserGroup')}
@@ -569,7 +572,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />}
-                {propertyGrupoDelegacion && <FieldSelect
+                {propertyAsesorReassign && <FieldSelect
                     label={t(langKeys.advisor)}
                     className="col-12"
                     valueDefault={getValues('newUserId')}
@@ -984,6 +987,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
     const closeTicket = (newstatus: string) => {
         if (newstatus === "CERRADO") {
             let tipificationproperty = (multiData?.data?.[12]?.data || [{ propertyvalue: "0" }])[0];
@@ -1036,6 +1040,10 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
             }
         }
     }, [mainAux2])
+    useEffect(() => {
+        console.log(multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL"))
+        console.log(!!multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)
+    }, [multiDataAux])
 
     return (
         <>
@@ -1100,7 +1108,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 {(
                     ticketSelected?.status !== 'CERRADO' &&
                     ticketSelected?.communicationchanneltype !== "VOXI" &&
-                    (propertyAsesorReassign || propertyGrupoDelegacion)
+                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)) 
                 ) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
@@ -1154,8 +1162,8 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
             <DialogReassignticket
                 openModal={openModalReassignticket}
                 setOpenModal={setOpenModalReassignticket}
-                propertyAsesorReassign={propertyAsesorReassign}
-                propertyGrupoDelegacion={propertyGrupoDelegacion}
+                propertyAsesorReassign={user?.roledesc?.includes("ASESOR")?propertyAsesorReassign:true}
+                propertyGrupoDelegacion={user?.roledesc?.includes("ASESOR")?((!propertyAsesorReassign && !propertyGrupoDelegacion)?true:propertyGrupoDelegacion):true}
             />
             <DialogSendHSM
                 openModal={openModalHSM}
