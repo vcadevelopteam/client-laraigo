@@ -5020,13 +5020,13 @@ export const massDelReassignmentRules = (groupslistassignmentruleid:string) => (
     parameters: { groupslistassignmentruleid },
 });
 
-export const getAssignmentRulesByGroup = (group:string) => ({
+export const getAssignmentRulesByGroup = (group:string, usergroups: string) => ({
     method: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
     key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
-    parameters: { group },
+    parameters: { group, usergroups },
 });
-export const getDomainByDomainName = (domainname:string, usergroups: string) => ({
+export const getDomainByDomainName = (domainname:string) => ({
     method: "UFN_DOMAIN_BY_DOMAINNAME",
     key: "UFN_DOMAIN_BY_DOMAINNAME",
-    parameters: { domainname, usergroups },
+    parameters: { domainname },
 });
