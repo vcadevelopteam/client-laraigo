@@ -266,10 +266,10 @@ export const selOrgSimpleList = (): IRequestBody => ({
     parameters: {}
 });
 
-export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }: Dictionary): IRequestBody => ({
+export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid, config }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
     key: "UFN_PROPERTY_INS",
-    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }
+    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid, config }
 });
 
 
@@ -1140,6 +1140,12 @@ export const getasesoresbyorgid = (closedby: string, communicationchannel: strin
 
 export const getChatflowBlockLst = (): IRequestBody => ({
     method: "UFN_CHATFLOW_BLOCK_LST",
+    parameters: {}
+});
+
+export const getChatflowBlockActiveSel = (): IRequestBody => ({
+    method: "UFN_CHATFLOW_BLOCK_ACTIVE_SEL",
+    key: "UFN_CHATFLOW_BLOCK_ACTIVE_SEL",
     parameters: {}
 });
 

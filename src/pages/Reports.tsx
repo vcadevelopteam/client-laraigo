@@ -51,6 +51,7 @@ import { columnsHideShow, columnsHideGraphic, columnGroupedBy } from 'common/hel
 import TipificationReport from './staticReports/ReportTipification';
 import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 import { CellProps } from 'react-table';
+import InputRetryReport from './staticReports/ReportInputRetry';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1008,8 +1009,13 @@ const Reports: FC = () => {
     }
 
     const handleSelectedString = (key: string) => {
-        setViewSelected(key);
+        console.log("Selected key:", key);
+        setViewSelected(key);       
     }
+
+
+
+  
 
     const reportSwitch = (report: any, index: number) => {   
         switch (report.reportname) {
@@ -1311,27 +1317,49 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
-                case 'PRODUCTIVITYHOURS':
-                    return (
-                        <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                            <Card >
-                                <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("productivityhoursreport")}}>
-                                    <CardMedia
-                                        component="img"
-                                        height="140"
-                                        className={classes.media}
-                                        image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
-                                        title={t('report_' + report?.origin)}
-                                    />
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
-                                            {t('report_' + report?.origin)}
-                                        </Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
-                    )                
+            case 'PRODUCTIVITYHOURS':
+                return (
+                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("productivityhoursreport")}}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
+                                    title={t('report_' + report?.origin)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t('report_' + report?.origin)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )     
+            case 'INPUTRETRY':
+                return (
+                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("inputretryreport")}}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
+                                    title={t('report_' + report?.origin)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t('report_' + report?.origin)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )                 
+            
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1786,8 +1814,15 @@ const Reports: FC = () => {
                 setSearchValue={setSearchValue} 
             />
         )
-    }    
-    else {
+    }  else if (viewSelected === "inputretryreport") {
+        return (
+            <InputRetryReport 
+                setViewSelected={setViewSelected}
+                row={rowSelected}
+                setSearchValue={setSearchValue} 
+            />
+        )
+    } else {
         return (
             <ReportItem
                 setViewSelected={setViewSelected}

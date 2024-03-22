@@ -2184,6 +2184,8 @@ export const langKeys = {
   default_application_tooltip: "default_application_tooltip",
   default_organization: 'default_organization',
   default_organization_tooltip: "default_organization_tooltip",
+  activate_derivation_direction: 'activate_derivation_direction',
+  activate_derivation_direction_tooltip: "activate_derivation_direction_tooltip",
   password_required: 'password_required',
   organization_by_default: 'organization_by_default',
   field_required: 'field_required',
@@ -2603,6 +2605,10 @@ export const langKeys = {
   report_inputretry_answer: 'report_inputretry_answer',
   report_inputretry_attempt: 'report_inputretry_attempt',
   report_inputretry_valid: 'report_inputretry_valid',
+  report_inputretry_maxX: 'report_inputretry_maxX',
+  report_inputretry_maxY: 'report_inputretry_maxY',
+  report_inputretry_moreX: 'report_inputretry_moreX',
+
 
   report_interaction: 'report_interaction',
   report_interaction_filter_channels: 'report_interaction_filter_channels',
