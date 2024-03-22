@@ -5019,3 +5019,8 @@ export const getAssignmentRulesByGroup = (group:string) => ({
     key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
     parameters: { group },
 });
+export const getDomainByDomainName = (domainname:string) => ({
+    method: "UFN_DOMAIN_BY_DOMAINNAME",
+    key: "UFN_DOMAIN_BY_DOMAINNAME",
+    parameters: { domainname },
+});

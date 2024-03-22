@@ -4,7 +4,7 @@ import { selectTicket, setUserType, emitEvent, cleanAlerts, setAgentsToReassign,
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, getMultiCollectionAux2, resetAllMain } from 'store/main/actions';
-import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getPropertiesIncludingName, getDocumentLibraryByUser } from 'common/helpers';
+import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getPropertiesIncludingName, getDocumentLibraryByUser, getDomainByDomainName } from 'common/helpers';
 import { ILibrary } from '@types';
 
 const MessageInbox: React.FC = () => {
@@ -80,7 +80,7 @@ const MessageInbox: React.FC = () => {
             getValuesFromDomainLight("MOTIVOCIERRE"),
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
-            getValuesFromDomainLight("GRUPOS"),
+            getDomainByDomainName("GRUPOS"),
             getListQuickReply(),
             getMessageTemplateLst(''),
             getCommChannelLst(),
