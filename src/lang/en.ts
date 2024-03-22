@@ -2422,6 +2422,10 @@ const translation: LangKeys = {
   report_inputretry_answer: "Answer",
   report_inputretry_attempt: "Attempt",
   report_inputretry_valid: "Valid",
+  report_inputretry_maxX: 'Max X attempts',
+  report_inputretry_maxY: 'Max Y attempts',
+  report_inputretry_moreX: 'More than Y attempts',
+
 
   report_interaction: "Interactions",
   report_interaction_filter_channels: 'Channels',
