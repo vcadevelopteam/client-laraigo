@@ -2184,6 +2184,8 @@ export const langKeys = {
   default_application_tooltip: "default_application_tooltip",
   default_organization: 'default_organization',
   default_organization_tooltip: "default_organization_tooltip",
+  activate_derivation_direction: 'activate_derivation_direction',
+  activate_derivation_direction_tooltip: "activate_derivation_direction_tooltip",
   password_required: 'password_required',
   organization_by_default: 'organization_by_default',
   field_required: 'field_required',

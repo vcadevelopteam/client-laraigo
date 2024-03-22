@@ -245,29 +245,43 @@ const SignIn = () => {
     const [getCustomDomain, setGetCustomDomain] = useState(false);
     const recaptchaRef = useRef<ReCAPTCHA | null>(null);
     const customDomainData = useSelector(state => state.corporation.mainData);
+    const [tab, settab] = useState({
+        title: "",
+        icon: "favicon-transparent.ico"
+    })
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 	React.useEffect(() => {
         if(isCustomDomain){
             const currentUrl = window.location.href
             const customDomain = currentUrl.replace('https://', '').replace('http://', '').split('.')[0]
-            dispatch(showBackdrop(true))
+            // dispatch(showBackdrop(true))
             dispatch(getCorpDetails(customDomain))
             setGetCustomDomain(true)
+        } else {
+            settab({
+                title: "Laraigo",
+                icon: "/favicon.ico"
+            })
         }
 	}, [])
 
 	React.useEffect(() => {
-        const iconLink = document.querySelector('link[rel="icon"]');
-        if(getCustomDomain && !customDomainData.loading && !customDomainData.error){
-            setCustomLogoURL(customDomainData?.data?.[0]||null) 
-            document.title  = customDomainData?.data?.[0]?.corpdesc || "Laraigo";    
-            iconLink.href = customDomainData?.data?.[0]?.iconurl||"/favicon.ico";             
-            setGetCustomDomain(false)
-            dispatch(showBackdrop(false))
-        }else{
-            document.title = "Laraigo";
-            iconLink.href = '/favicon.ico';
+        if (getCustomDomain) {
+            if(!customDomainData.loading && !customDomainData.error){
+                setCustomLogoURL(customDomainData?.data?.[0]||null) 
+                settab({
+                    title: customDomainData?.data?.[0]?.corpdesc || "Laraigo",
+                    icon: customDomainData?.data?.[0]?.iconurl||"/favicon.ico"
+                })
+                setGetCustomDomain(false)
+                dispatch(showBackdrop(false))
+            } else if (customDomainData.error) {
+                settab({
+                    title: "Laraigo",
+                    icon: "/favicon.ico"
+                })
+            }
         }
 	}, [customDomainData, getCustomDomain])
 
@@ -372,6 +386,8 @@ const SignIn = () => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
             dispatch(connectAgentUI(resLogin.user.automaticConnection ?? false))
             localStorage.setItem("firstLoad", "1") //para saber si lanzar el automatic connection cuando el get user haya terminado
+            localStorage.setItem("title", "")
+            localStorage.setItem("headeicon", "")
             window.open(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor", "_self");
         }
     }, [resLogin]);
@@ -380,6 +396,8 @@ const SignIn = () => {
         <>
             <Helmet>
                 <meta name="google-signin-client_id" content={`${apiUrls.GOOGLECLIENTID_LOGIN}`} />
+                <title>{tab.title}</title>
+                <link rel="icon" href={tab.icon} />
             </Helmet>
             <main>
                 <div className={classes.container}>

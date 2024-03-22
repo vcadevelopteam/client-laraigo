@@ -179,7 +179,15 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ component: Component, ...rest }) 
 
 	React.useEffect(() => {
 		if (!resValidateToken.error && !resValidateToken.loading) {
-			// const automaticConnection = resLogin.user?.automaticConnection || false;
+			localStorage.setItem("title", resValidateToken.user?.corpdesc!!);
+			localStorage.setItem("headeicon", resValidateToken.user?.iconurl!!);
+
+			const link = document.createElement('link');
+			link.rel = 'icon';
+			link.href = resValidateToken.user?.iconurl || "/favicon.ico";
+			document.head.appendChild(link);
+			document.title = resValidateToken.user?.corpdesc || "Laraigo";
+
 			const automaticConnection = localStorage.getItem("firstLoad") === "1";
 			const fromChangeOrganization = localStorage.getItem("changeorganization") === "1";
 			if (automaticConnection) {
