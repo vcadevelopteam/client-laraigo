@@ -11,7 +11,6 @@ import { FieldErrors } from "react-hook-form";
 import { FormControlLabel, Tooltip } from "@material-ui/core";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 
-
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -49,9 +48,9 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
-    const [isRetrieval, setIsRetrieval] = useState(row?.retrieval || true);
     const [isCodeInterpreter, setIsCodeInterpreter] = useState(row?.codeinterpreter || false);
-    const allbasemodels = multiDataAux?.data?.[2]?.data||[];
+    const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
+    
     const retrievalbasemodels = [
         {
             "domainid": 437605,
@@ -112,14 +111,26 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     maxLength={640}                                    
                 />
                 <FieldSelect
-                    label={t(langKeys.basemodel)}
-                    data={isRetrieval ? retrievalbasemodels : allbasemodels}
-                    valueDefault={getValues('basemodel')}
-                    onChange={(value) => setValue('basemodel', value.domainvalue)}
-                    error={errors?.basemodel?.message}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
                     className="col-6"
+                    data={multiDataAux?.data?.[3]?.data.filter(item => item.type === 'LARGE LANGUAGE MODEL') || []}
+                    label={t(langKeys.conector)}
+                    valueDefault={getValues('intelligentmodelsid')}
+                    onChange={(value) => {
+                        if(value) {
+                            setValue('intelligentmodelsid', value.id)
+                            setValue('apikey', value.apikey)
+                            setValue('basemodel', '')
+                            setConector(value)
+                        } else {
+                            setValue('intelligentmodelsid', 0)
+                            setValue('apikey', '')
+                            setValue('basemodel', '')
+                            setConector({})
+                        }
+                    }}
+                    error={errors?.intelligentmodelsid?.message}
+                    optionDesc="name"
+                    optionValue="id"
                 />
                 <FieldSelect
                     className="col-6"
@@ -130,35 +141,46 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
-                <FieldEdit
-                    className="col-12"
-                    label={t(langKeys.apikey)}
-                    valueDefault={getValues('apikey')}
-                    onChange={(value) => setValue('apikey', value)}
-                    error={errors?.apikey?.message}
-                    type="password"
+                <FieldSelect
+                    label={t(langKeys.basemodel)}
+                    data={conector?.provider === 'Open AI' ? retrievalbasemodels : []}
+                    valueDefault={getValues('basemodel')}
+                    onChange={(value) => {
+                        if(value) {
+                            setValue('basemodel', value.domainvalue)
+                        } else {
+                            setValue('basemodel', '')
+                        }
+                    }}
+                    error={errors?.basemodel?.message}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                    className="col-6"
                 />
-                <FormControlLabel style={{margin: 0}}
-                    control={
-                        <>
-                            <IOSSwitch
-                                checked={isCodeInterpreter}
-                                onChange={(event) => {
-                                    setIsCodeInterpreter(event.target.checked)
-                                    setValue('codeinterpreter', event.target.checked)
-                                }}
-                                color='primary'
-                            />
-                            <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
-                            <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
-                                <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
-                            </Tooltip>
-                        </>
-                    }                  
-                    className="col-5"
-                    label=""
-                />
-
+                {conector?.provider === 'Open AI' ? (
+                    <FormControlLabel style={{margin: 0}}
+                        control={
+                            <>
+                                <IOSSwitch
+                                    checked={isCodeInterpreter}
+                                    onChange={(event) => {
+                                        setIsCodeInterpreter(event.target.checked)
+                                        setValue('codeinterpreter', event.target.checked)
+                                    }}
+                                    color='primary'
+                                />
+                                <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
+                                <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
+                                </Tooltip>
+                            </>
+                        }                  
+                        className="col-5"
+                        label=""
+                    />
+                ) : (
+                    <div className="col-6"></div>
+                )}
             </div>
         </div>
     );

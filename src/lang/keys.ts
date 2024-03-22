@@ -5792,6 +5792,7 @@ export const langKeys = {
   personality_personalized: 'personality_personalized',
   contextperconversation: 'contextperconversation',
   firstinteraction: 'firstinteraction',
+  conector: 'conector',
 };
 
 export type LangKeys = typeof langKeys;

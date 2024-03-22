@@ -131,14 +131,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
         }))
     });
 
-    const services = [
-        ...dataDomainStatus,
-        {
-            domaindesc: 'LARGE LANGUAGE MODEL',
-            domainvalue:'LARGE LANGUAGE MODEL',
-        },
-    ]
-
     const providers = [
         {
             domaindesc: 'Open AI'
@@ -203,7 +195,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                     setValue('type', '')
                                 }
                             }}
-                            data={services}
+                            data={dataDomainStatus || []}
                             optionDesc='domaindesc'
                             optionValue='domainvalue'
                         />

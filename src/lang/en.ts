@@ -5880,6 +5880,7 @@ const translation: LangKeys = {
   personality_personalized: 'Custom Mode',
   contextperconversation: 'Context per conversation',
   firstinteraction: 'First user interaction',
+  conector: 'Conector',
 };
 
 const enResource: ResourceLanguage = {

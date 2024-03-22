@@ -14,8 +14,8 @@ import AddIcon from '@material-ui/icons/Add';
 import { Delete } from "@material-ui/icons";
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
-import { execute, getCollection } from "store/main/actions";
-import { assistantAiSel, exportExcel, insAssistantAi } from "common/helpers";
+import { execute, getCollection, getMultiCollectionAux } from "store/main/actions";
+import { assistantAiSel, exportExcel, getIntelligentModelsSel, getValuesFromDomain, insAssistantAi } from "common/helpers";
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
 import { deleteAssistant, deleteMassiveAssistant } from "store/gpt/actions";
@@ -310,8 +310,15 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 
     useEffect(() => {
         fetchData();
+        dispatch(
+            getMultiCollectionAux([
+              getValuesFromDomain('ESTADOGENERICO'),
+              getValuesFromDomain('QUERYWITHOUTANSWER'),
+              getValuesFromDomain('BASEMODEL'),
+              getIntelligentModelsSel(0),
+            ])
+          );
     }, []);
-
     const ButtonsElement = () => {
         return (
             <div className={classes.buttonsContainer}>   

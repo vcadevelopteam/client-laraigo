@@ -5806,6 +5806,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   personality_personalized: 'Modo Personalizado',
   contextperconversation: 'Contexto por conversación',
   firstinteraction: 'Primera interacción usuario',
+  conector: 'Conector',
 };
 
 const esResource: ResourceLanguage = {

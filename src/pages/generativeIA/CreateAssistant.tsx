@@ -4,12 +4,11 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TemplateBreadcrumbs, AntTab, AntTabPanelAux, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
-import { execute, getCollectionAux, getMultiCollectionAux } from 'store/main/actions';
+import { execute, getCollectionAux } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { Button, Tabs } from "@material-ui/core";
 import SaveIcon from '@material-ui/icons/Save';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ClearIcon from '@material-ui/icons/Clear';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import AssistantTabDetail from "./TabDetails/AssistantTabDetail";
@@ -17,7 +16,7 @@ import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
 import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
 import { useForm } from "react-hook-form";
 import { Dictionary } from "@types";
-import { assistantAiDocumentSel, decrypt, encrypt, getValuesFromDomain, insAssistantAi, insAssistantAiDoc } from "common/helpers";
+import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
 
@@ -101,16 +100,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [waitSaveUpdateAssistant, setWaitSaveUpdateAssistant] = useState(false)
 
     useEffect(() => {
-        dispatch(
-          getMultiCollectionAux([
-            getValuesFromDomain('ESTADOGENERICO'),
-            getValuesFromDomain('QUERYWITHOUTANSWER'),
-            getValuesFromDomain('BASEMODEL')
-          ])
-        );
-    }, []);
-
-    useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 if(registerError) {
@@ -141,6 +130,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             basemodel: row?.basemodel || '',
             language: row?.language || '',
             organizationname: row?.organizationname || '',
+            intelligentmodelsid: row?.intelligentmodelsid || 0,
             querywithoutanswer: row?.querywithoutanswer || '',
             response: row?.response || '',
             prompt: row?.prompt || '',
@@ -166,6 +156,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('basemodel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
         register('organizationname');
+        register('intelligentmodelsid');
         register('querywithoutanswer', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('response');
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
