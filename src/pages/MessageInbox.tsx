@@ -80,7 +80,7 @@ const MessageInbox: React.FC = () => {
             getValuesFromDomainLight("MOTIVOCIERRE"),
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
-            getDomainByDomainName("GRUPOS", user?.groups||""),
+            getDomainByDomainName("GRUPOS"),
             getListQuickReply(),
             getMessageTemplateLst(''),
             getCommChannelLst(),
