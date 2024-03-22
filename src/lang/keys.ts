@@ -2605,6 +2605,10 @@ export const langKeys = {
   report_inputretry_answer: 'report_inputretry_answer',
   report_inputretry_attempt: 'report_inputretry_attempt',
   report_inputretry_valid: 'report_inputretry_valid',
+  report_inputretry_maxX: 'report_inputretry_maxX',
+  report_inputretry_maxY: 'report_inputretry_maxY',
+  report_inputretry_moreX: 'report_inputretry_moreX',
+
 
   report_interaction: 'report_interaction',
   report_interaction_filter_channels: 'report_interaction_filter_channels',

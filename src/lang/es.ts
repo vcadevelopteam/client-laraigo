@@ -2296,6 +2296,9 @@ const translation: LangKeys = {
   report_inputretry_answer: "Respuesta",
   report_inputretry_attempt: "Intento",
   report_inputretry_valid: "Válido",
+  report_inputretry_maxX: 'Máximo X intentos',
+  report_inputretry_maxY: 'Máximo Y intentos',
+  report_inputretry_moreX: 'Más de Y intentos',
 
   report_interaction: "Interacciones",
   report_interaction_filter_channels: 'Canales',
