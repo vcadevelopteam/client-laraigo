@@ -1456,6 +1456,8 @@ const translation: LangKeys = {
   default_application_tooltip: "This is the module that will always be displayed on the main screen of the platform when logging in.",
   default_organization: 'Default organization',
   default_organization_tooltip: "When enabling the switch, the selected organization is the one that will be entered by default at login.",
+  activate_derivation_direction: 'Activate Derivation Direction',
+  activate_derivation_direction_tooltip: "If it exceeds the response timeout time in the the switch will direct you to the configured flow and block, if kept off it sends only the default value. off, it sends only the default value.",
   password_required: 'Password is required',
   code_duplicate: 'Code duplicated',
   field_required: 'Field is required',

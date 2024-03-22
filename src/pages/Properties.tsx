@@ -12,8 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { Box, CircularProgress } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
-import { FieldEdit, FieldEditArray, FieldEditMulti, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
-import { getDistinctPropertySel, getPropertySel, getValuesFromDomain, insProperty, getCorpSel, getOrgSel, getChannelSel } from 'common/helpers';
+import { FieldEdit, FieldEditArray, FieldEditMulti, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TemplateSwitchYesNo, TitleDetail } from 'components';
+import { getDistinctPropertySel, getPropertySel, getValuesFromDomain, insProperty, getCorpSel, getOrgSel, getChannelSel, getChatflowBlockActiveSel } from 'common/helpers';
 import { getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, execute, getCollectionAux2, resetMainAux2, getMultiCollectionAux2 } from 'store/main/actions';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
@@ -50,7 +50,15 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         height: '48px',
         lineHeight: '48px'
-    }
+    },
+    flexGrow: {
+        flex: 1
+    },
+    switchLabel: {
+        display: 'flex',
+        gap: '1rem',
+        alignItems: 'flex-start'
+    },
 }));
 
 const IDPROPERTIES = 'IDPROPERTIES';
@@ -248,6 +256,7 @@ interface DetailPropertyProps {
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected, arrayBread }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [extraData, setExtraData] = useState<{ loading:boolean, blockInfo: Dictionary[]}>({ loading: false, blockInfo: [] })
     const [waitSave, setWaitSave] = useState(false);
     const [mainaux2loading, setmainaux2loading] = useState(false);
     const [multi2loading, setmulti2loading] = useState(false);
@@ -271,7 +280,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     const dispatch = useDispatch();
 
-    const { control, register, handleSubmit, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, trigger, setValue, getValues, watch, formState: { errors } } = useForm<any>({
         defaultValues: {
             level: row?.level || "",
             corpid: row?.corpid || user?.corpid,
@@ -421,6 +430,12 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                                 getValuesFromDomain(detailResult.data[0].domainname, null, detailResult.data[0].orgid)
                             ]))
                         }
+                        if (detailResult.data[0].config && detailResult.data[0].config.type === 'redirect-flow-block') {
+                            setExtraData((prevValue) => ({ ...prevValue, loading: true }))
+                            dispatch(getMultiCollectionAux([
+                                getChatflowBlockActiveSel()
+                            ]))
+                        }
                     }
                 }
             }
@@ -429,10 +444,16 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     useEffect(() => {
         const indexDomainTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
+        const indexBlockInfo = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_CHATFLOW_BLOCK_ACTIVE_SEL'));
 
         if (indexDomainTable > -1) {
             setDomainTable({ loading: false, data: responseFromSelect.data[indexDomainTable] && responseFromSelect.data[indexDomainTable].success ? responseFromSelect.data[indexDomainTable].data : [] });
         }
+
+        if (indexBlockInfo > -1) {
+            setExtraData((prevValue) => ({ ...prevValue, loading: false, blockInfo: responseFromSelect.data[indexBlockInfo] && responseFromSelect.data[indexBlockInfo].success ? responseFromSelect.data[indexBlockInfo].data : [] }))
+        }
+
     }, [responseFromSelect]);
 
     useEffect(() => {
@@ -646,6 +667,8 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             onChangeSelectValue={onChangeSelectValue}
                             onChangeSwitchValue={onChangeSwitchValue}
                             domainTable={domainTable}
+                            extraData={extraData}
+                            watch={watch}
                         />
                     ))}
                 </div>
@@ -670,6 +693,8 @@ interface ModalProps {
     onChangeSelectValue: (index: any, param: string, value: any) => void;
     onChangeSwitchValue: (index: any, param: string, value: any) => void;
     domainTable: any;
+    extraData: any;
+    watch: any;
 }
 
 interface RowSelected {
@@ -677,10 +702,11 @@ interface RowSelected {
     row: Dictionary | null
 }
 
-const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields, onChangeSelectValue, register, errors, setValue, domainTable }) => {
+const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields, onChangeSelectValue, register, errors, setValue, domainTable, extraData, watch }) => {
     const [fieldValue, setFieldValue] = useState(null);
     const [comboStep, setComboStep] = useState('NONE');
     const [comboValue, setComboValue] = useState<any>(null);
+    const [blockFiltered, setBlockFiltered] = useState<Dictionary[]>([])
 
     const classes = useStyles();
 
@@ -689,6 +715,24 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
     const dispatch = useDispatch();
 
     var valueInput = null;
+
+    useEffect(() => {
+        if (!extraData.loading && extraData.blockInfo.length > 0) {
+            handleFilter(row?.config?.flowid)
+        }
+    }, [extraData]);
+    
+    if (row?.config) {
+        const { config } = watch(`table.${index}.config.enable`)
+    }
+
+    const handleFilter = (value: string) => {
+        const flow = extraData.blockInfo.find((item: Dictionary) => item.chatblockid === value)
+        const blocks = JSON.parse(flow?.blockgroup || '[]')
+        const allBlocks = blocks.flatMap(group => group.blocks.map(block => ({ id: block.id, title: block.title })));
+        setBlockFiltered(allBlocks)
+    }
+    
 
     if (row) {
         switch (row?.inputtype) {
@@ -788,22 +832,106 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
             case '':
             case 'TEXT':
                 if (edit) {
-                    valueInput =
-                        <FieldEditMulti
-                            className={classes.mb2}
-                            error={errors?.table?.[index]?.propertyvalue?.message}
-                            /*fregister={{
-                                ...register(`table.${index}.propertyvalue`, {
-                                    validate: {
-                                        value: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                    }
-                                })
-                            }}*/
-                            rows={1}
-                            label={t(langKeys.value)}
-                            onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
-                            valueDefault={row ? (row.propertyvalue || '') : ''}
-                        />
+                    if (!row.config) {
+                        valueInput =
+                            <FieldEditMulti
+                                error={errors?.table?.[index]?.propertyvalue?.message}
+                                /*fregister={{
+                                    ...register(`table.${index}.propertyvalue`, {
+                                        validate: {
+                                            value: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        }
+                                    })
+                                }}*/
+                                rows={1}
+                                label={t(langKeys.value)}
+                                onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
+                                valueDefault={row ? (row.propertyvalue || '') : ''}
+                            />
+                    } else if(row.config.type === 'redirect-flow-block') {
+                        valueInput = <div>
+                            <FieldEditMulti
+                                error={errors?.table?.[index]?.propertyvalue?.message}
+                                /*fregister={{
+                                    ...register(`table.${index}.propertyvalue`, {
+                                        validate: {
+                                            value: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        }
+                                    })
+                                }}*/
+                                rows={1}
+                                label={t(langKeys.value)}
+                                onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
+                                valueDefault={row ? (row.propertyvalue || '') : ''}
+                                disabled={row?.config?.enable || false}
+                            />
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem'}}>
+                                <div>
+                                    <TemplateSwitchYesNo
+                                        label={t(langKeys.activate_derivation_direction)}
+                                        className={classes.switchLabel}
+                                        valueDefault={row?.config?.enable || false}
+                                        helperText={t(langKeys.activate_derivation_direction_tooltip)}
+                                        onChange={(value) => {
+                                            setValue(`table.${index}.config.enable`, value);
+                                        }}
+                                    />
+                                </div>
+                                
+                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+                                    <label htmlFor="">{t(langKeys.flow)}</label>
+                                    <FieldSelect
+                                        className={classes.flexGrow}
+                                        data={extraData.blockInfo}
+                                        error={errors?.table?.[index]?.config?.flowid?.message}
+                                        disabled={!row?.config?.enable || false}
+                                        fregister={{
+                                            ...register(`table.${index}.config.flowid`, {
+                                                validate: {
+                                                    validate: (value: any) => {
+                                                        if (row?.config?.enable) return (value && value.length) || t(langKeys.field_required)
+                                                        return true
+                                                    },
+                                                }
+                                            })
+                                        }}
+                                        loading={extraData.loading}
+                                        onChange={(value) => {
+                                            setValue(`table.${index}.config.flowid`, value.chatblockid)
+                                            handleFilter(value.chatblockid)
+                                        }}
+                                        optionDesc='title'
+                                        optionValue='chatblockid'
+                                        valueDefault={row?.config.flowid || ''}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+                                    <label htmlFor="">{t(langKeys.app_block)}</label>
+                                    <FieldSelect
+                                        className={classes.flexGrow}
+                                        data={blockFiltered}
+                                        error={errors?.table?.[index]?.config?.blockid?.message}
+                                        disabled={!row?.config?.enable || false}
+                                        fregister={{
+                                            ...register(`table.${index}.config.blockid`, {
+                                                validate: {
+                                                    validate: (value: any) => {
+                                                        if (row?.config?.enable) return (value && value.length) || t(langKeys.field_required)
+                                                        return true
+                                                    },
+                                                }
+                                            })
+                                        }}
+                                        loading={extraData.loading}
+                                        onChange={(value) => setValue(`table.${index}.config.blockid`, value.id)}
+                                        optionDesc='title'
+                                        optionValue='id'
+                                        valueDefault={row?.config.blockid || ''}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    }
                 }
                 else {
                     valueInput =

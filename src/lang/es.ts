@@ -1680,6 +1680,8 @@ const translation: LangKeys = {
   default_application_tooltip: "Este es el módulo que siempre se mostrará en la pantalla principal de la plataforma al iniciar sesión.",
   default_organization: 'Organización por defecto',
   default_organization_tooltip: "Al habilitar el switch, la organización seleccionada es a la que se ingresará de forma predeterminada al iniciar sesión.",
+  activate_derivation_direction: '¿Activar dirección de derivación?',
+  activate_derivation_direction_tooltip: "Si supera el tiempo de espera de respuesta en el bot, al encender el switch te dirige al flujo y bloque configurado, si se mantiene apagado envía solo el valor por defecto",
   password_required: 'La contraseña es requerida',
   field_required: 'El campo es requerido',
   field_nonnegative: 'El campo no puede ser negativo',
