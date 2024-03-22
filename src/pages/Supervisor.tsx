@@ -493,6 +493,7 @@ const Supervisor: FC = () => {
     const multiData = useSelector(state => state.main.multiData);
     const [initial, setInitial] = useState(true)
     const firstLoad = React.useRef(true);
+    const user = useSelector(state => state.login.validateToken.user);
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error) {
@@ -511,7 +512,7 @@ const Supervisor: FC = () => {
             getValuesFromDomainLight("MOTIVOCIERRE"),
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
-            getDomainByDomainName("GRUPOS"),
+            getDomainByDomainName("GRUPOS",user?.groups||""),
             getListQuickReply(),
             getMessageTemplateLst(''),
             getCommChannelLst(),
