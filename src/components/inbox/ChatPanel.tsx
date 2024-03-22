@@ -1108,7 +1108,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 {(
                     ticketSelected?.status !== 'CERRADO' &&
                     ticketSelected?.communicationchanneltype !== "VOXI" &&
-                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)) 
+                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && !!multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)) 
                 ) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
