@@ -72,6 +72,10 @@ const paths = {
         path: "/paymentorderepayco/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderepayco/${corpid}/${orgid}/${ordercode}`,
     },
+    PHONE_REDIRECT: {
+        path: "/phoneredirect/:phone",
+        resolve: (phone: string) => `/phoneredirect/${phone}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,
