@@ -2424,6 +2424,10 @@ const translation: LangKeys = {
   report_inputretry_answer: "Answer",
   report_inputretry_attempt: "Attempt",
   report_inputretry_valid: "Valid",
+  report_inputretry_maxX: 'Max X attempts',
+  report_inputretry_maxY: 'Max Y attempts',
+  report_inputretry_moreX: 'More than Y attempts',
+
 
   report_interaction: "Interactions",
   report_interaction_filter_channels: 'Channels',
@@ -2669,6 +2673,7 @@ const translation: LangKeys = {
   report_userproductivity_tmradviseravg: "TMR Agent",
   report_userproductivity_tmravg_help: "Average response time of the agent/bot",
   report_userproductivity_tmradviseravg_help: "Average agent response time",
+  tipification_necesary:"You cannot close tickets that have not been typed.",
 
   report_userproductivity_cardtme: 'TME',
   report_userproductivity_cardtmo: 'TMO',
@@ -4130,6 +4135,7 @@ const translation: LangKeys = {
   analytics: "Analytics",
   propertyintegracionodoocrm: 'Turn on Odoo CRM integration',
   propertyaccionfuerahorario: 'Sets the bot action after working hours',
+  propertyhabilitarenvio_audios: 'Flag to enable/disable the audio sending functionality',
   propertyresponsewaitingmessagebottype: 'Indicates the type of response on waiting',
   propertyencuesta: 'Enables the survey',
   propertycierreautomatico: 'Turn on general automatic ticket closing',

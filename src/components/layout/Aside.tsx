@@ -198,9 +198,8 @@ const Aside = ({ classes, headerHeight }: IProps) => {
                 if (subroutes.length > 0) {
                     if (subroutes.includes('/invoice')) {
                         if (roles.includes('SUPERADMIN') || roles.includes("SUPERADMINISTRADOR SOCIOS") || roles?.includes('ADMINISTRADOR')) {
-                            const filteredSubroutes = ['/invoice'];
+                            const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
                             acc.push({ ...view, options: filteredSubroutes });
-
                         }
                         //  else if (roles.includes('ADMINISTRADOR') || roles.includes('SUPERVISOR')) {
                         //     const filteredSubroutes = ['/invoice']

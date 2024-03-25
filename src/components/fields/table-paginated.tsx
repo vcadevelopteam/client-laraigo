@@ -68,9 +68,6 @@ interface Column {
     showColumn?: boolean;
     showGroupedBy?: boolean;
 }
-interface ColumnVisibility {
-    [key: string]: boolean;
-}
 
 export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
     name: string
@@ -737,26 +734,51 @@ const TableZyx = React.memo(({
     const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
     const [filterApplied, setFilterApplied] = useState(false);  
 
+    const [rowByToggleActive, setRowByToggleActive] = useState(false);
+
+    useEffect(() => {
+        const storedPageIndex = localStorage.getItem('currentPageIndex');
+        if (storedPageIndex === null) {
+            localStorage.setItem('currentPageIndex', '0');
+        }
+        return () => {
+            localStorage.removeItem('currentPageIndex'); 
+        };
+    }, []); 
+    
+    const handlePageSizeChange = (newPageSize) => {
+        setPageSize(Number(newPageSize));
+        setPageIndex(0); 
+    };
+
     const handleFirstPageClick = () => {
         setPageIndex(0);
-        localStorage.setItem('currentPageIndex', '0');
+        if (!rowByToggleActive) { 
+            localStorage.setItem('currentPageIndex', '0');
+        }
     };
     
     const handlePrevPageClick = () => {
         const prevPageIndex = pagination.pageIndex - 1;
         setPageIndex(prevPageIndex);
-        localStorage.setItem('currentPageIndex', prevPageIndex.toString());       
+        if (!rowByToggleActive) { 
+            localStorage.setItem('currentPageIndex', prevPageIndex.toString());
+        }
     };
     
     const handleNextPageClick = () => {
         const nextPageIndex = pagination.pageIndex + 1;
         setPageIndex(nextPageIndex);
-        localStorage.setItem('currentPageIndex', nextPageIndex.toString());        
+        if (!rowByToggleActive) {
+            localStorage.setItem('currentPageIndex', nextPageIndex.toString());
+        }
     };
     
     const handleLastPageClick = () => {
         setPageIndex(pageCount - 1);
-        localStorage.setItem('currentPageIndex', (pageCount - 1).toString());      
+        if (!rowByToggleActive) {
+            localStorage.setItem('currentPageIndex', (pageCount - 1).toString());
+        }
     };
     
     const initialColumnVisibility = allColumns.reduce((acc, column) => {
@@ -833,6 +855,7 @@ const TableZyx = React.memo(({
 
     const handleColumnByToggle = (column: ColumnInstance, activate = true) => {
         const columnName = column.id as string;       
+        setRowByToggleActive(false); 
 
         setFilterApplied(false); 
         setPagination(prev => ({ ...prev, distinct: activate ? columnName : "", filters: initialFilters, pageIndex: 0, trigger: true }));
@@ -846,7 +869,7 @@ const TableZyx = React.memo(({
                 newArray.splice(columnIndex, 1); // Remueve la columna del lugar actual
             }    
             return newArray;
-        });      
+        });     
     };    
 
     const handleOrderReset = React.useCallback(()=>{
@@ -861,11 +884,11 @@ const TableZyx = React.memo(({
     };
 
     const handleRadioClick = (columnId: string) => {
-        handleChangePage()
         setColumnGroupedBy((prevGroupedBy) => {
             const isColumnActive = prevGroupedBy.includes(columnId);
             const updatedGroupedBy = isColumnActive ? [] : [columnId];
-          
+            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));
+
     
             if (!isColumnActive) {
                 const columnToToggle = allColumns.find(column => column.id === columnId);
@@ -884,8 +907,7 @@ const TableZyx = React.memo(({
             }
     
             return updatedGroupedBy;
-        });
-        
+        });       
     };    
 
     useEffect(() => {
@@ -911,13 +933,14 @@ const TableZyx = React.memo(({
             filters: {
                 ...prev.filters,
                 [columnName]: {
-                    "value": selectedRowValue,
-                    "operator": "equals"
+                    "value": selectedRowValue || "", // Si selectedRowValue es null, se reemplaza por una cadena vacía
+                    "operator": selectedRowValue === "" || selectedRowValue === null ? "isempty" : "equals" // Si selectedRowValue es "" o null, el operador es "isempty", de lo contrario, es "equals"
                 }
             },
             pageIndex: 0,
-            trigger: true            
-        }));     
+            trigger: true
+        }));         
+        setRowByToggleActive(true); 
     };    
                    
     return (
@@ -1179,7 +1202,7 @@ const TableZyx = React.memo(({
                                                     :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
-                                                        {column.id !== pagination.distinct && handleNoGroupedBy({ ...column, accessor: column.id, Header: column.Header as string }) && (
+                                                        {column.id !== pagination.distinct && !(pagination.filters && column.id in pagination.filters) && handleNoGroupedBy({ ...column, accessor: column.id, Header: column.Header as string }) && (
                                                             <Tooltip title={''}>
                                                                 <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
                                                                     {column.canGroupBy === true && (
@@ -1193,15 +1216,13 @@ const TableZyx = React.memo(({
                                                                                     title: 'Agrupar', 
                                                                                     onClick: () => {
                                                                                         handleColumnByToggle(column) 
-                                                                                        handleChangePage()
-                                                                                    }
-                                                                                    
+                                                                                    }   
                                                                                 }
                                                                             ))}
                                                                         />
                                                                     )}
                                                                 </div>
-                                                            </Tooltip>
+                                                            </Tooltip>                                                           
                                                         )}
 
 
@@ -1217,13 +1238,15 @@ const TableZyx = React.memo(({
                                                                     handleOrderReset()
                                                                 }}
                                                             >
-                                                                {column.id === pagination.distinct && (
+                                                            {(column.id === pagination.distinct || (pagination.filters && column.id in pagination.filters)) && (
                                                                     <KeyboardArrowRightIcon 
                                                                     fontSize="small"
                                                                     color="action"
                                                                     />
                                                                 )}
                                                             </div>
+
+                                                            
                                                             <Box
                                                                 component="div"
                                                                 {...column.getHeaderProps()}
@@ -1313,7 +1336,8 @@ const TableZyx = React.memo(({
                                                                     onClickRow && onClickRow(row.original);
                                                                     handleRowByToggle(cell, cell.column);
                                                                     handleColumnByToggle(cell.column);
-                                                                    handleChangePage();
+                                                                    handleChangePage()
+
                                                                 }
                                                             }}
                                                             
@@ -1348,6 +1372,9 @@ const TableZyx = React.memo(({
                                                         ) : ((cell.column.id !== pagination.distinct && pagination.distinct) ? null : cell.render('Cell'))}
                                                     </>
                                                 )}
+                                                {
+                                                    
+                                                }
                                             </TableCell>
 
                                             )}
@@ -1396,7 +1423,7 @@ const TableZyx = React.memo(({
                             style={{ display: 'inline-flex' }}
                             value={pageSize}
                             onChange={e => {
-                                setPageSize(Number(e.target.value))
+                                handlePageSizeChange(e.target.value);
                             }}
                         >
                             {[5, 10, 20, 50, 100].map(pageSize => (

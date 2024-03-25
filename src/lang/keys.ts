@@ -45,6 +45,7 @@ export const langKeys = {
   assignedgroup: "assignedgroup",
   finish: "finish",
   file: "file",
+  tipification_necesary: "tipification_necesary",
   automaticclosingtime: "automaticclosingtime",
   noteclosingtime: "noteclosingtime",
   successful_enablecirtualassistant: "successful_enablecirtualassistant",
@@ -2605,6 +2606,10 @@ export const langKeys = {
   report_inputretry_answer: 'report_inputretry_answer',
   report_inputretry_attempt: 'report_inputretry_attempt',
   report_inputretry_valid: 'report_inputretry_valid',
+  report_inputretry_maxX: 'report_inputretry_maxX',
+  report_inputretry_maxY: 'report_inputretry_maxY',
+  report_inputretry_moreX: 'report_inputretry_moreX',
+
 
   report_interaction: 'report_interaction',
   report_interaction_filter_channels: 'report_interaction_filter_channels',
@@ -4101,6 +4106,7 @@ export const langKeys = {
   analytics: "analytics",
   propertyintegracionodoocrm: 'propertyintegracionodoocrm',
   propertyaccionfuerahorario: 'propertyaccionfuerahorario',
+  propertyhabilitarenvio_audios: 'propertyhabilitarenvio_audios',
   propertyresponsewaitingmessagebottype: 'propertyresponsewaitingmessagebottype',
   propertyencuesta: 'propertyencuesta',
   propertycierreautomatico: 'propertycierreautomatico',

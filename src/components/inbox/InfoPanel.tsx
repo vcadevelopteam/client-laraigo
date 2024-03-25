@@ -191,6 +191,7 @@ const InfoTab: React.FC = () => {
     const person = useSelector(state => state.inbox.person.data);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [view, setView] = useState('view');
+    const user = useSelector(state => state.login.validateToken.user);
 
     const multiData = useSelector(state => state.main.multiDataAux);
     const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
@@ -225,7 +226,7 @@ const InfoTab: React.FC = () => {
             getValuesFromDomain("NIVELEDUCATIVO"),
             getPropertySelByName("OCUPACION"),
             getValuesFromDomain("TIPOPERSONA"),
-            getAssignmentRulesByGroup(ticketSelected?.usergroup||"")
+            getAssignmentRulesByGroup(ticketSelected?.usergroup||"", user?.groups||"")
         ]));
         return () => {
             dispatch(resetMultiMainAux());
