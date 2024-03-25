@@ -13,6 +13,7 @@ import { CellProps } from 'react-table';
 import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
 import { TemplateBreadcrumbs, FieldSelect, DialogZyx,} from "components";
 import TrafficIcon from '@material-ui/icons/Traffic';
+import { Range } from "react-date-range";
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -60,9 +61,20 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         distinct: {},
         daterange: null,
     });
-    const [allParameters, ] = useState<any>({});
+    const [allParameters, setAllParameters] = useState({});
     const [view, ] = useState("GRID");
     const [, setSelectedRow] = useState<Dictionary | undefined>({});
+    const [state, setState] = useState({ checkedA: false, checkedB: false });
+    const [checkedA, setcheckedA] = useState(false);
+
+    const [dateRange, setdateRange] = useState<Range>({
+        startDate: new Date(new Date().setDate(1)),
+        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        key: "selection",
+    });
+
+
+
 
     const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
         const column = props.cell.column;// eslint-disable-next-line react/prop-types
@@ -128,6 +140,27 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
     }, [mainPaginated]);
 
     useEffect(() => {
+        setAllParameters({
+            ...allParameters,
+            startdate: dateRange.startDate
+                ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
+                : null,
+            enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null,
+        });
+    }, [dateRange]);
+
+    const setValue = (parameterName: any, value: any) => {
+        setAllParameters({ ...allParameters, [parameterName]: value });
+    };
+
+    const handleChange = (event: any) => {
+        setState({ ...state, [event.target.name]: event.target.checked });
+        setValue("bot", event.target.checked);
+        setcheckedA(event.target.checked);
+    };
+
+
+    useEffect(() => {
         if (waitSave) {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
@@ -180,8 +213,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                         startdate: daterange.startDate!,
                         enddate: daterange.endDate!,
                         take: pageSize,
-                        skip: pageIndex * pageSize,
-                        distinct: distinct,
+                        skip: pageIndex * pageSize,                      
                         sorts: sorts,
                         filters: { },
                         ...allParameters,

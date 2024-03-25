@@ -476,12 +476,17 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         distinct: distinct || "",
         origin: origin,
         ...allParameters,
+        maxx: allParameters['maxx'] ? allParameters['maxx'] : 2,
+        maxy: allParameters['maxy'] ? allParameters['maxy'] : 3,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         hours: allParameters['hours'] ? allParameters['hours'] : "",
         asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+
+
+
 
 export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: methodExport,
