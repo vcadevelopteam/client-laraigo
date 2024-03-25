@@ -933,12 +933,13 @@ const TableZyx = React.memo(({
             filters: {
                 ...prev.filters,
                 [columnName]: {
-                    "value": selectedRowValue !== null ? selectedRowValue : "",
+                    "value": selectedRowValue || "", 
+                    "operator": selectedRowValue === "" || selectedRowValue === null ? "isempty" : "equals" 
                 }
             },
             pageIndex: 0,
-            trigger: true            
-        }));     
+            trigger: true
+        }));         
         setRowByToggleActive(true); 
     };    
                    
@@ -1229,19 +1230,18 @@ const TableZyx = React.memo(({
                                                                 style={{ cursor: 'pointer' }}
                                                                 onClick={() => {
                                                                     setPagination(prev => ({
-                                                                        ...prev,
-                                                                        distinct: "",   
-                                                                        filters: initialFilters,  
-                                                                        pageIndex: 0,
-                                                                        trigger: true
+                                                                    ...prev,
+                                                                    distinct: "",
+                                                                    pageIndex: 0,
+                                                                    trigger: true
                                                                     }));
                                                                     handleOrderReset()
                                                                 }}
                                                             >
-                                                                {(column.id === pagination.distinct || (pagination.filters && column.id in pagination.filters)) && (
+                                                            {(column.id === pagination.distinct || (pagination.filters && column.id in pagination.filters)) && (
                                                                     <KeyboardArrowRightIcon 
-                                                                        fontSize="small"
-                                                                        color="action"
+                                                                    fontSize="small"
+                                                                    color="action"
                                                                     />
                                                                 )}
                                                             </div>
