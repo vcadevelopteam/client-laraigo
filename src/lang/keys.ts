@@ -45,6 +45,7 @@ export const langKeys = {
   assignedgroup: "assignedgroup",
   finish: "finish",
   file: "file",
+  tipification_necesary: "tipification_necesary",
   automaticclosingtime: "automaticclosingtime",
   noteclosingtime: "noteclosingtime",
   successful_enablecirtualassistant: "successful_enablecirtualassistant",
