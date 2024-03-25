@@ -69,15 +69,6 @@ import {
 } from '@material-ui/pickers';
 import { TableFooter } from '@material-ui/core';
 
-interface ColumnVisibility {
-    [key: string]: boolean;
-}
-
-interface Column {
-    Header: string;
-    accessor: string;
-    showColumn?: boolean;
-}
 export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
     name: string
     onAdd?: (instance: TableInstance<T>) => MouseEventHandler
@@ -1318,7 +1309,9 @@ const TableZyx = React.memo(({
                                                                                 direction={column.isGrouped ? 'desc' : 'asc'}
                                                                                 IconComponent={KeyboardArrowRight}
                                                                                 className={classes.headerIcon}
-                                                                                {...column.getHeaderProps(column.getGroupByToggleProps({ title: 'Agrupar' }))}
+                                                                                {...column.getHeaderProps(column.getGroupByToggleProps({
+                                                                                    title: column.isGrouped ? 'Desagrupar' : 'Agrupar'
+                                                                                }))}                                                                            
                                                                             />
                                                                         )}
                                                                     </div>
