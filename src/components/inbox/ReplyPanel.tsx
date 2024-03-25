@@ -955,13 +955,12 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
     const listAllowRecords = ["FBDM", "FBMS", "WHA", "INDM", "INMS"];
-    const allowRecording = listAllowRecords.some((record) => ticketSelected.communicationchanneltype.includes(record));
     const [copyEmails, setCopyEmails] = useState<Dictionary>({ cc: false, cco: false, error: false });
-
+    
     const resReplyTicket = useSelector((state) => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
     const [lastSelection, setLastSelection] = useState(0);
-
+    
     const variablecontext = useSelector((state) => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector((state) => state.inbox.agentSelected);
     const user = useSelector((state) => state.login.validateToken.user);
@@ -987,6 +986,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [bodyobject, setBodyobject] = useState<Descendant[]>([
         { type: "paragraph", align: "left", children: [{ text: "" }] },
     ]);
+    const allowRecording = listAllowRecords.some((record) => ticketSelected?.communicationchanneltype?.includes(record)) && user?.properties?.enable_send_audio;
     const lock_send_file_pc = useSelector((state) => state.login.validateToken.user?.properties?.lock_send_file_pc);
     const [refresh, setrefresh] = useState(1);
     const [flagundo, setflagundo] = useState(false);
@@ -1401,7 +1401,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
-
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
