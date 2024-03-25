@@ -933,8 +933,8 @@ const TableZyx = React.memo(({
             filters: {
                 ...prev.filters,
                 [columnName]: {
-                    "value": selectedRowValue || "", // Si selectedRowValue es null, se reemplaza por una cadena vacía
-                    "operator": selectedRowValue === "" || selectedRowValue === null ? "isempty" : "equals" // Si selectedRowValue es "" o null, el operador es "isempty", de lo contrario, es "equals"
+                    "value": selectedRowValue || "", 
+                    "operator": selectedRowValue === "" || selectedRowValue === null ? "isempty" : "equals" 
                 }
             },
             pageIndex: 0,
