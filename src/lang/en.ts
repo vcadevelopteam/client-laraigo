@@ -2602,6 +2602,7 @@ const translation: LangKeys = {
   report_userproductivity_tmradviseravg: "TMR Agent",
   report_userproductivity_tmravg_help: "Average response time of the agent/bot",
   report_userproductivity_tmradviseravg_help: "Average agent response time",
+  tipification_necesary:"You cannot close tickets that have not been typed.",
 
   report_userproductivity_cardtme: 'TME',
   report_userproductivity_cardtmo: 'TMO',

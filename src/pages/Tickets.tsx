@@ -92,6 +92,7 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const closingRes = useSelector(state => state.inbox.triggerMassiveCloseTicket);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
@@ -133,13 +134,22 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
             personcommunicationchannel: row.personcommunicationchannel,
             communicationchannelid: row.communicationchannelid,
         }));
-        dispatch(massiveCloseTicket({
-            motive: data.motive,
-            observation: data.observation,
-            listTickets: listTicketsToClose,
-        }))
-        dispatch(showBackdrop(true));
-        setWaitClose(true);
+        let closeticket=false
+        const emptyTipification = rowWithDataSelected.some(x => !x.tipification || x.tipification.trim() === "");
+        if(user?.properties?.obligatory_tipification_close_ticket && emptyTipification){
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.tipification_necesary) }))
+        }else{
+            closeticket=true;
+        }
+        if(closeticket){
+            dispatch(massiveCloseTicket({
+                motive: data.motive,
+                observation: data.observation,
+                listTickets: listTicketsToClose,
+            }))
+            dispatch(showBackdrop(true));
+            setWaitClose(true);
+        }
     });
 
     return (

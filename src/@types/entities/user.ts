@@ -36,6 +36,7 @@ interface Properties {
     origin_label: boolean;
     lock_send_file_pc: boolean;
     range_date_filter: number | undefined;
+    obligatory_tipification_close_ticket: boolean;
 }
 
 interface Domains {
