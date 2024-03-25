@@ -4058,6 +4058,7 @@ const translation: LangKeys = {
   analytics: "Analytics",
   propertyintegracionodoocrm: 'Turn on Odoo CRM integration',
   propertyaccionfuerahorario: 'Sets the bot action after working hours',
+  propertyhabilitarenvio_audios: 'Flag to enable/disable the audio sending functionality',
   propertyresponsewaitingmessagebottype: 'Indicates the type of response on waiting',
   propertyencuesta: 'Enables the survey',
   propertycierreautomatico: 'Turn on general automatic ticket closing',
