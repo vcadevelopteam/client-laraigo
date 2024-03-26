@@ -10,7 +10,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Tooltip from '@material-ui/core/Tooltip';
 import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket, setLibraryByUser } from 'store/inbox/actions';
 import { getCollectionAux2, getMultiCollection, resetAllMain } from 'store/main/actions';
-import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getTimeWaiting, getDocumentLibraryByUser } from 'common/helpers';
+import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getTimeWaiting, getDocumentLibraryByUser, getDomainByDomainName } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -511,7 +511,7 @@ const Supervisor: FC = () => {
             getValuesFromDomainLight("MOTIVOCIERRE"),
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
-            getValuesFromDomainLight("GRUPOS"),
+            getDomainByDomainName("GRUPOS"),
             getListQuickReply(),
             getMessageTemplateLst(''),
             getCommChannelLst(),

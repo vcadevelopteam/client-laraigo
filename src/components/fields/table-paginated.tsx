@@ -1230,10 +1230,11 @@ const TableZyx = React.memo(({
                                                                 style={{ cursor: 'pointer' }}
                                                                 onClick={() => {
                                                                     setPagination(prev => ({
-                                                                    ...prev,
-                                                                    distinct: "",
-                                                                    pageIndex: 0,
-                                                                    trigger: true
+                                                                        ...prev,
+                                                                        distinct: "",
+                                                                        filters: {},
+                                                                        pageIndex: 0,
+                                                                        trigger: true
                                                                     }));
                                                                     handleOrderReset()
                                                                 }}

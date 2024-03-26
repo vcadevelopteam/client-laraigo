@@ -515,7 +515,9 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             const rules = multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")||[]
             let groups = user?.groups ? user?.groups.split(",") : [];
             if(rules?.data && propertyGrupoDelegacion){
-                groups = rules.data.map(item => item.assignedgroup)
+                debugger
+                let extragroups = rules.data.map(item => item.assignedgroup)
+                groups = extragroups.length?extragroups:groups
             }
             setUsableGroups(groups)
             if (user.properties.limit_reassign_group) {
@@ -1108,7 +1110,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 {(
                     ticketSelected?.status !== 'CERRADO' &&
                     ticketSelected?.communicationchanneltype !== "VOXI" &&
-                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)) 
+                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && !!multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)) 
                 ) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)

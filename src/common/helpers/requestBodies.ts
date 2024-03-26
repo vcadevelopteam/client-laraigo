@@ -266,10 +266,10 @@ export const selOrgSimpleList = (): IRequestBody => ({
     parameters: {}
 });
 
-export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }: Dictionary): IRequestBody => ({
+export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid, config }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
     key: "UFN_PROPERTY_INS",
-    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }
+    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid, config }
 });
 
 
@@ -476,12 +476,17 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         distinct: distinct || "",
         origin: origin,
         ...allParameters,
+        maxx: allParameters['maxx'] ? allParameters['maxx'] : 2,
+        maxy: allParameters['maxy'] ? allParameters['maxy'] : 3,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         hours: allParameters['hours'] ? allParameters['hours'] : "",
         asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+
+
+
 
 export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: methodExport,
@@ -1140,6 +1145,12 @@ export const getasesoresbyorgid = (closedby: string, communicationchannel: strin
 
 export const getChatflowBlockLst = (): IRequestBody => ({
     method: "UFN_CHATFLOW_BLOCK_LST",
+    parameters: {}
+});
+
+export const getChatflowBlockActiveSel = (): IRequestBody => ({
+    method: "UFN_CHATFLOW_BLOCK_ACTIVE_SEL",
+    key: "UFN_CHATFLOW_BLOCK_ACTIVE_SEL",
     parameters: {}
 });
 
@@ -5014,8 +5025,13 @@ export const massDelReassignmentRules = (groupslistassignmentruleid:string) => (
     parameters: { groupslistassignmentruleid },
 });
 
-export const getAssignmentRulesByGroup = (group:string) => ({
+export const getAssignmentRulesByGroup = (group:string, usergroups: string) => ({
     method: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
     key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
-    parameters: { group },
+    parameters: { group, usergroups },
+});
+export const getDomainByDomainName = (domainname:string) => ({
+    method: "UFN_DOMAIN_BY_DOMAINNAME",
+    key: "UFN_DOMAIN_BY_DOMAINNAME",
+    parameters: { domainname },
 });
