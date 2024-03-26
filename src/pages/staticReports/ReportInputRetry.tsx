@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TablePaginated from "components/fields/table-paginated";
 import { makeStyles } from "@material-ui/core/styles";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from "hooks";
 import { Dictionary, IFetchData } from "@types";
@@ -10,11 +10,12 @@ import { getCollectionPaginated, resetCollectionPaginated, exportData, resetMult
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { CellProps } from 'react-table';
-import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
-import { TemplateBreadcrumbs, FieldSelect, DialogZyx,} from "components";
+import { Divider, Grid, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { TemplateBreadcrumbs} from "components";
 import TrafficIcon from '@material-ui/icons/Traffic';
 import { Range } from "react-date-range";
-
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@material-ui/core';
+import TableZyx from "components/fields/table-simple";
 interface ItemProps {
     setViewSelected: (view: string) => void;
     setSearchValue: (searchValue: string) => void;
@@ -73,9 +74,6 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         key: "selection",
     });
 
-
-
-
     const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
         const column = props.cell.column;// eslint-disable-next-line react/prop-types
         const row = props.cell.row.original;
@@ -101,29 +99,28 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         () => [      
             {
                 Header: t(langKeys.flow),
-                accessor: 'person',   
-
+                accessor: 'flow',  
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_inputretry_question),
                 accessor: 'question',   
-                helpText: t(langKeys.report_inputretry_question),            
+                helpText: t(langKeys.report_inputretry_question_help),            
                 Cell: cell     
             },
             {
                 Header: t(langKeys.report_inputretry_maxX),
-                accessor: 'attempt',              
+                accessor: 'maxxattempts',              
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_inputretry_maxY),
-                accessor: 'ticketnum',                              
+                accessor: 'maxyattempts',                              
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_inputretry_moreX),
-                accessor: 'channel',
+                accessor: 'moreyattempts',
                 showGroupedBy: true,                             
                 Cell: cell
             },         
@@ -131,6 +128,43 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         []
     );
 
+    const dialogColumns = React.useMemo(
+        () => [   
+            {
+                Header: t(langKeys.ticket),
+                accessor: 'flow',  
+                Cell: cell
+            },   
+            {
+                Header: t(langKeys.channel),
+                accessor: 'channel',  
+                Cell: cell
+            }, 
+            {
+                Header: t(langKeys.person),
+                accessor: 'moreyattempts',  
+                Cell: cell
+            }, 
+            {
+                Header: t(langKeys.report_inputretry_datehour),
+                accessor: 'maxyattempts ',  
+                Cell: cell
+            }, 
+            {
+                Header: t(langKeys.report_inputretry_answer),
+                accessor: 'question', 
+                helpText: t(langKeys.report_inputretry_answer_help),   
+                Cell: cell
+            }, 
+            {
+                Header: t(langKeys.report_inputretry_validAnswer),
+                accessor: 'maxxattempts',  
+                Cell: cell
+            }, 
+                 
+        ],
+        []
+    );
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
@@ -139,26 +173,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         }
     }, [mainPaginated]);
 
-    useEffect(() => {
-        setAllParameters({
-            ...allParameters,
-            startdate: dateRange.startDate
-                ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
-                : null,
-            enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null,
-        });
-    }, [dateRange]);
-
-    const setValue = (parameterName: any, value: any) => {
-        setAllParameters({ ...allParameters, [parameterName]: value });
-    };
-
-    const handleChange = (event: any) => {
-        setState({ ...state, [event.target.name]: event.target.checked });
-        setValue("bot", event.target.checked);
-        setcheckedA(event.target.checked);
-    };
-
+  
 
     useEffect(() => {
         if (waitSave) {
@@ -257,11 +272,72 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         }
     }, [mainPaginated]);
 
-    const [isTypificationFilterModalOpen, setTypificationFilterModalOpen] = useState(false);
-
-    const handleOpeTypificationFilterModal = () => {
-        setTypificationFilterModalOpen(true);
+    const [openRowDialog, setOpenRowDialog] = useState(false);
+    const [openConfiDialog, setOpenConfigDialog] = useState(false);
+    const [selectedQuestion, setSelectedQuestion] = useState('');
+    const [maxX, setMaxX] = useState<number>(1);
+    const [maxY, setMaxY] = useState<number>(1);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [inputError, setInputError] = useState<string>('');
+    
+    const handleOpenRowDialog = (question: string) => {
+        setSelectedQuestion(question);
+        setOpenRowDialog(true);
+    };    
+    const handleCloseRowDialog = () => {
+        setOpenRowDialog(false);
+    };    
+    const handleOpenConfigDialog = () => {     
+        setOpenConfigDialog(true);
+    };    
+    const handleCloseConfigDialog = () => {
+        setOpenConfigDialog(false);
     };
+    
+    const handleMaxXChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.trim();
+        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
+            setMaxX(parseInt(value));
+            localStorage.setItem('maxX', value);
+            setInputError('');
+            if ((value === '' || !isNaN(parseInt(maxY))) && (maxY === '' || Number.isInteger(parseInt(maxY)))) {
+                setIsButtonDisabled(false);
+            }
+        } else {
+            setInputError('Input no válido');
+            setIsButtonDisabled(true);
+        }
+        console.log('Nuevo valor X:', value);
+    };
+    
+    const handleMaxYChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.trim();
+        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
+            setMaxY(parseInt(value));
+            localStorage.setItem('maxY', value);
+            setInputError('');
+            if ((value === '' || !isNaN(parseInt(maxX))) && (maxX === '' || Number.isInteger(parseInt(maxX)))) {
+                setIsButtonDisabled(false);
+            }
+        } else {
+            setInputError('Input no válido');
+            setIsButtonDisabled(true);
+        }
+        console.log('Nuevo valor Y:', value);
+    };
+    
+    useEffect(() => {
+        const savedMaxX = localStorage.getItem('maxX');
+        const savedMaxY = localStorage.getItem('maxX');
+        if (savedMaxX) {
+            setMaxX(parseInt(savedMaxX));
+        }
+        if (savedMaxY) {
+            setMaxY(parseInt(savedMaxY));
+        }
+    }, []);
+    
+    
 
     return (
         <div style={{ width: "100%", display: "flex", flex: 1, flexDirection: "column" }}>
@@ -278,6 +354,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                         columns={columns}
                         data={mainPaginated.data}
                         totalrow={totalrow}
+                        onClickRow={handleOpenRowDialog}
                         loading={mainPaginated.loading}
                         pageCount={pageCount}
                         filterrange={true}                        
@@ -285,7 +362,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                         ExtraMenuOptions={
                             <MenuItem
                                 style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
-                                onClick={handleOpeTypificationFilterModal}
+                                onClick={handleOpenConfigDialog}
                             >
                                 <ListItemIcon>
                                     <TrafficIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
@@ -299,37 +376,95 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                         exportPersonalized={triggerExportData}
                     />
                 )}
+                 <Dialog open={openRowDialog} onClose={handleCloseRowDialog} maxWidth="xl">
+                    <DialogTitle>
+                        <Trans i18nKey={langKeys.report_inputretry_question }/>: {selectedQuestion ? selectedQuestion.question : ''}
+
+                    </DialogTitle>
+                    <DialogContent>
+                        <TableZyx
+                            columns={dialogColumns}
+                            filterGeneral={false}
+                            download={true}
+                            data={mainPaginated.data}
+                            totalrow={totalrow}
+                            onClickRow={handleOpenRowDialog}
+                            loading={mainPaginated.loading}     
+                                               
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseRowDialog} color="primary" disabled={isButtonDisabled}>
+                            <Trans i18nKey={langKeys.return} />
+                        </Button>
+                    </DialogActions>
+
+                </Dialog>
+
+
+
+                <Dialog
+                    open={openConfiDialog}
+                    onClose={handleCloseConfigDialog}
+                    fullWidth
+                    maxWidth="sm"
+                >
+                    <DialogTitle>
+                        <Trans i18nKey={langKeys.trafficlightconfig} />
+                    </DialogTitle>
+                    <DialogContent>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <div>
+                                    <Typography variant="subtitle1">
+                                        <Trans i18nKey={langKeys.report_inputretry_maxX} />
+                                    </Typography>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <Typography variant="body1">X = </Typography>
+                                        <TextField
+                                            type="number"
+                                            value={maxX}
+                                            onChange={handleMaxXChange}
+                                        />
+                                    </div>
+                                </div>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Divider orientation="vertical" flexItem />
+                                <div>
+                                    <Typography variant="subtitle1">
+                                        <Trans i18nKey={langKeys.report_inputretry_maxMoreY} />
+                                    </Typography>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <Typography variant="body1">Y = </Typography>
+                                        <TextField
+                                            type="number"
+                                            value={maxY}
+                                            onChange={handleMaxYChange}
+                                        />
+                                    </div>
+                                </div>
+                            </Grid>
+                        </Grid>
+                        {inputError && (
+                            <Typography variant="body2" color="error" style={{ marginTop: '0.5rem' }}>
+                                {inputError}
+                            </Typography>
+                        )}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseConfigDialog} color="primary">
+                            <Trans i18nKey={langKeys.return} />
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+
+
             </>
 
 
-            <DialogZyx
-                open={isTypificationFilterModalOpen}
-                title={t(langKeys.configuration)}
-                buttonText1={t(langKeys.close)}
-                buttonText2={t(langKeys.apply)}
-                handleClickButton1={() => setTypificationFilterModalOpen(false)}
-                handleClickButton2={() => {
-                    setTypificationFilterModalOpen(false);
-                    fetchData(fetchDataAux);
-                }}
-                maxWidth="sm"
-                buttonStyle1={{ marginBottom: "0.3rem" }}
-                buttonStyle2={{ marginRight: "1rem", marginBottom: "0.3rem" }}
-            >
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginBottom: "1rem" }}>
-                    <FieldSelect
-                        label={t(langKeys.report_tipification_classificationlevel1)}
-                        className="col-12"
-                        data={
-                            []
-                        }
-                        valueDefault={"hola"}
-                        
-                        optionDesc="description"
-                        optionValue="description"
-                    />                  
-                </div>
-            </DialogZyx>
+           
                
         </div>
     );
