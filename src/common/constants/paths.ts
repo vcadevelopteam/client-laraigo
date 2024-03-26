@@ -342,6 +342,7 @@ const paths = {
     HEATMAP: '/dashboard/heatmap',
     RECORDHSMREPORT: '/dashboard/recordhsmreport',
     IASERVICES: '/iaservices',
+    REASSIGNMENTRULES: '/reassignmentrules',
     // IAMODELS: '/extras/intelligentmodels',
     IA: '/iaservices/ia',
 

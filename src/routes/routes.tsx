@@ -48,6 +48,7 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
+import GroupIcon from '@material-ui/icons/Group';
 
 export const viewsClassifications: ViewsClassificationConfig[] = [
     {
@@ -556,6 +557,13 @@ export const routes: RouteConfig[] = [
         path: paths.IATRAINING2,
         initialSubroute: paths.IATRAINING2,
         icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.REASSIGNMENTRULES,
+        description: <Trans i18nKey={langKeys.reassignmentrules} />,
+        tooltip: "",
+        path: paths.REASSIGNMENTRULES,
+        icon: (className) => <GroupIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
 ];
 

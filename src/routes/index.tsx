@@ -27,6 +27,7 @@ const Quickreplies = lazy(() => import('pages/Quickreplies'));
 const Groupconfig = lazy(() => import('pages/GroupConfig'));
 const Whitelist = lazy(() => import('pages/Whitelist'));
 const InappropriateWords = lazy(() => import('pages/InappropriateWords'));
+const ReassignmentRules = lazy(() => import('pages/ReassignmentRules'));
 const IntelligentModels = lazy(() => import('pages/IntelligentModels'));
 const IAConfiguration = lazy(() => import('pages/Iaservices'));
 const SLA = lazy(() => import('pages/SLA'));
@@ -329,6 +330,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.GROUPCONFIG} component={() => <Layout mainClasses={classes.main}><Groupconfig /></Layout>} />
 					<ProtectRoute exact path={paths.USERSETTINGS} component={() => <Layout mainClasses={classes.main}><UserSettings /></Layout>} />
 					<ProtectRoute exact path={paths.INAPPROPRIATEWORDS} component={() => <Layout mainClasses={classes.main}><InappropriateWords /></Layout>} />
+					<ProtectRoute exact path={paths.REASSIGNMENTRULES} component={() => <Layout mainClasses={classes.main}><ReassignmentRules /></Layout>} />
 					<ProtectRoute exact path={paths.INTELLIGENTMODELS} component={() => <Layout mainClasses={classes.main}><IntelligentModels /></Layout>} />
 					<ProtectRoute exact path={paths.SLA} component={() => <Layout mainClasses={classes.main}><SLA /></Layout>} />
 					<ProtectRoute exact path={paths.TIPIFICATIONS} component={() => <Layout mainClasses={classes.main}><Tipifications /></Layout>} />
