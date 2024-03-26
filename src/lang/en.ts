@@ -2427,11 +2427,15 @@ const translation: LangKeys = {
   report_inputretry_answer_help: 'Answer given by the user in the retry.',
   report_inputretry_attempt: "Attempt",
   report_inputretry_valid: "Valid",
+  report_inputretry_validAnswer: 'Valid Answer',
+  report_inputretry_maxMoreY: 'Max/More Y attempts',
   report_inputretry_maxX: 'Max X attempts',
   report_inputretry_maxY: 'Max Y attempts',
   report_inputretry_moreX: 'More than Y attempts',
-  report_inputretry_validAnswer: 'Valid Answer',
-  report_inputretry_maxMoreY: 'Max/More Y attempts',
+  report_inputretry_maxX_additional: 'Max {{maxX}} attempts',
+  report_inputretry_maxY_additional: 'Max {{mayY}} attempts',
+  report_inputretry_moreX_additional: 'More than {{mayY}} attempts',
+
 
   report_interaction: "Interactions",
   report_interaction_filter_channels: 'Channels',

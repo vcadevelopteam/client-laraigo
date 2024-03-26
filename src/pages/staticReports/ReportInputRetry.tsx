@@ -73,6 +73,13 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: "selection",
     });
+    const [openRowDialog, setOpenRowDialog] = useState(false);
+    const [openConfiDialog, setOpenConfigDialog] = useState(false);
+    const [selectedQuestion, setSelectedQuestion] = useState('');
+    const [maxX, setMaxX] = useState<number>(1);
+    const [maxY, setMaxY] = useState<number>(1);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [inputError, setInputError] = useState<string>('');
 
     const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
         const column = props.cell.column;// eslint-disable-next-line react/prop-types
@@ -109,30 +116,30 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                 Cell: cell     
             },
             {
-                Header: t(langKeys.report_inputretry_maxX),
+                Header: t(langKeys.report_inputretry_maxX_additional, { maxX: maxX}),
                 accessor: 'maxxattempts',              
                 Cell: cell
             },
             {
-                Header: t(langKeys.report_inputretry_maxY),
+                Header: t(langKeys.report_inputretry_maxY_additional, { mayY: maxY}),
                 accessor: 'maxyattempts',                              
                 Cell: cell
             },
             {
-                Header: t(langKeys.report_inputretry_moreX),
+                Header: t(langKeys.report_inputretry_moreX_additional, { mayY: maxY}),
                 accessor: 'moreyattempts',
                 showGroupedBy: true,                             
                 Cell: cell
             },         
         ],
-        []
+        [maxX, maxY]
     );
 
     const dialogColumns = React.useMemo(
         () => [   
             {
                 Header: t(langKeys.ticket),
-                accessor: 'flow',  
+                accessor: 'ticketnum',  
                 Cell: cell
             },   
             {
@@ -142,23 +149,23 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
             }, 
             {
                 Header: t(langKeys.person),
-                accessor: 'moreyattempts',  
+                accessor: 'name',  
                 Cell: cell
             }, 
             {
                 Header: t(langKeys.report_inputretry_datehour),
-                accessor: 'maxyattempts ',  
+                accessor: 'createdate ',  
                 Cell: cell
             }, 
             {
                 Header: t(langKeys.report_inputretry_answer),
-                accessor: 'question', 
+                accessor: 'interactiontext', 
                 helpText: t(langKeys.report_inputretry_answer_help),   
                 Cell: cell
             }, 
             {
                 Header: t(langKeys.report_inputretry_validAnswer),
-                accessor: 'maxxattempts',  
+                accessor: 'validinput',  
                 Cell: cell
             }, 
                  
@@ -231,6 +238,8 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                         skip: pageIndex * pageSize,                      
                         sorts: sorts,
                         filters: { },
+                        maxx: maxX, 
+                        maxy: maxY,
                         ...allParameters,
                     }
                 )
@@ -272,13 +281,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         }
     }, [mainPaginated]);
 
-    const [openRowDialog, setOpenRowDialog] = useState(false);
-    const [openConfiDialog, setOpenConfigDialog] = useState(false);
-    const [selectedQuestion, setSelectedQuestion] = useState('');
-    const [maxX, setMaxX] = useState<number>(1);
-    const [maxY, setMaxY] = useState<number>(1);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [inputError, setInputError] = useState<string>('');
+  
     
     const handleOpenRowDialog = (question: string) => {
         setSelectedQuestion(question);
@@ -382,14 +385,18 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
 
                     </DialogTitle>
                     <DialogContent>
+                    {selectedQuestion && (
+                        <Typography variant="body1">
+                            Chat Flow Card ID: {selectedQuestion.chatflowcardid}
+                        </Typography>
+                    )}
                         <TableZyx
                             columns={dialogColumns}
                             filterGeneral={false}
                             download={true}
                             data={mainPaginated.data}
-                            totalrow={totalrow}
-                            onClickRow={handleOpenRowDialog}
-                            loading={mainPaginated.loading}     
+                            totalrow={totalrow}                         
+                            loading={mainPaginated.loading}    
                                                
                         />
                     </DialogContent>

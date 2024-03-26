@@ -2608,11 +2608,15 @@ export const langKeys = {
   report_inputretry_answer_help: 'report_inputretry_answer_help',
   report_inputretry_attempt: 'report_inputretry_attempt',
   report_inputretry_valid: 'report_inputretry_valid',
+  report_inputretry_validAnswer: 'report_inputretry_validAnswer',
+  report_inputretry_maxMoreY: 'report_inputretry_maxMoreY',
   report_inputretry_maxX: 'report_inputretry_maxX',
   report_inputretry_maxY: 'report_inputretry_maxY',
   report_inputretry_moreX: 'report_inputretry_moreX',
-  report_inputretry_validAnswer: 'report_inputretry_validAnswer',
-  report_inputretry_maxMoreY: 'report_inputretry_maxMoreY',
+  report_inputretry_maxX_additional: 'report_inputretry_maxX_additional',
+  report_inputretry_maxY_additional: 'report_inputretry_maxY_additional',
+  report_inputretry_moreX_additional: 'report_inputretry_moreX_additional',
+
 
 
   report_interaction: 'report_interaction',
