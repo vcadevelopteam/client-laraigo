@@ -53,31 +53,29 @@ const useStyles = makeStyles((theme) => ({
 
 const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue }) => {
     const { t } = useTranslation();
-    const classes = useStyles();
     const dispatch = useDispatch();
     const mainPaginated = useSelector((state) => state.main.mainPaginated);
     const mainAux = useSelector((state) => state.main.mainAux);
     const resExportData = useSelector((state) => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
+    const [waitExport, setWaitExport] = useState(false);
     const [totalrow, settotalrow] = useState(0);   
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
-        pageSize: 0,
-        pageIndex: 0,
-        filters: {},
-        sorts: {},
-        distinct: {},
-        daterange: null,
-    });
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null });
     const [allParameters, ] = useState({});
     const [view, ] = useState("GRID");
     const [, setSelectedRow] = useState<Dictionary | undefined>({});  
     const [openRowDialog, setOpenRowDialog] = useState(false);
     const [openConfiDialog, setOpenConfigDialog] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState('');
+    const [fetchDataAfterStateUpdate, setFetchDataAfterStateUpdate] = useState<boolean>(false);
     const [maxX, setMaxX] = useState<number>(2);
     const [maxY, setMaxY] = useState<number>(3);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [tempMaxX, setTempMaxX] = useState<number>(2);
+    const [tempMaxY, setTempMaxY] = useState<number>(3);
+    const [, setIsButtonDisabled] = useState(false);
+    const [startdate, setStartDate] = useState('');
+    const [enddate, setEndDate] = useState('');
 
     const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
         const column = props.cell.column;// eslint-disable-next-line react/prop-types
@@ -222,11 +220,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         );
         dispatch(showBackdrop(true));
         setWaitSave(true);
-    };
-
-    const [startdate, setStartDate] = useState('');
-    const [enddate, setEndDate] = useState('');
-
+    };  
 
     const fetchDataAuxRow = (id: number) => {        
         dispatch (getCollectionAux(getChatFlowCardId({
@@ -235,16 +229,41 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
             chatflowcardid: id,      
         })))
     }
+     
+    const handleMaxXChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.trim();
+        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
+            setTempMaxX(parseInt(value));
+            setIsButtonDisabled(false);
+        } else {
+            setIsButtonDisabled(true);
+        }
+    };
 
+    const handleMaxYChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.trim();
+        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
+            setTempMaxY(parseInt(value));
+            setIsButtonDisabled(false);
+        } else {
+            setIsButtonDisabled(true);
+        }
+    };
+
+    const handleApplyButtonClick = () => {
+        setMaxX(tempMaxX); setMaxY(tempMaxY);
+        localStorage.setItem('maxX', tempMaxX.toString()); localStorage.setItem('maxY', tempMaxY.toString()); 
+        setOpenConfigDialog(false);
+        setFetchDataAfterStateUpdate(true);
+        fetchData(fetchDataAux)
+    };  
  
     const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
         if (daterange && daterange.startDate && daterange.endDate) {
             setStartDate(daterange.startDate);
-            setEndDate(daterange.endDate);           
-        }
-    
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange });
-        
+            setEndDate(daterange.endDate);
+        }    
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange });    
         dispatch(
             getCollectionPaginated(
                 getPaginatedForReports(
@@ -258,25 +277,21 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                         skip: pageIndex * pageSize,
                         sorts,
                         filters: {},
-                        maxx: maxX,
-                        maxy: maxY,
+                        maxx: tempMaxX, 
+                        maxy: tempMaxY, 
                         ...allParameters,
                     }
                 )
             )
-        );
+        );      
     };
     
-
-
     const handleSelected = () => {
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         setSearchValue("");
         setViewSelected("view-1");
     };
-
-    const [waitExport, setWaitExport] = useState(false);
 
     useEffect(() => {
         if (waitExport) {
@@ -307,8 +322,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         setSelectedQuestion(question.question);
         setOpenRowDialog(true);
         fetchDataAuxRow(question.chatflowcardid);
-    };    
-    
+    };        
     const handleCloseRowDialog = () => {
         setOpenRowDialog(false);
     };    
@@ -317,52 +331,27 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
     };    
     const handleCloseConfigDialog = () => {
         setOpenConfigDialog(false);
-    };
-    
-    const handleMaxXChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value.trim();
-        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
-            setMaxX(parseInt(value));
-            setIsButtonDisabled(false);
-        } else {
-            setIsButtonDisabled(true);
-        }
-    };   
-    
-    const handleMaxYChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value.trim();
-        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
-            setMaxY(parseInt(value));
-            setIsButtonDisabled(false);
-        } else {
-            setIsButtonDisabled(true);
-        }
-    };
-
-    const handleFocus = (event) => {
+    };    
+    const handleCloseTrafficDialog = () => {   
+        setOpenConfigDialog(false);
+    };  
+    const handleFocus = (event: Dictionary) => {
         event.target.blur();
     };
-
-    const handleApplyButtonClick = () => {
-        localStorage.setItem('maxX', String(maxX));
-        localStorage.setItem('maxY', String(maxY));    
-        fetchData(fetchDataAux);
-        setOpenConfigDialog(false);
-    };
-
+  
     useEffect(() => {
         const savedMaxX = localStorage.getItem('maxX');
         const savedMaxY = localStorage.getItem('maxY');
         if (savedMaxX) {
             setMaxX(parseInt(savedMaxX));
+            setTempMaxX(parseInt(savedMaxX));
         }
         if (savedMaxY) {
             setMaxY(parseInt(savedMaxY));
+            setTempMaxY(parseInt(savedMaxY)); 
         }
-    }, []);  
-
-    
-    
+    }, []);    
+   
     return (
         <div style={{ width: "100%", display: "flex", flex: 1, flexDirection: "column" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -403,7 +392,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                  <Dialog open={openRowDialog} onClose={handleCloseRowDialog} maxWidth="xl">
                     <DialogTitle>
                         <Trans i18nKey={langKeys.report_inputretry_question }/>: {selectedQuestion}
-
+                        
                     </DialogTitle>
                     <DialogContent>                   
                         <TableZyx
@@ -421,23 +410,24 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                             <Trans i18nKey={langKeys.return} />
                         </Button>
                     </DialogActions>
-
                 </Dialog>
-
-
 
                 <Dialog
                     open={openConfiDialog}
                     onClose={handleCloseConfigDialog}
                     fullWidth
                     maxWidth="sm"
-                    style={{cursor: 'default'}}
-                    disableBackdropClick  
+                    style={{cursor: 'default'}}                 
                 >
                     <DialogTitle>
                         <Trans i18nKey={langKeys.trafficlightconfig} />
+                        <Typography variant="subtitle2" style={{marginBottom: '0.8rem'}}>
+                            <Trans i18nKey={langKeys.limitsettings} />
+                        </Typography>
+
                     </DialogTitle>
                     <DialogContent>
+
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
                                 <div>
@@ -448,7 +438,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                                         <Typography variant="body1">X = </Typography>
                                         <TextField
                                             type="number"
-                                            value={maxX}
+                                            value={tempMaxX}
                                             onChange={handleMaxXChange}
                                             onFocus={handleFocus}
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
@@ -467,7 +457,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                                         <Typography variant="body1">Y = </Typography>
                                         <TextField
                                             type="number"
-                                            value={maxY}
+                                            value={tempMaxY}
                                             onChange={handleMaxYChange}
                                             onFocus={handleFocus}
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
@@ -479,22 +469,19 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                         </Grid>                       
                     </DialogContent>
                     <DialogActions>                      
-                        <Button onClick={handleApplyButtonClick} color="primary">
-                            <Trans i18nKey={langKeys.refresh} />
-                        </Button>
+                       <div style={{marginTop: '1.2rem', marginRight: '0.5rem'}}>
+                        <Button onClick={handleCloseTrafficDialog} color="default">
+                                <Trans i18nKey={langKeys.close} />
+                            </Button>
+                            <Button onClick={handleApplyButtonClick} color="primary">
+                                <Trans i18nKey={langKeys.refresh} />
+                            </Button>
+                       </div>
                     </DialogActions>
                 </Dialog>
-
-
-
-            </>
-
-
-           
-               
+            </>  
         </div>
     );
 };
-
 
 export default InputRetryReport;
