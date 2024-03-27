@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     textFieldCursor: {
         cursor: 'pointer',
         '&:hover': {
-            cursor: 'pointer', // Cambia el cursor cuando pasa el mouse sobre el TextField
+            cursor: 'pointer', 
         },
     }
 }));
@@ -323,7 +323,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         const value = event.target.value.trim();
         if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
             setMaxX(parseInt(value));
-            setIsButtonDisabled(false); // Asegúrate de habilitar el botón si el valor es válido
+            setIsButtonDisabled(false);
         } else {
             setIsButtonDisabled(true);
         }
@@ -333,7 +333,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         const value = event.target.value.trim();
         if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
             setMaxY(parseInt(value));
-            setIsButtonDisabled(false); // Asegúrate de habilitar el botón si el valor es válido
+            setIsButtonDisabled(false);
         } else {
             setIsButtonDisabled(true);
         }
@@ -344,11 +344,8 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
     };
 
     const handleApplyButtonClick = () => {
-        // Guardar en localStorage
         localStorage.setItem('maxX', String(maxX));
-        localStorage.setItem('maxY', String(maxY));
-    
-        // Llamar a fetchData
+        localStorage.setItem('maxY', String(maxY));    
         fetchData(fetchDataAux);
         setOpenConfigDialog(false);
     };
