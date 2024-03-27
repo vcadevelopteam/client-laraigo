@@ -475,9 +475,7 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         sorts,
         distinct: distinct || "",
         origin: origin,
-        ...allParameters,
-        maxx: allParameters['maxx'] ? allParameters['maxx'] : 2,
-        maxy: allParameters['maxy'] ? allParameters['maxy'] : 3,
+        ...allParameters,    
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         hours: allParameters['hours'] ? allParameters['hours'] : "",
         asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
@@ -4672,6 +4670,17 @@ export const partnerIns = ({ id, country, billingcurrency, documenttype, documen
     method: "UFN_PARTNER_INS",
     key: "UFN_PARTNER_INS",
     parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation },
+});
+
+export const getChatFlowCardId = ({ startdate, enddate, chatflowcardid }: Dictionary) => ({
+    method: "UFN_INTERACTION_CHATFLOWCARDID",
+    key: "UFN_INTERACTION_CHATFLOWCARDID",
+    parameters: {      
+        startdate, 
+        enddate, 
+        chatflowcardid, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1 
+    },
 });
 
 export const customerByPartnerSel = (partnerid: number) => ({
