@@ -68,11 +68,13 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
     const [openRowDialog, setOpenRowDialog] = useState(false);
     const [openConfiDialog, setOpenConfigDialog] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState('');
-    const [fetchDataAfterStateUpdate, setFetchDataAfterStateUpdate] = useState<boolean>(false);
+    const [, setFetchDataAfterStateUpdate] = useState<boolean>(false);
     const [maxX, setMaxX] = useState<number>(2);
     const [maxY, setMaxY] = useState<number>(3);
     const [tempMaxX, setTempMaxX] = useState<number>(2);
     const [tempMaxY, setTempMaxY] = useState<number>(3);
+    const [initialTempMaxX, setInitialTempMaxX] = useState<number>(2);
+    const [initialTempMaxY, setInitialTempMaxY] = useState<number>(3);
     const [, setIsButtonDisabled] = useState(false);
     const [startdate, setStartDate] = useState('');
     const [enddate, setEndDate] = useState('');
@@ -253,11 +255,12 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
     const handleApplyButtonClick = () => {
         setMaxX(tempMaxX); setMaxY(tempMaxY);
         localStorage.setItem('maxX', tempMaxX.toString()); localStorage.setItem('maxY', tempMaxY.toString()); 
-        setOpenConfigDialog(false);
+        setOpenConfigDialog(false); 
+        setInitialTempMaxX(tempMaxX); 
         setFetchDataAfterStateUpdate(true);
-        fetchData(fetchDataAux)
+        fetchData(fetchDataAux);
     };  
- 
+
     const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
         if (daterange && daterange.startDate && daterange.endDate) {
             setStartDate(daterange.startDate);
@@ -328,29 +331,30 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
     };    
     const handleOpenConfigDialog = () => {     
         setOpenConfigDialog(true);
-    };    
-    const handleCloseConfigDialog = () => {
-        setOpenConfigDialog(false);
-    };    
-    const handleCloseTrafficDialog = () => {   
-        setOpenConfigDialog(false);
     };  
+ 
     const handleFocus = (event: Dictionary) => {
         event.target.blur();
     };
   
     useEffect(() => {
-        const savedMaxX = localStorage.getItem('maxX');
-        const savedMaxY = localStorage.getItem('maxY');
+        const savedMaxX = localStorage.getItem('maxX'); const savedMaxY = localStorage.getItem('maxY');
         if (savedMaxX) {
             setMaxX(parseInt(savedMaxX));
             setTempMaxX(parseInt(savedMaxX));
+            setInitialTempMaxX(parseInt(savedMaxX)); 
         }
         if (savedMaxY) {
             setMaxY(parseInt(savedMaxY));
-            setTempMaxY(parseInt(savedMaxY)); 
+            setTempMaxY(parseInt(savedMaxY));
+            setInitialTempMaxY(parseInt(savedMaxY)); 
         }
-    }, []);    
+    }, []); 
+
+    const handleCloseConfigDialog = () => {
+        setOpenConfigDialog(false);
+        setTempMaxX(initialTempMaxX); setTempMaxY(initialTempMaxY); 
+    };  
    
     return (
         <div style={{ width: "100%", display: "flex", flex: 1, flexDirection: "column" }}>
@@ -414,7 +418,6 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
 
                 <Dialog
                     open={openConfiDialog}
-                    onClose={handleCloseConfigDialog}
                     fullWidth
                     maxWidth="sm"
                     style={{cursor: 'default'}}                 
@@ -470,7 +473,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                     </DialogContent>
                     <DialogActions>                      
                        <div style={{marginTop: '1.2rem', marginRight: '0.5rem'}}>
-                        <Button onClick={handleCloseTrafficDialog} color="default">
+                        <Button onClick={handleCloseConfigDialog} color="default">
                                 <Trans i18nKey={langKeys.close} />
                             </Button>
                             <Button onClick={handleApplyButtonClick} color="primary">
