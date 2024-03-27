@@ -4672,12 +4672,10 @@ export const partnerIns = ({ id, country, billingcurrency, documenttype, documen
     parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation },
 });
 
-export const getChatFlowCardId = ({ corpid, orgid, startdate, enddate, chatflowcardid }: Dictionary) => ({
+export const getChatFlowCardId = ({ startdate, enddate, chatflowcardid }: Dictionary) => ({
     method: "UFN_INTERACTION_CHATFLOWCARDID",
     key: "UFN_INTERACTION_CHATFLOWCARDID",
-    parameters: { 
-        corpid, 
-        orgid, 
+    parameters: {      
         startdate, 
         enddate, 
         chatflowcardid, 
