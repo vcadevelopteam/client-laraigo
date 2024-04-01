@@ -1,4 +1,4 @@
-const ENV = import.meta.env.VITE_ENV || 'TESTING';
+const ENV = import.meta.env.VITE_ENV || 'LOCAL';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
@@ -448,4 +448,7 @@ export const apiUrls = {
     GPT_ASSISTANTS_UPDATE: `${BASE_URL}/gpt/assistants/update`,
     GPT_ASSISTANTS_DELETE: `${BASE_URL}/gpt/assistants/delete`,
     GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
+
+    LLAMA_UPLOAD_FILES: `${BASE_URL}/llama/upload`,
+    LLAMA_MESSAGE: `${BASE_URL}/llama/message`,
 };
