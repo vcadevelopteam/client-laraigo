@@ -746,7 +746,11 @@ const TableZyx = React.memo(({
                         </div>
                     )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                        {ButtonsElement && <ButtonsElement />}
+                        {typeof ButtonsElement === 'function' ? (
+                            (<ButtonsElement />)
+                            ) : (
+                            ButtonsElement
+                        )}
                         {importCSV && (
                             <>
                                 <input

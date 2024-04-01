@@ -782,7 +782,11 @@ const TableZyx = React.memo(({
                         <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                     </Tooltip> : ""}
                 </span> : (<div style={{ flexGrow: 1 }}>
-                    {ButtonsElement && <ButtonsElement />}
+                    {typeof ButtonsElement === 'function' ? (
+                        (<ButtonsElement />)
+                        ) : (
+                        ButtonsElement
+                    )}
                 </div>)}
                 <span className={classes.containerButtons}>
                     {fetchData && (
@@ -799,7 +803,11 @@ const TableZyx = React.memo(({
                             </Fab>
                         </Tooltip>
                     )}
-                    {(ButtonsElement && !!titlemodule) && <ButtonsElement />}
+                    {typeof ButtonsElement === 'function' ? (
+                        (<ButtonsElement />)
+                        ) : (
+                        ButtonsElement
+                    )}
                     {importCSV && (
                         <>
                             <input
