@@ -168,7 +168,9 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
   
     
 
-    const columns = React.useMemo(() => reportColumns.map(x => {
+    const columns = React.useMemo(() => {
+    const filteredColumns = reportColumns.filter(column => column.proargnames !== 'countdistinct');
+    return filteredColumns.map(x => {
         const showColumn = columnsHideShow[row?.origin]?.[x.proargnames] ?? false;
         const showGroupedBy= columnGroupedBy[row?.origin]?.[x.proargnames] ?? false;
         switch (x.proargtype) {
@@ -352,7 +354,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         }
                 }
         }
-    }), [reportColumns]);
+    })}, [reportColumns]);
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
