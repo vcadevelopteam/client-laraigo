@@ -285,6 +285,7 @@ const translation: LangKeys = {
 
   send_quickreply: 'Enviar respuesta rápida',
   send_enrich_response: 'Enviar respuesta enriquecida',
+  record_audio: 'Grabar audio',
   send_image: 'Enviar imagen',
   send_file: 'Enviar un archivo',
   send_gif: 'Enviar gif',
