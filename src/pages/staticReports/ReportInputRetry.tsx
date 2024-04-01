@@ -235,7 +235,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
         if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 2)) {
             const newX = parseInt(value);
             setTempMaxX(newX);
-            if (tempMaxY >= newX) {
+            if (tempMaxY > newX) {
                 setIsButtonDisabled(false);
             } else {
                 setIsButtonDisabled(true);
@@ -245,10 +245,10 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
     
     const handleMaxYChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.trim();
-        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 2)) {
+        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 3)) {
             const newY = parseInt(value);
             setTempMaxY(newY);
-            if (newY >= tempMaxX) {
+            if (newY > tempMaxX) {
                 setIsButtonDisabled(false);
             } else {
                 setIsButtonDisabled(true);
@@ -474,7 +474,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                                         />                                        
                                     </div>
                                     {isButtonDisabled && (
-                                        <p style={{color: 'red'}}>Y no puede ser menor que X</p>
+                                        <p style={{color: 'red'}}>Y no puede ser menor o igual a X</p>
                                     )}
                                 </div>
                             </Grid>
