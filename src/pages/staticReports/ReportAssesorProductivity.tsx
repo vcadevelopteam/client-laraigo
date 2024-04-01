@@ -139,6 +139,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const [view, setView] = useState("GRID");
 
     const [dataGrid, setdataGrid] = useState<any[]>([]);
+   
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[];
@@ -146,6 +147,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         loading: false,
         data: [],
     });
+
     useEffect(() => {        
         dispatch(setViewChange("report_userproductivity"));
         dispatch(getMultiCollection([
@@ -168,16 +170,15 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             },
             {
                 Header: t(langKeys.report_userproductivity_fullname),
-                accessor: "fullname",
-                showColumn: true,
+                accessor: "fullname",         
+                showGroupedBy: true, 
                 fixed: true,
             },
             ...(isday
                 ? [
                       {
                           Header: t(langKeys.report_userproductivity_hourfirstlogin),
-                          accessor: "hourfirstlogin",
-                          showColumn: true,
+                          accessor: "hourfirstlogin",                       
                       },
                   ]
                 : []),
@@ -186,8 +187,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "totaltickets",
                 type: "number",
                 sortType: "number",
-                helpText: t(langKeys.report_userproductivity_totaltickets_help),
-                showColumn: true,
+                helpText: t(langKeys.report_userproductivity_totaltickets_help),             
+                showGroupedBy: true, 
                 fixed: true,
             },
             {
@@ -195,8 +196,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "closedtickets",
                 type: "number",
                 sortType: "number",
-                helpText: t(langKeys.report_userproductivity_closedtickets_help),
-                showColumn: true,
+                helpText: t(langKeys.report_userproductivity_closedtickets_help),            
+                showGroupedBy: true, 
                 fixed: true,
             },
             {
@@ -204,8 +205,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "asignedtickets",
                 type: "number",
                 sortType: "number",
-                helpText: t(langKeys.report_userproductivity_asignedtickets_help),
-                showColumn: true,
+                helpText: t(langKeys.report_userproductivity_asignedtickets_help),              
+                showGroupedBy: true, 
                 fixed: true,
             },
             {
@@ -213,8 +214,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "suspendedtickets",
                 type: "number",
                 sortType: "number",
-                helpText: t(langKeys.report_userproductivity_suspendedtickets_help),
-                showColumn: true,
+                helpText: t(langKeys.report_userproductivity_suspendedtickets_help),               
+                showGroupedBy: true, 
                 fixed: true,
             },
             {
@@ -247,12 +248,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "maxtotalduration",
                 helpText: t(langKeys.report_userproductivity_maxtotalduration_help),
                 showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalduration),
                 accessor: "mintotalduration",
                 helpText: t(langKeys.report_userproductivity_mintotalduration_help),
                 showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_avgtotalasesorduration),
@@ -265,12 +268,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "maxtotalasesorduration",
                 helpText: t(langKeys.report_userproductivity_maxtotalasesorduration_help),
                 showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalasesorduration),
                 accessor: "mintotalasesorduration",
                 helpText: t(langKeys.report_userproductivity_mintotalasesorduration_help),
                 showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_tmravg),
@@ -290,11 +295,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 type: "number",
                 sortType: "number",
                 showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
-                accessor: "userstatus",
-                showColumn: true,
+                accessor: "userstatus",              
+                showGroupedBy: true, 
                 fixed: true,
             },
             {
@@ -409,15 +415,19 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     }, [dateRange]);
 
     const fetchData = () => {
-        let stardate = dateRange.startDate
+        const stardate = dateRange.startDate
             ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
             : null;
-        let enddate = dateRange.endDate
+        const enddate = dateRange.endDate
             ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10)
             : null;
         setisday(stardate === enddate);
+        
         dispatch(resetMainAux());
-        dispatch(getCollectionAux(getUserProductivitySel({ ...allParameters })));
+        dispatch(getCollectionAux(getUserProductivitySel({
+            ...allParameters,
+            
+        })));
 
         if (view !== "GRID") {
             dispatch(
@@ -483,6 +493,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                     data={dataGrid}
                     download={false}
                     showHideColumns={true}
+                    groupedBy={true}
                     loading={detailCustomReport.loading}
                     register={false}
                     ButtonsElement={

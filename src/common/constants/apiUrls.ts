@@ -1,4 +1,4 @@
-const ENV = import.meta.env.VITE_ENV || 'DEVELOP';
+const ENV = import.meta.env.VITE_ENV || 'TESTING';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
@@ -452,4 +452,7 @@ export const apiUrls = {
 
     LLAMA_UPLOAD_FILES: `${BASE_URL}/llama/upload`,
     LLAMA_MESSAGE: `${BASE_URL}/llama/message`,
+
+    CORP_URL: `${BASE_URL}/corp`,
+    DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
 };

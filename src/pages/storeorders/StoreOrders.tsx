@@ -1,30 +1,14 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Dictionary, IFetchData } from "@types";
-import { resetAllMain } from "store/main/actions";
+import { getCollection, resetAllMain } from "store/main/actions";
 import StoreOrdersMainView from "./views/StoreOrdersMainView";
-
-interface RowSelected {
-    row: Dictionary | null;
-    edit: boolean;
-}
+import { ordersInStoreSel } from "common/helpers";
 
 const StoreOrders: FC = () => {
     const dispatch = useDispatch();
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
-        pageSize: 0,
-        pageIndex: 0,
-        filters: {},
-        sorts: {},
-        daterange: null,
-    });
-    const [rowSelected, setRowSelected] = useState<RowSelected>({
-        row: null,
-        edit: false,
-    });
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });  
+    const fetchData = () => {
+        dispatch(getCollection(ordersInStoreSel()));
     };
 
     useEffect(() => {
@@ -33,11 +17,11 @@ const StoreOrders: FC = () => {
         };
     }, []);
 
-    return <StoreOrdersMainView 
-      setRowSelected={setRowSelected} 
-      fetchData={fetchData} 
-      fetchDataAux={fetchDataAux} 
-    />;
+    return (
+        <StoreOrdersMainView
+            fetchData={fetchData}
+        />
+    );
 };
 
 export default StoreOrders;

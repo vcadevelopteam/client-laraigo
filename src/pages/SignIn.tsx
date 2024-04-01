@@ -33,6 +33,9 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import CloseIcon from '@material-ui/icons/Close';
 import ReactFacebookLogin from 'react-facebook-login';
 import { Helmet } from 'react-helmet';
+import { notCustomUrl } from './dashboard/constants';
+import { getCorpDetails } from 'store/corp/actions';
+import { Dictionary } from '@types';
 
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 // Declara la nueva propiedad en el objeto `window`
@@ -229,6 +232,7 @@ const SignIn = () => {
     const { t } = useTranslation();
 
     const dispatch = useDispatch();
+    const isCustomDomain = !notCustomUrl.some(url => window.location.href.includes(url));
 
     const classes = useStyles();
     const history = useHistory();
@@ -237,9 +241,36 @@ const SignIn = () => {
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [customLogoUrl, setCustomLogoURL] = useState<Dictionary|null>(null)
+    const [getCustomDomain, setGetCustomDomain] = useState(false);
     const recaptchaRef = useRef<ReCAPTCHA | null>(null);
+    const customDomainData = useSelector(state => state.corporation.mainData);
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
+	React.useEffect(() => {
+        if(isCustomDomain){
+            const currentUrl = window.location.href
+            const customDomain = currentUrl.replace('https://', '').replace('http://', '').split('.')[0]
+            dispatch(showBackdrop(true))
+            dispatch(getCorpDetails(customDomain))
+            setGetCustomDomain(true)
+        }
+	}, [])
+
+	React.useEffect(() => {
+        if(getCustomDomain && !customDomainData.loading && !customDomainData.error){
+            setCustomLogoURL(customDomainData?.data?.[0]||null)
+            
+            const existingFavicon = document.querySelector('link[rel="icon"]');
+            existingFavicon.href = customDomainData?.data?.[0]?.iconurl||"";
+
+            setGetCustomDomain(false)
+            dispatch(showBackdrop(false))
+        }
+		//dispatch(getCorpDetails("testlaraigo8"))
+	}, [customDomainData, getCustomDomain])
+
+
 
     const handleSignUp = () => {
         if (apiUrls.USELARAIGO) {
@@ -353,9 +384,15 @@ const SignIn = () => {
                 <div className={classes.container}>
                     <Container component="main" className={classes.containerLogin}>
                         <div className={classes.childContainer} style={{ height: '100%' }}>
+                        {isCustomDomain && customLogoUrl?.startlogourl ? (
+                            <div className={classes.image}>
+                                <img src={customLogoUrl.startlogourl} height={42.8} alt="Custom Logo" />
+                            </div>
+                        ) : (
                             <div className={classes.image}>
                                 <LaraigoLogo height={42.8} />
                             </div>
+                        )}
                             <div className={classes.paper} style={{ flex: 1 }}>
                                 {(resLogin.error && showError) && (
                                     <Alert className={classes.alertheader} variant="filled" severity="error" >
@@ -507,9 +544,9 @@ const SignIn = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className={classes.copyright}>
+                        {(!isCustomDomain || customLogoUrl?.ispoweredbylaraigo) && <div className={classes.copyright}>
                             {'Copyright © '} Laraigo {new Date().getFullYear()}
-                        </div>
+                        </div>}
                     </Container>
                 </div>
                 <Popus />

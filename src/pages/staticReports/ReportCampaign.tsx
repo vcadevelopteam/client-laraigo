@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon } from 'icons';
-import { Button, Checkbox, FormControlLabel, Grid, IconButton, ListItemIcon, MenuItem, Paper, Popper, Typography } from '@material-ui/core';
+import { Button} from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
@@ -18,8 +18,6 @@ import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
 import { FieldErrors } from "react-hook-form";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 
 interface DetailProps {
     setViewSelected?: (view: string) => void;
@@ -78,7 +76,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     const resExportData = useSelector(state => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null, distinct: "" })
     const [waitExport, setWaitExport] = useState(false);
 
     const [openModal, setOpenModal] = useState(false);
@@ -92,13 +90,12 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
 
     const filterChannel = useSelector ((state)=> state.main.mainAux)
     
-    const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
-        const column = props.cell.column;// eslint-disable-next-line react/prop-types
+    const cell = (props: CellProps<Dictionary>) => {
+        const column = props.cell.column;
         const row = props.cell.row.original;
         return (
             <div onClick={() => {
-                setSelectedRow(row);
-                setOpenModal(true);
+                setSelectedRow(row);               
             }}>             
                 {column.sortType === "datetime" && !!row[column.id] 
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
@@ -108,107 +105,79 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     hour: "numeric",
                     minute: "numeric",
                     second: "numeric"
-                })// eslint-disable-next-line react/prop-types
+                })
                 : row[column.id]}
             </div>
         )
     }
+
+    const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
   
     const columns = React.useMemo(
         () => [                    
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
-                groupedBy: false,  
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { title } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{title}</div>;
-                },
+                showGroupedBy: true,                 
+                Cell: cell
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                groupedBy: false,  
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { description } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{description}</div>;
-                },
+                showGroupedBy: true,             
+                Cell: cell
             },
             {
                 Header: t(langKeys.templatetype),
                 accessor: 'templatetype',
-                groupedBy: false,  
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { templatetype } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{templatetype}</div>;
-                },
+                showGroupedBy: true,                            
+                Cell: cell
             },
             {
                 Header: t(langKeys.templatename),
                 accessor: 'templatename',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { templatename } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{templatename}</div>;
-                },
+                showGroupedBy: true,                 
+                Cell: cell
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
-                groupedBy: false,  
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { channel } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{channel}</div>;
-                },
+                showGroupedBy: true,                 
+                Cell: cell
             },
             {
                 Header: t(langKeys.rundate),
                 accessor: 'rundate',
                 type: 'date',
-                sortType: 'datetime',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { rundate } = props.cell.row.original || {};
-                    return rundate ? new Date(rundate).toLocaleDateString() : null;
-                },     
+                sortType: 'datetime',                
+                Cell: cell  
             },
             {
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
                 NoFilter: false,
-                groupedBy: false,  
+                showGroupedBy: true, 
                 showColumn: true,     
                 prefixTranslation: 'executiontype',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executiontype } = props.cell.row.original || {};
-                    return (
-                        <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>
-                            {executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : ''}
-                        </div>
-                    );
-                },
+                Cell: cell  
             },                
             {
                 Header: t(langKeys.executingUser),
                 accessor: 'executionuser',
                 NoFilter: false,
-                groupedBy: false,  
+                showGroupedBy: true, 
                 showColumn: true,   
                 prefixTranslation: 'executionuser',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executionuser } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{executionuser !== null ? t(`executionuser_${executionuser}`) : ''}</div>;
-                },
+                Cell: cell  
             },
             {
                 Header: t(langKeys.executingUserProfile),
                 accessor: 'executionuserprofile',
                 NoFilter: false,
-                groupedBy: false,  
+                showGroupedBy: true, 
                 showColumn: true,   
                 prefixTranslation: 'executionuserprofile',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executionuserprofile } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{executionuserprofile !== null ? t(`executionuserprofile_${executionuserprofile}`) : ''}</div>;
-                },
+                Cell: cell  
             },
             {
                 Header: t(langKeys.total),
@@ -216,10 +185,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { total } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{total}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.success),
@@ -227,10 +193,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { success } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{success}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.success_percent),
@@ -238,10 +201,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { successp } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{successp}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.failed),
@@ -249,10 +209,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { fail } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{fail}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.failed_percent),
@@ -260,10 +217,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { failp } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{failp}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.attended),
@@ -271,10 +225,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { attended } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{attended}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.locked),
@@ -282,10 +233,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { locked } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{locked}</div>;
-                },
+                Cell: cell
             },
             {
                 Header: t(langKeys.blacklisted),
@@ -293,24 +241,26 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 type: 'number',
                 sortType: 'number',  
                 showColumn: true,            
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { blacklisted } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original); setOpenModal(true); }}>{blacklisted}</div>;
-                },
+                Cell: cell
             },
         ],
         []
     );
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+    React.useEffect(() => {
+        setColumnOrder(columns.map(column => column.accessor));
+    }, [columns]);
+
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct }: IFetchData) => {
         dispatch(showBackdrop(true))
-        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
+        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts, distinct }});
         dispatch(getCollectionPaginated(getCampaignReportPaginated(
             {
                 startdate: dateRangeCreateDate.startDate,
                 enddate: dateRangeCreateDate.endDate,
                 channeltype: selectedChannel,
                 sorts: sorts,
+                distinct: distinct,
                 filters: filters,
                 take: pageSize,
                 skip: pageIndex * pageSize,
@@ -454,98 +404,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
    
     const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
 
-    //groupedBy  ----------------------------------------------------------------------------------
-    type VisibleColumns2 = Record<string, boolean>;
-
-    const storedVisibleColumns2 = localStorage.getItem('visibleColumns');
-
-    const initialVisibleColumns2: VisibleColumns2 = storedVisibleColumns2
-        ? JSON.parse(storedVisibleColumns2)
-        : columns.reduce((acc, column) => {// eslint-disable-next-line react/prop-types
-            acc[column.accessor] = false;
-            return acc;
-        }, {} as VisibleColumns2);
-
-
-    const [visibleColumns2, setVisibleColumns2] = useState(initialVisibleColumns2);
-    const [pendingChanges2, setPendingChanges2] = useState(initialVisibleColumns2);
-
-    const handleToggleColumnVisibility2 = (columnName: keyof typeof visibleColumns2) => {
-        setPendingChanges2((prevPendingChanges: typeof pendingChanges2) => ({
-            ...prevPendingChanges,
-            [columnName]: !prevPendingChanges[columnName],
-        }));
-    };
-
-    const applyPendingChanges2 = () => {
-        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges2));
-        setVisibleColumns2(pendingChanges2);
-        setShowColumnsModalOpen(false);
-    };
-
-    useEffect(() => {
-        localStorage.setItem('visibleColumns', JSON.stringify(pendingChanges2));
-    }, [pendingChanges2]);
-
-
-
-    //showHide ----------------------------------------------------------------------------------
-    const storedVisibleColumns = localStorage.getItem('visibleColumns');
-    type VisibleColumns = Record<string, boolean>;
-    const initialVisibleColumns: VisibleColumns = storedVisibleColumns
-        ? JSON.parse(storedVisibleColumns)
-        : columns.reduce((acc, column) => {// eslint-disable-next-line react/prop-types
-            if (column.showColumn) {// eslint-disable-next-line react/prop-types
-                acc[column.accessor] = true;
-            }
-    return acc;
-    }, {} as VisibleColumns);
-
-    const [visibleColumns, setVisibleColumns] = useState(initialVisibleColumns);
-
-    const handleToggleColumnVisibility = (columnName: keyof typeof visibleColumns) => {
-        const updatedVisibleColumns = {
-          ...visibleColumns,
-          [columnName]: !visibleColumns[columnName],
-        };
-      
-        localStorage.setItem('visibleColumns', JSON.stringify(updatedVisibleColumns));
-        setVisibleColumns(updatedVisibleColumns);
-    };    // eslint-disable-next-line react/prop-types
-    const visibleColumnsList = columns.filter((column) => visibleColumns[column.accessor as keyof typeof visibleColumns]);
-
-
-    //open close modals dialogs ----------------------------------------------------------------------------------
-    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const [openSeButtons, setOpenSeButtons] = useState(false);
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
-        setOpenSeButtons((prevOpen) => !prevOpen);
-    };     
-    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
-    const handleOpenGroupedByModal = () => {
-        setGroupedByModalOpen(true);
-        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
-    };
-    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);
-    const handleOpenShowColumnsModal = () => { 
-        setShowColumnsModalOpen(true);        
-        if (openSeButtons) { setAnchorElSeButtons(null); setOpenSeButtons(false); }
-    };
-    
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node;    
-            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
-                setAnchorElSeButtons(null); setOpenSeButtons(false);
-            }
-        };    
-        document.addEventListener('click', handleClickOutside);
-        return () => { document.removeEventListener('click', handleClickOutside); };
-    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
-
-
-   
     return (
         <div style={{ width: '100%' }}>
             {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -570,196 +428,92 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             </div>}
             {externalUse && <div style={{ height: 10 }}></div>}
 
-            <div style={{ width: '100%', display: 'flex', background:'white', padding:'1rem 0 0 0'  }}>                 
-                
-                <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
-                    <DateRangePicker
-                        open={openDateRangeCreateDateModal}
-                        setOpen={setOpenDateRangeCreateDateModal}
-                        range={dateRangeCreateDate}
-                        onSelect={setDateRangeCreateDate}
-                    >
-                        <Button
-                            className={classes.itemDate}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+         
+            
+            <div style={{position: 'relative', height:'100%'}}>     
+
+                <div style={{ width: 'calc(100% - 60px)', display: 'flex', background:'white', padding:'1rem 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>                 
+                    
+                    <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
+                        <DateRangePicker
+                            open={openDateRangeCreateDateModal}
+                            setOpen={setOpenDateRangeCreateDateModal}
+                            range={dateRangeCreateDate}
+                            onSelect={setDateRangeCreateDate}
                         >
-                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                            <Button
+                                className={classes.itemDate}
+                                startIcon={<CalendarIcon />}
+                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                            >
+                                {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                            </Button>
+                        </DateRangePicker>
+
+                        <FieldSelect
+                            label={t(langKeys.channel)}
+                            variant="outlined"                       
+                            className={classes.filterComponent}                        
+                            data={uniqueTypdescList || []}        
+                            valueDefault={uniqueTypdescList}
+                            onChange={(value) => setSelectedChannel(value?.type||"")}           
+                            optionDesc="typedesc"
+                            optionValue="typedesc"
+                        />
+                    
+                    <Button
+                            disabled={mainPaginated.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            onClick={() => fetchData(fetchDataAux)}
+                        >
+                            {t(langKeys.search)}
                         </Button>
-                    </DateRangePicker>
 
-                    <FieldSelect
-                        label={t(langKeys.channel)}
-                        variant="outlined"                       
-                        className={classes.filterComponent}                        
-                        data={uniqueTypdescList || []}        
-                        valueDefault={uniqueTypdescList}
-                        onChange={(value) => setSelectedChannel(value?.type||"")}           
-                        optionDesc="typedesc"
-                        optionValue="typedesc"
-                    />
-                  
-                   <Button
-                        disabled={mainPaginated.loading}
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                        style={{ width: 120, backgroundColor: "#55BD84" }}
-                        onClick={() => fetchData(fetchDataAux)}
-                    >
-                        {t(langKeys.search)}
-                    </Button>
+                    </div> 
 
+                    <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
+                        <FieldSelect
+                            uset={true}
+                            variant="outlined"
+                            label={t(langKeys.reporttype)}
+                            className={classes.select}
+                            valueDefault={reportType}
+                            onChange={(value) => setReportType(value?.key)}
+                            data={dictToArrayKV(dataReportType)}
+                            optionDesc="value"
+                            optionValue="key"
+                        />
+                        <Button
+                                className={classes.button}
+                                color="primary"
+                                disabled={mainPaginated.loading}
+                                onClick={() => triggerExportData()}                         
+                                startIcon={<DownloadIcon />}
+                                variant="contained"
+                            >
+                                {`${t(langKeys.download)}`}
+                            </Button>                        
+                    </div>     
+
+
+                    
+                    <div>
+                                        
+                    </div>                                                                                
                 </div> 
 
-                <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
-                    <FieldSelect
-                        uset={true}
-                        variant="outlined"
-                        label={t(langKeys.reporttype)}
-                        className={classes.select}
-                        valueDefault={reportType}
-                        onChange={(value) => setReportType(value?.key)}
-                        data={dictToArrayKV(dataReportType)}
-                        optionDesc="value"
-                        optionValue="key"
-                    />
-                      <Button
-                            className={classes.button}
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            onClick={() => triggerExportData()}                         
-                            startIcon={<DownloadIcon />}
-                            variant="contained"
-                        >
-                            {`${t(langKeys.download)}`}
-                        </Button>                        
-                </div>     
-                <div>
-                    <IconButton
-                        aria-label="more"
-                        id="long-button"
-                        onClick={(event) => handleClickSeButtons(event)}
-                        style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                    >
-                        <MoreVertIcon />
-                    </IconButton>
-
-                    <div style={{ display: 'flex', gap: 8 }}>                               
-                        <Popper
-                            open={openSeButtons}
-                            anchorEl={anchorElSeButtons}
-                            placement="bottom"
-                            transition
-                            style={{marginRight:'1rem'}}
-                        >
-                            {({ TransitionProps }) => (
-                                <Paper {...TransitionProps} elevation={5}>
-
-                                    {/* <MenuItem 
-                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                        onClick={handleOpenGroupedByModal}
-                                    >
-                                        <ListItemIcon>
-                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                        </ListItemIcon>
-                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
-                                    </MenuItem>
-                                    <Divider /> */}
-
-                                    <MenuItem 
-                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                        onClick={handleOpenShowColumnsModal}                                           
-                                    >
-                                        <ListItemIcon>
-                                            <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                        </ListItemIcon>
-                                        <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
-                                    </MenuItem>   
-
-                                </Paper>
-                            )}
-                        </Popper>
-                    </div>    
-                    {isGroupedByModalOpen && (
-                        <DialogZyx 
-                            open={isGroupedByModalOpen} 
-                            title={t(langKeys.groupedBy)} 
-                            buttonText1={t(langKeys.close)}
-                            buttonText2={t(langKeys.apply) }
-                            handleClickButton1={() => setGroupedByModalOpen(false)}                    
-                            handleClickButton2={()=> setGroupedByModalOpen(false)}
-                            maxWidth="sm"
-                            buttonStyle1={{marginBottom:'0.3rem'}}
-                            buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
-                        >                     
-                            <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                {columns // eslint-disable-next-line react/prop-types
-                                    .filter((column) => column.groupedBy === false)
-                                    .map((column) => ( // eslint-disable-next-line react/prop-types
-                                    <Grid item xs={4} key={column.accessor}>
-                                        <FormControlLabel
-                                            style={{ pointerEvents: "none" }}
-                                            control={
-                                                <Checkbox
-                                                    color="primary"
-                                                    style={{ pointerEvents: "auto" }} // eslint-disable-next-line react/prop-types
-                                                    checked={pendingChanges2[column.accessor]} // eslint-disable-next-line react/prop-types
-                                                    onChange={() => handleToggleColumnVisibility2(column.accessor)} // eslint-disable-next-line react/prop-types
-                                                    name={column.accessor}
-                                                />
-                                            } // eslint-disable-next-line react/prop-types
-                                            label={t(column.Header)}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </DialogZyx>
-                    )} 
-                     {isShowColumnsModalOpen && (
-                            <DialogZyx 
-                                open={isShowColumnsModalOpen}
-                                title={t(langKeys.showHideColumns)}
-                                buttonText1={t(langKeys.close)}
-                                handleClickButton1={() => setShowColumnsModalOpen(false)}
-                                maxWidth="sm"
-                                buttonStyle1={{ marginBottom: '0.3rem' }}
-                            >  
-                                <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
-                                    {columns // eslint-disable-next-line react/prop-types
-                                        .filter((column) => column.showColumn === true)
-                                        .map((column) => ( // eslint-disable-next-line react/prop-types
-                                        <Grid item xs={4} key={column.accessor}>
-                                            <FormControlLabel
-                                                style={{ pointerEvents: "none" }}
-                                                control={
-                                                    <Checkbox
-                                                        color="primary"
-                                                        style={{ pointerEvents: "auto" }} // eslint-disable-next-line react/prop-types
-                                                        checked={visibleColumns[column.accessor]} // eslint-disable-next-line react/prop-types
-                                                        onChange={() => handleToggleColumnVisibility(column.accessor)} // eslint-disable-next-line react/prop-types
-                                                        name={column.accessor}
-                                                    />
-                                                } // eslint-disable-next-line react/prop-types
-                                                label={t(column.Header)}
-                                            />
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </DialogZyx>               
-                        )}
-                                        
-                </div>                                                                                
-            </div>
-            
-            <div style={{width:'100%', height:'100%'}}>       
                 <TablePaginated
-                    columns={visibleColumnsList}
+                    columns={columns}
                     data={mainPaginated.data}
                     totalrow={totalrow}
                     loading={mainPaginated.loading}
                     pageCount={pageCount}                    
                     fetchData={fetchData}               
+                    showHideColumns={true}
+                    groupedBy={true}
                     download={false}
                     hoverShadow={false}
                     exportPersonalized={triggerExportData}

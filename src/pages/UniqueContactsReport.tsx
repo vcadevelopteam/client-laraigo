@@ -96,7 +96,8 @@ interface DetailUniqueContactProps {
     setViewSelected: (view: string) => void;
 }
 
-const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, graphicType }) => {
+
+const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data }) => {
     const { t } = useTranslation();
 
     const columns = React.useMemo(
@@ -105,18 +106,16 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 Header: t(langKeys.month),
                 accessor: 'name',
                 NoFilter: true,
-                Cell: (props: CellProps<Dictionary>)  => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
 
-                    if (graphicType === "BAR")
-                        return row?.name;
                     return (
-                        <div style={{ display: 'flex', gap: 4 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <div style={{ width: 15, height: 15, backgroundColor: row.color }}></div>
                             {row?.name}
                         </div>
-                    )
-                }
+                    );
+                },
             },
             {
                 Header: t(langKeys.quantity),
@@ -144,7 +143,6 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 columns={columns}
                 data={data}
                 download={false}
-                pageSizeDefault={100}
                 filterGeneral={false}
                 toolsFooter={false}
             />
@@ -605,7 +603,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 }
             })
             setGridData([...rawdata,mainTotal]||[]);
-            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:Dictionary, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:randomColorGenerator()}],[]))
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:Dictionary, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color: randomColorGenerator()}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
@@ -674,7 +672,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 </React.Fragment>):
                 (<div>
                     <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
-                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, width: '100%', margin: '8px 0' }}>
+                        <div style={{display: 'flex', gap: 8, width: '100%', justifyContent:'right', marginTop: 6}}>
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -694,8 +692,11 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                             >
                                 {t(langKeys.grid_view)}
                             </Button>
+                       </div>                      
+                        <div style={{ fontWeight: 500, padding: 16, display: 'flex', justifyContent: 'left', width: '100%' }}>
+                            {t(langKeys.graphic_report_of, { report: t('uniquecontacts'), column: t('month') })}
                         </div>
-                        <>
+                        <>                      
                             {(mainResult.loading) ? (
                                 <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <CircularProgress />
@@ -724,7 +725,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                                         </ResponsiveContainer>
                                     </div>
                                     <div style={{ overflowX: 'auto' }}>
-                                        <TableResume                                        
+                                        <TableResume
                                             graphicType={graphicType}
                                             data={dataGraph}
                                         />
@@ -788,7 +789,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                                     </div>
                                 </div>
                             )))}
-                        </>
+                        </>                      
                     </Box>
                 </div>
                 )}
@@ -1356,7 +1357,8 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 </React.Fragment>):
                 (<div>
                     <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
-                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, width: '100%', margin: '8px 0' }}>
+                       
+                        <div style={{display: 'flex', gap: 8, width: '100%', justifyContent:'right', marginTop: 6}}>
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -1376,6 +1378,9 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                             >
                                 {t(langKeys.grid_view)}
                             </Button>
+                       </div>                      
+                        <div style={{ fontWeight: 500, padding: 16, display: 'flex', justifyContent: 'left', width: '100%' }}>
+                            {t(langKeys.graphic_report_of, { report: t('conversationquantity'), column: t('month') })}
                         </div>
                         <>
                         {(mainResult.loading) ? (
@@ -1449,6 +1454,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                 </div>
                                 <div style={{ overflowX: 'auto' }}>
                                     <TableResume
+                                    
                                         graphicType={graphicType}
                                         data={dataGraph}
                                     />
@@ -1549,57 +1555,69 @@ const UniqueContactsReport: FC = () => {
     }
 
     return (
-        <Fragment>            
-            <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
-                <div style={{display: 'flex', gap: 8}}>      
-                    <FieldSelect
-                        label={t(langKeys.year)}
-                        style={{ width: 140 }}
-                        variant="outlined"
-                        valueDefault={year}
-                        onChange={(value) => setYear(value?.value)}
-                        data={dataYears}
-                        optionDesc="value"
-                        optionValue="value"
-                    />                            
-                    <FieldMultiSelect
-                        label={t(langKeys.channeltype)}
-                        className={classes.filterComponent}
-                        onChange={(value) => {setChannelType(value.map((o: Dictionary) => o.domainvalue).join())}}
-                        valueDefault={channelType}
-                        variant="outlined"
-                        data={multiData?.data?.[2]?.data||[]}
-                        loading={multiData.loading}
-                        optionDesc={"domaindesc"}
-                        optionValue={"domainvalue"}
-                    />
-                    <div>
-                        <Button
-                            disabled={multiData.loading}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            onClick={() => search()}
-                        >{t(langKeys.search)}
-                        </Button>
-                    </div>
+
+        <div>
+            <Fragment>            
+                <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
+                    <div style={{display: 'flex', gap: 8}}>      
+                        <FieldSelect
+                            label={t(langKeys.year)}
+                            style={{ width: 140 }}
+                            variant="outlined"
+                            valueDefault={year}
+                            onChange={(value) => setYear(value?.value)}
+                            data={dataYears}
+                            optionDesc="value"
+                            optionValue="value"
+                        />                            
+                        <FieldMultiSelect
+                            label={t(langKeys.channeltype)}
+                            className={classes.filterComponent}
+                            onChange={(value) => {setChannelType(value.map((o: Dictionary) => o.domainvalue).join())}}
+                            valueDefault={channelType}
+                            variant="outlined"
+                            data={multiData?.data?.[2]?.data||[]}
+                            loading={multiData.loading}
+                            optionDesc={"domaindesc"}
+                            optionValue={"domainvalue"}
+                        />
+                        <div>
+                            <Button
+                                disabled={multiData.loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    </div>   
+                           
                 </div>
-            </div>
-            <Tabs
-                value={pageSelected}
-                indicatorColor="primary"
-                variant="fullWidth"
-                style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                textColor="primary"
-                onChange={(_, value) => setPageSelected(value)}
-            >
-                <AntTab label={t(langKeys.uniquecontacts).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
-                <AntTab label={t(langKeys.conversationquantity).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
-            </Tabs>
-            {pageSelected === 0 && <UniqueContactsReportDetail year={year} channelType={channelType}/>}
-            {pageSelected === 1 && <ConversationQuantityReportDetail year={year} channelType={channelType}/>}
-        </Fragment>
+
+               
+
+
+
+
+                
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.uniquecontacts).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
+                    <AntTab label={t(langKeys.conversationquantity).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
+                </Tabs>
+                {pageSelected === 0 && <UniqueContactsReportDetail year={year} channelType={channelType}/>}
+                {pageSelected === 1 && <ConversationQuantityReportDetail year={year} channelType={channelType}/>}
+            </Fragment>
+        </div>
+       
     )
 }
 

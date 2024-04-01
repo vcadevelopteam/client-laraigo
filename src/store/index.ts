@@ -33,6 +33,8 @@ import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import paymentReducer, { IState as IPayment } from './payment/reducer';
 import rasaiaReducer, { IState as IRasaia } from './rasaia/reducer';
 import conversationReducer, { IState as IConversation } from './conversation/reducer';
+import corporationReducer, { IState as ICorporation } from './corp/reducer';
+import deliveryReducer, { IState as IDelivery } from './delivery/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -50,6 +52,7 @@ export interface IRootState {
     llama: ILlama;
     culqi: ICulqi;
     dashboard: IDashboard;
+    delivery: IDelivery;
     getlocations: IGetLocations;
     getversion: IGetVersion;
     subscription: ISubscription;
@@ -65,6 +68,7 @@ export interface IRootState {
     servicedesk: IServiceDesk;
     rasaia: IRasaia
     conversation: IConversation
+    corporation: ICorporation
 }
 
 declare global {
@@ -89,6 +93,7 @@ const rootReducer = combineReducers<IRootState>({
     llama: llamaReducer,
     culqi: culqiReducer,
     dashboard: dashboardReducer,
+    delivery: deliveryReducer,
     getlocations: getlocationsReducer,
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,
@@ -104,6 +109,7 @@ const rootReducer = combineReducers<IRootState>({
     servicedesk: servicedeskReducer,
     rasaia: rasaiaReducer,
     conversation: conversationReducer,
+    corporation: corporationReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

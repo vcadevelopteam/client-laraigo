@@ -18,6 +18,7 @@ import ListIcon from '@material-ui/icons/List';
 import SettingsIcon from '@material-ui/icons/Settings';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import { CellProps } from 'react-table';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -126,19 +127,17 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
             {
                 Header: !!columnDesc ? columnDesc : t('report_' + row?.origin + '_' + column),
                 accessor: 'columnname',
-                NoFilter: true,
-                Cell: (props: any) => {
+                NoFilter: true,               
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original || {};
 
-                    if (graphicType === "BAR")
-                        return row?.columnname;
                     return (
-                        <div style={{ display: 'flex', gap: 4 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <div style={{ width: 15, height: 15, backgroundColor: row.color }}></div>
                             {row?.columnname}
                         </div>
-                    )
-                }
+                    );
+                },
             },
             {
                 Header: t(langKeys.quantity),
@@ -287,7 +286,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             }
         }
     }, [mainGraphicRes, data, loading])
-    
+    console.log(row?.origin)
 
     return (
         <>
@@ -352,12 +351,18 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                         )}
                     </div>
                 </Box>
+            )}           
+            {!data && row?.origin === 'sentmessages' && (
+                <div style={{ fontWeight: 500, padding: 16 }}>
+                    {t(langKeys.graphic_report_of, { report: t(langKeys.recordhsmreportexternal), column: t('report_' + row?.origin + '_' + column) })}
+
+                </div>
             )}
-            {!data && (
+            {!data && row?.origin !== 'sentmessages' && (
                 <div style={{ fontWeight: 500, padding: 16 }}>
                     {t(langKeys.graphic_report_of, { report: t('report_' + row?.origin), column: t('report_' + row?.origin + '_' + column) })}
                 </div>
-            )}
+            )}           
             {(loading || mainGraphicRes.loading) ? (
                 <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <CircularProgress />

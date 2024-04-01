@@ -25,7 +25,7 @@ const ReportRequestSD: FC = () => {
     const [totalrow, settotalrow] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })   
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null, distinct: {} })   
     
     useEffect(() => {
         dispatch(setViewChange("reportrequestsd"))
@@ -48,21 +48,25 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
+                showGroupedBy: true, 
                 helpText: t(langKeys.report_requestsd_type_help)
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
                 showColumn: true,   
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.applicant),
                 accessor: 'display_name',
+                showGroupedBy: true, 
                 helpText: t(langKeys.report_requestsd_applicant_help)
             },
             {
                 Header: t(langKeys.business),
                 accessor: 'company',
+                showGroupedBy: true, 
                 helpText: t(langKeys.report_requestsd_business_help)
             },
             {
@@ -73,10 +77,12 @@ const ReportRequestSD: FC = () => {
             {
                 Header: t(langKeys.priority),
                 accessor: 'priority',
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'phase',
+                showGroupedBy: true, 
                 helpText: t(langKeys.report_requestsd_status_help)
             },
             {
@@ -84,6 +90,7 @@ const ReportRequestSD: FC = () => {
                 accessor: 'resolution',
                 helpText: t(langKeys.report_requestsd_resolution_help),
                 showColumn: true,   
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.reportdate),
@@ -120,8 +127,8 @@ const ReportRequestSD: FC = () => {
         }
     }, [multiData])
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange, distinct }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange, distinct })
         dispatch(getCollectionPaginated(getreportrequestSD({
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,
@@ -129,6 +136,7 @@ const ReportRequestSD: FC = () => {
             channeltype: selectedChannel,
             skip: pageIndex * pageSize,
             sorts: sorts,
+            distinct: distinct,
             company: company,
             filters: {
                 ...filters,
@@ -242,6 +250,7 @@ const ReportRequestSD: FC = () => {
                 exportPersonalized={triggerExportData}
                 register={false}
                 showHideColumns={true}
+                groupedBy={true}
                 ExtraMenuOptions={
                     <MenuItem
                         style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
