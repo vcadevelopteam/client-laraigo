@@ -75,7 +75,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
     const [tempMaxY, setTempMaxY] = useState<number>(3);
     const [initialTempMaxX, setInitialTempMaxX] = useState<number>(2);
     const [initialTempMaxY, setInitialTempMaxY] = useState<number>(3);
-    const [, setIsButtonDisabled] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [startdate, setStartDate] = useState('');
     const [enddate, setEndDate] = useState('');
 
@@ -232,22 +232,28 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
      
     const handleMaxXChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.trim();
-        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
-            setTempMaxX(parseInt(value));
-            setIsButtonDisabled(false);
-        } else {
-            setIsButtonDisabled(true);
+        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 2)) {
+            const newX = parseInt(value);
+            setTempMaxX(newX);
+            if (tempMaxY >= newX) {
+                setIsButtonDisabled(false);
+            } else {
+                setIsButtonDisabled(true);
+            }
         }
     };
-
+    
     const handleMaxYChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.trim();
-        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 1)) {
-            setTempMaxY(parseInt(value));
-            setIsButtonDisabled(false);
-        } else {
-            setIsButtonDisabled(true);
-        }
+        if (value === '' || (Number.isInteger(parseInt(value)) && parseInt(value) >= 2)) {
+            const newY = parseInt(value);
+            setTempMaxY(newY);
+            if (newY >= tempMaxX) {
+                setIsButtonDisabled(false);
+            } else {
+                setIsButtonDisabled(true);
+            }
+        } 
     };
 
     const handleApplyButtonClick = () => {
@@ -445,7 +451,9 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             style={{cursor: 'default'}}
                                         />
+                                        
                                     </div>
+                                   
                                 </div>
                             </Grid>
                             <Grid item xs={6}>
@@ -463,10 +471,14 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                                             onFocus={handleFocus}
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             style={{cursor: 'default'}}
-                                        />
+                                        />                                        
                                     </div>
+                                    {isButtonDisabled && (
+                                        <p style={{color: 'red'}}>Y no puede ser menor que X</p>
+                                    )}
                                 </div>
                             </Grid>
+                           
                         </Grid>                       
                     </DialogContent>
                     <DialogActions>                      
@@ -474,7 +486,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                         <Button onClick={handleCloseConfigDialog} color="default">
                                 <Trans i18nKey={langKeys.close} />
                             </Button>
-                            <Button onClick={handleApplyButtonClick} color="primary">
+                            <Button onClick={handleApplyButtonClick} color="primary" disabled={isButtonDisabled}>
                                 <Trans i18nKey={langKeys.refresh} />
                             </Button>
                        </div>
