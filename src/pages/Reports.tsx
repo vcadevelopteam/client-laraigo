@@ -1009,7 +1009,7 @@ const Reports: FC = () => {
     }
 
     const handleSelectedString = (key: string) => {
-        console.log("Selected key:", key);
+        //console.log("Selected key:", key);
         setViewSelected(key);       
     }
 
