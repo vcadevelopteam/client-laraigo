@@ -2,13 +2,14 @@ import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getcomplianceSLA, getComplianceSLAExport } from 'common/helpers';
-import { IFetchData } from "@types";
+import { Dictionary, IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { cleanViewChange, exportData, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { FieldSelect } from 'components/fields/templates';
+import { CellProps } from 'react-table';
 
 
 const ReportComplianceSLA: FC = () => {
@@ -68,16 +69,17 @@ const ReportComplianceSLA: FC = () => {
             {
                 Header: t(langKeys.registrationdate),
                 accessor: 'report_date',
-                Cell: (props: any) => {
-                    const { report_date } = props.cell.row.original;
-                    return new Date(report_date).toLocaleString()
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const { report_date } = props.cell.row.original || {};
+                    return report_date ? new Date(report_date).toLocaleString() : "";
                 }
+                
             },
             {
                 Header: t(langKeys.firstContactDate),
                 accessor: 'first_contact_date',
-                Cell: (props: any) => {
-                    const { first_contact_date } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const { first_contact_date } = props.cell.row.original || {};
                     return first_contact_date? new Date(first_contact_date).toLocaleString() : ""
                 }
             },
@@ -93,24 +95,24 @@ const ReportComplianceSLA: FC = () => {
             {
                 Header: t(langKeys.dateofresolution),
                 accessor: 'resolution_date',
-                Cell: (props: any) => {
-                    const { resolution_date } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const { resolution_date } = props.cell.row.original || {};
                     return resolution_date? new Date(resolution_date).toLocaleString() : ""
                 }
             },
             {
                 Header: t(langKeys.dateofresolutiondeadline),
                 accessor: 'resolution_deadline',
-                Cell: (props: any) => {
-                    const { resolution_deadline } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const { resolution_deadline } = props.cell.row.original || {};
                     return new Date(resolution_deadline).toLocaleString()
                 }
             },
             {
                 Header: t(langKeys.firstContactDatedeadline),
                 accessor: 'first_contact_deadline',
-                Cell: (props: any) => {
-                    const { first_contact_deadline } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const { first_contact_deadline } = props.cell.row.original || {};
                     return new Date(first_contact_deadline).toLocaleString()
                 }
             },
@@ -221,7 +223,7 @@ const ReportComplianceSLA: FC = () => {
                             onChange={(value) => {
                                 setCompany(value?.domainvalue||"");
                             }}
-                            data={multiData.data[2].data}
+                            data={multiData && multiData.data && multiData.data[2] && multiData.data[2].data ? multiData.data[2].data : []}
                             loading={multiData.loading}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"

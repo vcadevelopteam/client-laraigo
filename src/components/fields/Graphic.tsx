@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, ReactElement, Fragment, useEffect, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,7 +13,7 @@ import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { DateRangePicker } from 'components';
 import { CircularProgress } from '@material-ui/core';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList, LineChart, Line } from 'recharts';
 import ListIcon from '@material-ui/icons/List';
 import SettingsIcon from '@material-ui/icons/Settings';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
@@ -88,8 +87,6 @@ const useStyles = makeStyles((theme) => ({
         }
     },
 }));
-
-var randomColor = () => Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
 interface IGraphic {
     graphicType: string;
     column: string;
@@ -123,6 +120,7 @@ export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadi
 const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; data: Dictionary[]; columnDesc?: string }> = ({ row, column, data, graphicType, columnDesc }) => {
     const { t } = useTranslation();
 
+
     const columns = React.useMemo(
         () => [
             {
@@ -130,7 +128,7 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
                 accessor: 'columnname',
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
 
                     if (graphicType === "BAR")
                         return row?.columnname;
@@ -154,7 +152,7 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
                 NoFilter: true,
                 type: 'number',
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return row.percentage + "%";
                 }
             },
@@ -198,6 +196,52 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
         (currentPage + 1) * itemsPerPage
     );
 
+    const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+    
+    const getNextColorGenerator = (): (() => string) => {
+        const predefinedColors = ["#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00", "#0F7F13", "#00CFE5", "#1D1856", "#FB5F5F", "#B061E1"];
+        let currentIndex = 0;
+        const usedColors = [...predefinedColors];
+    
+        return () => {
+            if (currentIndex < predefinedColors.length) {
+                const color = predefinedColors[currentIndex];
+                currentIndex++;
+                return color;
+            } else {
+                const randomColor = generateRandomColor();
+                if (!usedColors.includes(randomColor)) {
+                    usedColors.push(randomColor);
+                    return randomColor;
+                } else {
+                    return getNextColorGenerator()();
+                }
+            }
+        };
+    };    
+    const randomColorGenerator = getNextColorGenerator();
+
+  
+    const getNextColorGeneratorPerPage = (): (() => string) => {
+        const predefinedColorsPerPage = [
+            "#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00"
+        ];
+    
+        const getNextColor = (index: number): string => {
+            const colorIndex = index % predefinedColorsPerPage.length;
+            return predefinedColorsPerPage[colorIndex];
+        };
+    
+        let currentIndex = 0;
+    
+        return () => {
+            const color = getNextColor(currentIndex);
+            currentIndex++;
+            return color;
+        };
+    };    
+    const randomColorGeneratorPerPage = getNextColorGeneratorPerPage();
+
     useEffect(() => {
         if (dataGraphic.length > 0) {
             const newMaxSummary = Math.max(...dataGraphic.map(item => item.summary), 0) + 10;
@@ -226,7 +270,8 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                     columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
                     summary: parseInt(x.summary),
                     percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
-                    color: `#${randomColor()}`
+                    color: randomColorGeneratorPerPage()
+                    //color: generateRandomColor()
                 })));
             }
         } else {
@@ -236,12 +281,13 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                     ...x,
                     columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
                     summary: parseInt(x.summary),
-                    percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
-                    color: `#${randomColor()}`
+                    percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),               
+                    color: randomColorGenerator()
                 })));
             }
         }
     }, [mainGraphicRes, data, loading])
+    
 
     return (
         <>
@@ -338,39 +384,47 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                 <KeyboardArrowRightIcon />
                             </Button>
                         </div>
+
                         <ResponsiveContainer aspect={4.0 / 2}>
                             <BarChart
                                 data={slicedData}
-                                margin={{
-                                    top: 20,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
+                                margin={{ top: 20, right: 30, left: 20, bottom: 5}}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
-
                                 <YAxis domain={[0, maxSummary]}/>
                                 <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
-                                <Bar dataKey="summary" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" >
+                                <Bar 
+                                    dataKey="summary" 
+                                    fill="#7721AD" 
+                                    textAnchor="end" 
+                                    stackId="a" 
+                                    type="monotone" 
+                                >
                                     <LabelList dataKey="summary" position="top" />
+                                    {
+                                        slicedData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={randomColorGeneratorPerPage()} />
+                                        ))
+                                    }                                    
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
+
+
                     </div>
                     <div style={{ overflowX: 'auto' }}>
                         <TableResume
                             row={row}
                             column={column}
                             graphicType={graphicType}
-                            data={dataGraphic}
                             columnDesc={columnDesc}
+                            data={dataGraphic}
                         />
                     </div>
-                </div>
-            ) : (
-                <div style={{ display: 'flex' }}>
+                </div>  
+                ) : (graphicType === "PIE" ? (
+                    <div style={{ display: 'flex' }}>
                     <div style={{ flex: '0 0 65%', height: 500 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -386,7 +440,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                     innerRadius={40}
                                     fill="#8884d8"
                                 >
-                                    {dataGraphic.map((item, i) => (
+                                    {dataGraphic.map((item) => (
                                         <Cell
                                             key={item.columnname}
                                             fill={item.color}
@@ -405,8 +459,39 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                             data={dataGraphic}
                         />
                     </div>
+                    </div>          
+            ) : (
+                <div style={{ display: 'flex' }}>
+                    <div style={{ flex: '0 0 70%', height: 500 }}>
+                        <ResponsiveContainer aspect={4.0 / 2}>
+                            <LineChart
+                                data={slicedData}
+                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+                                <YAxis domain={[0, maxSummary]} />
+                                <ChartTooltip formatter={(value: number, name: string) => [value, t(name)]} />                                                           
+                                <Line 
+                                    type="linear" 
+                                    dataKey="summary" 
+                                    stroke={randomColorGeneratorPerPage()} 
+                                />
+                               
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div style={{ overflowX: 'auto' }}>
+                        <TableResume
+                            row={row}
+                            column={column}
+                            graphicType={graphicType}
+                            data={dataGraphic}
+                            columnDesc={columnDesc}
+                        />
+                    </div>
                 </div>
-            ))}
+            )))}
         </>
 
     )

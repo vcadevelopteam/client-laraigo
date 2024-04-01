@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { addTemplate, deleteTemplate, synchronizeTemplate } from "store/channel/actions";
 import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
 import { Close, Delete, FileCopy, GetApp, Search } from "@material-ui/icons";
@@ -56,6 +55,7 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
+import { CellProps } from "react-table";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -171,7 +171,7 @@ const MessageTemplates: FC = () => {
                 minWidth: 60,
                 NoFilter: true,
                 width: "1%",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -186,9 +186,12 @@ const MessageTemplates: FC = () => {
                 accessor: "createdate",
                 Header: t(langKeys.creationdate),
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return <div>{dateToLocalDate(row.createdate)}</div>;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    if (!row || !row.original || !row.original.createdate) {
+                        return null;
+                    }
+                    return <div>{dateToLocalDate(row.original.createdate)}</div>;
                 },
             },
             ...(showId
@@ -197,14 +200,10 @@ const MessageTemplates: FC = () => {
                         accessor: "id",
                         Header: t(langKeys.messagetemplateid),
                         type: "number",
-                        Cell: (props: any) => {
-                            const row = props.cell.row.original;
-                            if (row.showid) {
-                                return <div>{row.id}</div>;
-                            } else {
-                                return <div></div>;
-                            }
-                        },
+                        Cell: (props: CellProps<Dictionary>) => {
+                            const { row } = props.cell;
+                            return row?.showid ? <div>{row.id}</div> : null;
+                        }                        
                     },
                 ]
                 : []),
@@ -220,10 +219,16 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "category",
                 Header: t(langKeys.category),
-                Cell: (props: any) => {
-                    const { category, type } = props.cell.row.original;
-                    return (type === "HSM" ? t(`TEMPLATE_${category}`) : category).toUpperCase();
-                },
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const { category, type } = row?.original || {};
+                    if (category && type) {
+                        return (type === "HSM" ? t(`TEMPLATE_${category}`) : category).toUpperCase();
+                    } else {
+                        return ''; 
+                    }
+                }
+                          
             },
             {
                 accessor: "language",
@@ -237,10 +242,14 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "body",
                 Header: t(langKeys.body),
-                Cell: (props: any) => {
-                    const { body } = props.cell.row.original;
-                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body;
-                },
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const body = row?.original?.body;
+                    
+                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body || ''; 
+                }
+                
+                           
             },
         ],
         [showId]

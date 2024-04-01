@@ -2583,7 +2583,6 @@ const PersonDetail: FC = () => {
             setWaitLoading(true)
             dispatch(execute(getPersonOne({ personid: match.params.id })));
             setrefresh(false)
-            debugger
             //agregale la candicion para que llame al person sel
         }
     }, [person, refresh]);

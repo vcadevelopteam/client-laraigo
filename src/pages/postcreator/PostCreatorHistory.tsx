@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import CloseIcon from '@material-ui/icons/Close';
 import EditHistoryPost from './EditHistoryPost';
 import React, { FC, useEffect, useState } from "react";
@@ -20,6 +19,7 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
+import { CellProps } from 'react-table';
 
 const getArrayBread = (temporalName: string, viewName: string) => ([
     { id: "view-1", name: viewName || "Post Creator" },
@@ -186,95 +186,108 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
             width: 500,
             isComponent: true,
             NoFilter: true,
-            Cell: (props: any) => {
-                const { texttitle, communicationchanneldesc, medialink, communicationchanneltype } = props.cell.row.original;
+            Cell: (props: CellProps<Dictionary>) => {
+                const { texttitle, communicationchanneldesc, medialink, communicationchanneltype } = props.cell.row.original || {};
                 return (
                     <div style={{ display: "flex", gap: 5 }}>
                         <div>
                             {(!!medialink?.[0]?.thumbnail) ?
-                                <img loading='eager' alt="" width={60} height={60} src={medialink?.[0]?.thumbnail || ""}></img>
+                                <img loading='eager' alt="" width={60} height={60} src={medialink[0].thumbnail} />
                                 :
-                                <img loading='eager' alt="" width={60} height={60} src="https://via.placeholder.com/150"></img>
+                                <img loading='eager' alt="" width={60} height={60} src="https://via.placeholder.com/150" />
                             }
                             <div style={{ position: "absolute", top: 48, left: 138 }}>
-                                <Avatar variant="rounded" style={{ width: 23, height: 23, backgroundColor: "white" }}><GetIconColor channelType={communicationchanneltype} /></Avatar>
+                                <Avatar variant="rounded" style={{ width: 23, height: 23, backgroundColor: "white" }}>
+                                    <GetIconColor channelType={communicationchanneltype} />
+                                </Avatar>
                             </div>
                         </div>
                         <div style={{ position: "absolute", left: 180 }}>
                             <div style={{ display: "flex", fontSize: "1em", marginBottom: 1, marginTop: 10 }}>{texttitle}</div>
-                            <div style={{ display: "flex", fontSize: "0.8em", gap: 5 }}><Avatar style={{ width: 16, height: 16, backgroundColor: 'black' }} />{communicationchanneldesc}</div>
+                            <div style={{ display: "flex", fontSize: "0.8em", gap: 5 }}>
+                                <Avatar style={{ width: 16, height: 16, backgroundColor: 'black' }} />
+                                {communicationchanneldesc}
+                            </div>
                         </div>
                     </div>
-                )
-            }
+                );
+            }            
         },
         {
             Header: t(langKeys.publicationdate),
             accessor: 'publishdate',
             width: "auto",
             NoFilter: true,
-            Cell: (props: any) => {
-                const { publishdate } = props.cell.row.original;
+            Cell: (props: CellProps<Dictionary>) => {
+                const { publishdate } = props.cell.row.original || {};
+                if (!publishdate) {
+                    return "";
+                }
+            
                 const locale = navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
                 return (
                     <div style={{ height: 37, fontSize: "0.9em" }}>
                         {locale ? new Date(publishdate).toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' }) : new Date(publishdate).toDateString()}
-                    </div>)
-            }
+                    </div>
+                );
+            }            
         },
         {
             Header: t(langKeys.scope),
             accessor: 'reach',
             width: "auto",
             NoFilter: true,
-            Cell: (props: any) => {
-                const { reach } = props.cell.row.original;
+            Cell: (props: CellProps<Dictionary>) => {
+                const { reach } = props.cell.row.original || {}; 
                 return (
                     <div style={{ height: 58, textAlign: "center" }}>
                         <div>
-                            {reach || 0}
+                            {reach !== undefined ? reach : 0}
                         </div>
                         <div>
                             {t(langKeys.peoplereached)}
                         </div>
-                    </div>)
-            }
+                    </div>
+                );
+            }            
         },
         {
             Header: t(langKeys.interaction_plural),
             accessor: 'interactions',
             width: "auto",
             NoFilter: true,
-            Cell: (props: any) => {
-                const { interactions } = props.cell.row.original;
+            Cell: (props: CellProps<Dictionary>) => {
+                const { interactions } = props.cell.row.original || {};
                 return (
                     <div style={{ height: 50, textAlign: "center" }}>
                         {interactions || 0}
-                    </div>)
-            }
+                    </div>
+                );
+            }            
         },
         {
             Header: t(langKeys.likesandreactions),
             accessor: 'likesandreactions',
             width: "auto",
             NoFilter: true,
-            Cell: (props: any) => {
-                const { reactions } = props.cell.row.original;
+            Cell: (props: CellProps<Dictionary>) => {
+                const { reactions } = props.cell.row.original || {};
                 return (
                     <div style={{ height: 53, textAlign: "center" }}>
                         {Object.keys(reactions || {}).map((x) => {
                             return <div>{x.toLocaleUpperCase()}: {reactions[x]} </div>
                         })}
-                    </div>)
-            }
+                    </div>
+                );
+            }            
         },
         {
             Header: t(langKeys.publishstatus),
             accessor: 'publishstatus',
             width: "auto",
             NoFilter: true,
-            Cell: (props: any) => {
-                const { publishtatus, publishmessage } = props.cell.row.original;
+            Cell: (props: CellProps<Dictionary>) => {
+                const { publishtatus, publishmessage } = props.cell.row.original || {};
                 return (
                     <div style={{ height: 53, textAlign: "center" }}>
                         {
@@ -293,8 +306,8 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                             )
                         }
                     </div>
-                )
-            }
+                );
+            }            
         },
     ], []);
 

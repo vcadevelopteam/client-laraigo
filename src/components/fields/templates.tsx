@@ -339,6 +339,7 @@ interface InputProps {
     size?: "small" | "medium" | undefined;
     width?: number | "string";
     helperText?: "string";
+    placeholder?: string;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -353,7 +354,7 @@ interface TemplateAutocompleteProps extends InputProps {
     orderbylabel?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -384,6 +385,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                 style={{ width: width }}
                 value={value}
                 variant={variant}
+                placeholder={placeholder}
                 error={!!error}
                 helperText={error || null}
                 minRows={rows}
@@ -657,7 +659,6 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
             }
         }
         setDataG(data);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
     useEffect(() => {
@@ -671,9 +672,9 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
         } else {
             setValue(null);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, valueDefault]);
 
+  
     return (
         <div className={className}>
 
@@ -745,7 +746,6 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
         } else {
             setOptionsSelected([]);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
     return (
@@ -893,7 +893,6 @@ export const FieldMultiSelectVirtualized: React.FC<TemplateAutocompleteProps> = 
         } else {
             setOptionsSelected([]);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
     return (
@@ -966,7 +965,6 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
         } else {
             setOptionsSelected([]);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [valueDefault, data]);
 
     return (
@@ -1000,7 +998,7 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                     onChange && onChange(values, { action, option });
                 }}
                 size="small"
-                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
+                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}     
                 options={data}
                 renderInput={(params) => (
                     <TextField
@@ -1041,7 +1039,6 @@ export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ er
         } else {
             setOptionsSelected([]);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [valueDefault, data]);
     const el = React.useRef<null | HTMLDivElement>(null);
     const ke = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, keyCode: 13 });

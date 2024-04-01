@@ -179,7 +179,7 @@ const InputValidation: FC = () => {
                 minWidth: 60,
                 width: '1%',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             extraOption={t(langKeys.duplicate)}

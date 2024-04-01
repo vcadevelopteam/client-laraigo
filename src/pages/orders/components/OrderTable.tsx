@@ -42,10 +42,14 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 accessor: 'createdate',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original.createdate;
-                    const formatteddate = formatDate(row, {withTime: false})
-                    return formatteddate
-                }
+                    const { row } = props.cell;                  
+                    if (row && row.original && row.original.createdate) {
+                      const formatteddate = formatDate(row.original.createdate, { withTime: false });
+                      return formatteddate;
+                    } else {
+                      return "";
+                    }
+                }                  
             },
             {
                 Header: t(langKeys.client),
@@ -99,9 +103,19 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 accessor: 'var_horaentrega',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { deliverydate } = props.cell.row.original;
-                    return `${formatDate(deliverydate, { withTime: false })}`
-                }
+                    const { row } = props.cell;                    
+                    if (row && row.original) {
+                      const { deliverydate } = row.original;                  
+                      if (deliverydate) {
+                        return `${formatDate(deliverydate, { withTime: false })}`;
+                      } else {
+                        return "";
+                      }
+                    } else {
+                      return "";
+                    }
+                  }
+                                
             }         
         ],
         []

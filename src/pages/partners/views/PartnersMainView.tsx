@@ -156,7 +156,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         minWidth: 60,
         width: "1%",
         Cell: (props: CellProps<Dictionary>) => {
-          const row = props.cell.row.original;
+          const row = props.cell.row.original || {}; 
           return (
             <TemplateIcons
               deleteFunction={() => handleDelete(row)}
@@ -177,7 +177,7 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         type: 'boolean',
         sortType: 'basic',
         Cell: (props: CellProps<Dictionary>) => {
-            const { enterprisepartner } = props.cell.row.original;
+            const { enterprisepartner } = props.cell.row.original || {}; 
             return enterprisepartner ? t(langKeys.yes) : "No"
         }
       },

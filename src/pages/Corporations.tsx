@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab } from 'components';
 import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -16,6 +16,8 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import ClearIcon from '@material-ui/icons/Clear';
 import { CommonService } from 'network';
 import { getCountryList } from 'store/signup/actions';
+import { IconButton, Tabs } from '@material-ui/core';
+import { Close, CloudUpload } from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -38,7 +40,56 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    imgContainer: {
+        borderRadius: 20,
+        backgroundColor: "white",
+        width: 157,
+        height: 90,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    icon: {
+        "&:hover": {
+            cursor: "pointer",
+            color: theme.palette.primary.main,
+        },
+    },
+    img: {
+        height: "80%",
+        width: "auto",
+    },
+    text: {
+        fontWeight: 500,
+        fontSize: 16,
+        color: "#381052",
+    },
+    containerCompImg:{
+        display: "flex",
+        width: "100%",
+        border: "2px lightgrey dashed",
+        marginTop: 5,
+        justifyContent: "center"
+    }
 }));
+
+type ImageType = File | string | null;
+
+const getImgUrl = (file: ImageType): string | null => {
+    if (!file) return null;
+
+    try {
+        if (typeof file === "string") {
+            return file;
+        } else if (typeof file === "object") {
+            return URL.createObjectURL(file);
+        }
+        return null;
+    } catch (ex) {
+        console.error(ex);
+        return null;
+    }
+};
 
 const Corporations: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
@@ -64,7 +115,7 @@ const Corporations: FC = () => {
                 minWidth: 60,
                 width: '1%',
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
@@ -218,6 +269,10 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const [waitSave, setWaitSave] = useState(false);
     const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
     const [doctype, setdoctype] = useState(row?.doctype || "")
+    const [iconImg, setIconImg] = useState<ImageType>(row?.iconurl || "")
+    const [logoImg, setLogoImg] = useState<ImageType>(row?.logourl || "")
+    const [startLogoImg, setStartLogoImg] = useState<ImageType>(row?.startlogourl || "")
+    const [pageSelected, setPageSelected] = useState(0);
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
@@ -256,12 +311,67 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             credittype: row?.credittype || "typecredit_alcontado",
             operation: row ? "UPDATE" : "INSERT",
             paymentmethod: row?.paymentmethod || "",
+            ispoweredbylaraigo: row?.ispoweredbylaraigo || false,
+            domainname: row?.domainname || "",
             companysize: null,
             partner: row?.partner || "",
+            iconurl: row?.iconurl || "",
+            logourl: row?.logourl || "",
+            startlogourl: row?.startlogourl || "",
             appsettingid: row ? row.appsettingid : null,
             citybillingid: row ? row.citybillingid : null,
         }
     });
+
+    
+    const handleIconImgClick = () => {
+        const input = document.getElementById("IconImgInput");
+        input?.click();
+    };
+    const onChangeIconInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        setIconImg(e.target.files[0]);
+        setValue("iconurl", e.target.files[0]);
+    };
+    const handleCleanIconInput = () => {
+        if (!iconImg) return;
+        const input = document.getElementById("IconImgInput") as HTMLInputElement;
+        input.value = "";
+        setIconImg(null);
+        setValue("iconurl", null);
+    };
+    const handleLogoImgClick = () => {
+        const input = document.getElementById("LogoImgInput");
+        input?.click();
+    };
+    const onChangeLogoInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        setLogoImg(e.target.files[0]);
+        setValue("logourl", e.target.files[0]);
+    };
+    const handleCleanLogoInput = () => {
+        if (!logoImg) return;
+        const input = document.getElementById("StartLogoImgInput") as HTMLInputElement;
+        input.value = "";
+        setLogoImg(null);
+        setValue("logourl", null);
+    };
+    const handleStartLogoImgClick = () => {
+        const input = document.getElementById("StartLogoImgInput");
+        input?.click();
+    };
+    const onChangeStartLogoInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        setStartLogoImg(e.target.files[0]);
+        setValue("startlogourl", e.target.files[0]);
+    };
+    const handleCleanStartLogoInput = () => {
+        if (!startLogoImg) return;
+        const input = document.getElementById("StartLogoImgInput") as HTMLInputElement;
+        input.value = "";
+        setStartLogoImg(null);
+        setValue("startlogourl", null);
+    };
 
     React.useEffect(() => {
         const docTypeValidate = (docnum: string): string | undefined => {
@@ -313,8 +423,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('citybillingid');
     }, [register, billbyorg, doctype, getValues, t]);
 
-    useEffect(() => {
-    }, [executeRes, waitSave])
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
@@ -381,13 +489,17 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const docTypes = useMemo(() => {
         if (!dataDocType || dataDocType.length === 0) return [];
 
-        const val = dataDocType as any[];
+        const val = dataDocType as Dictionary[];
 
         return val.sort((a, b) => {
             return a.domaindesc.localeCompare(b.domaindesc);
         });
     }, [dataDocType, getValues("sunatcountry")]);
 
+    const iconImgUrl = getImgUrl(iconImg);
+    const logoImgUrl = getImgUrl(logoImg);
+    const startLogoImgUrl = getImgUrl(startLogoImg);
+    
     return (
         <div style={{ width: '100%', }}>
             <form onSubmit={onSubmit}>
@@ -423,7 +535,18 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                         }
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.informationcorporation)} />
+                    <AntTab label={t(langKeys.configurationblankbrand)} />
+                </Tabs>
+                {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
@@ -652,7 +775,134 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             />
                         </div>
                     </>)}
-                </div>
+                </div>}
+                {pageSelected === 1 && <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            <TemplateSwitch
+                                label={t(langKeys.logopoweredbylaraigo)}
+                                className="col-6"
+                                valueDefault={getValues('ispoweredbylaraigo')}
+                                onChange={(value) => {
+                                    setValue('ispoweredbylaraigo', value)
+                                    setValue('domainname', "")
+                                    handleCleanIconInput()
+                                    handleCleanLogoInput()
+                                    handleCleanStartLogoInput()
+                                }}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.domainname)}
+                                className="col-6"
+                                valueDefault={getValues('domainname')}
+                                onChange={(value) => setValue('domainname', value)}
+                                error={errors?.domainname?.message}
+                            />
+                            <FieldEdit
+                                label={t(langKeys.bond)}
+                                className="col-6"
+                                placeholder={"https://"}
+                                valueDefault={getValues('domainname')}
+                                disabled={true}
+                                error={errors?.contactemail?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            
+                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className='col-4'>
+                                <div className={classes.text}>{t(langKeys.uploadicon)} 32 x 32px</div>
+                                <div className={classes.containerCompImg}>
+                                    <div className={classes.imgContainer}>
+                                        {iconImgUrl && <img src={iconImgUrl} alt="icon button" className={classes.img} />}
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "space-around",
+                                            marginLeft: 12,
+                                        }}
+                                    >
+                                        <input
+                                            accept="image/*"
+                                            style={{ display: "none" }}
+                                            id="IconImgInput"
+                                            type="file"
+                                            onChange={onChangeIconInput}
+                                        />
+                                        <IconButton onClick={handleIconImgClick}>
+                                            <CloudUpload className={classes.icon} />
+                                        </IconButton>
+                                        <IconButton onClick={handleCleanIconInput}>
+                                            <Close className={classes.icon} />
+                                        </IconButton>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className='col-4'>
+                                <div className={classes.text}>{t(langKeys.uploadlogo)} 37 x 300px</div>
+                                <div className={classes.containerCompImg}>
+                                    <div className={classes.imgContainer}>
+                                        {logoImgUrl && <img src={logoImgUrl} alt="icon button" className={classes.img} />}
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "space-around",
+                                            marginLeft: 12,
+                                        }}
+                                    >
+                                        <input
+                                            accept="image/*"
+                                            style={{ display: "none" }}
+                                            id="LogoImgInput"
+                                            type="file"
+                                            onChange={onChangeLogoInput}
+                                        />
+                                        <IconButton onClick={handleLogoImgClick}>
+                                            <CloudUpload className={classes.icon} />
+                                        </IconButton>
+                                        <IconButton onClick={handleCleanLogoInput}>
+                                            <Close className={classes.icon} />
+                                        </IconButton>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} className='col-4'>
+                                <div className={classes.text}>{t(langKeys.uploadlogostarticon)} 42 x 150px</div>
+                                <div className={classes.containerCompImg}>
+                                    <div className={classes.imgContainer}>
+                                        {startLogoImgUrl && <img src={startLogoImgUrl} alt="icon button" className={classes.img} />}
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "space-around",
+                                            marginLeft: 12,
+                                        }}
+                                    >
+                                        <input
+                                            accept="image/*"
+                                            style={{ display: "none" }}
+                                            id="StartLogoImgInput"
+                                            type="file"
+                                            onChange={onChangeStartLogoInput}
+                                        />
+                                        <IconButton onClick={handleStartLogoImgClick}>
+                                            <CloudUpload className={classes.icon} />
+                                        </IconButton>
+                                        <IconButton onClick={handleCleanStartLogoInput}>
+                                            <Close className={classes.icon} />
+                                        </IconButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                   
+                </div>}
             </form>
         </div>
     );

@@ -37,6 +37,10 @@ export interface TableConfig {
   ButtonsElement?: (() => JSX.Element) | ReactElement;
   FiltersElement?: ReactElement;
   pageSizeDefault?: number;
+
+  groupedBy?: boolean;  
+  showHideColumns?: boolean;
+  
   filterGeneral?: boolean;
   hoverShadow?: boolean;
   loading?: boolean;
@@ -81,10 +85,12 @@ export interface TableConfig {
   };
   registertext?: string;
   useFooter?: boolean;
+  ExtraMenuOptions?: ReactElement;
 }
 
 export interface Pagination {
   sorts: Dictionary;
+  distinct?: string;
   filters: Dictionary;
   pageIndex: number;
   trigger?: boolean;
@@ -92,6 +98,7 @@ export interface Pagination {
 
 export interface IFetchData {
   sorts: Dictionary;
+  distinct: Dictionary;
   filters: Dictionary;
   pageIndex: number;
   pageSize: number;

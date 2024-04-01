@@ -257,7 +257,7 @@ const GroupConfig: FC = () => {
                 NoFilter: true,
                 isComponent: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}

@@ -1,0 +1,100 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { FC, useEffect, useState } from "react";
+import { useSelector } from "hooks";
+import { useDispatch } from "react-redux";
+import { getPaginatedInventoryConsumption, getUserSel, getValuesFromDomain, getWarehouses } from "common/helpers";
+import { Dictionary, IFetchData } from "@types";
+import { getCollectionPaginated, getMultiCollectionAux, resetAllMain } from "store/main/actions";
+import InventoryConsumptionMainView from "./views/InventoryConsumptionMainView";
+import InventoryConsumptionDetail from "./views/InventoryConsumptionDetail";
+
+interface RowSelected {
+  row: Dictionary | null;
+  edit: boolean;
+}
+
+const InventoryConsumption: FC = () => {
+  const dispatch = useDispatch();
+  const [viewSelected, setViewSelected] = useState("main-view");
+  const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
+    pageSize: 0,
+    pageIndex: 0,
+    filters: {},
+    sorts: {},
+    daterange: null,
+  });
+  const [rowSelected, setRowSelected] = useState<RowSelected>({
+    row: null,
+    edit: false,
+  });
+  function redirectFunc(view: string) {
+    setViewSelected(view);
+  }
+  const fetchData = ({
+    pageSize,
+    pageIndex,
+    filters,
+    sorts,
+    daterange,
+  }: IFetchData) => {
+    setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
+    dispatch(
+      getCollectionPaginated(
+        getPaginatedInventoryConsumption({
+          startdate: daterange?.startDate || null,
+          enddate: daterange?.endDate || null,
+          take: pageSize,
+          skip: pageIndex * pageSize,
+          sorts: sorts,
+          filters: {
+            ...filters,
+          },
+        })
+      )
+    );
+  };
+
+  useEffect(() => {
+    dispatch(
+      getMultiCollectionAux([
+        getValuesFromDomain("ESTADOCONSUMOINVENTARIO"),
+        getWarehouses(),
+        getValuesFromDomain("TIPOTRANSACCIONINV"),
+        getUserSel(0)
+      ])
+    );
+    return () => {
+      dispatch(resetAllMain());
+    };
+  }, []);
+  
+  useEffect(() => {
+    return () => {
+      dispatch(resetAllMain());
+    };
+  }, []);
+  
+
+  if (viewSelected === "main-view") {
+    return (
+      <InventoryConsumptionMainView
+        setViewSelected={setViewSelected}
+        setRowSelected={setRowSelected}
+        fetchData={fetchData}
+        viewSelected={viewSelected}
+        fetchDataAux={fetchDataAux}
+      />
+    );
+  } else
+    return (
+      <InventoryConsumptionDetail
+        data={rowSelected}
+        setViewSelected={redirectFunc}
+        fetchData={fetchData}
+        fetchDataAux={fetchDataAux}
+        viewSelected={viewSelected}
+      />
+    );
+};
+
+export default InventoryConsumption;
