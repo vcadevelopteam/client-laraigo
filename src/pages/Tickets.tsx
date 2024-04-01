@@ -23,6 +23,7 @@ import { Button, ListItemIcon, Tabs, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
+import { CellProps } from 'react-table';
 const isIncremental = window.location.href.includes("incremental")
 
 const selectionKey = 'conversationid';
@@ -92,6 +93,7 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const closingRes = useSelector(state => state.inbox.triggerMassiveCloseTicket);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
@@ -133,13 +135,22 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
             personcommunicationchannel: row.personcommunicationchannel,
             communicationchannelid: row.communicationchannelid,
         }));
-        dispatch(massiveCloseTicket({
-            motive: data.motive,
-            observation: data.observation,
-            listTickets: listTicketsToClose,
-        }))
-        dispatch(showBackdrop(true));
-        setWaitClose(true);
+        let closeticket=false
+        const emptyTipification = rowWithDataSelected.some(x => !x.tipification || x.tipification.trim() === "");
+        if(user?.properties?.obligatory_tipification_close_ticket && emptyTipification){
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.tipification_necesary) }))
+        }else{
+            closeticket=true;
+        }
+        if(closeticket){
+            dispatch(massiveCloseTicket({
+                motive: data.motive,
+                observation: data.observation,
+                listTickets: listTicketsToClose,
+            }))
+            dispatch(showBackdrop(true));
+            setWaitClose(true);
+        }
     });
 
     return (
@@ -582,7 +593,7 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
                 accessor: 'createdate',
                 type: 'date',
                 sortType: 'datetime',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return convertLocalDate(row.createdate).toLocaleString()
                 }
@@ -1056,13 +1067,13 @@ const Tickets = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: "1%",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const ticket = props.cell.row.original;
 
                     return (
                         <IconOptions
                             onHandlerReassign={
-                                ticket.estadoconversacion === "CERRADO"
+                                ticket && ticket.estadoconversacion === "CERRADO"
                                     ? undefined
                                     : () => {
                                         setRowToSend([ticket]);
@@ -1070,15 +1081,15 @@ const Tickets = () => {
                                     }
                             }
                             onHandlerClassify={
-                                ticket.estadoconversacion === "CERRADO"
+                                ticket && ticket.estadoconversacion === "CERRADO"
                                     ? undefined
                                     : () => {
                                         setRowToSend([ticket]);
                                         setOpenDialogTipify(true);
                                     }
-                            }
+                            }                            
                             onHandlerClose={
-                                ticket.estadoconversacion === "CERRADO"
+                                ticket && ticket.estadoconversacion === "CERRADO"
                                     ? undefined
                                     : () => {
                                         setRowToSend([ticket]);
@@ -1104,37 +1115,49 @@ const Tickets = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: "1%",
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.communicationchanneltype === "VOXI" &&
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (
+                        row &&
+                        row.communicationchanneltype === "VOXI" &&
                         row.postexternalid &&
                         row.callrecording &&
-                        row.callanswereddate ? (
-                        <Tooltip title={t(langKeys.download_record) || ""}>
-                            <IconButton
-                                size="small"
-                                onClick={() => downloadCallRecord(row)}
-                            >
-                                <CallRecordIcon style={{ fill: "#7721AD" }} />
-                            </IconButton>
-                        </Tooltip>
-                    ) : null;
-                },
+                        row.callanswereddate
+                    ) {
+                        return (
+                            <Tooltip title={t(langKeys.download_record) || ""}>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => downloadCallRecord(row)}
+                                >
+                                    <CallRecordIcon style={{ fill: "#7721AD" }} />
+                                </IconButton>
+                            </Tooltip>
+                        );
+                    } else {
+                        return null;
+                    }
+                },                
             },
             {
                 Header: t(langKeys.ticket_numeroticket),
                 accessor: "numeroticket",
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <label
-                            className={classes.labellink}
-                            onClick={() => openDialogInteractions(row)}
-                        >
-                            {row.numeroticket}
-                        </label>
-                    );
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (row && row.numeroticket) {
+                        return (
+                            <label
+                                className={classes.labellink}
+                                onClick={() => openDialogInteractions(row)}
+                            >
+                                {row.numeroticket}
+                            </label>
+                        );
+                    } else {
+                        return "";
+                    }
                 },
+                
             },
             {
                 Header: t(langKeys.ticket_communicationchanneldescription),
@@ -1165,22 +1188,29 @@ const Tickets = () => {
                 accessor: "fechainicio",
                 type: "date",
                 sortType: "datetime",
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return convertLocalDate(row.fechainicio).toLocaleString();
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (row && row.fechainicio) {
+                        return convertLocalDate(row.fechainicio).toLocaleString();
+                    } else {
+                        return null; 
+                    }
                 },
+                
             },
             {
                 Header: t(langKeys.ticket_fechafin),
                 accessor: "fechafin",
                 type: "date",
                 sortType: "datetime",
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
-                    return row.fechafin
-                        ? convertLocalDate(row.fechafin).toLocaleString()
-                        : "";
-                },
+                    if (row && row.fechafin) {
+                        return convertLocalDate(row.fechafin).toLocaleString();
+                    } else {
+                        return ""; 
+                    }
+                },                
             },
             {
                 Header: t(langKeys.status),
@@ -1215,12 +1245,15 @@ const Tickets = () => {
                 accessor: "fechahandoff",
                 type: "date",
                 sortType: "datetime",
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.fechahandoff
-                        ? convertLocalDate(row.fechahandoff).toLocaleString()
-                        : "";
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (row && row.fechahandoff) {
+                        return convertLocalDate(row.fechahandoff).toLocaleString();
+                    } else {
+                        return "";
+                    }
                 },
+                
             },
             {
                 Header: t(langKeys.ticket_fechaultimaconversacion),
@@ -1228,12 +1261,14 @@ const Tickets = () => {
                 accessor: "fechaultimaconversacion",
                 type: "date",
                 sortType: "datetime",
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.fechaultimaconversacion
-                        ? convertLocalDate(row.fechaultimaconversacion).toLocaleString()
-                        : "";
-                },
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (row && row.fechaultimaconversacion) {
+                        return convertLocalDate(row.fechaultimaconversacion).toLocaleString();
+                    } else {
+                        return "";
+                    }
+                },                
             },
             {
                 Header: t(langKeys.ticket_asesorinicial),
@@ -1339,12 +1374,15 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_abandoned),
                 accessor: "abandoned",
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.abandoned
-                        ? t(langKeys.affirmative)
-                        : t(langKeys.negative);
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (row && typeof row.abandoned !== 'undefined') {
+                        return row.abandoned ? t(langKeys.affirmative) : t(langKeys.negative);
+                    } else {
+                        return ""; 
+                    }
                 },
+                
             },
             {
                 Header: t(langKeys.ticket_labels),
@@ -1356,10 +1394,14 @@ const Tickets = () => {
                 accessor: 'originalpublicationdate',
                 type: 'date',
                 sortType: 'datetime',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.originalpublicationdate ? convertLocalDate(row.originalpublicationdate).toLocaleString() : ''
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (row && row.originalpublicationdate) {
+                        return convertLocalDate(row.originalpublicationdate).toLocaleString();
+                    } else {
+                        return ""; 
+                    }
+                },                
             },
             {
                 Header: t(langKeys.ticket_followercount),

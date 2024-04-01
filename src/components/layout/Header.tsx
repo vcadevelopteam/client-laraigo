@@ -18,6 +18,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { answerCall, holdCall, setHold } from 'store/voximplant/actions';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import { notCustomUrl } from 'pages/dashboard/constants';
 
 type IProps = {
     classes: any;
@@ -42,6 +43,10 @@ const useToolbarStyles = makeStyles(theme => ({
             width: 40,
             height: 40
         },
+    },
+    customImageLaraigo: {
+        backgroundSize: "100% 100%",
+        minWidth: 120
     },
     statusConnection: {
         display: 'block',
@@ -233,6 +238,36 @@ const Header = ({ classes }: IProps) => {
     const dispatch = useDispatch();
     const myClasses = useToolbarStyles();
     const openDrawer = useSelector(state => state.popus.openDrawer);
+    const user = useSelector(state => state.login.validateToken.user);
+    // const customDomain = !notCustomUrl.some(url => window.location.href.includes(url));
+    
+    useEffect(() => {
+        // const titlestr = localStorage.getItem("title")
+        // const headeiconstr = localStorage.getItem("headeicon")
+
+        // console.log("titlestr", titlestr)
+        // console.log("headeiconstr", headeiconstr)
+
+        // const iconLink = document.querySelector('link[rel="icon"]');
+        // if(!(titlestr && headeiconstr)){
+        //     if(customDomain){
+        //         iconLink.href  = user?.iconurl||"/favicon.ico";   
+        //         const str = user?.corpdesc || "Laraigo"
+        //         const title = str.charAt(0).toUpperCase() + str.slice(1).toLocaleLowerCase()
+        //         document.title = title;
+        //         localStorage.setItem('title', title);
+        //         localStorage.setItem('headeicon', user?.iconurl||"/favicon.ico");
+        //     }else{
+        //         document.title = "Laraigo";
+        //         iconLink.href = '/favicon.ico';
+        //         localStorage.setItem('title', 'Laraigo');
+        //         localStorage.setItem('headeicon', '/favicon.ico');
+        //     }
+        // }else{
+        //     document.title =  titlestr
+        //     iconLink.href = headeiconstr
+        // }
+    }, [])
 
     return (
         <AppBar
@@ -247,7 +282,8 @@ const Header = ({ classes }: IProps) => {
                 </IconButton>
                 <img
                     style={{ height: 37, marginLeft: 8 }}
-                    className={myClasses.imageLaraigo}
+                    src = {Boolean(user?.logourl) ? (user?.logourl||"") : undefined}
+                    className={Boolean(user?.logourl) ? myClasses.customImageLaraigo:myClasses.imageLaraigo}
                     alt="logo"
                 />
                 {/* <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} /> */}

@@ -33,6 +33,9 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import CloseIcon from '@material-ui/icons/Close';
 import ReactFacebookLogin from 'react-facebook-login';
 import { Helmet } from 'react-helmet';
+import { notCustomUrl } from './dashboard/constants';
+import { getCorpDetails } from 'store/corp/actions';
+import { Dictionary } from '@types';
 
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 // Declara la nueva propiedad en el objeto `window`
@@ -229,6 +232,7 @@ const SignIn = () => {
     const { t } = useTranslation();
 
     const dispatch = useDispatch();
+    const isCustomDomain = !notCustomUrl.some(url => window.location.href.includes(url));
 
     const classes = useStyles();
     const history = useHistory();
@@ -237,9 +241,59 @@ const SignIn = () => {
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [customLogoUrl, setCustomLogoURL] = useState<Dictionary | null>(null)
+    const [waitingGetDomain, setWaitingGetDomain] = useState(true);
     const recaptchaRef = useRef<ReCAPTCHA | null>(null);
+    const customDomainData = useSelector(state => state.corporation.mainData);
+    const firstLoad = React.useRef(true);
+
+    const [tab, settab] = useState({
+        title: "",
+        icon: "favicon-transparent.ico"
+    })
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
+
+    React.useEffect(() => {
+        if (isCustomDomain) {
+            const currentUrl = window.location.href
+            const customDomain = currentUrl.replace('https://', '').replace('http://', '').split('.')[0]
+            // dispatch(showBackdrop(true))
+            dispatch(getCorpDetails(customDomain))
+            setWaitingGetDomain(true)
+        } else {
+            setWaitingGetDomain(false);
+            settab({
+                title: "Laraigo",
+                icon: "/favicon.ico"
+            })
+        }
+    }, [])
+
+    React.useEffect(() => {
+        if (!firstLoad.current) {
+            if (waitingGetDomain) {
+                if (!customDomainData.loading && !customDomainData.error) {
+                    setCustomLogoURL(customDomainData?.data?.[0] || null)
+                    settab({
+                        title: customDomainData?.data?.[0]?.corpdesc || "Laraigo",
+                        icon: customDomainData?.data?.[0]?.iconurl || "/favicon.ico"
+                    })
+                    setWaitingGetDomain(false)
+                    dispatch(showBackdrop(false))
+                } else if (customDomainData.error) {
+                    settab({
+                        title: "Laraigo",
+                        icon: "/favicon.ico"
+                    })
+                }
+            }
+        } else {
+            firstLoad.current = false
+        }
+    }, [customDomainData, waitingGetDomain])
+
+
 
     const handleSignUp = () => {
         if (apiUrls.USELARAIGO) {
@@ -313,17 +367,17 @@ const SignIn = () => {
             history.push('/');
         } else {
             const externalToken = new URLSearchParams(window.location.search).get('accesstoken')
-            if(externalToken && isIncremental){
+            if (externalToken && isIncremental) {
                 saveAuthorizationToken(externalToken)
                 history.push('/');
-            }else{
+            } else {
                 localStorage.removeItem("firstLoad")
                 localStorage.removeItem("firstloadeddialog")
             }
         }
         const scriptsToLoad = ["recaptcha", "google"];
         // if (apiUrls.LOGIN_URL.includes("https://apiprd.laraigo.com")) {
-            scriptsToLoad.push("clarity");
+        scriptsToLoad.push("clarity");
         // }
         const { scriptRecaptcha, scriptPlatform, clarityScript } = loadScripts(scriptsToLoad);
 
@@ -340,6 +394,8 @@ const SignIn = () => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
             dispatch(connectAgentUI(resLogin.user.automaticConnection ?? false))
             localStorage.setItem("firstLoad", "1") //para saber si lanzar el automatic connection cuando el get user haya terminado
+            localStorage.setItem("title", "")
+            localStorage.setItem("headeicon", "")
             window.open(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor", "_self");
         }
     }, [resLogin]);
@@ -348,14 +404,27 @@ const SignIn = () => {
         <>
             <Helmet>
                 <meta name="google-signin-client_id" content={`${apiUrls.GOOGLECLIENTID_LOGIN}`} />
+                <title>{tab.title}</title>
+                <link rel="icon" href={tab.icon} />
             </Helmet>
             <main>
                 <div className={classes.container}>
                     <Container component="main" className={classes.containerLogin}>
                         <div className={classes.childContainer} style={{ height: '100%' }}>
-                            <div className={classes.image}>
-                                <LaraigoLogo height={42.8} />
-                            </div>
+                            {waitingGetDomain && (
+                                <div className={classes.image} style={{ minHeight: 43, height: 43 }}>...</div>
+                            )}
+                            {(!waitingGetDomain && customLogoUrl?.startlogourl) && (
+                                <div className={classes.image}>
+                                    <img src={customLogoUrl.startlogourl} height={42.8} alt="Custom Logo" />
+                                </div>
+                            )}
+                            {(!waitingGetDomain && !customLogoUrl?.startlogourl) && (
+                                <div className={classes.image}>
+                                    <LaraigoLogo height={42.8} />
+                                </div>
+                            )}
+
                             <div className={classes.paper} style={{ flex: 1 }}>
                                 {(resLogin.error && showError) && (
                                     <Alert className={classes.alertheader} variant="filled" severity="error" >
@@ -507,9 +576,9 @@ const SignIn = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className={classes.copyright}>
+                        {(!isCustomDomain || customLogoUrl?.ispoweredbylaraigo) && <div className={classes.copyright}>
                             {'Copyright © '} Laraigo {new Date().getFullYear()}
-                        </div>
+                        </div>}
                     </Container>
                 </div>
                 <Popus />

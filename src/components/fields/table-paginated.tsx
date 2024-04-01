@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, MouseEventHandler } from 'react';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -7,6 +7,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import IconButton from '@material-ui/core/IconButton';
 import Select from '@material-ui/core/Select';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowUp from '@material-ui/icons/KeyboardArrowUp'
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import Input from '@material-ui/core/Input';
@@ -14,10 +17,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TableConfig, Pagination, Dictionary, ITablePaginatedFilter } from '@types'
 import { Trans } from 'react-i18next';
 import Tooltip from '@material-ui/core/Tooltip';
+import { useTranslation } from 'react-i18next';
 import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
+import AllInboxIcon from '@material-ui/icons/AllInbox';
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 import clsx from 'clsx';
 import { Skeleton } from '@material-ui/lab';
 import {
@@ -40,12 +46,36 @@ import {
     useGlobalFilter,
     usePagination,
     useRowSelect,
+    TableInstance,
+    TableOptions,
+    Row,
+    useSortBy,
+    useExpanded,
+    useGroupBy,
+    ColumnInstance,
+    Cell,
+    useColumnOrder,    
 } from 'react-table'
 import { Range } from 'react-date-range';
-import { DateRangePicker } from 'components';
-import { Checkbox } from '@material-ui/core';
+import { DialogZyx, DateRangePicker } from 'components';
+import { Checkbox, Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Radio, TableSortLabel, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
+
+interface Column {
+    Header: string;
+    accessor: string;
+    showColumn?: boolean;
+    showGroupedBy?: boolean;
+}
+
+export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
+    name: string
+    onAdd?: (instance: TableInstance<T>) => MouseEventHandler
+    onDelete?: (instance: TableInstance<T>) => MouseEventHandler
+    onEdit?: (instance: TableInstance<T>) => MouseEventHandler
+    onClick?: (row: Row<T>) => void
+}
 
 declare module "react-table" {
     // eslint-disable-next-line
@@ -70,25 +100,7 @@ const useStyles = makeStyles((theme) => ({
                 alignItems: "center",
             },
         }
-    },
-    trdynamic: {
-        '&:hover': {
-            boxShadow: '0 11px 6px -9px rgb(84 84 84 / 78%)',
-            "& $containerfloat": {
-                visibility: 'visible'
-            }
-        },
-    },
-    containerfloat: {
-        borderBottom: 'none',
-        padding: '4px 24px 4px 16px',
-        backgroundColor: 'white',
-        marginTop: '1px',
-        position: 'absolute',
-        zIndex: 9999,
-        left: 0,
-        visibility: 'hidden'
-    },
+    },    
     button: {
         padding: 12,
         fontWeight: 500,
@@ -131,16 +143,39 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeaderColumn: {
         display: 'flex',
-        justifyContent: 'space-between',
+        gap: '0.5rem',
         alignItems: 'center'
     },
     iconHelpText: {
         width: 15,
         height: 15,
         cursor: 'pointer',
-    }
+    },
+    headerIcon: {
+        '& svg': {
+            width: 16,
+            height: 16,
+            marginTop: -2,
+            marginRight: 4,
+            marginLeft: -6
+        },
+    },
+    iconDirectionAsc: {
+        transform: 'rotate(90deg)',
+    },
+    iconDirectionDesc: {
+        transform: 'rotate(180deg)',
+    },
+    cellIcon: {
+        '& svg': {
+            width: 16,
+            height: 16,
+            marginTop: -2,
+            marginRight: 4,
+            marginLeft: -6
+        },
+    },
 }));
-
 
 const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilter }: any) => {
     const [value, setValue] = useState('');
@@ -453,9 +488,12 @@ const TableZyx = React.memo(({
     initialStartDate = null,
     initialFilters = {},
     initialPageIndex = 0,
+    groupedBy,
+    showHideColumns,
+    ExtraMenuOptions,
 }: TableConfig) => {
     const classes = useStyles();
-    const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, pageIndex: initialPageIndex });
+    const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, distinct: "", pageIndex: initialPageIndex });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [triggerSearch, setTriggerSearch] = useState(autotrigger);
     const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
@@ -476,7 +514,9 @@ const TableZyx = React.memo(({
         pageCount,
         setPageSize,
         toggleAllRowsSelected,
+        allColumns,
         state: { pageIndex, pageSize, selectedRowIds },
+        setColumnOrder
     } = useTable(
         {
             columns,
@@ -488,7 +528,6 @@ const TableZyx = React.memo(({
                 return useMemo(() => ({
                     ...state,
                     pageIndex: pagination.pageIndex,
-                    // eslint-disable-next-line react-hooks/exhaustive-deps
                 }), [state, pagination.pageIndex])
             },
             autoResetSelectedRows: false,
@@ -507,8 +546,12 @@ const TableZyx = React.memo(({
                 }
             }
         },
+        useColumnOrder,
         useFilters,
         useGlobalFilter,
+        useGroupBy,
+        useSortBy,
+        useExpanded,
         usePagination,
         useRowSelect,
         hooks => {
@@ -516,6 +559,7 @@ const TableZyx = React.memo(({
                 {
                     id: 'selection',
                     width: 80,
+                    disableGroupBy: true,
                     Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
                         !selectionFilter
                             ?
@@ -562,12 +606,15 @@ const TableZyx = React.memo(({
                 } as any,
                 ...columns,
             ])
+            hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {
+                const selectionGroupHeader = headerGroups[0].headers[0]
+                selectionGroupHeader.canResize = false
+            })
         }
     )
 
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
-            // const pageIndex = !page ? prev.pageIndex : page;
             return { ...prev, filters, pageIndex: 0, trigger: true }
         });
     };
@@ -604,6 +651,7 @@ const TableZyx = React.memo(({
         key: 'selection'
     });
 
+    
     const triggertmp = (fromButton: boolean = false) => {
         if (fromButton)
             setPagination(prev => ({ ...prev, pageIndex: initialPageIndex, trigger: false }));
@@ -632,28 +680,24 @@ const TableZyx = React.memo(({
             setSelectedRows && setSelectedRows({})
             setCleanSelection && setCleanSelection(false)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cleanSelection])
 
     useEffect(() => {
         if (pagination?.trigger) {
             triggertmp()
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pagination, triggerSearch])
 
     useEffect(() => {
         if (triggerSearch) {
             triggertmp()
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize])
 
     useEffect(() => {
         if (triggerSearch) {
             triggerSearch && triggertmp(true);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [triggerSearch])
 
     useEffect(() => {
@@ -661,17 +705,14 @@ const TableZyx = React.memo(({
             triggertmp();
             autoRefresh?.callback(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [autoRefresh])
 
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds]);
 
     useEffect(() => {
         onFilterChange?.(tFilters);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tFilters]);
 
     const exportData = () => {
@@ -684,12 +725,230 @@ const TableZyx = React.memo(({
         })
     }
 
+    const { t } = useTranslation();
+    const showExtraButtonIcon = showHideColumns || groupedBy || ExtraMenuOptions;
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [openSeButtons, setOpenSeButtons] = useState(false);
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false);  
+    const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
+    const [filterApplied, setFilterApplied] = useState(false);  
+
+    const [rowByToggleActive, setRowByToggleActive] = useState(false);
+
+    useEffect(() => {
+        const storedPageIndex = localStorage.getItem('currentPageIndex');
+        if (storedPageIndex === null) {
+            localStorage.setItem('currentPageIndex', '0');
+        }
+        return () => {
+            localStorage.removeItem('currentPageIndex'); 
+        };
+    }, []); 
+    
+    const handlePageSizeChange = (newPageSize) => {
+        setPageSize(Number(newPageSize));
+        setPageIndex(0); 
+    };
+
+    const handleFirstPageClick = () => {
+        setPageIndex(0);
+        if (!rowByToggleActive) { 
+            localStorage.setItem('currentPageIndex', '0');
+        }
+    };
+    
+    const handlePrevPageClick = () => {
+        const prevPageIndex = pagination.pageIndex - 1;
+        setPageIndex(prevPageIndex);
+        if (!rowByToggleActive) { 
+            localStorage.setItem('currentPageIndex', prevPageIndex.toString());
+        }
+    };
+    
+    const handleNextPageClick = () => {
+        const nextPageIndex = pagination.pageIndex + 1;
+        setPageIndex(nextPageIndex);
+        if (!rowByToggleActive) {
+            localStorage.setItem('currentPageIndex', nextPageIndex.toString());
+        }
+    };
+    
+    const handleLastPageClick = () => {
+        setPageIndex(pageCount - 1);
+        if (!rowByToggleActive) {
+            localStorage.setItem('currentPageIndex', (pageCount - 1).toString());
+        }
+    };
+    
+    const initialColumnVisibility = allColumns.reduce((acc, column) => {
+        acc[column.id] = true; 
+        return acc;
+    }, {});
+
+    const [columnVisibility, setColumnVisibility] = useState(() => {
+        const storedColumnVisibility = localStorage.getItem('columnVisibility');
+        if (storedColumnVisibility) {
+            return JSON.parse(storedColumnVisibility);
+        } else {
+            return initialColumnVisibility;
+        }
+    });
+
+    const handleColumnVisibilityChange = (columnId: any, isVisible: any) => {
+        const updatedVisibility = {
+            ...columnVisibility,
+            [columnId]: isVisible,
+        };
+        setColumnVisibility(updatedVisibility);
+        localStorage.setItem('columnVisibility', JSON.stringify(updatedVisibility));    
+        const columnInstance = allColumns.find(column => column.id === columnId);
+        if (columnInstance) {
+            columnInstance.toggleHidden(!isVisible);
+        }
+    }
+
+    useEffect(() => {
+        allColumns.forEach(column => {
+            const isVisible = columnVisibility[column.id] ?? true; 
+            column.toggleHidden(!isVisible); 
+        });
+    }, []); 
+
+    useEffect(() => {
+        localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
+    }, [columnVisibility]);
+
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+    };
+
+    const handleOpenGroupedByModal = () => {
+        setGroupedByModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
+    };
+
+    const handleOpenShowColumnsModal = () => {
+        setShowColumnsModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
+    };
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null);
+                setOpenSeButtons(false);
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
+
+    const handleColumnByToggle = (column: ColumnInstance, activate = true) => {
+        const columnName = column.id as string;       
+        setRowByToggleActive(false); 
+
+        setFilterApplied(false); 
+        setPagination(prev => ({ ...prev, distinct: activate ? columnName : "", filters: initialFilters, pageIndex: 0, trigger: true }));
+        setColumnOrder?.(prev => {
+            const newArray = [...prev];
+            const columnIndex = newArray.findIndex(id => id === columnName);    
+            if (activate) {
+                newArray.splice(columnIndex, 1); // Remueve la columna del lugar actual
+                newArray.unshift(columnName); // Inserta la columna al inicio
+            } else {
+                newArray.splice(columnIndex, 1); // Remueve la columna del lugar actual
+            }    
+            return newArray;
+        });     
+    };    
+
+    const handleOrderReset = React.useCallback(()=>{
+        setColumnOrder(columns.map(column=>column.accessor))     
+    },[columns])
+    
+    const handleChangePage = () => {
+        const storedPageIndex = localStorage.getItem('currentPageIndex');
+        if (storedPageIndex !== null) {
+            setPagination(prev => ({ ...prev, pageIndex: parseInt(storedPageIndex) }));            
+        }
+    };
+
+    const handleRadioClick = (columnId: string) => {
+        setColumnGroupedBy((prevGroupedBy) => {
+            const isColumnActive = prevGroupedBy.includes(columnId);
+            const updatedGroupedBy = isColumnActive ? [] : [columnId];
+            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));
+
+    
+            if (!isColumnActive) {
+                const columnToToggle = allColumns.find(column => column.id === columnId);
+                if (columnToToggle && columnToToggle.canGroupBy) {
+                    handleColumnByToggle(columnToToggle);
+                }
+            } else {       
+                setPagination(prev => ({ 
+                    ...prev, 
+                    distinct: "",   
+                    filters: initialFilters,              
+                    pageIndex: 0, 
+                    trigger: true 
+                }));
+                handleOrderReset();
+            }
+    
+            return updatedGroupedBy;
+        });       
+    };    
+
+    useEffect(() => {
+        const storedColumnGroupedBy = localStorage.getItem('columnGroupedBy');
+        if (storedColumnGroupedBy) {
+            setColumnGroupedBy(JSON.parse(storedColumnGroupedBy));
+        }
+    }, []);    
+
+    const handleNoGroupedBy = (column: Column) => {     
+        return columnGroupedBy.includes(column.accessor);
+    };    
+
+    const handleRowByToggle = (cell: Cell, column: ColumnInstance) => {          
+
+        const columnName = column.id as string;
+        const selectedRowValue = cell.row.original[columnName] as string;
+        setFilterApplied(true);
+
+        setPagination(prev => ({
+            ...prev,
+            distinct: "",
+            filters: {
+                ...prev.filters,
+                [columnName]: {
+                    "value": selectedRowValue || "", 
+                    "operator": selectedRowValue === "" || selectedRowValue === null ? "isempty" : "equals" 
+                }
+            },
+            pageIndex: 0,
+            trigger: true
+        }));         
+        setRowByToggleActive(true); 
+    };    
+                   
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                 <div className={clsx({
-                    [classes.containerButtons]: !!FiltersElement,
+                    [classes.containerButtons]: Boolean(FiltersElement),
                     [classes.containerButtonsNoFilters]: !FiltersElement
                 })}>
                     {filterrange && (
@@ -726,7 +985,7 @@ const TableZyx = React.memo(({
                             </Button>
                         </div>
                     )}
-                    {(!filterrange && !!FiltersElement) && (
+                    {(!filterrange && Boolean(FiltersElement)) && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                             {FiltersElement}
                             <Button
@@ -746,7 +1005,11 @@ const TableZyx = React.memo(({
                         </div>
                     )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                        {ButtonsElement && <ButtonsElement />}
+                        {typeof ButtonsElement === 'function' ? (
+                            (<ButtonsElement />)
+                        ) : (
+                            ButtonsElement
+                        )}
                         {importCSV && (
                             <>
                                 <input
@@ -790,11 +1053,132 @@ const TableZyx = React.memo(({
                                 color="primary"
                                 disabled={loading}
                                 onClick={exportData}
-                                // exportPersonalized
                                 startIcon={<DownloadIcon />}
                             ><Trans i18nKey={langKeys.download} />
                             </Button>
                         )}
+
+                        {showExtraButtonIcon && (
+                            <div>
+                                <IconButton
+                                    aria-label="more"
+                                    id="long-button"
+                                    onClick={(event) => handleClickSeButtons(event)}
+                                    style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                                >
+                                    <MoreVertIcon />
+                                </IconButton>
+
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <Popper
+                                        open={openSeButtons}
+                                        anchorEl={anchorElSeButtons}
+                                        placement="bottom"
+                                        transition
+                                        style={{ marginRight: '1rem' }}
+                                    >
+                                        {({ TransitionProps }) => (
+                                            <Paper {...TransitionProps} elevation={5}>
+                                                {showHideColumns && (
+                                                    <MenuItem
+                                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                        onClick={handleOpenShowColumnsModal}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                                    </MenuItem>
+                                                )}
+
+                                                {groupedBy && (
+                                                    <div>
+                                                        <MenuItem
+                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                            onClick={handleOpenGroupedByModal}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <AllInboxIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            </ListItemIcon>
+                                                            <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                                        </MenuItem>
+                                                        <Divider />
+                                                    </div>
+                                                )}
+                                                {ExtraMenuOptions}
+                                            </Paper>
+                                        )}
+                                    </Popper>
+                                </div>
+
+                            </div>
+                        )}
+
+                        {isShowColumnsModalOpen && (
+                            <DialogZyx
+                                open={isShowColumnsModalOpen}
+                                title={t(langKeys.showHideColumns)}
+                                buttonText2={t(langKeys.close)}
+                                handleClickButton2={() => setShowColumnsModalOpen(false)}
+                                maxWidth="sm"
+                                buttonStyle1={{ marginBottom: '0.3rem' }}
+                                buttonStyle2={{ marginRight: '1rem', marginBottom: '0.3rem' }}
+                            >
+                                <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                                {allColumns.filter(column => {
+                                    const isColumnInstance = 'accessor' in column && 'Header' in column;
+                                    return isColumnInstance && 'showColumn' in column && column.showColumn === true;
+                                })
+                                .map((column) => (
+                                    <Grid item xs={4} key={column.id}>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={columnVisibility[column.id] ?? true}
+                                                    onChange={(e) => handleColumnVisibilityChange(column.id, e.target.checked)}
+                                                />
+                                            }
+                                            label={t(column.Header as string)}
+                                        />
+                                    </Grid>
+                                ))}
+                                </Grid>
+
+                            </DialogZyx>
+                        )}
+
+                        {isGroupedByModalOpen && (
+                            <DialogZyx
+                                open={isGroupedByModalOpen}
+                                title={t(langKeys.groupedBy)}
+                                buttonText2={t(langKeys.close)}
+                                handleClickButton2={() => setGroupedByModalOpen(false)}
+                                maxWidth="sm"
+                                buttonStyle1={{ marginBottom: '0.3rem' }}
+                                buttonStyle2={{ marginRight: '1rem', marginBottom: '0.3rem' }}
+                            >
+                                <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                                    {columns
+                                        .filter((column: any) => column.showGroupedBy === true)
+                                        .map((column: any) => (
+                                        <Grid item xs={4} key={column.accessor}>
+                                            <FormControlLabel
+                                            control={
+                                                <Radio
+                                                color="primary"
+                                                checked={columnGroupedBy.includes(column.accessor)}
+                                                onClick={() => handleRadioClick(column.accessor)}
+                                                />
+                                            }
+                                            label={column.Header}
+                                            />
+                                        </Grid>
+                                        ))}
+                                </Grid>
+                            </DialogZyx>
+                        )}
+
                     </div>
                 </div>
             </Box>
@@ -805,8 +1189,8 @@ const TableZyx = React.memo(({
                 <Box overflow="auto" style={{ flex: 1 }}>
                     <MaUTable {...getTableProps()} aria-label="enhanced table" size="small" aria-labelledby="tableTitle">
                         <TableHead>
-                            {headerGroups.map((headerGroup) => (
-                                <TableRow {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroups.map((headerGroup, index) => (
+                                <TableRow {...headerGroup.getHeaderGroupProps()} key={index}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
@@ -818,6 +1202,52 @@ const TableZyx = React.memo(({
                                                     :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
+                                                        {column.id !== pagination.distinct && !(pagination.filters && column.id in pagination.filters) && handleNoGroupedBy({ ...column, accessor: column.id, Header: column.Header as string }) && (
+                                                            <Tooltip title={''}>
+                                                                <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
+                                                                    {column.canGroupBy === true && (
+                                                                        <TableSortLabel
+                                                                            active
+                                                                            direction={column.isGrouped ? 'desc' : 'asc'}
+                                                                            IconComponent={KeyboardArrowRight}
+                                                                            className={classes.headerIcon}
+                                                                            {...column.getHeaderProps( column.getGroupByToggleProps(
+                                                                                { 
+                                                                                    title: 'Agrupar', 
+                                                                                    onClick: () => {
+                                                                                        handleColumnByToggle(column) 
+                                                                                    }   
+                                                                                }
+                                                                            ))}
+                                                                        />
+                                                                    )}
+                                                                </div>
+                                                            </Tooltip>                                                           
+                                                        )}
+
+
+                                                            <div
+                                                                style={{ cursor: 'pointer' }}
+                                                                onClick={() => {
+                                                                    setPagination(prev => ({
+                                                                        ...prev,
+                                                                        distinct: "",
+                                                                        filters: {},
+                                                                        pageIndex: 0,
+                                                                        trigger: true
+                                                                    }));
+                                                                    handleOrderReset()
+                                                                }}
+                                                            >
+                                                            {(column.id === pagination.distinct || (pagination.filters && column.id in pagination.filters)) && (
+                                                                    <KeyboardArrowRightIcon 
+                                                                    fontSize="small"
+                                                                    color="action"
+                                                                    />
+                                                                )}
+                                                            </div>
+
+                                                            
                                                             <Box
                                                                 component="div"
                                                                 {...column.getHeaderProps()}
@@ -836,7 +1266,7 @@ const TableZyx = React.memo(({
                                                                     : <ArrowDownwardIcon className={classes.iconOrder} color="action" />)
                                                                 }
                                                             </Box>
-                                                            {!!column.helpText && (
+                                                            {column.helpText && (
                                                                 <Tooltip title={<div style={{ fontSize: 12, whiteSpace: 'break-spaces' }}>{column.helpText}</div>} arrow placement="top" >
                                                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                                                 </Tooltip>
@@ -870,29 +1300,86 @@ const TableZyx = React.memo(({
                                 <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
                                 page.map((row: any) => {
                                     prepareRow(row);
-                                    return (
+                                    return ( //eslint-disable-next-line
                                         <TableRow
                                             {...row.getRowProps()}
                                             hover
                                             style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                         >
-                                            {row.cells.map((cell: any, i: number) =>
-                                                <TableCell
-                                                    {...cell.getCellProps({
-                                                        style: {
-                                                            minWidth: cell.column.minWidth,
-                                                            width: cell.column.width,
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap',
-                                                            textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
-                                                        },
-                                                    })}
-                                                    onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
-                                                >
-                                                    {cell.render('Cell')}
-                                                </TableCell>
+                                            {row.cells.map((cell: any, index: number) => 
+
+                                            <TableCell
+                                                key={index}
+                                                {...cell.getCellProps({
+                                                    style: {
+                                                        minWidth: cell.column.minWidth,
+                                                        width: cell.column.width,
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
+                                                    },
+                                                })}
+                                                onClick={
+                                                    () => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null
+                                                }
+                                            >
+                                                {(filterApplied && pagination.filters && cell.column.id in pagination.filters) ? (
+                                                   <>
+                                                        <TableSortLabel
+                                                            className={classes.headerIcon}
+                                                            active
+                                                            direction={'asc'}
+                                                            IconComponent={KeyboardArrowRight}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (cell.column.id !== "selection") {
+                                                                    onClickRow && onClickRow(row.original);
+                                                                    handleRowByToggle(cell, cell.column);
+                                                                    handleColumnByToggle(cell.column);
+                                                                    handleChangePage()
+
+                                                                }
+                                                            }}
+                                                            
+                                                        />
+                                                        {''}
+                                                        {cell.render('Cell')}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {(cell.isGrouped || cell.column.id === pagination.distinct) ? (
+                                                            <>
+                                                                <TableSortLabel
+                                                                    classes={{
+                                                                        iconDirectionAsc: classes.iconDirectionAsc,
+                                                                        iconDirectionDesc: classes.iconDirectionDesc,
+                                                                    }}
+                                                                    active
+                                                                    direction={row.isExpanded ? 'desc' : 'asc'}
+                                                                    IconComponent={KeyboardArrowUp}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        if (cell.column.id !== "selection") {
+                                                                            onClickRow && onClickRow(row.original);
+                                                                            handleRowByToggle(cell, cell.column);
+                                                                        }
+                                                                    }}
+                                                                    className={classes.cellIcon}
+                                                                />
+                                                                {' '} {cell.render('Cell')} {' '}
+                                                                ({row.original.countdistinct})
+                                                            </>
+                                                        ) : ((cell.column.id !== pagination.distinct && pagination.distinct) ? null : cell.render('Cell'))}
+                                                    </>
+                                                )}
+                                                {
+                                                    
+                                                }
+                                            </TableCell>
+
                                             )}
+                                            
                                         </TableRow>
                                     )
                                 })
@@ -901,19 +1388,21 @@ const TableZyx = React.memo(({
                     </MaUTable>
                 </Box>
                 <Box className={classes.footerTable}>
-                    <Box>
-                        <IconButton onClick={() => setPageIndex(0)} disabled={!canPreviousPage} >
+                    <Box>    
+                                         
+                        <IconButton onClick={handleFirstPageClick} disabled={!canPreviousPage}>
                             <FirstPage />
                         </IconButton>
-                        <IconButton onClick={() => setPageIndex(pagination.pageIndex - 1)} disabled={!canPreviousPage} >
+                        <IconButton onClick={handlePrevPageClick} disabled={!canPreviousPage}>
                             <NavigateBefore />
                         </IconButton>
-                        <IconButton onClick={() => setPageIndex(pagination.pageIndex + 1)} disabled={!canNextPage} >
+                        <IconButton onClick={handleNextPageClick} disabled={!canNextPage}>
                             <NavigateNext />
                         </IconButton>
-                        <IconButton onClick={() => setPageIndex(pageCount - 1)} disabled={!canNextPage} >
+                        <IconButton onClick={handleLastPageClick} disabled={!canNextPage}>
                             <LastPage />
                         </IconButton>
+
                         <Box component="span" fontSize={14}>
                             <Trans
                                 i18nKey={langKeys.tablePageOf}
@@ -935,7 +1424,7 @@ const TableZyx = React.memo(({
                             style={{ display: 'inline-flex' }}
                             value={pageSize}
                             onChange={e => {
-                                setPageSize(Number(e.target.value))
+                                handlePageSizeChange(e.target.value);
                             }}
                         >
                             {[5, 10, 20, 50, 100].map(pageSize => (
@@ -952,9 +1441,13 @@ const TableZyx = React.memo(({
             </TableContainer >
         </Box >
     )
-})
 
+    
+    
+})
+TableZyx.displayName = 'TableZyx';
 export default TableZyx;
+TableZyx.displayName = "TableZyx"
 
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];

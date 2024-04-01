@@ -1,17 +1,36 @@
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getasesorvsticketsSel, getTicketvsAdviserExport } from 'common/helpers';
-import { IFetchData } from "@types";
+import { getasesorvsticketsSel, getCommChannelLstTypeDesc, getReportExport, getReportFilterSel, getUserAsesorByOrgID } from 'common/helpers';
+import { Dictionary, IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { cleanViewChange, exportData, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
+import { cleanViewChange, exportData, getCollectionPaginated, getMultiCollection, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
+import { makeStyles } from '@material-ui/core/styles';
+import { FieldSelect } from 'components';
 
+const useStyles = makeStyles((theme) => ({   
+    containerDetail: {
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+        background: '#fff',
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
+    }, 
+    filterComponent: {
+        minWidth: "220px",
+        maxWidth: "260px",
+    },  
+}));
 
 const TicketvsAdviser: FC = () => {
-    // const history = useHistory();
+    const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiData);
@@ -21,7 +40,8 @@ const TicketvsAdviser: FC = () => {
     const [totalrow, settotalrow] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [allParameters, setAllParameters] = useState<any>({});
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null })
     useEffect(() => {
         dispatch(setViewChange("report_ticketvsasesor"))
         return () => {
@@ -33,11 +53,12 @@ const TicketvsAdviser: FC = () => {
         () => [
             {
                 Header: t(langKeys.ticket_number),
-                accessor: 'numeroticket',
+                accessor: 'numeroticket',               
             },
             {
                 Header: t(langKeys.startDate),
                 accessor: 'fechainicio',
+                showGroupedBy: true,   
             },
             {
                 Header: t(langKeys.starttime),
@@ -45,11 +66,15 @@ const TicketvsAdviser: FC = () => {
             },
             {
                 Header: t(langKeys.advisor),
-                accessor: 'asesor',
+                accessor: 'asesor',       
+                showGroupedBy: true,   
+                helpText: t(`report_loginhistory_advisor`),
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'canal',
+                showGroupedBy: true,   
+                helpText: t(`report_loginhistory_channel`),
             },
             {
                 Header: t(langKeys.type),
@@ -66,10 +91,13 @@ const TicketvsAdviser: FC = () => {
             {
                 Header: t(langKeys.closedby),
                 accessor: 'cerradopor',
+                helpText: t(`report_loginhistory_closedby`),               
             },
             {
                 Header: t(langKeys.ticket_tipocierre),
                 accessor: 'tipocierre',
+                showGroupedBy: true,   
+                helpText: t(`report_loginhistory_closetype`),                
             },
             {
                 Header: t(langKeys.dateoffirstreplytoadviser),
@@ -90,6 +118,7 @@ const TicketvsAdviser: FC = () => {
             {
                 Header: t(langKeys.closing_date),
                 accessor: 'fechacierre',
+                showGroupedBy: true,   
             },
             {
                 Header: t(langKeys.closing_time),
@@ -98,40 +127,48 @@ const TicketvsAdviser: FC = () => {
             {
                 Header: t(langKeys.transactionoperationtype),
                 accessor: 'tipo_operacion',
+                showColumn: true,   
             },
             {
                 Header: t(langKeys.operador),
                 accessor: 'operador',
+                showColumn: true,   
             },
             {
                 Header: "Plan",
                 accessor: 'plan',
+                showColumn: true,   
             },
             {
                 Header: t(langKeys.purchasemode),
                 accessor: 'modalidad_compra',
+                showColumn: true,   
             },
             {
                 Header: t(langKeys.province),
                 accessor: 'provincia',
+                showColumn: true,   
             },
             {
                 Header: t(langKeys.district),
                 accessor: 'distrito',
+                showColumn: true,   
             },
             {
                 Header: t(langKeys.phone),
                 accessor: 'telefono',
+                showColumn: true,   
             },
             {
                 Header: t(langKeys.document),
                 accessor: 'documento',
+                showColumn: true,   
             },
             
         ],
         [t]
     );
-    
+     
     useEffect(() => {
         return () => {
             dispatch(resetMultiMain());
@@ -143,17 +180,34 @@ const TicketvsAdviser: FC = () => {
         }
     }, [multiData])
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+    useEffect(() => {
+        dispatch(getMultiCollection([getReportFilterSel("UFN_REPORT_ASESOR_VS_TICKET_SEL", "UFN_REPORT_ASESOR_VS_TICKET_SEL", ""), getCommChannelLstTypeDesc()]));
+        dispatch(setViewChange(`report_${"ticketvsadviser"}`));
+        return () => {
+            dispatch(cleanViewChange());
+        };
+    }, []);
+
+    const [selectedChannel, setSelectedChannel] = useState('');
+
+    const handleChangeChannel = (value: any) => {
+        setSelectedChannel(value ? value['typedesc'] : '');
+    };
+
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange })
         dispatch(getCollectionPaginated(getasesorvsticketsSel({
-            startdate: daterange.startDate!,
-            enddate: daterange.endDate!,
-            take: pageSize,
-            skip: pageIndex * pageSize,
-            sorts: sorts,
-            filters: {
-                ...filters,
-            },
+                startdate: daterange.startDate!,
+                enddate: daterange.endDate!,
+                take: pageSize,
+                skip: pageIndex * pageSize,
+                channel: selectedChannel,
+                sorts: sorts,
+                distinct: distinct,
+                filters: {
+                    ...filters,
+                },
+                ...allParameters
         })))
     };
     
@@ -171,7 +225,6 @@ const TicketvsAdviser: FC = () => {
             }
         }
     }, [resExportData, waitExport]);
-
     
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
@@ -181,19 +234,27 @@ const TicketvsAdviser: FC = () => {
     }, [mainPaginated])
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-        const columnsExport = columns.map(x => ({
+        const columnsExport = columns.map((x: Dictionary) => ({
             key: x.accessor,
             alias: x.Header,
         }));
-        dispatch(exportData(getTicketvsAdviserExport(
-            {
-                startdate: daterange.startDate!,
-                enddate: daterange.endDate!,
-                sorts,
-                filters: filters,
-            }), "", "excel", false, columnsExport));
+        dispatch(
+            exportData(
+                getReportExport("UFN_REPORT_ASESOR_VS_TICKET_EXPORT", "ticketvsadviser", {
+                    filters,
+                    sorts,
+                    startdate: daterange.startDate!,
+                    enddate: daterange.endDate!,
+                    ...allParameters,
+                }),
+                "",
+                "excel",
+                false,
+                columnsExport
+            )
+        );
         dispatch(showBackdrop(true));
-        setWaitExport(true);
+        setWaitSave(true);
     };
 
     useEffect(() => {
@@ -221,18 +282,38 @@ const TicketvsAdviser: FC = () => {
                 totalrow={totalrow}
                 loading={mainPaginated.loading}
                 pageCount={pageCount}
-                FiltersElement={<></>}
+                showHideColumns={true}
+                groupedBy={true}
+                FiltersElement={                            
+                    <FieldSelect                              
+                        valueDefault={allParameters["channel"]}
+                        label={t("report_reportvoicecall_filter_channels")}
+                        className={classes.filterComponent}
+                        key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
+                        variant="outlined"
+                        loading={multiData.loading}
+                        onChange={handleChangeChannel}                              
+                        data={
+                            multiData?.data[
+                                multiData?.data?.findIndex(
+                                    (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
+                                )
+                            ]?.data
+                            
+                        }
+                        optionDesc={"type"}
+                        optionValue={"typedesc"}
+                    />                    
+                }
                 filterrange={true}
                 download={true}
                 fetchData={fetchData}
                 filterGeneral={false}
                 exportPersonalized={triggerExportData}
                 register={false}         
-            />
-            
+            />            
         </React.Fragment>
     )
-
 }
 
 export default TicketvsAdviser;

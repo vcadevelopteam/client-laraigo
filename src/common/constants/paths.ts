@@ -17,6 +17,9 @@ const paths = {
     REPORTS: '/reports',
     REPORTDESIGNER: '/reportdesigner',
     POSTCREATOR: '/postcreator',
+    PRODUCTMASTER: '/ProductMaster',
+    WAREHOUSE: '/warehouse',
+    COMPANIES: '/companies',
     TICKETS: '/tickets',
     EMAIL_INBOX: '/email_inbox',
     MESSAGE_INBOX: '/message_inbox',
@@ -27,7 +30,11 @@ const paths = {
     IACONECTORS: '/iaconectors',
     IACONFIGURATION: '/iaconfigurations',
     IATRAINING: '/iatraining',
-    IATRAINING2: '/iatraining2',
+    CONFIGURATIONDELIVERY: '/configurationdelivery',
+    ORDERINSTORE: '/ordersinstore', 
+    STORECOVERAGE: '/storecoverage',
+    ORDERSINATTENTION: '/ordersinattention',
+    ORDERLIST: '/orderlist',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUPBASIC: "/sign-up/BASIC",
@@ -342,6 +349,7 @@ const paths = {
     HEATMAP: '/dashboard/heatmap',
     RECORDHSMREPORT: '/dashboard/recordhsmreport',
     IASERVICES: '/iaservices',
+    REASSIGNMENTRULES: '/reassignmentrules',
     // IAMODELS: '/extras/intelligentmodels',
     IA: '/iaservices/ia',
 
@@ -364,6 +372,12 @@ const paths = {
     RECOVER_PASSWORD: {
         path: '/recoverpassword/:token',
         resolve: (token: string) => `/recoverpassword/${token}`
+    },
+    INVENTORY: '/inventory',
+    INVENTORYCONSUMPTION: '/inventoryconsumption',
+    CONVERSATION: {
+        path: '/conversation/:token',
+        resolve: (token: string) => `/conversation/${token}`
     },
 };
 

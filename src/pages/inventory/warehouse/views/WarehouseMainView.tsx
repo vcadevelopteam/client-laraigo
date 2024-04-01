@@ -285,7 +285,7 @@ const WarehouseMainView: FC<WarehouseMainViewProps> = ({
       if (data.length > 0) {
         const error = data.some((element) => !isValidData(element));
         if(!error){
-          const dataToSend = data.map((x: any) => ({
+          let dataToSend = data.map((x: any) => ({
             ...x,
             warehouseid: 0,
             operation: "INSERT",

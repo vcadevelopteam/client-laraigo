@@ -173,7 +173,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 Cell: (props: any) => {
                     if (!edit)
                         return null;
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
@@ -494,7 +494,7 @@ const Domains: FC = () => {
                 minWidth: 60,
                 width: '1%',
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
@@ -525,7 +525,7 @@ const Domains: FC = () => {
                 NoFilter: true,
                 prefixTranslation: 'type_domain_',
                 Cell: (props: any) => {
-                    const { type } = props.cell.row.original;
+                    const { type } = props.cell.row.original || {}; 
                     return (t(`type_domain_${type}`.toLowerCase()) || "").toUpperCase()
                 }
             },
@@ -535,7 +535,7 @@ const Domains: FC = () => {
                 NoFilter: true,
                 prefixTranslation: 'status_',
                 Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
+                    const { status } = props.cell.row.original || {}; 
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             }

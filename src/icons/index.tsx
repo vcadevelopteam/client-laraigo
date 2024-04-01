@@ -320,6 +320,12 @@ export { ReactComponent as LaraigoChatProfileIcon } from './go-chat.svg';
 export { ReactComponent as SendMesageIcon } from './bot enviar.svg';
 
 
+export { ReactComponent as ProductMasterIcon } from './maestro-productos.svg';
+export { ReactComponent as WarehouseIcon } from './almacenes.svg';
+export { ReactComponent as InventoryConsumptionIcon } from './consumo_inventario.svg';
+export { ReactComponent as CompaniesIcon } from './empresas.svg';
+export { ReactComponent as InventoryIcon } from './inventarios.svg';
+
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
 export {ReactComponent as PDFRedIcon} from './pdf-red-20dp.svg';
 

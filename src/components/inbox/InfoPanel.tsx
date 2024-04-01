@@ -10,7 +10,7 @@ import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePers
 import { GetIcon, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { convertLocalDate, getAttachmentsByPerson, getConversationClassification2, getLeadsByUserPerson, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
+import { convertLocalDate, getAssignmentRulesByGroup, getAttachmentsByPerson, getConversationClassification2, getLeadsByUserPerson, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
@@ -189,7 +189,9 @@ const InfoTab: React.FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const person = useSelector(state => state.inbox.person.data);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [view, setView] = useState('view');
+    const user = useSelector(state => state.login.validateToken.user);
 
     const multiData = useSelector(state => state.main.multiDataAux);
     const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
@@ -216,7 +218,6 @@ const InfoTab: React.FC = () => {
         register('healthprofessional');
         register('referralchannel');
         register('district');
-
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("TIPODOCUMENTO"),
             getValuesFromDomain("GENERO"),
@@ -225,6 +226,7 @@ const InfoTab: React.FC = () => {
             getValuesFromDomain("NIVELEDUCATIVO"),
             getPropertySelByName("OCUPACION"),
             getValuesFromDomain("TIPOPERSONA"),
+            getAssignmentRulesByGroup(ticketSelected?.usergroup||"", user?.groups||"")
         ]));
         return () => {
             dispatch(resetMultiMainAux());

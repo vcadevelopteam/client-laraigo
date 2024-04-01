@@ -2,12 +2,13 @@
     "liveServer.settings.port": 5501,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "vscode.typescript-language-features"
     },
     "[javascript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
     },
     "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features"
-    }
+    },
+    "compile-hero.disable-compile-files-on-did-save-code": false
 }

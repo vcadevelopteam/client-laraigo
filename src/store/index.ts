@@ -16,6 +16,7 @@ import settingReducer, { IState as ISetting } from './setting/reducer';
 import activationUserReducer, { IState as IActivationUser } from './activationuser/reducer';
 import leadReducer, { IState as ILead } from './lead/reducer';
 import gptReducer, { IState as IGpt } from './gpt/reducer';
+import llamaReducer, { IState as ILlama } from './llama/reducer';
 import servicedeskReducer, { IState as IServiceDesk } from './servicedesk/reducer';
 import culqiReducer, { IState as ICulqi } from './culqi/reducer';
 import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
@@ -31,6 +32,9 @@ import postHistoryReducer, { IState as IPostHistory } from './posthistory/reduce
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import paymentReducer, { IState as IPayment } from './payment/reducer';
 import rasaiaReducer, { IState as IRasaia } from './rasaia/reducer';
+import conversationReducer, { IState as IConversation } from './conversation/reducer';
+import corporationReducer, { IState as ICorporation } from './corp/reducer';
+import deliveryReducer, { IState as IDelivery } from './delivery/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -45,8 +49,10 @@ export interface IRootState {
     setting: ISetting;
     activationuser: IActivationUser;
     lead: ILead;
+    llama: ILlama;
     culqi: ICulqi;
     dashboard: IDashboard;
+    delivery: IDelivery;
     getlocations: IGetLocations;
     getversion: IGetVersion;
     subscription: ISubscription;
@@ -61,6 +67,8 @@ export interface IRootState {
     payment: IPayment;
     servicedesk: IServiceDesk;
     rasaia: IRasaia
+    conversation: IConversation
+    corporation: ICorporation
 }
 
 declare global {
@@ -82,8 +90,10 @@ const rootReducer = combineReducers<IRootState>({
     setting: settingReducer,
     activationuser: activationUserReducer,
     lead: leadReducer,
+    llama: llamaReducer,
     culqi: culqiReducer,
     dashboard: dashboardReducer,
+    delivery: deliveryReducer,
     getlocations: getlocationsReducer,
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,
@@ -98,6 +108,8 @@ const rootReducer = combineReducers<IRootState>({
     payment: paymentReducer,
     servicedesk: servicedeskReducer,
     rasaia: rasaiaReducer,
+    conversation: conversationReducer,
+    corporation: corporationReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

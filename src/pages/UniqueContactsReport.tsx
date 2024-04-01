@@ -1,8 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import Button from '@material-ui/core/Button';
 import { AntTab, DialogZyx, FieldMultiSelect, FieldSelect} from 'components';
 import { convertLocalDate, dateToLocalDate, getDomainChannelTypeList, getUniqueContactsConversationExport, getUniqueContactsExport, getUniqueContactsSel, getValuesFromDomain, selOrgSimpleList, selUniqueContactsConversation, selUniqueContactsPcc } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
@@ -11,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollectionAux, getCollectionPaginated, exportData, setMemoryTable } from 'store/main/actions';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid } from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LineChart, Line, LabelList } from 'recharts';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { dataYears } from 'common/helpers';
 import ListIcon from '@material-ui/icons/List';
@@ -26,8 +24,8 @@ import { useForm } from 'react-hook-form';
 import Zoom from '@material-ui/core/Zoom';
 import TablePaginated from 'components/fields/table-paginated';
 import DialogInteractions from 'components/inbox/DialogInteractions';
-
-const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
+import { CellProps } from 'react-table';
+import { Button } from '@material-ui/core';
 
 const UNIQUECONTACTS = 'UNIQUECONTACTS';
 
@@ -98,7 +96,8 @@ interface DetailUniqueContactProps {
     setViewSelected: (view: string) => void;
 }
 
-const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, graphicType }) => {
+
+const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data }) => {
     const { t } = useTranslation();
 
     const columns = React.useMemo(
@@ -107,18 +106,16 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 Header: t(langKeys.month),
                 accessor: 'name',
                 NoFilter: true,
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
 
-                    if (graphicType === "BAR")
-                        return row?.name;
                     return (
-                        <div style={{ display: 'flex', gap: 4 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <div style={{ width: 15, height: 15, backgroundColor: row.color }}></div>
                             {row?.name}
                         </div>
-                    )
-                }
+                    );
+                },
             },
             {
                 Header: t(langKeys.quantity),
@@ -131,8 +128,8 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 accessor: 'percentage',
                 NoFilter: true,
                 type: 'number',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const row = props.cell.row.original || {};
                     return row.percentage.toFixed(2) + "%";
                 }
             },
@@ -198,7 +195,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal,setView, setO
                     valueDefault={getValues('graphictype')}
                     error={errors?.graphictype?.message}
                     onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }, { key: 'LINE', value: 'LINEA' },]}
                     uset={true}
                     prefixTranslation="graphic_"
                     optionDesc="value"
@@ -224,7 +221,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal,setView, setO
 }
 
 const RADIAN = Math.PI / 180;
-export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value, ...rest }: Dictionary) => {
+export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, value, ...rest }: Dictionary) => {
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -237,7 +234,7 @@ export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadi
 };
 
 const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewSelected }) => {
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null })
     // const [allParameters, setAllParameters] = useState<Dictionary>({});
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const [totalrow, settotalrow] = useState(0);
@@ -248,8 +245,8 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
     const classes = useStyles()
     const { t } = useTranslation();
     
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange })
         dispatch(getCollectionPaginated(selUniqueContactsPcc({
             take: pageSize,
             skip: pageIndex * pageSize,
@@ -275,7 +272,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
             {
                 Header: t(langKeys.communicationchannel),
                 accessor: 'channels',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     <div className={classes.fieldElipsis}>{row?.channels}</div>
                     return <Tooltip TransitionComponent={Zoom} title={row?.channels}>
@@ -291,8 +288,8 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
                 width: 'auto',
                 type: 'date',
                 sortType: 'datetime',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const row = props.cell.row.original || {};
                     return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
                 }
             },
@@ -302,8 +299,8 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
                 width: 'auto',
                 type: 'date',
                 sortType: 'datetime',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>)  => {
+                    const row = props.cell.row.original || {};
                     return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
                 }
             },
@@ -416,15 +413,17 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
     const cell = (props: any) => {
         const column = props.cell.column;
         const row = props.cell.row.original;
-        if(row.client === "Total"){
-            return <div><b>{row[column.id]}</b></div>
-        }else if(column.id.includes('_')){
-            return <div onClick={()=>handleView(row,column.id.split('_')[1])}>{row[column.id]}</div>
-        }else{
-            return <div>{row[column.id]}</div>
+        if (row && row.client === "Total") {
+            return <div><b>{row[column.id]}</b></div>;
+        } else if (row && column.id.includes('_')) {
+            return <div onClick={() => handleView(row, column.id.split('_')[1])}>{row[column.id]}</div>;
+        } else if (row) {
+            return <div>{row[column.id]}</div>;
         }
-    }
     
+        return "";
+    }
+
     const handleView = (row: Dictionary, month:number) => {
         setRowSelected({
             row,
@@ -440,20 +439,25 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Header: t(langKeys.client),
                 accessor: 'client',
                 width: 'auto',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const column = props.cell.column;
                     const row = props.cell.row.original;
-                    if(row.client === "Total"){
-                        return <div><b>{row[column.id]}</b></div>
-                    }else{
-                        return <div>{row[column.id]}</div>
+
+                    if (row && 'client' in row) {
+                        if (row.client === "Total") {
+                            return <div><b>{row[column.id]}</b></div>;
+                        } else {
+                            return <div>{row[column.id]}</div>;
+                        }
                     }
+                    return "";
                 }
             },
             {
                 Header: t(langKeys.month_01),
                 accessor: 'month_1',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
@@ -461,6 +465,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Header: t(langKeys.month_02),
                 accessor: 'month_2',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
@@ -469,12 +474,14 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 accessor: 'month_3',
                 width: 'auto',
                 type: 'number',
+                showColumn: true,   
                 Cell:cell
             },
             {
                 Header: t(langKeys.month_04),
                 accessor: 'month_4',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
@@ -482,6 +489,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Header: t(langKeys.month_05),
                 accessor: 'month_5',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
@@ -489,6 +497,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Header: t(langKeys.month_06),
                 accessor: 'month_6',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
@@ -497,18 +506,21 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 accessor: 'month_7',
                 width: 'auto',
                 type: 'number',
+                showColumn: true,   
                 Cell:cell
             },
             {
                 Header: t(langKeys.month_08),
                 accessor: 'month_8',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
             {
                 Header: t(langKeys.month_09),
                 accessor: 'month_9',
+                showColumn: true,   
                 width: 'auto',
                 type: 'number',
                 Cell:cell
@@ -517,6 +529,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Header: t(langKeys.month_10),
                 accessor: 'month_10',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
@@ -524,6 +537,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Header: t(langKeys.month_11),
                 accessor: 'month_11',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
@@ -531,6 +545,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Header: t(langKeys.month_12),
                 accessor: 'month_12',
                 width: 'auto',
+                showColumn: true,   
                 type: 'number',
                 Cell:cell
             },
@@ -539,22 +554,24 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 accessor: 'total',
                 width: 'auto',
                 type: 'number',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
-                    return <b>{row.total}</b>
+                    const totalValue = row ? row.total : undefined;
+                    return <b>{totalValue}</b>;
                 }
             },
         ],
         [t]
     );
+
     
     useEffect(() => {
         if (!mainResult.loading && mainResult?.key?.includes("UFN_REPORT_UNIQUECONTACTS_SEL")){
-            let mainTotal:any = {
+            const mainTotal: Dictionary = {
                 client: "Total",
                 month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
             }
-            let rawdata: any[] = [];
+            const rawdata: Dictionary[] = [];
             multiData.data[1].data.forEach((x)=>{
                 rawdata.push({
                     client: `${x.corpdesc} - ${x.orgdesc}`,
@@ -586,10 +603,37 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 }
             })
             setGridData([...rawdata,mainTotal]||[]);
-            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:COLORS[i]}],[]))
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:Dictionary, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color: randomColorGenerator()}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
+
+    const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+
+
+    const getNextColorGenerator = (): (() => string) => {
+        const predefinedColors = ["#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00", "#0F7F13", "#00CFE5", "#1D1856", "#FB5F5F", "#B061E1"];
+        let currentIndex = 0;
+        const usedColors = [...predefinedColors];
+    
+        return () => {
+            if (currentIndex < predefinedColors.length) {
+                const color = predefinedColors[currentIndex];
+                currentIndex++;
+                return color;
+            } else {
+                const randomColor = generateRandomColor();
+                if (!usedColors.includes(randomColor)) {
+                    usedColors.push(randomColor);
+                    return randomColor;
+                } else {
+                    return getNextColorGenerator()();
+                }
+            }
+        };
+    };    
+    const randomColorGenerator = getNextColorGenerator();
+
 
 
     if (viewSelected === "view-1") {
@@ -617,6 +661,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                                 </Box>
                             )}
                             download={true}
+                            showHideColumns={true}
                             filterGeneral={false}
                             loading={mainResult.loading}
                             register={false}
@@ -627,95 +672,124 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 </React.Fragment>):
                 (<div>
                     <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={mainResult.loading || !(gridData.length > 0)}
-                            onClick={() => setOpenModal(true)}
-                            startIcon={<Settings />}
-                        >
-                            {t(langKeys.configuration)}
-                        </Button>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setView('GRID')}
-                            startIcon={<ListIcon />}
-                        >
-                            {t(langKeys.grid_view)}
-                        </Button>
-                        <>
-                        {(mainResult.loading) ? (
-                            <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <CircularProgress />
-                            </div>
-                        ) :(graphicType === "BAR" ? (
-                            <div style={{ display: 'flex' }}>
-                                <div style={{ flex: '0 0 70%', height: 500 }}>
-                                    <ResponsiveContainer aspect={4.0 / 2}>
-                                        <BarChart
+                        <div style={{display: 'flex', gap: 8, width: '100%', justifyContent:'right', marginTop: 6}}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.loading || !(gridData.length > 0)}
+                                onClick={() => setOpenModal(true)}
+                                startIcon={<Settings />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setView('GRID')}
+                                startIcon={<ListIcon />}
+                            >
+                                {t(langKeys.grid_view)}
+                            </Button>
+                       </div>                      
+                        <div style={{ fontWeight: 500, padding: 16, display: 'flex', justifyContent: 'left', width: '100%' }}>
+                            {t(langKeys.graphic_report_of, { report: t('uniquecontacts'), column: t('month') })}
+                        </div>
+                        <>                      
+                            {(mainResult.loading) ? (
+                                <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <CircularProgress />
+                                </div>
+                            ) :(graphicType === "BAR" ? (
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: '0 0 70%', height: 500 }}>
+                                        <ResponsiveContainer aspect={4.0 / 2}>
+                                            <BarChart
+                                                data={dataGraph}
+                                                margin={{top: 20, right: 30, left: 20, bottom: 5}}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+                                                <YAxis />
+                                                <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
+                                                <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
+                                                    <LabelList dataKey="summary" position="top" />
+                                                    {
+                                                        dataGraph.map((entry: Dictionary, index: Dictionary) => (
+                                                            <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
+                                                        ))
+                                                    }    
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div style={{ overflowX: 'auto' }}>
+                                        <TableResume
+                                            graphicType={graphicType}
                                             data={dataGraph}
-                                            margin={{
-                                                top: 20,
-                                                right: 30,
-                                                left: 20,
-                                                bottom: 5,
-                                            }}
-                                        >
+                                        />
+                                    </div>
+                                </div>
+                            ) : (graphicType === "LINE" ? (
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: '0 0 70%', height: 500 }}>
+                                        <ResponsiveContainer aspect={4.0 / 2}>
+                                            <LineChart
+                                            data={dataGraph}
+                                            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                            >
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
-            
                                             <YAxis />
                                             <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
-                                            <Bar dataKey="value" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" ></Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer>
+                                            <Line type="linear" dataKey="value" stroke="#7721AD" />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                        </div>
+                                        <div style={{ overflowX: 'auto' }}>
+                                        <TableResume                                    
+                                            graphicType={graphicType}
+                                            data={dataGraph}
+                                        />
+                                    </div>
+                                </div>                       
+                            ) : (
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: '0 0 65%', height: 500 }}>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                <ChartTooltip />
+                                                <Pie
+                                                    data={dataGraph}
+                                                    dataKey="value"
+                                                    labelLine={false}
+                                                    label={RenderCustomizedLabel}
+                                                    nameKey="name"
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={40}
+                                                    fill="#7721AD"
+                                                >
+                                                    {dataGraph.map((item:Dictionary) => (
+                                                        <Cell
+                                                            key={item.name}
+                                                            fill={item.color}
+                                                        />
+                                                    ))}
+                                                </Pie>
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div style={{ overflowX: 'auto' }}>
+                                        <TableResume
+                                            graphicType={graphicType}
+                                            data={dataGraph}
+                                        />
+                                    </div>
                                 </div>
-                                <div style={{ overflowX: 'auto' }}>
-                                    <TableResume
-                                        graphicType={graphicType}
-                                        data={dataGraph}
-                                    />
-                                </div>
-                            </div>
-                        ) : (
-                            <div style={{ display: 'flex' }}>
-                                <div style={{ flex: '0 0 65%', height: 500 }}>
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <ChartTooltip />
-                                            <Pie
-                                                data={dataGraph}
-                                                dataKey="value"
-                                                labelLine={false}
-                                                label={RenderCustomizedLabel}
-                                                nameKey="name"
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius={40}
-                                                fill="#8884d8"
-                                            >
-                                                {dataGraph.map((item:any, i:number) => (
-                                                    <Cell
-                                                        key={item.name}
-                                                        fill={item.color}
-                                                    />
-                                                ))}
-                                            </Pie>
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <div style={{ overflowX: 'auto' }}>
-                                    <TableResume
-                                        graphicType={graphicType}
-                                        data={dataGraph}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                        </>
+                            )))}
+                        </>                      
                     </Box>
                 </div>
                 )}
@@ -746,7 +820,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
 
 
 const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, setViewSelected }) => {
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null })
     // const [allParameters, setAllParameters] = useState<Dictionary>({});
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const mainResult = useSelector(state => state.main.mainAux2);
@@ -765,8 +839,8 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
         setRowSelected({ ...row, displayname: row?.name||"" })
     }, [mainResult]);
     
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, distinct, daterange })
         dispatch(getCollectionPaginated(selUniqueContactsConversation({
             take: pageSize,
             skip: pageIndex * pageSize,
@@ -788,7 +862,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 Header: t(langKeys.ticket_number),
                 accessor: 'ticketnum',
                 width: 'auto',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return (
                         <label
@@ -806,7 +880,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 width: 'auto',
                 type: 'date',
                 sortType: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.startdate ? dateToLocalDate(row.startdate) : ""
                 }
@@ -822,7 +896,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 width: 'auto',
                 type: 'date',
                 sortType: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.finishdate ? dateToLocalDate(row.finishdate) : ""
                 }
@@ -883,7 +957,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 width: 'auto',
                 type: 'date',
                 sortType: 'date',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>)  => {
                     const row = props.cell.row.original;
                     return row.handoffdate ? dateToLocalDate(row.handoffdate) : ""
                 }
@@ -916,7 +990,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             },
             {
                 Header: t(langKeys.report_productivity_suspensiontime),
-                accessor: 'pauseduration', //preguntar por el campo
+                accessor: 'pauseduration',
                 width: 'auto',
             },
             {
@@ -985,7 +1059,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 totalrow={totalrow}
                 loading={mainPaginated.loading}
                 pageCount={pageCount}
-                autotrigger={true}
+                autotrigger={true}             
                 download={true}
                 ButtonsElement={() => (
                     <>
@@ -1031,13 +1105,15 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
     const cell = (props: any) => {
         const column = props.cell.column;
         const row = props.cell.row.original;
-        if(row.client === "Total"){
-            return <div><b>{row[column.id]}</b></div>
-        }else if(column.id.includes('_')){
-            return <div onClick={()=>handleView(row,column.id.split('_')[1])}>{row[column.id]}</div>
-        }else{
-            return <div>{row[column.id]}</div>
+        if (row && row.client === "Total") {
+            return <div><b>{row[column.id]}</b></div>;
+        } else if (row && column.id.includes('_')) {
+            return <div onClick={() => handleView(row, column.id.split('_')[1])}>{row[column.id]}</div>;
+        } else if (row) {
+            return <div>{row[column.id]}</div>;
         }
+    
+        return "";
     }
     
     const handleView = (row: Dictionary, month:number) => {
@@ -1055,21 +1131,23 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 Header: t(langKeys.client),
                 accessor: 'client',
                 width: 'auto',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const column = props.cell.column;
-                    const row = props.cell.row.original;
-                    if(row.client === "Total"){
-                        return <div><b>{row[column.id]}</b></div>
-                    }else{
-                        return <div>{row[column.id]}</div>
+                    const row = props.cell.row.original || {}; 
+                  
+                    if (row.client === "Total") {
+                      return <div><b>{row[column.id]}</b></div>;
+                    } else {                  
+                      return <div>{row[column.id] !== undefined ? row[column.id] : ''}</div>;
                     }
-                }
+                }                  
             },
             {
                 Header: t(langKeys.month_01),
                 accessor: 'month_1',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1077,6 +1155,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_2',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1084,6 +1163,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_3',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1091,6 +1171,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_4',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1098,6 +1179,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_5',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1105,6 +1187,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_6',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1112,6 +1195,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_7',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1119,6 +1203,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_8',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1126,6 +1211,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_9',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1133,6 +1219,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_10',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1140,6 +1227,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_11',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1147,6 +1235,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'month_12',
                 width: 'auto',
                 type: 'number',
+                showColumn: true, 
                 Cell:cell
             },
             {
@@ -1154,14 +1243,41 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 accessor: 'total',
                 width: 'auto',
                 type: 'number',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
-                    return <b>{row.total}</b>
+                    const totalValue = row ? row.total : undefined;
+                    return <b>{totalValue}</b>;
                 }
             },
         ],
         [t]
     );
+
+    const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+
+    const getNextColorGenerator = (): (() => string) => {
+        const predefinedColors = ["#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00", "#0F7F13", "#00CFE5", "#1D1856", "#FB5F5F", "#B061E1"];
+        let currentIndex = 0;
+        const usedColors = [...predefinedColors];
+    
+        return () => {
+            if (currentIndex < predefinedColors.length) {
+                const color = predefinedColors[currentIndex];
+                currentIndex++;
+                return color;
+            } else {
+                const randomColor = generateRandomColor();
+                if (!usedColors.includes(randomColor)) {
+                    usedColors.push(randomColor);
+                    return randomColor;
+                } else {
+                    return getNextColorGenerator()();
+                }
+            }
+        };
+    };    
+    const randomColorGenerator = getNextColorGenerator();
+
     useEffect(() => {
         if (!mainResult.loading && mainResult?.key?.includes("UFN_REPORT_UNIQUECONTACTS_SEL")){
             let mainTotal:any = {
@@ -1200,7 +1316,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 }
             })
             setGridData([...rawdata,mainTotal]||[]);
-            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:COLORS[i]}],[]))
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any, x:string)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color: randomColorGenerator()}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
@@ -1230,6 +1346,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                 </Box>
                             )}
                             download={true}
+                            showHideColumns={true}
                             filterGeneral={false}
                             loading={mainResult.loading}
                             register={false}
@@ -1240,25 +1357,31 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 </React.Fragment>):
                 (<div>
                     <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={mainResult.loading || !(gridData.length > 0)}
-                            onClick={() => setOpenModal(true)}
-                            startIcon={<Settings />}
-                        >
-                            {t(langKeys.configuration)}
-                        </Button>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setView('GRID')}
-                            startIcon={<ListIcon />}
-                        >
-                            {t(langKeys.grid_view)}
-                        </Button>
+                       
+                        <div style={{display: 'flex', gap: 8, width: '100%', justifyContent:'right', marginTop: 6}}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.loading || !(gridData.length > 0)}
+                                onClick={() => setOpenModal(true)}
+                                startIcon={<Settings />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setView('GRID')}
+                                startIcon={<ListIcon />}
+                            >
+                                {t(langKeys.grid_view)}
+                            </Button>
+                       </div>                      
+                        <div style={{ fontWeight: 500, padding: 16, display: 'flex', justifyContent: 'left', width: '100%' }}>
+                            {t(langKeys.graphic_report_of, { report: t('conversationquantity'), column: t('month') })}
+                        </div>
                         <>
                         {(mainResult.loading) ? (
                             <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1267,24 +1390,33 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                         ) :(graphicType === "BAR" ? (
                             <div style={{ display: 'flex' }}>
                                 <div style={{ flex: '0 0 70%', height: 500 }}>
+                                    
                                     <ResponsiveContainer aspect={4.0 / 2}>
                                         <BarChart
                                             data={dataGraph}
-                                            margin={{
-                                                top: 20,
-                                                right: 30,
-                                                left: 20,
-                                                bottom: 5,
-                                            }}
+                                            margin={{ top: 20, right: 30, left: 20, bottom: 5}}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
-            
                                             <YAxis />
                                             <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
-                                            <Bar dataKey="value" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" ></Bar>
+                                            <Bar 
+                                                dataKey="value" 
+                                                fill="#7721AD" 
+                                                textAnchor="end" 
+                                                stackId="a" 
+                                                type="monotone" 
+                                            >
+                                                <LabelList dataKey="summary" position="top" />
+                                                {
+                                                    dataGraph.map((entry: Dictionary, index: Dictionary) => (
+                                                        <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
+                                                    ))
+                                                }    
+                                            </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
+
                                 </div>
                                 <div style={{ overflowX: 'auto' }}>
                                     <TableResume
@@ -1293,7 +1425,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                     />
                                 </div>
                             </div>
-                        ) : (
+                        ) : (graphicType === "PIE" ? (
                             <div style={{ display: 'flex' }}>
                                 <div style={{ flex: '0 0 65%', height: 500 }}>
                                     <ResponsiveContainer width="100%" height="100%">
@@ -1310,7 +1442,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                                 innerRadius={40}
                                                 fill="#8884d8"
                                             >
-                                                {dataGraph.map((item:any, i:number) => (
+                                                {dataGraph.map((item: Dictionary) => (
                                                     <Cell
                                                         key={item.name}
                                                         fill={item.color}
@@ -1322,12 +1454,41 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                                 </div>
                                 <div style={{ overflowX: 'auto' }}>
                                     <TableResume
+                                    
                                         graphicType={graphicType}
                                         data={dataGraph}
                                     />
                                 </div>
                             </div>
-                        ))}
+                        ) : (graphicType === "LINE" ? (
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ flex: '0 0 70%', height: 500 }}>
+                                    <ResponsiveContainer aspect={4.0 / 2}>
+                                        <LineChart
+                                        data={dataGraph}
+                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                        >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+                                        <YAxis />
+                                        <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
+                                        <Line 
+                                        type="linear" 
+                                        dataKey="value" 
+                                        stroke={randomColorGenerator()} 
+                                    />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                    </div>
+                                    <div style={{ overflowX: 'auto' }}>
+                                    <TableResume
+                                        graphicType={graphicType}
+                                        data={dataGraph}
+                                    />
+                                </div>
+                            </div>                        
+                        ) : null
+                        )))}
                         </>
                     </Box>
                 </div>
@@ -1392,58 +1553,71 @@ const UniqueContactsReport: FC = () => {
             )
         ))
     }
+
     return (
-        <Fragment>            
-            <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
-                <div style={{display: 'flex', gap: 8}}>      
-                    <FieldSelect
-                        label={t(langKeys.year)}
-                        style={{ width: 140 }}
-                        variant="outlined"
-                        valueDefault={year}
-                        onChange={(value) => setYear(value?.value)}
-                        data={dataYears}
-                        optionDesc="value"
-                        optionValue="value"
-                    />                            
-                    <FieldMultiSelect
-                        label={t(langKeys.channeltype)}
-                        className={classes.filterComponent}
-                        onChange={(value) => {setChannelType(value.map((o: Dictionary) => o.domainvalue).join())}}
-                        valueDefault={channelType}
-                        variant="outlined"
-                        data={multiData?.data?.[2]?.data||[]}
-                        loading={multiData.loading}
-                        optionDesc={"domaindesc"}
-                        optionValue={"domainvalue"}
-                    />
-                    <div>
-                        <Button
-                            disabled={multiData.loading}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            onClick={() => search()}
-                        >{t(langKeys.search)}
-                        </Button>
-                    </div>
+
+        <div>
+            <Fragment>            
+                <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
+                    <div style={{display: 'flex', gap: 8}}>      
+                        <FieldSelect
+                            label={t(langKeys.year)}
+                            style={{ width: 140 }}
+                            variant="outlined"
+                            valueDefault={year}
+                            onChange={(value) => setYear(value?.value)}
+                            data={dataYears}
+                            optionDesc="value"
+                            optionValue="value"
+                        />                            
+                        <FieldMultiSelect
+                            label={t(langKeys.channeltype)}
+                            className={classes.filterComponent}
+                            onChange={(value) => {setChannelType(value.map((o: Dictionary) => o.domainvalue).join())}}
+                            valueDefault={channelType}
+                            variant="outlined"
+                            data={multiData?.data?.[2]?.data||[]}
+                            loading={multiData.loading}
+                            optionDesc={"domaindesc"}
+                            optionValue={"domainvalue"}
+                        />
+                        <div>
+                            <Button
+                                disabled={multiData.loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    </div>   
+                           
                 </div>
-            </div>
-            <Tabs
-                value={pageSelected}
-                indicatorColor="primary"
-                variant="fullWidth"
-                style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                textColor="primary"
-                onChange={(_, value) => setPageSelected(value)}
-            >
-                <AntTab label={t(langKeys.uniquecontacts).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
-                <AntTab label={t(langKeys.conversationquantity).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
-            </Tabs>
-            {pageSelected === 0 && <UniqueContactsReportDetail year={year} channelType={channelType}/>}
-            {pageSelected === 1 && <ConversationQuantityReportDetail year={year} channelType={channelType}/>}
-        </Fragment>
+
+               
+
+
+
+
+                
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.uniquecontacts).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
+                    <AntTab label={t(langKeys.conversationquantity).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
+                </Tabs>
+                {pageSelected === 0 && <UniqueContactsReportDetail year={year} channelType={channelType}/>}
+                {pageSelected === 1 && <ConversationQuantityReportDetail year={year} channelType={channelType}/>}
+            </Fragment>
+        </div>
+       
     )
 }
 

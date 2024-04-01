@@ -1,8 +1,5 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useMemo, useState } from "react"; // we need this to make JSX compile
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
+import React, { FC, useEffect, useMemo, useState } from "react"; 
+import { useDispatch, useSelector } from "react-redux";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import {
@@ -59,6 +56,7 @@ import { dictToArrayKV, extractVariables, isJson } from "common/helpers";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { TextField } from "@material-ui/core";
+import { CellProps } from "react-table";
 
 interface RowSelected {
    row: Dictionary | null;
@@ -220,10 +218,15 @@ const IntegrationManager: FC = () => {
             accessor: "status",
             NoFilter: true,
             prefixTranslation: "status_",
-            Cell: (props: any) => {
-               const { status } = props.cell.row.original;
-               return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
-            },
+            Cell: (props: CellProps<Dictionary>) => {
+               const { row } = props.cell;               
+               if (row && row.original && row.original.status !== undefined && row.original.status !== null) {
+                 return (t(`status_${row.original.status}`.toLowerCase()) || "").toUpperCase();
+               } else {
+                 return "";
+               }
+             },
+             
          },
       ],
       []
