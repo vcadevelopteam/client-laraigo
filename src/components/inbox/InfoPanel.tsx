@@ -226,7 +226,7 @@ const InfoTab: React.FC = () => {
             getValuesFromDomain("NIVELEDUCATIVO"),
             getPropertySelByName("OCUPACION"),
             getValuesFromDomain("TIPOPERSONA"),
-            getAssignmentRulesByGroup(ticketSelected?.usergroup||"",user?.groups||"")
+            getAssignmentRulesByGroup(ticketSelected?.usergroup||"", user?.groups||"")
         ]));
         return () => {
             dispatch(resetMultiMainAux());

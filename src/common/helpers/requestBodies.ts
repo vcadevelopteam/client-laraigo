@@ -266,10 +266,10 @@ export const selOrgSimpleList = (): IRequestBody => ({
     parameters: {}
 });
 
-export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }: Dictionary): IRequestBody => ({
+export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid, config }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
     key: "UFN_PROPERTY_INS",
-    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }
+    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid, config }
 });
 
 
@@ -475,13 +475,16 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         sorts,
         distinct: distinct || "",
         origin: origin,
-        ...allParameters,
+        ...allParameters,    
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         hours: allParameters['hours'] ? allParameters['hours'] : "",
         asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+
+
+
 
 export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: methodExport,
@@ -1140,6 +1143,12 @@ export const getasesoresbyorgid = (closedby: string, communicationchannel: strin
 
 export const getChatflowBlockLst = (): IRequestBody => ({
     method: "UFN_CHATFLOW_BLOCK_LST",
+    parameters: {}
+});
+
+export const getChatflowBlockActiveSel = (): IRequestBody => ({
+    method: "UFN_CHATFLOW_BLOCK_ACTIVE_SEL",
+    key: "UFN_CHATFLOW_BLOCK_ACTIVE_SEL",
     parameters: {}
 });
 
@@ -4663,6 +4672,17 @@ export const partnerIns = ({ id, country, billingcurrency, documenttype, documen
     parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation },
 });
 
+export const getChatFlowCardId = ({ startdate, enddate, chatflowcardid }: Dictionary) => ({
+    method: "UFN_INTERACTION_CHATFLOWCARDID",
+    key: "UFN_INTERACTION_CHATFLOWCARDID",
+    parameters: {      
+        startdate, 
+        enddate, 
+        chatflowcardid, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1 
+    },
+});
+
 export const customerByPartnerSel = (partnerid: number) => ({
     method: "UFN_CUSTOMER_BY_PARTNER_SEL",
     key: "UFN_CUSTOMER_BY_PARTNER_SEL",
@@ -4862,38 +4882,6 @@ export const updateAssistantAiDocumentTraining = (assistantaiid: number, documen
     key: "UFN_ASSISTANTAIDOCUMENT_TRAINING_UPD",
     parameters: { assistantaiid, documentsid },
 });
-
-export const getReassignmentRulesSel = (id:number) => ({
-    method: "UFN_ASSIGNMENTRULE_SEl",
-    key: "UFN_ASSIGNMENTRULE_SEl",
-    parameters: { 
-        id: id,
-        all: true 
-    },
-});
-
-export const insReassignmentRules = ({ id, description, group, assignedgroup, type, status, operation }: Dictionary) => ({
-    method: "UFN_ASSIGNMENTRULE_INS",
-    key: "UFN_ASSIGNMENTRULE_INS",
-    parameters: { id, description, group, assignedgroup, type, status, operation },
-});
-
-export const massDelReassignmentRules = (groupslistassignmentruleid:string) => ({
-    method: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
-    key: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
-    parameters: { groupslistassignmentruleid },
-});
-
-export const getAssignmentRulesByGroup = (group:string, usergroups: string) => ({
-    method: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
-    key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
-    parameters: { group, usergroups },
-});
-export const getDomainByDomainName = (domainname:string) => ({
-    method: "UFN_DOMAIN_BY_DOMAINNAME",
-    key: "UFN_DOMAIN_BY_DOMAINNAME",
-    parameters: { domainname },
-});
 export const getHeatmapConfig = () => ({
     method: "UFN_REPORT_CONFIGURATION_SEL",
     key: "UFN_REPORT_CONFIGURATION_SEL",
@@ -5023,4 +5011,36 @@ export const ordersByConfigRoutingLogic = (listorderid: string) => ({
     method: "UFN_ORDERS_BY_CONFIGURATION_SEL",
     key: "UFN_ORDERS_BY_CONFIGURATION_SEL",
     parameters: { listorderid },
+});
+
+export const getReassignmentRulesSel = (id:number) => ({
+    method: "UFN_ASSIGNMENTRULE_SEl",
+    key: "UFN_ASSIGNMENTRULE_SEl",
+    parameters: { 
+        id: id,
+        all: true 
+    },
+});
+
+export const insReassignmentRules = ({ id, description, group, assignedgroup, type, status, operation }: Dictionary) => ({
+    method: "UFN_ASSIGNMENTRULE_INS",
+    key: "UFN_ASSIGNMENTRULE_INS",
+    parameters: { id, description, group, assignedgroup, type, status, operation },
+});
+
+export const massDelReassignmentRules = (groupslistassignmentruleid:string) => ({
+    method: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
+    key: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
+    parameters: { groupslistassignmentruleid },
+});
+
+export const getAssignmentRulesByGroup = (group:string, usergroups: string) => ({
+    method: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
+    key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
+    parameters: { group, usergroups },
+});
+export const getDomainByDomainName = (domainname:string) => ({
+    method: "UFN_DOMAIN_BY_DOMAINNAME",
+    key: "UFN_DOMAIN_BY_DOMAINNAME",
+    parameters: { domainname },
 });

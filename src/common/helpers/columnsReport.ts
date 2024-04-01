@@ -133,10 +133,7 @@ export const columnGroupedBy: ColumnsInterface = {
         username: true,
         status: true,  
         type: true,
-    }, 
-    inputretry: { 
-        person: true,      
-    }, 
+    },    
     interaction: {
         ticketnum: true,
         ticketyear: true,  
