@@ -4099,6 +4099,7 @@ export const langKeys = {
   analytics: "analytics",
   propertyintegracionodoocrm: 'propertyintegracionodoocrm',
   propertyaccionfuerahorario: 'propertyaccionfuerahorario',
+  propertyhabilitarenvio_audios: 'propertyhabilitarenvio_audios',
   propertyresponsewaitingmessagebottype: 'propertyresponsewaitingmessagebottype',
   propertyencuesta: 'propertyencuesta',
   propertycierreautomatico: 'propertycierreautomatico',
