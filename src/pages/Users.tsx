@@ -2021,6 +2021,7 @@ const Users: FC = () => {
                                             bydefault: true,
                                             labels: "",
                                             warehouseid: "0",
+                                            groups: d.groups,
                                             storeid: "0",
                                             channels: d.channels || "",
                                             status: "DESCONECTADO",
