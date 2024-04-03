@@ -168,191 +168,193 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
   
     
 
-    const columns = React.useMemo(() => reportColumns.map(x => {
-        const showColumn = columnsHideShow[row?.origin]?.[x.proargnames] ?? false;
-        const showGroupedBy= columnGroupedBy[row?.origin]?.[x.proargnames] ?? false;
-        switch (x.proargtype) {
-            case "bigint":
-                if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
-                    return {
-                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                        accessor: x.proargnames,
-                        showColumn,
-                        showGroupedBy,
-                        type: "number-centered"
-                    }
-                }
-                else {
-                    return {
-                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                        accessor: x.proargnames,
-                        showColumn,
-                        showGroupedBy,
-                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                        type: "number"
-                    }
-
-                }
-            case "boolean":
-                return {
-                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                    accessor: x.proargnames,
-                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                    type: "boolean",
-                    showColumn,
-                    showGroupedBy,
-                    Cell: (props: CellProps<Dictionary>) => {/* eslint-disable react/prop-types */
-                        const { cell } = props;
-                        const { column, row } = cell || {};
-                        const { id } = column || {};
-                        const { original } = row || {};                        
-                        const cellValue = original && id && original[id];                        
-                        return (t(`${cellValue || ''}`.toLowerCase()) || '').toUpperCase();
-                    }
-                    
-                }
-            case "timestamp without time zone":
-                return {
-                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                    accessor: x.proargnames,
-                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                    type: "date",
-                    showColumn,
-                    showGroupedBy,
-                    Cell: (props: CellProps<Dictionary>)  => {
-                        const column = props.cell.column;
-                        const row = props.cell.row.original;                    
-                        const cellValue = row && column && column.id ? row[column.id] : null;                    
-                        return (
-                            <div>
-                                {cellValue ? 
-                                    convertLocalDate(cellValue).toLocaleString(undefined, {
-                                        year: "numeric",
-                                        month: "2-digit",
-                                        day: "2-digit",
-                                        hour: "numeric",
-                                        minute: "numeric",
-                                        second: "numeric",
-                                        hour12: false
-                                    }) 
-                                    : null
-                                }
-                            </div>
-                        );
-                    }
-                }
-            case "date":
-                return {
-                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                    accessor: x.proargnames,
-                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                    type: "date",
-                    showColumn,
-                    showGroupedBy,
-                    Cell: (props: CellProps<Dictionary>)  => {
-                        const column = props.cell.column;
-                        const row = props.cell.row.original;
-                        return (<div>
-                            {new Date(
-                                row[column.id].split('-')[0],
-                                row[column.id].split('-')[1] - 1,
-                                row[column.id].split('-')[2]
-                            ).toLocaleString(undefined, {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit"
-                            })}
-                        </div>)
-                    }
-                }
-            default:
-                switch (row?.origin) {
-                    case "loginhistory":
-                        switch (x.proargnames) {
-                            case "status":
-                                return {
-                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                                    accessor: x.proargnames,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                                    type: "string",
-                                    showColumn,
-                                    showGroupedBy,
-                                    Cell: (props: CellProps<Dictionary>) => {
-                                        const { row } = props.cell;                                        
-                                        if (row && row.original && 'status' in row.original) {
-                                            const { status } = row.original;
-                                            return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
-                                        }                                    
-                                        return ""; 
-                                    }                                    
-                                }
-                            default:
-                                return {
-                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                                    accessor: x.proargnames,
-                                    showColumn,
-                                    showGroupedBy,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                                    type: "string"
-                                }
+    const columns = React.useMemo(() => {
+        const filteredColumns = reportColumns.filter(column => column.proargnames !== 'countdistinct');
+        return filteredColumns.map(x => {
+            const showColumn = columnsHideShow[row?.origin]?.[x.proargnames] ?? false;
+            const showGroupedBy= columnGroupedBy[row?.origin]?.[x.proargnames] ?? false;
+            switch (x.proargtype) {
+                case "bigint":
+                    if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
+                        return {
+                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                            accessor: x.proargnames,
+                            showColumn,
+                            showGroupedBy,
+                            type: "number-centered"
                         }
-                    case "interaction":
-                    case "inputretry":
-                        switch (x.proargnames) {
-                            case "interactiontext":
-                                return {
-                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                                    accessor: x.proargnames,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                                    type: "string",
-                                    showColumn,
-                                    showGroupedBy,
-                                    Cell: (props: CellProps<Dictionary>) => {
-                                        const { row } = props.cell || {};
-                                        const { original } = row || {};                                    
-                                        const { interactiontext } = original || {};                                    
-                                        const textToShow = interactiontext ? interactiontext : "Texto no disponible";
-                                        const truncatedText = textToShow.length < 40 ? textToShow : textToShow.substring(0, 40) + "... ";                                    
-                                        return truncatedText;
-                                    }
-                                }
-                            case "question":
-                                return {
-                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                                    accessor: x.proargnames,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                                    type: "string",
-                                    showColumn,
-                                    showGroupedBy,
-                                    Cell: (props: CellProps<Dictionary>) => {
-                                        const { question } = props.cell.row.original || {};
-                                        const textToShow = question ? (question.length < 40 ? question : question.substring(0, 40) + "... ") : "";
-                                        return textToShow;
-                                    },
-                                    
-                                }
-                            default:
-                                return {
-                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                                    accessor: x.proargnames,
-                                    showColumn,
-                                    showGroupedBy,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                                    type: "string"
-                                }
-                        }
-                    default:
+                    }
+                    else {
                         return {
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                             accessor: x.proargnames,
                             showColumn,
                             showGroupedBy,
                             helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
-                            type: "string"
+                            type: "number"
                         }
-                }
-        }
-    }), [reportColumns]);
+    
+                    }
+                case "boolean":
+                    return {
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                        type: "boolean",
+                        showColumn,
+                        showGroupedBy,
+                        Cell: (props: CellProps<Dictionary>) => {/* eslint-disable react/prop-types */
+                            const { cell } = props;
+                            const { column, row } = cell || {};
+                            const { id } = column || {};
+                            const { original } = row || {};                        
+                            const cellValue = original && id && original[id];                        
+                            return (t(`${cellValue || ''}`.toLowerCase()) || '').toUpperCase();
+                        }
+                        
+                    }
+                case "timestamp without time zone":
+                    return {
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                        type: "date",
+                        showColumn,
+                        showGroupedBy,
+                        Cell: (props: CellProps<Dictionary>)  => {
+                            const column = props.cell.column;
+                            const row = props.cell.row.original;                    
+                            const cellValue = row && column && column.id ? row[column.id] : null;                    
+                            return (
+                                <div>
+                                    {cellValue ? 
+                                        convertLocalDate(cellValue).toLocaleString(undefined, {
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "numeric",
+                                            minute: "numeric",
+                                            second: "numeric",
+                                            hour12: false
+                                        }) 
+                                        : null
+                                    }
+                                </div>
+                            );
+                        }
+                    }
+                case "date":
+                    return {
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                        type: "date",
+                        showColumn,
+                        showGroupedBy,
+                        Cell: (props: CellProps<Dictionary>)  => {
+                            const column = props.cell.column;
+                            const row = props.cell.row.original;
+                            return (<div>
+                                {new Date(
+                                    row[column.id].split('-')[0],
+                                    row[column.id].split('-')[1] - 1,
+                                    row[column.id].split('-')[2]
+                                ).toLocaleString(undefined, {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit"
+                                })}
+                            </div>)
+                        }
+                    }
+                default:
+                    switch (row?.origin) {
+                        case "loginhistory":
+                            switch (x.proargnames) {
+                                case "status":
+                                    return {
+                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                        accessor: x.proargnames,
+                                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                        type: "string",
+                                        showColumn,
+                                        showGroupedBy,
+                                        Cell: (props: CellProps<Dictionary>) => {
+                                            const { row } = props.cell;                                        
+                                            if (row && row.original && 'status' in row.original) {
+                                                const { status } = row.original;
+                                                return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                                            }                                    
+                                            return ""; 
+                                        }                                    
+                                    }
+                                default:
+                                    return {
+                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                        accessor: x.proargnames,
+                                        showColumn,
+                                        showGroupedBy,
+                                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                        type: "string"
+                                    }
+                            }
+                        case "interaction":
+                        case "inputretry":
+                            switch (x.proargnames) {
+                                case "interactiontext":
+                                    return {
+                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                        accessor: x.proargnames,
+                                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                        type: "string",
+                                        showColumn,
+                                        showGroupedBy,
+                                        Cell: (props: CellProps<Dictionary>) => {
+                                            const { row } = props.cell || {};
+                                            const { original } = row || {};                                    
+                                            const { interactiontext } = original || {};                                    
+                                            const textToShow = interactiontext ? interactiontext : "Texto no disponible";
+                                            const truncatedText = textToShow.length < 40 ? textToShow : textToShow.substring(0, 40) + "... ";                                    
+                                            return truncatedText;
+                                        }
+                                    }
+                                case "question":
+                                    return {
+                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                        accessor: x.proargnames,
+                                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                        type: "string",
+                                        showColumn,
+                                        showGroupedBy,
+                                        Cell: (props: CellProps<Dictionary>) => {
+                                            const { question } = props.cell.row.original || {};
+                                            const textToShow = question ? (question.length < 40 ? question : question.substring(0, 40) + "... ") : "";
+                                            return textToShow;
+                                        },
+                                        
+                                    }
+                                default:
+                                    return {
+                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                        accessor: x.proargnames,
+                                        showColumn,
+                                        showGroupedBy,
+                                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                        type: "string"
+                                    }
+                            }
+                        default:
+                            return {
+                                Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                accessor: x.proargnames,
+                                showColumn,
+                                showGroupedBy,
+                                helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                type: "string"
+                            }
+                    }
+            }
+        })}, [reportColumns]);
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
