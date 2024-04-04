@@ -9,6 +9,7 @@ export const columnsHideGraphic = {
         clientnumber: true,
         email: true,
         personcommunicationchannel: true,
+        countdistinct: true,   
     },
     userproductivityhours: {
         busytimewithinwork: true,
@@ -33,8 +34,12 @@ export const columnsHideGraphic = {
     },
     loginhistory: {
         datehour: true,
-        motivedescription: true,         
+        motivedescription: true,   
+        countdistinct: true,      
     },
+    productivity: {
+        countdistinct: true,   
+    }
 };
 
 export interface ColumnsInterface {
