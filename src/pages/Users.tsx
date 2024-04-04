@@ -407,7 +407,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             setDataWarehouses({ loading: false, data: [] });
         }
     };
-
     const onChangeRole = (value: Dictionary) => {
         setValue("rolegroups", value.map((o: Dictionary) => o.roleid).join());
         setValue("roledesc", value.map((o: Dictionary) => o.roledesc).join());
@@ -528,18 +527,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 }
 
                             </div>
-                            <FieldSelect
-                                label={t(langKeys.store)}
-                                className={classes.mb2}
-                                valueDefault={getValues('storeid')}
-                                error={errors?.storeid?.message}
-                                data={dataStores.data}
-                                onChange={(value) => setValue('storeid', value.storeid)}
-                                loading={dataStores.loading}
-                                triggerOnChangeOnFirst={true}
-                                optionDesc="description"
-                                optionValue="storeid"
-                            />
+                            {(getValues('rolegroups')?.includes('53') || getValues('rolegroups')?.includes('51')) && (
+                                <FieldSelect
+                                    label={t(langKeys.store)}
+                                    className={classes.mb2}
+                                    valueDefault={getValues('storeid')}
+                                    error={errors?.storeid?.message}
+                                    data={dataStores.data}
+                                    onChange={(value) => setValue('storeid', value.storeid)}
+                                    loading={dataStores.loading}
+                                    triggerOnChangeOnFirst={true}
+                                    optionDesc="description"
+                                    optionValue="storeid"
+                                />
+                            )}
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -609,18 +610,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
                             />
-                            <FieldSelect
-                                label={t(langKeys.warehouse)}
-                                className={classes.mb2}
-                                valueDefault={getValues('warehouseid')}
-                                error={errors?.warehouseid?.message}
-                                data={dataWarehouses.data}
-                                onChange={(value) => setValue('warehouseid', value.warehouseid)}
-                                loading={dataWarehouses.loading}
-                                triggerOnChangeOnFirst={true}
-                                optionDesc="description"
-                                optionValue="warehouseid"
-                            />
+                            {getValues('rolegroups')?.includes('50') && (
+                                <FieldSelect
+                                    label={t(langKeys.warehouse)}
+                                    className={classes.mb2}
+                                    valueDefault={getValues('warehouseid')}
+                                    error={errors?.warehouseid?.message}
+                                    data={dataWarehouses.data}
+                                    onChange={(value) => setValue('warehouseid', value.warehouseid)}
+                                    loading={dataWarehouses.loading}
+                                    triggerOnChangeOnFirst={true}
+                                    optionDesc="description"
+                                    optionValue="warehouseid"
+                                />
+                            )}
                         </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
