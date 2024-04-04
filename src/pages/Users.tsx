@@ -528,7 +528,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 }
 
                             </div>
-                            {/*<FieldSelect
+                            <FieldSelect
                                 label={t(langKeys.store)}
                                 className={classes.mb2}
                                 valueDefault={getValues('storeid')}
@@ -539,7 +539,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 triggerOnChangeOnFirst={true}
                                 optionDesc="description"
                                 optionValue="storeid"
-                            />*/}
+                            />
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -609,7 +609,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
                             />
-                            {/*<FieldSelect
+                            <FieldSelect
                                 label={t(langKeys.warehouse)}
                                 className={classes.mb2}
                                 valueDefault={getValues('warehouseid')}
@@ -620,7 +620,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 triggerOnChangeOnFirst={true}
                                 optionDesc="description"
                                 optionValue="warehouseid"
-                            />*/}
+                            />
                         </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
