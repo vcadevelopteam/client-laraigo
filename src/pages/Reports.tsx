@@ -906,8 +906,10 @@ const Reports: FC = () => {
                             reporttype: "custom"
                         }))
                     ].filter((y: any) => superadmin ? true : !['invoice'].includes(y?.origin));
-                    setAllReports(rr);
-                    setallReportsToShow(rr);
+                    const filteredReports = rr.filter(report => report.origin !== "conversationwhatsapp");
+
+                    setAllReports(filteredReports);
+                    setallReportsToShow(filteredReports);
                 }
             }
         }
@@ -916,16 +918,14 @@ const Reports: FC = () => {
 
     useEffect(() => {
         if (searchValue.length >= 3 || searchValue.length === 0) {
-            const temparray = allReports
-                .filter((x: any) => x.reportname !== "CONVERSATIONWHATSAPP")
-                .filter((x: any) => {
-                    if (x.reporttype === "default")
-                        return (t((langKeys as any)[`report_${x.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase())
-                    return x.description.toLowerCase().includes(searchValue.toLowerCase())
-                });
-            setallReportsToShow(temparray);
+            let temparray = allReports.filter((el: any) => {
+                if (el.reporttype === "default")
+                    return (t((langKeys as any)[`report_${el.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase())
+                return el.description.toLowerCase().includes(searchValue.toLowerCase())
+            })
+            setallReportsToShow(temparray)
         }
-    }, [searchValue, allReports]);
+    }, [searchValue]);
     
     useEffect(() => {
         setallReportsToShow(allReports);
