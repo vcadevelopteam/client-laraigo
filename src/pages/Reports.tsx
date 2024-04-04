@@ -723,148 +723,6 @@ const initialRange = {
     key: 'selection'
 }
 
-const ReportConversationWhatsapp: FC = () => {
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-
-    const multiData = useSelector(state => state.main.multiData);
-    const [gridData, setGridData] = useState<any[]>([]);
-
-    const classes = useStyles()
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-
-    const search = () => {
-        dispatch(showBackdrop(true))
-        dispatch(getMultiCollection([
-            getConversationsWhatsapp(
-                {
-                    startdate: dateRangeCreateDate.startDate,
-                    enddate: dateRangeCreateDate.endDate
-                }
-            )
-        ]))
-    }
-    useEffect(() => {
-        dispatch(setViewChange("report_conversationwhatsapp"))
-        return () => {
-            dispatch(cleanViewChange());
-        }
-    }, [])
-
-    useEffect(() => {
-        return () => {
-            dispatch(resetMultiMain());
-        }
-    }, [])
-
-    useEffect(() => {
-        if (!multiData.loading) {
-            dispatch(showBackdrop(false));
-            setGridData((multiData.data[0]?.data || []).map(d => ({
-                ...d,
-                conversationstart: d.conversationstart ? new Date(d.conversationstart).toLocaleString() : '',
-                conversationend: d.conversationend ? new Date(d.conversationend).toLocaleString() : ''
-            })))
-        }
-    }, [multiData])
-
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.personIdentifier),
-                accessor: 'personcommunicationchannel',
-            },
-            {
-                Header: t(langKeys.phone),
-                accessor: 'personcommunicationchannelowner',
-            },
-            {
-                Header: t(langKeys.ticket_number),
-                accessor: 'ticketnum',
-            },
-            {
-                Header: "Iniciado por",
-                accessor: 'initiatedby',
-            },
-            {
-                Header: "Fecha de inicio",
-                accessor: 'conversationstart',               
-            },
-            {
-                Header: "Fecha de fin",
-                accessor: 'conversationend',               
-            },
-            {
-                Header: t(langKeys.countrycode),
-                accessor: 'country',
-            },
-            {
-                Header: t(langKeys.amount),
-                accessor: 'cost',
-                type: 'number'
-            },
-            {
-                Header: t(langKeys.paymentmethod),
-                accessor: 'paymenttype',
-                Cell: (props: CellProps<Dictionary>)  => {
-                    const { row } = props.cell;                
-                    if (row && row.original && 'paymenttype' in row.original) {
-                        const { paymenttype } = row.original;
-                        return (t(`${paymenttype}`.toLowerCase()) || "").toUpperCase();
-                    }                
-                    return ""; 
-                }
-            },
-        ],
-        []
-    );
-
-    return (
-        <React.Fragment>
-            <div style={{ height: 10 }}></div>
-            <TableZyx
-                columns={columns}
-                data={gridData}
-                ButtonsElement={() => (
-                    <div className={classes.containerHeader} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            <DateRangePicker
-                                open={openDateRangeCreateDateModal}
-                                setOpen={setOpenDateRangeCreateDateModal}
-                                range={dateRangeCreateDate}
-                                onSelect={setDateRangeCreateDate}
-                            >
-                                <Button
-                                    className={classes.itemDate}
-                                    startIcon={<CalendarIcon />}
-                                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                                >
-                                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                                </Button>
-                            </DateRangePicker>                            
-                            <div>
-                                <Button
-                                    disabled={multiData.loading}
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    onClick={() => search()}
-                                >{t(langKeys.search)}
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                download={true}
-                filterGeneral={false}
-                loading={multiData.loading}
-                register={false}
-            />
-        </React.Fragment>
-    )
-}
 
 const Reports: FC = () => {
     const { t } = useTranslation();
@@ -906,8 +764,10 @@ const Reports: FC = () => {
                             reporttype: "custom"
                         }))
                     ].filter((y: any) => superadmin ? true : !['invoice'].includes(y?.origin));
-                    setAllReports(rr);
-                    setallReportsToShow(rr);
+                    const filteredReports = rr.filter(report => report.origin !== "conversationwhatsapp");
+
+                    setAllReports(filteredReports);
+                    setallReportsToShow(filteredReports);
                 }
             }
         }
@@ -916,16 +776,15 @@ const Reports: FC = () => {
 
     useEffect(() => {
         if (searchValue.length >= 3 || searchValue.length === 0) {
-            const temparray = allReports
-                .filter((x: any) => x.reportname !== "CONVERSATIONWHATSAPP")
-                .filter((x: any) => {
-                    if (x.reporttype === "default")
-                        return (t((langKeys as any)[`report_${x.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase())
-                    return x.description.toLowerCase().includes(searchValue.toLowerCase())
-                });
-            setallReportsToShow(temparray);
+            let temparray = allReports.filter((el: any) => {
+                if (el.reporttype === "default")
+                    return (t((langKeys as any)[`report_${el.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase())
+                return el.description.toLowerCase().includes(searchValue.toLowerCase())
+            })
+            setallReportsToShow(temparray)
         }
-    }, [searchValue, allReports]);
+    }, [searchValue]);
+    
     
     useEffect(() => {
         setallReportsToShow(allReports);
@@ -1699,18 +1558,6 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <HSMHistoryReport />
-                </div>
-            </>
-        )
-    } else if (viewSelected === "reportconversationwhatsapp") {
-        return (
-            <>
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t(langKeys.conversation_plural) + " Whatsapp", t(langKeys.report_plural))}
-                        handleClick={handleSelectedString}
-                    />
-                    <ReportConversationWhatsapp />
                 </div>
             </>
         )
