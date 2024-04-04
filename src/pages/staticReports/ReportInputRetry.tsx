@@ -166,11 +166,12 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
             }, 
             {
                 Header: t(langKeys.report_inputretry_validAnswer),
+                prefixTranslation: '',
                 accessor: 'validinput',  
                 Cell: ({ value }) => {
-                    return value ?  t(langKeys.yes) :  t(langKeys.no);
+                    return t(value);
                 }
-            }, 
+            },  
                  
         ],
         []
