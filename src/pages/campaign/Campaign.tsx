@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -13,7 +12,7 @@ import { getCollection, execute, getCollectionAux, resetAllMain } from 'store/ma
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CampaignDetail } from './CampaignDetail';
 import { Blacklist } from './Blacklist';
-import { CampaignReport } from './CampaignReport';
+import { CampaignReport } from '../staticReports/ReportCampaign';
 import { IconButton, ListItemIcon } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -156,9 +155,10 @@ export const Campaign: FC = () => {
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <div>{dateToLocalDate(row.startdate)}</div>
-                    )
+                        <div>{row && row.startdate ? dateToLocalDate(row.startdate) : ''}</div>
+                    );
                 }
+                
             },
             {
                 Header: t(langKeys.enddate),
@@ -168,46 +168,50 @@ export const Campaign: FC = () => {
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <div>{dateToLocalDate(row.enddate)}</div>
-                    )
-                }
+                        <div>{row && row.enddate ? dateToLocalDate(row.enddate) : ''}</div>
+                    );
+                }                
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: false,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const status = row && row.original && row.original.status;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                 }
+                
             },
             {
                 Header: t(langKeys.datetimestart_campaign),
                 accessor: 'datetimestart',
                 NoFilter: false,
                 prefixTranslation: 'datetimestart',
-                Cell: (props: any) => {
-                    const { datetimestart } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const datetimestart = row && row.original && row.original.datetimestart;
                     const formattedDate = formatDate(datetimestart, { withTime: true }) || '';
                     return formattedDate;
-                }
+                }                
             },
             {
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
                 NoFilter: false,
                 prefixTranslation: 'executiontype',
-                Cell: (props: any) => {
-                    const { executiontype } = props.cell.row.original;
-                    return t(`executiontype_${executiontype}`).toUpperCase()
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const executiontype = row && row.original && row.original.executiontype;
+                    return executiontype ? t(`executiontype_${executiontype}`).toUpperCase() : '';
+                }                
             },
             {
                 accessor: 'stop',
                 isComponent: true,
                 maxWidth: '80px',
-                Cell: (props: any) => {
+                Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     if (row?.status === 'EJECUTANDO') {
                         return <StopIcon
@@ -228,44 +232,56 @@ export const Campaign: FC = () => {
             {
                 accessor: 'execute',
                 isComponent: true,
-                Cell: (props: any) => {
-                    const { id, status, startdate, enddate } = props.cell.row.original;
-                    if (dateToLocalDate(startdate, 'date') <= todayDate()
-                        && todayDate() <= dateToLocalDate(enddate, 'date')) {
-                        if (status === 'EJECUTANDO') {
-                            return <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleStatus(id)
-                                }}
-                                style={{ backgroundColor: "#55bd84" }}
-                            ><Trans i18nKey={langKeys.status} />
-                            </Button>
-                        }
-                        else if (status === 'ACTIVO') {
-                            return <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleStart(id)
-                                }}
-                                style={{ backgroundColor: "#55bd84" }}
-                            ><Trans i18nKey={langKeys.execute} />
-                            </Button>
-                        }
-                        else {
-                            return null
-                        }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    if (!row || !row.original) {
+                        return null;
                     }
-                    else {
-                        return null
+                
+                    const { id, status, startdate, enddate } = row.original;
+                
+                    if (
+                        dateToLocalDate(startdate, 'date') <= todayDate() &&
+                        todayDate() <= dateToLocalDate(enddate, 'date')
+                    ) {
+                        if (status === 'EJECUTANDO') {
+                            return (
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleStatus(id);
+                                    }}
+                                    style={{ backgroundColor: "#55bd84" }}
+                                >
+                                    <Trans i18nKey={langKeys.status} />
+                                </Button>
+                            );
+                        } else if (status === 'ACTIVO') {
+                            return (
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleStart(id);
+                                    }}
+                                    style={{ backgroundColor: "#55bd84" }}
+                                >
+                                    <Trans i18nKey={langKeys.execute} />
+                                </Button>
+                            );
+                        } else {
+                            return null;
+                        }
+                    } else {
+                        return null;
                     }
                 }
+                
             },
         ],
         []

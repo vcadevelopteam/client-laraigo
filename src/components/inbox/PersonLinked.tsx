@@ -65,7 +65,7 @@ const DialogLinkPerson: React.FC<{
             minWidth: 60,
             width: '1%',
             Cell: (props: any) => {
-                const row = props.cell.row.original;
+                const row = props.cell.row.original || {};
                 return (
                     <IconButton
                         size='small'
@@ -98,7 +98,7 @@ const DialogLinkPerson: React.FC<{
             type: 'date',
             sortType: 'datetime',
             Cell: (props: any) => {
-                const row = props.cell.row.original;
+                const row = props.cell.row.original || {};
                 return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
             }
         },
@@ -107,7 +107,7 @@ const DialogLinkPerson: React.FC<{
             accessor: 'status',
             prefixTranslation: 'status_',
             Cell: (props: any) => {
-                const { status } = props.cell.row.original;
+                const { status } = props.cell.row.original || {};
                 return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
             }
         }

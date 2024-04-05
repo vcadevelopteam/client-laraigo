@@ -22,7 +22,7 @@ import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MapLeaflet from 'components/fields/MapLeaflet';
 
-const useStylesInteraction = makeStyles((theme) => ({
+const useStylesInteraction = makeStyles(() => ({
     containerCarousel: {
         width: 230,
         backgroundColor: '#f0f2f5',
@@ -435,15 +435,15 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
 
 const checkUrl = (url: string) => {
     const hasExtension = url.replace(/^.*[\\/]/, '').includes('.');
-    return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) !== null || !hasExtension);
+    return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(`${url}`.toLocaleLowerCase()) !== null || !hasExtension);
 }
 
-const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy }, classes, userType }) => {
+const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy, reply }, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
-
+    console.log("interactiontype, interactiontext", interactiontype, interactiontext, reply)
     const [height, setHeight] = React.useState("0px");
 
     const onLoad = () => {
@@ -452,13 +452,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
 
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
-    if (interactiontype === "text")
+    if (interactiontype === "text") {
         return (
             <div
                 title={convertLocalDate(createdate).toLocaleString()}
                 className={clsx(classes.interactionText, {
-                    [classes.interactionTextAgent]: userType !== 'client',
+                    [classes.interactionTextAgent]: userType !== 'client'
                 })}
+                style={{ marginLeft: reply ? 24 : 0 }}
             >
                 <span dangerouslySetInnerHTML={{ __html: validateIsUrl(showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ") }}></span>
                 {!showfulltext && (
@@ -469,6 +470,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
+    }
     else if (interactiontype === "html")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
@@ -810,7 +812,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     return (
         <div className={clsx(classes.interactionText, {
             [classes.interactionTextAgent]: userType !== 'client',
-        })}>
+        })} style={{ marginTop: interactiontype === "comment-text" ? 16 : 0 }}>
             {interactiontext}
             <PickerInteraction userType={userType} fill={userType === "client" ? "#FFF" : "#eeffde"} />
             <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />

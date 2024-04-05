@@ -1,27 +1,30 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getDateCleaned } from 'common/helpers';
+import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon } from 'icons';
-import { Button } from '@material-ui/core';
+import { Button} from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
-
+import { FieldErrors } from "react-hook-form";
 
 interface DetailProps {
     setViewSelected?: (view: string) => void;
     externalUse?: boolean;
+    setValue: Dictionary
+    getValues: Dictionary,
+    errors: FieldErrors
 }
 
 const arrayBread = [
@@ -47,6 +50,9 @@ const useStyles = makeStyles(() => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    filterComponent: {
+        width: '180px'
+      },
 }));
 
 const dataReportType = {
@@ -70,7 +76,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     const resExportData = useSelector(state => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null, distinct: "" })
     const [waitExport, setWaitExport] = useState(false);
 
     const [openModal, setOpenModal] = useState(false);
@@ -81,16 +87,17 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
 
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+
+    const filterChannel = useSelector ((state)=> state.main.mainAux)
     
     const cell = (props: CellProps<Dictionary>) => {
         const column = props.cell.column;
         const row = props.cell.row.original;
         return (
             <div onClick={() => {
-                setSelectedRow(row);
-                setOpenModal(true);
-            }}>
-                {column.sortType === "datetime" && !!row[column.id]
+                setSelectedRow(row);               
+            }}>             
+                {column.sortType === "datetime" && !!row[column.id] 
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
                     month: "2-digit",
@@ -104,55 +111,80 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         )
     }
 
+    const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
+  
     const columns = React.useMemo(
-        () => [
+        () => [                    
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
+                showGroupedBy: true,                 
                 Cell: cell
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
+                showGroupedBy: true,             
                 Cell: cell
             },
             {
                 Header: t(langKeys.templatetype),
                 accessor: 'templatetype',
+                showGroupedBy: true,                            
                 Cell: cell
             },
             {
                 Header: t(langKeys.templatename),
                 accessor: 'templatename',
+                showGroupedBy: true,                 
                 Cell: cell
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
+                showGroupedBy: true,                 
                 Cell: cell
             },
             {
                 Header: t(langKeys.rundate),
                 accessor: 'rundate',
                 type: 'date',
-                sortType: 'datetime',
-                Cell: cell
+                sortType: 'datetime',                
+                Cell: cell  
             },
             {
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
                 NoFilter: false,
+                showGroupedBy: true, 
+                showColumn: true,     
                 prefixTranslation: 'executiontype',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { executiontype } = props.cell.row.original;
-                    return executiontype !== undefined ? t(`executiontype_${executiontype}`).toUpperCase() : '';
-                }
+                Cell: cell  
+            },                
+            {
+                Header: t(langKeys.executingUser),
+                accessor: 'executionuser',
+                NoFilter: false,
+                showGroupedBy: true, 
+                showColumn: true,   
+                prefixTranslation: 'executionuser',
+                Cell: cell  
+            },
+            {
+                Header: t(langKeys.executingUserProfile),
+                accessor: 'executionuserprofile',
+                NoFilter: false,
+                showGroupedBy: true, 
+                showColumn: true,   
+                prefixTranslation: 'executionuserprofile',
+                Cell: cell  
             },
             {
                 Header: t(langKeys.total),
                 accessor: 'total',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -160,6 +192,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'success',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -167,6 +200,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'successp',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -174,6 +208,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'fail',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -181,6 +216,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'failp',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -188,6 +224,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'attended',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
@@ -195,33 +232,41 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 accessor: 'locked',
                 type: 'number',
                 sortType: 'number',
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.blacklisted),
                 accessor: 'blacklisted',
                 type: 'number',
-                sortType: 'number',
+                sortType: 'number',  
+                showColumn: true,            
                 Cell: cell
-            }
+            },
         ],
         []
     );
 
-    const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+    React.useEffect(() => {
+        setColumnOrder(columns.map(column => column.accessor));
+    }, [columns]);
+
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct }: IFetchData) => {
         dispatch(showBackdrop(true))
-        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
+        setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts, distinct }});
         dispatch(getCollectionPaginated(getCampaignReportPaginated(
             {
                 startdate: dateRangeCreateDate.startDate,
                 enddate: dateRangeCreateDate.endDate,
+                channeltype: selectedChannel,
                 sorts: sorts,
+                distinct: distinct,
                 filters: filters,
                 take: pageSize,
                 skip: pageIndex * pageSize,
             }
         )));
-    };
+    };  
 
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
@@ -232,6 +277,8 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_type_selected)}));
             return null;
         }
+        
+        
         if (reportType === dataReportType.default) {
             dispatch(exportData(getCampaignReportExport(
                 Object.keys(selectedRows).reduce((ad: any[], d: any) => {
@@ -257,11 +304,10 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'template', alias: t(langKeys.templatename)},
                     {key: 'rundate', alias: t(langKeys.rundate)},
                     {key: 'runtime', alias: t(langKeys.runtime)},
+                    {key: 'executionuser', alias: t(langKeys.executingUser)},
+                    {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
                     {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
-                    {key: 'finishdate', alias: t(langKeys.finishconversationdate)},
-                    {key: 'finishtime', alias: t(langKeys.finishconversationtime)},
-                    {key: 'realduration', alias: t(langKeys.realduration)},
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
                     {key: 'classification', alias: t(langKeys.classification)},
                     {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
@@ -285,22 +331,23 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 true,
                 [
                     {key: 'templatetype', alias: t(langKeys.templatetype)},
+                    {key: 'date', alias: t(langKeys.date)},
                     {key: 'campaign', alias: t(langKeys.campaign)},
                     {key: 'description', alias: t(langKeys.description)},
-                    {key: 'template', alias: t(langKeys.template)},
                     {key: 'ticketnum', alias: t(langKeys.ticket)},
-                    {key: 'year', alias: t(langKeys.year)},
-                    {key: 'month', alias: t(langKeys.month)},
-                    {key: 'ticketdate', alias: t(langKeys.ticketdate)},
-                    {key: 'tickettime', alias: t(langKeys.tickettime)},
-                    {key: 'contact', alias: t(langKeys.contact)},
-                    {key: 'client', alias: t(langKeys.client)},
-                    {key: 'channel', alias: t(langKeys.channel)},
                     {key: 'group', alias: t(langKeys.group)},
-                    {key: 'firstagent', alias: t(langKeys.firstagent)},
-                    {key: 'message', alias: t(langKeys.message)},
+                    {key: 'userid', alias: t(langKeys.userid)},
+                    {key: 'agent', alias: t(langKeys.agent)},
+                    {key: 'contact', alias: t(langKeys.contact)},
+                    {key: 'template', alias: t(langKeys.templatename)},
+                    {key: 'rundate', alias: t(langKeys.rundate)},
+                    {key: 'runtime', alias: t(langKeys.runtime)},
+                    {key: 'executionuser', alias: t(langKeys.executingUser)},
+                    {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
+                    {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
                     {key: 'classification', alias: t(langKeys.classification)},
-                    {key: 'lastagent', alias: t(langKeys.lastagent)},
+                    {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
                     {key: 'log', alias: t(langKeys.log)},
                 ]
@@ -313,6 +360,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
+        fetchFiltersChannels();
         return () => {
             dispatch(resetCollectionPaginated());
         };
@@ -339,68 +387,22 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             settotalrow(mainPaginated.count);
             dispatch(showBackdrop(false));
         }
-    }, [mainPaginated]);
+    }, [mainPaginated]);  
+   
+    //channel Filter ----------------------------------------------------------------------------------
+    const channelTypeList = filterChannel.data || [];
+    const channelTypeFilteredList = new Set();
+    const [selectedChannel, setSelectedChannel] = useState("");
 
-    const ButtonsElement = () => {
-        return (
-            <div style={{ width: '100%', display: 'flex'  }}>                 
-                
-                <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
-                    <DateRangePicker
-                        open={openDateRangeCreateDateModal}
-                        setOpen={setOpenDateRangeCreateDateModal}
-                        range={dateRangeCreateDate}
-                        onSelect={setDateRangeCreateDate}
-                    >
-                        <Button
-                            className={classes.itemDate}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                        >
-                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                        </Button>
-                    </DateRangePicker>
-                    <Button
-                        disabled={mainPaginated.loading}
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                        style={{ width: 120, backgroundColor: "#55BD84" }}
-                        onClick={() => fetchData(fetchDataAux)}
-                    >{t(langKeys.search)}
-                    </Button>
-                </div> 
-
-                <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
-                    <FieldSelect
-                        uset={true}
-                        variant="outlined"
-                        label={t(langKeys.reporttype)}
-                        className={classes.select}
-                        valueDefault={reportType}
-                        onChange={(value) => setReportType(value?.key)}
-                        data={dictToArrayKV(dataReportType)}
-                        optionDesc="value"
-                        optionValue="key"
-                    />
-                      <Button
-                            className={classes.button}
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            onClick={() => triggerExportData()}                         
-                            startIcon={<DownloadIcon />}
-                            variant="contained"
-                        >
-                            {`${t(langKeys.download)}`}
-                        </Button>
-                        
-                </div>
-                   
-                
-              
-            </div>
-        )
-    }
+    const uniqueTypdescList = channelTypeList.filter(item => {
+        if (channelTypeFilteredList.has(item.type)) {
+            return false; 
+        }
+        channelTypeFilteredList.add(item.type);
+        return true;
+    });
+   
+    const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
 
     return (
         <div style={{ width: '100%' }}>
@@ -425,9 +427,84 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 </div>
             </div>}
             {externalUse && <div style={{ height: 10 }}></div>}
+
+         
             
-            <div style={{width:'100%', height:'100%'}}>        
-                <ButtonsElement/>
+            <div style={{position: 'relative', height:'100%'}}>     
+
+                <div style={{ width: 'calc(100% - 60px)', display: 'flex', background:'white', padding:'1rem 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>                 
+                    
+                    <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
+                        <DateRangePicker
+                            open={openDateRangeCreateDateModal}
+                            setOpen={setOpenDateRangeCreateDateModal}
+                            range={dateRangeCreateDate}
+                            onSelect={setDateRangeCreateDate}
+                        >
+                            <Button
+                                className={classes.itemDate}
+                                startIcon={<CalendarIcon />}
+                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                            >
+                                {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                            </Button>
+                        </DateRangePicker>
+
+                        <FieldSelect
+                            label={t(langKeys.channel)}
+                            variant="outlined"                       
+                            className={classes.filterComponent}                        
+                            data={uniqueTypdescList || []}        
+                            valueDefault={uniqueTypdescList}
+                            onChange={(value) => setSelectedChannel(value?.type||"")}           
+                            optionDesc="typedesc"
+                            optionValue="typedesc"
+                        />
+                    
+                    <Button
+                            disabled={mainPaginated.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            onClick={() => fetchData(fetchDataAux)}
+                        >
+                            {t(langKeys.search)}
+                        </Button>
+
+                    </div> 
+
+                    <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
+                        <FieldSelect
+                            uset={true}
+                            variant="outlined"
+                            label={t(langKeys.reporttype)}
+                            className={classes.select}
+                            valueDefault={reportType}
+                            onChange={(value) => setReportType(value?.key)}
+                            data={dictToArrayKV(dataReportType)}
+                            optionDesc="value"
+                            optionValue="key"
+                        />
+                        <Button
+                                className={classes.button}
+                                color="primary"
+                                disabled={mainPaginated.loading}
+                                onClick={() => triggerExportData()}                         
+                                startIcon={<DownloadIcon />}
+                                variant="contained"
+                            >
+                                {`${t(langKeys.download)}`}
+                            </Button>                        
+                    </div>     
+
+
+                    
+                    <div>
+                                        
+                    </div>                                                                                
+                </div> 
+
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}
@@ -435,12 +512,14 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     loading={mainPaginated.loading}
                     pageCount={pageCount}                    
                     fetchData={fetchData}               
+                    showHideColumns={true}
+                    groupedBy={true}
                     download={false}
                     hoverShadow={false}
                     exportPersonalized={triggerExportData}
                     useSelection={true}
                     selectionKey={selectionKey}
-                    setSelectedRows={setSelectedRows}
+                    setSelectedRows={setSelectedRows}             
                 />
             </div>
             
@@ -531,4 +610,4 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
             </div>
         </DialogZyx>
     )
-}
+}   

@@ -89,12 +89,10 @@ const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: ClassNameMap, his
 const PopperContent: React.FC<{ classes: ClassNameMap, config: ViewsClassificationConfig, history: History }> = ({ classes, config, history }) => {
     const screenWidth = useScreenSize();
 
-    const navigationRoutes = useMemo(() => config.options.map((option: string) =>
-        routes.find(route => route?.key === option || route?.path === option)
-    ), [config.options]);
+    const navigationRoutes = useMemo(() => config.options.map((option: string) => routes.find(route => route?.key === option || route?.path === option)).filter((x: RouteConfig) => x), [config.options]);
 
     const columnCount = useMemo(() => getColumnCount(navigationRoutes.length, screenWidth), [navigationRoutes.length, screenWidth]);
-
+    
     return (
         <div>
             <Typography variant="h6" className={classes.drawerItemActive} style={{ paddingTop: 10, textAlign: 'start', paddingLeft: 23, backgroundColor: '#F9F9FA' }}>
@@ -187,12 +185,12 @@ const Aside = ({ classes, headerHeight }: IProps) => {
     const userConnected = useSelector(state => state.inbox.userConnected);
     const userData = useSelector(state => state.login.validateToken.user);
     const [showViews, setShowViews] = useState<ViewsClassificationConfig[]>([])
-
+    
     useEffect(() => {
         setShowViews(
             viewsClassifications.reduce((acc: ViewsClassificationConfig[], view) => {
                 const subroutes = Object.entries(applications as IApplicationsRecord)
-                    .filter(([_, values]) => values[4] === view.id)
+                    .filter(([_, values]) => values[5] === view.key.toUpperCase())
                     .map(([route, values]) => ({ route, menuorder: values[6] }))
                     .sort((a, b) => a.menuorder - b.menuorder)
                     .map(entry => entry.route);
@@ -202,11 +200,11 @@ const Aside = ({ classes, headerHeight }: IProps) => {
                         if (roles.includes('SUPERADMIN') || roles.includes("SUPERADMINISTRADOR SOCIOS") || roles?.includes('ADMINISTRADOR')) {
                             const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
                             acc.push({ ...view, options: filteredSubroutes });
-
-                        } else if (roles.includes('ADMINISTRADOR') || roles.includes('SUPERVISOR')) {
-                            const filteredSubroutes = ['/invoice']
-                            acc.push({ ...view, options: filteredSubroutes });
                         }
+                        //  else if (roles.includes('ADMINISTRADOR') || roles.includes('SUPERVISOR')) {
+                        //     const filteredSubroutes = ['/invoice']
+                        //     acc.push({ ...view, options: filteredSubroutes });
+                        // }
                     } else {
                         acc.push({ ...view, options: subroutes });
                     }
@@ -215,7 +213,7 @@ const Aside = ({ classes, headerHeight }: IProps) => {
             }, [])
         )
     }, [])
-
+    
     return (
         <Drawer
             className={clsx(classes.drawer, {

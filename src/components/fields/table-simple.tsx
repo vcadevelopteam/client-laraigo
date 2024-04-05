@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, MouseEventHandler } from 'react';
 import Table from '@material-ui/core/Table';
+import { Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Radio, TableSortLabel, Typography } from '@material-ui/core'
 import Button from '@material-ui/core/Button';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowUp from '@material-ui/icons/KeyboardArrowUp'
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
 import { exportExcel, getLocaleDateString, localesLaraigo } from 'common/helpers';
 import { setMemoryTable } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
+import AllInboxIcon from '@material-ui/icons/AllInbox'; 
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 import {
     FirstPage,
     LastPage,
@@ -32,20 +37,24 @@ import IconButton from '@material-ui/core/IconButton';
 import BackupIcon from '@material-ui/icons/Backup';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Dictionary, TableConfig } from '@types'
-import { SearchField } from 'components';
+import { DialogZyx, SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import Checkbox from '@material-ui/core/Checkbox';
 import {
     useTable,
+    TableInstance,
+    TableOptions,
     useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination,
-    useRowSelect,
+    useRowSelect,    
     Row,
     FilterProps,
-    CellProps
+    CellProps,   
+    useExpanded,
+    useGroupBy,
 } from 'react-table'
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -59,6 +68,14 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import { TableFooter } from '@material-ui/core';
+
+export interface TableProperties<T extends Record<string, unknown>> extends TableOptions<T> {
+    name: string
+    onAdd?: (instance: TableInstance<T>) => MouseEventHandler
+    onDelete?: (instance: TableInstance<T>) => MouseEventHandler
+    onEdit?: (instance: TableInstance<T>) => MouseEventHandler
+    onClick?: (row: Row<T>) => void
+}
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -137,14 +154,38 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeaderColumn: {
         display: 'flex',
-        justifyContent: 'space-between',
+        gap: '0.5rem',
         alignItems: 'center'
     },
     iconHelpText: {
         width: 15,
         height: 15,
         cursor: 'pointer',
-    }
+    },
+    headerIcon: {
+        '& svg': {
+          width: 16,
+          height: 16,
+          marginTop: -2,
+          marginRight: 4,
+          marginLeft: -6
+        },
+    },
+    iconDirectionAsc: {
+        transform: 'rotate(90deg)',
+    },
+    iconDirectionDesc: {
+        transform: 'rotate(180deg)',
+    },
+    cellIcon: {
+        '& svg': {
+          width: 16,
+          height: 16,
+          marginTop: -2,
+          marginRight: 4,
+          marginLeft: -6
+        },
+    },
 }));
 
 declare module "react-table" {
@@ -348,11 +389,145 @@ const TableZyx = React.memo(({
     useFooter = false,
     heightWithCheck = 43,
     checkHistoryCenter = false,
+    showHideColumns,
+    groupedBy,
+    ExtraMenuOptions,
     acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
 }: TableConfig) => {
+    const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const [initial, setInitial] = useState(true);
+    const showExtraButtonIcon = showHideColumns || groupedBy || ExtraMenuOptions;
+    const [isGroupedByModalOpen, setGroupedByModalOpen] = useState(false);   
+    const [isShowColumnsModalOpen, setShowColumnsModalOpen] = useState(false); 
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [openSeButtons, setOpenSeButtons] = useState(false);
+    const [columnGroupedBy, setColumnGroupedBy] = useState<string[]>([]);
+    const [activeColumn, setActiveColumn] = useState(localStorage.getItem('activeColumn') || null);
+
+    const initialColumnVisibility = columns.reduce((acc, column) => {
+        acc[column.id] = true; 
+        return acc;
+    }, {});
+
+    const [columnVisibility, setColumnVisibility] = useState(() => {
+        const storedColumnVisibility = localStorage.getItem('columnVisibility');
+        if (storedColumnVisibility) {
+            return JSON.parse(storedColumnVisibility);
+        } else {
+            return initialColumnVisibility;
+        }
+    });
+  
+    const handleColumnVisibilityChange = (columnId, isVisible) => {
+        const updatedVisibility = {
+            ...columnVisibility,
+            [columnId]: isVisible,
+        };
+        setColumnVisibility(updatedVisibility);
+        localStorage.setItem('columnVisibility', JSON.stringify(updatedVisibility));    
+        const columnInstance = allColumns.find(column => column.id === columnId);
+        if (columnInstance) {
+            columnInstance.toggleHidden(!isVisible);
+        }
+    }
+
+    useEffect(() => {
+        allColumns.forEach(column => {
+            const isVisible = columnVisibility[column.id] ?? true; 
+            column.toggleHidden(!isVisible); 
+        });
+    }, []); 
+
+    useEffect(() => {
+        localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
+    }, [columnVisibility]);
+    
+   
+    
+    
+   
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+    }; 
+
+    const handleOpenGroupedByModal = () => {
+        setGroupedByModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
+    };
+
+    const handleOpenShowColumnsModal = () => {
+        setShowColumnsModalOpen(true);
+        if (openSeButtons) {
+            setAnchorElSeButtons(null);
+            setOpenSeButtons(false);
+        }
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+            if (!isGroupedByModalOpen && !isShowColumnsModalOpen && anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null);
+                setOpenSeButtons(false);
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isGroupedByModalOpen, isShowColumnsModalOpen, anchorElSeButtons, setOpenSeButtons]);
+
+    const handleRadioClick = (columnId: string) => {
+        setColumnGroupedBy((prevGroupedBy) => {
+            const isColumnActive = prevGroupedBy.includes(columnId);
+            const updatedGroupedBy = isColumnActive ? [] : [columnId];
+    
+            prevGroupedBy.forEach((prevColumn) => {
+                if (prevColumn !== columnId) {
+                    toggleGroupBy(prevColumn, false);
+                }
+            });    
+            setActiveColumn(isColumnActive ? null : columnId);    
+            localStorage.setItem('columnGroupedBy', JSON.stringify(updatedGroupedBy));    
+            localStorage.setItem('activeColumn', isColumnActive ? '' : columnId);    
+            if (!isColumnActive) {
+                const columnToToggle = allColumns.find((column) => column.id === columnId);
+                if (columnToToggle && columnToToggle.canGroupBy) {
+                    toggleGroupBy(columnId);
+                }
+            } else {
+                toggleGroupBy(columnId, false);
+            }
+    
+            return updatedGroupedBy;
+        });
+    };
+        
+    useEffect(() => {
+        const activeColumn = localStorage.getItem('activeColumn');
+        if (activeColumn) {
+            setActiveColumn(activeColumn);
+        }
+    }, []);    
+    
+    useEffect(() => {
+        //console.log('Columna activa recuperada del localStorage:', activeColumn);
+    }, [activeColumn]);
+    
+    useEffect(() => {
+        const storedColumnGroupedBy = localStorage.getItem('columnGroupedBy');
+        if (storedColumnGroupedBy) {
+            setColumnGroupedBy(JSON.parse(storedColumnGroupedBy));
+        }
+    }, [activeColumn]);
+
+    
 
     const DefaultColumnFilter = ({
         column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" },
@@ -621,8 +796,7 @@ const TableZyx = React.memo(({
     }, []);
 
     const defaultColumn = React.useMemo(
-        () => ({
-            // Let's set up our default Filter UI
+        () => ({          
             Filter: (props: FilterProps<Dictionary>) => DefaultColumnFilter({ ...props, data }),
             filter: filterCellValue,
         }),
@@ -646,20 +820,28 @@ const TableZyx = React.memo(({
         setPageSize,
         globalFilteredRows,
         setGlobalFilter,
-        state: { pageIndex, pageSize, selectedRowIds },
-        toggleAllRowsSelected
+        allColumns,
+        state: { pageIndex, pageSize, selectedRowIds  },
+        toggleAllRowsSelected,
+        toggleGroupBy,
     } = useTable({
         columns,
         data,
-        initialState: { pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
+        initialState: { 
+            pageSize: pageSizeDefault, 
+            selectedRowIds: initialSelectedRows || {}, 
+            filters: initialStateFilter || []         
+        },
         defaultColumn,
         getRowId: (row, relativeIndex: number, parent?: Row<Dictionary>) => selectionKey
             ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
             : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex),
     },
-        useFilters,
+        useFilters,       
         useGlobalFilter,
-        useSortBy,
+        useGroupBy,
+        useSortBy,       
+        useExpanded,     
         usePagination,
         useRowSelect,
         hooks => {
@@ -667,6 +849,7 @@ const TableZyx = React.memo(({
                 {
                     id: 'selection',
                     width: 80,
+                    disableGroupBy: true,
                     Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
                         <div>
                             <Checkbox
@@ -677,7 +860,6 @@ const TableZyx = React.memo(({
                         </div>
                     ),
                     Cell: ({ row }: CellProps<Dictionary>) => (
-
                         <div>
                             {checkHistoryCenter === true ? <Checkbox
                                 color="primary"
@@ -697,13 +879,42 @@ const TableZyx = React.memo(({
                 } as any,
                 ...columns,
             ])
+            hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {
+                // fix the parent group of the selection button to not be resizable
+                const selectionGroupHeader = headerGroups[0]?.headers[0]
+                if (selectionGroupHeader) {
+                    selectionGroupHeader.canResize = false
+                }
+            })
         }
     )
+
+    const handleCheckboxChange = (columnId: any) => {
+        const updatedVisibility = {
+            ...columnVisibility,
+            [columnId]: !columnVisibility[columnId],
+        };
+        setColumnVisibility(updatedVisibility);
+        localStorage.setItem('columnVisibility', JSON.stringify(updatedVisibility));
+    };   
+
+    useEffect(() => {
+        const storedColumnVisibility = localStorage.getItem('columnVisibility');
+        if (storedColumnVisibility) {
+            setColumnVisibility(JSON.parse(storedColumnVisibility));
+        }
+    }, []);
+    
+    useEffect(() => {
+        allColumns.forEach(column => {
+            const isVisible = columnVisibility[column.id] ?? true;
+            column.toggleHidden(!isVisible);
+        });
+    }, [columnVisibility, allColumns]);
 
     useEffect(() => {
         setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
     }, [globalFilteredRows])
-
 
     useEffect(() => {
         if (initialStateFilter) {
@@ -745,8 +956,9 @@ const TableZyx = React.memo(({
                     {...row.getRowProps({ style })}
                     hover
                 >
-                    {row.cells.map((cell, _) =>
+                    {row.cells.map((cell, index) =>
                         <TableCell
+                            key={index}
                             {...cell.getCellProps({
                                 style: {
                                     ...(cell.column.width === 'auto' ? {
@@ -761,10 +973,11 @@ const TableZyx = React.memo(({
                                     whiteSpace: 'nowrap',
                                     textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
-                            })}
+                            })}                            
                             onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
                         >
                             {cell.render('Cell')}
+                           
                         </TableCell>
                     )}
                 </TableRow>
@@ -772,7 +985,6 @@ const TableZyx = React.memo(({
         },
         [headerGroups, prepareRow, page]
     )
-
     return (
         <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
@@ -782,7 +994,11 @@ const TableZyx = React.memo(({
                         <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                     </Tooltip> : ""}
                 </span> : (<div style={{ flexGrow: 1 }}>
-                    {ButtonsElement && <ButtonsElement />}
+                    {typeof ButtonsElement === 'function' ? (
+                        ButtonsElement()
+                        ) : (
+                        ButtonsElement
+                    )}
                 </div>)}
                 <span className={classes.containerButtons}>
                     {fetchData && (
@@ -873,6 +1089,63 @@ const TableZyx = React.memo(({
                         ><Trans i18nKey={langKeys.download} />
                         </Button>
                     )}
+                    {showExtraButtonIcon && (
+                        <div>
+                             <IconButton
+                                aria-label="more"
+                                id="long-button"
+                                onClick={(event) => handleClickSeButtons(event)}
+                                style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                            >
+                                <MoreVertIcon />
+                            </IconButton>
+
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <Popper
+                                    open={openSeButtons}
+                                    anchorEl={anchorElSeButtons}
+                                    placement="bottom"
+                                    transition
+                                    style={{marginRight:'1rem'}}
+                                >
+                                    {({ TransitionProps }) => (
+                                        <Paper {...TransitionProps} elevation={5}>                                           
+                                            {showHideColumns && (
+                                                <>
+                                                <MenuItem 
+                                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                                    onClick={handleOpenShowColumnsModal}                                           
+                                                >
+                                                    <ListItemIcon>
+                                                        <ViewWeekIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
+                                                    </ListItemIcon>
+                                                    <Typography variant="inherit">{t(langKeys.showHideColumns)}</Typography>
+                                                </MenuItem>
+                                                <Divider />
+                                                </>
+                                            )}
+                                             {groupedBy && (
+                                                <div>
+                                                    <MenuItem 
+                                                        style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                                        onClick={handleOpenGroupedByModal}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <AllInboxIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">{t(langKeys.groupedBy)}</Typography>
+                                                    </MenuItem>
+                                                    <Divider />
+                                                </div>
+                                            )}
+                                            {ExtraMenuOptions}
+                                        </Paper>
+                                    )}
+                                </Popper>
+                            </div>
+                                     
+                        </div>  
+                    )}
                     {deleteData && (
                         <Button
                             className={classes.button}
@@ -935,41 +1208,127 @@ const TableZyx = React.memo(({
                 </Box>
             )}
 
+            {isShowColumnsModalOpen && (
+                <DialogZyx 
+                    open={isShowColumnsModalOpen} 
+                    title={t(langKeys.showHideColumns)} 
+                    buttonText2={t(langKeys.close)}       
+                    handleClickButton2={() => setShowColumnsModalOpen(false)}                  
+                    maxWidth="sm"
+                    buttonStyle1={{marginBottom:'0.3rem'}}
+                    buttonStyle2={{marginRight:'1rem', marginBottom:'0.3rem'}}
+                >                              
+                    <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                    {allColumns.filter(column => {
+                        const isColumnInstance = 'accessor' in column && 'Header' in column;
+                        return isColumnInstance && 'showColumn' in column && column.showColumn === true;
+                    })
+                    .map((column) => (
+                        <Grid item xs={4} key={column.id}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        color="primary"
+                                        checked={columnVisibility[column.id] ?? true}
+                                        onChange={(e) => handleColumnVisibilityChange(column.id, e.target.checked)}
+                                    />
+                                }
+                                label={t(column.Header as string)}
+                            />
+                        </Grid>
+                    ))}
+                    </Grid>
+
+                </DialogZyx>               
+            )}
+
+            {isGroupedByModalOpen && (
+                <DialogZyx 
+                    open={isGroupedByModalOpen}
+                    title={t(langKeys.groupedBy)}
+                    buttonText2={t(langKeys.close)}
+                    handleClickButton2={() => setGroupedByModalOpen(false)}
+                    maxWidth="sm"
+                    buttonStyle1={{ marginBottom: '0.3rem' }}
+                    buttonStyle2={{ marginRight: '1rem', marginBottom: '0.3rem' }}
+                >                     
+                    <Grid container spacing={1} style={{ marginTop: '0.5rem' }}>
+                        {columns
+                            .filter((column: any) => column.showGroupedBy === true)
+                            .map((column: any) => (
+                            <Grid item xs={4} key={column.accessor}>
+                                <FormControlLabel
+                                    control={
+                                        <Radio
+                                            color="primary"
+                                            checked={columnGroupedBy.includes(column.accessor)}
+                                            onClick={() => handleRadioClick(column.accessor)}
+                                            
+                                        />
+                                    }
+                                    label={column.Header}
+                                />
+                            </Grid>
+                            ))}
+                    </Grid>
+                </DialogZyx>
+            )} 
+
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column" }}>
-            <Box overflow="auto" style={{ flex: 1 }}>
+                <Box overflow="auto" style={{ flex: 1 }}>
                     <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead style={{ display: 'table-header-group' }}>
-                            {headerGroups.map((headerGroup) => (
-                                <TableRow  {...headerGroup.getHeaderGroupProps()} style={useSelection ? { display: 'flex' } : {}}>
+                            {headerGroups.map((headerGroup, index) => ( 
+                                <TableRow {...headerGroup.getHeaderGroupProps()} key={index} style={useSelection ? { display: 'flex' } : {}}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
-                                            <th style={{ width: "0px" }} key="header-floating"></th> :
+                                            
+                                            <th style={{ width: "0px" }} key="header-floating"></th> : 
                                             <TableCell key={ii} style={useSelection ? {
                                                 ...(column.width === 'auto' ? {
                                                     flex: 1,
                                                 } : {
                                                     minWidth: column.minWidth,
                                                     width: column.width,
-                                                    maxWidth: column.maxWidth,
+                                                    maxWidth: column.maxWidth, 
                                                 })
                                             } : {}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
-                                                            <Box
 
-                                                                {...column.getHeaderProps(column.getSortByToggleProps({ title: 'ordenar' }))}
+                                                        { activeColumn === column.id && (
+                                                                <Tooltip title={''}>
+                                                                    <div style={{ whiteSpace: 'nowrap', wordWrap: 'break-word', display: 'flex', cursor: 'pointer', alignItems: 'center' }}>
+                                                                        {column.canGroupBy === true && (
+                                                                            <TableSortLabel
+                                                                                active
+                                                                                direction={column.isGrouped ? 'desc' : 'asc'}
+                                                                                IconComponent={KeyboardArrowRight}
+                                                                                className={classes.headerIcon}
+                                                                                {...column.getHeaderProps(column.getGroupByToggleProps({
+                                                                                    title: column.isGrouped ? 'Desagrupar' : 'Agrupar'
+                                                                                }))}                                                                            
+                                                                            />
+                                                                        )}
+                                                                    </div>
+                                                                </Tooltip>
+                                                            )
+                                                        }
+
+                                                            <Box
+                                                                {...column.getHeaderProps(column.getSortByToggleProps({ title: 'Ordenar' }))}
                                                                 style={{
                                                                     whiteSpace: 'nowrap',
                                                                     wordWrap: 'break-word',
                                                                     display: 'flex',
                                                                     cursor: 'pointer',
-                                                                    alignItems: 'center',
+                                                                    alignItems: 'center',                                                                    
                                                                 }}
-                                                            >
+                                                            >                                                              
                                                                 {column.render('Header')}
                                                                 {column.isSorted && (
                                                                     column.isSortedDesc ?
@@ -977,7 +1336,9 @@ const TableZyx = React.memo(({
                                                                         :
                                                                         <ArrowUpwardIcon className={classes.iconOrder} color="action" />
                                                                 )}
+                                                               
                                                             </Box>
+
                                                             {!!column.helpText && (
                                                                 <Tooltip title={<div style={{ fontSize: 12 }}>{column.helpText}</div>} arrow placement="top" >
                                                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
@@ -1011,13 +1372,13 @@ const TableZyx = React.memo(({
                             )}
                             {(!loading && !useSelection) && page.map(row => {
                                 prepareRow(row);
-                                return (
+                                return ( //eslint-disable-next-line
                                     <TableRow
                                         {...row.getRowProps()}
                                         hover
                                         style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                     >
-                                        {row.cells.map((cell, i) =>
+                                        {row.cells.map((cell) => //eslint-disable-next-line
                                             <TableCell
                                                 {...cell.getCellProps({
                                                     style: {
@@ -1033,7 +1394,39 @@ const TableZyx = React.memo(({
                                                 })}
                                                 onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
                                             >
-                                                {cell.render('Cell')}
+                                               {cell.isGrouped ? (
+                                                    <>
+                                                        <TableSortLabel
+                                                            classes={{
+                                                                iconDirectionAsc: classes.iconDirectionAsc,
+                                                                iconDirectionDesc: classes.iconDirectionDesc,
+                                                            }}
+                                                            active
+                                                            direction={row.isExpanded ? 'desc' : 'asc'}
+                                                            IconComponent={KeyboardArrowUp}
+                                                            {...row.getToggleRowExpandedProps()}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation(); 
+                                                                row.toggleRowExpanded();
+                                                            }}
+                                                            className={classes.cellIcon}
+                                                        />{' '}
+                                                        {cell.render('Cell', { editable: false })} ({row.subRows.length})
+                                                    </>
+                                                ) : (
+                                                    columns.isGrouped ? ( 
+                                                        cell.isAggregated ? (
+                                                            cell.render('Aggregated')
+                                                        ) : cell.isPlaceholder ? null : (
+                                                            cell.render('Cell')
+                                                        )
+                                                    ) : (
+                                                        cell.render('Cell')
+                                                    )
+                                                )}
+
+
+                                                
                                             </TableCell>
                                         )}
                                     </TableRow>
@@ -1041,9 +1434,9 @@ const TableZyx = React.memo(({
                             })}
                         </TableBody>
                         {useFooter && <TableFooter>
-                            {footerGroups.map(group => (
+                            {footerGroups.map(group => ( //eslint-disable-next-line
                                 <TableRow {...group.getFooterGroupProps()}>
-                                    {group.headers.map(column => (
+                                    {group.headers.map(column => ( //eslint-disable-next-line
                                         <TableCell {...column.getFooterProps({
                                             style: {
                                                 fontWeight: "bold",
@@ -1059,6 +1452,7 @@ const TableZyx = React.memo(({
                         </TableFooter>}
                     </Table>
                 </Box>
+                
                 {toolsFooter && (
                     <Box className={classes.footerTable}>
                         <Box>

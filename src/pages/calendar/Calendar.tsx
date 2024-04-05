@@ -31,6 +31,7 @@ import CalendarConnections from './CalendarConnections';
 import CalendarScheduledEvents from './CalendarScheduledEvents';
 import { ICalendarFormFields } from './ICalendar';
 import EventIcon from '@material-ui/icons/Event';
+import { CellProps } from 'react-table';
 const isIncremental = window.location.href.includes("incremental")
 
 const dataVariables = [
@@ -772,10 +773,14 @@ const Calendar: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;                
+                    if (row && row.original && row.original.status !== undefined && row.original.status !== null) {
+                      return (t(`status_${row.original.status}`.toLowerCase()) || "").toUpperCase();
+                    } else {
+                      return ""; 
+                    }
+                }                  
             },
             {
                 Header: t(langKeys.notificationtype),

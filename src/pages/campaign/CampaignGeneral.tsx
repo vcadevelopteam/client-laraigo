@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import IconButton from '@material-ui/core/IconButton';
 import { FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray } from 'components';
 import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';

@@ -106,3 +106,16 @@ export function request_send(request: any) {
         return ExternalRequestManager.get(url, { auth: authorization, headers: headersjson });
     }
 }
+
+export function conversation(token:string) {
+    return APIManager.get(apiUrls.CONVERSATION + "/" + token, {  }, true);
+}
+export function corporation(requestBody: IRequestBody | ITransaction) {
+    return APIManager.post(apiUrls.CORP_URL, { data: requestBody }, true);
+}
+
+export function corporationGet(domain: string) {
+    return APIManager.post(`${apiUrls.CORP_URL}/getinfodomain`, { data: {
+        "subdomain":domain
+    } }, true);
+}

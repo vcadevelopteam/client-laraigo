@@ -102,6 +102,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const executeAssistant = useSelector(state => state.gpt.gptResult);
     const [waitSaveCreateAssistant2, setWaitSaveCreateAssistant2] = useState(false)
     const [waitSaveUpdateAssistant, setWaitSaveUpdateAssistant] = useState(false)
+    const [selectedBaseModel, setSelectedBaseModel] = useState<string|null>(row?.basemodel || null);
 
     useEffect(() => {
         dispatch(
@@ -112,7 +113,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
           ])
         );
     }, []);
-
+    
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -152,7 +153,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             temperature: row?.temperature || 0,
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
-            apikey: edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '',
+            apikey: edit ? (row?.basemodel === 'llama-2-13b-chat.Q4_0' ? row?.apikey : decrypt(row?.apikey, PUBLICKEYPEM)) : '',
             retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
             type: row?.type || '',
@@ -365,6 +366,46 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         );
     });
 
+    const onMainSubmitLlama = handleSubmit(async (data) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+
+            let generalprompt;
+
+            if (data.organizationname !== '') {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
+            } else {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            }
+
+            if (data.querywithoutanswer === 'Mejor Sugerencia') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
+                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+            }
+
+            dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: 'llamacode' })));
+            setWaitSave(true);
+        };
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback,
+            })
+        );
+    });
+
     useEffect(() => {
         if (waitSaveInsFile) {
             if (!executeResult.loading && !executeResult.error) {
@@ -440,7 +481,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     return (
         <>
-            <form onSubmit={cosFile.name === '' && cosFile.url === '' ? onMainSubmit : onMainSubmitWithFiles} className={classes.formcontainer}>
+            <form onSubmit={selectedBaseModel === 'llama-2-13b-chat.Q4_0' ? onMainSubmitLlama : (cosFile.name === '' && cosFile.url === '' ? onMainSubmit : onMainSubmitWithFiles)} className={classes.formcontainer}>
                 <div style={{ width: "100%" }}>
                     <div className={classes.titleandcrumbs}>
                         <div style={{ flexGrow: 1 }}>
@@ -509,13 +550,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     />
                 </Tabs>
                 <AntTabPanelAux index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
+                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} basemodel={selectedBaseModel} setBasemodel={setSelectedBaseModel}/>
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} basemodel={selectedBaseModel} />
                 </AntTabPanelAux>
             </form>
         </>

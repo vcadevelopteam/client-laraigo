@@ -36,6 +36,8 @@ interface Properties {
     origin_label: boolean;
     lock_send_file_pc: boolean;
     range_date_filter: number | undefined;
+    enable_send_audio: boolean;
+    obligatory_tipification_close_ticket: boolean;
 }
 
 interface Domains {
@@ -80,6 +82,9 @@ export interface IUser {
     voximplantcallsupervision: boolean;
     partnerid: number;
     companyuser?: string;
+    logourl?: string;
+    startlogourl?: string;
+    iconurl?: string;
     // notifications: Notification[];
 }
 

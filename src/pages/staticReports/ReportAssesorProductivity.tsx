@@ -1,68 +1,70 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { useSelector } from 'hooks';
-import { cleanViewChange, getCollectionAux, getMainGraphic, resetMainAux, setViewChange } from "store/main/actions";
-import { getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
+import { useSelector } from "hooks";
+import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
+import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
-import { Box, Button, Card, CardContent, Grid, Tooltip, Typography } from "@material-ui/core";
+import { Box, Button, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon } from "icons";
+import { Range } from "react-date-range";
+import CategoryIcon from "@material-ui/icons/Category";
+import TableZyx from "components/fields/table-simple";
+import { exportExcel } from "common/helpers";
+import { langKeys } from "lang/keys";
+import { Dictionary } from "@types";
+import { useForm } from "react-hook-form";
+import Graphic from "components/fields/Graphic";
+import AssessmentIcon from "@material-ui/icons/Assessment";
+import ListIcon from "@material-ui/icons/List";
+import { Settings } from "@material-ui/icons";
+import InfoIcon from '@material-ui/icons/Info';
+import {  Card, CardContent, Grid, Tooltip } from "@material-ui/core";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import { Range } from 'react-date-range';
-import IndicatorPanel from "./IndicatorPanel";
 import clsx from 'clsx';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import TableZyx from "components/fields/table-simple";
-import { exportExcel } from 'common/helpers';
-import { langKeys } from "lang/keys";
-import { Dictionary, MultiData } from "@types";
-import { useForm } from "react-hook-form";
-import Graphic from "components/fields/Graphic";
-import AssessmentIcon from '@material-ui/icons/Assessment';
-import ListIcon from '@material-ui/icons/List';
-import { Settings } from "@material-ui/icons";
-import InfoIcon from '@material-ui/icons/Info';
+import { MultiData } from "@types";
+import IndicatorPanel from "components/report/IndicatorPanel";
 
 interface Assessor {
     row: Dictionary | null;
-    multiData: MultiData[];
     allFilters: Dictionary[];
 }
 
 const useStyles = makeStyles((theme) => ({
     containerFilter: {
-        width: '100%',
+        width: "100%",
         padding: "10px",
         marginBottom: "10px",
-        display: 'flex',
+        display: "flex",
         gap: 8,
-        flexWrap: 'wrap',
-        backgroundColor: "white"
+        flexWrap: "wrap",
+        backgroundColor: "white",
+        justifyContent: "space-between",
     },
     filterComponent: {
-        minWidth: '220px',
-        maxWidth: '260px'
+        minWidth: "220px",
+        maxWidth: "260px",
     },
     containerHeader: {
-        display: 'flex',
-        flexWrap: 'wrap',
+        display: "flex",
+        flexWrap: "wrap",
         gap: 16,
-        [theme.breakpoints.up('sm')]: {
-            display: 'flex',
-        }
+        [theme.breakpoints.up("sm")]: {
+            display: "flex",
+        },
     },
     containerDetails: {
-        paddingBottom: theme.spacing(2)
+        paddingBottom: theme.spacing(2),
     },
     button: {
         padding: 12,
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
+        fontSize: "14px",
+        textTransform: "initial",
     },
     BackGrRed: {
         backgroundColor: "#fb5f5f",
@@ -73,17 +75,17 @@ const useStyles = makeStyles((theme) => ({
     iconHelpText: {
         width: 15,
         height: 15,
-        cursor: 'pointer',
+        cursor: "pointer",
     },
     containerHeaderItem: {
-        backgroundColor: '#FFF',
+        backgroundColor: "#FFF",
         padding: 8,
-        display: 'block',
-        flexWrap: 'wrap',
+        display: "block",
+        flexWrap: "wrap",
         gap: 8,
-        [theme.breakpoints.up('sm')]: {
-            display: 'flex',
-        }
+        [theme.breakpoints.up("sm")]: {
+            display: "flex",
+        },
     },
 }));
 
@@ -105,24 +107,30 @@ const columnsTemp = [
     "mintotalasesorduration",
     "userconnectedduration",
     "userstatus",
-    "groups"
-]
+    "groups",
+];
 
-const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
+const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    const user = useSelector(state => state.login.validateToken.user);
-    const groups = user?.groups?.split(",").filter(x=>!!x) || [];
-    const mainAux = useSelector(state => state.main.mainAux);
+    const multiData = useSelector(state => state.main.multiData);
+    const mainAux = useSelector((state) => state.main.mainAux);
     const [groupsdata, setgroupsdata] = useState<any>([]);
     const [allParameters, setAllParameters] = useState({});
-    const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(1)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
+    const [dateRange, setdateRange] = useState<Range>({
+        startDate: new Date(new Date().setDate(1)),
+        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        key: "selection",
+    });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);
     const [isday, setisday] = useState(false);
-    const [columnGraphic, setColumnGraphic] = useState('');
+    const [columnGraphic, setColumnGraphic] = useState("");
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [, setOpenSeButtons] = useState(false);
+    const [openFilterModal, setOpenFilterModal] = useState(false);
     const [maxmin, setmaxmin] = useState({
         maxticketsclosed: 0,
         maxticketsclosedasesor: "",
@@ -136,24 +144,30 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
 
     const [openModal, setOpenModal] = useState(false);
-    const [view, setView] = useState('GRID');
+    const [view, setView] = useState("GRID");
 
-    const [dataGrid, setdataGrid] = useState<any[]>([])
+    const [dataGrid, setdataGrid] = useState<any[]>([]);
+   
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
-        data: Dictionary[]
+        data: Dictionary[];
     }>({
         loading: false,
-        data: []
-    })
+        data: [],
+    });
 
-    useEffect(() => {
-        dispatch(setViewChange("report_userproductivity"))
+    useEffect(() => {        
+        dispatch(setViewChange("report_userproductivity"));
+        dispatch(getMultiCollection([
+            getReportColumnSel("UFN_REPORT_USERPRODUCTIVITY_SEL"),
+            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","probando"),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_GRUPOS","GRUPOS"),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_ESTADOORGUSER","ESTADOORGUSER"),
+        ]));
         return () => {
             dispatch(cleanViewChange());
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        };
+    }, []);
 
     const columns = React.useMemo(
         () => [
@@ -266,20 +280,31 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
         ],
         [isday, mainAux, desconectedmotives]
     );
-
+    
     useEffect(() => {
-        if(allFilters){
-            let groupitem = allFilters.find(e=>e.values[0].label === "group")
-            if(!!groupitem){
-                let arraygroups = multiData[multiData.findIndex(x => x.key === (groupitem?.values[0].isListDomains ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname : groupitem?.values[0].filter))]
-                setgroupsdata(groups.length > 0?arraygroups.data.filter(x => groups.includes(x.domainvalue)):arraygroups.data)
+        if (allFilters) {
+            if(!multiData.loading && !multiData.error && multiData.data.length){
+                const groupitem = allFilters.find((e) => e.values[0].label === "group");
+                if (groupitem) {
+                    const arraygroups =
+                        multiData?.data[
+                            multiData?.data?.findIndex(
+                                (x) =>
+                                    x.key ===
+                                    (groupitem?.values[0].isListDomains
+                                        ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname
+                                        : groupitem?.values[0].filter)
+                            )
+                        ];
+                    setgroupsdata(arraygroups.data);
+                }
             }
         }
-    }, [multiData,allFilters])
+    }, [multiData, allFilters]);
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
             setDetailCustomReport(mainAux);
-            setdataGrid(mainAux.data.map(x => ({ ...x, ...JSON.parse(x.desconectedtimejson) })))
+            setdataGrid(mainAux.data.map((x) => ({ ...x, ...JSON.parse(x.desconectedtimejson) })));
             let maxminaux = {
                 maxticketsclosed: 0,
                 maxticketsclosedasesor: "",
@@ -289,106 +314,148 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 maxtimeconnectedasesor: "",
                 mintimeconnected: "0",
                 mintimeconnectedasesor: "",
-            }
+            };
             if (mainAux.data.length > 0) {
-                const desconedtedmotives = Array.from(new Set((mainAux.data as any).reduce((ac: string[], x: any) => (
-                    x.desconectedtimejson ? [...ac, ...Object.keys(JSON.parse(x.desconectedtimejson))] : ac), [])));
+                const desconedtedmotives = Array.from(
+                    new Set(
+                        (mainAux.data as any).reduce(
+                            (ac: string[], x: any) =>
+                                x.desconectedtimejson ? [...ac, ...Object.keys(JSON.parse(x.desconectedtimejson))] : ac,
+                            []
+                        )
+                    )
+                );
                 setDesconectedmotives([...desconedtedmotives]);
-                mainAux.data.filter(x => x.usertype !== 'HOLDING').forEach((x, i) => {
-                    if (i === 0) {
-                        maxminaux = {
-                            maxticketsclosed: x.closedtickets,
-                            maxticketsclosedasesor: x.fullname,
-                            minticketsclosed: x.closedtickets,
-                            minticketsclosedasesor: x.fullname,
-                            maxtimeconnected: x.userconnectedduration,
-                            maxtimeconnectedasesor: x.fullname,
-                            mintimeconnected: x.userconnectedduration,
-                            mintimeconnectedasesor: x.fullname,
+                mainAux.data
+                    .filter((x) => x.usertype !== "HOLDING")
+                    .forEach((x, i) => {
+                        if (i === 0) {
+                            maxminaux = {
+                                maxticketsclosed: x.closedtickets,
+                                maxticketsclosedasesor: x.fullname,
+                                minticketsclosed: x.closedtickets,
+                                minticketsclosedasesor: x.fullname,
+                                maxtimeconnected: x.userconnectedduration,
+                                maxtimeconnectedasesor: x.fullname,
+                                mintimeconnected: x.userconnectedduration,
+                                mintimeconnectedasesor: x.fullname,
+                            };
+                        } else {
+                            if (maxminaux.maxticketsclosed < x.closedtickets) {
+                                maxminaux.maxticketsclosed = x.closedtickets;
+                                maxminaux.maxticketsclosedasesor = x.fullname;
+                            }
+                            if (maxminaux.minticketsclosed > x.closedtickets) {
+                                maxminaux.minticketsclosed = x.closedtickets;
+                                maxminaux.minticketsclosedasesor = x.fullname;
+                            }
+                            if (parseInt(maxminaux.maxtimeconnected) < parseInt(x.userconnectedduration)) {
+                                maxminaux.maxtimeconnected = x.userconnectedduration;
+                                maxminaux.maxtimeconnectedasesor = x.fullname;
+                            }
+                            if (parseInt(maxminaux.mintimeconnected) > parseInt(x.userconnectedduration)) {
+                                maxminaux.mintimeconnected = x.userconnectedduration;
+                                maxminaux.mintimeconnectedasesor = x.fullname;
+                            }
                         }
-                    } else {
-                        if (maxminaux.maxticketsclosed < x.closedtickets) {
-                            maxminaux.maxticketsclosed = x.closedtickets
-                            maxminaux.maxticketsclosedasesor = x.fullname
-                        }
-                        if (maxminaux.minticketsclosed > x.closedtickets) {
-                            maxminaux.minticketsclosed = x.closedtickets
-                            maxminaux.minticketsclosedasesor = x.fullname
-                        }
-                        if (parseInt(maxminaux.maxtimeconnected) < parseInt(x.userconnectedduration)) {
-                            maxminaux.maxtimeconnected = x.userconnectedduration
-                            maxminaux.maxtimeconnectedasesor = x.fullname
-                        }
-                        if (parseInt(maxminaux.mintimeconnected) > parseInt(x.userconnectedduration)) {
-                            maxminaux.mintimeconnected = x.userconnectedduration
-                            maxminaux.mintimeconnectedasesor = x.fullname
-                        }
-                    }
-                })
+                    });
             }
-            setmaxmin(maxminaux)
+            setmaxmin(maxminaux);
         }
-    }, [mainAux])
+    }, [mainAux]);
 
     useEffect(() => {
         setAllParameters({
             ...allParameters,
-            startdate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
-            enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+            startdate: dateRange.startDate
+                ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
+                : null,
+            enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null,
         });
     }, [dateRange]);
 
     const fetchData = () => {
-        let stardate = dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null
-        let enddate = dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
-        setisday(stardate === enddate)
+        const stardate = dateRange.startDate
+            ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
+            : null;
+        const enddate = dateRange.endDate
+            ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10)
+            : null;
+        setisday(stardate === enddate);
+        
         dispatch(resetMainAux());
-        dispatch(getCollectionAux(getUserProductivitySel({ ...allParameters })));
+        dispatch(getCollectionAux(getUserProductivitySel({
+            ...allParameters,
+            
+        })));
 
         if (view !== "GRID") {
-            dispatch(getMainGraphic(getUserProductivityGraphic(
-                {
-                    ...allParameters,
-                    // startdate: daterange?.startDate!,
-                    // enddate: daterange?.endDate!,
-                    column: columnGraphic,
-                    summarization: 'COUNT'
-                }
-            )));
+            dispatch(
+                getMainGraphic(
+                    getUserProductivityGraphic({
+                        ...allParameters,
+                        // startdate: daterange?.startDate!,
+                        // enddate: daterange?.endDate!,
+                        column: columnGraphic,
+                        summarization: "COUNT",
+                    })
+                )
+            );
         }
     };
 
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
-    }
+    };
 
     const handleChange = (event: any) => {
         setState({ ...state, [event.target.name]: event.target.checked });
         setValue("bot", event.target.checked);
-        setcheckedA(event.target.checked)
+        setcheckedA(event.target.checked);
     };
 
-    const format = (date: Date) => date.toISOString().split('T')[0];
+    const format = (date: Date) => date.toISOString().split("T")[0];
 
     const handlerSearchGraphic = (daterange: any, column: string) => {
-        dispatch(getMainGraphic(getUserProductivityGraphic(
-            {
-                ...allParameters,
-                startdate: daterange?.startDate!,
-                enddate: daterange?.endDate!,
-                column,
-                summarization: 'COUNT'
-            }
-        )));
-    }
+        dispatch(
+            getMainGraphic(
+                getUserProductivityGraphic({
+                    ...allParameters,
+                    startdate: daterange?.startDate!,
+                    enddate: daterange?.endDate!,
+                    column,
+                    summarization: "COUNT",
+                })
+            )
+        );
+    };
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+            if (anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null);
+                setOpenSeButtons(false);
+            }
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [anchorElSeButtons, setOpenSeButtons]);
+    
     return (
         <>
-            <div className={classes.containerFilter}>
-                <div style={{ display: 'flex' }}>
+
+            <div style={{ display: "flex", gap: 8, marginBottom: '1rem', marginTop: '0.5rem' }}>
+                <div style={{ display: "flex" }}>
                     <Box width={1}>
-                        <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        <Box
+                            className={classes.containerHeader}
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                                 <DateRangePicker
                                     open={openDateRangeModal}
                                     setOpen={setOpenDateRangeModal}
@@ -397,75 +464,113 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 >
                                     <Button
                                         disabled={detailCustomReport.loading}
-                                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                                        style={{
+                                            border: "1px solid #bfbfc0",
+                                            borderRadius: 4,
+                                            color: "rgb(143, 146, 161)",
+                                        }}
                                         startIcon={<CalendarIcon />}
                                         onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                     >
-                                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                        {format(dateRange.startDate!) +
+                                            " - " +
+                                            format(dateRange.endDate!)}
                                     </Button>
                                 </DateRangePicker>
                             </div>
                         </Box>
                     </Box>
                 </div>
-                {
-                    allFilters.map(filtro => (
-                        (filtro.values[0].multiselect ?
-                            <FieldMultiSelect
-                                limitTags={1}
-                                label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                className={classes.filterComponent}
-                                key={filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter}
-                                onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                variant="outlined"
-                                data={filtro.values[0].label==="group"?
-                                    groupsdata:
-                                    multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data}
-                                optionDesc={filtro.values[0].optionDesc}
-                                optionValue={filtro.values[0].optionValue}
-                            />
-                            :
-                            <FieldSelect
-                                label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                className={classes.filterComponent}
-                                key={filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter}
-                                onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                variant="outlined"
-                                data={multiData[multiData.findIndex(x => x.key === filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter)].data}
-                                optionDesc={filtro.values[0].optionDesc}
-                                optionValue={filtro.values[0].optionValue}
-                            />
-                        )
-                    )
-                    )
-                }
-                <div style={{ alignItems: 'center' }}>
-                    <div>
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
-                        <FormControlLabel
-                            style={{ paddingLeft: 10 }}
-                            control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
-                            label={checkedA ? t(langKeys.yes) : "No"}
-                        />
-                    </div>
-                </div>
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: "flex" }}>
                     <Box width={1}>
-                        <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        <Box
+                            className={classes.containerHeader}
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                <FieldSelect                                                    
+                                    label={t("report_userproductivity_filter_channels")}
+                                    className={classes.filterComponent}
+                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
+                                    valueDefault={allParameters?.channel || "ayuda"}
+                                    onChange={(value) =>
+                                        setValue("channel", value?.typedesc || "ayuda2")
+                                    }
+                                    variant="outlined"
+                                    data={
+                                        multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
+                                    }
+                                    loading={multiData.loading}
+                                    optionDesc={"type"}
+                                    optionValue={"typedesc"}
+                                />
+                                <FieldMultiSelect
+                                    limitTags={1}
+                                    label={t("report_userproductivity_filter_group")}
+                                    className={classes.filterComponent + " col-6"}
+                                    valueDefault={allParameters?.usergroup || ""}
+                                    key={"UFN_DOMAIN_LST_VALORES_GRUPOS"}
+                                    onChange={(value) =>
+                                        setValue("usergroup", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
+                                    }
+                                    variant="outlined"
+                                    data={groupsdata}
+                                    optionDesc={"domaindesc"}
+                                    optionValue={"domainvalue"}
+                                />
+
+                                <FieldMultiSelect
+                                    limitTags={1}
+                                    label={t("report_userproductivity_filter_status")}
+                                    className={classes.filterComponent + " col-6"}
+                                    key={"UFN_DOMAIN_LST_VALORES_ESTADOORGUSER"}
+                                    valueDefault={allParameters?.userstatus || ""}
+                                    onChange={(value) =>
+                                        setValue("userstatus", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
+                                    }
+                                    variant="outlined"
+                                    data={multiData?.data?.find(x=>x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data||[]}
+                                    loading={multiData.loading}
+                                    optionDesc={"domaindesc"}
+                                    optionValue={"domainvalue"}
+                                />
+                                <div style={{ alignItems: 'center' }}>
+                                    <div>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
+                                        <FormControlLabel
+                                            style={{ paddingLeft: 10 }}
+                                            control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
+                                            label={checkedA ? t(langKeys.yes) : "No"}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+                <div style={{ display: "flex" }}>
+                    <Box width={1}>
+                        <Box
+                            className={classes.containerHeader}
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                                 <Button
                                     disabled={detailCustomReport.loading}
                                     variant="contained"
                                     color="primary"
-                                    style={{ backgroundColor: '#55BD84', width: 120 }}
+                                    style={{ backgroundColor: "#55BD84", width: 120 }}
                                     onClick={() => {
                                         setDetailCustomReport({
                                             loading: true,
-                                            data: []
-                                        })
-                                        fetchData()
+                                            data: [],
+                                        });
+                                        fetchData();
                                     }}
-                                >{t(langKeys.refresh)}
+                                >
+                                    {t(langKeys.refresh)}
                                 </Button>
                             </div>
                         </Box>
@@ -473,10 +578,13 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 </div>
             </div>
 
+
             <Grid container spacing={3}>
+                
                 <Grid item xs={12} md={6} lg={6}>
                     <div>
                         <Grid container spacing={1} >
+
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
                                     [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
@@ -499,6 +607,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                     </CardContent>
                                 </Card>
                             </Grid>
+
+
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmax_tme)}
@@ -530,9 +640,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         </Grid>
                     </div>
                 </Grid>
+
                 <Grid item xs={12} md={6} lg={6}>
                     <div>
                         <Grid container spacing={1}>
+
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
                                     [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
@@ -555,6 +667,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                     </CardContent>
                                 </Card>
                             </Grid>
+
+                            
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmax_tmo)}
@@ -587,6 +701,13 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     </div>
                 </Grid>
             </Grid>
+           
+
+
+
+
+
+
 
             <Grid container spacing={3} className={classes.containerDetails} style={{paddingTop:10}}>
                 <Grid item xs={12} md={6} lg={6}>
@@ -681,7 +802,10 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 />
             ) : (
                 <div>
-                    <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
+                    <Box
+                        style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}
+                        className={classes.containerHeaderItem}
+                    >
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -696,7 +820,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                            onClick={() => setView('GRID')}
+                            onClick={() => setView("GRID")}
                             startIcon={<ListIcon />}
                         >
                             {t(langKeys.grid_view)}
@@ -714,7 +838,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         withFilters={false}
                         setView={setView}
                         withButtons={false}
-                        row={{ origin: 'userproductivity' }}
+                        row={{ origin: "userproductivity" }}
                         handlerSearchGraphic={handlerSearchGraphic}
                     />
                 </div>
@@ -728,19 +852,18 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 daterange={dateRange}
                 filters={allParameters}
                 columns={[
-                    ...columnsTemp.map(c => ({
-                        key: c, value: `report_userproductivity_${c}`
+                    ...columnsTemp.map((c) => ({
+                        key: c,
+                        value: `report_userproductivity_${c}`,
                     })),
-                    ...desconectedmotives.map((d: any) =>
-                    ({
+                    ...desconectedmotives.map((d: any) => ({
                         key: `desconectedtimejson::json->>'${d}'`,
-                        value: d
-                    })
-                    )
+                        value: d,
+                    })),
                 ]}
-            />
+            />          
         </>
-    )
+    );
 };
 
 interface SummaryGraphicProps {
@@ -755,42 +878,67 @@ interface SummaryGraphicProps {
     columnsprefix?: string;
 }
 
-const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, setColumnGraphic }) => {
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
+    openModal,
+    setOpenModal,
+    setView,  
+    filters,
+    columns,
+    setColumnGraphic,
+}) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        getValues,
+        formState: { errors },
+    } = useForm<any>({
         defaultValues: {
-            graphictype: 'BAR',
-            column: ''
-        }
+            graphictype: "BAR",
+            column: "chamare",
+        },
     });
 
     useEffect(() => {
-        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register("graphictype", { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register("column", { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [register]);
 
     const handleCancelModal = () => {
         setOpenModal(false);
-    }
+    };
 
     const handleAcceptModal = handleSubmit((data) => {
         triggerGraphic(data);
     });
 
     const triggerGraphic = (data: any) => {
-        setView(`CHART-${data.graphictype}-${data.column?.split('::')[0]}`);
+        setView(`CHART-${data.graphictype}-${data.column?.split("::")[0]}`);
         setOpenModal(false);
-        setColumnGraphic(data.column)
-        dispatch(getMainGraphic(getUserProductivityGraphic(
-            {
-                ...filters,
-                column: data.column,
-                summarization: 'COUNT'
-            }
-        )));
-    }
+        setColumnGraphic(data.column);
+        dispatch(
+            getMainGraphic(
+                getUserProductivityGraphic({
+                    ...filters,
+                    column: data.column,
+                    summarization: "COUNT",
+                })
+            )
+        );
+    };
+    const excludeUserProductivity = [
+        "hourfirstlogin",
+        "avgfirstreplytime",
+        "maxfirstreplytime",
+        "minfirstreplytime",
+        "avgtotalasesorduration",
+        "groups",
+    ];
+
+    const filteredColumns = columns.filter((column) => !excludeUserProductivity.includes(column.key));
 
     return (
         <DialogZyx
@@ -807,10 +955,14 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_type)}
                     className="col-12"
-                    valueDefault={getValues('graphictype')}
+                    valueDefault={getValues("graphictype")}
                     error={errors?.graphictype?.message}
-                    onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    onChange={(value) => setValue("graphictype", value?.key)}
+                    data={[
+                        { key: "BAR", value: "BAR" },
+                        { key: "PIE", value: "PIE" },
+                        { key: "LINE", value: "LINEA" },
+                    ]}
                     uset={true}
                     prefixTranslation="graphic_"
                     optionDesc="value"
@@ -821,10 +973,10 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_view_by)}
                     className="col-12"
-                    valueDefault={getValues('column')}
+                    valueDefault={getValues("column")}
                     error={errors?.column?.message}
-                    onChange={(value) => setValue('column', value?.key)}
-                    data={columns}
+                    onChange={(value) => setValue("column", value?.key)}
+                    data={filteredColumns}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}
@@ -832,7 +984,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 />
             </div>
         </DialogZyx>
-    )
-}
+    );
+};
 
-export default AssessorProductivity;
+export default AssesorProductivityReport;

@@ -40,7 +40,9 @@ const ManageOrganization: FC = () => {
             if (!resChangeOrganization.loading && !resChangeOrganization.error) {
                 dispatch(showBackdrop(false));
                 localStorage.setItem("firstLoad", "1")
-                localStorage.setItem("changeorganization", "1")
+                localStorage.setItem("changeorganization", "1")                
+                localStorage.setItem('title', "");
+                localStorage.setItem('headeicon', "");
                 localStorage.setItem("agentConnected", resChangeOrganization.automaticConnection ? "1" : "")
                 window.location.reload()
             } else if (resChangeOrganization.error) {

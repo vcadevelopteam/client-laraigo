@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -15,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -223,8 +223,8 @@ const Whitelist: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}

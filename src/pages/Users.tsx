@@ -3,7 +3,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo,} from "components";
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName} from "common/helpers";
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore} from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -170,6 +170,14 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         loading: false,
         data: [],
     });
+    const [dataStores, setDataStores] = useState<{ loading: boolean; data: Dictionary[] }>({
+        loading: false,
+        data: [],
+    });
+    const [dataWarehouses, setDataWarehouses] = useState<{ loading: boolean; data: Dictionary[] }>({
+        loading: false,
+        data: [],
+    });
 
     const {
         register,
@@ -223,6 +231,14 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         const indexApplications = resFromOrg.data.findIndex(
             (x: MultiData) => x.key === "UFN_APPS_DATA_SEL" + (index + 1)
         );
+        
+        const indexStores = resFromOrg.data.findIndex(
+            (x: MultiData) => x.key === "UFN_STORE_SEL"
+        );
+
+        const indexWarehouses = resFromOrg.data.findIndex(
+            (x: MultiData) => x.key === "UFN_WAREHOUSE_SEL"
+        );
 
         if (indexSupervisor > -1)
             setDataSupervisors({
@@ -248,6 +264,24 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 data:
                     resFromOrg.data[indexGroups] && resFromOrg.data[indexGroups].success
                         ? resFromOrg.data[indexGroups].data
+                        : [],
+            });
+
+        if (indexStores > -1)
+            setDataStores({
+                loading: false,
+                data:
+                    resFromOrg.data[indexStores] && resFromOrg.data[indexStores].success
+                        ? resFromOrg.data[indexStores].data
+                        : [],
+            });
+
+        if (indexWarehouses > -1)
+            setDataWarehouses({
+                loading: false,
+                data:
+                    resFromOrg.data[indexWarehouses] && resFromOrg.data[indexWarehouses].success
+                        ? resFromOrg.data[indexWarehouses].data
                         : [],
             });
 
@@ -293,6 +327,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             labels: row?.labels || '',
             status: 'DESCONECTADO',
             bydefault: row?.bydefault || false,
+            warehouseid: row?.warehouseid || 0,
+            storeid: row?.storeid || 0,
         });
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
@@ -310,6 +346,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         register("status", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("labels");
         register("bydefault");
+        register('warehouseid');
+        register('storeid');
 
         setDataOrganizations({
             loading: false,
@@ -350,17 +388,23 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             setDataSupervisors({ loading: true, data: [] });
             setDataChannels({ loading: true, data: [] });
             setDataGroups({ loading: true, data: [] });
+            setDataStores({ loading: true, data: [] });
+            setDataWarehouses({ loading: true, data: [] });
             dispatch(
                 getMultiCollectionAux([
                     getSupervisors(value.orgid, 0, index + 1),
                     getChannelsByOrg(value.orgid, index + 1),
                     getValuesFromDomain("GRUPOS", `_GRUPOS${index + 1}`, value.orgid),
+                    getWarehouseSel(),
+                    selStore(0),
                 ])
             );
         } else {
             setDataSupervisors({ loading: false, data: [] });
             setDataChannels({ loading: false, data: [] });
             setDataGroups({ loading: false, data: [] });
+            setDataStores({ loading: false, data: [] });
+            setDataWarehouses({ loading: false, data: [] });
         }
     };
 
@@ -484,6 +528,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 }
 
                             </div>
+                            {/*<FieldSelect
+                                label={t(langKeys.store)}
+                                className={classes.mb2}
+                                valueDefault={getValues('storeid')}
+                                error={errors?.storeid?.message}
+                                data={dataStores.data}
+                                onChange={(value) => setValue('storeid', value.storeid)}
+                                loading={dataStores.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="storeid"
+                            />*/}
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -553,6 +609,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
                             />
+                            {/*<FieldSelect
+                                label={t(langKeys.warehouse)}
+                                className={classes.mb2}
+                                valueDefault={getValues('warehouseid')}
+                                error={errors?.warehouseid?.message}
+                                data={dataWarehouses.data}
+                                onChange={(value) => setValue('warehouseid', value.warehouseid)}
+                                loading={dataWarehouses.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="warehouseid"
+                            />*/}
                         </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
@@ -1554,8 +1622,12 @@ const Users: FC = () => {
                 NoFilter: true,
                 prefixTranslation: "status_",
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                    if(props.cell.row.original) {
+                        const { status } = props.cell.row.original;
+                        return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                    }
+                    return null
+                   
                 },
             },
             {
@@ -1618,7 +1690,7 @@ const Users: FC = () => {
             "balanced",
             'showbots',
         ];
-        if (mainMultiResult.data[12].data[0].propertyvalue !== "1") {
+        if (mainMultiResult?.data?.[12]?.data?.[0]?.propertyvalue !== "1") {
             data.pop();
             header.pop();
         }
@@ -1932,6 +2004,7 @@ const Users: FC = () => {
                                         firstname: String(d.firstname),
                                         lastname: String(d.lastname),
                                         email: String(d.email),
+                                        showbots: Boolean(d.showbots),
                                         pwdchangefirstlogin: d.pwdchangefirstlogin === "true",
                                         type: "NINGUNO",
                                         status: d.status,
@@ -1947,7 +2020,9 @@ const Users: FC = () => {
                                             orgid: user?.orgid,
                                             bydefault: true,
                                             labels: "",
-                                            groups: d.groups || "",
+                                            warehouseid: "0",
+                                            groups: d.groups,
+                                            storeid: "0",
                                             channels: d.channels || "",
                                             status: "DESCONECTADO",
                                             type: type,

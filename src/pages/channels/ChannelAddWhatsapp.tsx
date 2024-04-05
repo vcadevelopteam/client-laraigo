@@ -416,7 +416,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             />
         );
     }
-    
+
     if (viewSelected === "view1") {
         if (setRegister360) {
             return (

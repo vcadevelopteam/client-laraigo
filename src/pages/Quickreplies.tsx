@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, Fragment, useCallback, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -37,6 +36,7 @@ import { emojis } from "common/constants/emojis";
 import { emitEvent } from 'store/inbox/actions';
 import { RichText, renderToString, toElement } from 'components/fields/RichText';
 import { Descendant } from 'slate';
+import { CellProps } from 'react-table';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -1022,8 +1022,8 @@ const Quickreplies: FC = () => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
@@ -1049,10 +1049,11 @@ const Quickreplies: FC = () => {
                 Header: t(langKeys.quickresponse),
                 accessor: 'bodyText',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const { bodyText } = props.cell.row.original;
-                    return (bodyText.length > 100) ? bodyText.slice(0,100) + '...' : bodyText;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { bodyText } = props.cell.row.original || {};                    
+                    return bodyText ? (bodyText.length > 100 ? bodyText.slice(0, 100) + "..." : bodyText) : "";
                 }
+                  
             },
             {
                 Header: t(langKeys.classification),
@@ -1064,10 +1065,10 @@ const Quickreplies: FC = () => {
                 accessor: 'status',
                 NoFilter: true,
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { status } = props.cell.row.original || {};
+                    return status ? (t(`status_${status}`.toLowerCase()) || "").toUpperCase() : "";
+                }                  
             },
 
         ],

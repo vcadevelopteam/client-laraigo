@@ -18,6 +18,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
+import { CellProps } from 'react-table';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -132,8 +133,8 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { status } = props.cell.row.original || {};
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
