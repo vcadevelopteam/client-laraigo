@@ -7,9 +7,6 @@ import { TitleDetail, TemplateIcons, IOSSwitch, TemplateBreadcrumbs } from "comp
 import TableZyx from "components/fields/table-simple";
 import { Button, FormControlLabel } from "@material-ui/core";
 import { useSelector } from "hooks";
-import PrintIcon from "@material-ui/icons/Print";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import ReceiptIcon from "@material-ui/icons/Receipt";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import UndeliveredDialog from "../dialogs/UndeliveredDialog";
@@ -23,8 +20,9 @@ import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
 import { reportPdf } from "store/culqi/actions";
 import { execute, getCollectionAux2 } from "store/main/actions";
-import { orderLineSel, ordersByConfigRoutingLogic, updateOrderOnlyStatus } from "common/helpers";
+import { orderLineSel, updateOrderOnlyStatus } from "common/helpers";
 import { deliveryRouting } from "store/delivery/actions";
+import { DeliveryTicketIcon, PrintIcon, RoutingLogicIcon } from "icons";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -728,7 +726,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 className={classes.button}
                                 color="primary"
                                 disabled={main.loading}
-                                startIcon={<LocationOnIcon color="secondary" />}
+                                startIcon={<RoutingLogicIcon fill="white"/>}
                                 style={{backgroundColor: '#55BD84'}}
                                 onClick={applyRoutingLogic}
                             >
@@ -751,7 +749,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             variant="contained"
                             color="primary"
                             disabled={main.loading}
-                            startIcon={<PrintIcon color="secondary" />}
+                            startIcon={<PrintIcon fill="white" />}
                             className={classes.button}
                             style={{backgroundColor: '#55BD84'}}
                             onClick={() => {
@@ -765,7 +763,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 variant="contained"
                                 color="primary"
                                 disabled={main.loading || Object.keys(selectedRows).length === 0 || Object.keys(selectedRows).length > 1}
-                                startIcon={<ReceiptIcon color="secondary" />}
+                                startIcon={<DeliveryTicketIcon fill="white" />}
                                 className={classes.button}
                                 style={{backgroundColor: '#55BD84'}}
                                 onClick={() => {

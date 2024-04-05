@@ -41,6 +41,11 @@ import {
     ConectivityIARouteIcon,
     IAEntrenamientoIcon,
     SLAIcon,
+    DeliveryIcon,
+    StoreCoverageIcon,
+    OrdersListIcon,
+    OrdersInAttentionIcon,
+    ConfigurationDeliveryIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -86,7 +91,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         key: "delivery",
         description: <Trans i18nKey={langKeys.delivery} />,
         // tooltip: <Trans i18nKey={langKeys.reason_sales} />,
-        icon: (className) => <SalesRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        icon: (className) => <DeliveryIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
         // options: [paths.CONFIGURATIONDELIVERY,paths.ORDERLIST]
     },
     {
@@ -318,7 +323,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.CONFIGURATIONDELIVERY,
         initialSubroute: paths.CONFIGURATIONDELIVERY,
-        icon: (className) => <ConfigPropertiesIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ConfigurationDeliveryIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.ORDERLIST,
@@ -327,7 +332,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.ORDERLIST,
         initialSubroute: paths.ORDERLIST,
-        icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <OrdersListIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.ORDERINSTORE,
@@ -345,7 +350,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.ORDERSINATTENTION,
         initialSubroute: paths.ORDERSINATTENTION,
-        icon: (className) => <ProductsIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <OrdersInAttentionIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.STORECOVERAGE,
@@ -354,7 +359,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.STORECOVERAGE,
         initialSubroute: paths.STORECOVERAGE,
-        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <StoreCoverageIcon style={{ width: 22, height: 22 }} className={className} />,
     },    
     {
         key: '/channels',
