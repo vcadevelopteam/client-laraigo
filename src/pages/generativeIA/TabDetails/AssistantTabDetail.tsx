@@ -34,13 +34,15 @@ interface AssistantTabDetailProps {
     setValue: any
     getValues: any,
     errors: FieldErrors
+    setProvider: (provider: string) => void
 }
 
 const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     data:{row, edit},
     setValue,
     getValues,
-    errors
+    errors,
+    setProvider,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -65,6 +67,17 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
             "bydefault": null
         }
     ];
+
+    const llamaModels = [
+        {
+            domainvalue: 'Llama 2',
+            domaindesc: 'Llama 2',
+        },
+        {
+            domainvalue: 'Llama 3',
+            domaindesc: 'Llama 3',
+        },
+    ]
 
     useEffect(() => {
         if (waitSave) {
@@ -121,11 +134,13 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                             setValue('apikey', value.apikey)
                             setValue('basemodel', '')
                             setConector(value)
+                            setProvider(value.provider)
                         } else {
                             setValue('intelligentmodelsid', 0)
                             setValue('apikey', '')
                             setValue('basemodel', '')
                             setConector({})
+                            setProvider('')
                         }
                     }}
                     error={errors?.intelligentmodelsid?.message}
@@ -143,7 +158,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 />
                 <FieldSelect
                     label={t(langKeys.basemodel)}
-                    data={conector?.provider === 'Open AI' ? retrievalbasemodels : []}
+                    data={conector?.provider === 'Open AI' ? retrievalbasemodels : conector?.provider === 'Meta' ? llamaModels : []}
                     valueDefault={getValues('basemodel')}
                     onChange={(value) => {
                         if(value) {

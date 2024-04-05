@@ -19,6 +19,7 @@ import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
+import { createCollection } from "store/llama/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -96,8 +97,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [waitSaveCreateAssistantFile, setWaitSaveCreateAssistantFile] = useState(false)
     const [waitSaveCreateAssistantAssignFile, setWaitSaveCreateAssistantAssignFile] = useState(false)
     const executeAssistant = useSelector(state => state.gpt.gptResult);
+    const metaResult = useSelector(state => state.llama.llamaResult);
     const [waitSaveCreateAssistant2, setWaitSaveCreateAssistant2] = useState(false)
     const [waitSaveUpdateAssistant, setWaitSaveUpdateAssistant] = useState(false)
+    const [waitSaveCreateMeta, setWaitSaveCreateMeta] = useState(false)
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const [provider, setProvider] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid)?.provider : '')
 
     useEffect(() => {
         if (waitSave) {
@@ -426,6 +431,69 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         setTabIndex(newIndex);
     };
 
+    const onMainSubmitMeta = handleSubmit(async (data) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+
+            let generalprompt;
+
+            if (data.organizationname !== '') {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
+            } else {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            }
+
+            if (data.querywithoutanswer === 'Mejor Sugerencia') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
+                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+            }
+
+            setGeneralPrompt(generalprompt)
+
+            dispatch(createCollection({
+                name: data.name,
+            }))            
+            setWaitSaveCreateMeta(true)                 
+        };
+        if(!edit) {
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback,
+                })
+            );
+        }
+    });
+
+    useEffect(() => {
+        if (waitSaveCreateMeta) {
+            if (!metaResult.loading && !metaResult.error) {
+                setWaitSaveCreateMeta(false);
+                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                setWaitSave(true);
+            } else if (metaResult.error) {
+                const errormessage = t(metaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateMeta(false);
+            }
+        }
+    }, [metaResult, waitSaveCreateMeta]);
+
     const mainHandleSubmit = (e: ChangeEvent<NonNullable<unknown>>) => {
         e.preventDefault();
         if (tabIndex === 0) {
@@ -433,10 +501,16 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         } else if (tabIndex === 1) {
             handleChangeTab(e, 2);
         } else {
-            if (cosFile.name === '' && cosFile.url === '') {
-                onMainSubmit();
+            if(provider === 'Open AI') {
+                if (cosFile.name === '' && cosFile.url === '') {
+                    onMainSubmit();
+                } else {
+                    onMainSubmitWithFiles();
+                }
             } else {
-                onMainSubmitWithFiles();
+                if (cosFile.name === '' && cosFile.url === '') {
+                    onMainSubmitMeta();
+                }
             }
         }
     }
@@ -528,7 +602,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     />
                 </Tabs>
                 <AntTabPanelAux index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
+                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
