@@ -133,13 +133,16 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
 
     const providers = [
         {
-            domaindesc: 'Open AI'
+            domaindesc: 'Open AI',
+            domainvalue: 'Open AI',
         },
         {
-            domaindesc: 'Meta'
+            domaindesc: 'Meta',
+            domainvalue: 'Meta',
         },
         {
-            domaindesc: 'Mistral'
+            domaindesc: 'Mistral',
+            domainvalue: 'Mistral',
         },
     ]
 
@@ -259,7 +262,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 label={t(langKeys.provider)}
                                 data={providers}
                                 optionDesc='domaindesc'
-                                optionValue='domaindesc'
+                                optionValue='domainvalue'
                                 onChange={(value) => {
                                     if(value) {
                                         setValue('provider', value.domaindesc)

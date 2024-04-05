@@ -16,3 +16,4 @@ export * as CatalogService from './service/catalog';
 export * as PaymentService from './service/payment';
 export * as RasaService from './service/rasa';
 export * as GptService from './service/gpt';
+export * as LlamaService from './service/llama';

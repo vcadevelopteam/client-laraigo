@@ -448,4 +448,9 @@ export const apiUrls = {
     GPT_ASSISTANTS_UPDATE: `${BASE_URL}/gpt/assistants/update`,
     GPT_ASSISTANTS_DELETE: `${BASE_URL}/gpt/assistants/delete`,
     GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
+
+    LLAMA_CREATE_COLLECTION: `${BASE_URL}/llama/create_collection`,
+    LLAMA_DELETE_COLLECTION: `${BASE_URL}/llama/delete_collection`,
+    LLAMA_ADD_FILE: `${BASE_URL}/llama/add_file`,
+    LLAMA_QUERY: `${BASE_URL}/llama/query`,
 };
