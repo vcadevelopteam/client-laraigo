@@ -390,6 +390,10 @@ const translation: LangKeys = {
   user_plural: 'Usuarios',
 
   organization_permissions: 'Permisos de la organización',
+  oportunidad: "Oportunidad",
+  "message template": "Plantilla de comunicación",
+  customvariabledesc: "Campos personalizados en la aplicación de ",
+  customvariableslist: "Lista de campos personalizados",
   generate_password: 'Generar contraseña',
   send_password_by_email: 'Enviar contraseña por correo',
   is_an_invalid_email: 'es un email inválido',
@@ -1583,6 +1587,11 @@ const translation: LangKeys = {
   observation: 'Observación',
   botdesigner: 'Diseñador de Bots',
 
+  customvariables: "Campos Personalizados",
+  customvariable: "Campo Personalizado",
+  app: "Aplicación",
+  templateinformation: 'Información de Plantilla',
+  userinformation: 'Información del Usuario',
   variableconfiguration: 'Configuración de variables',
   variableconfiguration_plural: 'Configuración de variables',
   variableconfigurationdetail: 'Detalle de configuracion de variable',

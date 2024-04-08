@@ -39,6 +39,7 @@ import { Controller } from "react-hook-form";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
+import TableZyxEditable from 'components/fields/table-editable';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
 
@@ -1120,6 +1121,75 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
     );
 }
 
+interface CustomVariableTabProps {
+    setTableData: (x:Dictionary[])=>void;
+    tableData: Dictionary[];
+}
+
+const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData }) => {
+    const domains = useSelector(state => state.person.editableDomains);
+    const { t } = useTranslation();
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
+        setSkipAutoReset(true);
+        const auxTableData = tableData
+        auxTableData[rowIndex][columnId] = value
+        setTableData(auxTableData)
+        setUpdatingDataTable(!updatingDataTable);
+    }
+
+    useEffect(() => {
+        setSkipAutoReset(false)
+    }, [updatingDataTable])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: false,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: false,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: false,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
+    return (        
+        <TableZyxEditable
+            columns={columns}
+            data={tableData}
+            download={false}
+            loading={domains.loading}
+            register={false}
+            filterGeneral={false}
+            updateCell={updateCell}
+            skipAutoReset={skipAutoReset}
+        />
+    );
+}
+
 interface ConversationsTabProps {
     person: IPerson;
 }
@@ -1979,6 +2049,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     const [payloadTemp, setpayloadTemp] = useState<any>(null)
     const [valuestosend, setvaluestosend] = useState<any>(null)
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
         phone: person?.phone || '',
@@ -1986,6 +2057,13 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     })
 
     const user = useSelector(state => state.login.validateToken.user);
+
+    useEffect(() => {
+        if (domains.value?.customVariables && person) {
+            console.log(person)
+            setTableDataVariables(domains.value.customVariables.map(x=>({...x,value: person.variablecontext[x.variablename]||""})))
+        }
+    }, [person, domains]);
 
     const { setValue, getValues, trigger, register, control, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -2129,7 +2207,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     const editperson = () => {
         dispatch(showBackdrop(true));
         dispatch(editPerson(payloadTemp.parameters.personid ? payloadTemp : {
-            header: editPersonBody({ ...person, ...valuestosend }),
+            header: editPersonBody({ ...person, ...valuestosend,
+                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+            }),
             detail: []
         }, !payloadTemp.parameters.personid));
 
@@ -2142,7 +2222,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
         if (allOk) {
             const values = getValues();
             const callback = () => {
-                const payload = editPersonBody(values);
+                const payload = editPersonBody({...values, 
+                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                });
                 setpayloadTemp(payload)
                 setvaluestosend(values)
                 dispatch(execute(personInsValidation({
@@ -2387,6 +2469,13 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
                                     value="4"
                                 />
                             }
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "5" && classes.activetab)}
+                                    label={<Trans i18nKey={langKeys.customvariables} />}
+                                    value="5"
+                                />
+                            }
                             {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
                                 label={<Trans i18nKey={langKeys.claim} count={2} />}
@@ -2423,6 +2512,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
                     </TabPanel>
                     <TabPanel value="4" index={tabIndex}>
                         <AuditTab person={person} />
+                    </TabPanel>
+                    <TabPanel value="5" index={tabIndex}>
+                        <CustomVariableTab tableData={tableDataVariables} setTableData={setTableDataVariables}/>
                     </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
@@ -2583,7 +2675,6 @@ const PersonDetail: FC = () => {
             setWaitLoading(true)
             dispatch(execute(getPersonOne({ personid: match.params.id })));
             setrefresh(false)
-            //agregale la candicion para que llame al person sel
         }
     }, [person, refresh]);
 

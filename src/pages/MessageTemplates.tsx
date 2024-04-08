@@ -1,5 +1,5 @@
 import { addTemplate, deleteTemplate, synchronizeTemplate } from "store/channel/actions";
-import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
+import { Box, CircularProgress, IconButton, Paper, Tabs } from "@material-ui/core";
 import { Close, Delete, FileCopy, GetApp, Search } from "@material-ui/icons";
 import { Descendant } from "slate";
 import { Dictionary, IFetchData, MultiData } from "@types";
@@ -24,6 +24,7 @@ import {
 } from "store/main/actions";
 
 import {
+    AntTab,
     FieldEdit,
     FieldEditMulti,
     FieldSelect,
@@ -35,6 +36,7 @@ import {
 
 import {
     dateToLocalDate,
+    getCustomVariableSelByTableName,
     getMessageTemplateExport,
     getPaginatedMessageTemplate,
     getValuesFromDomain,
@@ -56,6 +58,7 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
+import TableZyxEditable from "components/fields/table-editable";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -264,6 +267,7 @@ const MessageTemplates: FC = () => {
                 getValuesFromDomain("MESSAGETEMPLATECATEGORY"),
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
+                getCustomVariableSelByTableName("messagetemplate")
             ])
         );
 
@@ -617,6 +621,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
+
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
+        setSkipAutoReset(true);
+        const auxTableData = tableDataVariables
+        auxTableData[rowIndex][columnId] = value
+        setTableDataVariables(auxTableData)
+        setUpdatingDataTable(!updatingDataTable);
+    }
+
 
     const dataChannel =
         multiData[2] && multiData[2].success
@@ -636,6 +652,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [pageSelected, setPageSelected] = useState(0);
+    useEffect(() => {
+        if (multiData[3]) {
+            const variableDataList = multiData[3].data ||[]
+            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+        }
+    }, [multiData]);
 
     const [bodyObject, setBodyObject] = useState<Descendant[]>(
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
@@ -1110,7 +1133,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyObject })));
+                dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyObject,
+                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             };
@@ -1381,6 +1406,39 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("type");
         trigger("typeattachment");
     };
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: false,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: false,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: false,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
+
 
     return (
         <div style={{ width: "100%" }}>
@@ -1423,7 +1481,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </Button>
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.templateinformation)} />
+                    <AntTab label={t(langKeys.variableconfiguration)}/>
+                </Tabs>
+                {pageSelected === 0 && <div className={classes.containerDetail}>
                     {row?.showid && (
                         <div className="row-zyx">
                             <FieldView
@@ -1931,7 +2000,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </React.Fragment>
                         </div>
                     )}
-                </div>
+                </div>}
+                {pageSelected === 1 &&
+                <div className={classes.containerDetail}>                    
+                    <TableZyxEditable
+                        columns={columns}
+                        data={tableDataVariables}
+                        download={false}
+                        //loading={multiData.loading}
+                        register={false}
+                        filterGeneral={false}
+                        updateCell={updateCell}
+                        skipAutoReset={skipAutoReset}
+                    />
+                </div>}
             </form>
         </div>
     );
