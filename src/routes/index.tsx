@@ -42,6 +42,8 @@ const Tipifications = lazy(() => import('pages/Tipifications'));
 const InputValidation = lazy(() => import('pages/InputValidation'));
 const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
 const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
+const CustomVariable = lazy(() => import('pages/CustomVariable'));
+const CustomFields = lazy(() => import('pages/CustomFields'));
 const Emojis = lazy(() => import('pages/Emojis'));
 const IATraining = lazy(() => import('pages/LaraigoIA'));
 const Campaign = lazy(() => import('pages/campaign/Campaign'));
@@ -369,6 +371,8 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CAMPAIGN} component={() => <Layout mainClasses={classes.main}><Campaign /></Layout>} />
 					<ProtectRoute exact path={paths.BOTDESIGNER} component={() => <Layout mainClasses={classes.main}><BotDesigner /></Layout>} />
 					<ProtectRoute exact path={paths.VARIABLECONFIGURATION} component={() => <Layout mainClasses={classes.main}><VariableConfiguration /></Layout>} />
+					<ProtectRoute exact path={paths.CUSTOMVARIABLE} component={() => <Layout mainClasses={classes.main}><CustomVariable /></Layout>} />
+					{/*<ProtectRoute exact path={paths.CUSTOMFIELDS} component={() => <Layout mainClasses={classes.main}><CustomFields /></Layout>} />*/}
 					<ProtectRoute exact path={paths.EMOJIS} component={() => <Layout mainClasses={classes.main}><Emojis /></Layout>} />
 					<ProtectRoute exact path={paths.DASHBOARD} component={() => <Layout mainClasses={classes.main}><Dashboard /></Layout>} />
 					<ProtectRoute exact path={paths.DASHBOARD_ADD} component={() => <Layout mainClasses={classes.main}><DashboardAdd /></Layout>} />
