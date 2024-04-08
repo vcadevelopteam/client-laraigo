@@ -22,7 +22,7 @@ export const deleteCollection = (requestBody: any): IActionCall => ({
     type: null,
 })
 
-export const addFile = (requestBody: any): IActionCall => ({
+export const addFileLlama = (requestBody: any): IActionCall => ({
     callAPI: () => LlamaService.addFile(requestBody),
     types: {
         loading: actionTypes.ADD_FILE,

@@ -19,6 +19,7 @@ import { assistantAiSel, exportExcel, getIntelligentModelsSel, getValuesFromDoma
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
 import { deleteAssistant, deleteMassiveAssistant } from "store/gpt/actions";
+import { deleteCollection } from "store/llama/actions";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -89,11 +90,11 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         { id: "generativeia", name: t(langKeys.generativeailow) },       
     ];
     const [waitSave, setWaitSave] = useState(false);
-
     const executeAssistants = useSelector((state) => state.gpt.gptResult);
+    const llamaResult = useSelector((state) => state.llama.llamaResult);
     const [waitSaveAssistantsDelete, setWaitSaveAssistantDelete] = useState(false);
     const [assistantDelete, setAssistantDelete] = useState<Dictionary | null>(null);
-
+    const [waitSaveAssistantDeleteLlama, setWaitSaveAssistantDeleteLlama] = useState(false)
 
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
@@ -148,6 +149,31 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         }
     }, [executeAssistants, waitSaveAssistantsDelete]);
 
+    useEffect(() => {
+        if (waitSaveAssistantDeleteLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveAssistantDeleteLlama(false);
+                dispatch(execute(insAssistantAi({
+                        ...assistantDelete,
+                        id: assistantDelete?.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+                setAssistantDelete(null);
+                setWaitSave(true);
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveAssistantDeleteLlama(false);
+            }
+        }
+    }, [llamaResult, waitSaveAssistantDeleteLlama]);
+
     const handleDelete = (row: Dictionary) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
@@ -158,12 +184,21 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             setAssistantDelete(row)
             setWaitSaveAssistantDelete(true);  
         };
+
+        const callbackLlama = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(deleteCollection({
+                name: row.name,
+            }))
+            setAssistantDelete(row)
+            setWaitSaveAssistantDeleteLlama(true);
+        };
     
         dispatch(
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_delete),
-            callback,
+            callback: row.basemodel.startsWith('gpt') ? callback : callbackLlama,
           })
         );
     };

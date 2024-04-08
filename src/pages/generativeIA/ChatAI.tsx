@@ -23,6 +23,7 @@ import { FieldEdit } from "components";
 import CachedIcon from '@material-ui/icons/Cached';
 import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
+import { query } from "store/llama/actions";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -175,8 +176,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [waitSaveThread, setWaitSaveThread] = useState(false);
     const [waitSaveThreadDelete, setWaitSaveThreadDelete] = useState(false);
     const [waitSaveMessage, setWaitSaveMessage] = useState(false);
+    const [waitSaveMessageLlama, setWaitSaveMessageLlama] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
     const executeThreads = useSelector((state) => state.gpt.gptResult);
+    const llamaResult = useSelector((state) => state.llama.llamaResult);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
     const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
     const dataThreads = useSelector(state => state.main.mainAux);
@@ -323,15 +326,51 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [executeThreads, waitSaveMessage]);
 
     useEffect(() => {
+        if (waitSaveMessageLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveMessageLlama(false);
+                dispatch(execute(insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: selectedChat?.threadid,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: llamaResult.data.result,
+                    infosource: '',
+                    type: 'BOT',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })))
+                setIsLoading(false);
+                fetchThreadMessages(selectedChat?.threadid);
+
+                dispatch(showBackdrop(false));
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveMessageLlama(false);
+            }
+        }
+    }, [llamaResult, waitSaveMessageLlama]);
+
+    useEffect(() => {
         handleChatClick(dataThreads.data[0]);
     }, [dataThreads.data]);
 
     const handleCreateChat = () => {
-        dispatch(showBackdrop(true));
-        dispatch(createThread({
-            apikey: row?.apikey,
-        }))
-        setWaitSaveThread(true);
+        if(row?.basemodel.startsWith('gpt')) {
+            dispatch(showBackdrop(true));
+            dispatch(createThread({
+                apikey: row?.apikey,
+            }))
+            setWaitSaveThread(true);
+        } else {
+            dispatch(showBackdrop(true));
+            dispatch(execute(insThread({...getValues(), code: 'llamatest'})));
+            setWaitSaveCreateThread(true);
+        }
     };
 
     const handleSendMessage = async () => {
@@ -364,11 +403,41 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         setWaitSaveMessage(true)
     };
 
+    const handleSendMessageLlama = async () => {
+        setIsLoading(true);
+        dispatch(
+            execute(
+                insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: selectedChat?.threadid,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: messageText,
+                    infosource: '',
+                    type: 'USER',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })
+            )
+        );
+        const message = messageText
+        setMessageText('');
+        fetchThreadMessages(selectedChat?.threadid);
+        dispatch(query({
+            collection: row?.name,
+            query: message,
+            prompt: row?.prompt,
+            chat_history: [],
+        }))
+        setWaitSaveMessageLlama(true)
+    };
+
     useEffect(() => {
         const handleKeyUp = (event: KeyboardEvent) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                handleSendMessage();
+                if(row?.basemodel.startsWith('gpt')) handleSendMessage();
+                else handleSendMessageLlama();
             }
         };
         
@@ -379,7 +448,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         return () => {
             document.removeEventListener('keyup', handleKeyUp);
         };
-    }, [handleSendMessage]);
+    }, [handleSendMessage, handleSendMessageLlama]);
 
     const handleDeleteChat = (chat: Dictionary) => {
         const callback = async () => {
@@ -558,7 +627,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                     <InputAdornment position="end">
                                         <IconButton                                           
                                             className={classes.sendicon}
-                                            onClick={() => handleSendMessage()}
+                                            onClick={() => {
+                                                if(row?.basemodel.startsWith('gpt')) handleSendMessage()
+                                                else handleSendMessageLlama()
+                                            }}
                                             disabled={!selectedChat || messageText.trim() === '' || isLoading}
                                         >
                                           <SendMesageIcon color="secondary" />

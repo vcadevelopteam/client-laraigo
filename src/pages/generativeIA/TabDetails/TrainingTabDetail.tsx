@@ -23,6 +23,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
 import { addFile, assignFile, verifyFile } from "store/gpt/actions";
+import { addFileLlama } from "store/llama/actions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -222,6 +223,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [waitSaveAddFile, setWaitSaveAddFile] = useState(false);
     const [waitSaveAssignFile, setWaitSaveAssignFile] = useState(false);
     const executeFiles = useSelector((state) => state.gpt.gptResult);
+    const llamaResult = useSelector((state) => state.llama.llamaResult);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
+    const [waitSaveAddFileLlama, setWaitSaveAddFileLlama] = useState(false)
   
     useEffect(() => {
         fetchData();
@@ -270,7 +275,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     useEffect(() => {
         if (waitSaveAssignFile) {
             if (!executeFiles.loading && !executeFiles.error) {
-                setWaitSaveAssignFile(false);                
+                setWaitSaveAssignFile(false);
                 dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
                 setWaitSave(true);
             } else if (executeFiles.error) {
@@ -306,6 +311,23 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeFiles, waitSaveAddFile]);
 
+    useEffect(() => {
+        if (waitSaveAddFileLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveAddFileLlama(false);
+                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: 'llamatest' })));
+                setWaitSave(true);
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveAddFileLlama(false);
+            }
+        }
+    }, [llamaResult, waitSaveAddFileLlama]);
+
     const handleUpload = handleSubmit(async (data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
@@ -316,12 +338,21 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             }))
             setWaitSaveAddFile(true);
         };
+
+        const callbackMeta = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(addFileLlama({
+                url: data.url,
+                collection: row?.name
+            }))
+            setWaitSaveAddFileLlama(true);
+        }
       
         dispatch(
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
-            callback,
+            callback: conector?.provider === 'Meta' ? callbackMeta : callback,
           })
         );
     });

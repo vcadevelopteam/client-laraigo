@@ -6,7 +6,7 @@ export function createCollection(data: any) {
 }
 
 export function deleteCollection(data: any) {
-    return APIManager.delete(apiUrls.LLAMA_DELETE_COLLECTION, { data }, true);
+    return APIManager.post(apiUrls.LLAMA_DELETE_COLLECTION, { data }, true);
 }
 
 export function addFile(data: any) {
