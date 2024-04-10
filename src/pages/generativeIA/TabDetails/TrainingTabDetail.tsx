@@ -22,7 +22,8 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import CachedIcon from '@material-ui/icons/Cached';
 import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
-import { addFile, assignFile, verifyFile } from "store/gpt/actions";
+import { addFile, assignFile } from "store/gpt/actions";
+import { uploadFileLlama } from "store/llama/actions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -193,6 +194,7 @@ interface TrainingTabDetailProps {
     fetchAssistants: () => void;
     edit: boolean;
     setFile: (data: {name: string, url: string}) => void;
+    basemodel: string | null;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -200,7 +202,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     fetchData,
     fetchAssistants,
     edit,
-    setFile
+    setFile,
+    basemodel
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -222,6 +225,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [waitSaveAddFile, setWaitSaveAddFile] = useState(false);
     const [waitSaveAssignFile, setWaitSaveAssignFile] = useState(false);
     const executeFiles = useSelector((state) => state.gpt.gptResult);
+    const llamaFiles = useSelector((state) => state.llama.llamaResult);
+    const [waitSaveLlamaUploadFile, setWaitSaveLlamaUploadFile] = useState(false);
   
     useEffect(() => {
         fetchData();
@@ -325,6 +330,41 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
           })
         );
     });
+
+    useEffect(() => {
+        if (waitSaveLlamaUploadFile) {
+            if (!llamaFiles.loading && !llamaFiles.error) {
+                setWaitSaveLlamaUploadFile(false);
+                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: llamaFiles.node_id })));
+                setWaitSave(true);
+            } else if (llamaFiles.error) {
+                const errormessage = t(llamaFiles.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveLlamaUploadFile(false);
+            }
+        }
+    }, [llamaFiles, waitSaveLlamaUploadFile]);
+
+    const handleUploadLlama = handleSubmit(async (data) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(uploadFileLlama({
+                file_url: data.url
+            }))
+            setWaitSaveLlamaUploadFile(true);
+        };
+      
+        dispatch(
+          manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback,
+          })
+        );
+    });
       
     const handleUploadURL = handleSubmit((data) => {
         const callback = () => {
@@ -370,12 +410,23 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             }))
             setRowAux(row2)
             setWaitSaveFileDelete(true)
-        };    
+        };
+        const callbackLlama: () => void = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(insAssistantAiDoc({
+                ...row2,
+                id: row2.assistantaidocumentid,
+                operation: "DELETE",
+                status: "ELIMINADO",
+                type: "NINGUNO" 
+            })));
+            setWaitSave(true);
+        }
         dispatch(
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_delete),
-            callback,
+            callback: basemodel === 'llama-2-13b-chat.Q4_0' ? callbackLlama : callback,
           })
         );
     };
@@ -529,15 +580,20 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeFiles, waitSaveFileDelete]);
 
-    const handleDrop = (event) => {
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         const files = event.dataTransfer.files;
         onChangeAttachment(files);
     };
     
-    const handleDragOver = (event) => {
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
     };
+
+    const handleUploadCreatingAssistant = () => {
+        setViewSelected('main')
+        setFile({name: getValues('description'), url: getValues('url')})
+    }
 
     if(viewSelected === 'main') {
         return (
@@ -703,10 +759,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             variant="contained"
                             type="button"
                             startIcon={<AttachFileIcon />}
-                            onClick={edit ? handleUpload : ()=>{
-                                setViewSelected('main')
-                                setFile({name: getValues('description'), url: getValues('url')})
-                            }}
+                            onClick={edit ? (basemodel === 'llama-2-13b-chat.Q4_0' ? handleUploadLlama : handleUpload) : handleUploadCreatingAssistant}
                             className={classes.clipButton2}
                             disabled={fileAttachment === null || getValues('url') === ''}
                         >

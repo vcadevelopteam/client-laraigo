@@ -1,4 +1,4 @@
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, makeStyles } from "@material-ui/core";
+import { Button, Checkbox, makeStyles } from "@material-ui/core";
 import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
@@ -8,9 +8,9 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import DoneIcon from "@material-ui/icons/Done";
-import WhatsAppIcon from '@material-ui/icons/WhatsApp';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import { Dictionary } from "@types";
+import { WhatsappSendIcon } from "icons";
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -69,7 +69,7 @@ const InvoiceShareDialog: React.FC<{
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20}}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end', width: 145, }}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <WhatsAppIcon className={classes.icon}/>
+                        <WhatsappSendIcon className={classes.icon}/>
                         <span>{t(langKeys.WHATSAPP)}</span>
                         <Checkbox
                             color="primary"

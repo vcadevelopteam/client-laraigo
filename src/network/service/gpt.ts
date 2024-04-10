@@ -1,6 +1,15 @@
 import { apiUrls } from "common/constants";
 import { APIManager } from "network/manager";
 
+interface ILlamaFileUpload {
+    file_url: string;
+}
+interface ILlamaMessage {
+    text: string;
+    assistant_id: number;
+    node_id: string;
+}
+
 export function createThread(data: any) {
     return APIManager.post(apiUrls.GPT_THREADS, { data }, true);
 }
@@ -44,4 +53,12 @@ export function deleteAssistant(data: any) {
 
 export function deleteMassiveAssistant(data: any) {
     return APIManager.post(apiUrls.GPT_ASSISTANTS_DELETE_MASSIVE, { data }, true);
+}
+
+export function uploadFileLlama(data: ILlamaFileUpload) {
+    return APIManager.post(apiUrls.LLAMA_UPLOAD_FILES, { data }, true);
+}
+
+export function messagesLlama(data: ILlamaMessage) {
+    return APIManager.post(apiUrls.LLAMA_MESSAGE, { data }, true);
 }

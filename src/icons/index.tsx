@@ -329,3 +329,16 @@ export { ReactComponent as InventoryIcon } from './inventarios.svg';
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
 export {ReactComponent as PDFRedIcon} from './pdf-red-20dp.svg';
 
+export {ReactComponent as DeliveryIcon} from './delivery.svg'
+export {ReactComponent as ConfigurationDeliveryIcon} from './configuraciones-delivery_black_24dp.svg'
+export {ReactComponent as OrdersListIcon} from './lista-pedidos.svg'
+export {ReactComponent as OrdersInAttentionIcon} from './pedidos-atencion_black_24dp.svg'
+export {ReactComponent as OrdersInStoreIcon} from './pedidos-tienda.svg'
+export {ReactComponent as StoreCoverageIcon} from './zona-cobertural_black_24dp.svg'
+export {ReactComponent as RoutingLogicIcon} from './logica_ruta_black_24dp.svg'
+export {ReactComponent as TipificationIcon} from './tipificar.svg'
+export {ReactComponent as PrintIcon} from './print_black_24dp.svg'
+export {ReactComponent as DeliveryTicketIcon} from './boleta_24dp.svg'
+export {ReactComponent as CheckPrepareIcon} from './check-enviar.svg'
+export {ReactComponent as EmailSendIcon} from './email_black_24dp 2.svg'
+export {ReactComponent as WhatsappSendIcon} from './whatsapp-delineado.svg'

@@ -2,8 +2,8 @@ import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo,} from "components";
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore} from "common/helpers";
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo, AntTab,} from "components";
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore, getCustomVariableSelByTableName} from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -28,7 +28,7 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import { Divider, Grid, ListItem, Box, IconButton } from "@material-ui/core";
+import { Divider, Grid, ListItem, Box, IconButton, Tabs } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import DeleteIcon from "@material-ui/icons/Delete";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -36,6 +36,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { DuplicateIcon } from "icons";
 import { CellProps } from "react-table";
+import TableZyxEditable from "components/fields/table-editable";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -407,7 +408,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             setDataWarehouses({ loading: false, data: [] });
         }
     };
-
     const onChangeRole = (value: Dictionary) => {
         setValue("rolegroups", value.map((o: Dictionary) => o.roleid).join());
         setValue("roledesc", value.map((o: Dictionary) => o.roledesc).join());
@@ -528,18 +528,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 }
 
                             </div>
-                            <FieldSelect
-                                label={t(langKeys.store)}
-                                className={classes.mb2}
-                                valueDefault={getValues('storeid')}
-                                error={errors?.storeid?.message}
-                                data={dataStores.data}
-                                onChange={(value) => setValue('storeid', value.storeid)}
-                                loading={dataStores.loading}
-                                triggerOnChangeOnFirst={true}
-                                optionDesc="description"
-                                optionValue="storeid"
-                            />
+                            {(getValues('rolegroups')?.includes('53') || getValues('rolegroups')?.includes('51')) && (
+                                <FieldSelect
+                                    label={t(langKeys.store)}
+                                    className={classes.mb2}
+                                    valueDefault={getValues('storeid')}
+                                    error={errors?.storeid?.message}
+                                    data={dataStores.data}
+                                    onChange={(value) => setValue('storeid', value.storeid)}
+                                    loading={dataStores.loading}
+                                    triggerOnChangeOnFirst={true}
+                                    optionDesc="description"
+                                    optionValue="storeid"
+                                />
+                            )}
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -609,18 +611,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
                             />
-                            <FieldSelect
-                                label={t(langKeys.warehouse)}
-                                className={classes.mb2}
-                                valueDefault={getValues('warehouseid')}
-                                error={errors?.warehouseid?.message}
-                                data={dataWarehouses.data}
-                                onChange={(value) => setValue('warehouseid', value.warehouseid)}
-                                loading={dataWarehouses.loading}
-                                triggerOnChangeOnFirst={true}
-                                optionDesc="description"
-                                optionValue="warehouseid"
-                            />
+                            {getValues('rolegroups')?.includes('50') && (
+                                <FieldSelect
+                                    label={t(langKeys.warehouse)}
+                                    className={classes.mb2}
+                                    valueDefault={getValues('warehouseid')}
+                                    error={errors?.warehouseid?.message}
+                                    data={dataWarehouses.data}
+                                    onChange={(value) => setValue('warehouseid', value.warehouseid)}
+                                    loading={dataWarehouses.loading}
+                                    triggerOnChangeOnFirst={true}
+                                    optionDesc="description"
+                                    optionValue="warehouseid"
+                                />
+                            )}
                         </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
@@ -1050,7 +1054,27 @@ const DetailUsers: React.FC<DetailProps> = ({
     const [allIndex, setAllIndex] = useState([]);
     const [getOrganizations, setGetOrganizations] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [pageSelected, setPageSelected] = useState(0);
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
 
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
+        setSkipAutoReset(true);
+        const auxTableData = tableDataVariables
+        auxTableData[rowIndex][columnId] = value
+        setTableDataVariables(auxTableData)
+        setUpdatingDataTable(!updatingDataTable);
+    }
+    
+    useEffect(() => {
+        console.log(multiData)
+        if (multiData[13]) {
+            const variableDataList = multiData[13].data ||[]
+            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+        }
+    }, [multiData]);
+    
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
     useEffect(() => {
@@ -1213,7 +1237,9 @@ const DetailUsers: React.FC<DetailProps> = ({
                 dispatch(
                     saveUser(
                         {
-                            header: insUser({ ...data, language: t(langKeys.currentlanguage) }),
+                            header: insUser({ ...data, language: t(langKeys.currentlanguage),
+                                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                            }),
                             detail: [
                                 ...dataOrganizations.filter((x) => x && x?.operation).map((x) => x && insOrgUser(x)),
                                 ...orgsToDelete.map((x) => insOrgUser(x)),
@@ -1252,6 +1278,38 @@ const DetailUsers: React.FC<DetailProps> = ({
         setValue("status", value ? value.domainvalue : "");
         value && setOpenDialogStatus(true);
     };
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: false,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: false,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: false,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
 
     return (
         <div style={{ width: "100%" }}>
@@ -1310,7 +1368,18 @@ const DetailUsers: React.FC<DetailProps> = ({
                         </>
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.userinformation)} />
+                    <AntTab label={t(langKeys.variableconfiguration)}/>
+                </Tabs>
+                {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <div
                             className="col-6"
@@ -1460,10 +1529,23 @@ const DetailUsers: React.FC<DetailProps> = ({
                             helperText={t(langKeys.user_tooltip)}
                         />
                     </div>
-                </div>
+                </div>}
+                {pageSelected === 1 &&
+                <div className={classes.containerDetail}>                    
+                    <TableZyxEditable
+                        columns={columns}
+                        data={tableDataVariables}
+                        download={false}
+                        //loading={multiData.loading}
+                        register={false}
+                        filterGeneral={false}
+                        updateCell={updateCell}
+                        skipAutoReset={skipAutoReset}
+                    />
+                </div>}
             </form>
 
-            <div className={classes.containerDetail}>
+            {pageSelected === 0 && <div className={classes.containerDetail}>
                 {detailRes.error ? (
                     <h1>ERROR</h1>
                 ) : (
@@ -1503,7 +1585,7 @@ const DetailUsers: React.FC<DetailProps> = ({
                         )}
                     </div>
                 )}
-            </div>
+            </div>}
             <DialogZyx
                 open={openDialogStatus}
                 title={t(langKeys.status)}
@@ -1732,6 +1814,7 @@ const Users: FC = () => {
             getChannelsByOrg(user?.orgid),
             getSecurityRules(),
             getPropertySelByName("VISUALIZACIONBOTSUSUARIOS"),
+            getCustomVariableSelByTableName("usr")
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -2021,6 +2104,7 @@ const Users: FC = () => {
                                             bydefault: true,
                                             labels: "",
                                             warehouseid: "0",
+                                            groups: d.groups,
                                             storeid: "0",
                                             channels: d.channels || "",
                                             status: "DESCONECTADO",

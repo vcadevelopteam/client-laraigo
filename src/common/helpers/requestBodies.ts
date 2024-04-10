@@ -235,10 +235,10 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
     parameters: { type, classificationid }
 });
 
-export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS" }: Dictionary): IRequestBody => ({
+export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS", variablecontext={} }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key,
-    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
+    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language, variablecontext }
 });
 
 export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, storeid, warehouseid, showbots}: Dictionary): IRequestBody => ({
@@ -475,13 +475,16 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         sorts,
         distinct: distinct || "",
         origin: origin,
-        ...allParameters,
+        ...allParameters,    
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         hours: allParameters['hours'] ? allParameters['hours'] : "",
         asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+
+
+
 
 export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: methodExport,
@@ -700,6 +703,22 @@ export const getDomainSel = (domainname: string): IRequestBody => ({
         all: true
     }
 })
+export const getCustomVariableSel = (): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
+    key: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
+    parameters: {}
+})
+export const getCustomVariableSelByTableName = (tablename:string): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_SEL",
+    key: "UFN_CUSTOM_VARIABLE_SEL",
+    parameters: {tablename, customvariableapplicationid:0}
+})
+export const insCustomVariable = ({id, customvariableapplicationid, variablename, description, variabletype, status, operation}:Dictionary): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_INS",
+    key: "UFN_CUSTOM_VARIABLE_INS",
+    parameters: {id, customvariableapplicationid, variablename, description, variabletype, status, operation}
+})
+
 export const getDocumentLibrary = (): IRequestBody => ({
     method: "UFN_DOCUMENTLIBRARY_SEL",
     key: "UFN_DOCUMENTLIBRARY_SEL",
@@ -782,10 +801,10 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo, domainname, olddomainname }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext={} }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite, body, bodyobject, quickreply_type, quickreply_priority, attachment }: Dictionary): IRequestBody => ({
@@ -1001,7 +1020,8 @@ export const insMessageTemplate = (
         communicationchannelid,
         communicationchanneltype,
         exampleparameters,
-        operation
+        operation,
+        variablecontext
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1032,7 +1052,8 @@ export const insMessageTemplate = (
             communicationchannelid,
             communicationchanneltype,
             exampleparameters,
-            operation
+            operation,
+            variablecontext
         }
     });
 
@@ -2576,7 +2597,7 @@ export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody =
     }
 });
 
-export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation, phone, email, phase }: Dictionary): IRequestBody => ({
+export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation, phone, email, phase,variablecontext  }: Dictionary): IRequestBody => ({
     method: 'UFN_LEAD_INS',
     key: "UFN_LEAD_INS",
     parameters: {
@@ -2596,7 +2617,8 @@ export const insLead = ({ leadid, description, status, type, expected_revenue, d
         phone,
         email,
         phase,
-        operation
+        operation,
+        variablecontext
     }
 });
 
@@ -4667,6 +4689,17 @@ export const partnerIns = ({ id, country, billingcurrency, documenttype, documen
     method: "UFN_PARTNER_INS",
     key: "UFN_PARTNER_INS",
     parameters: { id, country, billingcurrency, documenttype, documentnumber, company, address, billingcontact, email, signaturedate, enterprisepartner, billingplan, typecalculation, numbercontactsbag, puadditionalcontacts, priceperbag, automaticgenerationdrafts, automaticperiodgeneration, montlyplancost, numberplancontacts, status, type, operation },
+});
+
+export const getChatFlowCardId = ({ startdate, enddate, chatflowcardid }: Dictionary) => ({
+    method: "UFN_INTERACTION_CHATFLOWCARDID",
+    key: "UFN_INTERACTION_CHATFLOWCARDID",
+    parameters: {      
+        startdate, 
+        enddate, 
+        chatflowcardid, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1 
+    },
 });
 
 export const customerByPartnerSel = (partnerid: number) => ({

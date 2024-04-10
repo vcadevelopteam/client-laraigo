@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, IOSSwitch } from 'components';
-import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
+import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getCustomVariableSelByTableName, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,6 +21,7 @@ import { getCountryList } from 'store/signup/actions';
 import { formatNumber } from 'common/helpers';
 import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updateScenario } from "store/voximplant/actions";
 import { CellProps } from 'react-table';
+import TableZyxEditable from 'components/fields/table-editable';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -120,6 +121,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const transferBalanceResult = useSelector(state => state.voximplant.requestTransferAccountBalance);
     const [doctype, setdoctype] = useState(row?.doctype || "");
     const [idUpload, setIdUpload] = useState('');
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
         iconbot: row?.iconbot || "",
@@ -199,6 +203,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
 
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
+        setSkipAutoReset(true);
+        const auxTableData = tableDataVariables
+        auxTableData[rowIndex][columnId] = value
+        setTableDataVariables(auxTableData)
+        setUpdatingDataTable(!updatingDataTable);
+    }
+
     React.useEffect(() => {
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -250,6 +262,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [row])
+
+    useEffect(() => {
+        if (multiData[12]) {
+            const variableDataList = multiData[12].data ||[]
+            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+        }
+    }, [multiData]);
 
     useEffect(() => {
         if (waitSave) {
@@ -376,7 +395,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insOrg({ ...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient })));
+            dispatch(execute(insOrg({ ...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient,
+                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+            })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -493,6 +514,38 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             return t(langKeys.emailverification) as string;
         }
     }
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: false,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: false,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: false,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
 
     return (
         <div style={{ width: '100%' }}>
@@ -544,6 +597,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     <AntTab label={t(langKeys.emailconfiguration)} />
                     {roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
                     {false && <AntTab label={t(langKeys.chatimages)} />}
+                    <AntTab label={t(langKeys.variableconfiguration)} value={4}/>
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
@@ -1221,6 +1275,18 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         </Box>
                     </Grid>
                 </div>}
+                {pageSelected === 4 && <div className={classes.containerDetail}>                    
+                    <TableZyxEditable
+                        columns={columns}
+                        data={tableDataVariables}
+                        download={false}
+                        //loading={multiData.loading}
+                        register={false}
+                        filterGeneral={false}
+                        updateCell={updateCell}
+                        skipAutoReset={skipAutoReset}
+                    />
+                </div>}
             </form>
         </div>
     );
@@ -1315,6 +1381,7 @@ const Organizations: FC = () => {
             getPropertySelByNameOrg("VOXIMPLANTADDITIONALPERCHANNEL", 0, "_CHANNEL"),
             appsettingInvoiceSelCombo(),
             getCityBillingList(),
+            getCustomVariableSelByTableName("org")
         ]));
         return () => {
             dispatch(resetAllMain());

@@ -6,9 +6,9 @@ import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { CellProps } from "react-table";
 import TableZyx from "components/fields/table-simple";
+import CheckIcon from '@material-ui/icons/Check';
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -181,8 +181,7 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({ setViewSelected, 
 						<Button
 							variant="contained"
 							color="primary"
-							disabled={main.loading || Object.keys(selectedRows).length === 0}
-							startIcon={<CheckCircleIcon color="secondary" />}
+							startIcon={<CheckIcon/>}
 							style={{ backgroundColor: "#55BD84" }}
 						>
 							<Trans i18nKey={langKeys.prepare} />
