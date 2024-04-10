@@ -9,10 +9,20 @@ const actionTypes = {
     DELETE_COLLECTION_FAILURE: 'llama/delete_collection_failure',
     DELETE_COLLECTION_RESET: 'llama/delete_collection_reset',
 
+    EDIT_COLLECTION: 'llama/edit_collection',
+    EDIT_COLLECTION_SUCCESS: 'llama/edit_collection_success',
+    EDIT_COLLECTION_FAILURE: 'llama/edit_collection_failure',
+    EDIT_COLLECTION_RESET: 'llama/edit_collection_reset',
+
     ADD_FILE: 'llama/add_file',
     ADD_FILE_SUCCESS: 'llama/add_file_success',
     ADD_FILE_FAILURE: 'llama/add_file_failure',
     ADD_FILE_RESET: 'llama/add_file_reset',
+
+    DELETE_FILE: 'llama/delete_file',
+    DELETE_FILE_SUCCESS: 'llama/delete_file_success',
+    DELETE_FILE_FAILURE: 'llama/delete_file_failure',
+    DELETE_FILE_RESET: 'llama/delete_file_reset',
 
     QUERY: 'llama/query',
     QUERY_SUCCESS: 'llama/query_success',

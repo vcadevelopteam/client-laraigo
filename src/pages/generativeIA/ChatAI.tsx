@@ -187,6 +187,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [messageText, setMessageText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [cardDelete, setCardDelete] = useState<Dictionary | null>(null);
+    const [waitSaveMessageAux, setWaitSaveMessageLlamaAux] = useState(false);
+    const [date, setDate] = useState('');
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
     const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
@@ -261,10 +263,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             if (!executeThreads.loading && !executeThreads.error) {
                 setWaitSaveThread(false);
                 const data = getValues()
-                dispatch(execute(insThread({...data, code: executeThreads.data.id})));
-                setValue('description', '');
+                dispatch(execute(insThread({...data, code: executeThreads.data.id, description: date})));
+                setDate('')
                 setWaitSaveCreateThread(true);
-                dispatch(showBackdrop(false));
             } else if (executeThreads.error) {
                 const errormessage = t(executeThreads.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
@@ -283,7 +284,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
                 setWaitSaveCreateThread(true);
                 setCardDelete(null);
-                dispatch(showBackdrop(false));
             } else if (executeThreads.error) {
                 const errormessage = t(executeThreads.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
@@ -312,19 +312,16 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 })))
                 setIsLoading(false);
                 fetchThreadMessages(selectedChat?.threadid);
-
-                dispatch(showBackdrop(false));
             } else if (executeThreads.error) {
                 const errormessage = t(executeThreads.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
                 setWaitSaveMessage(false);
             }
         }
     }, [executeThreads, waitSaveMessage]);
-
+    
     useEffect(() => {
         if (waitSaveMessageLlama) {
             if (!llamaResult.loading && !llamaResult.error) {
@@ -340,35 +337,57 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     status: 'ACTIVO',
                     operation: 'INSERT',
                 })))
-                setIsLoading(false);
-                fetchThreadMessages(selectedChat?.threadid);
-
-                dispatch(showBackdrop(false));
+                setWaitSaveMessageLlamaAux(true)
             } else if (llamaResult.error) {
                 const errormessage = t(llamaResult.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
                 setWaitSaveMessageLlama(false);
             }
         }
     }, [llamaResult, waitSaveMessageLlama]);
 
     useEffect(() => {
+        if (waitSaveMessageAux) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveMessageLlamaAux(false);
+                setIsLoading(false);
+                fetchThreadMessages(selectedChat?.threadid);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessageLlamaAux(false);
+            }
+        }
+    }, [executeResult, waitSaveMessageAux]);
+
+    useEffect(() => {
         handleChatClick(dataThreads.data[0]);
     }, [dataThreads.data]);
 
     const handleCreateChat = () => {
+        const fecha = new Date();
+        const year = fecha.getFullYear();
+        const month = ('0' + (fecha.getMonth() + 1)).slice(-2);
+        const day = ('0' + fecha.getDate()).slice(-2);
+        const hours = ('0' + fecha.getHours()).slice(-2);
+        const minutes = ('0' + fecha.getMinutes()).slice(-2);
+        const seconds = ('0' + fecha.getSeconds()).slice(-2);
+        const dateAux = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+
         if(row?.basemodel.startsWith('gpt')) {
             dispatch(showBackdrop(true));
+            setDate(dateAux)
             dispatch(createThread({
                 apikey: row?.apikey,
             }))
             setWaitSaveThread(true);
         } else {
             dispatch(showBackdrop(true));
-            dispatch(execute(insThread({...getValues(), code: 'llamatest'})));
+            dispatch(execute(insThread({...getValues(), code: 'llamatest', description: dateAux})));
             setWaitSaveCreateThread(true);
         }
     };
@@ -426,8 +445,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         dispatch(query({
             collection: row?.name,
             query: message,
-            prompt: row?.prompt,
-            chat_history: [],
+            system_prompt: row?.prompt,
+            model: row?.basemodel?.split('-')[0],
         }))
         setWaitSaveMessageLlama(true)
     };
@@ -459,13 +478,18 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             }))
             setCardDelete(chat)
             setWaitSaveThreadDelete(true);     
-          };
+        };
+        const callbackMeta = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(insThread({ ...chat, id: chat.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+            setWaitSaveCreateThread(true);    
+        };
       
-          dispatch(
+        dispatch(
             manageConfirmation({
               visible: true,
               question: t(langKeys.confirmation_delete),
-              callback,
+              callback: row?.basemodel.startsWith('gpt') ? callback : callbackMeta,
             })
         );
     };
@@ -549,7 +573,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 <>
                                     <div className={classes.threadName} style={{ backgroundColor: chat.threadid === selectedChat?.threadid ? '#EEEEEE': ''}}>
                                         <ChatBubbleIcon className={classes.chatIcon}/>
-                                        <Typography style={{ fontSize: '1rem', width: 182 }}>{chat.description === '' ? chat.createdate.split('.')[0] : chat.description}</Typography>
+                                        <Typography style={{ fontSize: '1rem', width: 182 }}>{chat.description}</Typography>
                                         <IconButton onClick={() => handleEditChat(chat)} style={{paddingRight: 0, width: 36}}>
                                             <EditIcon style={{ color: '#757377' }}/>
                                         </IconButton>

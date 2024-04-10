@@ -70,12 +70,10 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
 
     const llamaModels = [
         {
-            domainvalue: 'Llama 2',
-            domaindesc: 'Llama 2',
-        },
-        {
-            domainvalue: 'Llama 3',
-            domaindesc: 'Llama 3',
+            "domainid": 439128,
+            "domainvalue": "llama-2-13b-chat",
+            "domaindesc": "llama-2-13b-chat",
+            "bydefault": null
         },
     ]
 

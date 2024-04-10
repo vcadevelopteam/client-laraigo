@@ -451,6 +451,8 @@ export const apiUrls = {
 
     LLAMA_CREATE_COLLECTION: `${BASE_URL}/llama/create_collection`,
     LLAMA_DELETE_COLLECTION: `${BASE_URL}/llama/delete_collection`,
+    LLAMA_EDIT_COLLECTION: `${BASE_URL}/llama/edit_collection`,
     LLAMA_ADD_FILE: `${BASE_URL}/llama/add_file`,
+    LLAMA_DELETE_FILE: `${BASE_URL}/llama/delete_file`,
     LLAMA_QUERY: `${BASE_URL}/llama/query`,
 };

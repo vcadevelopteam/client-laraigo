@@ -27,10 +27,20 @@ export default createReducer<IState>(initialState, {
     [actionType.DELETE_COLLECTION_FAILURE]: caseFunctions.llamaFailure,
     [actionType.DELETE_COLLECTION_RESET]: caseFunctions.llamaReset,
 
+    [actionType.EDIT_COLLECTION]: caseFunctions.llamaLoading,
+    [actionType.EDIT_COLLECTION_SUCCESS]: caseFunctions.llamaSuccess,
+    [actionType.EDIT_COLLECTION_FAILURE]: caseFunctions.llamaFailure,
+    [actionType.EDIT_COLLECTION_RESET]: caseFunctions.llamaReset,
+
     [actionType.ADD_FILE]: caseFunctions.llamaLoading,
     [actionType.ADD_FILE_SUCCESS]: caseFunctions.llamaSuccess,
     [actionType.ADD_FILE_FAILURE]: caseFunctions.llamaFailure,
     [actionType.ADD_FILE_RESET]: caseFunctions.llamaReset,
+
+    [actionType.DELETE_FILE]: caseFunctions.llamaLoading,
+    [actionType.DELETE_FILE_SUCCESS]: caseFunctions.llamaSuccess,
+    [actionType.DELETE_FILE_FAILURE]: caseFunctions.llamaFailure,
+    [actionType.DELETE_FILE_RESET]: caseFunctions.llamaReset,
 
     [actionType.QUERY]: caseFunctions.llamaLoading,
     [actionType.QUERY_SUCCESS]: caseFunctions.llamaSuccess,

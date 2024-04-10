@@ -19,7 +19,7 @@ import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
-import { createCollection } from "store/llama/actions";
+import { createCollection, editCollection } from "store/llama/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -432,46 +432,62 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     };
 
     const onMainSubmitMeta = handleSubmit(async (data) => {
+        let generalprompt;
+
+        if (data.organizationname !== '') {
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+            }
+            generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
+        } else {
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+            }
+            generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                ', infórmales que solamente puedes comunicarte en ' + data.language;
+        }
+
+        if (data.querywithoutanswer === 'Mejor Sugerencia') {
+            generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+        } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
+            generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+        }
+
+        setGeneralPrompt(generalprompt)
+
         const callback = async () => {
             dispatch(showBackdrop(true));
-
-            let generalprompt;
-
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
-            }
-
-            if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
-            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
-            }
-
-            setGeneralPrompt(generalprompt)
-
             dispatch(createCollection({
-                name: data.name,
-            }))            
-            setWaitSaveCreateMeta(true)                 
+                collection: data.name,
+            }))
+            setWaitSaveCreateMeta(true)
         };
+        const callbackEdit = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(editCollection({
+                name: row?.name,
+                new_name: data.name
+            }))
+            setWaitSaveCreateMeta(true)
+        };
+
         if(!edit) {
             dispatch(
                 manageConfirmation({
                     visible: true,
                     question: t(langKeys.confirmation_save),
                     callback,
+                })
+            );
+        } else {
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback: callbackEdit,
                 })
             );
         }

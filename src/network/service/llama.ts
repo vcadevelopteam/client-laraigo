@@ -9,8 +9,16 @@ export function deleteCollection(data: any) {
     return APIManager.post(apiUrls.LLAMA_DELETE_COLLECTION, { data }, true);
 }
 
+export function editCollection(data: any) {
+    return APIManager.post(apiUrls.LLAMA_EDIT_COLLECTION, { data }, true);
+}
+
 export function addFile(data: any) {
     return APIManager.post(apiUrls.LLAMA_ADD_FILE, { data }, true);
+}
+
+export function deleteFile(data: any) {
+    return APIManager.post(apiUrls.LLAMA_DELETE_FILE, { data }, true);
 }
 
 export function query(data: any) {

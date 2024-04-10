@@ -22,12 +22,32 @@ export const deleteCollection = (requestBody: any): IActionCall => ({
     type: null,
 })
 
+export const editCollection = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService.editCollection(requestBody),
+    types: {
+        loading: actionTypes.EDIT_COLLECTION,
+        success: actionTypes.EDIT_COLLECTION_SUCCESS,
+        failure: actionTypes.EDIT_COLLECTION_FAILURE,
+    },
+    type: null,
+})
+
 export const addFileLlama = (requestBody: any): IActionCall => ({
     callAPI: () => LlamaService.addFile(requestBody),
     types: {
         loading: actionTypes.ADD_FILE,
         success: actionTypes.ADD_FILE_SUCCESS,
         failure: actionTypes.ADD_FILE_FAILURE,
+    },
+    type: null,
+})
+
+export const deleteFileLlama = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService.deleteFile(requestBody),
+    types: {
+        loading: actionTypes.DELETE_FILE,
+        success: actionTypes.DELETE_FILE_SUCCESS,
+        failure: actionTypes.DELETE_FILE_FAILURE,
     },
     type: null,
 })

@@ -23,7 +23,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
 import { addFile, assignFile, verifyFile } from "store/gpt/actions";
-import { addFileLlama } from "store/llama/actions";
+import { addFileLlama, deleteFileLlama } from "store/llama/actions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -227,6 +227,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
     const [waitSaveAddFileLlama, setWaitSaveAddFileLlama] = useState(false)
+    const [waitSaveFileDeleteLlama, setWaitSaveFileDeleteLlama] = useState(false)
   
     useEffect(() => {
         fetchData();
@@ -401,15 +402,48 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             }))
             setRowAux(row2)
             setWaitSaveFileDelete(true)
-        };    
+        };
+        const callbackMeta = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(deleteFileLlama({
+                collection: row?.name,
+                filename: row2?.description,
+            }))
+            setRowAux(row2)
+            setWaitSaveFileDeleteLlama(true)
+        };
         dispatch(
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_delete),
-            callback,
+            callback: conector?.provider === 'Meta' ? callbackMeta : callback,
           })
         );
     };
+
+    useEffect(() => {
+        if (waitSaveFileDeleteLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveFileDeleteLlama(false);
+                dispatch(execute(insAssistantAiDoc({
+                    ...rowAux,
+                    id: rowAux?.assistantaidocumentid,
+                    operation: "DELETE",
+                    status: "ELIMINADO",
+                    type: "NINGUNO" 
+                })));
+                setWaitSave(true);
+                setRowAux(null)
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveFileDeleteLlama(false);
+            }
+        }
+    }, [llamaResult, waitSaveFileDeleteLlama]);
 
     const handleDownloadDocument = () => {
         if (selectedDocumentUrl) {
