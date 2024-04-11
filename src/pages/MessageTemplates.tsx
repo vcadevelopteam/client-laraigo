@@ -205,7 +205,7 @@ const MessageTemplates: FC = () => {
                         type: "number",
                         Cell: (props: CellProps<Dictionary>) => {
                             const { row } = props.cell;
-                            return row?.showid ? <div>{row.id}</div> : null;
+                            return showId ? <div>{row.id}</div> : null;
                         }                        
                     },
                 ]
