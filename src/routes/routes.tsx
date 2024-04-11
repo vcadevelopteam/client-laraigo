@@ -465,20 +465,6 @@ export const routes: RouteConfig[] = [
         icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
     },
     {
-        key: paths.CUSTOMVARIABLE,
-        description: <Trans i18nKey={langKeys.customvariables}/>,
-        tooltip: <Trans i18nKey={langKeys.customvariables} />,
-        path: paths.CUSTOMVARIABLE,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
-    },
-    /*{
-        key: paths.CUSTOMFIELDS,
-        description: <Trans i18nKey={langKeys.custom_fields} count={2} />,
-        tooltip: <Trans i18nKey={langKeys.custom_fields} />,
-        path: paths.CUSTOMFIELDS,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
-    },*/
-    {
         key: paths.USERS,
         description: <Trans i18nKey={langKeys.user_plural} />,
         tooltip: "",
@@ -587,20 +573,6 @@ export const routes: RouteConfig[] = [
         path: paths.VARIABLECONFIGURATION,
         icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
-    {
-        key: paths.CUSTOMVARIABLE,
-        description: <Trans i18nKey={langKeys.customvariables}/>,
-        tooltip: <Trans i18nKey={langKeys.customvariables} />,
-        path: paths.CUSTOMVARIABLE,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
-    },
-    /*{
-        key: paths.CUSTOMFIELDS,
-        description: <Trans i18nKey={langKeys.custom_fields} count={2} />,
-        tooltip: <Trans i18nKey={langKeys.custom_fields} />,
-        path: paths.CUSTOMFIELDS,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
-    },*/
     {
         key: paths.EMOJIS,
         description: <Trans i18nKey={langKeys.restrictedEmoji} count={2} />,

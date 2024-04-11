@@ -45,7 +45,6 @@ import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
-import TableZyxEditable from 'components/fields/table-editable';
 
 const isIncremental = window.location.href.includes("incremental")
 
@@ -440,8 +439,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [openModal, setOpenModal] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
-    const domains = useSelector(state => state.person.editableDomains);
     
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
@@ -452,13 +449,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         dispatch(getDomainsByTypename());
     }, []);
-    
-    useEffect(() => {
-        if (domains.value?.customVariablesLead && lead) {
-            setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
-        }
-    }, [lead,domains]);
-
 
     const { register, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
         defaultValues: {
@@ -540,9 +530,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
                 if (edit) {
                     dispatch(saveLeadAction([
-                        insLead2({...data,
-                            variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
-                        }, data.operation),
+                        insLead2(data, data.operation),
                         ...leadProductsChanges.current.map(leadHistoryIns),
                         ...leadTagsChanges.current.map(leadHistoryIns),
                     ], false));
@@ -562,9 +550,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         }
 
                         return {
-                            header: insLead2({...data,
-                                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
-                            }, data.operation),
+                            header: insLead2(data, data.operation),
                             detail: [
                                 ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
                                 ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
@@ -1487,14 +1473,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             )}
                         />
                     )}
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.customvariables} />
-                            </div>
-                        )}
-                        value={3}
-                    />
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <TabPanelLogNote
@@ -1546,12 +1524,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         onClick={onClickSelectPersonModal}
                     />
                 )}
-                <AntTabPanel index={3} currentIndex={tabIndex}>
-                    <TabCustomVariables
-                        tableData={tableDataVariables} 
-                        setTableData={setTableDataVariables}
-                    />
-                </AntTabPanel>
                 <DialogSendTemplate
                     openModal={openDialogTemplate}
                     setOpenModal={setOpenDialogTemplate}
@@ -3078,74 +3050,6 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
     );
 }
 
-interface TabCustomVariablesProps {
-    setTableData: (x:Dictionary[])=>void;
-    tableData: Dictionary[];
-}
-
-const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableData }) => {
-    const domains = useSelector(state => state.person.editableDomains);
-    const { t } = useTranslation();
-    const [skipAutoReset, setSkipAutoReset] = useState(false)
-    const [updatingDataTable, setUpdatingDataTable] = useState(false);
-
-    const updateCell = (rowIndex: number, columnId: string, value: string) => {
-        setSkipAutoReset(true);
-        const auxTableData = tableData
-        auxTableData[rowIndex][columnId] = value
-        setTableData(auxTableData)
-        setUpdatingDataTable(!updatingDataTable);
-    }
-
-    useEffect(() => {
-        setSkipAutoReset(false)
-    }, [updatingDataTable])
-
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.variable),
-                accessor: 'variablename',
-                NoFilter: false,
-                sortType: 'string'
-            },
-            {
-                Header: t(langKeys.description),
-                accessor: 'description',
-                NoFilter: false,
-                sortType: 'string',
-            },
-            {
-                Header: t(langKeys.datatype),
-                accessor: 'variabletype',
-                NoFilter: false,
-                sortType: 'string',
-            },
-            {
-                Header: t(langKeys.value),
-                accessor: 'value',
-                NoFilter: true,
-                type: 'string',
-                editable: true,
-                width: 250,
-                maxWidth: 250
-            },
-        ],
-        []
-    )
-    return (        
-        <TableZyxEditable
-            columns={columns}
-            data={tableData}
-            download={false}
-            loading={domains.loading}
-            register={false}
-            filterGeneral={false}
-            updateCell={updateCell}
-            skipAutoReset={skipAutoReset}
-        />
-    );
-}
 interface Options {
     withTime?: boolean;
 }
