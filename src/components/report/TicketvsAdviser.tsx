@@ -181,7 +181,7 @@ const TicketvsAdviser: FC = () => {
     }, [multiData])
 
     useEffect(() => {
-        dispatch(getMultiCollection([getReportFilterSel("UFN_REPORT_ASESOR_VS_TICKET_SEL", "UFN_REPORT_ASESOR_VS_TICKET_SEL", ""), getCommChannelLstTypeDesc()]));
+        dispatch(getMultiCollection([getCommChannelLstTypeDesc()]));
         dispatch(setViewChange(`report_${"ticketvsadviser"}`));
         return () => {
             dispatch(cleanViewChange());

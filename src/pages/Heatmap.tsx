@@ -1087,7 +1087,6 @@ const MainHeatMap: React.FC<{
         const LIMITHOUR = 24;
         const arrayvalidvalues = new Array(25).fill(0);
         const arrayvalidvaluesmonth = new Array(32).fill(0);
-
         for (let i = 1; i <= LIMITHOUR + 1; i++) {
             const objectfree: Dictionary = {
                 hour: i,
@@ -1216,8 +1215,8 @@ const MainHeatMap: React.FC<{
                             const column = props.cell.column;
                             const row = props.cell.row.original || {};
                             const rowcounter = props.cell.row.index;
-                            const timespenttotal = row && row.original && row.original[key] !== undefined
-                                ? row.original[key].split(":")
+                            const timespenttotal = row && row[key] !== undefined
+                                ? row[key].split(":")
                                 : ["00", "00", "00"];
                         
                             const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
@@ -1372,7 +1371,6 @@ const MainHeatMap: React.FC<{
                     ss.toString().padStart(2, "0");
             }
         });
-
         setpersonAverageReplyTimexFechaData(arrayfree);
 
         function gradient(num: number, rowcounter: number) {
@@ -1403,10 +1401,9 @@ const MainHeatMap: React.FC<{
                             const column = props.cell.column;
                             const row = props.cell.row.original || {};
                             const rowcounter = props.cell.row.index;
-                            const timespenttotal = row !== undefined && row.original !== undefined && key in row.original
-                                ? row.original[key].split(":")
+                            const timespenttotal = row !== undefined && key in row
+                                ? row[key].split(":")
                                 : ["00", "00", "00"];
-                        
                             const hh = timespenttotal[0] === "00" ? "" : timespenttotal[0] + "h ";
                             const mm = timespenttotal[1] === "00" ? "" : timespenttotal[1] + "m ";
                             const ss = timespenttotal[2];
