@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment, Tooltip } from '@material-ui/core';
 import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldEditArray, FieldMultiSelectVirtualized, DialogZyx, FieldEditMulti } from 'components';
 import { RichText } from 'components/fields/RichText';
 import { langKeys } from 'lang/keys';
@@ -46,6 +46,7 @@ import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import TableZyxEditable from 'components/fields/table-editable';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 
 const isIncremental = window.location.href.includes("incremental")
 
@@ -132,6 +133,11 @@ const useLeadFormStyles = makeStyles(theme => ({
         textDecoration: 'underline',
         cursor: 'pointer'
     },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    }
 }));
 
 function returnpriority(prio:number) {
@@ -1491,6 +1497,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <Trans i18nKey={langKeys.customvariables} />
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
                             </div>
                         )}
                         value={3}
@@ -3106,19 +3115,19 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
             {
                 Header: t(langKeys.variable),
                 accessor: 'variablename',
-                NoFilter: false,
+                NoFilter: true,
                 sortType: 'string'
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: false,
+                NoFilter: true,
                 sortType: 'string',
             },
             {
                 Header: t(langKeys.datatype),
                 accessor: 'variabletype',
-                NoFilter: false,
+                NoFilter: true,
                 sortType: 'string',
             },
             {

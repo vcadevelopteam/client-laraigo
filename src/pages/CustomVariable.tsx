@@ -8,13 +8,15 @@ import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getValuesFromDomain, insDomain, insDomainvalue, getCustomVariableSel, getCustomVariableSelByTableName, insCustomVariable } from 'common/helpers';
+import { getValuesFromDomain, getCustomVariableSel, getCustomVariableSelByTableName, insCustomVariable } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain, getMultiCollectionAux } from 'store/main/actions';
+import { getCollection, getMultiCollection, getCollectionAux, resetMainAux, resetAllMain, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { Tooltip } from '@material-ui/core';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -58,6 +60,11 @@ const useStyles = makeStyles((theme) => ({
         fontSize: "20px",
         color: theme.palette.text.primary,
     },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    }
 }));
 
 const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, dataDomain,mainRow, openModal,multiData, setOpenModal, updateRecords }) => {
@@ -70,13 +77,20 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
         if (!edit && dataDomain && dataDomain.some(d => d.variablename === data.variablename)) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.code_duplicate) }))
         }
-        else {
-            if (edit)
-                updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.variablename === row?.variablename || '' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
-            else
-                updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, org_name: user?.orgdesc || '', status: row?.status || 'ACTIVO', operation: "INSERT" }]);
-
-            setOpenModal(false);
+        else {            
+            const callback = () => {
+                if (edit)
+                    updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.variablename === row?.variablename || '' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
+                else
+                    updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, org_name: user?.orgdesc || '', status: row?.status || 'ACTIVO', operation: "INSERT" }]);
+    
+                setOpenModal(false);
+            }
+            dispatch(manageConfirmation({
+                visible: true,
+                question: edit?t(langKeys.confirmation_save_customvariable_edit):t(langKeys.confirmation_save_customvariable),
+                callback
+            }))
         }
     });
 
@@ -140,7 +154,11 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                     valueDefault={getValues('variabletype')}
                     onChange={(value) => { setValue('variabletype', value ? value.domainvalue : ''); }}
                     error={errors?.variabletype?.message}
-                    data={[{domaindesc: "numerico", domainvalue:"numerico"}]}
+                    data={[
+                        {domaindesc: "Enteros", domainvalue:"Enteros"},
+                        {domaindesc: "Letras", domainvalue:"Letras"},
+                        {domaindesc: "Fecha y Hora", domainvalue:"Fecha y Hora"},
+                    ]}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />                             
@@ -242,7 +260,7 @@ const DetailCustomVariable: React.FC<DetailProps> = ({ data: { row, domainname, 
             row.operation = 'DELETE';
         }
 
-        setdataDomain(p => p.filter(x => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.customvariableapplicationid !== x.customvariableapplicationid)));
+        setdataDomain(p => p.filter(x => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.customvariableid !== x.customvariableid)));
     }
 
     const handleEdit = (row: Dictionary) => {
@@ -360,7 +378,11 @@ const DetailCustomVariable: React.FC<DetailProps> = ({ data: { row, domainname, 
             </form>
 
             <div className={classes.containerDetail}>
-                <div className={classes.subtitle}> {t(langKeys.customvariableslist)}</div>
+                <div className={classes.subtitle}> {t(langKeys.customvariableslist)}
+                        <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper)}</div>} arrow placement="top" >
+                            <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                        </Tooltip>
+                </div>
                 {detailRes.error ? <h1>ERROR</h1> : (
                     <TableZyx
                         columns={columns}
@@ -371,6 +393,7 @@ const DetailCustomVariable: React.FC<DetailProps> = ({ data: { row, domainname, 
                         filterGeneral={false}
                         register={true}
                         handleRegister={handleRegister}
+                        pageSizeDefault={10}
                     />
                 )}
             </div>
@@ -395,6 +418,7 @@ const CustomVariable: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [dataTable, setDataTable] = useState<Dictionary[]>([]);
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.customvariables) },
@@ -418,22 +442,13 @@ const CustomVariable: FC = () => {
             },
             {
                 Header: t(langKeys.app),
-                accessor: 'application_name',
-                NoFilter: true,//customvariabledesc
+                accessor: 'application_name_t',
                 helpText: t(langKeys.application_helper),
-                Cell: (props: any) => {
-                    const { application_name } = props.cell.row.original || {}; 
-                    return (t(`${application_name}`.toLowerCase()) || "")
-                }
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description',
+                accessor: 'description_t',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const { application_name } = props.cell.row.original || {}; 
-                    return t(langKeys.customvariabledesc) + t(`${application_name}`.toLowerCase()) || ""
-                }
             },
             {
                 Header: t(langKeys.organization),
@@ -469,6 +484,16 @@ const CustomVariable: FC = () => {
     }, []);
 
     useEffect(() => {
+        if(!mainResult.mainData.loading && !mainResult.mainData.error){
+            const changeddata = mainResult.mainData.data.map(x=>({...x,
+                application_name_t: t(`${x.application_name}`.toLowerCase()) || "",
+                description_t: t(langKeys.customvariabledesc) + t(`${x.application_name}`.toLowerCase()) || ""
+            }))
+            setDataTable(changeddata)
+        }
+    }, [mainResult]);
+
+    useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
@@ -501,7 +526,7 @@ const CustomVariable: FC = () => {
                     columns={columns}
                     titlemodule={t(langKeys.customvariables)}
                     helperText={t(langKeys.custom_fields_helper)}
-                    data={mainResult.mainData.data}
+                    data={dataTable}
                     download={true}
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}
