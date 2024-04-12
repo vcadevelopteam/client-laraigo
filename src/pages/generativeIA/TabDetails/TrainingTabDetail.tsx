@@ -353,7 +353,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
-            callback: conector?.provider === 'Meta' ? callbackMeta : callback,
+            callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
           })
         );
     });
@@ -416,7 +416,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_delete),
-            callback: conector?.provider === 'Meta' ? callbackMeta : callback,
+            callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
           })
         );
     };

@@ -19,7 +19,7 @@ import { assistantAiSel, exportExcel, getIntelligentModelsSel, getValuesFromDoma
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
 import { deleteAssistant, deleteMassiveAssistant } from "store/gpt/actions";
-import { deleteCollection } from "store/llama/actions";
+import { deleteCollection, massiveDeleteCollection } from "store/llama/actions";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -210,7 +210,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             dispatch(deleteMassiveAssistant({
                 ids: codes,
                 apikey: dataSelected[0].apikey,            
-            }))    
+            }))
 
             dataSelected.map(async (row) => {          
                 dispatch(
@@ -234,6 +234,73 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             })
         );
     };
+
+    const handleDeleteSelection2 = async (dataSelected: Dictionary[]) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));  
+            const collections = dataSelected.map(obj=> obj.name)
+            dispatch(massiveDeleteCollection({
+                names: collections,
+            }))
+
+            dataSelected.map(async (row) => {
+                dispatch(
+                    execute(insAssistantAi({
+                        ...row,
+                        id: row.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+            });
+            setWaitSave(true);
+        }
+
+        dispatch(
+            manageConfirmation({
+              visible: true,
+              question: t(langKeys.confirmation_delete_all),
+              callback,
+            })
+        );
+    };
+
+    const handleDeleteBothSelection = (gptObjects: Dictionary[], nonGptObjects: Dictionary[]) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));  
+            const collections = nonGptObjects.map(obj=> obj.name)
+            dispatch(massiveDeleteCollection({
+                names: collections,
+            }))
+            const codes = gptObjects.map(obj=> obj.code)
+            dispatch(deleteMassiveAssistant({
+                ids: codes,
+                apikey: gptObjects[0].apikey,            
+            }))
+            const dataSelected = gptObjects.concat(nonGptObjects)
+            dataSelected.map(async (row) => {
+                dispatch(
+                    execute(insAssistantAi({
+                        ...row,
+                        id: row.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+            });
+            setWaitSave(true);
+        }
+
+        dispatch(
+            manageConfirmation({
+              visible: true,
+              question: t(langKeys.confirmation_delete_all),
+              callback,
+            })
+        );
+    }
     
     const columnsGenerativeIA = React.useMemo(
         () => [
@@ -354,6 +421,19 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             ])
           );
     }, []);
+
+    const handleMassiveDelete = () => {
+        if (rowWithDataSelected.every(obj => obj.basemodel.startsWith('gpt'))) {
+            handleDeleteSelection(rowWithDataSelected);
+        } else if (rowWithDataSelected.every(obj => !obj.basemodel.startsWith('gpt'))) {
+            handleDeleteSelection2(rowWithDataSelected);
+        } else {
+            const gptObjects = rowWithDataSelected.filter(obj => obj.basemodel.startsWith('gpt'));
+            const nonGptObjects = rowWithDataSelected.filter(obj => !obj.basemodel.startsWith('gpt'));
+            handleDeleteBothSelection(gptObjects, nonGptObjects)
+        }
+    }
+
     const ButtonsElement = () => {
         return (
             <div className={classes.buttonsContainer}>   
@@ -372,9 +452,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     startIcon={<Delete style={{ color: "white" }} />}
                     variant="contained"
                     style={{marginLeft: 9}}
-                    onClick={() => {
-                        handleDeleteSelection(rowWithDataSelected);
-                    }}
+                    onClick={handleMassiveDelete}
                 >
                     {t(langKeys.delete)}
                 </Button>

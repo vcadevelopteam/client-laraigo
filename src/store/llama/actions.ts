@@ -22,6 +22,16 @@ export const deleteCollection = (requestBody: any): IActionCall => ({
     type: null,
 })
 
+export const massiveDeleteCollection = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService.massiveDeleteCollection(requestBody),
+    types: {
+        loading: actionTypes.MASSIVE_DELETE_COLLECTION,
+        success: actionTypes.MASSIVE_DELETE_COLLECTION_SUCCESS,
+        failure: actionTypes.MASSIVE_DELETE_COLLECTION_FAILURE,
+    },
+    type: null,
+})
+
 export const editCollection = (requestBody: any): IActionCall => ({
     callAPI: () => LlamaService.editCollection(requestBody),
     types: {

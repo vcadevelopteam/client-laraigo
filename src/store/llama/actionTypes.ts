@@ -9,6 +9,11 @@ const actionTypes = {
     DELETE_COLLECTION_FAILURE: 'llama/delete_collection_failure',
     DELETE_COLLECTION_RESET: 'llama/delete_collection_reset',
 
+    MASSIVE_DELETE_COLLECTION: 'llama/massive_delete_collection',
+    MASSIVE_DELETE_COLLECTION_SUCCESS: 'llama/massive_delete_collection_success',
+    MASSIVE_DELETE_COLLECTION_FAILURE: 'llama/massive_delete_collection_failure',
+    MASSIVE_DELETE_COLLECTION_RESET: 'llama/massive_delete_collection_reset',
+
     EDIT_COLLECTION: 'llama/edit_collection',
     EDIT_COLLECTION_SUCCESS: 'llama/edit_collection_success',
     EDIT_COLLECTION_FAILURE: 'llama/edit_collection_failure',

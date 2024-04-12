@@ -144,7 +144,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             temperature: row?.temperature || 0,
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
-            apikey: edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '',
+            apikey: row?.basemodel.startsWith('gpt') ? (edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '') : (edit ? row?.apikey : ''),
             retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
             type: row?.type || '',

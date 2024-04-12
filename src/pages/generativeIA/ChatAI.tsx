@@ -343,6 +343,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setIsLoading(false);
                 setWaitSaveMessageLlama(false);
             }
         }
@@ -446,7 +447,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             collection: row?.name,
             query: message,
             system_prompt: row?.prompt,
-            model: row?.basemodel?.split('-')[0],
+            model: row?.basemodel,
         }))
         setWaitSaveMessageLlama(true)
     };

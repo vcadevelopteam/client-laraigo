@@ -68,15 +68,6 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         }
     ];
 
-    const llamaModels = [
-        {
-            "domainid": 439128,
-            "domainvalue": "llama-2-13b-chat",
-            "domaindesc": "llama-2-13b-chat",
-            "bydefault": null
-        },
-    ]
-
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -156,7 +147,11 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 />
                 <FieldSelect
                     label={t(langKeys.basemodel)}
-                    data={conector?.provider === 'Open AI' ? retrievalbasemodels : conector?.provider === 'Meta' ? llamaModels : []}
+                    data={
+                        conector?.provider === 'Open AI' ? retrievalbasemodels :
+                        conector?.provider === 'Meta' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('meta')) :
+                        conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('ibm')) : []
+                    }
                     valueDefault={getValues('basemodel')}
                     onChange={(value) => {
                         if(value) {
