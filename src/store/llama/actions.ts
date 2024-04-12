@@ -12,6 +12,16 @@ export const createCollection = (requestBody: any): IActionCall => ({
     type: null,
 })
 
+export const createCollectionDocument = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService.createCollectionDocument(requestBody),
+    types: {
+        loading: actionTypes.CREATE_COLLECTION_DOCUMENT,
+        success: actionTypes.CREATE_COLLECTION_DOCUMENT_SUCCESS,
+        failure: actionTypes.CREATE_COLLECTION_DOCUMENT_FAILURE,
+    },
+    type: null,
+})
+
 export const deleteCollection = (requestBody: any): IActionCall => ({
     callAPI: () => LlamaService.deleteCollection(requestBody),
     types: {

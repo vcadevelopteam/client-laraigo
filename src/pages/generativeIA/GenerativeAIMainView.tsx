@@ -72,7 +72,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     arrayBread,
 }) => {
     const dispatch = useDispatch();
-    const user = useSelector(state => state.login.validateToken.user);
     const { t } = useTranslation();
     const [viewSelectedTraining, setViewSelectedTraining] = useState("assistantdetail")
     const executeResult = useSelector(state => state.main.execute);

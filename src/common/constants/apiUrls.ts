@@ -450,6 +450,7 @@ export const apiUrls = {
     GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
 
     LLAMA_CREATE_COLLECTION: `${BASE_URL}/llama/create_collection`,
+    LLAMA_CREATE_COLLECTION_DOCUMENT: `${BASE_URL}/llama/create_collection_document`,
     LLAMA_DELETE_COLLECTION: `${BASE_URL}/llama/delete_collection`,
     LLAMA_MASSIVE_DELETE_COLLECTION: `${BASE_URL}/llama/massive_delete`,
     LLAMA_EDIT_COLLECTION: `${BASE_URL}/llama/edit_collection`,

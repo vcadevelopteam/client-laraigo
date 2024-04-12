@@ -4,6 +4,11 @@ const actionTypes = {
     CREATE_COLLECTION_FAILURE: 'llama/create_collection_failure',
     CREATE_COLLECTION_RESET: 'llama/create_collection_reset',
 
+    CREATE_COLLECTION_DOCUMENT: 'llama/create_collection_document',
+    CREATE_COLLECTION_DOCUMENT_SUCCESS: 'llama/create_collection_document_success',
+    CREATE_COLLECTION_DOCUMENT_FAILURE: 'llama/create_collection_document_failure',
+    CREATE_COLLECTION_DOCUMENT_RESET: 'llama/create_collection_document_reset',
+
     DELETE_COLLECTION: 'llama/delete_collection',
     DELETE_COLLECTION_SUCCESS: 'llama/delete_collection_success',
     DELETE_COLLECTION_FAILURE: 'llama/delete_collection_failure',

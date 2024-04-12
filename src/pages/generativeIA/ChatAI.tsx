@@ -43,11 +43,6 @@ const useStyles = makeStyles((theme) => ({
         height: '81vh', 
         overflowY: 'auto',
     },
-    chatInput: {
-        display: 'flex',
-        gap: theme.spacing(1),
-        marginTop: theme.spacing(2),
-    },
     chatInputContainer: {
         bottom: 0,
         padding: theme.spacing(2),
@@ -59,11 +54,6 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '2rem',
         justifyContent: 'space-between',
     },
-    redbutton: {
-        backgroundColor: '#ffff',
-        color: 'red',
-        border: '1px solid red'
-    },
     purpleButton: {
         width: 131,
         backgroundColor: '#7721AD',
@@ -74,16 +64,6 @@ const useStyles = makeStyles((theme) => ({
     },
     sendicon: {
         backgroundColor: 'none',
-    },
-    newChatContainer: {
-        backgroundColor: '#F4EDF8',
-        padding: '10px 10px 0',
-        marginBottom: '10px',
-        border: '1px solid #7721AD'
-    },
-    iconsContainer: {
-        display: 'flex',
-        justifyContent: 'flex-end'
     },
     threadContainer: {
         cursor: 'pointer',
@@ -446,7 +426,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         dispatch(query({
             collection: row?.name,
             query: message,
-            system_prompt: row?.prompt,
+            system_prompt: row?.generalprompt,
             model: row?.basemodel,
         }))
         setWaitSaveMessageLlama(true)

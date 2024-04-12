@@ -329,6 +329,11 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [llamaResult, waitSaveAddFileLlama]);
 
+    const handleUploadInNewAssistant = () => {
+        setViewSelected('main')
+        setFile({name: getValues('description'), url: getValues('url')})
+    }
+
     const handleUpload = handleSubmit(async (data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
@@ -768,10 +773,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             variant="contained"
                             type="button"
                             startIcon={<AttachFileIcon />}
-                            onClick={edit ? handleUpload : ()=>{
-                                setViewSelected('main')
-                                setFile({name: getValues('description'), url: getValues('url')})
-                            }}
+                            onClick={edit ? handleUpload : handleUploadInNewAssistant}
                             className={classes.clipButton2}
                             disabled={fileAttachment === null || getValues('url') === ''}
                         >

@@ -5,6 +5,10 @@ export function createCollection(data: any) {
     return APIManager.post(apiUrls.LLAMA_CREATE_COLLECTION, { data }, true);
 }
 
+export function createCollectionDocument(data: any) {
+    return APIManager.post(apiUrls.LLAMA_CREATE_COLLECTION_DOCUMENT, { data }, true);
+}
+
 export function deleteCollection(data: any) {
     return APIManager.post(apiUrls.LLAMA_DELETE_COLLECTION, { data }, true);
 }

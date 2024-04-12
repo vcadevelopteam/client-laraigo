@@ -19,7 +19,7 @@ import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
-import { createCollection, editCollection } from "store/llama/actions";
+import { createCollection, createCollectionDocument, editCollection } from "store/llama/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -101,6 +101,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [waitSaveCreateAssistant2, setWaitSaveCreateAssistant2] = useState(false)
     const [waitSaveUpdateAssistant, setWaitSaveUpdateAssistant] = useState(false)
     const [waitSaveCreateMeta, setWaitSaveCreateMeta] = useState(false)
+    const [waitSaveCreateCollection, setWaitSaveCreateCollection] = useState(false)
+    const [waitSaveCreateCollectionDoc, setWaitSaveCreateCollectionDoc] = useState(false)
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [provider, setProvider] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid)?.provider : '')
 
@@ -493,6 +495,49 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         }
     });
 
+    const onMainSubmitMetaWithFiles = handleSubmit(async (data) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+            let generalprompt;
+
+            if (data.organizationname !== '') {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n' + 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
+            } else {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            }
+
+            if (data.querywithoutanswer === 'Mejor Sugerencia') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
+                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+            }
+            setGeneralPrompt(generalprompt)
+
+            dispatch(createCollectionDocument({
+                url: cosFile.url,
+                collection: data.name
+            }))
+            setWaitSaveCreateCollection(true)
+        };
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback,
+            })
+        );
+    });
+
     useEffect(() => {
         if (waitSaveCreateMeta) {
             if (!metaResult.loading && !metaResult.error) {
@@ -510,6 +555,49 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         }
     }, [metaResult, waitSaveCreateMeta]);
 
+    useEffect(() => {
+        if (waitSaveCreateCollection) {
+            if (!metaResult.loading && !metaResult.error) {
+                setWaitSaveCreateCollection(false);
+                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                setWaitSaveCreateCollectionDoc(true);
+            } else if (metaResult.error) {
+                const errormessage = t(metaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateCollection(false);
+            }
+        }
+    }, [metaResult, waitSaveCreateCollection]);
+
+    useEffect(() => {
+        if (waitSaveCreateCollectionDoc) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveCreateCollectionDoc(false);
+                dispatch(execute(insAssistantAiDoc({
+                    assistantaiid: executeResult.data[0].p_assistantaiid,
+                    id: 0,
+                    description: cosFile.name,
+                    url: cosFile.url,
+                    fileid: 'llamatest',
+                    type: 'FILE',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })));
+                setWaitSave(true);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateCollectionDoc(false);
+            }
+        }
+    }, [executeResult, waitSaveCreateCollectionDoc]);
+
     const mainHandleSubmit = (e: ChangeEvent<NonNullable<unknown>>) => {
         e.preventDefault();
         if (tabIndex === 0) {
@@ -526,6 +614,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             } else {
                 if (cosFile.name === '' && cosFile.url === '') {
                     onMainSubmitMeta();
+                } else {
+                    onMainSubmitMetaWithFiles();
                 }
             }
         }
