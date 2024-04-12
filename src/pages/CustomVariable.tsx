@@ -302,7 +302,7 @@ const DetailCustomVariable: React.FC<DetailProps> = ({ data: { row, domainname, 
             dispatch(showBackdrop(true));
             dispatch(getMultiCollectionAux([
                     ...dataDomain.filter(x => !!x.operation).map(x => insCustomVariable({ ...row, ...x, id: x?.customvariableid||0 })),
-                    ...domainToDelete.map(x => insCustomVariable({ ...x, id: x.customvariableapplicationid}))
+                    ...domainToDelete.map(x => insCustomVariable({ ...x, id: x.customvariableid, operation: "UPDATE"}))
                 ]
             ));
 

@@ -192,6 +192,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
 
     useEffect(() => {
         if (triggerSave) {
+            debugger
             (async () => {
                 const allOk = await trigger(); //para q valide el formulario
                 const data = getValues();
