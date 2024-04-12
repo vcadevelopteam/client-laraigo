@@ -77,20 +77,13 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
         if (!edit && dataDomain && dataDomain.some(d => d.variablename === data.variablename)) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.code_duplicate) }))
         }
-        else {            
-            const callback = () => {
-                if (edit)
-                    updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.variablename === row?.variablename || '' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
-                else
-                    updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, org_name: user?.orgdesc || '', status: row?.status || 'ACTIVO', operation: "INSERT" }]);
-    
-                setOpenModal(false);
-            }
-            dispatch(manageConfirmation({
-                visible: true,
-                question: edit?t(langKeys.confirmation_save_customvariable_edit):t(langKeys.confirmation_save_customvariable),
-                callback
-            }))
+        else {     
+            if (edit)
+                updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.variablename === row?.variablename || '' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
+            else
+                updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, org_name: user?.orgdesc || '', status: row?.status || 'ACTIVO', operation: "INSERT" }]);
+
+            setOpenModal(false);
         }
     });
 
