@@ -1411,19 +1411,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             {
                 Header: t(langKeys.variable),
                 accessor: 'variablename',
-                NoFilter: false,
+                NoFilter: true,
                 sortType: 'string'
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: false,
+                NoFilter: true,
                 sortType: 'string',
             },
             {
                 Header: t(langKeys.datatype),
                 accessor: 'variabletype',
-                NoFilter: false,
+                NoFilter: true,
                 sortType: 'string',
             },
             {
