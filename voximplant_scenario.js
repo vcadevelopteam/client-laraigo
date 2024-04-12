@@ -214,8 +214,6 @@ function createTicket2(callback) {
             } else {
                 identifier = result.Result.identifier || result.Result.split("#")[0];
                 personName = result.Result.personname || result.Result.split("#")[1];
-                identifier = result.Result.split("#")[0];
-                personName = result.Result.split("#")[1];
 
                 conversationid = identifier?.split("-")[3];
 
