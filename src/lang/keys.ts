@@ -18,7 +18,7 @@ export const langKeys = {
   edit_all: "edit_all",
   successful_inventoryconsumption: "successful_inventoryconsumption",
   set_your_weekly: "set_your_weekly",
-  error_generate_label:"error_generate_label",
+  error_generate_label: "error_generate_label",
   connected_since: "connected_since",
   validatedomainname: "validatedomainname",
   warningwhitebrand: "warningwhitebrand",
@@ -183,7 +183,7 @@ export const langKeys = {
   availablequantity: "availablequantity",
   reservedquantity: "reservedquantity",
   dispatchedquantity: "dispatchedquantity",
-  
+
   dispatchhistory: "dispatchhistory",
   dateoflastshipment: "dateoflastshipment",
   dateoflastshipmenttooltip: "dateoflastshipmenttooltip",
@@ -2813,7 +2813,7 @@ export const langKeys = {
   report_userproductivity_user: 'report_userproductivity_user',
   report_userproductivity_fullname: 'report_userproductivity_fullname',
   report_userproductivity_hourfirstlogin: 'report_userproductivity_hourfirstlogin',
-  
+
   report_userproductivity_totaltickets: 'report_userproductivity_totaltickets',
   report_userproductivity_totaltickets_help: 'report_userproductivity_totaltickets_help',
 
@@ -2839,7 +2839,7 @@ export const langKeys = {
   report_userproductivity_maxtotalduration_help: 'report_userproductivity_maxtotalduration_help',
   report_userproductivity_mintotalduration: 'report_userproductivity_mintotalduration',
   report_userproductivity_mintotalduration_help: 'report_userproductivity_mintotalduration_help',
- report_userproductivity_avgtotalasesorduration: 'report_userproductivity_avgtotalasesorduration',
+  report_userproductivity_avgtotalasesorduration: 'report_userproductivity_avgtotalasesorduration',
   report_userproductivity_avgtotalasesorduration_help: 'report_userproductivity_avgtotalasesorduration_help',
   report_userproductivity_maxtotalasesorduration_help: 'report_userproductivity_maxtotalasesorduration_help',
   report_userproductivity_mintotalasesorduration_help: 'report_userproductivity_mintotalasesorduration_help',
@@ -2848,12 +2848,12 @@ export const langKeys = {
   report_userproductivity_userconnectedduration: 'report_userproductivity_userconnectedduration',
   report_userproductivity_userstatus: 'report_userproductivity_userstatus',
   report_userproductivity_groups: 'report_userproductivity_groups',
-  
 
 
 
 
-  
+
+
 
   report_userproductivity_cardtme: 'report_userproductivity_cardtme',
   report_userproductivity_cardtmo: 'report_userproductivity_cardtmo',
@@ -5712,7 +5712,7 @@ export const langKeys = {
   scheduledshift: 'scheduledshift',
   deliverydate: 'deliverydate',
   ordertime: 'ordertime',
-  typing:'typing',
+  typing: 'typing',
   validated: 'validated',
   deliveryshift: 'deliveryshift',
   undelivered: 'undelivered',
@@ -5779,10 +5779,10 @@ export const langKeys = {
   viewcounter: 'viewcounter',
   paymentreceipt: 'paymentreceipt',
   registeredaddress: 'registeredaddress',
-  viewonlinepayment: 'viewonlinepayment', 
-  obverseid: 'obverseid', 
-  reverseid: 'reverseid', 
-  paymentvoucher: 'paymentvoucher', 
+  viewonlinepayment: 'viewonlinepayment',
+  obverseid: 'obverseid',
+  reverseid: 'reverseid',
+  paymentvoucher: 'paymentvoucher',
   store: 'store',
   schedulesth: 'schedulesth',
   dispatch: 'dispatch',
@@ -6032,6 +6032,7 @@ export const langKeys = {
   deliverytypeerror: 'deliverytypeerror',
   allmustbesameorder: 'allmustbesameorder',
   needtopay: 'needtopay',
+  numbers: 'numbers',
 };
 
 export type LangKeys = typeof langKeys;

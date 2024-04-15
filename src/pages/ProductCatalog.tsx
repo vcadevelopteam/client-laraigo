@@ -388,14 +388,14 @@ const ProductCatalog: FC = () => {
                 accessor: 'description',
                 Header: t(langKeys.description),
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;                  
+                    const { row } = props.cell;
                     if (row && row.original && row.original.description) {
-                      const { description } = row.original;
-                      return description.substring(0, 50) + "... ";
+                        const { description } = row.original;
+                        return description.substring(0, 50) + "... ";
                     } else {
-                      return ""; 
+                        return "";
                     }
-                }                  
+                }
             },
             {
                 accessor: 'availability',
@@ -403,36 +403,36 @@ const ProductCatalog: FC = () => {
                 type: 'select',
                 listSelectFilter: getValues('availabilityList') || [],
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;                  
+                    const { row } = props.cell;
                     if (row && row.original && row.original.availability) {
-                      const { availability } = row.original;
-                      const formattedAvailability = t(`productcatalog_domain_availability_${availability?.replaceAll(' ', '_')}`.toLowerCase()) || '';
-                      return formattedAvailability.toUpperCase();
+                        const { availability } = row.original;
+                        const formattedAvailability = t(`productcatalog_domain_availability_${availability?.replaceAll(' ', '_')}`.toLowerCase()) || '';
+                        return formattedAvailability.toUpperCase();
                     } else {
-                      return "";
+                        return "";
                     }
-                }                  
+                }
             },
             {
                 accessor: 'link',
                 Header: t(langKeys.website),
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;                  
+                    const { row } = props.cell;
                     if (row && row.original && row.original.link) {
-                      const { link } = row.original;
-                      return (
-                        <label
-                          className={classes.labellink}
-                          onClick={(e) => { e.stopPropagation(); window.open(`${link}`, '_blank')?.focus() }}
-                        >
-                          {t(langKeys.website)}
-                        </label>
-                      );
+                        const { link } = row.original;
+                        return (
+                            <label
+                                className={classes.labellink}
+                                onClick={(e) => { e.stopPropagation(); window.open(`${link}`, '_blank')?.focus() }}
+                            >
+                                {t(langKeys.website)}
+                            </label>
+                        );
                     } else {
-                      return null;
+                        return null;
                     }
-                }                  
+                }
             },
             {
                 accessor: 'currency',
@@ -440,18 +440,18 @@ const ProductCatalog: FC = () => {
                 type: 'select',
                 listSelectFilter: getValues('currencyList') || [],
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;                  
+                    const { row } = props.cell;
                     if (row && row.original && row.original.currency) {
-                      const { currency } = row.original;
-                      return (
-                        <span>
-                          {t(`productcatalog_domain_currency_${currency}`.toLowerCase()) || ''}
-                        </span>
-                      );
+                        const { currency } = row.original;
+                        return (
+                            <span>
+                                {t(`productcatalog_domain_currency_${currency}`.toLowerCase()) || ''}
+                            </span>
+                        );
                     } else {
-                      return null; 
+                        return null;
                     }
-                }                  
+                }
             },
             {
                 accessor: 'price',
@@ -460,14 +460,14 @@ const ProductCatalog: FC = () => {
                 type: 'number',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { price } = props.cell.row.original || {};
-                    const formattedPrice = price !== undefined ? formatNumber(price) : '';                  
+                    const formattedPrice = price !== undefined ? formatNumber(price) : '';
                     return (
-                      <span>
-                        {formattedPrice}
-                      </span>
+                        <span>
+                            {formattedPrice}
+                        </span>
                     );
                 }
-                  
+
             },
             {
                 accessor: 'saleprice',
@@ -476,53 +476,53 @@ const ProductCatalog: FC = () => {
                 type: 'number',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { saleprice } = props.cell.row.original || {};
-                    const formattedSalePrice = saleprice !== undefined ? formatNumber(saleprice) : '';                  
+                    const formattedSalePrice = saleprice !== undefined ? formatNumber(saleprice) : '';
                     return (
-                      <span>
-                        {formattedSalePrice}
-                      </span>
+                        <span>
+                            {formattedSalePrice}
+                        </span>
                     );
-                }                  
+                }
             },
             {
                 accessor: 'imagelink',
                 Header: t(langKeys.image),
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { imagelink } = props.cell.row.original || {};                   
+                    const { imagelink } = props.cell.row.original || {};
                     const openImageLink = (e) => {
-                      e.stopPropagation();
-                      imagelink && window.open(imagelink, '_blank')?.focus();
-                    };                  
+                        e.stopPropagation();
+                        imagelink && window.open(imagelink, '_blank')?.focus();
+                    };
                     return (
-                      <label
-                        className={classes.labellink}
-                        onClick={openImageLink}
-                      >
-                        {imagelink ? t(langKeys.imagelink) : ''}
-                      </label>
+                        <label
+                            className={classes.labellink}
+                            onClick={openImageLink}
+                        >
+                            {imagelink ? t(langKeys.imagelink) : ''}
+                        </label>
                     );
-                }                  
+                }
             },
             {
                 accessor: 'additionalimagelink',
                 Header: t(langKeys.additionalimage),
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { additionalimagelink } = props.cell.row.original || {};                  
+                    const { additionalimagelink } = props.cell.row.original || {};
                     const openAdditionalImageLink = (e) => {
-                      e.stopPropagation();
-                      additionalimagelink && window.open(additionalimagelink, '_blank')?.focus();
-                    };                  
+                        e.stopPropagation();
+                        additionalimagelink && window.open(additionalimagelink, '_blank')?.focus();
+                    };
                     return (
-                      <label
-                        className={classes.labellink}
-                        onClick={openAdditionalImageLink}
-                      >
-                        {additionalimagelink ? t(langKeys.additionalimagelink) : ''}
-                      </label>
+                        <label
+                            className={classes.labellink}
+                            onClick={openAdditionalImageLink}
+                        >
+                            {additionalimagelink ? t(langKeys.additionalimagelink) : ''}
+                        </label>
                     );
-                }                  
+                }
             },
             {
                 accessor: 'pattern',
@@ -995,6 +995,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [fileAttachmentAditional, setFileAttachmentAditional] = useState<File | null>(null);
     const [labels, setlabels] = useState(row?.labels?.split(',') || []);
+    const [numbers, setnumbers] = useState(row?.numbers?.split(',') || []);
     const resultManageProduct = useSelector(state => state.catalog.requestCatalogManageProduct);
     const uploadResult = useSelector(state => state.main.uploadFile);
     const classes = useStyles();
@@ -1084,6 +1085,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             datelaunch: row?.datelaunch || null,
             dateexpiration: row?.dateexpiration || null,
             labels: row?.labels || '',
+            numbers: row?.numbers || '',
             customlabel0: row?.customlabel0 || '',
             customlabel1: row?.customlabel1 || '',
             customlabel2: row?.customlabel2 || '',
@@ -1132,6 +1134,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('datelaunch');
         register('dateexpiration');
         register('labels');
+        register('numbers');
         register('customlabel0');
         register('customlabel1');
         register('customlabel2');
@@ -1506,6 +1509,20 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                     </div>
                     <div className="row-zyx">
+                        <FieldMultiSelectFreeSolo
+                            className="col-6"
+                            data={numbers.map((x: any) => ({ value: x }))}
+                            disabled={!edit}
+                            label={t(langKeys.numbers)}
+                            loading={false}
+                            onChange={(value) => {
+                                setnumbers(value.reduce((acc: any, x: any) => [...acc, typeof x === "object" ? x.value : x], []))
+                                setValue("numbers", value.reduce((acc: any, x: any) => [...acc, typeof x === "object" ? x.value : x], []).join(","))
+                            }}
+                            optionDesc="value"
+                            optionValue="value"
+                            valueDefault={numbers.join(",") || ''}
+                        />
                         <FieldEdit
                             className="col-6"
                             disabled={!edit}
@@ -1515,6 +1532,8 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             type="number"
                             valueDefault={row?.customnumber0 || ''}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
                             disabled={!edit}
@@ -1524,8 +1543,6 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             type="number"
                             valueDefault={row?.customnumber1 || ''}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
                             disabled={!edit}
@@ -1535,6 +1552,8 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             type="number"
                             valueDefault={row?.customnumber2 || ''}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
                             disabled={!edit}
@@ -1544,10 +1563,8 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             type="number"
                             valueDefault={row?.customnumber3 || ''}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
-                            className="col-12"
+                            className="col-6"
                             disabled={!edit}
                             error={errors?.customnumber4?.message}
                             label={`${t(langKeys.customnumber)} 4`}
