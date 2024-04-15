@@ -1593,6 +1593,7 @@ const translation: LangKeys = {
   customvariable: "Campo Personalizado",
   app: "Aplicación",
   templateinformation: 'Información de Plantilla',
+  userinformation: 'Información del Usuario',
   variableconfiguration: 'Configuración de variables',
   variableconfiguration_plural: 'Configuración de variables',
   variableconfigurationdetail: 'Detalle de configuracion de variable',

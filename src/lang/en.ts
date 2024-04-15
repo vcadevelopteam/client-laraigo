@@ -1299,6 +1299,7 @@ const translation: LangKeys = {
   customvariableslist_helper: "Here you can create custom fields.\nExample to register:\nField: RUC\nDescription: RUC\nData type: Numeric\nTo finish the registration, select save.",
   customvariableslist_helper_lead: "It will allow you to view the fields created from the custom fields application and also allows you to edit the value according to the needs of this application.",
   variableconfiguration: 'Variable Configuration',
+  userinformation: 'User information',
   templateinformation: 'Template Information',
   variableconfiguration_plural: 'Variable Configuration',
   variableconfigurationdetail: 'Variable configuration detail',
