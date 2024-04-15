@@ -446,8 +446,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [openModal, setOpenModal] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
-    const domains = useSelector(state => state.person.editableDomains);
     
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
@@ -458,13 +456,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         dispatch(getDomainsByTypename());
     }, []);
-    
-    useEffect(() => {
-        if (domains.value?.customVariablesLead && lead) {
-            setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
-        }
-    }, [lead,domains]);
-
 
     const { register, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
         defaultValues: {
@@ -546,9 +537,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
                 if (edit) {
                     dispatch(saveLeadAction([
-                        insLead2({...data,
-                            variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
-                        }, data.operation),
+                        insLead2(data, data.operation),
                         ...leadProductsChanges.current.map(leadHistoryIns),
                         ...leadTagsChanges.current.map(leadHistoryIns),
                     ], false));
@@ -568,9 +557,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         }
 
                         return {
-                            header: insLead2({...data,
-                                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
-                            }, data.operation),
+                            header: insLead2(data, data.operation),
                             detail: [
                                 ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
                                 ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
@@ -1555,12 +1542,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         onClick={onClickSelectPersonModal}
                     />
                 )}
-                <AntTabPanel index={3} currentIndex={tabIndex}>
-                    <TabCustomVariables
-                        tableData={tableDataVariables} 
-                        setTableData={setTableDataVariables}
-                    />
-                </AntTabPanel>
                 <DialogSendTemplate
                     openModal={openDialogTemplate}
                     setOpenModal={setOpenDialogTemplate}
