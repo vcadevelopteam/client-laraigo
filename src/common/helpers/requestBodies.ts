@@ -5044,3 +5044,18 @@ export const getDomainByDomainName = (domainname:string) => ({
     key: "UFN_DOMAIN_BY_DOMAINNAME",
     parameters: { domainname },
 });
+export const getCustomVariableSel = (): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
+    key: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
+    parameters: {}
+})
+export const getCustomVariableSelByTableName = (tablename:string): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_SEL",
+    key: "UFN_CUSTOM_VARIABLE_SEL",
+    parameters: {tablename, customvariableapplicationid:0}
+})
+export const insCustomVariable = ({id, customvariableapplicationid, variablename, description, variabletype, status, operation}:Dictionary): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_INS",
+    key: "UFN_CUSTOM_VARIABLE_INS",
+    parameters: {id, customvariableapplicationid, variablename, description, variabletype, status, operation}
+})
