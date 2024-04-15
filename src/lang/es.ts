@@ -1589,6 +1589,8 @@ const translation: LangKeys = {
   observation: 'Observación',
   botdesigner: 'Diseñador de Bots',
 
+  customvariables: "Campos Personalizados",
+  customvariable: "Campo Personalizado",
   variableconfiguration: 'Configuración de variables',
   variableconfiguration_plural: 'Configuración de variables',
   variableconfigurationdetail: 'Detalle de configuracion de variable',
