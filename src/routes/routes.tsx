@@ -2,7 +2,7 @@ import React from 'react';
 import { ViewsClassificationConfig, RouteConfig } from "@types";
 import paths from "common/constants/paths";
 import {
-    DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,
+    DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,CustomVariablesIcon,
     BotDesignerIcon, BillingSetupIcon, TimeSheetIcon, InvoiceIcon,
     //IAServicesIcon,
     OutboundIcon,
@@ -469,7 +469,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.customvariables}/>,
         tooltip: <Trans i18nKey={langKeys.customvariables} />,
         path: paths.CUSTOMVARIABLE,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
+        icon: (className) => <CustomVariablesIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
     },
     /*{
         key: paths.CUSTOMFIELDS,

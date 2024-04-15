@@ -37,7 +37,7 @@ import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon,
 import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
-import { EmailIcon, WhatsappIcon, SmsIcon } from 'icons';
+import { EmailIcon, WhatsappIcon, SmsIcon, CustomVariablesIcon } from 'icons';
 import { Descendant } from 'slate';
 import { emitEvent } from 'store/inbox/actions';
 import { emojis } from "common/constants/emojis";
@@ -1491,11 +1491,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     <Trans i18nKey={langKeys.history} />
                                 </div>
                             )}
-                        />
-                    )}
+                            />
+                        )}
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <CustomVariablesIcon style={{ width: 22, height: 22, fill: "#b6b4ba" }} />
                                 <Trans i18nKey={langKeys.customvariables} />
                                 <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
