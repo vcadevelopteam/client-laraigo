@@ -1490,7 +1490,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     onChange={(_, value) => setPageSelected(value)}
                 >
                     <AntTab label={t(langKeys.templateinformation)} />
-                    <AntTab label={t(langKeys.variableconfiguration)}/>
+                    <AntTab label={t(langKeys.custom_fields)}/>
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     {row?.showid && (
