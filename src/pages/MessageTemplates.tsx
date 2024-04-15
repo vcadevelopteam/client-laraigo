@@ -59,7 +59,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
 import TableZyxEditable from "components/fields/table-editable";
-import { InfoRoundedIcon } from "icons";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 

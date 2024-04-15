@@ -15,13 +15,14 @@ import { getCollection, getMultiCollection, execute, resetAllMain, uploadFile, r
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
-import { Box, Grid, IconButton, InputAdornment, Tabs, FormControlLabel } from '@material-ui/core';
+import { Box, Grid, IconButton, InputAdornment, Tabs, FormControlLabel, Tooltip } from '@material-ui/core';
 import { Close, CloudUpload, Visibility, VisibilityOff, Refresh as RefreshIcon, CompareArrows } from '@material-ui/icons';
 import { getCountryList } from 'store/signup/actions';
 import { formatNumber } from 'common/helpers';
 import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updateScenario } from "store/voximplant/actions";
 import { CellProps } from 'react-table';
 import TableZyxEditable from 'components/fields/table-editable';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -597,7 +598,15 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     <AntTab label={t(langKeys.emailconfiguration)} />
                     {roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
                     {false && <AntTab label={t(langKeys.chatimages)} />}
-                    <AntTab label={t(langKeys.variableconfiguration)} value={4}/>
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.customvariables} />
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
+                            </div>
+                        )} value={4}/>
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">

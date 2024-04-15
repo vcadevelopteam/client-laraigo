@@ -34,7 +34,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { DuplicateIcon, InfoRoundedIcon } from "icons";
+import { DuplicateIcon } from "icons";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { CellProps } from "react-table";
 import TableZyxEditable from "components/fields/table-editable";
 
@@ -197,7 +198,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
 
     useEffect(() => {
         if (triggerSave) {
-            debugger
             (async () => {
                 const allOk = await trigger(); //para q valide el formulario
                 const data = getValues();
@@ -1556,7 +1556,7 @@ const DetailUsers: React.FC<DetailProps> = ({
                 </div>}
             </form>
 
-            <div className={classes.containerDetail}>
+            <div className={classes.containerDetail} style={{display:pageSelected === 0?"":"None"}}>
                 {detailRes.error ? (
                     <h1>ERROR</h1>
                 ) : (
