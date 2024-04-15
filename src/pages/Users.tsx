@@ -28,13 +28,13 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import { Divider, Grid, ListItem, Box, IconButton, Tabs } from "@material-ui/core";
+import { Divider, Grid, ListItem, Box, IconButton, Tabs, Tooltip } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import DeleteIcon from "@material-ui/icons/Delete";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { DuplicateIcon } from "icons";
+import { DuplicateIcon, InfoRoundedIcon } from "icons";
 import { CellProps } from "react-table";
 import TableZyxEditable from "components/fields/table-editable";
 
@@ -106,6 +106,11 @@ const useStyles = makeStyles((theme) => ({
     badgeFailure: {
         color: "#fff",
         backgroundColor: "#fb5f5f",
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
     },
 }));
 const ListItemSkeleton: FC = () => (
@@ -1375,7 +1380,15 @@ const DetailUsers: React.FC<DetailProps> = ({
                     onChange={(_, value) => setPageSelected(value)}
                 >
                     <AntTab label={t(langKeys.userinformation)} />
-                    <AntTab label={t(langKeys.variableconfiguration)}/>
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.customvariables} />
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
+                            </div>
+                        )}/>
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">

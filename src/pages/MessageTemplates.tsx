@@ -1,5 +1,5 @@
 import { addTemplate, deleteTemplate, synchronizeTemplate } from "store/channel/actions";
-import { Box, CircularProgress, IconButton, Paper, Tabs } from "@material-ui/core";
+import { Box, CircularProgress, IconButton, Paper, Tabs, Tooltip } from "@material-ui/core";
 import { Close, Delete, FileCopy, GetApp, Search } from "@material-ui/icons";
 import { Descendant } from "slate";
 import { Dictionary, IFetchData, MultiData } from "@types";
@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import {
     execute,
@@ -59,6 +59,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
 import TableZyxEditable from "components/fields/table-editable";
+import { InfoRoundedIcon } from "icons";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -124,6 +125,11 @@ const useStyles = makeStyles((theme) => ({
             opacity: 1,
         },
     },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    }
 }));
 
 const MessageTemplates: FC = () => {
@@ -1490,7 +1496,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     onChange={(_, value) => setPageSelected(value)}
                 >
                     <AntTab label={t(langKeys.templateinformation)} />
-                    <AntTab label={t(langKeys.custom_fields)}/>
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.customvariables} />
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
+                            </div>
+                        )}/>
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     {row?.showid && (
