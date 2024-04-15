@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker, getAnalyticsIA, getUserAsesorByOrgID } from 'common/helpers';
+import React, { useState, useEffect, useCallback, FC } from 'react'
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker, getAnalyticsIA, getUserAsesorByOrgID, getCustomVariableSelByTableName } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -10,7 +10,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized, AntTab, AntTabPanel } from 'components';
+import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized, AntTab, AntTabPanel, TitleDetail, TemplateBreadcrumbs, FieldView } from 'components';
 import TableZyx from 'components/fields/table-simple';
 import { useForm } from 'react-hook-form';
 import IconButton from '@material-ui/core/IconButton';
@@ -84,6 +84,11 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         flexWrap: 'wrap',
         width: 'inherit',
+    },
+    containerDetail: {
+        marginTop: theme.spacing(2),       
+        padding: theme.spacing(2),
+        background: "#fff",
     },
 }));
 
@@ -489,7 +494,7 @@ const IconOptions: React.FC<{
                 aria-haspopup="true"
                 size="small"
                 disabled={disabled}
-                onClick={(e) => setAnchorEl(e.currentTarget)}
+                onClick={(e) => {e.stopPropagation();setAnchorEl(e.currentTarget)}}
             >
                 <MoreVertIcon />
             </IconButton>
@@ -982,6 +987,336 @@ const DialogLoadTickets: React.FC<{
         </DialogZyx>)
 }
 
+interface RowSelected {
+    row: Dictionary | null,
+    columnid: string | null,
+    open: boolean
+}
+
+const TicketDetail: FC<{ row:RowSelected, setViewSelected:(x:string)=>void, openDialogInteractions:(x:any)=>void }> = ({ row, setViewSelected,openDialogInteractions }) => {
+    const multiDataResult = useSelector(state => state.main.multiData);
+    const { t } = useTranslation();
+    const [tabIndex, setTabIndex] = useState(0);
+    const classes = useStyles();
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
+    
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.ticket) }, { id: "view-2", name: t(langKeys.ticket) + " " + t(langKeys.detail)}
+    ];
+
+    useEffect(() => {
+        if(!multiDataResult.loading && !multiDataResult.error){
+            if (multiDataResult.data[9]) {
+                const variableDataList = multiDataResult.data[9].data ||[]
+                setTableDataVariables(variableDataList.map(x=>({...x,value: row?.row?.variablecontext?.[x.variablename]||""})))
+            }
+        }
+    }, [multiDataResult,row]);
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: true,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: true,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: true,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
+    
+    return (
+        <div style={{ width: "100%" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={setViewSelected}
+                    />
+                    <TitleDetail
+                        title={t(langKeys.ticket) + " " + t(langKeys.detail)}
+                    />
+                </div>
+            </div>
+            <Tabs
+                value={tabIndex}
+                onChange={(_, i) => setTabIndex(i)}
+                className={classes.tabs}
+                textColor="primary"
+                indicatorColor="primary"
+                variant="fullWidth"
+            >
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.generalinformation)}</div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.custom_fields)}</div>
+                    )}
+                />
+            </Tabs>
+            <AntTabPanel index={0} currentIndex={tabIndex}>
+                <div className={classes.containerDetail}>   
+                    <div className='row-zyx'>
+                        <div className={"col-4"}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                {t(langKeys.ticket_numeroticket)}
+                            </Box>
+                            <label
+                                className={classes.labellink}
+                                onClick={(e) => {e.stopPropagation();openDialogInteractions(row?.row)}}
+                            >
+                                {row?.row?.numeroticket}
+                            </label>
+                        </div>
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_communicationchanneldescription)}
+                            value={row?.row?.communicationchanneldescription || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_name)}
+                            value={row?.row?.name || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.origin)}
+                            value={row?.row?.origin || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_firstusergroup)}
+                            value={row?.row?.firstusergroup || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_ticketgroup)}
+                            value={row?.row?.ticketgroup || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_fechainicio)}
+                            value={row?.row?.fechainicio?convertLocalDate(row.row.fechainicio).toLocaleString(): "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_fechafin)}
+                            value={row?.row?.fechafin?convertLocalDate(row.row.fechafin).toLocaleString(): "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.status)}
+                            value={row?.row?.estadoconversacion || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_tipocierre)}
+                            tooltip={t(langKeys.report_productivity_closetype_help)}
+                            value={row?.row?.tipocierre || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_duracionreal)}
+                            tooltip={t(langKeys.ticket_help_duracionreal)}
+                            value={row?.row?.duracionreal || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_duracionpausa)}
+                            value={row?.row?.duracionpausa || "-"}
+                            tooltip={t(langKeys.ticket_duracionpausa_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_duraciontotal)}
+                            value={row?.row?.duraciontotal || "-"}
+                            tooltip={t(langKeys.ticket_duraciontotal_help)}
+                            />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_fechahandoff)}
+                            tooltip={t(langKeys.ticket_fechahandoff_help)}
+                            value={row?.row?.fechahandoff?convertLocalDate(row.row.fechahandoff).toLocaleString(): "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_fechaultimaconversacion)}
+                            tooltip={t(langKeys.ticket_fechaultimaconversacion_help)}
+                            value={row?.row?.fechaultimaconversacion?convertLocalDate(row.row.fechaultimaconversacion).toLocaleString(): "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_asesorinicial)}
+                            value={row?.row?.asesorinicial || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_asesorfinal)}
+                            value={row?.row?.asesorfinal || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_supervisor)}
+                            value={row?.row?.supervisor || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_agentrol)}
+                            value={row?.row?.rolasesor || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_empresa)}
+                            value={row?.row?.empresa || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.campaign)}
+                            value={row?.row?.campaign || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_tmoasesor)}
+                            value={row?.row?.tmoasesor || "-"}
+                            tooltip={t(langKeys.ticket_tmoasesor_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_tiempopromediorespuesta)}
+                            value={row?.row?.tiempopromediorespuesta || "-"}
+                            tooltip={t(langKeys.ticket_tiempopromediorespuesta_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_tiempopromediorespuestaasesor)}
+                            value={row?.row?.tiempopromediorespuestaasesor || "-"}
+                            tooltip={t(langKeys.ticket_tiempopromediorespuestaasesor_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_tiempoprimerarespuestaasesor)}
+                            value={row?.row?.tiempoprimerarespuestaasesor || "-"}
+                            tooltip={t(langKeys.ticket_tiempoprimerarespuestaasesor_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_tiempopromediorespuestapersona)}
+                            value={row?.row?.tiempopromediorespuestapersona || "-"}
+                            tooltip={t(langKeys.ticket_tiempopromediorespuestapersona_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_tiempoprimeraasignacion)}
+                            value={row?.row?.tiempoprimeraasignacion || "-"}
+                            tooltip={t(langKeys.ticket_tiempoprimeraasignacion_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_tdatime)}
+                            value={row?.row?.tdatime || "-"}
+                            tooltip={t(langKeys.ticket_tdatime_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_holdingwaitingtime)}
+                            value={row?.row?.holdingwaitingtime || "-"}
+                            tooltip={t(langKeys.ticket_holdingwaitingtime_help)}
+                            />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.supervisionduration)}
+                            value={row?.row?.supervisionduration || "-"}
+                            />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_classification)}
+                            value={row?.row?.tipification || "-"}
+                            tooltip={t(langKeys.ticket_tipification_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_documenttype)}
+                            value={row?.row?.documenttype || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.documentnumber)}
+                            value={row?.row?.dni || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_email)}
+                            value={row?.row?.email || "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_balancetimes)}
+                            value={row?.row?.balancetimes || "0"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_abandoned)}
+                            value={row?.row?.abandoned? t(langKeys.affirmative) : t(langKeys.negative)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_labels)}
+                            value={row?.row?.labels || "-"}
+                            tooltip={t(langKeys.ticket_labels_help)}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_originalpublishdate)}
+                            value={row?.row?.originalpublicationdate?convertLocalDate(row.row.originalpublicationdate).toLocaleString(): "-"}
+                        />
+                        <FieldView
+                            className={"col-4"}
+                            label={t(langKeys.ticket_followercount)}
+                            value={row?.row?.numberfollowers || "0"}
+                        />
+                    </div>
+                </div>
+            </AntTabPanel>
+            <AntTabPanel index={1} currentIndex={tabIndex}>
+                <div className={classes.containerDetail}>   
+                    <TableZyx
+                        columns={columns}
+                        data={tableDataVariables}
+                        filterGeneral={false}
+                        download={false}
+                        loading={multiDataResult.loading}
+                        register={false}
+                    />
+                </div>
+            </AntTabPanel>
+        </div>
+    )
+}
+
 const Tickets = () => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -994,6 +1329,8 @@ const Tickets = () => {
     const [openDialogReassign, setOpenDialogReassign] = useState(false);
     const [openDialogShowHistory, setOpenDialogShowHistory] = useState(false);
     const [openDialogShowAnalyticsIA, setOpenDialogShowAnalyticsIA] = useState(false);
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [rowDetail, setRowDetail] = useState<RowSelected>({ row: null, columnid: null, open: false });
 
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -1128,7 +1465,7 @@ const Tickets = () => {
                             <Tooltip title={t(langKeys.download_record) || ""}>
                                 <IconButton
                                     size="small"
-                                    onClick={() => downloadCallRecord(row)}
+                                    onClick={(e) => {e.stopPropagation();downloadCallRecord(row)}}
                                 >
                                     <CallRecordIcon style={{ fill: "#7721AD" }} />
                                 </IconButton>
@@ -1148,7 +1485,7 @@ const Tickets = () => {
                         return (
                             <label
                                 className={classes.labellink}
-                                onClick={() => openDialogInteractions(row)}
+                                onClick={(e) => {e.stopPropagation();openDialogInteractions(row)}}
                             >
                                 {row.numeroticket}
                             </label>
@@ -1466,7 +1803,8 @@ const Tickets = () => {
             getUserAsesorByOrgID(),
             getValuesFromDomainLight("GRUPOS"),
             getCampaignLst(),
-            getPropertySelByName('CARGARCONVERSACIONES')
+            getPropertySelByName('CARGARCONVERSACIONES'),
+            getCustomVariableSelByTableName("conversation")
         ]));
 
         return () => {
@@ -1505,139 +1843,151 @@ const Tickets = () => {
         }
     }, [mainResult?.multiData])
 
+    const handleView = (row: Dictionary, columnid: string) => {
+        setRowDetail({ row, columnid, open: true });
+        setViewSelected("view-2");
+    }
+
+    const FilterElements = React.useMemo(() => (
+        <>
+            <FieldMultiSelect
+                label={t(langKeys.channel)}
+                className={classes.filterComponent}
+                key="fieldMultiSelect_channel"
+                valueDefault={allParameters["channel"] || ""}
+                onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
+                variant="outlined"
+                data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
+                optionDesc="communicationchanneldesc"
+                optionValue="communicationchannelid"
+                disabled={mainPaginated.loading}
+            />
+            <FieldMultiSelect
+                label={t(langKeys.group)}
+                className={classes.filterComponent}
+                key="fieldMultiSelect_group"
+                valueDefault={allParameters["usergroup"] || ""}
+                onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
+                variant="outlined"
+                data={mainResult?.multiData?.data[1]?.data || []}
+                optionDesc="domaindesc"
+                optionValue="domainvalue"
+                disabled={mainPaginated.loading}
+            />
+            <FieldMultiSelect
+                label={t(langKeys.agent)}
+                className={classes.filterComponent}
+                key="fieldMultiSelect_user"
+                valueDefault={allParameters["lastuserid"] || ""}
+                onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
+                variant="outlined"
+                data={userList}
+                optionDesc="fullname"
+                optionValue="userid"
+                disabled={mainPaginated.loading}
+            />
+            <FieldMultiSelectVirtualized
+                label={t(langKeys.campaign)}
+                className={classes.filterComponentVirtualized}
+                key="fieldMultiSelect_campaign"
+                valueDefault={allParameters["campaignid"] || ""}
+                onChange={(value) => setValue("campaignid", value ? value.map((o: Dictionary) => o.id).join() : '')}
+                variant="outlined"
+                data={mainResult?.multiData?.data[7]?.data || []}
+                optionDesc="title"
+                optionValue="id"
+                disabled={mainPaginated.loading}
+            />
+        </>
+    ), [allParameters, mainResult.multiData, mainPaginated, userList])
+    
     return (
         <div className={classes.container}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
-                <div className={classes.title}>
-                    {t(langKeys.ticket_plural)}
-                </div>
-                {!isIncremental &&
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<ReassignIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setRowToSend(rowWithDataSelected);
-                                setOpenDialogReassign(true);
-                            }}
-                        >
-                            {t(langKeys.reassign)}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<TipifyIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setRowToSend(rowWithDataSelected);
-                                setOpenDialogTipify(true);
-                            }}
-                        >
-                            {t(langKeys.ticket_typify)}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<CloseTicketIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setRowToSend(rowWithDataSelected);
-                                setOpenDialogClose(true);
-                            }}
-                        >
-                            {t(langKeys.close)}
-                        </Button>
+            {(viewSelected === "view-1") && <div>
+                <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
+                    <div className={classes.title}>
+                        {t(langKeys.ticket_plural)}
                     </div>
-                }
-            </Box>
-            <TablePaginated
-                columns={columns}
-                data={mainPaginated.data}
-                totalrow={totalrow}
-                loading={mainPaginated.loading}
-                pageCount={pageCount}
-                filterrange={true}
-                download={true}
-                ButtonsElement={() => (
-                    <>
-                        {
-                            ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v)))
-                            && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
-                            && <Button
-                                className={classes.button}
+                    {!isIncremental &&
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={mainPaginated.loading}
-                                onClick={() => setOpenUploadTickets(true)}
-                                startIcon={<PublishIcon />}
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<ReassignIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setRowToSend(rowWithDataSelected);
+                                    setOpenDialogReassign(true);
+                                }}
                             >
-                                {t(langKeys.upload_conversation_plural)}
+                                {t(langKeys.reassign)}
                             </Button>
-                        }
-                    </>
-                )}
-                fetchData={fetchData}
-                exportPersonalized={triggerExportData}
-                useSelection={true}
-                selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
-                selectionKey={selectionKey}
-                setSelectedRows={setSelectedRows}
-                filterRangeDate="today"
-                FiltersElement={React.useMemo(() => (
-                    <>
-                        <FieldMultiSelect
-                            label={t(langKeys.channel)}
-                            className={classes.filterComponent}
-                            key="fieldMultiSelect_channel"
-                            valueDefault={allParameters["channel"] || ""}
-                            onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
-                            variant="outlined"
-                            data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                            disabled={mainPaginated.loading}
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.group)}
-                            className={classes.filterComponent}
-                            key="fieldMultiSelect_group"
-                            valueDefault={allParameters["usergroup"] || ""}
-                            onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
-                            variant="outlined"
-                            data={mainResult?.multiData?.data[1]?.data || []}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            disabled={mainPaginated.loading}
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.agent)}
-                            className={classes.filterComponent}
-                            key="fieldMultiSelect_user"
-                            valueDefault={allParameters["lastuserid"] || ""}
-                            onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
-                            variant="outlined"
-                            data={userList}
-                            optionDesc="fullname"
-                            optionValue="userid"
-                            disabled={mainPaginated.loading}
-                        />
-                        <FieldMultiSelectVirtualized
-                            label={t(langKeys.campaign)}
-                            className={classes.filterComponentVirtualized}
-                            key="fieldMultiSelect_campaign"
-                            valueDefault={allParameters["campaignid"] || ""}
-                            onChange={(value) => setValue("campaignid", value ? value.map((o: Dictionary) => o.id).join() : '')}
-                            variant="outlined"
-                            data={mainResult?.multiData?.data[7]?.data || []}
-                            optionDesc="title"
-                            optionValue="id"
-                            disabled={mainPaginated.loading}
-                        />
-                    </>
-                ), [allParameters, mainResult.multiData, mainPaginated, userList])}
-            />
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<TipifyIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setRowToSend(rowWithDataSelected);
+                                    setOpenDialogTipify(true);
+                                }}
+                            >
+                                {t(langKeys.ticket_typify)}
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<CloseTicketIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setRowToSend(rowWithDataSelected);
+                                    setOpenDialogClose(true);
+                                }}
+                            >
+                                {t(langKeys.close)}
+                            </Button>
+                        </div>
+                    }
+                </Box>
+                <TablePaginated
+                    columns={columns}
+                    data={mainPaginated.data}
+                    totalrow={totalrow}
+                    loading={mainPaginated.loading}
+                    pageCount={pageCount}
+                    filterrange={true}
+                    download={true}
+                    onClickRow={handleView}
+                    ButtonsElement={() => (
+                        <>
+                            {
+                                ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v)))
+                                && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
+                                && <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={mainPaginated.loading}
+                                    onClick={() => setOpenUploadTickets(true)}
+                                    startIcon={<PublishIcon />}
+                                >
+                                    {t(langKeys.upload_conversation_plural)}
+                                </Button>
+                            }
+                        </>
+                    )}
+                    fetchData={fetchData}
+                    exportPersonalized={triggerExportData}
+                    useSelection={true}
+                    selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
+                    selectionKey={selectionKey}
+                    setSelectedRows={setSelectedRows}
+                    filterRangeDate="today"
+                    FiltersElement={FilterElements}
+                />
+            </div>}
+            {(viewSelected === "view-2") && 
+            <TicketDetail row={rowDetail} setViewSelected={setViewSelected} openDialogInteractions={openDialogInteractions}/>}
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}

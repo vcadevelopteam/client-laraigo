@@ -192,6 +192,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
 
     useEffect(() => {
         if (triggerSave) {
+            debugger
             (async () => {
                 const allOk = await trigger(); //para q valide el formulario
                 const data = getValues();
@@ -1545,7 +1546,7 @@ const DetailUsers: React.FC<DetailProps> = ({
                 </div>}
             </form>
 
-            {pageSelected === 0 && <div className={classes.containerDetail}>
+            <div className={classes.containerDetail}>
                 {detailRes.error ? (
                     <h1>ERROR</h1>
                 ) : (
@@ -1585,7 +1586,7 @@ const DetailUsers: React.FC<DetailProps> = ({
                         )}
                     </div>
                 )}
-            </div>}
+            </div>
             <DialogZyx
                 open={openDialogStatus}
                 title={t(langKeys.status)}
