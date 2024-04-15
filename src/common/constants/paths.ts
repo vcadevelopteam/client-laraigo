@@ -343,6 +343,7 @@ const paths = {
     CAMPAIGN: '/extras/campaign',
     BOTDESIGNER: '/extras/botdesigner',
     VARIABLECONFIGURATION: '/extras/variableconfiguration',
+    CUSTOMVARIABLE: '/customvariable',
     EMOJIS: '/extras/emojis',
     DASHBOARDMANAGERIAL: '/dashboard/dashboardmanagerial',
     DASHBOARDOPERATIONALPUSH: '/dashboard/dashboardoperationalpush',
