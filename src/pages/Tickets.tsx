@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData } from '@types'
 import { langKeys } from 'lang/keys';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized, AntTab, AntTabPanel, TitleDetail, TemplateBreadcrumbs, FieldView } from 'components';
@@ -24,6 +24,7 @@ import PublishIcon from '@material-ui/icons/Publish';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import { CellProps } from 'react-table';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 const isIncremental = window.location.href.includes("incremental")
 
 const selectionKey = 'conversationid';
@@ -1073,9 +1074,14 @@ const TicketDetail: FC<{ row:RowSelected, setViewSelected:(x:string)=>void, open
                     )}
                 />
                 <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.custom_fields)}</div>
-                    )}
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.customvariables} />
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
+                            </div>
+                        )}
                 />
             </Tabs>
             <AntTabPanel index={0} currentIndex={tabIndex}>
