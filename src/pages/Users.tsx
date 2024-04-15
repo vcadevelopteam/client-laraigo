@@ -1543,7 +1543,7 @@ const DetailUsers: React.FC<DetailProps> = ({
                 </div>}
             </form>
 
-            {pageSelected === 0 && <div className={classes.containerDetail}>
+            <div className={classes.containerDetail}>
                 {detailRes.error ? (
                     <h1>ERROR</h1>
                 ) : (
@@ -1583,7 +1583,7 @@ const DetailUsers: React.FC<DetailProps> = ({
                         )}
                     </div>
                 )}
-            </div>}
+            </div>
             <DialogZyx
                 open={openDialogStatus}
                 title={t(langKeys.status)}

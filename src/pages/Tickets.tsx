@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker, getAnalyticsIA, getUserAsesorByOrgID } from 'common/helpers';
+import React, { useState, useEffect, useCallback, FC } from 'react'
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker, getAnalyticsIA, getUserAsesorByOrgID, getCustomVariableSelByTableName } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -489,7 +489,7 @@ const IconOptions: React.FC<{
                 aria-haspopup="true"
                 size="small"
                 disabled={disabled}
-                onClick={(e) => setAnchorEl(e.currentTarget)}
+                onClick={(e) => {e.stopPropagation();setAnchorEl(e.currentTarget)}}
             >
                 <MoreVertIcon />
             </IconButton>
@@ -982,6 +982,21 @@ const DialogLoadTickets: React.FC<{
         </DialogZyx>)
 }
 
+interface RowSelected {
+    row: Dictionary | null,
+    columnid: string | null,
+    edit: boolean
+}
+
+const TicketDetail: FC<{ row:RowSelected }> = ({ row }) => {
+    const multiDataResult = useSelector(state => state.main.multiData);
+    console.log(row)
+    console.log(multiDataResult)
+    return <div>
+        test
+    </div>
+}
+
 const Tickets = () => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -994,6 +1009,8 @@ const Tickets = () => {
     const [openDialogReassign, setOpenDialogReassign] = useState(false);
     const [openDialogShowHistory, setOpenDialogShowHistory] = useState(false);
     const [openDialogShowAnalyticsIA, setOpenDialogShowAnalyticsIA] = useState(false);
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [rowDetail, setRowDetail] = useState<RowSelected>({ row: null, columnid: null, edit: false });
 
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -1128,7 +1145,7 @@ const Tickets = () => {
                             <Tooltip title={t(langKeys.download_record) || ""}>
                                 <IconButton
                                     size="small"
-                                    onClick={() => downloadCallRecord(row)}
+                                    onClick={(e) => {e.stopPropagation();downloadCallRecord(row)}}
                                 >
                                     <CallRecordIcon style={{ fill: "#7721AD" }} />
                                 </IconButton>
@@ -1148,7 +1165,7 @@ const Tickets = () => {
                         return (
                             <label
                                 className={classes.labellink}
-                                onClick={() => openDialogInteractions(row)}
+                                onClick={(e) => {e.stopPropagation();openDialogInteractions(row)}}
                             >
                                 {row.numeroticket}
                             </label>
@@ -1466,7 +1483,8 @@ const Tickets = () => {
             getUserAsesorByOrgID(),
             getValuesFromDomainLight("GRUPOS"),
             getCampaignLst(),
-            getPropertySelByName('CARGARCONVERSACIONES')
+            getPropertySelByName('CARGARCONVERSACIONES'),
+            getCustomVariableSelByTableName("conversation")
         ]));
 
         return () => {
@@ -1505,179 +1523,188 @@ const Tickets = () => {
         }
     }, [mainResult?.multiData])
 
-    return (
-        <div className={classes.container}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
-                <div className={classes.title}>
-                    {t(langKeys.ticket_plural)}
-                </div>
-                {!isIncremental &&
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<ReassignIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setRowToSend(rowWithDataSelected);
-                                setOpenDialogReassign(true);
-                            }}
-                        >
-                            {t(langKeys.reassign)}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<TipifyIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setRowToSend(rowWithDataSelected);
-                                setOpenDialogTipify(true);
-                            }}
-                        >
-                            {t(langKeys.ticket_typify)}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<CloseTicketIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setRowToSend(rowWithDataSelected);
-                                setOpenDialogClose(true);
-                            }}
-                        >
-                            {t(langKeys.close)}
-                        </Button>
+    const handleView = (row: Dictionary, columnid: string) => {
+        setRowDetail({ row, columnid, edit: false });
+        setViewSelected("view-2");
+    }
+    if(viewSelected === "view-1"){
+        return (
+            <div className={classes.container}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
+                    <div className={classes.title}>
+                        {t(langKeys.ticket_plural)}
                     </div>
-                }
-            </Box>
-            <TablePaginated
-                columns={columns}
-                data={mainPaginated.data}
-                totalrow={totalrow}
-                loading={mainPaginated.loading}
-                pageCount={pageCount}
-                filterrange={true}
-                download={true}
-                ButtonsElement={() => (
-                    <>
-                        {
-                            ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v)))
-                            && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
-                            && <Button
-                                className={classes.button}
+                    {!isIncremental &&
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={mainPaginated.loading}
-                                onClick={() => setOpenUploadTickets(true)}
-                                startIcon={<PublishIcon />}
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<ReassignIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setRowToSend(rowWithDataSelected);
+                                    setOpenDialogReassign(true);
+                                }}
                             >
-                                {t(langKeys.upload_conversation_plural)}
+                                {t(langKeys.reassign)}
                             </Button>
-                        }
-                    </>
-                )}
-                fetchData={fetchData}
-                exportPersonalized={triggerExportData}
-                useSelection={true}
-                selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
-                selectionKey={selectionKey}
-                setSelectedRows={setSelectedRows}
-                filterRangeDate="today"
-                FiltersElement={React.useMemo(() => (
-                    <>
-                        <FieldMultiSelect
-                            label={t(langKeys.channel)}
-                            className={classes.filterComponent}
-                            key="fieldMultiSelect_channel"
-                            valueDefault={allParameters["channel"] || ""}
-                            onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
-                            variant="outlined"
-                            data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                            disabled={mainPaginated.loading}
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.group)}
-                            className={classes.filterComponent}
-                            key="fieldMultiSelect_group"
-                            valueDefault={allParameters["usergroup"] || ""}
-                            onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
-                            variant="outlined"
-                            data={mainResult?.multiData?.data[1]?.data || []}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            disabled={mainPaginated.loading}
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.agent)}
-                            className={classes.filterComponent}
-                            key="fieldMultiSelect_user"
-                            valueDefault={allParameters["lastuserid"] || ""}
-                            onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
-                            variant="outlined"
-                            data={userList}
-                            optionDesc="fullname"
-                            optionValue="userid"
-                            disabled={mainPaginated.loading}
-                        />
-                        <FieldMultiSelectVirtualized
-                            label={t(langKeys.campaign)}
-                            className={classes.filterComponentVirtualized}
-                            key="fieldMultiSelect_campaign"
-                            valueDefault={allParameters["campaignid"] || ""}
-                            onChange={(value) => setValue("campaignid", value ? value.map((o: Dictionary) => o.id).join() : '')}
-                            variant="outlined"
-                            data={mainResult?.multiData?.data[7]?.data || []}
-                            optionDesc="title"
-                            optionValue="id"
-                            disabled={mainPaginated.loading}
-                        />
-                    </>
-                ), [allParameters, mainResult.multiData, mainPaginated, userList])}
-            />
-            <DialogInteractions
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                ticket={rowSelected}
-            />
-            <DialogHistoryStatus
-                openModal={openDialogShowHistory}
-                setOpenModal={setOpenDialogShowHistory}
-                ticket={rowSelected}
-            />
-            <DialogAnalyticsIA
-                openModal={openDialogShowAnalyticsIA}
-                setOpenModal={setOpenDialogShowAnalyticsIA}
-                ticket={rowSelected}
-            />
-            <DialogTipifications
-                fetchData={fetchDataAux2}
-                rowWithDataSelected={rowToSend}
-                openModal={openDialogTipify}
-                setOpenModal={setOpenDialogTipify}
-            />
-            <DialogCloseticket
-                fetchData={fetchDataAux2}
-                rowWithDataSelected={rowToSend}
-                openModal={openDialogClose}
-                setOpenModal={setOpenDialogClose}
-            />
-            <DialogReassignticket
-                fetchData={fetchDataAux2}
-                rowWithDataSelected={rowToSend}
-                openModal={openDialogReassign}
-                setOpenModal={setOpenDialogReassign}
-            />
-            <DialogLoadTickets
-                fetchData={fetchDataAux2}
-                openModal={openUploadTickets}
-                setOpenModal={setOpenUploadTickets}
-            />
-        </div>
-    )
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<TipifyIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setRowToSend(rowWithDataSelected);
+                                    setOpenDialogTipify(true);
+                                }}
+                            >
+                                {t(langKeys.ticket_typify)}
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<CloseTicketIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setRowToSend(rowWithDataSelected);
+                                    setOpenDialogClose(true);
+                                }}
+                            >
+                                {t(langKeys.close)}
+                            </Button>
+                        </div>
+                    }
+                </Box>
+                <TablePaginated
+                    columns={columns}
+                    data={mainPaginated.data}
+                    totalrow={totalrow}
+                    loading={mainPaginated.loading}
+                    pageCount={pageCount}
+                    filterrange={true}
+                    download={true}
+                    onClickRow={handleView}
+                    ButtonsElement={() => (
+                        <>
+                            {
+                                ((user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v)))
+                                && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
+                                && <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={mainPaginated.loading}
+                                    onClick={() => setOpenUploadTickets(true)}
+                                    startIcon={<PublishIcon />}
+                                >
+                                    {t(langKeys.upload_conversation_plural)}
+                                </Button>
+                            }
+                        </>
+                    )}
+                    fetchData={fetchData}
+                    exportPersonalized={triggerExportData}
+                    useSelection={true}
+                    selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
+                    selectionKey={selectionKey}
+                    setSelectedRows={setSelectedRows}
+                    filterRangeDate="today"
+                    FiltersElement={React.useMemo(() => (
+                        <>
+                            <FieldMultiSelect
+                                label={t(langKeys.channel)}
+                                className={classes.filterComponent}
+                                key="fieldMultiSelect_channel"
+                                valueDefault={allParameters["channel"] || ""}
+                                onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
+                                variant="outlined"
+                                data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
+                                disabled={mainPaginated.loading}
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.group)}
+                                className={classes.filterComponent}
+                                key="fieldMultiSelect_group"
+                                valueDefault={allParameters["usergroup"] || ""}
+                                onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
+                                variant="outlined"
+                                data={mainResult?.multiData?.data[1]?.data || []}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                disabled={mainPaginated.loading}
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.agent)}
+                                className={classes.filterComponent}
+                                key="fieldMultiSelect_user"
+                                valueDefault={allParameters["lastuserid"] || ""}
+                                onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
+                                variant="outlined"
+                                data={userList}
+                                optionDesc="fullname"
+                                optionValue="userid"
+                                disabled={mainPaginated.loading}
+                            />
+                            <FieldMultiSelectVirtualized
+                                label={t(langKeys.campaign)}
+                                className={classes.filterComponentVirtualized}
+                                key="fieldMultiSelect_campaign"
+                                valueDefault={allParameters["campaignid"] || ""}
+                                onChange={(value) => setValue("campaignid", value ? value.map((o: Dictionary) => o.id).join() : '')}
+                                variant="outlined"
+                                data={mainResult?.multiData?.data[7]?.data || []}
+                                optionDesc="title"
+                                optionValue="id"
+                                disabled={mainPaginated.loading}
+                            />
+                        </>
+                    ), [allParameters, mainResult.multiData, mainPaginated, userList])}
+                />
+                <DialogInteractions
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    ticket={rowSelected}
+                />
+                <DialogHistoryStatus
+                    openModal={openDialogShowHistory}
+                    setOpenModal={setOpenDialogShowHistory}
+                    ticket={rowSelected}
+                />
+                <DialogAnalyticsIA
+                    openModal={openDialogShowAnalyticsIA}
+                    setOpenModal={setOpenDialogShowAnalyticsIA}
+                    ticket={rowSelected}
+                />
+                <DialogTipifications
+                    fetchData={fetchDataAux2}
+                    rowWithDataSelected={rowToSend}
+                    openModal={openDialogTipify}
+                    setOpenModal={setOpenDialogTipify}
+                />
+                <DialogCloseticket
+                    fetchData={fetchDataAux2}
+                    rowWithDataSelected={rowToSend}
+                    openModal={openDialogClose}
+                    setOpenModal={setOpenDialogClose}
+                />
+                <DialogReassignticket
+                    fetchData={fetchDataAux2}
+                    rowWithDataSelected={rowToSend}
+                    openModal={openDialogReassign}
+                    setOpenModal={setOpenDialogReassign}
+                />
+                <DialogLoadTickets
+                    fetchData={fetchDataAux2}
+                    openModal={openUploadTickets}
+                    setOpenModal={setOpenUploadTickets}
+                />
+            </div>
+        )
+    }else{
+        return <TicketDetail row={rowDetail}/>
+    }
 }
 
 export default Tickets;
