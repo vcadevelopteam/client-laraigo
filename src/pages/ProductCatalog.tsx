@@ -995,6 +995,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [fileAttachmentAditional, setFileAttachmentAditional] = useState<File | null>(null);
     const [labels, setlabels] = useState(row?.labels?.split(',') || []);
+    const [numbers, setnumbers] = useState(row?.numers?.split(',') || []);
     const resultManageProduct = useSelector(state => state.catalog.requestCatalogManageProduct);
     const uploadResult = useSelector(state => state.main.uploadFile);
     const classes = useStyles();
@@ -1084,6 +1085,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             datelaunch: row?.datelaunch || null,
             dateexpiration: row?.dateexpiration || null,
             labels: row?.labels || '',
+            numbers: row?.numbers || '',
             customlabel0: row?.customlabel0 || '',
             customlabel1: row?.customlabel1 || '',
             customlabel2: row?.customlabel2 || '',
@@ -1132,6 +1134,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('datelaunch');
         register('dateexpiration');
         register('labels');
+        register('numbers');
         register('customlabel0');
         register('customlabel1');
         register('customlabel2');
@@ -1505,6 +1508,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             valueDefault={row?.customlabel4 || ''}
                         />
                     </div>
+                    
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
@@ -1547,13 +1551,27 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            className="col-12"
+                            className="col-6"
                             disabled={!edit}
                             error={errors?.customnumber4?.message}
                             label={`${t(langKeys.customnumber)} 4`}
                             onChange={(value) => setValue('customnumber4', (value || value === 0) ? value.toString() : '')}
                             type="number"
                             valueDefault={row?.customnumber4 || ''}
+                        />
+                        <FieldMultiSelectFreeSolo
+                            className="col-6"
+                            data={numbers.map((x: any) => ({ value: x }))}
+                            disabled={!edit}
+                            label={t(langKeys.number)}
+                            loading={false}
+                            onChange={(value) => {
+                                setnumbers(value.reduce((acc: any, x: any) => [...acc, typeof x === "object" ? x.value : x], []))
+                                setValue("numbers", value.reduce((acc: any, x: any) => [...acc, typeof x === "object" ? x.value : x], []).join(","))
+                            }}
+                            optionDesc="value"
+                            optionValue="value"
+                            valueDefault={numbers.join(",") || ''}
                         />
                     </div>
                     <div className="row-zyx">
