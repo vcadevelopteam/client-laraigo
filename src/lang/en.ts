@@ -274,9 +274,9 @@ const translation: LangKeys = {
 
   groupconfig: "Group Configuration",
   emailconfiguration: "Email configuration",
-  configurationblankbrand: "White brand configuration",  
+  configurationblankbrand: "White brand configuration",
   domainname: "Domain name",
-  bond: "Bond",  
+  bond: "Bond",
   logopoweredbylaraigo: "Logo powered by laraigo",
   uploadicon: "Upload icon",
   uploadlogo: "Upload logo",
@@ -571,7 +571,7 @@ const translation: LangKeys = {
 
 
 
-  
+
   type_org_22: 'Manufacture of rubber products',
   type_org_23: 'Manufacture of metallurgical products',
   type_org_24: 'Weapons manufacturing',
@@ -846,7 +846,7 @@ const translation: LangKeys = {
   type_ocupation_40: "COUNTER",
   transferdate: "Transfer date",
   dispatchedquantity: "Dispatched quantity",
-  error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed",  type_ocupation_41: "CONTRACTOR",
+  error_generate_label: "The inventory consumption for which you want to generate the label is not in a completed state and the action cannot be performed", type_ocupation_41: "CONTRACTOR",
   type_ocupation_42: "CLOTHING AND CUTTING / GARMENT MANUFACTURER",
   type_ocupation_43: "COSMETOLOGIST, HAIRDRESSER AND BARBER",
   type_ocupation_44: "DECORATOR, DRAWER, ADVERTISER",
@@ -2665,8 +2665,8 @@ const translation: LangKeys = {
   corporationdetail: "Corporation detail",
   organizationdetail: "Organization detail",
   messagetemplatedetail: "Message template detail",
-  
-  
+
+
   report_userproductivity_totaltickets: 'Ticket quantity',
   report_userproductivity_totaltickets_help: 'Number of tickets handled by the user.',
   report_userproductivity_closedtickets: 'Closed',
@@ -2703,7 +2703,7 @@ const translation: LangKeys = {
   report_userproductivity_tmradviseravg: "TMR Agent",
   report_userproductivity_tmravg_help: "Average response time of the agent/bot",
   report_userproductivity_tmradviseravg_help: "Average agent response time",
-  tipification_necesary:"You cannot close tickets that have not been typed.",
+  tipification_necesary: "You cannot close tickets that have not been typed.",
 
   report_userproductivity_cardtme: 'TME',
   report_userproductivity_cardtmo: 'TMO',
@@ -6054,10 +6054,10 @@ const translation: LangKeys = {
   address_found_in_geolocator: 'Address found in the Geolocator',
   viewcounter: 'View Counter',
   registeredaddress: 'Registered Address',
-  viewonlinepayment: 'View Online Payment', 
-  obverseid: 'Obverse ID', 
-  reverseid: 'Reverse ID', 
-  paymentvoucher: 'Payment Voucher', 
+  viewonlinepayment: 'View Online Payment',
+  obverseid: 'Obverse ID',
+  reverseid: 'Reverse ID',
+  paymentvoucher: 'Payment Voucher',
   store: 'Store',
   schedulesth: 'Schedule',
   dispatch: 'Dispatch',
@@ -6111,6 +6111,7 @@ const translation: LangKeys = {
   deliverytypeerror: 'One of the selected orders has the delivery type Store Pickup',
   allmustbesameorder: 'The selected records must belong to the same order',
   needtopay: 'Payment to be confirmed',
+  numbers: 'Numbers',
 };
 
 const enResource: ResourceLanguage = {

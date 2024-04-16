@@ -2500,8 +2500,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_userproductivity_user: 'Usuario del asesor',
   report_userproductivity_fullname: 'Asesor',
   report_userproductivity_hourfirstlogin: 'Hora de primer logueo',
-  
-  
+
+
   report_userproductivity_totaltickets: 'Cantidad de tickets',
   report_userproductivity_totaltickets_help: 'Cantidad de tickets que ha atendido el usuario.',
 
@@ -3343,7 +3343,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_reportcompliancesla: "Reporte de cumplimiento de SLAs",
   report_reportrequestsd: "Reporte de solicitudes SD",
 
-  
+
   manageClassification_plural: 'Gestionar clasificaciones',
   manageRestrictedEmoji: 'Gestionar emoji restringido',
   manageRestrictedEmoji_plural: 'Gestionar emojis restringidos',
@@ -6001,10 +6001,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   address_found_in_geolocator: 'Dirección encontrada en el Geolocalizador',
   viewcounter: 'Contador de Visitas',
   registeredaddress: 'Dirección Registrada',
-  viewonlinepayment: 'Ver Pago en Linea', 
-  obverseid: 'DNI Anverso', 
-  reverseid: 'DNI Reverso', 
-  paymentvoucher: 'Voucher de Pago', 
+  viewonlinepayment: 'Ver Pago en Linea',
+  obverseid: 'DNI Anverso',
+  reverseid: 'DNI Reverso',
+  paymentvoucher: 'Voucher de Pago',
   store: 'Tienda',
   schedulesth: 'Agendar',
   dispatch: 'Despachar',
@@ -6058,6 +6058,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   deliverytypeerror: 'Uno de los pedidos seleccionados tiene el tipo de entrega Recojo en tienda',
   allmustbesameorder: 'Los registros seleccionados deben pertenecer a la misma orden',
   needtopay: 'Falta confirmar el pago',
+  numbers: 'Números',
 };
 
 const esResource: ResourceLanguage = {

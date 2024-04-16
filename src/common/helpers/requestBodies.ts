@@ -241,16 +241,16 @@ export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, pass
     parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
-export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, storeid, warehouseid, showbots}: Dictionary): IRequestBody => ({
+export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, storeid, warehouseid, showbots }: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
     parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect, storeid, warehouseid, showbots }
 });
 
-export const insStore = ({ id, description, phone, address, warehouseid, coveragearea , warehouseinstore, type , status, operation }: Dictionary): IRequestBody => ({
+export const insStore = ({ id, description, phone, address, warehouseid, coveragearea, warehouseinstore, type, status, operation }: Dictionary): IRequestBody => ({
     method: "UFN_STORE_INS",
     key: "UFN_STORE_INS",
-    parameters: { id, description, phone, address, warehouseid, coveragearea , warehouseinstore, type , status, operation }
+    parameters: { id, description, phone, address, warehouseid, coveragearea, warehouseinstore, type, status, operation }
 });
 
 export const selStore = (id: number): IRequestBody => ({
@@ -475,7 +475,7 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         sorts,
         distinct: distinct || "",
         origin: origin,
-        ...allParameters,    
+        ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         hours: allParameters['hours'] ? allParameters['hours'] : "",
         asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
@@ -1386,7 +1386,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
 
 export const getCampaignLst = (): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
-    key:"UFN_CAMPAIGN_LST",
+    key: "UFN_CAMPAIGN_LST",
     parameters: {}
 });
 
@@ -3573,11 +3573,11 @@ export const postHistoryIns = ({ communicationchannelid, communicationchanneltyp
     }
 })
 
-export const productCatalogIns = ({ corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, standardfeatures0 = "", reviewstatus, reviewdescription, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, numbers, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, standardfeatures0 = "", reviewstatus, reviewdescription, status, type, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, standardfeatures0, reviewstatus, reviewdescription, status, type, username, operation
+        corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, numbers, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, standardfeatures0, reviewstatus, reviewdescription, status, type, username, operation
     }
 })
 
@@ -4253,7 +4253,7 @@ export const rasaSynonimIns = ({ id, rasaid, description, examples, values, stat
 export const rasaModelSel = () => ({
     method: "UFN_RASA_MODEL_SEL",
     key: "UFN_RASA_MODEL_SEL",
-    parameters: { },
+    parameters: {},
 });
 
 export const getPaginatedProducts = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
@@ -4272,16 +4272,16 @@ export const getPaginatedProducts = ({ skip, take, filters, sorts, startdate, en
     }
 })
 
-export const insProduct = ({ productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitdispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  }: Dictionary) => ({
+export const insProduct = ({ productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitdispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation }: Dictionary) => ({
     method: "UFN_PRODUCT_INS",
     key: "UFN_PRODUCT_INS",
-    parameters: {  productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitdispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation  },
+    parameters: { productid, description, descriptionlarge, producttype, familyid, unitbuyid, unitdispatchid, imagereference, status, type, attachments, productcode, loteid, subfamilyid, operation },
 });
 
-export const insWarehouse = ({ warehouseid,description,address,phone,latitude,longitude,status,type,operation,name, descriptionlarge  }: Dictionary) => ({
+export const insWarehouse = ({ warehouseid, description, address, phone, latitude, longitude, status, type, operation, name, descriptionlarge }: Dictionary) => ({
     method: "UFN_WAREHOUSE_INS",
     key: "UFN_WAREHOUSE_INS",
-    parameters: {  warehouseid,description,address,phone,latitude,longitude,status,type,operation,name, descriptionlarge  },
+    parameters: { warehouseid, description, address, phone, latitude, longitude, status, type, operation, name, descriptionlarge },
 });
 
 export const getWarehouseProducts = (warehouseid: number): IRequestBody => ({
@@ -4303,7 +4303,7 @@ export const getProductProduct = (productid: number): IRequestBody => ({
 export const insProductAlternative = ({ productalternativeid, productid, productaltid, status, type, operation }: Dictionary) => ({
     method: "UFN_PRODUCTALTERNATIVE_INS",
     key: "UFN_PRODUCTALTERNATIVE_INS",
-    parameters: {  productalternativeid, productid, productaltid, status, type, operation  },
+    parameters: { productalternativeid, productid, productaltid, status, type, operation },
 });
 
 export const getAllAttributeProduct = (productid: number): IRequestBody => ({
@@ -4317,19 +4317,19 @@ export const getAllAttributeProduct = (productid: number): IRequestBody => ({
 export const insProductAttribute = ({ productattributeid, p_tableid, attributeid, value, unitmeasureid, status, type, operation }: Dictionary) => ({
     method: "UFN_PRODUCTATTRIBUTE_INS",
     key: "UFN_PRODUCTATTRIBUTE_INS",
-    parameters: {  productattributeid, p_tableid, attributeid, value, unitmeasureid, status, type, operation  },
+    parameters: { productattributeid, p_tableid, attributeid, value, unitmeasureid, status, type, operation },
 });
 
-export const insStatusProduct = ({ statusid,comment,status,type,productid,ismoveinventory,operation}: Dictionary) => ({
+export const insStatusProduct = ({ statusid, comment, status, type, productid, ismoveinventory, operation }: Dictionary) => ({
     method: "UFN_STATUSPRODUCT_INS",
     key: "UFN_STATUSPRODUCT_INS",
-    parameters: {  statusid,comment,status,type,productid,ismoveinventory,operation  },
+    parameters: { statusid, comment, status, type, productid, ismoveinventory, operation },
 });
 
-export const insStatusProductMas = (data:any): IRequestBody => ({
+export const insStatusProductMas = (data: any): IRequestBody => ({
     method: "UFN_STATUSPRODUCT_MAS",
     key: "UFN_STATUSPRODUCT_MAS",
-    parameters: {  json: JSON.stringify(data)  },
+    parameters: { json: JSON.stringify(data) },
 });
 
 export const getProductsExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
@@ -4365,16 +4365,16 @@ export const getProductsWarehouse = (productid: number): IRequestBody => ({
 export const getInventoryConsumptionDetail = (inventoryconsumptionid: number): IRequestBody => ({
     method: "UFN_INVENTORYCONSUMPTION_DETAILSELECT",
     key: "UFN_INVENTORYCONSUMPTION_DETAILSELECT",
-    parameters: {        
+    parameters: {
         inventoryconsumptionid
     }
 });
 
-export const insProductWarehouse = ({productwarehouseid,productid,warehouseid,priceunit,ispredeterminate,typecostdispatch,unitdispatchid,unitbuyid,lotecode,rackcode,status,type,operation,currentbalance }: Dictionary): IRequestBody => ({
+export const insProductWarehouse = ({ productwarehouseid, productid, warehouseid, priceunit, ispredeterminate, typecostdispatch, unitdispatchid, unitbuyid, lotecode, rackcode, status, type, operation, currentbalance }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTWAREHOUSE_INS",
     key: "UFN_PRODUCTWAREHOUSE_INS",
     parameters: {
-        productwarehouseid,productid,warehouseid,priceunit,ispredeterminate,typecostdispatch,unitdispatchid,unitbuyid,lotecode,rackcode,status,type,operation,currentbalance
+        productwarehouseid, productid, warehouseid, priceunit, ispredeterminate, typecostdispatch, unitdispatchid, unitbuyid, lotecode, rackcode, status, type, operation, currentbalance
     }
 })
 
@@ -4394,7 +4394,7 @@ export const getPaginatedWarehouse = ({ skip, take, filters, sorts, startdate, e
     }
 })
 
-export const insInventory= ({ inventoryid, productid, warehousid, iswharehousedefault, rackdefault, typecostdispatch, familyid, subfamilyid, status, type, $urrentbalance, operation }: Dictionary): IRequestBody => ({
+export const insInventory = ({ inventoryid, productid, warehousid, iswharehousedefault, rackdefault, typecostdispatch, familyid, subfamilyid, status, type, $urrentbalance, operation }: Dictionary): IRequestBody => ({
     method: "UFN_INVENTORY_INS",
     key: "UFN_INVENTORY_INS",
     parameters: {
@@ -4451,28 +4451,28 @@ export const getWarehouses = (): IRequestBody => ({
         warehouseid: 0
     }
 });
-export const getProductStatusHistory = (productid:number): IRequestBody => ({
+export const getProductStatusHistory = (productid: number): IRequestBody => ({
     method: "UFN_ALL_STATUSPRODUCT_PRODUCT_SEL",
     key: "UFN_ALL_STATUSPRODUCT_PRODUCT_SEL",
     parameters: {
         id: productid
     }
 });
-export const importProducts = (data:any): IRequestBody => ({
+export const importProducts = (data: any): IRequestBody => ({
     method: "UFN_PRODUCT_MAS",
     key: "UFN_PRODUCT_MAS",
     parameters: {
         json: JSON.stringify(data)
     }
 });
-export const importProductManufacturer = (data:any): IRequestBody => ({
+export const importProductManufacturer = (data: any): IRequestBody => ({
     method: "UFN_PRODUCTMANUFACTURER_MAS",
     key: "UFN_PRODUCTMANUFACTURER_MAS",
     parameters: {
         json: JSON.stringify(data)
     }
 });
-export const importProductsWarehouse = (data:any): IRequestBody => ({
+export const importProductsWarehouse = (data: any): IRequestBody => ({
     method: "UFN_PRODUCTWAREHOUSE_MAS",
     key: "UFN_PRODUCTWAREHOUSE_MAS",
     parameters: {
@@ -4480,7 +4480,7 @@ export const importProductsWarehouse = (data:any): IRequestBody => ({
     }
 });
 
-export const getManufacturer = (manufacturerid:number): IRequestBody => ({
+export const getManufacturer = (manufacturerid: number): IRequestBody => ({
     method: "UFN_MANUFACTURER_SEL",
     key: "UFN_MANUFACTURER_SEL",
     parameters: {
@@ -4497,10 +4497,10 @@ export const insProductDealer = ({ productcompanyid, p_tableid, manufacturerid, 
     method: "UFN_PRODUCTMANUFACTURER_INS",
     key: "UFN_PRODUCTMANUFACTURER_INS",
     parameters: {
-        productcompanyid, p_tableid, manufacturerid: manufacturerid||0, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid: distributorid||0, operation
+        productcompanyid, p_tableid, manufacturerid: manufacturerid || 0, model, catalognumber, webpage, taxeid, isstockistdefault, averagedeliverytime, lastprice, lastorderdate, unitbuy, status, type, distributorid: distributorid || 0, operation
     }
 })
-export const getProductManufacturer = (productid:number): IRequestBody => ({
+export const getProductManufacturer = (productid: number): IRequestBody => ({
     method: "UFN_ALL_MANUFACTURER_PRODUCT_SEL",
     key: "UFN_ALL_MANUFACTURER_PRODUCT_SEL",
     parameters: {
@@ -4508,7 +4508,7 @@ export const getProductManufacturer = (productid:number): IRequestBody => ({
     }
 });
 
-export const getProductOrderProp = (productid:number): IRequestBody => ({
+export const getProductOrderProp = (productid: number): IRequestBody => ({
     method: "UFN_ALL_PRODUCT_ORDER_SEL",
     key: "UFN_ALL_PRODUCT_ORDER_SEL",
     parameters: {
@@ -4516,7 +4516,7 @@ export const getProductOrderProp = (productid:number): IRequestBody => ({
     }
 });
 
-export const importProductsAttribute = (data:any): IRequestBody => ({
+export const importProductsAttribute = (data: any): IRequestBody => ({
     method: "UFN_PRODUCTATTRIBUTE_MAS",
     key: "UFN_PRODUCTATTRIBUTE_MAS",
     parameters: {
@@ -4524,7 +4524,7 @@ export const importProductsAttribute = (data:any): IRequestBody => ({
     }
 });
 
-export const importWarehouse = (data:any): IRequestBody => ({
+export const importWarehouse = (data: any): IRequestBody => ({
     method: "UFN_WAREHOUSE_MAS",
     key: "UFN_WAREHOUSE_MAS",
     parameters: {
@@ -4561,13 +4561,13 @@ export const getCompanyExport = ({ filters, sorts, startdate, enddate }: Diction
     }
 });
 
-export const insCompany = ({ manufacturerid,description, status,type,descriptionlarge,clientenumbers,beginpage,currencyid,taxeid,ispaymentdelivery,typemanufacterid,manufacturercode,operation  }: Dictionary) => ({
+export const insCompany = ({ manufacturerid, description, status, type, descriptionlarge, clientenumbers, beginpage, currencyid, taxeid, ispaymentdelivery, typemanufacterid, manufacturercode, operation }: Dictionary) => ({
     method: "UFN_MANUFACTURER_INS",
     key: "UFN_MANUFACTURER_INS",
-    parameters: {  manufacturerid,description, status,type,descriptionlarge,clientenumbers,beginpage,currencyid,taxeid,ispaymentdelivery,typemanufacterid,manufacturercode,operation  },
+    parameters: { manufacturerid, description, status, type, descriptionlarge, clientenumbers, beginpage, currencyid, taxeid, ispaymentdelivery, typemanufacterid, manufacturercode, operation },
 });
 
-export const importManufacturer = (data:any): IRequestBody => ({
+export const importManufacturer = (data: any): IRequestBody => ({
     method: "UFN_MANUFACTURER_MAS",
     key: "UFN_MANUFACTURER_MAS",
     parameters: {
@@ -4575,7 +4575,7 @@ export const importManufacturer = (data:any): IRequestBody => ({
     }
 });
 
-export const importstatusProduct = (data:any): IRequestBody => ({
+export const importstatusProduct = (data: any): IRequestBody => ({
     method: "UFN_STATUSPRODUCT_MAS",
     key: "UFN_STATUSPRODUCT_MAS",
     parameters: {
@@ -4592,7 +4592,7 @@ export const duplicateProduct = (productid: number): IRequestBody => ({
 });
 
 
-export const getInventoryBalance = (inventorybalanceid:number): IRequestBody => ({
+export const getInventoryBalance = (inventorybalanceid: number): IRequestBody => ({
     method: "UFN_INVENTORYBALANCE_SEL",
     key: "UFN_INVENTORYBALANCE_SEL",
     parameters: {
@@ -4600,7 +4600,7 @@ export const getInventoryBalance = (inventorybalanceid:number): IRequestBody => 
     }
 });
 
-export const insInventoryBalance = ({ inventorybalanceid, inventoryid, shelf, lotecode, currentbalance, recountphysical, recountphysicaldate, isreconciled, shelflifedays, duedate, status, type, operation  }: Dictionary): IRequestBody => ({
+export const insInventoryBalance = ({ inventorybalanceid, inventoryid, shelf, lotecode, currentbalance, recountphysical, recountphysicaldate, isreconciled, shelflifedays, duedate, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_INVENTORYBALANCE_INS",
     key: "UFN_INVENTORYBALANCE_INS",
     parameters: {
@@ -4620,42 +4620,42 @@ export const getInventoryExport = ({ filters, sorts, startdate, enddate }: Dicti
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const getInventoryCost = (inventoryid:number): IRequestBody => ({
+export const getInventoryCost = (inventoryid: number): IRequestBody => ({
     method: "UFN_ALL_INVENTORY_INVENTORYCOST_SEL",
     key: "UFN_ALL_INVENTORY_INVENTORYCOST_SEL",
     parameters: {
         inventoryid
     }
 });
-export const getInventoryRecount = (inventoryid:number): IRequestBody => ({
+export const getInventoryRecount = (inventoryid: number): IRequestBody => ({
     method: "UFN_INVENTORYRECOUNT_SEL",
     key: "UFN_INVENTORYRECOUNT_SEL",
     parameters: {
         inventoryid
     }
 });
-export const getInventoryWarehouse = (inventoryid:number): IRequestBody => ({
+export const getInventoryWarehouse = (inventoryid: number): IRequestBody => ({
     method: "UFN_INVENTORYWAREHOUSE_SEL",
     key: "UFN_INVENTORYWAREHOUSE_SEL",
     parameters: {
         inventoryid
     }
 });
-export const getInventoryLote = (inventoryid:number): IRequestBody => ({
+export const getInventoryLote = (inventoryid: number): IRequestBody => ({
     method: "UFN_INVENTORYLOTE_SEL",
     key: "UFN_INVENTORYLOTE_SEL",
     parameters: {
         inventoryid
     }
 });
-export const getInventoryBooking = (inventoryid:number): IRequestBody => ({
+export const getInventoryBooking = (inventoryid: number): IRequestBody => ({
     method: "UFN_INVENTORYBOOKING_SEL",
     key: "UFN_INVENTORYBOOKING_SEL",
     parameters: {
         inventoryid
     }
 });
-export const insInventoryBooking = ({ inventorybookingid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate  }: Dictionary): IRequestBody => ({
+export const insInventoryBooking = ({ inventorybookingid, inventoryid, warehouseid, ticketid, bookingtype, bookingquantity, status, type, operation, applicationdate }: Dictionary): IRequestBody => ({
     method: "UFN_INVENTORBOOKING_INS",
     key: "UFN_INVENTORBOOKING_INS",
     parameters: {
@@ -4678,11 +4678,11 @@ export const partnerIns = ({ id, country, billingcurrency, documenttype, documen
 export const getChatFlowCardId = ({ startdate, enddate, chatflowcardid }: Dictionary) => ({
     method: "UFN_INTERACTION_CHATFLOWCARDID",
     key: "UFN_INTERACTION_CHATFLOWCARDID",
-    parameters: {      
-        startdate, 
-        enddate, 
-        chatflowcardid, 
-        offset: (new Date().getTimezoneOffset() / 60) * -1 
+    parameters: {
+        startdate,
+        enddate,
+        chatflowcardid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     },
 });
 
@@ -4709,14 +4709,14 @@ export const billingPeriodPartnerEnterprise = ({ partnerid, corpid, orgid, year,
     key: "UFN_BILLINGPERIODPARTNER_ENTERPRISE",
     parameters: { partnerid, corpid, orgid, year, month, reporttype, username },
 });
-export const getInventoryMovement = (inventoryid:number): IRequestBody => ({
+export const getInventoryMovement = (inventoryid: number): IRequestBody => ({
     method: "UFN_ALL_INVENTORY_INVENTORYMOVEMENT_SEL",
     key: "UFN_ALL_INVENTORY_INVENTORYMOVEMENT_SEL",
     parameters: {
         inventoryid
     }
 });
-export const insOrderInventory = ({ inventoryorderid, inventoryid, isneworder, replenishmentpoint, deliverytimedays, securitystock, economicorderquantity, unitbuyid, distributorid, manufacturerid, catalognumber, model, status, type, operation  }: Dictionary): IRequestBody => ({
+export const insOrderInventory = ({ inventoryorderid, inventoryid, isneworder, replenishmentpoint, deliverytimedays, securitystock, economicorderquantity, unitbuyid, distributorid, manufacturerid, catalognumber, model, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_ORDER_INS",
     key: "UFN_ORDER_INS",
     parameters: {
@@ -4724,7 +4724,7 @@ export const insOrderInventory = ({ inventoryorderid, inventoryid, isneworder, r
     }
 });
 
-export const updateInventoryBalances = (inventoryid:number): IRequestBody => ({
+export const updateInventoryBalances = (inventoryid: number): IRequestBody => ({
     method: "UFN_INVENTORY_INVENTORYBALANCE_UPD",
     key: "UFN_INVENTORY_INVENTORYBALANCE_UPD",
     parameters: {
@@ -4754,11 +4754,11 @@ export const billingPeriodPartnerDeveloperReseller = ({ partnerid, corpid, orgid
     parameters: { partnerid, corpid, orgid, year, month, username },
 });
 
-export const insInventoryConsumption = ({ inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid,inventorybookingid, status, type, comment, operation }: Dictionary): IRequestBody => ({
+export const insInventoryConsumption = ({ inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, inventorybookingid, status, type, comment, operation }: Dictionary): IRequestBody => ({
     method: "UFN_INVENTORYCONSUMPTION_INS",
     key: "UFN_INVENTORYCONSUMPTION_INS",
     parameters: {
-        inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid,inventorybookingid, status, type, comment, operation
+        inventoryconsumptionid, description, ordernumber, transactiontype, warehouseid, inventorybookingid, status, type, comment, operation
     }
 });
 
@@ -4890,10 +4890,10 @@ export const getHeatmapConfig = () => ({
     key: "UFN_REPORT_CONFIGURATION_SEL",
     parameters: { reportname: "" },
 });
-export const heatmapConfigIns = ({reportname, configuration}:Dictionary) => ({
+export const heatmapConfigIns = ({ reportname, configuration }: Dictionary) => ({
     method: "UFN_REPORT_CONFIGURATION_INS",
     key: "UFN_REPORT_CONFIGURATION_INS",
-    parameters: { reportname, configuration: JSON.stringify(configuration)},
+    parameters: { reportname, configuration: JSON.stringify(configuration) },
 });
 
 export const getWarehouseSel = () => ({
@@ -5016,12 +5016,12 @@ export const ordersByConfigRoutingLogic = (listorderid: string) => ({
     parameters: { listorderid },
 });
 
-export const getReassignmentRulesSel = (id:number) => ({
+export const getReassignmentRulesSel = (id: number) => ({
     method: "UFN_ASSIGNMENTRULE_SEl",
     key: "UFN_ASSIGNMENTRULE_SEl",
-    parameters: { 
+    parameters: {
         id: id,
-        all: true 
+        all: true
     },
 });
 
@@ -5031,18 +5031,18 @@ export const insReassignmentRules = ({ id, description, group, assignedgroup, ty
     parameters: { id, description, group, assignedgroup, type, status, operation },
 });
 
-export const massDelReassignmentRules = (groupslistassignmentruleid:string) => ({
+export const massDelReassignmentRules = (groupslistassignmentruleid: string) => ({
     method: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
     key: "UFN_ASSIGNMENTRULE_MASSIVE_DEL",
     parameters: { groupslistassignmentruleid },
 });
 
-export const getAssignmentRulesByGroup = (group:string, usergroups: string) => ({
+export const getAssignmentRulesByGroup = (group: string, usergroups: string) => ({
     method: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
     key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
     parameters: { group, usergroups },
 });
-export const getDomainByDomainName = (domainname:string) => ({
+export const getDomainByDomainName = (domainname: string) => ({
     method: "UFN_DOMAIN_BY_DOMAINNAME",
     key: "UFN_DOMAIN_BY_DOMAINNAME",
     parameters: { domainname },
