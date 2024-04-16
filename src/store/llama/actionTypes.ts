@@ -38,6 +38,11 @@ const actionTypes = {
     QUERY_SUCCESS: 'llama/query_success',
     QUERY_FAILURE: 'llama/query_failure',
     QUERY_RESET: 'llama/query_reset',
+
+    DELETE_THREAD: 'llama/delete_thread',
+    DELETE_THREAD_SUCCESS: 'llama/delete_thread_success',
+    DELETE_THREAD_FAILURE: 'llama/delete_thread_failure',
+    DELETE_THREAD_RESET: 'llama/delete_thread_reset',
 }
 
 export default actionTypes;

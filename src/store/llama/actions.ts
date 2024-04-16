@@ -82,4 +82,14 @@ export const query = (requestBody: any): IActionCall => ({
     type: null,
 })
 
+export const deleteThreadLlama = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService.deleteThread(requestBody),
+    types: {
+        loading: actionTypes.DELETE_THREAD,
+        success: actionTypes.DELETE_THREAD_SUCCESS,
+        failure: actionTypes.DELETE_THREAD_FAILURE,
+    },
+    type: null,
+})
+
 export const resetLlama = (): IActionCall => ({type: actionTypes.CREATE_COLLECTION_RESET});

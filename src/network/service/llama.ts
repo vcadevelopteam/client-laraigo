@@ -32,3 +32,7 @@ export function deleteFile(data: any) {
 export function query(data: any) {
     return APIManager.post(apiUrls.LLAMA_QUERY, { data }, true);
 }
+
+export function deleteThread(data: any) {
+    return APIManager.post(apiUrls.LLAMA_DELETE_THREAD, { data }, true);
+}

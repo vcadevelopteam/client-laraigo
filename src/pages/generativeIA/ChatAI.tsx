@@ -23,7 +23,7 @@ import { FieldEdit } from "components";
 import CachedIcon from '@material-ui/icons/Cached';
 import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
-import { query } from "store/llama/actions";
+import { deleteThreadLlama, query } from "store/llama/actions";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -168,6 +168,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [cardDelete, setCardDelete] = useState<Dictionary | null>(null);
     const [waitSaveMessageAux, setWaitSaveMessageLlamaAux] = useState(false);
+    const [waitSaveThreadDeleteLlama, setWaitSaveThreadDeleteLlama] = useState(false)
     const [date, setDate] = useState('');
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
@@ -225,6 +226,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     useEffect(() => {
         if (waitSaveCreateThread) {
             if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveCreateThread(false)
                 fetchThreadsByAssistant()
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
@@ -274,6 +276,24 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             }
         }
     }, [executeThreads, waitSaveThreadDelete]);
+
+    useEffect(() => {
+        if (waitSaveThreadDeleteLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveThreadDeleteLlama(false);
+                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                setWaitSaveCreateThread(true);
+                setCardDelete(null);
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveThreadDeleteLlama(false);
+            }
+        }
+    }, [llamaResult, waitSaveThreadDeleteLlama]);
 
     useEffect(() => {
         if (waitSaveMessage) {
@@ -428,6 +448,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             query: message,
             system_prompt: row?.generalprompt,
             model: row?.basemodel,
+            threadid: selectedChat?.threadid
         }))
         setWaitSaveMessageLlama(true)
     };
@@ -458,12 +479,15 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 apikey: row?.apikey,
             }))
             setCardDelete(chat)
-            setWaitSaveThreadDelete(true);     
+            setWaitSaveThreadDelete(true);
         };
         const callbackMeta = async () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insThread({ ...chat, id: chat.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
-            setWaitSaveCreateThread(true);    
+            dispatch(deleteThreadLlama({
+                threadid: selectedChat?.threadid
+            }))
+            setCardDelete(chat)
+            setWaitSaveThreadDeleteLlama(true);
         };
       
         dispatch(
@@ -591,7 +615,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                                     </div>
                                                     <div className={classes.textContainer}>
                                                         <Typography variant="body1">
-                                                            {message.messagetext}
+                                                            {message.messagetext.trimStart()}
                                                         </Typography>
                                                     </div>
                                                 </div>

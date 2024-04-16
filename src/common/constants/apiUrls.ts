@@ -457,4 +457,5 @@ export const apiUrls = {
     LLAMA_ADD_FILE: `${BASE_URL}/llama/add_file`,
     LLAMA_DELETE_FILE: `${BASE_URL}/llama/delete_file`,
     LLAMA_QUERY: `${BASE_URL}/llama/query`,
+    LLAMA_DELETE_THREAD: `${BASE_URL}/llama/delete_thread`,
 };

@@ -56,4 +56,9 @@ export default createReducer<IState>(initialState, {
     [actionType.QUERY_SUCCESS]: caseFunctions.llamaSuccess,
     [actionType.QUERY_FAILURE]: caseFunctions.llamaFailure,
     [actionType.QUERY_RESET]: caseFunctions.llamaReset,
+
+    [actionType.DELETE_THREAD]: caseFunctions.llamaLoading,
+    [actionType.DELETE_THREAD_SUCCESS]: caseFunctions.llamaSuccess,
+    [actionType.DELETE_THREAD_FAILURE]: caseFunctions.llamaFailure,
+    [actionType.DELETE_THREAD_RESET]: caseFunctions.llamaReset,
 });
