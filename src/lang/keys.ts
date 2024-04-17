@@ -6032,6 +6032,8 @@ export const langKeys = {
   deliverytypeerror: 'deliverytypeerror',
   allmustbesameorder: 'allmustbesameorder',
   needtopay: 'needtopay',
+  transactionnumber: 'transactionnumber',
+  conversationTMO: 'TMO Conversación',
 };
 
 export type LangKeys = typeof langKeys;
