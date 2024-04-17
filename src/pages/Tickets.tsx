@@ -1033,6 +1033,11 @@ const TicketDetail: FC<{ row:RowSelected, setViewSelected:(x:string)=>void, open
                 accessor: 'variabletype',
                 NoFilter: true,
                 sortType: 'string',
+                prefixTranslation: 'datatype_',
+                Cell: (props: any) => {
+                    const { variabletype } = props.cell.row.original || {}; 
+                    return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.value),
