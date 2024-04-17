@@ -159,10 +159,10 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                      }}
                     error={errors?.variabletype?.message}
                     data={[
-                        {domaindesc: "Enteros", domainvalue:"number"},
-                        {domaindesc: "Letras", domainvalue:"string"},
-                        {domaindesc: "Fecha y Hora", domainvalue:"datetime-local"},
-                        {domaindesc: "Dominio", domainvalue:"domain"},
+                        {domaindesc: "ENTEROS", domainvalue:"number"},
+                        {domaindesc: "LETRAS", domainvalue:"string"},
+                        {domaindesc: "FECHA Y HORA", domainvalue:"datetime-local"},
+                        {domaindesc: "DOMINIO", domainvalue:"domain"},
                     ]}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
@@ -240,7 +240,12 @@ const DetailCustomVariable: React.FC<DetailProps> = ({ data: { row, domainname, 
             {
                 Header: t(langKeys.datatype),
                 accessor: 'variabletype',
-                NoFilter: true
+                NoFilter: true,
+                prefixTranslation: 'datatype_',
+                Cell: (props: any) => {
+                    const { variabletype } = props.cell.row.original || {}; 
+                    return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.organization),
@@ -469,7 +474,7 @@ const CustomVariable: FC = () => {
             {
                 Header: t(langKeys.organization),
                 accessor: 'org_name',
-                NoFilter: true
+                NoFilter: true,
             },
             {
                 Header: t(langKeys.status),
