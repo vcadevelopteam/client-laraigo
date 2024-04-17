@@ -107,7 +107,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
             },
             {
                 Header: t(langKeys.ticket_number),
-                accessor: 'ticketnumber',
+                accessor: 'ticketnum',
                 NoFilter: true
             },
             {
@@ -117,32 +117,32 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
             },
             {
                 Header: t(langKeys.rundate),
-                accessor: 'rundate',
+                accessor: 'fecha_ejecucion',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.runtime),
-                accessor: 'runtime',
+                accessor: 'hora_ejecucion',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.finishconversationdate),
-                accessor: 'finishconversationdate',
+                accessor: 'fecha_fin_conversacion',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.finishconversationtime),
-                accessor: 'finishconversationtime',
+                accessor: 'hora_fin_conversacion',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.firstreplydate),
-                accessor: 'firstreplydate',
+                accessor: 'fecha_primera_respuesta',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.firstreplytime),
-                accessor: 'firstreplytime',
+                accessor: 'hora_primera_respuesta',
                 NoFilter: true
             },
             {
@@ -172,7 +172,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
             },
             {
                 Header: t(langKeys.transactionnumber),
-                accessor: 'transactionnumber',
+                accessor: 'n_transaccion',
                 NoFilter: true
             },
             {
@@ -182,17 +182,17 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
             },
             {
                 Header: t(langKeys.agent),
-                accessor: 'agent',
+                accessor: 'asesorfinal',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.conversationTMO),
-                accessor: 'conversationtmo',
+                accessor: 'tmo',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.tipification),
-                accessor: 'tipification',
+                accessor: 'classification',
                 NoFilter: true
             },
             {
