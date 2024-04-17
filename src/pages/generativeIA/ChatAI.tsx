@@ -285,12 +285,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 setWaitSaveCreateThread(true);
                 setCardDelete(null);
             } else if (llamaResult.error) {
-                const errormessage = t(llamaResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
                 setWaitSaveThreadDeleteLlama(false);
+                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                setWaitSaveCreateThread(true);
+                setCardDelete(null);
             }
         }
     }, [llamaResult, waitSaveThreadDeleteLlama]);
@@ -388,7 +386,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             setWaitSaveThread(true);
         } else {
             dispatch(showBackdrop(true));
-            dispatch(execute(insThread({...getValues(), code: 'llamatest', description: dateAux})));
+            dispatch(execute(insThread({...getValues(), code: '', description: dateAux})));
             setWaitSaveCreateThread(true);
         }
     };
@@ -444,11 +442,11 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         setMessageText('');
         fetchThreadMessages(selectedChat?.threadid);
         dispatch(query({
-            collection: row?.name,
+            assistant_name: row?.name,
             query: message,
             system_prompt: row?.generalprompt,
             model: row?.basemodel,
-            threadid: selectedChat?.threadid
+            thread_id: selectedChat?.code
         }))
         setWaitSaveMessageLlama(true)
     };
