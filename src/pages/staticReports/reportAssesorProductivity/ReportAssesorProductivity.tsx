@@ -1,13 +1,13 @@
-import React, { FC, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import React, { ChangeEvent, FC, useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
 import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
-import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
+import { AntTab, DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
-import { Box, Button, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { Box, Button, ListItemIcon, MenuItem, Tabs, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon } from "icons";
 import { Range } from "react-date-range";
 import CategoryIcon from "@material-ui/icons/Category";
@@ -28,6 +28,12 @@ import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import { MultiData } from "@types";
 import IndicatorPanel from "components/report/IndicatorPanel";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import SettingsIcon from '@material-ui/icons/Settings';
+import SubjectIcon from '@material-ui/icons/Subject';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList, LineChart, Line, Legend } from 'recharts';
+import TablePaginated from 'components/fields/table-paginated';
+
 
 interface Assessor {
     row: Dictionary | null;
@@ -86,6 +92,15 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up("sm")]: {
             display: "flex",
         },
+    },
+    tabs: {
+        color: "#989898",
+        backgroundColor: "white",
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        width: "inherit",
+        
     },
 }));
 
@@ -280,6 +295,53 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         ],
         [isday, mainAux, desconectedmotives]
     );
+
+    const columnsForAgentNumber = React.useMemo(
+        () => [           
+            {
+                Header: t(langKeys.report_userproductivity_fullname),
+                accessor: 'fullname',
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'userstatus',
+            },                   
+            {
+                Header: t(langKeys.report_userproductivity_maxfirstreplytime),
+                accessor: 'maxfirstreplytime',
+            },
+            {
+                Header: t(langKeys.report_userproductivity_minfirstreplytime),
+                accessor: 'minfirstreplytime',
+            },           
+            {
+                Header: t(langKeys.report_userproductivity_maxtotalduration),
+                accessor: 'maxtotalduration',
+            },
+            {
+                Header: t(langKeys.report_userproductivity_mintotalduration),
+                accessor: 'mintotalduration',
+            },
+           
+            {
+                Header: t(langKeys.report_userproductivity_maxtotalasesorduration),
+                accessor: 'maxtotalasesorduration',
+            },
+            {
+                Header: t(langKeys.report_userproductivity_mintotalasesorduration),
+                accessor: 'mintotalasesorduration',
+            },         
+            {
+                Header: t(langKeys.report_userproductivity_userconnectedduration),
+                accessor: 'userconnectedduration',
+                type: "number",
+                sortType: 'number',
+            },
+          
+          
+        ],
+        [isday, mainAux, desconectedmotives]
+    );
     
     useEffect(() => {
         if (allFilters) {
@@ -443,9 +505,37 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             document.removeEventListener("click", handleClickOutside);
         };
     }, [anchorElSeButtons, setOpenSeButtons]);
+
     
+
+    const [tabIndex, setTabIndex] = useState(0);
+    const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
+        setTabIndex(newIndex);
+    };
+    
+    const dataforRechart = [
+        { name: 'Juan', value: 400 },
+        { name: 'Carlos', value: 300 },
+        { name: 'Nirvana', value: 200 },
+        { name: 'Sebas', value: 500 },
+        { name: 'Victor', value: 400 },
+        { name: 'Toro', value: 300 },
+      
+    ];
+    const dataHorizontal = [
+        { name: 'Juan', value: '12:54' },
+        { name: 'Carlos', value: '15:45' },
+        { name: 'Nirvana', value: '10:30' },
+        { name: 'Sebas', value: '8:20' },
+        { name: 'Victor', value: '11:15' },
+      ];
+      const [pageCount, setPageCount] = useState(0);
+      const [totalrow, settotalrow] = useState(0);
+
+
     return (
         <>
+    {/* Inicio de la Cabezera 1 ----------------------------------------------------*/}
 
             <div style={{ display: "flex", gap: 8, marginBottom: '1rem', marginTop: '0.5rem' }}>
                 <div style={{ display: "flex" }}>
@@ -478,6 +568,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                     </Button>
                                 </DateRangePicker>
                             </div>
+                            
                         </Box>
                     </Box>
                 </div>
@@ -488,53 +579,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                             justifyContent="space-between"
                             alignItems="center"
                         >
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                <FieldSelect                                                    
-                                    label={t("report_userproductivity_filter_channels")}
-                                    className={classes.filterComponent}
-                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
-                                    valueDefault={allParameters?.channel || "ayuda"}
-                                    onChange={(value) =>
-                                        setValue("channel", value?.typedesc || "ayuda2")
-                                    }
-                                    variant="outlined"
-                                    data={
-                                        multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
-                                    }
-                                    loading={multiData.loading}
-                                    optionDesc={"type"}
-                                    optionValue={"typedesc"}
-                                />
-                                <FieldMultiSelect
-                                    limitTags={1}
-                                    label={t("report_userproductivity_filter_group")}
-                                    className={classes.filterComponent + " col-6"}
-                                    valueDefault={allParameters?.usergroup || ""}
-                                    key={"UFN_DOMAIN_LST_VALORES_GRUPOS"}
-                                    onChange={(value) =>
-                                        setValue("usergroup", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
-                                    }
-                                    variant="outlined"
-                                    data={groupsdata}
-                                    optionDesc={"domaindesc"}
-                                    optionValue={"domainvalue"}
-                                />
-
-                                <FieldMultiSelect
-                                    limitTags={1}
-                                    label={t("report_userproductivity_filter_status")}
-                                    className={classes.filterComponent + " col-6"}
-                                    key={"UFN_DOMAIN_LST_VALORES_ESTADOORGUSER"}
-                                    valueDefault={allParameters?.userstatus || ""}
-                                    onChange={(value) =>
-                                        setValue("userstatus", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
-                                    }
-                                    variant="outlined"
-                                    data={multiData?.data?.find(x=>x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data||[]}
-                                    loading={multiData.loading}
-                                    optionDesc={"domaindesc"}
-                                    optionValue={"domainvalue"}
-                                />
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: '0 15px' }}>
                                 <div style={{ alignItems: 'center' }}>
                                     <div>
                                         <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
@@ -579,128 +624,195 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             </div>
 
 
-            <Grid container spacing={3}>
+
+            {/* Tabs TMO TME TMR ----------------------------------------------------*/}
+
+            <Tabs
+                value={tabIndex}
+                onChange={handleChangeTab}
+                className={classes.tabs}
+                textColor="primary"
+                indicatorColor="primary"
+                variant="fullWidth"
+            >
+                <AntTab
+                    label={
+                        <div>
+                            <Trans i18nKey={langKeys.tmo} />
+                        </div>
+                    }
+                />
+                <AntTab
+                    label={
+                        <div>
+                            <Trans i18nKey={langKeys.tme} />
+                        </div>
+                    }
+                />
+                    <AntTab
+                    label={
+                        <div>
+                            <Trans i18nKey={langKeys.tmr} />
+                        </div>
+                    }
+                />
+            </Tabs>
+
+
+            {/* Espacio Grafica con flecha TMO/TME/TMR ----------------------------------------------------*/}
+            <div style={{margin: '1rem 0'}}>
+                <Card  style={{ color: "#7721AD" }}>
+                        <CardContent style={{ paddingBottom: 10 }}>
+                            <div style={{display:'flex', justifyContent: 'space-between'}}>
+                                <div>
+                                    <Typography  style={{fontWeight:'bold', fontSize:'1.3rem'}}> {t(langKeys.tmo)}</Typography>
+                                    <Typography> Tiempo Medio de la Operación</Typography>
+                                </div>
+                                <div style={{display:'flex', gap: 5}}>
+                                    <CloudDownloadIcon style={{ color: "#2E2C34" }}/>
+                                    <SettingsIcon style={{ color: "#2E2C34" }}/>
+                                </div>
+                            </div>                        
+                        </CardContent>
+                </Card>
+            </div>
+
+
+
+
+            {/* Espacio Asesor con TMO Promedio / Cumplimiento TMO por ticket ----------------------------------------------------*/}
+
+            <Grid container spacing={3} className={classes.containerDetails}>
                 
                 <Grid item xs={12} md={6} lg={6}>
-                    <div>
-                        <Grid container spacing={1} >
 
-                            <Grid item xs={12} md={12} lg={12}>
-                                <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
-                                })} style={{ color: "white" }}>
-                                    <CardContent style={{ paddingBottom: 10 }}>
-                                        <Typography variant="h5">
-                                            {t(langKeys.report_userproductivity_cardtme)}
-                                            <Tooltip title={`${t(langKeys.tmetooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
-                                            </Tooltip>
-                                        </Typography>
-                                        <Typography variant="h5" component="div" align="center">
-                                            {detailCustomReport.data[0]?.cardavgavgtme}
-                                        </Typography>
-                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
-                                            {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral || ""}`}
-                                            {(detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
+                <Card>
+                    <CardContent style={{ paddingBottom: 10 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div>
+                            <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> Asesor con TMO Promedio</Typography>
+                        </div>
+                        <div style={{ display: 'flex', gap: 5 }}>
+                            <SubjectIcon style={{ color: "#2E2C34" }} />
+                            <CloudDownloadIcon style={{ color: "#2E2C34" }} />
+                        </div>
+                        </div>
 
+                        <div style={{ margin: '1rem 0' }}>
+                            <BarChart width={500} height={300} data={dataforRechart} >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Bar dataKey="value" fill="#8884d8" />
+                            </BarChart>
+                        </div>
 
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax_tme)}
-                                    value={detailCustomReport.data[0]?.cardavgmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmeuser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
-                                    value={detailCustomReport.data[0]?.cardmaxmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})` : "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin_tme)}
-                                    value={detailCustomReport.data[0]?.cardavgmintme}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmeuser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin_tme)}
-                                    value={detailCustomReport.data[0]?.cardminmintme}
-                                    value2={detailCustomReport.data[0]?.cardminmintmeuser ? `#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})` : "-"}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
+                    </CardContent>
+                    </Card>
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={6}>
-                    <div>
-                        <Grid container spacing={1}>
+                    <Card>
+                        <CardContent style={{ paddingBottom: 10 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>Cumplimiento TMO por Ticket</Typography>
+                                </div>
+                                <div style={{ display: 'flex', gap: 5 }}>
+                                    <SubjectIcon style={{ color: "#2E2C34" }} />
+                                    <CloudDownloadIcon style={{ color: "#2E2C34" }} />
+                                </div>
+                            </div>
 
-                            <Grid item xs={12} md={12} lg={12}>
-                                <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
-                                })} style={{ color: "white" }}>
-                                    <CardContent style={{ paddingBottom: 10 }}>
-                                        <Typography variant="h5">
-                                            {t(langKeys.report_userproductivity_cardtmo)}
-                                            <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
-                                            </Tooltip>
-                                        </Typography>
-                                        <Typography variant="h5" component="div" align="center">
-                                            {detailCustomReport.data[0]?.cardavgavgtmo}
-                                        </Typography>
-                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
-                                            {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral || ""}`}
-                                            {(detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
+                            <div style={{ margin: '1rem 0' }}>
+                                <PieChart width={500} height={300} data={dataforRechart}>
+                                    <Pie dataKey="value" isAnimationActive={false} fill="#8884d8" label />
+                                </PieChart>
+                            </div>
 
-                            
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax_tmo)}
-                                    value={detailCustomReport.data[0]?.cardavgmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmouser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
-                                    value={detailCustomReport.data[0]?.cardmaxmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})` : "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin_tmo)}
-                                    value={detailCustomReport.data[0]?.cardavgmintmo}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmouser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin_tmo)}
-                                    value={detailCustomReport.data[0]?.cardminmintmo}
-                                    value2={detailCustomReport.data[0]?.cardminmintmouser ? `#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})` : "-"}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
+                        </CardContent>
+                    </Card>
+
+
                 </Grid>
+
             </Grid>
+
+
+
+
+            {/* Espacio N°Tickets Cerrados / N° Asesores ----------------------------------------------------*/}
+
+            <Grid container spacing={3} className={classes.containerDetails}>
+                
+                <Grid item xs={12} md={6} lg={6}>
+
+                    <Card style={{ width: '100%' }}>
+                        <CardContent style={{ paddingBottom: 10 }}>
+                            <div style={{display:'flex', justifyContent: 'space-between'}}>
+                                <div>
+                                    <Typography  style={{fontWeight:'bold', fontSize:'1.3rem'}}> N° Tickets Cerrados</Typography>
+                                </div>
+                                <div style={{display:'flex', gap: 5}}>
+                                    <SubjectIcon style={{ color: "#2E2C34" }}/>
+                                    <CloudDownloadIcon style={{ color: "#2E2C34" }}/>
+                                </div>
+                            </div>      
+
+                            <div style={{margin: '1rem 0', justifyContent:'center', display:'flex'}}>
+                                <BarChart width={500} height={300} data={dataforRechart}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Bar dataKey="value" fill="#8884d8" />
+                                </BarChart>
+                            </div>
+
+
+                        </CardContent>
+                    </Card>
+
+
+                    
+                </Grid>
+
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card >
+                        <CardContent style={{ paddingBottom: 10 }}>
+                            <div style={{display:'flex', justifyContent: 'space-between'}}>
+                                <div>
+                                    <Typography  style={{fontWeight:'bold', fontSize:'1.3rem'}}>N° Asesores</Typography>
+                                </div>
+                                <div style={{display:'flex', gap: 5}}>
+                                    <SubjectIcon style={{ color: "#2E2C34" }}/>
+                                    <CloudDownloadIcon style={{ color: "#2E2C34" }}/>
+                                </div>
+                            </div>     
+
+                            <div style={{margin: '1rem 0'}}>
+                                <TablePaginated
+                                    columns={columnsForAgentNumber}
+                                    data={dataGrid}
+                                    totalrow={totalrow}
+                                    pageCount={pageCount}
+                                    autotrigger={true}
+                                    download={false}                                  
+                                    fetchData={fetchData}
+                                />
+                            </div>
+
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+            </Grid>
+
+
+
+
+
+
+
            
 
 
@@ -709,64 +821,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
 
 
 
-            <Grid container spacing={3} className={classes.containerDetails} style={{paddingTop:10}}>
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card>
-                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="body2">
-                                    {t(langKeys.report_userproductivity_totalclosedtickets)}
-                                </Typography>
-                                <Typography variant="h5" component="div" align="center">
-                                    {detailCustomReport.data[0]?.totalclosedtickets}
-                                </Typography>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="subtitle1" >
-                                    {maxmin.maxticketsclosedasesor} ({maxmin.maxticketsclosed})
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxticketsclosedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    {maxmin.minticketsclosedasesor} ({maxmin.minticketsclosed})
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_minticketsclosedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card>
-                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="body2">
-                                    N° {t(langKeys.report_userproductivity_usersconnected)}
-                                </Typography>
-                                <Typography variant="h5" component="div" align="center">
-                                    {detailCustomReport.data[0]?.usersconnected}
-                                </Typography>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="subtitle1">
-                                    {maxmin.maxtimeconnectedasesor} ({maxmin.maxtimeconnected} m)
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxtimeconnectedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    {maxmin.mintimeconnectedasesor} ({maxmin.mintimeconnected} m)
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_mintimeconnectedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+       
 
             {view === "GRID" ? (
                 <TableZyx
