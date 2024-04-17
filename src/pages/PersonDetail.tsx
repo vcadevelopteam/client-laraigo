@@ -4,7 +4,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, GetIcon } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation, getPersonOne } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation, getPersonOne, getDomainByDomainNameList } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip, styled, InputAdornment } from '@material-ui/core';
 import clsx from 'clsx';
@@ -23,7 +23,7 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { getChannelListByPerson, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useFieldArray, useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { execute } from 'store/main/actions';
+import { execute, getCollectionAux2 } from 'store/main/actions';
 import Rating from '@material-ui/lab/Rating';
 import TableZyx from '../components/fields/table-simple';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
@@ -39,7 +39,7 @@ import { Controller } from "react-hook-form";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
-import TableZyxEditable from 'components/fields/table-editable';
+import CustomTableZyxEditable from 'components/fields/customtable-editable';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
 
@@ -1127,10 +1127,12 @@ interface CustomVariableTabProps {
 }
 
 const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData }) => {
+    const dispatch = useDispatch();
     const domains = useSelector(state => state.person.editableDomains);
     const { t } = useTranslation();
     const [skipAutoReset, setSkipAutoReset] = useState(false)
     const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
 
     const updateCell = (rowIndex: number, columnId: string, value: string) => {
         setSkipAutoReset(true);
@@ -1139,6 +1141,11 @@ const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData
         setTableData(auxTableData)
         setUpdatingDataTable(!updatingDataTable);
     }
+    useEffect(() => {
+        if(!domains.loading && !domains.error && domains.value?.customVariables){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariables?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [domains]);
 
     useEffect(() => {
         setSkipAutoReset(false)
@@ -1177,12 +1184,13 @@ const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData
         []
     )
     return (        
-        <TableZyxEditable
+        <CustomTableZyxEditable
             columns={columns}
             data={tableData}
             download={false}
             loading={domains.loading}
             register={false}
+            dataDomains={domainsCustomTable?.data||[]}
             filterGeneral={false}
             updateCell={updateCell}
             skipAutoReset={skipAutoReset}

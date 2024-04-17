@@ -708,15 +708,15 @@ export const getCustomVariableSel = (): IRequestBody => ({
     key: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
     parameters: {}
 })
-export const getCustomVariableSelByTableName = (tablename:string): IRequestBody => ({
+export const getCustomVariableSelByTableName = (tablename:string, customvariableapplicationid:number=0): IRequestBody => ({
     method: "UFN_CUSTOM_VARIABLE_SEL",
     key: "UFN_CUSTOM_VARIABLE_SEL",
-    parameters: {tablename, customvariableapplicationid:0}
+    parameters: {tablename, customvariableapplicationid}
 })
-export const insCustomVariable = ({id, customvariableapplicationid, variablename, description, variabletype, status, operation}:Dictionary): IRequestBody => ({
+export const insCustomVariable = ({id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname=""}:Dictionary): IRequestBody => ({
     method: "UFN_CUSTOM_VARIABLE_INS",
     key: "UFN_CUSTOM_VARIABLE_INS",
-    parameters: {id, customvariableapplicationid, variablename, description, variabletype, status, operation}
+    parameters: {id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname}
 })
 
 export const getDocumentLibrary = (): IRequestBody => ({
@@ -5062,4 +5062,9 @@ export const getDomainByDomainName = (domainname:string) => ({
     method: "UFN_DOMAIN_BY_DOMAINNAME",
     key: "UFN_DOMAIN_BY_DOMAINNAME",
     parameters: { domainname },
+});
+export const getDomainByDomainNameList = (domainnamelist:string) => ({
+    method: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
+    key: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
+    parameters: { domainnamelist },
 });
