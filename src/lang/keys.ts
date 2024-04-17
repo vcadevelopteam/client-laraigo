@@ -6057,6 +6057,8 @@ export const langKeys = {
   canprintoneorder: 'canprintoneorder',
   deliverytypeerror: 'deliverytypeerror',
   allmustbesameorder: 'allmustbesameorder',
+  transactionnumber: 'transactionnumber',
+  conversationTMO: 'conversationTMO',
   needtopay: 'needtopay',
   numbers: 'numbers',
 };

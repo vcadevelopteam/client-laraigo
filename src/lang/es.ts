@@ -6062,6 +6062,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   deliverytypeerror: 'Uno de los pedidos seleccionados tiene el tipo de entrega Recojo en tienda',
   allmustbesameorder: 'Los registros seleccionados deben pertenecer a la misma orden',
   needtopay: 'Falta confirmar el pago',
+  transactionnumber: 'N° Transacción',
+  conversationTMO: 'TMO Conversación',
   numbers: 'Números',
 };
 
