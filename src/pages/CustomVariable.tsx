@@ -459,6 +459,7 @@ const CustomVariable: FC = () => {
                 Header: t(langKeys.app),
                 accessor: 'application_name_t',
                 helpText: t(langKeys.application_helper),
+                NoFilter: true,
             },
             {
                 Header: t(langKeys.description),
