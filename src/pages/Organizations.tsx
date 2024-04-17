@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, IOSSwitch } from 'components';
-import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getCustomVariableSelByTableName, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
+import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getCustomVariableSelByTableName, getDomainByDomainNameList, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,7 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, resetAllMain, uploadFile, resetUploadFile } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, resetAllMain, uploadFile, resetUploadFile, getCollectionAux2 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
@@ -21,8 +21,8 @@ import { getCountryList } from 'store/signup/actions';
 import { formatNumber } from 'common/helpers';
 import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updateScenario } from "store/voximplant/actions";
 import { CellProps } from 'react-table';
-import TableZyxEditable from 'components/fields/table-editable';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import CustomTableZyxEditable from 'components/fields/customtable-editable';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -102,6 +102,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
     const roledesc = user?.roledesc || "";
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveUpload, setWaitSaveUpload] = useState(false);
@@ -1285,10 +1286,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     </Grid>
                 </div>}
                 {pageSelected === 4 && <div className={classes.containerDetail}>                    
-                    <TableZyxEditable
+                    <CustomTableZyxEditable
                         columns={columns}
                         data={tableDataVariables}
                         download={false}
+                        dataDomains={domainsCustomTable?.data||[]}
                         //loading={multiData.loading}
                         register={false}
                         filterGeneral={false}
@@ -1397,6 +1399,12 @@ const Organizations: FC = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if(!mainResult.multiData.loading && !mainResult.multiData.error && mainResult.multiData.data?.[12]){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(mainResult.multiData?.data?.[12]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [mainResult.multiData]);
+    
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {

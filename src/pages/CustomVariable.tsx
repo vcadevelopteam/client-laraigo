@@ -8,7 +8,7 @@ import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getValuesFromDomain, getCustomVariableSel, getCustomVariableSelByTableName, insCustomVariable } from 'common/helpers';
+import { getValuesFromDomain, getCustomVariableSel, getCustomVariableSelByTableName, insCustomVariable, getDomainSel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -72,7 +72,9 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const { register, handleSubmit, setValue, formState: { errors }, reset, getValues } = useForm();
+    const [showDomains, setShowDomains] = useState(row?.variabletype === "domain");
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataDomainList = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const onSubmit = handleSubmit((data) => {
         if (!edit && dataDomain && dataDomain.some(d => d.variablename === data.variablename)) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.code_duplicate) }))
@@ -94,16 +96,22 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                 description: row?.description || '',
                 variablename: row?.variablename || '',
                 variabletype: row?.variabletype || '',
+                domainname: row?.domainname || '',
                 status: row?.status || 'ACTIVO',
             })
-
+            setShowDomains(row?.variabletype === "domain")
+        }
+    }, [openModal])
+    useEffect(() => {
+        if (openModal) {
+            register('domainname', { validate: (value) => (showDomains?((value && value.length) || t(langKeys.field_required)):true) });
             register('description', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
             register('variablename', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('variabletype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('id');
         }
-    }, [openModal])
+    }, [openModal,showDomains])
 
     return (
         <DialogZyx
@@ -145,16 +153,30 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                     label={t(langKeys.datatype)}
                     className="col-3"
                     valueDefault={getValues('variabletype')}
-                    onChange={(value) => { setValue('variabletype', value ? value.domainvalue : ''); }}
+                    onChange={(value) => { setValue('variabletype', value?.domainvalue||'');
+                        setValue('domainname', '');
+                        setShowDomains(value?.domainvalue === "domain")
+                     }}
                     error={errors?.variabletype?.message}
                     data={[
-                        {domaindesc: "Enteros", domainvalue:"Enteros"},
-                        {domaindesc: "Letras", domainvalue:"Letras"},
-                        {domaindesc: "Fecha y Hora", domainvalue:"Fecha y Hora"},
+                        {domaindesc: "Enteros", domainvalue:"number"},
+                        {domaindesc: "Letras", domainvalue:"string"},
+                        {domaindesc: "Fecha y Hora", domainvalue:"datetime-local"},
+                        {domaindesc: "Dominio", domainvalue:"domain"},
                     ]}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />                             
+                {showDomains && <FieldSelect
+                    label={t(langKeys.domainname)}
+                    className="col-3"
+                    valueDefault={getValues('domainname')}
+                    onChange={(value) => { setValue('domainname', value ? value.domainname : ''); }}
+                    error={errors?.domainname?.message}
+                    data={dataDomainList}
+                    optionDesc="domainname"
+                    optionValue="domainname"
+                />  }                          
                 <FieldSelect
                     label={t(langKeys.status)}
                     className="col-3"
@@ -294,7 +316,7 @@ const DetailCustomVariable: React.FC<DetailProps> = ({ data: { row, domainname, 
         register('id');
 
         dispatch(resetMainAux());
-        dispatch(getCollectionAux(getCustomVariableSelByTableName((row?.table_name || ""))));
+        dispatch(getCollectionAux(getCustomVariableSelByTableName((row?.table_name || ""), row?.customvariableapplicationid)));
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -468,7 +490,8 @@ const CustomVariable: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPODOMINIO")
+            getValuesFromDomain("TIPODOMINIO"),
+            getDomainSel("")
         ]));
 
         return () => {

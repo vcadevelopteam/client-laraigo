@@ -13,7 +13,8 @@ import PersonIcon from '@material-ui/icons/Person';
 import { getDomainsByTypename } from 'store/person/actions';
 import {
     insLead2, adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
-    getLeadsSel, leadHistoryIns, selCalendar
+    getLeadsSel, leadHistoryIns, selCalendar,
+    getDomainByDomainNameList
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -35,7 +36,7 @@ import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/perso
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon, TrackChanges as TrackChangesIcon } from '@material-ui/icons';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, resetMain } from 'store/main/actions';
+import { getCollection, getCollectionAux2, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import { EmailIcon, WhatsappIcon, SmsIcon, CustomVariablesIcon } from 'icons';
 import { Descendant } from 'slate';
@@ -45,8 +46,8 @@ import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
-import TableZyxEditable from 'components/fields/table-editable';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import CustomTableZyxEditable from 'components/fields/customtable-editable';
 
 const isIncremental = window.location.href.includes("incremental")
 
@@ -3098,6 +3099,8 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
     const { t } = useTranslation();
     const [skipAutoReset, setSkipAutoReset] = useState(false)
     const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
+    const dispatch = useDispatch();
 
     const updateCell = (rowIndex: number, columnId: string, value: string) => {
         setSkipAutoReset(true);
@@ -3106,6 +3109,11 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
         setTableData(auxTableData)
         setUpdatingDataTable(!updatingDataTable);
     }
+    useEffect(() => {
+        if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [domains]);
 
     useEffect(() => {
         setSkipAutoReset(false)
@@ -3144,12 +3152,13 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
         []
     )
     return (        
-        <TableZyxEditable
+        <CustomTableZyxEditable
             columns={columns}
             data={tableData}
             download={false}
             loading={domains.loading}
             register={false}
+            dataDomains={domainsCustomTable?.data||[]}
             filterGeneral={false}
             updateCell={updateCell}
             skipAutoReset={skipAutoReset}

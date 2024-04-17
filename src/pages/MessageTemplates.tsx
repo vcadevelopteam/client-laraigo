@@ -16,6 +16,7 @@ import { Trans, useTranslation } from "react-i18next";
 import {
     execute,
     exportData,
+    getCollectionAux2,
     getCollectionPaginated,
     getMultiCollection,
     resetAllMain,
@@ -37,6 +38,7 @@ import {
 import {
     dateToLocalDate,
     getCustomVariableSelByTableName,
+    getDomainByDomainNameList,
     getMessageTemplateExport,
     getPaginatedMessageTemplate,
     getValuesFromDomain,
@@ -58,8 +60,8 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
-import TableZyxEditable from "components/fields/table-editable";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import CustomTableZyxEditable from "components/fields/customtable-editable";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -282,6 +284,12 @@ const MessageTemplates: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+
+    useEffect(() => {
+        if(!mainResult.multiData.loading && !mainResult.multiData.error && mainResult.multiData.data?.[3]){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(mainResult.multiData?.data?.[3]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [mainResult.multiData]);
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
@@ -625,6 +633,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
     const [skipAutoReset, setSkipAutoReset] = useState(false)
@@ -2017,10 +2026,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 </div>}
                 {pageSelected === 1 &&
                 <div className={classes.containerDetail}>                    
-                    <TableZyxEditable
+                    <CustomTableZyxEditable
                         columns={columns}
                         data={tableDataVariables}
                         download={false}
+                        dataDomains={domainsCustomTable?.data||[]}
                         //loading={multiData.loading}
                         register={false}
                         filterGeneral={false}

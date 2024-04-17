@@ -3,7 +3,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo, AntTab,} from "components";
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore, getCustomVariableSelByTableName} from "common/helpers";
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore, getCustomVariableSelByTableName, getDomainByDomainNameList} from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -13,7 +13,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
 import Avatar from "@material-ui/core/Avatar";
-import { uploadFile } from "store/main/actions";
+import { getCollectionAux2, uploadFile } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import clsx from "clsx";
 import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux} from "store/main/actions";
@@ -37,7 +37,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { DuplicateIcon } from "icons";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { CellProps } from "react-table";
-import TableZyxEditable from "components/fields/table-editable";
+import CustomTableZyxEditable from "components/fields/customtable-editable";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -1044,7 +1044,8 @@ const DetailUsers: React.FC<DetailProps> = ({
 
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector((state) => state.activationuser.saveUser);
-    const detailRes = useSelector((state) => state.main.mainAux); //RESULTADO DEL DETALLE
+    const detailRes = useSelector((state) => state.main.mainAux);
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
 
     const [dataOrganizations, setDataOrganizations] = useState<(Dictionary | null)[]>([]);
     const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
@@ -1067,6 +1068,7 @@ const DetailUsers: React.FC<DetailProps> = ({
 
     const updateCell = (rowIndex: number, columnId: string, value: string) => {
         setSkipAutoReset(true);
+        debugger
         const auxTableData = tableDataVariables
         auxTableData[rowIndex][columnId] = value
         setTableDataVariables(auxTableData)
@@ -1074,7 +1076,6 @@ const DetailUsers: React.FC<DetailProps> = ({
     }
     
     useEffect(() => {
-        console.log(multiData)
         if (multiData[13]) {
             const variableDataList = multiData[13].data ||[]
             setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
@@ -1546,10 +1547,11 @@ const DetailUsers: React.FC<DetailProps> = ({
                 </div>}
                 {pageSelected === 1 &&
                 <div className={classes.containerDetail}>                    
-                    <TableZyxEditable
+                    <CustomTableZyxEditable
                         columns={columns}
                         data={tableDataVariables}
                         download={false}
+                        dataDomains={domainsCustomTable?.data||[]}
                         //loading={multiData.loading}
                         register={false}
                         filterGeneral={false}
@@ -1834,6 +1836,11 @@ const Users: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+    useEffect(() => {
+        if(!mainMultiResult.loading && !mainMultiResult.error && mainMultiResult?.data?.[13]?.data){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(mainMultiResult?.data?.[13]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [mainMultiResult]);
 
     useEffect(() => {
         if (waitImport) {
