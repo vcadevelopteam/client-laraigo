@@ -671,7 +671,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                     endIcon={tabIndex !== 2 ? <ArrowForwardIcon color="secondary" /> : <></>}
                                     style={{ backgroundColor: '#55BD84' }}
                                 >
-                                    {tabIndex !== 2 ? t(langKeys.continue) : t(langKeys.save)}
+                                    {tabIndex !== 2 ? t(langKeys.next) : t(langKeys.save)}
                                 </Button>
                             </div>
                         </div>
