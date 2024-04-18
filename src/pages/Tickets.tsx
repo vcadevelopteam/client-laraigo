@@ -1019,10 +1019,12 @@ const Tickets = () => {
     }
 
     useEffect(() => {
-        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
-            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.conversationid === parseInt(x)) || p.find(y => y.conversationid === parseInt(x)) || {}))
+        if (!mainPaginated.loading && !mainPaginated.error){
+            if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+                setRowWithDataSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.conversationid === parseInt(x)) || p.find(y => y.conversationid === parseInt(x)) || {}))
+            }
         }
-    }, [selectedRows])
+    }, [selectedRows, mainPaginated])
 
     const downloadCallRecord = async (ticket: Dictionary) => {
         // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
