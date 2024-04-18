@@ -25,6 +25,7 @@ import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import { CellProps } from 'react-table';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import ClearIcon from "@material-ui/icons/Clear";
 const isIncremental = window.location.href.includes("incremental")
 
 const selectionKey = 'conversationid';
@@ -1064,6 +1065,16 @@ const TicketDetail: FC<{ row:RowSelected, setViewSelected:(x:string)=>void, open
                         title={t(langKeys.ticket) + " " + t(langKeys.detail)}
                     />
                 </div>
+                <Button
+                    color="primary"
+                    onClick={() => setViewSelected("view-1")}
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    type="button"
+                    variant="contained"
+                >
+                    {t(langKeys.back)}
+                </Button>
             </div>
             <Tabs
                 value={tabIndex}
