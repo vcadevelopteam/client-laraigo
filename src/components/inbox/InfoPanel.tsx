@@ -575,7 +575,7 @@ const InfoTab: React.FC = () => {
                 {person?.observation && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.observation)}</div>
-                        <div>{person?.observation}</div>
+                        <div style={{ whiteSpace: "pre-wrap" }}>{person?.observation}</div>
                     </div>
                 </div>}
             </div>
