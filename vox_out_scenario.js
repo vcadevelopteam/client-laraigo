@@ -284,7 +284,8 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
     site = data.caller_id;
     message = data.message;
     flow = data.flow;
-    variables = data.variables;
+    variables = data.variables || {};
+    variables.phone = phone_number
 
     dataCampaign = {
         type: data.type || "CAMPAIGN",
