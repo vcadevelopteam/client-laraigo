@@ -6061,6 +6061,18 @@ export const langKeys = {
   conversationTMO: 'conversationTMO',
   needtopay: 'needtopay',
   numbers: 'numbers',
+  corporate: 'corporate',
+  cancelassistantcreation: 'cancelassistantcreation',
+  cancelassistantedit: 'cancelassistantedit',
+  personality_table: 'personality_table',
+  personality_client: 'personality_client',
+  personality_sales: 'personality_sales',
+  personality_tech: 'personality_tech',
+  personality_ai: 'personality_ai',
+  personality_personalized: 'personality_personalized',
+  contextperconversation: 'contextperconversation',
+  firstinteraction: 'firstinteraction',
+  conector: 'conector',
 };
 
 export type LangKeys = typeof langKeys;

@@ -170,7 +170,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-    const [viewSelected, setViewSelected] = useState('main');
+    const [viewSelected, setViewSelected] = useState(edit ? 'detail' : 'main');
     const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [unansweredQueries, setUnansweredQueries] = useState<string | null>(row?.querywithoutanswer || null);
@@ -221,7 +221,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             negativeprompt: '1) Ser grosero.\n2) Hablar de temas políticos, sexuales, religiosos y culturales.\n3) Usar información falsa o incoherente.',
             max_tokens: 500,
             temperature: 1,
-            top_p: 1
+            top_p: 1,
+            type: 'TABLE',
         },
         {
             title: t(langKeys.customer_service),
@@ -234,7 +235,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             negativeprompt: '1) Ser grosero.\n2) Hablar de temas políticos, sexuales, religiosos y culturales.\n3) Usar información falsa o incoherente.\n4) Hablar de otras organizaciones.',
             max_tokens: 300,
             temperature: 1,
-            top_p: 1
+            top_p: 1,
+            type: 'CLIENT',
         },
         {
             title: t(langKeys.sales_expert),
@@ -247,7 +249,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             negativeprompt: '1) Ser grosero.\n2) Hablar de temas políticos, sexuales, religiosos y culturales.\n3) Usar información falsa o incoherente.\n4) Ofrecer productos relacionados a otras organizaciones.',
             max_tokens: 300,
             temperature: 1,
-            top_p: 1
+            top_p: 1,
+            type: 'SALES',
         },
         {
             title: t(langKeys.technical_support),
@@ -260,7 +263,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             negativeprompt: '1) Ser grosero.\n2) Hablar de temas políticos, sexuales, religiosos y culturales.\n3) Usar información falsa o incoherente.\n4) Hablar de otras organizaciones.',
             max_tokens: 700,
             temperature: 1,
-            top_p: 1
+            top_p: 1,
+            type: 'TECH',
         },
         {
             title: t(langKeys.ai_base),
@@ -273,7 +277,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             negativeprompt: '1) Ser grosero.\n2) Usar información falsa o incoherente.',
             max_tokens: 300,
             temperature: 1,
-            top_p: 1
+            top_p: 1,
+            type: 'AI',
         },
         {
             title: t(langKeys.custom_mode),
@@ -286,7 +291,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             negativeprompt: '',
             max_tokens: 300,
             temperature: 1,
-            top_p: 1
+            top_p: 1,
+            type: 'PERSONALIZED',
         },
     ];
 
@@ -301,6 +307,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('temperature', cardData[cardIndex].temperature)
         setValue('max_tokens', cardData[cardIndex].max_tokens)
         setValue('top_p', cardData[cardIndex].top_p)
+        setValue('type', cardData[cardIndex].type)
         setViewSelected('detail');
     }
 
@@ -315,169 +322,207 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('temperature', 0)
         setValue('max_tokens', 0)
         setValue('top_p', 0)
+        setValue('type', '')
         setViewSelected('main');
     }
 
     if(edit) {
-        return (
-            <>
+        if(viewSelected === 'main') {
+            return (
                 <div className={classes.containerDetail}>
-                    <div className="row-zyx" style={{marginBottom:0}}>
+                    <div id="parameters">
                         <span className={classes.title}>
                             {t(langKeys.personality)}
                         </span>
-                        <div className={classes.block10}/>
-                        <div className="col-4">
-                            <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
-                            <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
-                            <FieldSelect
-                                label={t(langKeys.language)}
-                                data={languages}
-                                valueDefault={getValues('language')}
-                                onChange={(value) => {
-                                    if(value) {
-                                        setValue('language', value.domainvalue)
-                                    } else {
-                                        setValue('language', '')
-                                    }
-                                }}
-                                error={errors?.language?.message}
-                                optionValue='domainvalue'
-                                optionDesc='domaindesc'
-                            />
+                        <div><span className={classes.text}>{t(langKeys.selectpersonality)}</span></div>
+                        <div className={`row-zyx ${classes.cardsContainer}`} >
+                            {cardData.map((card, index) => (
+                                <Grid item xs={2} md={1} lg={2} className={classes.grid} key={index}>
+                                    <Card className={classes.card} onClick={() => handleSelectCard(index)}>
+                                        <div className={classes.cardContent}>             
+                                            {card.title=== t(langKeys.help_desk_clerk) ? (<HelpDeskPersonalityIcon className={classes.logo} />) 
+                                            : card.title=== t(langKeys.customer_service) ? (<ClientServicePersonalityIcon className={classes.logo} />) 
+                                            : card.title=== t(langKeys.sales_expert) ? (<SalesPersonalityIcon className={classes.logo} />)
+                                            : card.title=== t(langKeys.technical_support) ? (<TechSupportPersonalityIcon className={classes.logo} />)
+                                            : card.title=== t(langKeys.ai_base) ? (<BaseAIPersonalityIcon className={classes.logo} />)
+                                            : (<PersonalizedPersonalityIcon className={classes.logo} />)                                        
+                                        }                               
+                                            <div className={classes.cardTitle}>{card.title}</div>
+                                            <div className={classes.cardText}>{card.description}</div>                                         
+                                        </div>
+                                    </Card>
+                                </Grid>
+                            ))}
                         </div>
-                        <div className="col-4">
-                            <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
-                            <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.enterorgnametext)}</span></div>
-                            <FieldEdit
-                                label={t(langKeys.organization)}
-                                valueDefault={getValues('organizationname')}
-                                onChange={(value) => setValue('organizationname', value)}
-                                error={errors?.organizationname?.message}
-                            />
-                        </div>
-                        <div className="col-4">
-                            <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
-                            <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
-                            <FieldSelect
-                                label={t(langKeys.queries)}
-                                data={(multiDataAux?.data?.[1]?.data||[])}
-                                onChange={(value) => {
-                                    if(value?.domainvalue) {
-                                        setUnansweredQueries(value.domainvalue)
-                                        setValue('querywithoutanswer', value.domainvalue)
-                                    } else {
-                                        setUnansweredQueries('')
-                                        setValue('querywithoutanswer', '')
-                                    }
-                                }}
-                                error={errors?.querywithoutanswer?.message}
-                                valueDefault={getValues('querywithoutanswer')}
-                                optionValue="domainvalue"
-                                optionDesc="domainvalue"
-                            />
-                        </div>
-                        {unansweredQueries === 'Respuesta Sugerida' && (
-                            <>
-                                <div className={classes.block20}/>
-                                <div>
-                                    <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
-                                    <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.aianswer)}</span></div>
-                                    <FieldEdit
-                                        variant="outlined"
-                                        InputProps={{
-                                            multiline: true,
-                                            maxRows: 3
-                                        }}
-                                        valueDefault={getValues('response')}
-                                        onChange={(value) => setValue('response', value)}
-                                    />
-                                </div>
-                            </>
-                        )}
                     </div>
                 </div>
-                <div className={`row-zyx ${classes.containerDetail2}`}>
-                    <div className="col-8" style={{paddingRight:50}}>
-                        <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
-                        <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
-                        <FieldEdit
-                            variant="outlined"
-                            InputProps={{
-                                multiline: true,
-                                maxRows: 7
-                            }}
-                            valueDefault={getValues('prompt')}
-                            onChange={(value) => setValue('prompt', value)}
-                            error={errors?.prompt?.message}
-                        />
-                        <div className={classes.block20}/>
-                        <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
-                        <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
-                        <FieldEdit
-                            variant="outlined"
-                            InputProps={{
-                                multiline: true,
-                                maxRows: 5
-                            }}
-                            valueDefault={getValues('negativeprompt')}
-                            onChange={(value) => setValue('negativeprompt', value)}
-                            error={errors?.negativeprompt?.message}
-                        />
+            );
+        } else {
+            return (
+                <>
+                    <div className={classes.containerDetail}>
+                        <div className="row-zyx" style={{marginBottom:0}}>
+                            <div>
+                                <Button
+                                    type="button"
+                                    style={{color: '#7721AD'}}
+                                    startIcon={<ArrowBackIcon />}
+                                    onClick={handleBackCard}
+                                >
+                                    {t(langKeys.personality)}
+                                </Button>
+                            </div>
+                            <div className={classes.block10}/>
+                            <span className={classes.title}>
+                                {t(langKeys[`personality_${(getValues('type')).toLowerCase()}`])}
+                            </span>
+                            <div className={classes.block10}/>
+                            <div className="col-4">
+                                <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
+                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
+                                <FieldSelect
+                                    label={t(langKeys.language)}
+                                    data={languages}
+                                    valueDefault={getValues('language')}
+                                    onChange={(value) => setValue('language', value)}
+                                    error={errors?.language?.message}
+                                    optionValue='domainvalue'
+                                    optionDesc='domaindesc'
+                                />
+                            </div>
+                            <div className="col-4">
+                                <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
+                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.enterorgnametext)}</span></div>
+                                <FieldEdit
+                                    label={t(langKeys.organization)}
+                                    valueDefault={getValues('organizationname')}
+                                    onChange={(value) => setValue('organizationname', value)}
+                                    error={errors?.organizationname?.message}
+                                />
+                            </div>
+                            <div className="col-4">
+                                <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
+                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
+                                <FieldSelect
+                                    label={t(langKeys.queries)}
+                                    data={(multiDataAux?.data?.[1]?.data||[])}
+                                    onChange={(value) => {
+                                        if(value?.domainvalue) {
+                                            setUnansweredQueries(value.domainvalue)
+                                            setValue('querywithoutanswer', value.domainvalue)
+                                        } else {
+                                            setUnansweredQueries('')
+                                            setValue('querywithoutanswer', '')
+                                        }
+                                    }}
+                                    error={errors?.querywithoutanswer?.message}
+                                    valueDefault={getValues('querywithoutanswer')}
+                                    optionValue="domainvalue"
+                                    optionDesc="domainvalue"
+                                />
+                            </div>
+                            {unansweredQueries === 'Respuesta Sugerida' && (
+                                <>
+                                    <div className={classes.block20}/>
+                                    <div>
+                                        <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
+                                        <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.aianswer)}</span></div>
+                                        <FieldEdit
+                                            variant="outlined"
+                                            InputProps={{
+                                                multiline: true,
+                                                maxRows: 3
+                                            }}
+                                            valueDefault={getValues('response')}
+                                            onChange={(value) => setValue('response', value)}
+                                        />
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
-                    <div className="col-4">
-                        <div className={classes.parameterContainer}>
-                            <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
-                            <div className={classes.widthBlock10}/>
+                    <div className={`row-zyx ${classes.containerDetail2}`}>
+                        <div className="col-8" style={{paddingRight:50}}>
+                            <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
+                            <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
                             <FieldEdit
-                                type="number"
                                 variant="outlined"
-                                size="small"
-                                width={80}
-                                valueDefault={getValues('max_tokens')}
-                                onChange={(value) => setValue('max_tokens', value)}
-                                error={errors?.max_tokens?.message}
+                                InputProps={{
+                                    multiline: true,
+                                    maxRows: 7
+                                }}
+                                valueDefault={getValues('prompt')}
+                                onChange={(value) => setValue('prompt', value)}
+                                error={errors?.prompt?.message}
+                            />
+                            <div className={classes.block20}/>
+                            <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
+                            <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
+                            <FieldEdit
+                                variant="outlined"
+                                InputProps={{
+                                    multiline: true,
+                                    maxRows: 5
+                                }}
+                                valueDefault={getValues('negativeprompt')}
+                                onChange={(value) => setValue('negativeprompt', value)}
+                                error={errors?.negativeprompt?.message}
                             />
                         </div>
-                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
-                        <div className={classes.block20}/>
-                        <div className={classes.parameterContainer}>
-                            <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
-                            <div className={classes.widthBlock10}/>
-                            <span>0 - 2.0</span>
-                            <div className={classes.widthBlock10}/>
-                            <FieldEdit
-                                type="number"
-                                variant="outlined"
-                                size="small"
-                                width={80}
-                                valueDefault={getValues('temperature')}
-                                onChange={(value) => setValue('temperature', value)}
-                                error={errors?.temperature?.message}
-                            />
+                        <div className="col-4">
+                            <div className={classes.parameterContainer}>
+                                <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
+                                <div className={classes.widthBlock10}/>
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                    valueDefault={getValues('max_tokens')}
+                                    onChange={(value) => setValue('max_tokens', value)}
+                                    error={errors?.max_tokens?.message}
+                                />
+                            </div>
+                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
+                            <div className={classes.block20}/>
+                            <div className={classes.parameterContainer}>
+                                <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
+                                <div className={classes.widthBlock10}/>
+                                <span>0 - 2.0</span>
+                                <div className={classes.widthBlock10}/>
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                    valueDefault={getValues('temperature')}
+                                    onChange={(value) => setValue('temperature', value)}
+                                    error={errors?.temperature?.message}
+                                />
+                            </div>
+                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
+                            <div className={classes.block20}/>
+                            <div className={classes.parameterContainer}>
+                                <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
+                                <div className={classes.widthBlock10}/>
+                                <span>0 - 1.0</span>
+                                <div className={classes.widthBlock10}/>
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                    valueDefault={getValues('top_p')}
+                                    onChange={(value) => setValue('top_p', value)}
+                                    error={errors?.top_p?.message}
+                                />
+                            </div>
+                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
                         </div>
-                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
-                        <div className={classes.block20}/>
-                        <div className={classes.parameterContainer}>
-                            <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
-                            <div className={classes.widthBlock10}/>
-                            <span>0 - 1.0</span>
-                            <div className={classes.widthBlock10}/>
-                            <FieldEdit
-                                type="number"
-                                variant="outlined"
-                                size="small"
-                                width={80}
-                                valueDefault={getValues('top_p')}
-                                onChange={(value) => setValue('top_p', value)}
-                                error={errors?.top_p?.message}
-                            />
-                        </div>
-                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
                     </div>
-                </div>
-            </>
-        );
+                </>
+            );
+        }
     } else {
         if(viewSelected === 'main') {
             return (
@@ -535,14 +580,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 <FieldSelect
                                     label={t(langKeys.language)}
                                     data={languages}
-                                    valueDefault={getValues('language')}
-                                    onChange={(value) => {
-                                        if(value) {
-                                            setValue('language', value.domainvalue)
-                                        } else {
-                                            setValue('language', '')
-                                        }
-                                    }}
+                                    valueDefault={selectedCardData?.language}
+                                    onChange={(value) => setValue('language', value)}
                                     optionValue='domainvalue'
                                     optionDesc='domaindesc'
                                 />

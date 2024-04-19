@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getChannelsByOrg, getIntelligentModels, getIntelligentModelsConfigurations, getValuesFromDomain, insInteligentModelConfiguration } from 'common/helpers';
+import { getChannelsByOrg, getIntelligentModelsConfigurations, getIntelligentModelsSel, getValuesFromDomain, insInteligentModelConfiguration } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -47,6 +47,9 @@ const serviceTypes = [
         options: [
             { value: 'TONE ANALYZER', description: 'TONE ANALYZER' }
         ]
+    },
+    {
+        type: 'LARGE LANGUAGE MODEL'
     }
 ]
 
@@ -133,7 +136,9 @@ interface servicesData {
     keywords?: boolean,
     semanticroles?: boolean,
     sentiment?: boolean,
-    translationservice?: string
+    translationservice?: string,
+    contextperconversation?: boolean,
+    firstinteraction?: boolean,
 }
 
 interface RowSelected {
@@ -232,7 +237,9 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
         entities: false,
         keywords: false,
         semanticroles: false,
-        sentiment: false
+        sentiment: false,
+        contextperconversation: false,
+        firstinteraction: false,
     });
 
     React.useEffect(() => {
@@ -296,7 +303,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
             callback
         }))
     });
-
+    
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -445,7 +452,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                     optionDesc="type"
                                                     optionValue="type"
                                                 />
-                                                {getValues(`services.${i}.type_of_service`) !== '' && (
+                                                {getValues(`services.${i}.type_of_service`) !== '' && getValues(`services.${i}.type_of_service`) !== 'LARGE LANGUAGE MODEL' && (
                                                     <FieldSelect
                                                         fregister={{
                                                             ...register(`services.${i}.service`, {
@@ -491,7 +498,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                             })
                                                         }}
                                                         onChange={(value) => {
-                                                            setValue(`services.${i}.intelligentmodelsid`, value?.intelligentmodelsid || 0)
+                                                            setValue(`services.${i}.intelligentmodelsid`, value?.id || 0)
                                                             trigger(`services.${i}.intelligentmodelsid`)
                                                             // fieldUpdate(i, { ...fields[i], intelligentmodelsid: value.intelligentmodelsid })
                                                         }
@@ -502,7 +509,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         data={dataModels.filter((y: any) => y.type.trim() === getValues(`services.${i}.service`))}
                                                         valueDefault={getValues(`services.${i}.intelligentmodelsid`)}
                                                         optionDesc="description"
-                                                        optionValue="intelligentmodelsid"
+                                                        optionValue="id"
                                                     />
                                                 )}
                                                 {getValues(`services.${i}.service`) === 'NATURAL LANGUAGE UNDERSTANDING' && (
@@ -564,52 +571,100 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         optionValue="value"
                                                     />
                                                 )}
-                                                <FieldSelect
-                                                    fregister={{
-                                                        ...register(`services.${i}.analyzemode`, {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                        })
-                                                    }}
-                                                    label={t(langKeys.analysis_type)}
-                                                    className={classes.mb2}
-                                                    error={errors?.services?.[i]?.analyzemode?.message}
-                                                    valueDefault={getValues(`services.${i}.analyzemode`)}
-                                                    onChange={(value) => {
-                                                        setValue(`services.${i}.analyzemode`, value?.value || "")
-                                                    }}
-                                                    data={analysis_type}
-                                                    optionDesc="description"
-                                                    optionValue="value"
-                                                />
-                                                <div style={{ display: 'flex', flexWrap: 'wrap' }} className={classes.mb2}>
-                                                    <TemplateSwitch
+                                                {getValues(`services.${i}.type_of_service`) !== 'LARGE LANGUAGE MODEL' &&(
+                                                    <FieldSelect
                                                         fregister={{
-                                                            ...register(`services.${i}.analyzecustomer`)
+                                                            ...register(`services.${i}.analyzemode`, {
+                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                            })
                                                         }}
-                                                        label={t(langKeys.client_message)}
-                                                        valueDefault={(item.analyzecustomer) ? item.analyzecustomer : false}
-                                                        style={{ flex: '0 0 170px' }}
-                                                        onChange={(value) => setValue(`services.${i}.analyzecustomer`, value)}
+                                                        label={t(langKeys.analysis_type)}
+                                                        className={classes.mb2}
+                                                        error={errors?.services?.[i]?.analyzemode?.message}
+                                                        valueDefault={getValues(`services.${i}.analyzemode`)}
+                                                        onChange={(value) => {
+                                                            setValue(`services.${i}.analyzemode`, value?.value || "")
+                                                        }}
+                                                        data={analysis_type}
+                                                        optionDesc="description"
+                                                        optionValue="value"
                                                     />
-                                                    <TemplateSwitch
+                                                )}
+                                                {getValues(`services.${i}.type_of_service`) === 'LARGE LANGUAGE MODEL' && (
+                                                    <FieldSelect
                                                         fregister={{
-                                                            ...register(`services.${i}.analyzebot`)
+                                                            ...register(`services.${i}.intelligentmodelsid`, {
+                                                                validate: (value: any) => (value) || t(langKeys.field_required)
+                                                            })
                                                         }}
-                                                        label={t(langKeys.bot_message)}
-                                                        valueDefault={(item.analyzebot) ? item.analyzebot : false}
-                                                        style={{ flex: '0 0 170px' }}
-                                                        onChange={(value) => setValue(`services.${i}.analyzebot`, value)}
+                                                        onChange={(value) => {
+                                                            setValue(`services.${i}.intelligentmodelsid`, value?.id || 0)
+                                                            trigger(`services.${i}.intelligentmodelsid`)
+                                                            // fieldUpdate(i, { ...fields[i], intelligentmodelsid: value.intelligentmodelsid })
+                                                        }
+                                                        }
+                                                        label={t(langKeys.model)}
+                                                        className={classes.mb2}
+                                                        error={errors?.services?.[i]?.intelligentmodelsid?.message}
+                                                        data={dataModels.filter((y: any) => y.type.trim() === 'LARGE LANGUAGE MODEL')}
+                                                        valueDefault={getValues(`services.${i}.intelligentmodelsid`)}
+                                                        optionDesc="name"
+                                                        optionValue="id"
                                                     />
-                                                    <TemplateSwitch
-                                                        fregister={{
-                                                            ...register(`services.${i}.analyzeuser`)
-                                                        }}
-                                                        label={t(langKeys.agent_message)}
-                                                        valueDefault={(item.analyzeuser) ? item.analyzeuser : false}
-                                                        style={{ flex: '0 0 170px' }}
-                                                        onChange={(value) => setValue(`services.${i}.analyzeuser`, value)}
-                                                    />
-                                                </div>
+                                                )}
+                                                {getValues(`services.${i}.type_of_service`) !== 'LARGE LANGUAGE MODEL' && (
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap' }} className={classes.mb2}>
+                                                        <TemplateSwitch
+                                                            fregister={{
+                                                                ...register(`services.${i}.analyzecustomer`)
+                                                            }}
+                                                            label={t(langKeys.client_message)}
+                                                            valueDefault={(item.analyzecustomer) ? item.analyzecustomer : false}
+                                                            style={{ flex: '0 0 170px' }}
+                                                            onChange={(value) => setValue(`services.${i}.analyzecustomer`, value)}
+                                                        />
+                                                        <TemplateSwitch
+                                                            fregister={{
+                                                                ...register(`services.${i}.analyzebot`)
+                                                            }}
+                                                            label={t(langKeys.bot_message)}
+                                                            valueDefault={(item.analyzebot) ? item.analyzebot : false}
+                                                            style={{ flex: '0 0 170px' }}
+                                                            onChange={(value) => setValue(`services.${i}.analyzebot`, value)}
+                                                        />
+                                                        <TemplateSwitch
+                                                            fregister={{
+                                                                ...register(`services.${i}.analyzeuser`)
+                                                            }}
+                                                            label={t(langKeys.agent_message)}
+                                                            valueDefault={(item.analyzeuser) ? item.analyzeuser : false}
+                                                            style={{ flex: '0 0 170px' }}
+                                                            onChange={(value) => setValue(`services.${i}.analyzeuser`, value)}
+                                                        />
+                                                    </div>
+                                                )}
+                                                {getValues(`services.${i}.type_of_service`) === 'LARGE LANGUAGE MODEL' && (
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap' }} className={classes.mb2}>
+                                                        <TemplateSwitch
+                                                            fregister={{
+                                                                ...register(`services.${i}.contextperconversation`)
+                                                            }}
+                                                            label={t(langKeys.contextperconversation)}
+                                                            valueDefault={(item.contextperconversation) ? item.contextperconversation : false}
+                                                            style={{ flex: '0 0 170px' }}
+                                                            onChange={(value) => setValue(`services.${i}.contextperconversation`, value)}
+                                                        />
+                                                        <TemplateSwitch
+                                                            fregister={{
+                                                                ...register(`services.${i}.firstinteraction`)
+                                                            }}
+                                                            label={t(langKeys.firstinteraction)}
+                                                            valueDefault={(item.firstinteraction) ? item.firstinteraction : false}
+                                                            style={{ flex: '0 0 170px' }}
+                                                            onChange={(value) => setValue(`services.${i}.firstinteraction`, value)}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <div style={{ textAlign: 'right' }}>
@@ -711,7 +766,7 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
-            getIntelligentModels(),
+            getIntelligentModelsSel(0),
             getChannelsByOrg(),
             getValuesFromDomain("TIPOMODELO"),
             getValuesFromDomain("ESTADOGENERICO")
