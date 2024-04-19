@@ -31,9 +31,12 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },  
     chatList: {
+        display: 'flex',
+        flexDirection: 'column',
         borderRight: `1px solid ${theme.palette.divider}`,
         padding: theme.spacing(2),
         width: 320,
+        height: '100%'
     },
     chatMain: {
         flex: 1,           
@@ -67,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     },
     threadContainer: {
         cursor: 'pointer',
-        marginBottom: '15px'
+        marginBottom: '15px',
     },
     threadNameContainer: {
         display: 'flex',
@@ -530,65 +533,69 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     return (
         <div className={classes.container}>
             <Paper className={classes.chatList}>
-                <div style={{marginBottom: 10, fontWeight: 'bold', textAlign: 'center'}}>{row?.name}</div>
-                <div className={classes.buttonscontainer}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        startIcon={<ArrowBackIcon color="primary" />}
-                        className={classes.backButton}
-                        onClick={() => setViewSelected('assistantdetail')}
-                    >
-                        {t(langKeys.return)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        startIcon={<AddIcon color="secondary" />}
-                        className={classes.purpleButton}
-                        onClick={() => handleCreateChat()} 
-                    >
-                        {t(langKeys.newchat)}
-                    </Button>
-                </div>
-                {dataThreads.data.map((chat) => (
-                    <div key={chat.threadid} onClick={() => handleChatClick(chat)} className={classes.threadContainer}>
-                        <div className={classes.threadNameContainer}>
-                            {selectedChatForEdit === chat.threadid ? (
-                                <>
-                                    <div className={classes.threadNameInput}>
-                                        <FieldEdit
-                                            valueDefault={getValues('description')}
-                                            onChange={(value) => setValue('description', value)}
-                                            error={errors?.description?.message}
-                                        />
-                                    </div>
-                                    <div style={{marginLeft:'10px'}}>
-                                        <IconButton onClick={() => handleCloseEdit()}>
-                                            <ClearIcon style={{ color: '#757377'}}/>
-                                        </IconButton>
-                                        <IconButton onClick={() => handleSaveEdit()}>
-                                            <CheckIcon style={{ color: '#757377' }}/>
-                                        </IconButton>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className={classes.threadName} style={{ backgroundColor: chat.threadid === selectedChat?.threadid ? '#EEEEEE': ''}}>
-                                        <ChatBubbleIcon className={classes.chatIcon}/>
-                                        <Typography style={{ fontSize: '1rem', width: 182 }}>{chat.description}</Typography>
-                                        <IconButton onClick={() => handleEditChat(chat)} style={{paddingRight: 0, width: 36}}>
-                                            <EditIcon style={{ color: '#757377' }}/>
-                                        </IconButton>
-                                        <IconButton onClick={() => handleDeleteChat(chat)} style={{paddingRight: 0, width: 36}}>
-                                            <DeleteIcon style={{ color: '#757377' }}/>
-                                        </IconButton>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                <div style={{flex: '0 0 auto', height: 90}}>
+                    <div style={{marginBottom: 10, fontWeight: 'bold', textAlign: 'center'}}>{row?.name}</div>
+                    <div className={classes.buttonscontainer}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            startIcon={<ArrowBackIcon color="primary" />}
+                            className={classes.backButton}
+                            onClick={() => setViewSelected('assistantdetail')}
+                        >
+                            {t(langKeys.return)}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            startIcon={<AddIcon color="secondary" />}
+                            className={classes.purpleButton}
+                            onClick={() => handleCreateChat()} 
+                        >
+                            {t(langKeys.newchat)}
+                        </Button>
                     </div>
-                ))}
+                </div>
+                <div style={{overflowY: 'auto', flex: 1, width: 'fit-content'}}>
+                    {dataThreads.data.filter(chat => chat.type === 'THREAD').map((chat) => (
+                        <div key={chat.threadid} onClick={() => handleChatClick(chat)} className={classes.threadContainer}>
+                            <div className={classes.threadNameContainer}>
+                                {selectedChatForEdit === chat.threadid ? (
+                                    <>
+                                        <div className={classes.threadNameInput}>
+                                            <FieldEdit
+                                                valueDefault={getValues('description')}
+                                                onChange={(value) => setValue('description', value)}
+                                                error={errors?.description?.message}
+                                            />
+                                        </div>
+                                        <div style={{marginLeft:'10px'}}>
+                                            <IconButton onClick={() => handleCloseEdit()}>
+                                                <ClearIcon style={{ color: '#757377'}}/>
+                                            </IconButton>
+                                            <IconButton onClick={() => handleSaveEdit()}>
+                                                <CheckIcon style={{ color: '#757377' }}/>
+                                            </IconButton>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className={classes.threadName} style={{ backgroundColor: chat.threadid === selectedChat?.threadid ? '#EEEEEE': ''}}>
+                                            <ChatBubbleIcon className={classes.chatIcon}/>
+                                            <Typography style={{ fontSize: '1rem', width: 182 }}>{chat.description}</Typography>
+                                            <IconButton onClick={() => handleEditChat(chat)} style={{paddingRight: 0, width: 36}}>
+                                                <EditIcon style={{ color: '#757377' }}/>
+                                            </IconButton>
+                                            <IconButton onClick={() => handleDeleteChat(chat)} style={{paddingRight: 0, width: 36}}>
+                                                <DeleteIcon style={{ color: '#757377' }}/>
+                                            </IconButton>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </Paper>
             <div className={classes.chatMain}>
                 <div className={classes.chatMessages}>
