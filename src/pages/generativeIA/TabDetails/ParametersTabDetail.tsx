@@ -334,7 +334,13 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 label={t(langKeys.language)}
                                 data={languages}
                                 valueDefault={getValues('language')}
-                                onChange={(value) => setValue('language', value)}
+                                onChange={(value) => {
+                                    if(value) {
+                                        setValue('language', value.domainvalue)
+                                    } else {
+                                        setValue('language', '')
+                                    }
+                                }}
                                 error={errors?.language?.message}
                                 optionValue='domainvalue'
                                 optionDesc='domaindesc'
@@ -529,8 +535,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 <FieldSelect
                                     label={t(langKeys.language)}
                                     data={languages}
-                                    valueDefault={selectedCardData?.language}
-                                    onChange={(value) => setValue('language', value)}
+                                    valueDefault={getValues('language')}
+                                    onChange={(value) => {
+                                        if(value) {
+                                            setValue('language', value.domainvalue)
+                                        } else {
+                                            setValue('language', '')
+                                        }
+                                    }}
                                     optionValue='domainvalue'
                                     optionDesc='domaindesc'
                                 />
