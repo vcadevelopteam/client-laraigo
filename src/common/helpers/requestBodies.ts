@@ -5068,3 +5068,8 @@ export const getDomainByDomainNameList = (domainnamelist:string) => ({
     key: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
     parameters: { domainnamelist },
 });
+export const editCalendarBooking = ({calendarbookingid,personmail,personname,notes,comments}:Dictionary) => ({
+    method: "UFN_CALENDARBOOKING_EDIT",
+    key: "UFN_CALENDARBOOKING_EDIT",
+    parameters: { calendarbookingid,personmail,personname,notes,comments },
+});

@@ -185,7 +185,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 sortType: 'datetime',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { datehour } = props.cell.row.original || {};
-                    return datehour ? new Date(datehour).toLocaleDateString() : null;
+                    return datehour ? `${datehour}` : null;
                 }            
                
             },
