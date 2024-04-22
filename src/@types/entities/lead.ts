@@ -190,6 +190,7 @@ export interface ICrmLeadActivitySave {
     hsmtemplatetype?: string;
     variables?: any[]
     calendar?: number
+    linkcalendar?: string
 }
 export interface AutomatizationRuleSave {
 	id: number,
