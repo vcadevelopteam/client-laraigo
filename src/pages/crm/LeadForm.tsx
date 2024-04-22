@@ -1535,6 +1535,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <TabPanelScheduleActivity
                         readOnly={isIncremental || isStatusClosed()}
+                        getValues={getValues}
+                        values={values}
                         leadId={edit ? Number(match.params.id) : 0}
                         loading={saveActivity.loading || leadActivities.loading}
                         activities={edit ? leadActivities.data : getValues('activities')}
@@ -1964,6 +1966,8 @@ interface TabPanelScheduleActivityProps {
     activities: IcrmLeadActivity[];
     leadId: number;
     userid: number;
+    getValues: any;
+    values: Dictionary;
     onSubmit?: (newActivity: ICrmLeadActivitySave) => void;
 }
 
@@ -1976,8 +1980,10 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
     readOnly,
     activities,
     loading,
+    getValues,
     leadId,
     userid,
+    values,
     onSubmit,
 }) => {
     const classes = useTabPanelScheduleActivityStyles();
@@ -2079,8 +2085,10 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
             <SaveActivityModal
                 onClose={() => setOpenModal({ value: false, payload: null })}
                 open={openModal.value}
+                getValues2={getValues}
                 activity={openModal.payload}
                 leadid={leadId}
+                otherData={values}
                 onSubmit={onSubmit}
                 userid={userid}
             />
@@ -2117,6 +2125,8 @@ interface SaveActivityModalProps {
     leadid: number;
     userid?: number;
     onClose: () => void;
+    otherData: Dictionary;
+    getValues2: any;
     onSubmit?: (newActivity: ICrmLeadActivitySave) => void;
 }
 
@@ -2143,7 +2153,7 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
 
 const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }], align: "left" }];
 
-export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, userid, onSubmit }) => {
+export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, userid, onSubmit, getValues2, otherData }) => {
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
     const { t } = useTranslation();
@@ -2160,6 +2170,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const [, refresh] = useState(false);
     const [domainsTotal, setDomainsTotal] = useState<Dictionary[]>([])
     const [bodyMessage, setBodyMessage] = useState('');
+    const [blockEditSummary, setBlockEditSummary] = useState(activity?.type === "appointment");
     // const [bodyCleaned, setBodyCleaned] = useState('');
     const calendarList = useSelector(state => state.lead.calendar);
     const [assigntoinitial, setassigntoinitial] = useState(0)
@@ -2235,6 +2246,15 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             calendar: activity?.calendar || 0
         },
     });
+    useEffect(() => {
+        if(open && blockEditSummary){
+            const descripcion = getValues2("description");
+            let primeros20Caracteres = descripcion.slice(0, 20);
+            if(descripcion.length > 20) primeros20Caracteres = primeros20Caracteres+"..."
+            setValue("description",primeros20Caracteres)
+            setValue("assigneduser",getValues2("userid"))
+        }
+    }, [open,blockEditSummary]);
 
     const { fields } = useFieldArray({
         control,
@@ -2286,7 +2306,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             hsmtemplateid: 0,
             hsmtemplatename: '',
             variables: [],
-            calendar: 0
+            calendar: 0,
+            linkcalendar: ""
         });
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2316,7 +2337,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             communicationchannelid: activity?.communicationchannelid || 0,
             hsmtemplatetype: template?.type || "",
             variables: [],
-            calendar: activity?.calendar || 0
+            calendar: activity?.calendar || 0,
+            linkcalendar: "",
         });
 
         setBodyMessage(template?.body || "")
@@ -2353,13 +2375,15 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     }, [open, userid, leadid, advisers, setValue]);
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
-        handleSubmit((values) => {
-            // const dueate = new Date(values.duedate);
-            // dueate.setHours(dueate.getHours() - 5);
-            // const day = dueate.toLocaleDateString("en-US", { day: '2-digit' });
-            // const month = dueate.toLocaleDateString("en-US", { month: '2-digit' });
-            // const year = dueate.toLocaleDateString("en-US", { year: 'numeric' });
-            // const time = dueate.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
+        handleSubmit((values) => {            
+            if(values.type === "appointment" && values.linkcalendar){
+                const url = "https://" + values.linkcalendar + "/?" +
+                "n=" + encodeURIComponent(otherData.displayname) +
+                "&t=" + encodeURIComponent(otherData.phone) +
+                "&c=" + encodeURIComponent(otherData.email);
+                window.open(url, '_blank');
+            }
+            debugger
             if (values.type.includes("automated")) {
                 setBodyMessage(body => {
                     values?.variables?.forEach((x: Dictionary) => {
@@ -2485,6 +2509,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 setBodyMessage('');
                                                 setValue('hsmtemplateid', 0);
                                                 trigger('type');
+                                                setBlockEditSummary(v?.domainvalue === "appointment")
                                                 if (v?.domainvalue === "appointment") {
                                                     console.log(getValues('duedate'))
                                                     setValue('duedate', new Date().toISOString().slice(0, 16).replace('T', ' '))
@@ -2500,13 +2525,19 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        {blockEditSummary? <FieldView
+                                            label={t(langKeys.summary)}
+                                            className={classes.field}
+                                            value={getValues('description')}
+                                            tooltipcontent={getValues2("description")}
+                                        />:                       
                                         <FieldEdit
                                             label={t(langKeys.summary)}
                                             className={classes.field}
                                             valueDefault={getValues('description')}
                                             onChange={v => setValue('description', v)}
                                             error={errors?.description?.message}
-                                        />
+                                        />}
                                     </Grid>
                                     {(getValues('type').includes("automated") && getValues("hsmtemplatetype") === "HSM") &&
                                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ paddingTop: 8, marginTop: 8 }}>
@@ -2565,7 +2596,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             valueDefault={getValues('calendar')}
                                             onChange={v => {
                                                 setValue('calendar', v?.calendareventid || 0);
-                                                v?.eventlink && window.open("https://" + v.eventlink, '_blank');
+                                                setValue('linkcalendar', v?.eventlink|| "")
                                             }}
                                             error={errors?.assignto?.message}
                                         />:
