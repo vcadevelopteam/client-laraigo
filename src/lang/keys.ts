@@ -3746,6 +3746,7 @@ export const langKeys = {
   userlimit: 'userlimit',
   max_limit: 'max_limit',
   max_limit_file_per_upload: 'max_limit_file_per_upload',
+  type_activitylead_appointment: 'type_activitylead_appointment',
   type_activitylead_call: 'type_activitylead_call',
   type_activitylead_automated: 'type_activitylead_automated',
   type_activitylead_automatedmail: 'type_activitylead_automatedmail',
