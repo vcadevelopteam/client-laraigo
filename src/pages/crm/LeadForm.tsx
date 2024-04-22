@@ -466,6 +466,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         }
     }, [lead,domains]);
 
+    useEffect(() => {
+        if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [domains]);
+
 
     const { register, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
         defaultValues: {
@@ -3100,7 +3106,6 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
     const [skipAutoReset, setSkipAutoReset] = useState(false)
     const [updatingDataTable, setUpdatingDataTable] = useState(false);
     const domainsCustomTable = useSelector((state) => state.main.mainAux2);
-    const dispatch = useDispatch();
 
     const updateCell = (rowIndex: number, columnId: string, value: string) => {
         setSkipAutoReset(true);
@@ -3109,11 +3114,6 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
         setTableData(auxTableData)
         setUpdatingDataTable(!updatingDataTable);
     }
-    useEffect(() => {
-        if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
-            dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
-        }
-    }, [domains]);
 
     useEffect(() => {
         setSkipAutoReset(false)
@@ -3161,9 +3161,9 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
             columns={columns}
             data={tableData}
             download={false}
-            loading={domains.loading}
+            loading={domains.loading||domainsCustomTable.loading}
             register={false}
-            dataDomains={domainsCustomTable?.data||[]}
+            dataDomains={domainsCustomTable?.data}
             filterGeneral={false}
             updateCell={updateCell}
             skipAutoReset={skipAutoReset}
