@@ -450,7 +450,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                     haveDate: bookingDates.find(y => y.calendarbookingid === x.calendarbookingid)
                 };
             })
-            setDataBooking(processedDataBooking.filter(x=>x.person_name.includes(filterAgent)));
+            setDataBooking(processedDataBooking.filter(x=>x.created_by.includes(filterAgent)));
         }
     }, [mainAux,filterAgent])
 
@@ -482,7 +482,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                             </Button>
                         </DateRangePicker>
                         <FieldSelect 
-                            label={t(langKeys.agent)}
+                            label={t(langKeys.createdBy)}
                             data={mainAux?.data?.map(obj => obj.person_name).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
                                 .map(name => ({ agent: name }))||[]} 
                             
@@ -542,6 +542,11 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                             <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
                                         </div>
                                         <div className={classes.integrationInformation}>
+                                            {x.created_by && (
+                                                <Typography>
+                                                    {t(langKeys.createdBy)}: <span>{x.created_by}</span>
+                                                </Typography>
+                                            )}
                                             {x.person_name && (
                                                 <Typography>
                                                     {t(langKeys.assigned_agent)}: <span>{x.person_name}</span>
