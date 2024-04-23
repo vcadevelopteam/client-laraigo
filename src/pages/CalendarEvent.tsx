@@ -203,7 +203,6 @@ const FormToSend: FC<{
     const [phoneCountry, setPhoneCountry] = useState('');
     const dispatch = useDispatch();
     const url = new URLSearchParams(window.location.search);
-    console.log(url)
     const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm({
         defaultValues: {
             name: url.get("n") || event?.personname,
