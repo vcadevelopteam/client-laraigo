@@ -3750,6 +3750,7 @@ const translation: LangKeys = {
   type_activitylead_automatedmail: 'Automate message email',
   type_activitylead_automatedhsm: 'Automate message hsm',
   transfercall: "Transfer call",
+  errorappointmentlead: "Appointment creation was cancelled.",
   transfercalltoadvisor: "Transfer call to advisor",
   transfer: "Transfer",
   transferto: "Transfer {{from}} to {{to}}",

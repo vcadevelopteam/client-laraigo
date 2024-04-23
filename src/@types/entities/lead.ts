@@ -192,6 +192,7 @@ export interface ICrmLeadActivitySave {
     variables?: any[]
     calendar?: number
     linkcalendar?: string
+    calendarbookingid?:number
 }
 export interface AutomatizationRuleSave {
 	id: number,
@@ -261,6 +262,7 @@ export interface IcrmLeadActivity {
     hsmtemplateid?: number;
     hsmtemplatetype?: string;
     calendar?:number;
+    calendarbookingid?: number
 }
 
 export interface ICrmColumn {

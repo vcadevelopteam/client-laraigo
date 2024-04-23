@@ -33,6 +33,7 @@ export const langKeys = {
   custom_fields_of: "custom_fields_of",
   custom_fields_helper: "custom_fields_helper",
   visualizationBotTooltip: "visualizationBotTooltip",
+  errorappointmentlead: "errorappointmentlead",
   numberminimun_helper: "numberminimun_helper",
   numbermaximum_helper: "numbermaximum_helper",
   timeminimun_helper: "timeminimun_helper",
