@@ -24,6 +24,7 @@ export const langKeys = {
   warningwhitebrand: "warningwhitebrand",
   transferdate: "transferdate",
   visualizationBotTooltip: "visualizationBotTooltip",
+  errorappointmentlead: "errorappointmentlead",
   numberminimun_helper: "numberminimun_helper",
   numbermaximum_helper: "numbermaximum_helper",
   timeminimun_helper: "timeminimun_helper",

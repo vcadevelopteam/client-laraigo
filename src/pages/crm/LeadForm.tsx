@@ -2198,7 +2198,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             communicationchannelid: activity?.communicationchannelid || 0,
             hsmtemplatetype: activity?.hsmtemplatetype || "",
             variables: [],
-            calendar: activity?.calendar || 0
+            calendar: activity?.calendar || 0,
+            calendarbookingid: activity?.calendarbookingid || 0,
         },
     });
     useEffect(() => {
@@ -2262,7 +2263,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             hsmtemplatename: '',
             variables: [],
             calendar: 0,
-            linkcalendar: ""
+            linkcalendar: "",
+            calendarbookingid: 0
         });
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2332,82 +2334,64 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
         handleSubmit((values) => {            
             if(values.type === "appointment" && values.linkcalendar){
+                let calendarid = 0
+                setValue("calendarbookingid",0)
                 const url = "https://" + values.linkcalendar + "/?" +
                 "n=" + encodeURIComponent(otherData.displayname) +
                 "&t=" + encodeURIComponent(otherData.phone) +
                 "&c=" + encodeURIComponent(otherData.email);
-                const win = window.open(url);
+                const win = window.open(url, '_blank');
                 dispatch(showBackdrop(true))
+                window.addEventListener('message', (event) => {
+                  if (event.source === win) {
+                    calendarid=event.data
+                    setValue("calendarbookingid",event.data)
+                    const bb = "";            
+                    if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
+                        const supervisorid = advisers.data.find(x => x.userid === values.assigneduser)?.supervisorid || 0;
+                        const data = {
+                            leadid: lead.value?.leadid || 0,
+                            leadname: lead.value?.description,
+                            description: values.description,
+                            duedate: values.duedate,
+                            assigneduser: values.assigneduser,
+                            userid: values.assigneduser, //quien va a recibir la notificacion
+                            supervisorid,
+                            assignto: values.assignto,
+                            status: "PROGRAMADO",
+                            type: "automated",
+                            feedback: "",
+                            notificationtype: "LEADACTIVITY"
+                        }
+                        dispatch(emitEvent({
+                            event: 'newNotification',
+                            data
+                        }))
+                    }
+        
+                    onSubmit?.({
+                        ...values,
+                        status,
+                        detailjson: JSON.stringify(detail),
+                        hsmtemplateid: values.hsmtemplateid,
+                        communicationchannelid: values?.communicationchannelid || 0,
+                        sendhsm: values.type.includes("automated") ? JSON.stringify(bb) : "",
+                        // duedate: dueate.toUTCString()
+                        // duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
+                    });
+                    if (leadid === 0 && mustCloseOnSubmit.current) {
+                        onClose();
+                    } else {
+                        resetValues();
+                    }
+                  }
+                });
                 const timer = setInterval(function() {
                     if (win.closed) {
                         clearInterval(timer);
-                        dispatch(showBackdrop(true))
-                        if (values.type.includes("automated")) {
-                            setBodyMessage(body => {
-                                values?.variables?.forEach((x: Dictionary) => {
-                                    body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (lead.value as Dictionary)[x.variable] : x.text)
-                                })
-                                return body
-                            })
-                        }
-                        const bb = values.type.includes("automated") ? {
-                            hsmtemplatename: values.hsmtemplatename,
-                            hsmtemplateid: values.hsmtemplateid,
-                            communicationchannelid: values?.communicationchannelid || "",
-                            communicationchanneltype: values?.communicationchanneltype || "",
-                            platformtype: values?.communicationchanneltype || "",
-                            type: values?.hsmtemplatetype || "",
-                            shippingreason: "LEAD",
-                            listmembers: [{
-                                personid: lead.value?.personid || 0,
-                                phone: lead.value?.phone + "",
-                                firstname: lead.value?.firstname + "",
-                                lastname: lead.value?.lastname + "",
-                                parameters: values.variables?.map((v: any) => ({
-                                    type: "text",
-                                    text: v.variable !== 'custom' ? (lead.value as Dictionary)[v.variable] : v.text,
-                                    name: v.name
-                                })) || []
-                            }]
-                        } : "";
-            
-            
-                        if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
-                            const supervisorid = advisers.data.find(x => x.userid === values.assigneduser)?.supervisorid || 0;
-                            const data = {
-                                leadid: lead.value?.leadid || 0,
-                                leadname: lead.value?.description,
-                                description: values.description,
-                                duedate: values.duedate,
-                                assigneduser: values.assigneduser,
-                                userid: values.assigneduser, //quien va a recibir la notificacion
-                                supervisorid,
-                                assignto: values.assignto,
-                                status: "PROGRAMADO",
-                                type: "automated",
-                                feedback: "",
-                                notificationtype: "LEADACTIVITY"
-                            }
-                            dispatch(emitEvent({
-                                event: 'newNotification',
-                                data
-                            }))
-                        }
-            
-                        onSubmit?.({
-                            ...values,
-                            status,
-                            detailjson: JSON.stringify(detail),
-                            hsmtemplateid: values.hsmtemplateid,
-                            communicationchannelid: values?.communicationchannelid || 0,
-                            sendhsm: values.type.includes("automated") ? JSON.stringify(bb) : "",
-                            // duedate: dueate.toUTCString()
-                            // duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
-                        });
-                        if (leadid === 0 && mustCloseOnSubmit.current) {
-                            onClose();
-                        } else {
-                            resetValues();
+                        if(calendarid === 0){
+                            dispatch(showBackdrop(false))
+                            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorappointmentlead) }))
                         }
                     }
                 }, 500);

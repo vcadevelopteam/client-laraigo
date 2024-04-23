@@ -2081,6 +2081,7 @@ const translation: LangKeys = {
   warehouses: "Almacenes",
   standard_cost: "Costo estándar",
   average_cost: "Costo promedio",
+  errorappointmentlead: "Se cancelo la creación de cita.",
   current_balance: "Balance actual",
   default_shelf: "Estante predeterminado",
   add_product_to_warehouse: "Agregar producto a almacén",
