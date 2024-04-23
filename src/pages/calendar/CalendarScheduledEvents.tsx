@@ -483,7 +483,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                         </DateRangePicker>
                         <FieldSelect 
                             label={t(langKeys.createdBy)}
-                            data={mainAux?.data?.map(obj => obj.person_name).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
+                            data={mainAux?.data?.map(obj => obj.created_by).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
                                 .map(name => ({ agent: name }))||[]} 
                             
                             onChange={(value) => {
