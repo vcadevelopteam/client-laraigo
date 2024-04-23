@@ -95,7 +95,8 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         const row = props.cell.row.original;
         return (
             <div onClick={() => {
-                setSelectedRow(row);               
+                setSelectedRow(row);       
+                setOpenModal(true);        
             }}>             
                 {column.sortType === "datetime" && !!row[column.id] 
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
