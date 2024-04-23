@@ -450,7 +450,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                     haveDate: bookingDates.find(y => y.calendarbookingid === x.calendarbookingid)
                 };
             })
-            setDataBooking(processedDataBooking.filter(x=>x.created_by.includes(filterAgent)));
+            setDataBooking(processedDataBooking.filter(x=>(x?.created_by||"").includes(filterAgent)));
         }
     }, [mainAux,filterAgent])
 
