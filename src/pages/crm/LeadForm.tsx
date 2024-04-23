@@ -2174,6 +2174,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     // const [bodyCleaned, setBodyCleaned] = useState('');
     const calendarList = useSelector(state => state.lead.calendar);
     const [assigntoinitial, setassigntoinitial] = useState(0)
+    const [calendarbookingid, setCalendarbookingid] = useState(0)
 
     useEffect(() => {
         if (!domains.loading && !domains.error) {
@@ -2390,7 +2391,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                 window.addEventListener('message', (event) => {
                   if (event.source === win) {
                     calendarid=event.data
-                    setValue("calendarbookingid",event.data)
+                    setValue("calendarbookingid",calendarid)
                     const bb = "";            
                     if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
                         const supervisorid = advisers.data.find(x => x.userid === values.assigneduser)?.supervisorid || 0;
@@ -2402,6 +2403,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                             assigneduser: values.assigneduser,
                             userid: values.assigneduser, //quien va a recibir la notificacion
                             supervisorid,
+                            calendarbookingid: calendarid,
                             assignto: values.assignto,
                             status: "PROGRAMADO",
                             type: "automated",
@@ -2416,6 +2418,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         
                     onSubmit?.({
                         ...values,
+                        calendarbookingid: calendarid,
                         status,
                         detailjson: JSON.stringify(detail),
                         hsmtemplateid: values.hsmtemplateid,
