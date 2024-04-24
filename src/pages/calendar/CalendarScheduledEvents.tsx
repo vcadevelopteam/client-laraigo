@@ -133,15 +133,17 @@ const DialogBooking: React.FC<{
             <DialogContent>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div style={{ display: 'flex', gap: 8 }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
-                            <div style={{ backgroundColor: booking?.color, width: 24, height: 24, borderRadius: 12 }}></div>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
-                            <FieldView
-                                label={t(langKeys.schedule)}
-                                value={`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
-                                className={classes.colInput}
-                            />
+                        <div style={{width:"50%", display: 'flex', gap: 8}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <div style={{ backgroundColor: booking?.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <FieldView
+                                    label={t(langKeys.schedule)}
+                                    value={`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
+                                    className={classes.colInput}
+                                />
+                            </div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldEdit
