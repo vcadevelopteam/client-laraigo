@@ -6090,6 +6090,10 @@ const translation: LangKeys = {
   allmustbesameorder: 'The selected records must belong to the same order',
   needtopay: 'Payment to be confirmed',
   numbers: 'Numbers',
+  quality: 'Quality',
+  messageslimit: 'Messages Limit',
+  templatesdeletemessage: 'If you delete the selected templates, they will also be deleted in Meta, note that you will not be able to recover the template again and you will have to create a new one.',
+  messagetypetext: 'Select the type of message to use as a template.',
 };
 
 const enResource: ResourceLanguage = {

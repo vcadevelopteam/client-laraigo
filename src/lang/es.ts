@@ -6037,6 +6037,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   allmustbesameorder: 'Los registros seleccionados deben pertenecer a la misma orden',
   needtopay: 'Falta confirmar el pago',
   numbers: 'Números',
+  quality: 'Calidad',
+  messageslimit: 'Limite Mensajes',
+  templatesdeletemessage: 'Si eliminas las plantillas seleccionadas, se eliminarán también en Meta, ten en cuenta que no podrás volver a recuperar dicha plantilla y tendrás que volver a crear una.',
+  messagetypetext: 'Selecciona el tipo de mensaje que utilizaras como plantilla.',
 };
 
 const esResource: ResourceLanguage = {

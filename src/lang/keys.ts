@@ -6033,6 +6033,10 @@ export const langKeys = {
   allmustbesameorder: 'allmustbesameorder',
   needtopay: 'needtopay',
   numbers: 'numbers',
+  quality: 'quality',
+  messageslimit: 'messageslimit',
+  templatesdeletemessage: 'templatesdeletemessage',
+  messagetypetext: 'messagetypetext',
 };
 
 export type LangKeys = typeof langKeys;

@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import WarningIcon from '@material-ui/icons/Warning';
 
 import {
     execute,
@@ -191,7 +192,7 @@ const MessageTemplates: FC = () => {
                     if (!row || !row.original || !row.original.createdate) {
                         return null;
                     }
-                    return <div>{dateToLocalDate(row.original.createdate)}</div>;
+                    return <div style={{textAlign: 'center'}}>{dateToLocalDate(row.original.createdate)}</div>;
                 },
             },
             ...(showId
@@ -202,19 +203,35 @@ const MessageTemplates: FC = () => {
                         type: "number",
                         Cell: (props: CellProps<Dictionary>) => {
                             const { row } = props.cell;
-                            return showId ? <div>{row.id}</div> : null;
-                        }                        
+                            return showId ? <div style={{textAlign: 'center'}}>{row.id}</div> : null;
+                        }
                     },
                 ]
                 : []),
             {
-                accessor: "type",
-                Header: t(langKeys.type),
-                prefixTranslation: "messagetemplate_",
+                accessor: "communicationchanneltype",
+                Header: t(langKeys.channel),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    return <div style={{textAlign: 'center'}}>{row.original.communicationchanneltype}</div>;
+                }
             },
             {
                 accessor: "name",
                 Header: t(langKeys.name),
+            },
+            {
+                accessor: "language",
+                Header: t(langKeys.language),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    return <div style={{textAlign: 'center'}}>{row.original.language}</div>;
+                }
+            },
+            {
+                accessor: "type",
+                Header: t(langKeys.messagetype),
+                prefixTranslation: "messagetemplate_",
             },
             {
                 accessor: "category",
@@ -231,13 +248,71 @@ const MessageTemplates: FC = () => {
                           
             },
             {
-                accessor: "language",
-                Header: t(langKeys.language),
+                accessor: "externalstatus",
+                Header: t(langKeys.status),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const { externalstatus, type } = row?.original || {};
+            
+                    let statusText = '';
+            
+                    if (type) {
+                        switch (type) {
+                            case "HSM":
+                                statusText = t(`TEMPLATE_${externalstatus}`);
+                                break;
+                            default:
+                                statusText = t('TEMPLATE_APPROVED');
+                                break;
+                        }
+            
+                        let color = '';
+            
+                        switch (statusText) {
+                            case 'PENDIENTE':
+                                color = '#E6C300';
+                                break;
+                            case 'RECHAZADA':
+                                color = 'red';
+                                break;
+                            case 'APROBADA':
+                                color = 'green';
+                                break;
+                            default:
+                                color = 'black';
+                                break;
+                        }
+            
+                        return (
+                            <span style={{ color: color, textAlign: 'center' }}>
+                                {statusText.toUpperCase()}
+                            </span>
+                        );
+                    } else {
+                        return ''; 
+                    }
+                }
             },
             {
                 accessor: "templatetype",
                 Header: t(langKeys.templatetype),
                 prefixTranslation: "messagetemplate_",
+            },
+            {
+                accessor: "priority",
+                Header: t(langKeys.quality),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    return <div style={{textAlign: 'center'}}>{row.original.priority}</div>;
+                }
+            },
+            {
+                accessor: "limit",
+                Header: t(langKeys.messageslimit),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    return <div style={{textAlign: 'center'}}>{row.original.limit}</div>;
+                }
             },
             {
                 accessor: "body",
@@ -247,14 +322,12 @@ const MessageTemplates: FC = () => {
                     const body = row?.original?.body;
                     
                     return body && body.length > 40 ? `${body.substring(0, 40)}...` : body || ''; 
-                }
-                
-                           
+                }     
             },
         ],
         [showId]
     );
-
+    
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -451,16 +524,21 @@ const MessageTemplates: FC = () => {
             setWaitDelete(true);
         };
 
-        dispatch(
-            manageConfirmation({
-                callback,
-                question: t(langKeys.confirmation_delete),
-                visible: true,
-            })
-        );
+        if(row.type === 'HSM') {
+            dispatch(
+                manageConfirmation({
+                    callback,
+                    question: t(langKeys.templatesdeletemessage),
+                    visible: true,
+                })
+            );
+        } else {
+            callback()
+        }
     };
 
     const handleBulkDelete = (dataSelected: Dictionary[]) => {
+        const hasHSMType = dataSelected.some(item => item.type === 'HSM');
         const callback = () => {
             dispatch(
                 deleteTemplate({
@@ -474,13 +552,17 @@ const MessageTemplates: FC = () => {
             setWaitDelete(true);
         };
 
-        dispatch(
-            manageConfirmation({
-                callback,
-                question: t(langKeys.confirmation_delete),
-                visible: true,
-            })
-        );
+        if(hasHSMType) {
+            dispatch(
+                manageConfirmation({
+                    callback,
+                    question: t(langKeys.templatesdeletemessage),
+                    visible: true,
+                })
+            );
+        } else {
+            callback()
+        }
     };
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
@@ -804,7 +886,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             servicecredentials: row?.communicationchannelservicecredentials || "",
             status: row?.status || "ACTIVO",
             templatetype: row?.templatetype || "STANDARD",
-            type: row?.type || "HSM",
+            type: row?.type || "",
             typeattachment: row?.typeattachment || "",
         },
     });
@@ -1433,26 +1515,45 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             />
                         </div>
                     )}
+                    <div className='row-zyx' style={{display: 'flex', flexDirection: 'column'}}>
+                        <span style={{fontWeight: 'bold'}}>{t(langKeys.messagetype)}</span>
+                        <span>{t(langKeys.messagetypetext)}</span>
+                    </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            className="col-6"
+                            className="col-4"
                             data={dataMessageType}
                             disabled={disableInput}
                             error={errors?.type?.message}
-                            label={t(langKeys.messagetype)}
                             onChange={onChangeMessageType}
                             optionDesc="text"
                             optionValue="value"
                             valueDefault={getValues("type")}
+                            variant="outlined"
                         />
-                        <FieldEdit
-                            className="col-6"
-                            disabled={disableInput}
-                            error={errors?.name?.message}
-                            label={t(langKeys.name)}
-                            onChange={(value) => setValue("name", value)}
-                            valueDefault={getValues("name")}
-                        />
+                        {getValues("type") === '' && (
+                            <div className="col-4">
+                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFDEDE', borderRadius: 5, width: 220, height: '100%', gap: '1rem'}}>
+                                    <WarningIcon style={{color: 'red'}}/>
+                                    Selecciona una opción
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div className="row-zyx">
+                        {(getValues("type") !== "HSM" && getValues("type") !== '') && (
+                            <FieldSelect
+                                className="col-6"
+                                data={dataCategory}
+                                disabled={disableInput}
+                                error={errors?.category?.message}
+                                label={t(langKeys.category)}
+                                onChange={(value) => setValue("category", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                valueDefault={getValues("category")}
+                            />
+                        )}
                     </div>
                     <div className="row-zyx">
                         {getValues("type") === "HSM" && (
@@ -1479,45 +1580,52 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 )}
                             </>
                         )}
-                        {getValues("type") !== "HSM" && (
-                            <FieldSelect
+                    </div>
+                    <div className="row-zyx">
+                        {getValues('type') !== '' &&(
+                            <FieldEdit
                                 className="col-6"
-                                data={dataCategory}
                                 disabled={disableInput}
-                                error={errors?.category?.message}
-                                label={t(langKeys.category)}
-                                onChange={(value) => setValue("category", value?.domainvalue)}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                                valueDefault={getValues("category")}
+                                error={errors?.name?.message}
+                                label={t(langKeys.name)}
+                                onChange={(value) => setValue("name", value)}
+                                valueDefault={getValues("name")}
                             />
                         )}
                         {isProvider && (
-                            <FieldSelect
-                                className="col-6"
-                                data={dataExternalLanguage}
-                                disabled={disableInput}
-                                error={errors?.language?.message}
-                                label={t(langKeys.language)}
-                                onChange={(value) => setValue("language", value?.value)}
-                                optionDesc="description"
-                                optionValue="value"
-                                valueDefault={getValues("language")}
-                            />
+                            <>
+                                {getValues("type") !== '' && (
+                                    <FieldSelect
+                                        className="col-6"
+                                        data={dataExternalLanguage}
+                                        disabled={disableInput}
+                                        error={errors?.language?.message}
+                                        label={t(langKeys.language)}
+                                        onChange={(value) => setValue("language", value?.value)}
+                                        optionDesc="description"
+                                        optionValue="value"
+                                        valueDefault={getValues("language")}
+                                    />
+                                )}
+                            </>
                         )}
                         {!isProvider && (
-                            <FieldSelect
-                                className="col-6"
-                                data={dataLanguage}
-                                disabled={disableInput}
-                                error={errors?.language?.message}
-                                label={t(langKeys.language)}
-                                onChange={(value) => setValue("language", value?.domainvalue)}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                                uset={true}
-                                valueDefault={getValues("language")}
-                            />
+                            <>
+                                {getValues("type") !== '' && (
+                                    <FieldSelect
+                                        className="col-6"
+                                        data={dataLanguage}
+                                        disabled={disableInput}
+                                        error={errors?.language?.message}
+                                        label={t(langKeys.language)}
+                                        onChange={(value) => setValue("language", value?.domainvalue)}
+                                        optionDesc="domaindesc"
+                                        optionValue="domainvalue"
+                                        uset={true}
+                                        valueDefault={getValues("language")}
+                                    />
+                                )}
+                            </>
                         )}
                     </div>
                     {getValues("type") === "HSM" && (
@@ -1558,17 +1666,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </div>
                     )}
                     <div className="row-zyx">
-                        <FieldSelect
-                            className="col-12"
-                            data={dataTemplateType}
-                            disabled={templateTypeDisabled || disableInput}
-                            error={errors?.templatetype?.message}
-                            label={t(langKeys.templatetype)}
-                            onChange={onChangeTemplateType}
-                            optionDesc="text"
-                            optionValue="value"
-                            valueDefault={getValues("templatetype")}
-                        />
+                        {getValues("type") !== '' && (
+                            <FieldSelect
+                                className="col-12"
+                                data={dataTemplateType}
+                                disabled={templateTypeDisabled || disableInput}
+                                error={errors?.templatetype?.message}
+                                label={t(langKeys.templatetype)}
+                                onChange={onChangeTemplateType}
+                                optionDesc="text"
+                                optionValue="value"
+                                valueDefault={getValues("templatetype")}
+                            />
+                        )}
                     </div>
                     {getValues("templatetype") === "MULTIMEDIA" && getValues("type") === "HSM" && (
                         <div className="row-zyx">
