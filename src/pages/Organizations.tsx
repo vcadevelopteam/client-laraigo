@@ -192,6 +192,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [fixedAmount, setFixedAmount] = useState(row?.voximplantrechargefixed || 0.00);
     const [costMaximum, setCostMaximum] = useState(0.00);
     const [costLimit, setCostLimit] = useState(0.00);
+    const [firstLoadBalance, setFirstLoadBalance] = useState(true);
+    const [firstLoadConsumption, setFirstLoadConsumption] = useState(true);
     const [balanceChild, setBalanceChild] = useState(0.00);
     const [balanceParent, setBalanceParent] = useState(0.00);
     const [checkedAutomaticRecharge, setCheckedAutomaticRecharge] = useState(row ? (row?.voximplantautomaticrecharge || false) : (defaultRecharge[0]?.propertyvalue === '1' ? true : false));
@@ -285,11 +287,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         if (waitGetConsumption) {
             if (!getConsumptionResult.loading) {
                 if (!getConsumptionResult.error) {
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
+                    !firstLoadConsumption && dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
                     if (getConsumptionResult.data) {
                         setCostMaximum(getConsumptionResult.data.maximumconsumption || 0);
                         setCostLimit((parseFloat(fixedAmount) || 0) + ((parseFloat(getConsumptionResult.data.maximumconsumption) || 0) * ((parseFloat(percentageAmount) || 0) + 1)));
                     }
+                    setFirstLoadConsumption(false)
                 }
                 else {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(((getConsumptionResult.msg || getConsumptionResult.message) || getConsumptionResult.code) || 'error_unexpected_error') }));
@@ -319,11 +322,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         if (waitGetBalance) {
             if (!getBalanceResult.loading) {
                 if (!getBalanceResult.error) {
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
+                    !firstLoadBalance && dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (getBalanceResult.data) {
                         setBalanceChild(getBalanceResult.data.balancechild || 0);
                         setBalanceParent(getBalanceResult.data.balanceparent || 0);
                     }
+                    setFirstLoadBalance(false)
                 }
                 else {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(((getBalanceResult.msg || getBalanceResult.message) || getBalanceResult.code) || 'error_unexpected_error') }));
