@@ -1,16 +1,15 @@
-import React, { ChangeEvent, FC, useEffect, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import React, { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
 import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
-import { AntTab, DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
+import { AntTab, DateRangePicker, DialogZyx, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
-import { Box, Button, CircularProgress, Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Typography } from "@material-ui/core";
+import { Box, Button, Divider, ListItemIcon, MenuItem, Paper, Popper, Tabs, TextField, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon } from "icons";
 import { Range } from "react-date-range";
-import CategoryIcon from "@material-ui/icons/Category";
 import TableZyx from "components/fields/table-simple";
 import { convertLocalDate, exportExcel } from "common/helpers";
 import { langKeys } from "lang/keys";
@@ -20,21 +19,12 @@ import Graphic from "components/fields/Graphic";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import ListIcon from "@material-ui/icons/List";
 import { Settings } from "@material-ui/icons";
-import InfoIcon from '@material-ui/icons/Info';
-import {  Card, CardContent, Grid, Tooltip } from "@material-ui/core";
-import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import clsx from 'clsx';
-import ThumbDownIcon from '@material-ui/icons/ThumbDown';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import { MultiData } from "@types";
-import IndicatorPanel from "components/report/IndicatorPanel";
+import {  Card, CardContent, Grid } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SubjectIcon from '@material-ui/icons/Subject';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList, LineChart, Line, Legend } from 'recharts';
-import TablePaginated from 'components/fields/table-paginated';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
 import GaugeChart from "react-gauge-chart";
-import ViewWeekIcon from '@material-ui/icons/ViewWeek';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import { CellProps } from 'react-table';
@@ -198,7 +188,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             </div>
         )
     }
-
+  
 
 
     useEffect(() => {        
@@ -215,6 +205,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     }, []);
 
     const columns = React.useMemo(
+        
         () => [
             {
                 Header: t(langKeys.report_userproductivity_user),
@@ -263,12 +254,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             {
                 Header: t(langKeys.report_userproductivity_minfirstreplytime),
                 accessor: 'minfirstreplytime',
-            },
-            // {
-            //     Header: t(langKeys.report_userproductivity_avgtotalduration),
-            //     accessor: 'avgtotalduration',
-            //     NoFilter: false
-            // },
+            },          
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
@@ -326,22 +312,38 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         [isday, mainAux, desconectedmotives]
     );
 
+    const columnsClosedTickets = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_userproductivity_fullname),
+                accessor: 'fullname',
+            },        
+            {
+                Header: t(langKeys.report_userproductivity_closedtickets),
+                accessor: 'closedtickets',
+                type: "number",
+                sortType: 'number',
+            },       
+        ],
+        []
+    );
+
     const columnsFulfillmentByTicket = React.useMemo(
         () => [
             {
-                Header: t(langKeys.report_userproductivity_user),
+                Header: t(langKeys.ticket),
                 accessor: 'userid',
                 NoFilter: true,
                 Cell: cell
             },           
             {
-                Header: t(langKeys.report_userproductivity_maxtotalduration),
+                Header: t(langKeys.tmo),
                 accessor: 'maxtotalduration',
                 NoFilter: true,
                 Cell: cell
             },          
         ],
-        [isday, mainAux, desconectedmotives]
+        []
     );
 
     const getColumns = (tabIndex: any) => {
@@ -397,6 +399,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                         accessor: 'fullname',
                         NoFilter: false,
                     },
+                    {
+                        Header: 'TMR máximo',
+                        accessor: 'tmradvisermax',
+                    },
+                    {
+                        Header: 'TMR mínimo',
+                        accessor: 'tmradvisermin',
+                    },                   
                     {
                         Header: t(langKeys.report_userproductivity_userconnectedduration),
                         accessor: 'userconnectedduration',
@@ -522,9 +532,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             dispatch(
                 getMainGraphic(
                     getUserProductivityGraphic({
-                        ...allParameters,
-                        // startdate: daterange?.startDate!,
-                        // enddate: daterange?.endDate!,
+                        ...allParameters,                      
                         column: columnGraphic,
                         summarization: "COUNT",
                     })
@@ -573,22 +581,34 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         };
     }, [anchorElSeButtons, setOpenSeButtons]);
 
-    
+    const [orderType, setOrderType] = useState("");
+    const [sortBy, setSortBy] = useState("");
 
-  
-    
-    const dataforRechart = [
-        { name: 'Juan', value: 400 },
-        { name: 'Carlos', value: 300 },
-        { name: 'Nirvana', value: 200 },
-        { name: 'Sebas', value: 500 },
-        { name: 'Victor', value: 400 },
-        { name: 'Toro', value: 300 },
-      
-      
-    ];
-  
+    const dataforRechart = dataGrid.map(item => ({
+        name: item.fullname,
+        value: parseInt(item.closedtickets)
+    }));
 
+
+    const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
+
+    const sortedData = dataforRechart.slice().sort((a, b) => {
+        if (sortBy === "value") {
+            if (orderType === "asc") {
+                return a.value - b.value;
+            } else if (orderType === "desc") {
+                return b.value - a.value;
+            }
+        } else if (sortBy === "name") {
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+        }
+        return 0;
+    });
+    
     // Para el graphic velocimetro
     const [gaugeArcs, setGaugeArcs] = useState([100, 100]);
     const [detaildata, setDetaildata] = useState<any>({
@@ -604,18 +624,16 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-
     //para dialog velocimetro apartado}
     const [openExpectedValueModal, setOpenExpectedValueModal] = useState(false);
     const [hour, setHour] = useState("00");
     const [minute, setMinute] = useState("00");
     const [second, setSecond] = useState("00");
     const [errorText, setErrorText] = useState("");
-    const [isAcceptDisabled, setIsAcceptDisabled] = useState(true);
+    const [, setIsAcceptDisabled] = useState(true);
 
     const handleAccept = () => {
         const formattedValue = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
-        console.log("Valor deseado:", formattedValue);
         setOpenExpectedValueModal(false);
     };
 
@@ -639,7 +657,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         }
     };
 
-
     //para manejo de tabs
     const [tabIndex, setTabIndex] = useState(0);
     const [tabTexts] = useState([
@@ -658,18 +675,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         setOpenSeButtons((prevOpen) => !prevOpen);
     };
 
-
     //para garfico barras
-
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
 
     const slicedData = dataforRechart.slice(
         currentPage * itemsPerPage,
         (currentPage + 1) * itemsPerPage
     );
-
-    const [dataGraphic, setDataGraphic] = useState<Dictionary[]>([])
 
     const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
 
@@ -696,11 +709,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     };    
     const randomColorGenerator = getNextColorGenerator();
 
-    const [graphicType, setGraphicType] = useState('BAR');
-    const [dataGraph, setdataGraph] = useState<any>([]);
-    const mainResult = useSelector(state => state.main.mainAux);    
-
-   
+    
 
     const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, summary, ...rest }: Dictionary) => {
         const RADIAN = Math.PI / 180;
@@ -719,7 +728,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
     return (
         <>
-    {/* Inicio de la Cabezera 1 ----------------------------------------------------*/}
+        {/* Inicio de la Cabezera 1 ----------------------------------------------------*/}
 
             <div style={{ display: "flex", gap: 8, marginBottom: '1rem', marginTop: '0.5rem' }}>
                 <div style={{ display: "flex" }}>
@@ -941,7 +950,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                 
                                     
 
-                                    <SubjectIcon style={{ color: openSeButtons ? '#783BA5' : '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />
+                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />
                        
                                 
                                     <div style={{ display: 'flex', gap: 8 }}>
@@ -981,12 +990,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                     <div>
                                                         <MenuItem
                                                             style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                            onClick={() => setOrderType("asc")}
                                                         >
                                                             <ListItemIcon>
-                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
                                                             </ListItemIcon>
                                                             <Typography variant="inherit">Por Nombre de Asesor</Typography>
                                                         </MenuItem>
+
                                                         <Divider />
                                                     </div>
                                             
@@ -1014,12 +1025,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             <KeyboardArrowLeftIcon />
                                         </Button>
                                         <div>
-                                        {`${currentPage + 1} de ${Math.ceil(dataGraphic.length / itemsPerPage)}`}
+                                            {`${currentPage + 1} de ${Math.ceil(dataforRechart.length / itemsPerPage)}`}
                                         </div>
                                         <Button
                                             color="primary"
                                             onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                                            disabled={(currentPage + 1) * itemsPerPage >= dataGraphic.length}
+                                            disabled={(currentPage + 1) * itemsPerPage >= dataforRechart.length}
                                         >
                                             <KeyboardArrowRightIcon />
                                         </Button>
@@ -1031,7 +1042,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             margin={{top: 20, right: 30, left: 20, bottom: 5}}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={50} dy={5} dx={-5} />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={150} dy={5} dx={-5} />
                                             <YAxis />
                                             <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
                                             <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
@@ -1126,79 +1137,88 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{display:'flex', gap: 40}}>
                                     <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Tickets Cerrados</Typography>
-                                    <Typography style={{  fontSize: '1.3rem' }}> 217</Typography>
+                                    <Typography style={{  fontSize: '1.3rem' }}>{totalClosedTickets}</Typography>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: 5 }}>
-                                
+                                <div style={{ display: 'flex', gap: 5 }}>                               
                                     
-
-                                    <SubjectIcon style={{ color: openSeButtons ? '#783BA5' : '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />
+                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />
                        
                                 
                                     <div style={{ display: 'flex', gap: 8 }}>
-                                        <Popper
-                                            open={openSeButtons}
-                                            anchorEl={anchorElSeButtons}
-                                            placement="bottom"
-                                            transition
-                                            style={{ marginRight: '1rem' }}
-                                        >
-                                            {({ TransitionProps }) => (
-                                                <Paper {...TransitionProps} elevation={5}>
+                                    <Popper
+                                        open={openSeButtons}
+                                        anchorEl={anchorElSeButtons}
+                                        placement="bottom"
+                                        transition
+                                        style={{ marginRight: '1rem' }}
+                                    >
+                                        {({ TransitionProps }) => (
+                                            <Paper {...TransitionProps} elevation={5}>
+                                                <MenuItem
+                                                    style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                    onClick={() => {
+                                                        setOrderType("desc");
+                                                        setSortBy("value");
+                                                    }}
+                                                >
+                                                    <ListItemIcon>
+                                                        <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                    </ListItemIcon>
+                                                    <Typography variant="inherit">Mayor a Menor</Typography>
+                                                </MenuItem>
+
+                                                <Divider />
+
+                                                <div>
                                                     <MenuItem
                                                         style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                    
+                                                        onClick={() => {
+                                                            setOrderType("asc");
+                                                            setSortBy("value");
+                                                        }}
                                                     >
                                                         <ListItemIcon>
-                                                            <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                            <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                         </ListItemIcon>
-                                                        <Typography variant="inherit">Mayor a Menor</Typography>
+                                                        <Typography variant="inherit">Menor a Mayor</Typography>
                                                     </MenuItem>
                                                     <Divider />
-                                                
+                                                </div>
 
-                                                    <div>
-                                                        <MenuItem
-                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                        >
-                                                            <ListItemIcon>
-                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
-                                                            </ListItemIcon>
-                                                            <Typography variant="inherit">Menor a Mayor</Typography>
-                                                        </MenuItem>
-                                                        <Divider />
-                                                    </div>
+                                                <div>
+                                                    <MenuItem
+                                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                        onClick={() => {
+                                                            setOrderType("asc");
+                                                            setSortBy("name");
+                                                        }}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">Por Nombre de Asesor</Typography>
+                                                    </MenuItem>
+                                                    <Divider />
+                                                </div>
 
-                                                    <div>
-                                                        <MenuItem
-                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                        >
-                                                            <ListItemIcon>
-                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
-                                                            </ListItemIcon>
-                                                            <Typography variant="inherit">Por Nombre de Asesor</Typography>
-                                                        </MenuItem>
-                                                        <Divider />
-                                                    </div>
-                                            
-                                                
-                                                </Paper>
-                                            )}
-                                        </Popper>
+                                            </Paper>
+                                        )}
+                                    </Popper>
+
                                     </div>
 
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("closedTicketsReport" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                             
                                 </div>
                             </div>
 
                             <div style={{ margin: '1rem 0' }}>
                                                                                  
-                                <div style={{ }}>   
+                                <div >   
 
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-                                        <Button
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
+                                    <Button
                                             color="primary"
                                             onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
                                             disabled={currentPage === 0}
@@ -1206,24 +1226,24 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             <KeyboardArrowLeftIcon />
                                         </Button>
                                         <div>
-                                        {`${currentPage + 1} de ${Math.ceil(dataGraphic.length / itemsPerPage)}`}
+                                            {`${currentPage + 1} de ${Math.ceil(dataforRechart.length / itemsPerPage)}`}
                                         </div>
                                         <Button
                                             color="primary"
                                             onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                                            disabled={(currentPage + 1) * itemsPerPage >= dataGraphic.length}
+                                            disabled={(currentPage + 1) * itemsPerPage >= dataforRechart.length}
                                         >
                                             <KeyboardArrowRightIcon />
                                         </Button>
-                                    </div>
+                                    </div>                                 
 
                                     <ResponsiveContainer height={300}>
                                         <BarChart
-                                            data={slicedData}
-                                            margin={{top: 20, right: 30, left: 20, bottom: 5}}
+                                            data={sortedData}
+                                            margin={{top: 0, right: 20, left: 0, bottom: 0}}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={50} dy={5} dx={-5} />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={160} dy={5} dx={-5} />
                                             <YAxis />
                                             <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
                                             <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
@@ -1238,11 +1258,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                     </ResponsiveContainer>
 
                                 
-                                </div>
-
-
-
-                                  
+                                </div>                                  
                             </div>
 
                         </CardContent>
@@ -1257,7 +1273,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{display:'flex', gap: 40}}>
                                 <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Asesores</Typography>
-                                <Typography style={{  fontSize: '1.3rem' }}> 9</Typography>
+                                <Typography style={{  fontSize: '1.3rem' }}>{dataGrid.length}</Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>                            
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
@@ -1293,7 +1309,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
 
 
-
+        
        
 
             {view === "GRID" ? (
