@@ -321,3 +321,5 @@ export { ReactComponent as SendMesageIcon } from './bot enviar.svg';
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
 export {ReactComponent as PDFRedIcon} from './pdf-red-20dp.svg';
 
+export {ReactComponent as AIBussiness} from './empresa 1.svg'
+export {ReactComponent as AIGenerative} from './generativa 1.svg'

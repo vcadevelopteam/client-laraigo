@@ -156,8 +156,7 @@ interface ParametersTabDetailProps {
     setValue: any
     getValues: any,
     errors: FieldErrors
-    selectedCardData: CardDataType | null
-    setSelectedCardData: (card: CardDataType | null) => void
+    setValidatePrompt: (data: string) => void
 }
 
 const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
@@ -165,8 +164,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     setValue,
     getValues,
     errors,
-    selectedCardData,
-    setSelectedCardData
+    setValidatePrompt,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -176,6 +174,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     const [viewSelected, setViewSelected] = useState(edit ? 'detail' : 'main');
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [unansweredQueries, setUnansweredQueries] = useState<string | null>(row?.querywithoutanswer || null);
+    const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
 
     useEffect(() => {
         if (waitSave) {
@@ -310,6 +309,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('max_tokens', cardData[cardIndex].max_tokens)
         setValue('top_p', cardData[cardIndex].top_p)
         setValue('type', cardData[cardIndex].type)
+        setValidatePrompt(cardData[cardIndex].prompt)
         setViewSelected('detail');
     }
 
@@ -325,6 +325,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('max_tokens', 0)
         setValue('top_p', 0)
         setValue('type', '')
+        setValidatePrompt('')
         setViewSelected('main');
     }
 
@@ -460,7 +461,10 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     maxRows: 7
                                 }}
                                 valueDefault={getValues('prompt')}
-                                onChange={(value) => setValue('prompt', value)}
+                                onChange={(value) => {
+                                    setValue('prompt', value)
+                                    setValidatePrompt(value)
+                                }}
                                 error={errors?.prompt?.message}
                             />
                             <div className={classes.block20}/>
@@ -658,7 +662,10 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     multiline: true,
                                 }}
                                 valueDefault={selectedCardData?.prompt}
-                                onChange={(value) => setValue('prompt', value)}
+                                onChange={(value) => {
+                                    setValue('prompt', value)
+                                    setValidatePrompt(value)
+                                }}
                                 error={errors?.prompt?.message}
                             />
                             <div className={classes.block20}/>
