@@ -35,6 +35,8 @@ interface AssistantTabDetailProps {
     getValues: any,
     errors: FieldErrors
     setProvider: (provider: string) => void
+    firstData: Dictionary
+    setFirstData: (data: Dictionary) => void
 }
 
 const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
@@ -43,6 +45,8 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     getValues,
     errors,
     setProvider,
+    firstData,
+    setFirstData,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -98,7 +102,10 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     className="col-6"
                     label={t(langKeys.name)}
                     valueDefault={getValues('name')}
-                    onChange={(value) => setValue('name', value)}
+                    onChange={(value) => {
+                        setValue('name', value)
+                        setFirstData({...firstData, name: value})
+                    }}
                     error={errors?.name?.message}
                     type="text"
                     maxLength={60}                                    
@@ -107,7 +114,10 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     className="col-6"
                     label={t(langKeys.description)}
                     valueDefault={getValues('description')}
-                    onChange={(value) => setValue('description', value)}
+                    onChange={(value) => {
+                        setValue('description', value)
+                        setFirstData({...firstData, description: value})
+                    }}
                     error={errors?.description?.message}
                     type="text"
                     maxLength={640}                                    
@@ -124,12 +134,14 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                             setValue('basemodel', '')
                             setConector(value)
                             setProvider(value.provider)
+                            setFirstData({...firstData, intelligentmodelsid: value.id, basemodel: ''})
                         } else {
                             setValue('intelligentmodelsid', 0)
                             setValue('apikey', '')
                             setValue('basemodel', '')
                             setConector({})
                             setProvider('')
+                            setFirstData({...firstData, intelligentmodelsid: 0, basemodel: ''})
                         }
                     }}
                     error={errors?.intelligentmodelsid?.message}
@@ -156,8 +168,10 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     onChange={(value) => {
                         if(value) {
                             setValue('basemodel', value.domainvalue)
+                            setFirstData({...firstData, basemodel: value.domainvalue})
                         } else {
                             setValue('basemodel', '')
+                            setFirstData({...firstData, basemodel: ''})
                         }
                     }}
                     error={errors?.basemodel?.message}

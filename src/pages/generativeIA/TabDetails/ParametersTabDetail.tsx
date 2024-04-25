@@ -133,11 +133,6 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 15
     },
 }));
-
-interface RowSelected {
-    row: Dictionary | null;
-    edit: boolean;
-}
 interface CardDataType {
     title: string;
     description: string;
@@ -151,19 +146,27 @@ interface CardDataType {
     temperature: number;
     top_p: number;
 }
+interface RowSelected {
+    row: Dictionary | null;
+    edit: boolean;
+}
 
 interface ParametersTabDetailProps {
     data: RowSelected
     setValue: any
     getValues: any,
     errors: FieldErrors
+    selectedCardData: CardDataType | null
+    setSelectedCardData: (card: CardDataType | null) => void
 }
 
 const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     data:{row, edit},
     setValue,
     getValues,
-    errors
+    errors,
+    selectedCardData,
+    setSelectedCardData
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -171,7 +174,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const [viewSelected, setViewSelected] = useState(edit ? 'detail' : 'main');
-    const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [unansweredQueries, setUnansweredQueries] = useState<string | null>(row?.querywithoutanswer || null);
 

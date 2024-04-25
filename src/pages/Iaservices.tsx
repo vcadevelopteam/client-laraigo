@@ -238,7 +238,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
         keywords: false,
         semanticroles: false,
         sentiment: false,
-        contextperconversation: false,
+        contextperconversation: true,
         firstinteraction: false,
     });
 
@@ -650,7 +650,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                                 ...register(`services.${i}.contextperconversation`)
                                                             }}
                                                             label={t(langKeys.contextperconversation)}
-                                                            valueDefault={(item.contextperconversation) ? item.contextperconversation : false}
+                                                            valueDefault={(item.contextperconversation) ? item.contextperconversation : true}
                                                             style={{ flex: '0 0 170px' }}
                                                             onChange={(value) => setValue(`services.${i}.contextperconversation`, value)}
                                                         />

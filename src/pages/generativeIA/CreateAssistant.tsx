@@ -56,7 +56,19 @@ interface RowSelected {
     row: Dictionary | null;
     edit: boolean;
 }
-
+interface CardDataType {
+    title: string;
+    description: string;
+    language: string;
+    organizationName: string;
+    querywithoutanswer: string;
+    response: string;
+    prompt: string;
+    negativeprompt: string;
+    max_tokens: number;
+    temperature: number;
+    top_p: number;
+}
 interface CreateAssistantProps {
     data: RowSelected;
     arrayBread: BreadCrumb[],
@@ -105,6 +117,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [waitSaveCreateCollectionDoc, setWaitSaveCreateCollectionDoc] = useState(false)
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [provider, setProvider] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid)?.provider : '')
+    const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
+    const [firstData, setFirstData] = useState<Dictionary>({
+        name: '',
+        description: '',
+        basemodel: '',
+        intelligentmodelsid: 0
+    })
 
     useEffect(() => {
         if (waitSave) {
@@ -654,6 +673,16 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         );
     }
 
+    const isDisabled = () => {
+        if (tabIndex === 0) {
+            return (firstData.name === '' || firstData.description === '' || firstData.intelligentmodelsid === 0 || firstData.basemodel === '');
+        } else if (tabIndex === 1) {
+            return selectedCardData === null;
+        } else {
+            return false;
+        }
+    };
+
     return (
         <>
             <form
@@ -687,6 +716,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                     variant="contained"
                                     type="submit"
                                     color="primary"
+                                    disabled={isDisabled()}
                                     startIcon={tabIndex !== 2 ? <></> : <SaveIcon color="secondary" />}
                                     endIcon={tabIndex !== 2 ? <ArrowForwardIcon color="secondary" /> : <></>}
                                     style={{ backgroundColor: '#55BD84' }}
@@ -728,10 +758,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     />
                 </Tabs>
                 <AntTabPanelAux index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} />
+                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
+                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} selectedCardData={selectedCardData} setSelectedCardData={setSelectedCardData} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
                     <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
