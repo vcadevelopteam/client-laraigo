@@ -56,19 +56,6 @@ interface RowSelected {
     row: Dictionary | null;
     edit: boolean;
 }
-interface CardDataType {
-    title: string;
-    description: string;
-    language: string;
-    organizationName: string;
-    querywithoutanswer: string;
-    response: string;
-    prompt: string;
-    negativeprompt: string;
-    max_tokens: number;
-    temperature: number;
-    top_p: number;
-}
 interface CreateAssistantProps {
     data: RowSelected;
     arrayBread: BreadCrumb[],
@@ -117,13 +104,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [waitSaveCreateCollectionDoc, setWaitSaveCreateCollectionDoc] = useState(false)
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [provider, setProvider] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid)?.provider : '')
-    const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
     const [firstData, setFirstData] = useState<Dictionary>({
         name: '',
         description: '',
         basemodel: '',
         intelligentmodelsid: 0
     })
+    const [validatePrompt, setValidatePrompt] = useState('')
 
     useEffect(() => {
         if (waitSave) {
@@ -677,7 +664,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (tabIndex === 0) {
             return (firstData.name === '' || firstData.description === '' || firstData.intelligentmodelsid === 0 || firstData.basemodel === '');
         } else if (tabIndex === 1) {
-            return selectedCardData === null;
+            return validatePrompt === '';
         } else {
             return false;
         }
@@ -761,7 +748,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} selectedCardData={selectedCardData} setSelectedCardData={setSelectedCardData} />
+                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
                     <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
