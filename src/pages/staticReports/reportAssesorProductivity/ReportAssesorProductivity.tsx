@@ -7,7 +7,7 @@ import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, get
 import { AntTab, DateRangePicker, DialogZyx, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
-import { Box, Button, Divider, ListItemIcon, MenuItem, Paper, Popper, Tabs, TextField, Typography } from "@material-ui/core";
+import { Box, Button, DialogActions, Divider, ListItemIcon, MenuItem, Paper, Popper, Tabs, TextField, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon } from "icons";
 import { Range } from "react-date-range";
 import TableZyx from "components/fields/table-simple";
@@ -589,8 +589,59 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         value: parseInt(item.closedtickets)
     }));
 
+    // console.log(dataGrid.map(item => ({     
+    //     fullname: item.fullname,
+    //     TMEPromedio: item.avgfirstreplytime,
+    //     TMRPromedio: item.tmravg,
+    //     TMOAsesorPromedio: item.avgtotalasesorduration,
+    // })))
 
     const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
+
+    //sacar el promedio TMO TMR TME
+    type TimeData = {
+        fullname: string;
+        TMEPromedio?: string;
+        TMRPromedio?: string;
+        TMOAsesorPromedio?: string;
+    };
+    
+    function calculateAverageTime(data: TimeData[], timeKey: keyof TimeData) {
+        const totalSeconds = data.reduce((totalSeconds, item) => {
+            const timeValue = item[timeKey];
+            if (typeof timeValue === 'string') {
+                const [hours, minutes, seconds] = timeValue.split(':').map(Number);
+                return totalSeconds + (hours * 3600) + (minutes * 60) + seconds;
+            } else {
+                return totalSeconds;
+            }
+        }, 0);
+    
+        const avgSeconds = Math.round(totalSeconds / data.length);
+        const avgHours = Math.floor(avgSeconds / 3600);
+        const avgRemainingSeconds = avgSeconds % 3600;
+        const avgMinutes = Math.floor(avgRemainingSeconds / 60);
+        const avgSecondsFinal = avgRemainingSeconds % 60;
+    
+        return `${String(avgHours).padStart(2, '0')}:${String(avgMinutes).padStart(2, '0')}:${String(avgSecondsFinal).padStart(2, '0')}`;
+    }
+    
+    const tmeValues = dataGrid.map(item => ({ TMEPromedio: item.avgfirstreplytime }));
+    const avgTME = calculateAverageTime(tmeValues, 'TMEPromedio');
+    
+    const tmrValues = dataGrid.map(item => ({ TMRPromedio: item.tmravg }));
+    const avgTMR = calculateAverageTime(tmrValues, 'TMRPromedio');
+    
+    const tmoValues = dataGrid.map(item => ({ TMOAsesorPromedio: item.avgtotalasesorduration }));
+    const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
+    
+    
+
+
+
+
+
+    //
 
     const sortedData = dataforRechart.slice().sort((a, b) => {
         if (sortBy === "value") {
@@ -609,53 +660,37 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         return 0;
     });
     
-    // Para el graphic velocimetro
-    const [gaugeArcs, setGaugeArcs] = useState([100, 100]);
-    const [detaildata, setDetaildata] = useState<any>({
-        previousvalue: getRandomInt(0, 100),
-        currentvalue: getRandomInt(0, 100),
-        updatedate: new Date().toISOString(),
-        target: getRandomInt(50, 100),
-        cautionat: getRandomInt(30, 70),
-        alertat: getRandomInt(0, 50)
-    });
-      
-    function getRandomInt(min: number, max: number) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+   
 
-    //para dialog velocimetro apartado}
     const [openExpectedValueModal, setOpenExpectedValueModal] = useState(false);
-    const [hour, setHour] = useState("00");
-    const [minute, setMinute] = useState("00");
-    const [second, setSecond] = useState("00");
-    const [errorText, setErrorText] = useState("");
-    const [, setIsAcceptDisabled] = useState(true);
+    const [hour, setHour] = useState('00');
+    const [minute, setMinute] = useState('00');
+    const [second, setSecond] = useState('00');
+    const [errorText, setErrorText] = useState('');
+    const [expectedValue, setExpectedValue] = useState('00:00:00');
 
     const handleAccept = () => {
-        const formattedValue = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
         setOpenExpectedValueModal(false);
+        if (validateTime()) {
+            const newValue = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
+            setExpectedValue(newValue);
+            console.log('Nuevo valor esperado:', newValue);
+        }
     };
 
     const validateTime = () => {
-        if (hour === "" || minute === "" || second === "") {
-            setErrorText("Debe completar todos los campos.");
-            setIsAcceptDisabled(true);
-            return;
-        }
+        const h = parseInt(hour, 10);
+        const m = parseInt(minute, 10);
+        const s = parseInt(second, 10);
 
-        const hh = parseInt(hour, 10);
-        const mm = parseInt(minute, 10);
-        const ss = parseInt(second, 10);
-
-        if (isNaN(hh) || isNaN(mm) || isNaN(ss) || hh < 0 || hh > 24 || mm < 0 || mm > 60 || ss < 0 || ss > 60) {
-            setErrorText("Horario inválido.");
-            setIsAcceptDisabled(true);
-        } else {
-            setErrorText("");
-            setIsAcceptDisabled(false);
+        if (isNaN(h) || isNaN(m) || isNaN(s) || h < 0 || h > 23 || m < 0 || m > 59 || s < 0 || s > 59) {
+            setErrorText('Por favor, ingrese una hora válida.');
+            return false;
         }
+        setErrorText('');
+        return true;
     };
+
 
     //para manejo de tabs
     const [tabIndex, setTabIndex] = useState(0);
@@ -723,6 +758,34 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             </text>
         );
     };
+
+
+ // Para el graphic velocimetro
+    // Función para determinar si el valor promedio es menor o mayor que el valor esperado
+    const isPromedioMenorEsperado = (avg: string) => {
+        const avgSeconds = getSecondsFromTimeString(avg);
+        const expectedSeconds = getSecondsFromTimeString(expectedValue);
+        return avgSeconds < expectedSeconds;
+    };
+
+    // Función para obtener la cantidad de segundos de una cadena de tiempo en formato HH:mm:ss
+    const getSecondsFromTimeString = (timeString: string) => {
+        const [hours, minutes, seconds] = timeString.split(':').map(Number);
+        return hours * 3600 + minutes * 60 + seconds;
+    };
+    const [gaugeArcs, setGaugeArcs] = useState([100, 100]);
+    const [detaildata, setDetaildata] = useState<any>({
+        previousvalue: getRandomInt(0, 100),
+        currentvalue: getRandomInt(0, 100),
+        updatedate: new Date().toISOString(),
+        target: isPromedioMenorEsperado(avgTMO) ? getRandomInt(50, 100) : getRandomInt(0, 50),
+        cautionat: isPromedioMenorEsperado(avgTMO) ? getRandomInt(30, 70) : getRandomInt(0, 30),
+        alertat: isPromedioMenorEsperado(avgTMO) ? getRandomInt(0, 30) : getRandomInt(70, 100)
+    });
+      
+    function getRandomInt(min: number, max: number) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
 
 
@@ -852,17 +915,13 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                         <div style={{ width: '85vw', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
                             <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>
                                 <div>{tabTexts[tabIndex].label} Esperado</div>
-                                <div style={{ fontWeight: 'normal' }}>00:10:00</div>
+                                <div style={{ fontWeight: 'normal' }}>{expectedValue}</div>
                             </div>
                             <GaugeChart
                                 style={{ width: '450px' }}
                                 id="gauge-chart"
                                 arcsLength={gaugeArcs}
-                                colors={
-                                    detaildata.target < detaildata.alertat
-                                        ? ['#FF0000', '#00B050']
-                                        : ['#00B050', '#FF0000']
-                                }
+                                colors={isPromedioMenorEsperado(avgTMO) ? ['#FF0000', '#00B050']:['#00B050', '#FF0000'] }
                                 needleColor="#783BA5"
                                 needleBaseColor="#783BA5"
                                 textColor="#000000"
@@ -876,7 +935,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                             />
                             <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', margin: '0', textAlign: 'center' }}>
                                 <div>{tabTexts[tabIndex].label} Promedio</div>
-                                <div style={{ fontWeight: 'normal' }}>00:07:30</div>
+                                <div style={{ fontWeight: 'normal' }}>
+                                    {tabIndex === 0 && avgTMO}
+                                    {tabIndex === 1 && avgTME}
+                                    {tabIndex === 2 && avgTMR}
+                                </div>
                             </div>
                         </div>
                     </CardContent>
@@ -884,15 +947,9 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
                 <DialogZyx
                     open={openExpectedValueModal}
-                    title="Configuración del valor deseado"
-                    button1Type="button"
-                    buttonText1="Cancelar"
-                    handleClickButton1={() => setOpenExpectedValueModal(false)}
-                    button2Type="button"
-                    buttonText2="Aceptar"
-                    handleClickButton2={handleAccept}
+                    title="Configuración del valor esperado"
                 >
-                    <div style={{ marginBottom: "1rem", display: 'flex', gap: 10 }}>
+                    <div style={{ marginBottom: '1rem', display: 'flex', gap: 10 }}>
                         <TextField
                             label="HH"
                             variant="outlined"
@@ -928,7 +985,16 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                         />
                     </div>
                     {errorText && <div style={{ color: 'red', textAlign: 'center' }}>{errorText}</div>}
+                    <DialogActions>
+                        <Button onClick={() => setOpenExpectedValueModal(false)} color="default">
+                            Cancelar
+                        </Button>
+                        <Button onClick={handleAccept} color="primary" disabled={!!errorText}>
+                            Aceptar
+                        </Button>
+                    </DialogActions>
                 </DialogZyx>
+
 
             </div>
 
