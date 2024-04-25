@@ -943,7 +943,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </div>
                     )}
                     <div className='row-zyx' style={{display: 'flex', flexDirection: 'column'}}>
-                        <span style={{fontWeight: 'bold'}}>{t(langKeys.messagetype)}</span>
+                        <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messagetype)}</span>
                         <span>{t(langKeys.messagetypetext)}</span>
                     </div>
                     <div className="row-zyx">
@@ -967,6 +967,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </div>
                         )}
                     </div>
+                    {getValues("type") === 'HSM' && (
+                        <>
+                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
+                                <span style={{fontWeight: 'bold', fontSize: 20}}>{`${t(langKeys.configuration)} ${t(langKeys.template)}`}</span>
+                            </div>
+                            <div className='row-zyx' style={{display: 'flex', flexDirection: 'column'}}>
+                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.category)}</span>
+                                <span>Elige la categoría que mejor describa tu plantilla de mensaje.</span>
+                            </div>
+                        </>
+                    )}
                     <div className="row-zyx">
                         {(getValues("type") !== "HSM" && getValues("type") !== '') && (
                             <FieldSelect
