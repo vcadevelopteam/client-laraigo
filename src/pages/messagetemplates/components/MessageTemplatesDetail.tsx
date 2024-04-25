@@ -1,5 +1,5 @@
 import { addTemplate } from "store/channel/actions";
-import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
+import { Box, Checkbox, CircularProgress, IconButton, Paper } from "@material-ui/core";
 import { Close, FileCopy, GetApp } from "@material-ui/icons";
 import { Descendant } from "slate";
 import { Dictionary, MultiData } from "@types";
@@ -12,6 +12,9 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 import WarningIcon from '@material-ui/icons/Warning';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 
 import {
     execute,
@@ -108,6 +111,35 @@ const useStyles = makeStyles((theme) => ({
             opacity: 1,
         },
     },
+    categoryOption: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        paddingTop: 15,
+        paddingBottom: 15,
+        paddingLeft: 15,
+        borderRadius: 10,
+        padding: 10,
+        backgroundColor: '#EEEEEE',
+        flex: 1,
+        cursor: 'pointer',
+        "&:hover": {
+            backgroundColor: '#D8D8D8',
+        },
+    },
+    checkbox: {
+        backgroundColor: 'white',
+        cursor: 'pointer',
+        borderRadius: '50%',
+        height: '1.1rem',
+        width: '1.1rem',
+        appearance: 'none',
+        border: '1px solid #A0A0A0',
+        verticalAlign: 'middle',
+        "&:checked": {
+            backgroundColor: '#7721AD'
+        }
+    },
 }));
 
 const DetailMessageTemplates: React.FC<DetailProps> = ({
@@ -117,21 +149,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     setViewSelected,
 }) => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-
     const addRequest = useSelector((state) => state.channel.requestAddTemplate);
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
-
     const dataChannel =
         multiData[2] && multiData[2].success
             ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
             : [];
-
     const [bodyAlert, setBodyAlert] = useState("");
     const [bodyAttachment, setBodyAttachment] = useState(row?.body || "");
     const [disableInput, setDisableInput] = useState(false);
@@ -145,10 +173,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
-
     const [bodyObject, setBodyObject] = useState<Descendant[]>(
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
     );
+    const [category, setCategory] = useState('')
 
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -976,6 +1004,32 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.category)}</span>
                                 <span>Elige la categoría que mejor describa tu plantilla de mensaje.</span>
                             </div>
+                            <div style={{display: 'flex', flexDirection: 'row', gap: '0.5rem'}}>
+                                <div className={classes.categoryOption} onClick={() => setCategory('MARKETING')}>
+                                    <input type="checkbox" checked={category === 'MARKETING'} className={classes.checkbox}/>
+                                    <VolumeUpIcon style={{marginLeft: 10, marginRight: 10}}/>
+                                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Marketing</span>
+                                        <span>Envía promociones o información sobre tus productos, servicios o negocio.</span>
+                                    </div>
+                                </div>
+                                <div className={classes.categoryOption} onClick={() => setCategory('UTILITY')}>
+                                    <input type="checkbox" checked={category === 'UTILITY'} className={classes.checkbox}/>
+                                    <NotificationsIcon style={{marginLeft: 10, marginRight: 10}}/>
+                                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Utilidad</span>
+                                        <span>Envía mensajes sobre un pedido o cuenta existentes.</span>
+                                    </div>
+                                </div>
+                                <div className={classes.categoryOption} onClick={() => setCategory('AUTHENTICATION')}>
+                                    <input type="checkbox" checked={category === 'AUTHENTICATION'} className={classes.checkbox}/>
+                                    <VpnKeyIcon style={{marginLeft: 10, marginRight: 10}}/>
+                                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Autenticación</span>
+                                        <span>Envía códigos para verificar una transacción o un inicio de sesión.</span>
+                                    </div>
+                                </div>
+                            </div>
                         </>
                     )}
                     <div className="row-zyx">
@@ -995,7 +1049,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     </div>
                     <div className="row-zyx">
                         {getValues("type") === "HSM" && (
-                            <>
+                            <>  
                                 {isNew && (
                                     <FieldSelect
                                         className="col-6"
@@ -1090,6 +1144,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </>
                         )}
                     </div>
+                    {getValues("type") === 'HSM' && (
+                        <div>
+                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
+                                <span style={{fontWeight: 'bold', fontSize: 20}}>{`${t(langKeys.edit)} ${t(langKeys.template)}`}</span>
+                            </div>
+                        </div>
+                    )}
                     {getValues("type") === "HSM" && (
                         <div className="row-zyx">
                             <FieldSelect
