@@ -7,12 +7,12 @@ import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, get
 import { AntTab, DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
-import { Box, Button, ListItemIcon, MenuItem, Tabs, Typography } from "@material-ui/core";
+import { Box, Button, CircularProgress, Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon } from "icons";
 import { Range } from "react-date-range";
 import CategoryIcon from "@material-ui/icons/Category";
 import TableZyx from "components/fields/table-simple";
-import { exportExcel } from "common/helpers";
+import { convertLocalDate, exportExcel } from "common/helpers";
 import { langKeys } from "lang/keys";
 import { Dictionary } from "@types";
 import { useForm } from "react-hook-form";
@@ -33,8 +33,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import SubjectIcon from '@material-ui/icons/Subject';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList, LineChart, Line, Legend } from 'recharts';
 import TablePaginated from 'components/fields/table-paginated';
-
-
+import GaugeChart from "react-gauge-chart";
+import ViewWeekIcon from '@material-ui/icons/ViewWeek';
+import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import { CellProps } from 'react-table';
 interface Assessor {
     row: Dictionary | null;
     allFilters: Dictionary[];
@@ -125,7 +128,7 @@ const columnsTemp = [
     "groups",
 ];
 
-const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
+const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -144,7 +147,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const [isday, setisday] = useState(false);
     const [columnGraphic, setColumnGraphic] = useState("");
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const [, setOpenSeButtons] = useState(false);
+    const [openSeButtons, setOpenSeButtons] = useState(false);
     const [openFilterModal, setOpenFilterModal] = useState(false);
     const [maxmin, setmaxmin] = useState({
         maxticketsclosed: 0,
@@ -170,6 +173,33 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         loading: false,
         data: [],
     });
+
+    const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
+
+
+    const cell = (props: CellProps<Dictionary>) => {
+        const column = props.cell.column;
+        const row = props.cell.row.original;
+        return (
+            <div onClick={() => {
+                setSelectedRow(row);     
+                setOpenModal(true);               
+            }}>             
+                {column.sortType === "datetime" && !!row[column.id] 
+                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                })
+                : row[column.id]}
+            </div>
+        )
+    }
+
+
 
     useEffect(() => {        
         dispatch(setViewChange("report_userproductivity"));
@@ -296,52 +326,89 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         [isday, mainAux, desconectedmotives]
     );
 
-    const columnsForAgentNumber = React.useMemo(
-        () => [           
+    const columnsFulfillmentByTicket = React.useMemo(
+        () => [
             {
-                Header: t(langKeys.report_userproductivity_fullname),
-                accessor: 'fullname',
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'userstatus',
-            },                   
-            {
-                Header: t(langKeys.report_userproductivity_maxfirstreplytime),
-                accessor: 'maxfirstreplytime',
-            },
-            {
-                Header: t(langKeys.report_userproductivity_minfirstreplytime),
-                accessor: 'minfirstreplytime',
+                Header: t(langKeys.report_userproductivity_user),
+                accessor: 'userid',
+                NoFilter: true,
+                Cell: cell
             },           
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
-            },
-            {
-                Header: t(langKeys.report_userproductivity_mintotalduration),
-                accessor: 'mintotalduration',
-            },
-           
-            {
-                Header: t(langKeys.report_userproductivity_maxtotalasesorduration),
-                accessor: 'maxtotalasesorduration',
-            },
-            {
-                Header: t(langKeys.report_userproductivity_mintotalasesorduration),
-                accessor: 'mintotalasesorduration',
-            },         
-            {
-                Header: t(langKeys.report_userproductivity_userconnectedduration),
-                accessor: 'userconnectedduration',
-                type: "number",
-                sortType: 'number',
-            },
-          
-          
+                NoFilter: true,
+                Cell: cell
+            },          
         ],
         [isday, mainAux, desconectedmotives]
     );
+
+    const getColumns = (tabIndex: any) => {
+        switch (tabIndex) {
+            case 0: // TMO
+                return [
+                    {
+                        Header: t(langKeys.report_userproductivity_fullname),
+                        accessor: 'fullname',
+                        NoFilter: false,
+                    },
+                    {
+                        Header: t(langKeys.report_userproductivity_maxtotalduration),
+                        accessor: 'maxtotalduration',
+                    },
+                    {
+                        Header: t(langKeys.report_userproductivity_mintotalduration),
+                        accessor: 'mintotalduration',
+                    },
+                    {
+                        Header: t(langKeys.report_userproductivity_userconnectedduration),
+                        accessor: 'userconnectedduration',
+                        type: "number",
+                        sortType: 'number',
+                    },
+                ];
+            case 1: // TME
+                return [
+                    {
+                        Header: t(langKeys.report_userproductivity_fullname),
+                        accessor: 'fullname',
+                        NoFilter: false,
+                    },
+                    {
+                        Header: t(langKeys.report_userproductivity_maxfirstreplytime),
+                        accessor: 'maxfirstreplytime',
+                    },
+                    {
+                        Header: t(langKeys.report_userproductivity_minfirstreplytime),
+                        accessor: 'minfirstreplytime',
+                    },
+                    {
+                        Header: t(langKeys.report_userproductivity_userconnectedduration),
+                        accessor: 'userconnectedduration',
+                        type: "number",
+                        sortType: 'number',
+                    },
+                ];
+            case 2: // TMR
+                return [
+                    {
+                        Header: t(langKeys.report_userproductivity_fullname),
+                        accessor: 'fullname',
+                        NoFilter: false,
+                    },
+                    {
+                        Header: t(langKeys.report_userproductivity_userconnectedduration),
+                        accessor: 'userconnectedduration',
+                        type: "number",
+                        sortType: 'number',
+                    },
+                ];
+            default:
+                return [];
+        }
+    };
+   
     
     useEffect(() => {
         if (allFilters) {
@@ -508,10 +575,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
 
     
 
-    const [tabIndex, setTabIndex] = useState(0);
-    const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
-        setTabIndex(newIndex);
-    };
+  
     
     const dataforRechart = [
         { name: 'Juan', value: 400 },
@@ -521,16 +585,136 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         { name: 'Victor', value: 400 },
         { name: 'Toro', value: 300 },
       
+      
     ];
-    const dataHorizontal = [
-        { name: 'Juan', value: '12:54' },
-        { name: 'Carlos', value: '15:45' },
-        { name: 'Nirvana', value: '10:30' },
-        { name: 'Sebas', value: '8:20' },
-        { name: 'Victor', value: '11:15' },
-      ];
-      const [pageCount, setPageCount] = useState(0);
-      const [totalrow, settotalrow] = useState(0);
+  
+
+    // Para el graphic velocimetro
+    const [gaugeArcs, setGaugeArcs] = useState([100, 100]);
+    const [detaildata, setDetaildata] = useState<any>({
+        previousvalue: getRandomInt(0, 100),
+        currentvalue: getRandomInt(0, 100),
+        updatedate: new Date().toISOString(),
+        target: getRandomInt(50, 100),
+        cautionat: getRandomInt(30, 70),
+        alertat: getRandomInt(0, 50)
+    });
+      
+    function getRandomInt(min: number, max: number) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+
+    //para dialog velocimetro apartado}
+    const [openExpectedValueModal, setOpenExpectedValueModal] = useState(false);
+    const [hour, setHour] = useState("00");
+    const [minute, setMinute] = useState("00");
+    const [second, setSecond] = useState("00");
+    const [errorText, setErrorText] = useState("");
+    const [isAcceptDisabled, setIsAcceptDisabled] = useState(true);
+
+    const handleAccept = () => {
+        const formattedValue = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
+        console.log("Valor deseado:", formattedValue);
+        setOpenExpectedValueModal(false);
+    };
+
+    const validateTime = () => {
+        if (hour === "" || minute === "" || second === "") {
+            setErrorText("Debe completar todos los campos.");
+            setIsAcceptDisabled(true);
+            return;
+        }
+
+        const hh = parseInt(hour, 10);
+        const mm = parseInt(minute, 10);
+        const ss = parseInt(second, 10);
+
+        if (isNaN(hh) || isNaN(mm) || isNaN(ss) || hh < 0 || hh > 24 || mm < 0 || mm > 60 || ss < 0 || ss > 60) {
+            setErrorText("Horario inválido.");
+            setIsAcceptDisabled(true);
+        } else {
+            setErrorText("");
+            setIsAcceptDisabled(false);
+        }
+    };
+
+
+    //para manejo de tabs
+    const [tabIndex, setTabIndex] = useState(0);
+    const [tabTexts] = useState([
+        { label: 'TMO', title: 'Tiempo Medio de la Operación' },
+        { label: 'TME', title: 'Tiempo de primera respuesta' },
+        { label: 'TMR', title: 'Tiempo promedio de respuesta' }
+    ]);
+
+    const handleChangeTab = (event, newValue) => {
+        setTabIndex(newValue);
+    };
+
+    //para morevert functionality
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
+        setOpenSeButtons((prevOpen) => !prevOpen);
+    };
+
+
+    //para garfico barras
+
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 5;
+
+    const slicedData = dataforRechart.slice(
+        currentPage * itemsPerPage,
+        (currentPage + 1) * itemsPerPage
+    );
+
+    const [dataGraphic, setDataGraphic] = useState<Dictionary[]>([])
+
+    const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+
+    const getNextColorGenerator = (): (() => string) => {
+        const predefinedColors = ["#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00", "#0F7F13", "#00CFE5", "#1D1856", "#FB5F5F", "#B061E1"];
+        let currentIndex = 0;
+        const usedColors = [...predefinedColors];
+    
+        return () => {
+            if (currentIndex < predefinedColors.length) {
+                const color = predefinedColors[currentIndex];
+                currentIndex++;
+                return color;
+            } else {
+                const randomColor = generateRandomColor();
+                if (!usedColors.includes(randomColor)) {
+                    usedColors.push(randomColor);
+                    return randomColor;
+                } else {
+                    return getNextColorGenerator()();
+                }
+            }
+        };
+    };    
+    const randomColorGenerator = getNextColorGenerator();
+
+    const [graphicType, setGraphicType] = useState('BAR');
+    const [dataGraph, setdataGraph] = useState<any>([]);
+    const mainResult = useSelector(state => state.main.mainAux);    
+
+   
+
+    const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, summary, ...rest }: Dictionary) => {
+        const RADIAN = Math.PI / 180;
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    
+        return (
+            <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+                {summary}
+            </text>
+        );
+    };
+
 
 
     return (
@@ -615,7 +799,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                         fetchData();
                                     }}
                                 >
-                                    {t(langKeys.refresh)}
+                                    {t(langKeys.search)}
                                 </Button>
                             </div>
                         </Box>
@@ -635,100 +819,291 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 indicatorColor="primary"
                 variant="fullWidth"
             >
-                <AntTab
-                    label={
-                        <div>
-                            <Trans i18nKey={langKeys.tmo} />
-                        </div>
-                    }
-                />
-                <AntTab
-                    label={
-                        <div>
-                            <Trans i18nKey={langKeys.tme} />
-                        </div>
-                    }
-                />
-                    <AntTab
-                    label={
-                        <div>
-                            <Trans i18nKey={langKeys.tmr} />
-                        </div>
-                    }
-                />
+               {tabTexts.map((tab, index) => (
+                    <AntTab key={index} label={tab.label} />
+                ))}
             </Tabs>
 
 
-            {/* Espacio Grafica con flecha TMO/TME/TMR ----------------------------------------------------*/}
-            <div style={{margin: '1rem 0'}}>
-                <Card  style={{ color: "#7721AD" }}>
-                        <CardContent style={{ paddingBottom: 10 }}>
-                            <div style={{display:'flex', justifyContent: 'space-between'}}>
-                                <div>
-                                    <Typography  style={{fontWeight:'bold', fontSize:'1.3rem'}}> {t(langKeys.tmo)}</Typography>
-                                    <Typography> Tiempo Medio de la Operación</Typography>
-                                </div>
-                                <div style={{display:'flex', gap: 5}}>
-                                    <CloudDownloadIcon style={{ color: "#2E2C34" }}/>
-                                    <SettingsIcon style={{ color: "#2E2C34" }}/>
-                                </div>
-                            </div>                        
-                        </CardContent>
+            {/* Card Velocimetro TMO  ----------------------------------------------------*/}
+            <div style={{margin: '0.5rem 0'}}>
+                <Card style={{ margin: '0',  padding: 0}}>
+                    <CardContent>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                                <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>{tabTexts[tabIndex].label}</Typography>
+                                <Typography>{tabTexts[tabIndex].title}</Typography>
+                            </div>
+                            <div style={{ display: 'flex', gap: 5 }}>
+                                <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))} />
+                                <SettingsIcon style={{ color: "#2E2C34", cursor: "pointer" }} onClick={() => setOpenExpectedValueModal(true)} />
+                            </div>
+                        </div>
+
+                        <div style={{ width: '85vw', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+                            <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>
+                                <div>{tabTexts[tabIndex].label} Esperado</div>
+                                <div style={{ fontWeight: 'normal' }}>00:10:00</div>
+                            </div>
+                            <GaugeChart
+                                style={{ width: '450px' }}
+                                id="gauge-chart"
+                                arcsLength={gaugeArcs}
+                                colors={
+                                    detaildata.target < detaildata.alertat
+                                        ? ['#FF0000', '#00B050']
+                                        : ['#00B050', '#FF0000']
+                                }
+                                needleColor="#783BA5"
+                                needleBaseColor="#783BA5"
+                                textColor="#000000"
+                                animate={false}
+                                percent={
+                                    detaildata.target < detaildata.alertat
+                                        ? detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10))
+                                        : detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.target * 1.2 / 10) * 10))
+                                }
+                                formatTextValue={() => ``}
+                            />
+                            <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', margin: '0', textAlign: 'center' }}>
+                                <div>{tabTexts[tabIndex].label} Promedio</div>
+                                <div style={{ fontWeight: 'normal' }}>00:07:30</div>
+                            </div>
+                        </div>
+                    </CardContent>
                 </Card>
+
+                <DialogZyx
+                    open={openExpectedValueModal}
+                    title="Configuración del valor deseado"
+                    button1Type="button"
+                    buttonText1="Cancelar"
+                    handleClickButton1={() => setOpenExpectedValueModal(false)}
+                    button2Type="button"
+                    buttonText2="Aceptar"
+                    handleClickButton2={handleAccept}
+                >
+                    <div style={{ marginBottom: "1rem", display: 'flex', gap: 10 }}>
+                        <TextField
+                            label="HH"
+                            variant="outlined"
+                            value={hour}
+                            onChange={(e) => {
+                                setHour(e.target.value.replace(/\D/g, '').slice(0, 2));
+                                validateTime();
+                            }}
+                            fullWidth
+                            inputProps={{ maxLength: 2 }}
+                        />
+                        <TextField
+                            label="MM"
+                            variant="outlined"
+                            value={minute}
+                            onChange={(e) => {
+                                setMinute(e.target.value.replace(/\D/g, '').slice(0, 2));
+                                validateTime();
+                            }}
+                            fullWidth
+                            inputProps={{ maxLength: 2 }}
+                        />
+                        <TextField
+                            label="SS"
+                            variant="outlined"
+                            value={second}
+                            onChange={(e) => {
+                                setSecond(e.target.value.replace(/\D/g, '').slice(0, 2));
+                                validateTime();
+                            }}
+                            fullWidth
+                            inputProps={{ maxLength: 2 }}
+                        />
+                    </div>
+                    {errorText && <div style={{ color: 'red', textAlign: 'center' }}>{errorText}</div>}
+                </DialogZyx>
+
             </div>
 
+                      
 
-
-
-            {/* Espacio Asesor con TMO Promedio / Cumplimiento TMO por ticket ----------------------------------------------------*/}
 
             <Grid container spacing={3} className={classes.containerDetails}>
-                
+
+                {/* Card Asesor con TMO Promedio  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-
-                <Card>
-                    <CardContent style={{ paddingBottom: 10 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <div>
-                            <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> Asesor con TMO Promedio</Typography>
-                        </div>
-                        <div style={{ display: 'flex', gap: 5 }}>
-                            <SubjectIcon style={{ color: "#2E2C34" }} />
-                            <CloudDownloadIcon style={{ color: "#2E2C34" }} />
-                        </div>
-                        </div>
-
-                        <div style={{ margin: '1rem 0' }}>
-                            <BarChart width={500} height={300} data={dataforRechart} >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Bar dataKey="value" fill="#8884d8" />
-                            </BarChart>
-                        </div>
-
-                    </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card>
-                        <CardContent style={{ paddingBottom: 10 }}>
+                    <Card style={{height:'30rem', margin:0}}>
+                        <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
-                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>Cumplimiento TMO por Ticket</Typography>
+                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> Asesor con {tabTexts[tabIndex].label} Promedio</Typography>
                                 </div>
+
                                 <div style={{ display: 'flex', gap: 5 }}>
-                                    <SubjectIcon style={{ color: "#2E2C34" }} />
-                                    <CloudDownloadIcon style={{ color: "#2E2C34" }} />
+                                
+                                    
+
+                                    <SubjectIcon style={{ color: openSeButtons ? '#783BA5' : '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />
+                       
+                                
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <Popper
+                                            open={openSeButtons}
+                                            anchorEl={anchorElSeButtons}
+                                            placement="bottom"
+                                            transition
+                                            style={{ marginRight: '1rem' }}
+                                        >
+                                            {({ TransitionProps }) => (
+                                                <Paper {...TransitionProps} elevation={5}>
+                                                    <MenuItem
+                                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                    
+                                                    >
+                                                        <ListItemIcon>
+                                                            <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">Mayor a Menor</Typography>
+                                                    </MenuItem>
+                                                    <Divider />
+                                                
+
+                                                    <div>
+                                                        <MenuItem
+                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            </ListItemIcon>
+                                                            <Typography variant="inherit">Menor a Mayor</Typography>
+                                                        </MenuItem>
+                                                        <Divider />
+                                                    </div>
+
+                                                    <div>
+                                                        <MenuItem
+                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            </ListItemIcon>
+                                                            <Typography variant="inherit">Por Nombre de Asesor</Typography>
+                                                        </MenuItem>
+                                                        <Divider />
+                                                    </div>
+                                            
+                                                
+                                                </Paper>
+                                            )}
+                                        </Popper>
+                                    </div>
+
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                                            
                                 </div>
                             </div>
 
                             <div style={{ margin: '1rem 0' }}>
-                                <PieChart width={500} height={300} data={dataforRechart}>
-                                    <Pie dataKey="value" isAnimationActive={false} fill="#8884d8" label />
-                                </PieChart>
+                                                                                 
+                                <div style={{ }}>   
+
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
+                                        <Button
+                                            color="primary"
+                                            onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
+                                            disabled={currentPage === 0}
+                                        >
+                                            <KeyboardArrowLeftIcon />
+                                        </Button>
+                                        <div>
+                                        {`${currentPage + 1} de ${Math.ceil(dataGraphic.length / itemsPerPage)}`}
+                                        </div>
+                                        <Button
+                                            color="primary"
+                                            onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                                            disabled={(currentPage + 1) * itemsPerPage >= dataGraphic.length}
+                                        >
+                                            <KeyboardArrowRightIcon />
+                                        </Button>
+                                    </div>
+
+                                    <ResponsiveContainer height={300}>
+                                        <BarChart
+                                            data={slicedData}
+                                            margin={{top: 20, right: 30, left: 20, bottom: 5}}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={50} dy={5} dx={-5} />
+                                            <YAxis />
+                                            <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
+                                            <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
+                                                <LabelList dataKey="summary" position="top" />
+                                                {
+                                                    dataforRechart.map((entry: any, index: any) => (
+                                                        <Cell key={`cell-${index}`} fill={"#7721AD"} />
+                                                    ))
+                                                }    
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+
+                                
+                                </div>
+
+
+
+                                  
                             </div>
+
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                {/* Card Cumplimiento TMO por Ticket  ----------------------------------------------------*/}
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card style={{height:'30rem'}}>
+                        <CardContent style={{ paddingBottom: 10 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>Cumplimiento {tabTexts[tabIndex].label} por Ticket</Typography>
+                                </div>
+                              
+                            </div>
+
+                            <div style={{ margin: '1rem 0',  display: 'flex' }}>
+                                <ResponsiveContainer height={300}>
+                                    <PieChart>
+                                        <ChartTooltip />
+                                        <Pie
+                                            data={dataforRechart}
+                                            dataKey="value"
+                                            labelLine={false}
+                                            label={RenderCustomizedLabel}
+                                            nameKey="name"
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={40}
+                                            fill="#7721AD"
+                                        >
+                                             {dataforRechart.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
+                                            ))}
+                                        </Pie>
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <div style={{ overflowX: 'auto', width:'40vw', marginRight:'3rem' }}>
+                                    <TableZyx
+                                        columns={columnsFulfillmentByTicket}
+                                        filterGeneral={false}
+                                        data={dataGrid}
+                                        download={false}
+                                        loading={detailCustomReport.loading}
+                                        register={false}                                                                             
+                                    />
+                           
+                                </div>
+                            </div>
+
+                          
+                            
 
                         </CardContent>
                     </Card>
@@ -741,65 +1116,163 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
 
 
 
-            {/* Espacio N°Tickets Cerrados / N° Asesores ----------------------------------------------------*/}
-
             <Grid container spacing={3} className={classes.containerDetails}>
                 
+                {/* Card N° Tickets Cerrados  ----------------------------------------------------*/}
+
                 <Grid item xs={12} md={6} lg={6}>
-
-                    <Card style={{ width: '100%' }}>
-                        <CardContent style={{ paddingBottom: 10 }}>
-                            <div style={{display:'flex', justifyContent: 'space-between'}}>
-                                <div>
-                                    <Typography  style={{fontWeight:'bold', fontSize:'1.3rem'}}> N° Tickets Cerrados</Typography>
+                    <Card style={{height:'30rem'}}>
+                        <CardContent >
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{display:'flex', gap: 40}}>
+                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Tickets Cerrados</Typography>
+                                    <Typography style={{  fontSize: '1.3rem' }}> 217</Typography>
                                 </div>
-                                <div style={{display:'flex', gap: 5}}>
-                                    <SubjectIcon style={{ color: "#2E2C34" }}/>
-                                    <CloudDownloadIcon style={{ color: "#2E2C34" }}/>
-                                </div>
-                            </div>      
 
-                            <div style={{margin: '1rem 0', justifyContent:'center', display:'flex'}}>
-                                <BarChart width={500} height={300} data={dataforRechart}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Bar dataKey="value" fill="#8884d8" />
-                                </BarChart>
+                                <div style={{ display: 'flex', gap: 5 }}>
+                                
+                                    
+
+                                    <SubjectIcon style={{ color: openSeButtons ? '#783BA5' : '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />
+                       
+                                
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <Popper
+                                            open={openSeButtons}
+                                            anchorEl={anchorElSeButtons}
+                                            placement="bottom"
+                                            transition
+                                            style={{ marginRight: '1rem' }}
+                                        >
+                                            {({ TransitionProps }) => (
+                                                <Paper {...TransitionProps} elevation={5}>
+                                                    <MenuItem
+                                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                    
+                                                    >
+                                                        <ListItemIcon>
+                                                            <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                        </ListItemIcon>
+                                                        <Typography variant="inherit">Mayor a Menor</Typography>
+                                                    </MenuItem>
+                                                    <Divider />
+                                                
+
+                                                    <div>
+                                                        <MenuItem
+                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            </ListItemIcon>
+                                                            <Typography variant="inherit">Menor a Mayor</Typography>
+                                                        </MenuItem>
+                                                        <Divider />
+                                                    </div>
+
+                                                    <div>
+                                                        <MenuItem
+                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            </ListItemIcon>
+                                                            <Typography variant="inherit">Por Nombre de Asesor</Typography>
+                                                        </MenuItem>
+                                                        <Divider />
+                                                    </div>
+                                            
+                                                
+                                                </Paper>
+                                            )}
+                                        </Popper>
+                                    </div>
+
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                                            
+                                </div>
                             </div>
 
+                            <div style={{ margin: '1rem 0' }}>
+                                                                                 
+                                <div style={{ }}>   
+
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
+                                        <Button
+                                            color="primary"
+                                            onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
+                                            disabled={currentPage === 0}
+                                        >
+                                            <KeyboardArrowLeftIcon />
+                                        </Button>
+                                        <div>
+                                        {`${currentPage + 1} de ${Math.ceil(dataGraphic.length / itemsPerPage)}`}
+                                        </div>
+                                        <Button
+                                            color="primary"
+                                            onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                                            disabled={(currentPage + 1) * itemsPerPage >= dataGraphic.length}
+                                        >
+                                            <KeyboardArrowRightIcon />
+                                        </Button>
+                                    </div>
+
+                                    <ResponsiveContainer height={300}>
+                                        <BarChart
+                                            data={slicedData}
+                                            margin={{top: 20, right: 30, left: 20, bottom: 5}}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={50} dy={5} dx={-5} />
+                                            <YAxis />
+                                            <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
+                                            <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
+                                                <LabelList dataKey="summary" position="top" />
+                                                {
+                                                    dataforRechart.map((entry: any, index: any) => (
+                                                        <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
+                                                    ))
+                                                }    
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+
+                                
+                                </div>
+
+
+
+                                  
+                            </div>
 
                         </CardContent>
                     </Card>
-
-
-                    
                 </Grid>
 
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card >
-                        <CardContent style={{ paddingBottom: 10 }}>
-                            <div style={{display:'flex', justifyContent: 'space-between'}}>
-                                <div>
-                                    <Typography  style={{fontWeight:'bold', fontSize:'1.3rem'}}>N° Asesores</Typography>
-                                </div>
-                                <div style={{display:'flex', gap: 5}}>
-                                    <SubjectIcon style={{ color: "#2E2C34" }}/>
-                                    <CloudDownloadIcon style={{ color: "#2E2C34" }}/>
-                                </div>
-                            </div>     
+                {/* Card N° Asesores  ----------------------------------------------------*/}
 
-                            <div style={{margin: '1rem 0'}}>
-                                <TablePaginated
-                                    columns={columnsForAgentNumber}
-                                    data={dataGrid}
-                                    totalrow={totalrow}
-                                    pageCount={pageCount}
-                                    autotrigger={true}
-                                    download={false}                                  
-                                    fetchData={fetchData}
-                                />
-                            </div>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card style={{height:'30rem'}}>
+                        <CardContent >                          
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{display:'flex', gap: 40}}>
+                                <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Asesores</Typography>
+                                <Typography style={{  fontSize: '1.3rem' }}> 9</Typography>
+                                </div>
+                                <div style={{ display: 'flex', gap: 5 }}>                            
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                                </div>
+                            </div>                           
+
+                            <TableZyx
+                                columns={getColumns(tabIndex)}
+                                filterGeneral={false}
+                                data={dataGrid}
+                                download={false}
+                                loading={detailCustomReport.loading}
+                                register={false}
+                               
+                            />
 
                         </CardContent>
                     </Card>
@@ -824,37 +1297,51 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
        
 
             {view === "GRID" ? (
-                <TableZyx
-                    columns={columns}
-                    filterGeneral={false}
-                    data={dataGrid}
-                    download={false}
-                    loading={detailCustomReport.loading}
-                    register={false}
-                    ButtonsElement={() => (
-                        <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
-                                onClick={() => setOpenModal(true)}
-                                startIcon={<AssessmentIcon />}
-                            >
-                                {t(langKeys.graphic_view)}
-                            </Button>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                disabled={detailCustomReport.loading}
-                                onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                                startIcon={<DownloadIcon />}
-                            >{t(langKeys.download)}
-                            </Button>
-                        </Box>
-                    )}
-                />
+
+                <>
+                    <div style={{margin: '1rem 0'}}>
+                        <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>
+                         
+                                <TableZyx
+                                    columns={columns}
+                                    filterGeneral={false}
+                                    data={dataGrid}
+                                    download={false}
+                                    loading={detailCustomReport.loading}
+                                    register={false}
+                                    ButtonsElement={() => (
+                                        <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
+                                                onClick={() => setOpenModal(true)}
+                                                startIcon={<AssessmentIcon />}
+                                            >
+                                                {t(langKeys.graphic_view)}
+                                            </Button>
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={detailCustomReport.loading}
+                                                onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                                                startIcon={<DownloadIcon />}
+                                            >{t(langKeys.download)}
+                                            </Button>
+                                        </Box>
+                                    )}
+                                />
+                           
+                        </Card>
+
+                      
+
+                    </div>    
+                
+                </>
+               
             ) : (
                 <div>
                     <Box
