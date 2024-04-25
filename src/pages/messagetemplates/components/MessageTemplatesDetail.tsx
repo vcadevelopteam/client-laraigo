@@ -1055,6 +1055,30 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </>
                         )}
                     </div>
+                    <div className="row-zyx">
+                        {getValues("type") !== '' && (
+                            <>
+                                <FieldSelect
+                                    className="col-6"
+                                    data={dataTemplateType}
+                                    disabled={templateTypeDisabled || disableInput}
+                                    error={errors?.templatetype?.message}
+                                    label={t(langKeys.templatetype)}
+                                    onChange={onChangeTemplateType}
+                                    optionDesc="text"
+                                    optionValue="value"
+                                    valueDefault={getValues("templatetype")}
+                                />
+                                <FieldSelect
+                                    className="col-6"
+                                    data={[]}
+                                    label={t(langKeys.channel)}
+                                    optionDesc="text"
+                                    optionValue="value"
+                                />
+                            </>
+                        )}
+                    </div>
                     {getValues("type") === "HSM" && (
                         <div className="row-zyx">
                             <FieldSelect
@@ -1092,21 +1116,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             />
                         </div>
                     )}
-                    <div className="row-zyx">
-                        {getValues("type") !== '' && (
-                            <FieldSelect
-                                className="col-12"
-                                data={dataTemplateType}
-                                disabled={templateTypeDisabled || disableInput}
-                                error={errors?.templatetype?.message}
-                                label={t(langKeys.templatetype)}
-                                onChange={onChangeTemplateType}
-                                optionDesc="text"
-                                optionValue="value"
-                                valueDefault={getValues("templatetype")}
-                            />
-                        )}
-                    </div>
                     {getValues("templatetype") === "MULTIMEDIA" && getValues("type") === "HSM" && (
                         <div className="row-zyx">
                             <React.Fragment>
