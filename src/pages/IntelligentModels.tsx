@@ -256,6 +256,9 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 onChange={(value) => setValue('apikey', value)}
                                 valueDefault={getValues('apikey')}
                                 error={errors?.apikey?.message}
+                                InputProps={{
+                                    autoComplete: 'off',
+                                }}
                             />
                             <FieldSelect
                                 className='col-6'
