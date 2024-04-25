@@ -254,7 +254,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 type='password'
                                 label={t(langKeys.apikey)}
                                 onChange={(value) => setValue('apikey', value)}
-                                valueDefault={row ? (row.apikey || "") : ""}
+                                valueDefault={getValues('apikey')}
                                 error={errors?.apikey?.message}
                             />
                             <FieldSelect
@@ -270,21 +270,21 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                         setValue('provider', '')
                                     }
                                 }}
-                                valueDefault={row ? (row.provider || "") : ""}
+                                valueDefault={getValues('provider')}
                                 error={errors?.provider?.message}
                             />
                             <FieldEdit
                                 className='col-6'
                                 label={t(langKeys.name)}
                                 onChange={(value) => setValue('name', value)}
-                                valueDefault={row ? (row.name || "") : ""}
+                                valueDefault={getValues('name')}
                                 error={errors?.name?.message}
                             />
                             <FieldEdit
                                 className='col-6'
                                 label={t(langKeys.description)}
                                 onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
+                                valueDefault={getValues('description')}
                                 error={errors?.description?.message}
                             />
                         </div>
