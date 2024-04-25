@@ -1,9 +1,9 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
-import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
+import { cleanViewChange, getCollectionAux, getCollectionPaginated, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
+import { getPaginatedTicket, getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
 import { AntTab, DateRangePicker, DialogZyx, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
@@ -23,11 +23,12 @@ import {  Card, CardContent, Grid } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SubjectIcon from '@material-ui/icons/Subject';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, Tooltip as RechartsTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
 import GaugeChart from "react-gauge-chart";
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import { CellProps } from 'react-table';
+import DialogInteractions from "components/inbox/DialogInteractions";
 interface Assessor {
     row: Dictionary | null;
     allFilters: Dictionary[];
@@ -95,6 +96,11 @@ const useStyles = makeStyles((theme) => ({
         width: "inherit",
         
     },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
 }));
 
 const columnsTemp = [
@@ -124,6 +130,9 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
     const mainAux = useSelector((state) => state.main.mainAux);
+    const mainPaginated = useSelector(state => state.main.mainPaginated);
+    const mainResult = useSelector(state => state.main);
+
     const [groupsdata, setgroupsdata] = useState<any>([]);
     const [allParameters, setAllParameters] = useState({});
     const [dateRange, setdateRange] = useState<Range>({
@@ -152,6 +161,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
 
     const [openModal, setOpenModal] = useState(false);
+    const [openModalTicket, setOpenModalTicket] = useState(false);
+
     const [view, setView] = useState("GRID");
 
     const [dataGrid, setdataGrid] = useState<any[]>([]);
@@ -172,8 +183,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         const row = props.cell.row.original;
         return (
             <div onClick={() => {
-                setSelectedRow(row);     
-                setOpenModal(true);               
+                setSelectedRow(row);                                
             }}>             
                 {column.sortType === "datetime" && !!row[column.id] 
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
@@ -203,6 +213,9 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             dispatch(cleanViewChange());
         };
     }, []);
+
+
+
 
     const columns = React.useMemo(
         
@@ -312,33 +325,41 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         [isday, mainAux, desconectedmotives]
     );
 
-    const columnsClosedTickets = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.report_userproductivity_fullname),
-                accessor: 'fullname',
-            },        
-            {
-                Header: t(langKeys.report_userproductivity_closedtickets),
-                accessor: 'closedtickets',
-                type: "number",
-                sortType: 'number',
-            },       
-        ],
-        []
-    );
+  
+
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModalTicket(true);
+        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
+    }, [mainResult]);
 
     const columnsFulfillmentByTicket = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.ticket),
-                accessor: 'userid',
+        () => [           
+            { 
+                Header: t(langKeys.ticket_numeroticket),
+                accessor: "numeroticket",
                 NoFilter: true,
-                Cell: cell
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (row && row.numeroticket) {
+                        return (
+                            <label
+                                className={classes.labellink}
+                                onClick={() => openDialogInteractions(row)}
+                            >
+                                {row.numeroticket}
+                            </label>
+                        );
+                    } else {
+                        return "";
+                    }
+                },
+                
             },           
             {
                 Header: t(langKeys.tmo),
-                accessor: 'maxtotalduration',
+                accessor: 'duraciontotal',
                 NoFilter: true,
                 Cell: cell
             },          
@@ -513,6 +534,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         });
     }, [dateRange]);
 
+    console.log(mainPaginated.data)
     const fetchData = () => {
         const stardate = dateRange.startDate
             ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
@@ -527,6 +549,16 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             ...allParameters,
             
         })));
+
+        dispatch(getCollectionPaginated(getPaginatedTicket({
+            startdate: stardate,
+            enddate: enddate,
+            take: 10,
+            skip: 0,
+            sorts: {},
+            filters: {},
+            ...allParameters
+        })))
 
         if (view !== "GRID") {
             dispatch(
@@ -589,6 +621,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         value: parseInt(item.closedtickets)
     }));
 
+    const dataforPie = [
+        { name: 'Cumple', value: 40 },
+        { name: 'No Cumple', value: 60 },
+      
+    ];
+
     // console.log(dataGrid.map(item => ({     
     //     fullname: item.fullname,
     //     TMEPromedio: item.avgfirstreplytime,
@@ -634,14 +672,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     
     const tmoValues = dataGrid.map(item => ({ TMOAsesorPromedio: item.avgtotalasesorduration }));
     const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
-    
-    
-
-
-
-
-
-    //
 
     const sortedData = dataforRechart.slice().sort((a, b) => {
         if (sortBy === "value") {
@@ -659,8 +689,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         }
         return 0;
     });
-    
-   
 
     const [openExpectedValueModal, setOpenExpectedValueModal] = useState(false);
     const [hour, setHour] = useState('00');
@@ -714,7 +742,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
 
-    const slicedData = dataforRechart.slice(
+    const slicedData = sortedData.slice(
         currentPage * itemsPerPage,
         (currentPage + 1) * itemsPerPage
     );
@@ -786,6 +814,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     function getRandomInt(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+    const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
 
 
@@ -1005,7 +1034,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
                 {/* Card Asesor con TMO Promedio  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'30rem', margin:0}}>
+                    <Card style={{height:'25rem', margin:0}}>
                         <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
@@ -1122,6 +1151,44 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                         </BarChart>
                                     </ResponsiveContainer>
 
+                                    {/* <ResponsiveContainer height={300} width="100%" minHeight={dataforRechart.length*60||300}>
+                                        <BarChart
+                                            data={slicedData}
+                                            layout="vertical"
+                                            margin={{top: 20, right: 30, left: 20, bottom: 5}}
+                                            barSize={40}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={150} dy={5} dx={-5} />
+                                            <YAxis />
+                                            <ChartTooltip formatter={(name:any, value:any)=> [t(name), value]} />
+                                            <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
+                                                <LabelList dataKey="summary" position="top" />
+                                                {
+                                                    dataforRechart.map((entry: any, index: any) => (
+                                                        <Cell key={`cell-${index}`} fill={"#7721AD"} />
+                                                    ))
+                                                }    
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer> */}
+
+                                    {/* <ResponsiveContainer width="100%" minHeight={dataAppRank.length*60||300}>
+                                        <BarChart data={dataAppRank} layout="vertical"  barSize={40}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis type="number" height={50} domain={[0, 'dataMax']}  label={{ value: `${t(langKeys.quantity)}`, position: 'insideBottom' }}/>
+                                            <YAxis domain={["",""]} type="category" dataKey="tag"  label={{ width:80, value: `Tags`, angle: -90, position: 'insideLeft' }}
+                                                width={dataAppRank?.map((x:any)=> x.tag.length).length>0?Math.max(...dataAppRank?.map((x:any)=> x.tag.length))*11:10}
+                                            />
+                                            <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
+                                            <Bar dataKey="quantity" fill="#8884d8">
+                                                {dataAppRank?.map((entry: any, index: number) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer> */}
+
                                 
                                 </div>
 
@@ -1136,7 +1203,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
                 {/* Card Cumplimiento TMO por Ticket  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'30rem'}}>
+                    <Card style={{height:'25rem'}}>
                         <CardContent style={{ paddingBottom: 10 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
@@ -1150,7 +1217,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                     <PieChart>
                                         <ChartTooltip />
                                         <Pie
-                                            data={dataforRechart}
+                                            data={dataforPie}
                                             dataKey="value"
                                             labelLine={false}
                                             label={RenderCustomizedLabel}
@@ -1170,10 +1237,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                     <TableZyx
                                         columns={columnsFulfillmentByTicket}
                                         filterGeneral={false}
-                                        data={dataGrid}
+                                        data={mainPaginated.data}
                                         download={false}
                                         loading={detailCustomReport.loading}
-                                        register={false}                                                                             
+                                        register={false}     
+                                        toolsFooter={false}   
+                                        pageSizeDefault={10}                                                                     
                                     />
                            
                                 </div>
@@ -1184,6 +1253,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
                         </CardContent>
                     </Card>
+
+                    <DialogInteractions
+                        openModal={openModalTicket}
+                        setOpenModal={setOpenModalTicket}
+                        ticket={rowSelected}
+                    />
 
 
                 </Grid>
@@ -1198,7 +1273,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                 {/* Card N° Tickets Cerrados  ----------------------------------------------------*/}
 
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'30rem'}}>
+                    <Card style={{height:'32rem'}}>
                         <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{display:'flex', gap: 40}}>
@@ -1305,7 +1380,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
                                     <ResponsiveContainer height={300}>
                                         <BarChart
-                                            data={sortedData}
+                                            data={slicedData} //sortedData
                                             margin={{top: 0, right: 20, left: 0, bottom: 0}}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -1316,12 +1391,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                 <LabelList dataKey="summary" position="top" />
                                                 {
                                                     dataforRechart.map((entry: any, index: any) => (
-                                                        <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
+                                                        <Cell key={`cell-${index}`} fill={"#7721AD"} />
                                                     ))
                                                 }    
                                             </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
+
+                                    
 
                                 
                                 </div>                                  
@@ -1334,7 +1411,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                 {/* Card N° Asesores  ----------------------------------------------------*/}
 
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'30rem'}}>
+                    <Card style={{height:'32rem'}}>
                         <CardContent >                          
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{display:'flex', gap: 40}}>
@@ -1353,6 +1430,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                 download={false}
                                 loading={detailCustomReport.loading}
                                 register={false}
+                                pageSizeDefault={10}
+                           
                                
                             />
 
