@@ -1,3 +1,5 @@
+import { Orders } from "pages/orders";
+
 export const langKeys = {
   english: 'english',
   spanish: 'spanish',
@@ -5551,6 +5553,9 @@ export const langKeys = {
   deliverytypeerror: 'deliverytypeerror',
   allmustbesameorder: 'allmustbesameorder',
   needtopay: 'needtopay',
+  app_orders_in_attention: 'app_orders_in_attention',
+  app_order_list: 'app_order_list',
+  app_orders_in_store: 'app_orders_in_store',
 };
 
 export type LangKeys = typeof langKeys;

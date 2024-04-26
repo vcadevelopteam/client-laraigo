@@ -5632,6 +5632,9 @@ const translation: LangKeys = {
   deliverytypeerror: 'One of the selected orders has the delivery type Store Pickup',
   allmustbesameorder: 'The selected records must belong to the same order',
   needtopay: 'Payment to be confirmed',
+  app_orders_in_attention: 'Orders in attention',
+  app_order_list: 'Order list',
+  app_orders_in_store: 'Orders in store',
 };
 
 const enResource: ResourceLanguage = {

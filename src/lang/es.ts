@@ -5561,6 +5561,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   deliverytypeerror: 'Uno de los pedidos seleccionados tiene el tipo de entrega Recojo en tienda',
   allmustbesameorder: 'Los registros seleccionados deben pertenecer a la misma orden',
   needtopay: 'Falta confirmar el pago',
+  app_orders_in_attention: 'Pedidos en atención',
+  app_order_list: 'Lista de pedidos',
+  app_orders_in_store: 'Pedidos en tienda',
 };
 
 const esResource: ResourceLanguage = {
