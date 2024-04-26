@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'; 
+import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -13,7 +13,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { CampaignDetail } from './CampaignDetail';
 import { Blacklist } from './Blacklist';
 import { CampaignReport } from '../staticReports/ReportCampaign';
-import { Box, IconButton, ListItemIcon } from '@material-ui/core';
+import { IconButton, ListItemIcon } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -21,12 +21,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import StopIcon from '@material-ui/icons/Stop';
 import { formatDate} from 'common/helpers';
 import { CellProps } from 'react-table';
-import AddIcon from '@material-ui/icons/Add';
-import { DateRangePicker } from 'components';
-import { CalendarIcon } from 'icons';
-import { Range } from "react-date-range";
-import { Search as SearchIcon } from '@material-ui/icons';
-
 
 interface RowSelected {
     row: Dictionary | null,
@@ -45,14 +39,6 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
-    containerHeader: {
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 16,
-        [theme.breakpoints.up("sm")]: {
-            display: "flex",
-        },
-    },
 }));
 
 const IconOptions: React.FC<{
@@ -68,7 +54,19 @@ const IconOptions: React.FC<{
     };
     return (
         <>
-           
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+                disabled={disabled}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    setAnchorEl(e.currentTarget)
+                }}
+            >
+                <MoreVertIcon />
+            </IconButton>
             <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -115,55 +113,6 @@ export const Campaign: FC = () => {
     const [waitStart, setWaitStart] = useState(false);
     const [waitStatus, setWaitStatus] = useState(false);
     const [waitStop, setWaitStop] = useState(false);
-
-    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
-
-    useEffect(() => {
-        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
-            setRowWithDataSelected((p) =>
-                Object.keys(selectedRows).map(
-                    (x) =>
-                        mainResult.mainData?.data.find((y) => y.assistantaiid === parseInt(x)) ??
-                        p.find((y) => y.assistantaiid === parseInt(x)) ??
-                        {}
-                )
-            );
-        }
-    }, [selectedRows]);
-
-    const handleDeleteSelection = async (dataSelected: Dictionary[]) => {
-        const callback = async () => {
-            dispatch(showBackdrop(true));  
-            const codes = dataSelected.map(obj=> obj.code)
-            // dispatch(deleteMassiveAssistant({
-            //     ids: codes,
-            //     apikey: dataSelected[0].apikey,            
-            // }))    
-
-            dataSelected.map(async (row) => {          
-                // dispatch(
-                //     execute(insAssistantAi({
-                //         ...row,
-                //         id: row.assistantaiid,
-                //         operation: "DELETE",
-                //         status: "ELIMINADO",
-                //         type: "NINGUNO" 
-                //     }))
-                // );
-            });
-            setWaitSave(true);
-        }
-
-        dispatch(
-            manageConfirmation({
-              visible: true,
-              question: t(langKeys.confirmation_delete_all),
-              callback,
-            })
-        );
-    };
-    
 
     const columns = React.useMemo(
         () => [
@@ -281,7 +230,6 @@ export const Campaign: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.action),
                 accessor: 'execute',
                 isComponent: true,
                 Cell: (props: CellProps<Dictionary>) => {
@@ -474,133 +422,29 @@ export const Campaign: FC = () => {
         }
     }
 
-    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const [openSeButtons, setOpenSeButtons] = useState(false);
-
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElSeButtons(event.currentTarget);
-        setOpenSeButtons((prevOpen) => !prevOpen);
-    };
-
-    const handleCloseSeButtons = () => {
-    setAnchorElSeButtons(null);
-    setOpenSeButtons(false);
-    };
-    
-    useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-        if (anchorElSeButtons && !anchorElSeButtons.contains(event.target as Node)) {
-        handleCloseSeButtons();
-        }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => { document.removeEventListener('mousedown', handleClickOutside);};}, [anchorElSeButtons]);    
-
-    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
-    const format = (date: Date) => date.toISOString().split("T")[0];
-
-    const [detailCustomReport, setDetailCustomReport] = useState<{
-        loading: boolean;
-        data: Dictionary[];
-    }>({
-        loading: false,
-        data: [],
-    });
-
-    const [dateRange, setdateRange] = useState<Range>({
-        startDate: new Date(new Date().setDate(1)),
-        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-        key: "selection",
-    });
-
     const AdditionalButtons = () => {
         return (
-            <React.Fragment>        
-
-                <div style={{ display: "flex" }}>
-                    <Box width={1}>
-                        <Box
-                            className={classes.containerHeader}
-                            justifyContent="space-between"
-                            alignItems="center"
-                        >
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                <DateRangePicker
-                                    open={openDateRangeModal}
-                                    setOpen={setOpenDateRangeModal}
-                                    range={dateRange}
-                                    onSelect={setdateRange}
-                                >
-                                    <Button
-                                        disabled={detailCustomReport.loading}
-                                        style={{
-                                            border: "1px solid #bfbfc0",
-                                            borderRadius: 4,
-                                            color: "rgb(143, 146, 161)",
-                                        }}
-                                        startIcon={<CalendarIcon />}
-                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                                    >
-                                        {format(dateRange.startDate!) +
-                                            " - " +
-                                            format(dateRange.endDate!)}
-                                    </Button>
-                                </DateRangePicker>
-
-                                <Button
-                                    disabled={mainResult.mainData.loading}
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    //onClick={() => fetchData(fetchDataAux)}
-                                >
-                                    {t(langKeys.search)}
-                                </Button>
-                            </div>
-                        </Box>
-                    </Box>
-                </div>  
-
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    type='button'       
-                    disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0 }
-                    startIcon={<DeleteIcon color="secondary" />}
-                    onClick={() => {
-                    handleDeleteSelection(rowWithDataSelected);
-                    }}
-                    style={{ 
-                        backgroundColor: mainResult.mainData.loading || Object.keys(selectedRows).length === 0 ? undefined : "#FB5F5F" 
-                    }}
-                >   
-                    <Trans i18nKey={langKeys.delete} />
-                </Button>
-
-
+            <React.Fragment>
                 <Button
                     className={classes.button}
                     variant="contained"
                     color="primary"
                     disabled={mainResult.mainData.loading}
-                    startIcon={<AddIcon color="secondary" />}
-                    onClick={() => handleRegister()}
-                    style={{ backgroundColor: "#22b66e" }}
-                ><Trans i18nKey={langKeys.register} />
+                    // startIcon={<AddIcon color="secondary" />}
+                    onClick={() => setViewSelected("blacklist")}
+                    style={{ backgroundColor: "#ea2e49" }}
+                ><Trans i18nKey={langKeys.blacklist} />
                 </Button>
-
-                <IconButton
-                    aria-label="more"
-                    id="long-button"
-                    onClick={handleClickSeButtons}
-                    style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                >
-                    <MoreVertIcon />
-                </IconButton>
-                
+                <Button
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={mainResult.mainData.loading}
+                    // startIcon={<AddIcon color="secondary" />}
+                    onClick={() => setViewSelected("report")}
+                    style={{ backgroundColor: "#22b66e" }}
+                ><Trans i18nKey={langKeys.report} />
+                </Button>
             </React.Fragment>
         )
     }
@@ -612,17 +456,16 @@ export const Campaign: FC = () => {
         }
 
         return (
-            <TableZyx      
-                titlemodule={t(langKeys.campaign_plural, { count: 2 })}
-                columns={columns}
-                data={mainResult.mainData.data}              
-                useSelection={true}
-                setSelectedRows={setSelectedRows}
+            <TableZyx
                 onClickRow={handleEdit}
+                columns={columns}
+                titlemodule={t(langKeys.campaign_plural, { count: 2 })}
+                data={mainResult.mainData.data}
+                download={true}
                 loading={mainResult.mainData.loading}
-                // register={true}
-                // handleRegister={handleRegister}
-                ButtonsElement={AdditionalButtons}               
+                register={true}
+                ButtonsElement={AdditionalButtons}
+                handleRegister={handleRegister}
             />
         )
     }
