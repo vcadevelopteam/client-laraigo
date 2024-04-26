@@ -9,7 +9,7 @@ import { langKeys } from 'lang/keys';
 import { getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import {Box, Card, Grid } from '@material-ui/core';
-import { IntencionesIALogo, EntidadesIALogo, SynonimsRasaLogo, ModelsRasaLogo, TestModelRasa, RASATrainingIcon, GenerativeAIIcon, WitIcon, AIGenerative, AIBussiness } from 'icons';
+import { IntencionesIALogo, EntidadesIALogo, SynonimsRasaLogo, ModelsRasaLogo, TestModelRasa, RASATrainingIcon, GenerativeAIIcon, WitIcon, AIGenerative, AIBussiness, WatsonxImage, ChatGPTImage, Llama3Image, MistralImage, WatsonXAssistantImage, ActionsImage } from 'icons';
 import { Intentions } from './assistant/Intentions';
 import { Entities } from './assistant/Entities';
 import { IntentionsRasa } from './rasa/IntentionsRasa';
@@ -419,7 +419,31 @@ const WitIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}
                                     </div>
                                 </Card>
                             </Grid>
-                            
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                                            <div>
+                                                <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                                <div className={classes.containerInnertittle2}>Acciones</div>
+                                                <div className={classes.containerInnertittle3}>{t(langKeys.entitiesdescription)}</div>
+                                            </div>
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <ActionsImage style={{ height: 220, width:"100%" }} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Grid>
                         </Grid>
                     </div>
                 </div>
@@ -482,7 +506,7 @@ const CorporateIA: React.FC<{arrayBread: any, setViewSelected: (view: string) =>
                                     <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
                                         <div>
                                             <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>WIT IA</div>
+                                            <div className={classes.containerInnertittle2}>WATSONX ASSISTANT</div>
                                             <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
                                         </div>                                           
                                         <Button
@@ -496,7 +520,7 @@ const CorporateIA: React.FC<{arrayBread: any, setViewSelected: (view: string) =>
                                     </div>
                                     
                                     <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <WitIcon style={{ height: 220, width:"100%" }} />
+                                        <WatsonXAssistantImage style={{ height: 220, width:"100%" }} />
                                     </div>
                                 </div>
                             </Card>
@@ -524,6 +548,150 @@ const CorporateIA: React.FC<{arrayBread: any, setViewSelected: (view: string) =>
                                     
                                     <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
                                         <RASATrainingIcon style={{ height: 220, width:"100%" }} />
+                                    </div>
+                                </div>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                </div>
+            </div>
+        </div>
+    )
+}
+const GenerativeIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}> = ({ setViewSelected, arrayBread }) => {
+    const { t } = useTranslation();
+    const classes = useStyles();
+
+    const newArrayBread = [
+        ...arrayBread,
+        { id: "generativeview", name:  "Generativa" },
+    ];
+
+    const functionChange = (change:string) => {
+        if(change === "corporateia"){
+            setViewSelected("view-1")
+        }else{
+            setViewSelected(change);
+        }
+    }
+
+    return (
+        <div style={{ width: "100%" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={newArrayBread}
+                    handleClick={functionChange}
+                />
+            </div>
+            <div className={classes.container}>
+                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+                    <span className={classes.title}>
+                        {t(langKeys.training)}
+                    </span>
+                </Box>
+                <div className={classes.containerDetails}>
+                    
+                    <Grid container spacing={3} >
+                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                            <Card style={{ position: 'relative', display:"flex" }}>
+                                <div className={classes.containerInner}>
+
+                                    <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                                        <div>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>WATSONX</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
+                                        </div>                                           
+                                        <Button
+                                            className={classes.button}
+                                            variant="contained"
+                                            color="primary"
+                                            style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                            onClick={()=>setViewSelected("generativeia")}
+                                        >{t(langKeys.enter)}
+                                        </Button>
+                                    </div>
+                                    
+                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                        <WatsonxImage style={{ height: 220, width:"100%" }} />
+                                    </div>
+                                </div>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                            <Card style={{ position: 'relative', display:"flex" }}>
+                                <div className={classes.containerInner}>
+
+                                    <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                                        <div>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>CHATGPT</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
+                                        </div>
+                                        <Button
+                                            className={classes.button}
+                                            variant="contained"
+                                            color="primary"
+                                            style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                            onClick={()=>setViewSelected("generativeia")}
+                                        >{t(langKeys.enter)}
+                                        </Button>
+                                    </div>
+                                    
+                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                        <ChatGPTImage style={{ height: 220, width:"100%" }} />
+                                    </div>
+                                </div>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                            <Card style={{ position: 'relative', display:"flex" }}>
+                                <div className={classes.containerInner}>
+
+                                    <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                                        <div>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>LLAMA3</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
+                                        </div>
+                                        <Button
+                                            className={classes.button}
+                                            variant="contained"
+                                            color="primary"
+                                            style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                            onClick={()=>setViewSelected("generativeia")}
+                                        >{t(langKeys.enter)}
+                                        </Button>
+                                    </div>
+                                    
+                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                        <Llama3Image style={{ height: 220, width:"100%" }} />
+                                    </div>
+                                </div>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                            <Card style={{ position: 'relative', display:"flex" }}>
+                                <div className={classes.containerInner}>
+
+                                    <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                                        <div>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>MISTRAL</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
+                                        </div>
+                                        <Button
+                                            className={classes.button}
+                                            variant="contained"
+                                            color="primary"
+                                            style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                            onClick={()=>setViewSelected("generativeia")}
+                                        >{t(langKeys.enter)}
+                                        </Button>
+                                    </div>
+                                    
+                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                        <MistralImage style={{ height: 220, width:"100%" }} />
                                     </div>
                                 </div>
                             </Card>
@@ -585,6 +753,11 @@ const IATraining: React.FC = () => {
         // })))
     }, [mainResult.mainData.data])
 
+    const generativeAIBread = [
+        ...arrayBread,
+        { id: "generativeview", name:  "Generativa" },
+    ];
+
     if (viewSelectedTraining === "view-1") {
         return (
             <div style={{ width: "100%" }}>
@@ -637,7 +810,8 @@ const IATraining: React.FC = () => {
                                                 variant="contained"
                                                 color="primary"
                                                 style={{ backgroundColor: "#55BD84", width: "fit-content" }}
-                                                onClick={()=>setViewSelectedTraining("generativeia")}
+                                                //onClick={()=>setViewSelectedTraining("generativeia")}
+                                                onClick={()=>setViewSelectedTraining("generativeview")}
                                             >{t(langKeys.enter)}
                                             </Button>
                                         </div>
@@ -668,12 +842,19 @@ const IATraining: React.FC = () => {
         return (
             <GenerativeAIMainView 
             setViewSelected={functionChange}
-            arrayBread={arrayBread}
+            arrayBread={generativeAIBread}
             />
         )
     }else if (viewSelectedTraining === "corporateia") {
         return (
             <CorporateIA 
+            setViewSelected={functionChange}
+            arrayBread={arrayBread}
+            />
+        )
+    }else if (viewSelectedTraining === "generativeview") {
+        return (
+            <GenerativeIA
             setViewSelected={functionChange}
             arrayBread={arrayBread}
             />
