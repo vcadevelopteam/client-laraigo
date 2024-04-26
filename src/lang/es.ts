@@ -6043,6 +6043,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   messagetypetext: 'Selecciona el tipo de mensaje que utilizaras como plantilla.',
   messagetemplate_carousel: 'Carrusel',
   templateedition: 'Edición plantilla',
+  messagepreview: 'Previsualización del mensaje',
 };
 
 const esResource: ResourceLanguage = {

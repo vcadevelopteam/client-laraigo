@@ -6096,6 +6096,7 @@ const translation: LangKeys = {
   messagetypetext: 'Select the type of message to use as a template.',
   messagetemplate_carousel: 'Carousel',
   templateedition: 'Template edition',
+  messagepreview: 'Message preview',
 };
 
 const enResource: ResourceLanguage = {

@@ -6039,6 +6039,7 @@ export const langKeys = {
   messagetypetext: 'messagetypetext',
   messagetemplate_carousel: 'messagetemplate_carousel',
   templateedition: 'templateedition',
+  messagepreview: 'messagepreview',
 };
 
 export type LangKeys = typeof langKeys;

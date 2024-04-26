@@ -15,6 +15,9 @@ import WarningIcon from '@material-ui/icons/Warning';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
+import CloseIcon from '@material-ui/icons/Close';
+import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 
 import {
     execute,
@@ -408,6 +411,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
                     });
                 }
+                onChangeTemplateType({ value: "" });
                 setTemplateTypeDisabled(false);
                 onChangeTemplateMedia();
                 break;
@@ -795,14 +799,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("buttons");
     };
 
-    const onClickRemoveButton = async () => {
-        let btns = getValues("buttons");
+    const onClickRemoveButton = async (index: number) => {
+        const btns = getValues("buttons");
 
         if (btns && btns.length > 0) {
-            unregister(`buttons.${btns.length - 1}`);
+            unregister(`buttons.${index}`);
             setValue(
                 "buttons",
-                btns.filter((x: any, i: number) => i !== btns.length - 1)
+                btns.filter((x: any, i: number) => i !== index)
             );
         }
 
@@ -1077,10 +1081,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 className="col-6"
                                 disabled={disableInput}
                                 error={errors?.name?.message}
+                                label={getValues('type') !== 'HSM' ? t(langKeys.name) : ''}
                                 onChange={(value) => setValue("name", value)}
                                 valueDefault={getValues("name")}
                                 maxLength={512}
-                                variant="outlined"
+                                variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
                             />
                         )}
                         {isProvider && (
@@ -1091,7 +1096,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         data={dataExternalLanguage}
                                         disabled={disableInput}
                                         error={errors?.language?.message}
-                                        label={t(langKeys.language)}
+                                        label={getValues('type') !== 'HSM' ? t(langKeys.language) : ''}
+                                        variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
                                         onChange={(value) => setValue("language", value?.value)}
                                         optionDesc="description"
                                         optionValue="value"
@@ -1113,7 +1119,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         optionValue="domainvalue"
                                         uset={true}
                                         valueDefault={getValues("language")}
-                                        variant="outlined"
+                                        label={getValues('type') !== 'HSM' ? t(langKeys.language) : ''}
+                                        variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
                                     />
                                 )}
                             </>
@@ -1136,157 +1143,168 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             <>
                                 <FieldSelect
                                     className="col-6"
-                                    data={dataTemplateType}
+                                    data={getValues("type") !== 'HSM' ? dataTemplateType : dataTemplateType.filter((x: Dictionary) => {return x.value !== 'STANDARD'})}
                                     disabled={templateTypeDisabled || disableInput}
                                     error={errors?.templatetype?.message}
                                     onChange={onChangeTemplateType}
                                     optionDesc="text"
                                     optionValue="value"
                                     valueDefault={getValues("templatetype")}
-                                    variant="outlined"
+                                    label={getValues('type') !== 'HSM' ? t(langKeys.templatetype) : ''}
+                                    variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
                                 />
                                 <FieldSelect
                                     className="col-6"
-                                    data={[]}
-                                    optionDesc="text"
-                                    optionValue="value"
-                                    variant="outlined"
+                                    data={dataChannel}
+                                    disabled={!isNew || disableInput}
+                                    error={errors?.communicationchannelid?.message}
+                                    optionDesc="communicationchanneldesc"
+                                    optionValue="communicationchannelid"
+                                    onChange={(value) => changeProvider(value)}
+                                    valueDefault={getValues("communicationchannelid")}
+                                    label={getValues('type') !== 'HSM' ? t(langKeys.channel) : ''}
+                                    variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
                                 />
                             </>
                         )}
                     </div>
-                    {getValues("type") === 'HSM' && (
+                    {getValues("type") === 'HSM' &&
+                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
                         <div>
                             <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
                                 <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
                             </div>
-                        </div>
-                    )}
-                    {getValues("type") === "HSM" && (
-                        <div className="row-zyx">
-                            <FieldSelect
-                                className="col-6"
-                                data={dataChannel}
-                                disabled={!isNew || disableInput}
-                                error={errors?.communicationchannelid?.message}
-                                label={t(langKeys.messagetemplate_fromprovider)}
-                                onChange={(value) => changeProvider(value)}
-                                optionDesc="communicationchanneldesc"
-                                optionValue="communicationchannelid"
-                                valueDefault={getValues("communicationchannelid")}
-                            />
-                            <FieldSelect
-                                className="col-6"
-                                data={dataExternalStatus}
-                                disabled={true}
-                                error={errors?.externalstatus?.message}
-                                label={t(langKeys.messagetemplate_externalstatus)}
-                                optionDesc="description"
-                                optionValue="value"
-                                valueDefault={getValues("externalstatus")}
-                            />
-                        </div>
-                    )}
-                    {getValues("type") === "HSM" && (
-                        <div className="row-zyx">
-                            <FieldEdit
-                                className="col-12"
-                                disabled={disableNamespace}
-                                error={errors?.namespace?.message}
-                                label={t(langKeys.namespace)}
-                                onChange={(value) => setValue("namespace", value)}
-                                valueDefault={getValues("namespace")}
-                            />
-                        </div>
-                    )}
-                    {getValues("templatetype") === "MULTIMEDIA" && getValues("type") === "HSM" && (
-                        <div className="row-zyx">
-                            <React.Fragment>
-                                <Button
-                                    className={classes.mediabutton}
-                                    disabled={disableInput}
-                                    onClick={() => onClickHeaderToogle()}
-                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
-                                    type="button"
-                                    variant="contained"
-                                    style={{
-                                        backgroundColor: getValues("headerenabled") ? "#000000" : "#AAAAAA",
-                                        color: "#FFFFFF",
-                                    }}
-                                >
-                                    {t(langKeys.header)}
-                                </Button>
-                                <Button
-                                    className={classes.mediabutton}
-                                    disabled={disableInput}
-                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
-                                    type="button"
-                                    variant="contained"
-                                    style={{
-                                        backgroundColor: "#000000",
-                                        color: "#FFFFFF",
-                                    }}
-                                >
-                                    {t(langKeys.body)}
-                                </Button>
-                                <Button
-                                    className={classes.mediabutton}
-                                    disabled={disableInput}
-                                    onClick={() => onClickFooterToogle()}
-                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
-                                    type="button"
-                                    variant="contained"
-                                    style={{
-                                        backgroundColor: getValues("footerenabled") ? "#000000" : "#AAAAAA",
-                                        color: "#FFFFFF",
-                                    }}
-                                >
-                                    {t(langKeys.footer)}
-                                </Button>
-                                <Button
-                                    className={classes.mediabutton}
-                                    disabled={disableInput}
-                                    onClick={() => onClickButtonsToogle()}
-                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
-                                    type="button"
-                                    variant="contained"
-                                    style={{
-                                        backgroundColor: getValues("buttonsenabled") ? "#000000" : "#AAAAAA",
-                                        color: "#FFFFFF",
-                                    }}
-                                >
-                                    {t(langKeys.buttons)}
-                                </Button>
-                            </React.Fragment>
-                        </div>
-                    )}
-                    {getValues("templatetype") === "MULTIMEDIA" &&
-                        getValues("headerenabled") &&
-                        getValues("type") === "HSM" && (
-                            <div className="row-zyx">
-                                <React.Fragment>
-                                    <FieldSelect
-                                        className={classes.headerType}
-                                        data={dataHeaderType}
-                                        disabled={disableInput}
-                                        label={t(langKeys.headertype)}
-                                        onChange={onChangeHeaderType}
-                                        optionDesc="text"
-                                        optionValue="value"
-                                        valueDefault={getValues("headertype")}
+                            <div style={{display: 'flex'}}>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
+                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.header)}</span>
+                                    <span style={{marginBottom: 10}}>Añade un título o elige qué tipo de contenido usarás para este encabezado.</span>
+                                    <div style={{width: 150, marginBottom: 20}}>
+                                        <FieldSelect
+                                            data={dataHeaderType}
+                                            onChange={onChangeHeaderType}
+                                            optionDesc="text"
+                                            optionValue="value"
+                                            valueDefault={getValues("headertype")}
+                                            variant="outlined"
+                                        />
+                                    </div>
+                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.body)}</span>
+                                    <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
+                                    <FieldEditMulti
+                                        error={errors?.body?.message}
+                                        maxLength={getValues("type") === "SMS" ? 160 : 1024}
+                                        onChange={(value) => setValue("body", value)}
+                                        valueDefault={getValues("body")}
                                     />
-                                    <FieldEdit
-                                        className={classes.headerText}
-                                        disabled={disableInput && getValues("header") === "text"}
-                                        error={errors?.header?.message}
-                                        label={t(langKeys.header)}
-                                        onChange={(value) => setValue("header", value)}
-                                        valueDefault={getValues("header")}
+                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.footer)}</span>
+                                    <span style={{marginBottom: 5}}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
+                                    <FieldEditMulti
+                                        error={errors?.footer?.message}
+                                        maxLength={60}
+                                        onChange={(value) => setValue("footer", value)}
+                                        rows={2}
+                                        valueDefault={getValues("footer")}
                                     />
-                                </React.Fragment>
+                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.buttons)}</span>
+                                    <span style={{marginBottom: 5}}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
+                                    <div style={{display: 'flex'}}>
+                                        {getValues("buttons")?.length < 3 && (
+                                            <div>
+                                                <Button
+                                                    color="primary"
+                                                    onClick={() => onClickAddButton()}
+                                                    startIcon={<AddIcon color="primary" />}
+                                                    style={{ margin: "10px" }}
+                                                    type="button"
+                                                    variant="outlined"
+                                                >
+                                                    {t(langKeys.addbutton)}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 5, marginBottom: 10}}>
+                                        <EmojiObjectsIcon />
+                                        <span style={{marginLeft: 10}}>Si añades más de tres botones, se mostrarán en una lista</span>
+                                    </div>
+                                    {getValues("templatetype") === "MULTIMEDIA" &&
+                                    getValues("type") === "HSM" &&
+                                    getValues('buttons')?.length > 0 && (
+                                        <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
+                                            <React.Fragment>
+                                                {getValues("buttons")?.map((btn: any, i: number) => {
+                                                    return (
+                                                        <div key={`btn-${i}`} style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                            <DragIndicatorIcon />
+                                                            <div style={{display: 'flex', padding: '15px 10px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, width: 'fit-content', gap: 7}}>
+                                                                <FieldEdit
+                                                                    className={classes.mb1}
+                                                                    disabled={disableInput}
+                                                                    error={errors?.buttons?.[i]?.title?.message}
+                                                                    label={t(langKeys.title)}
+                                                                    onChange={(value) => onChangeButton(i, "title", value)}
+                                                                    valueDefault={btn?.title || ""}
+                                                                    variant="outlined"
+                                                                    fregister={{
+                                                                        ...register(`buttons.${i}.title`, {
+                                                                            validate: (value) =>
+                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                        }),
+                                                                    }}
+                                                                />
+                                                                <FieldSelect
+                                                                    className={classes.mb1}
+                                                                    data={dataButtonType}
+                                                                    disabled={disableInput}
+                                                                    error={errors?.buttons?.[i]?.type?.message}
+                                                                    label={t(langKeys.type)}
+                                                                    onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                    optionDesc="text"
+                                                                    optionValue="value"
+                                                                    valueDefault={btn?.type || ""}
+                                                                    variant="outlined"
+                                                                    fregister={{
+                                                                        ...register(`buttons.${i}.type`, {
+                                                                            validate: (value) =>
+                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                        }),
+                                                                    }}
+                                                                />
+                                                                <FieldEdit
+                                                                    className={classes.mb1}
+                                                                    disabled={disableInput}
+                                                                    error={errors?.buttons?.[i]?.payload?.message}
+                                                                    label={t(langKeys.payload)}
+                                                                    onChange={(value) => onChangeButton(i, "payload", value)}
+                                                                    valueDefault={btn?.payload || ""}
+                                                                    variant="outlined"
+                                                                    fregister={{
+                                                                        ...register(`buttons.${i}.payload`, {
+                                                                            validate: (value) =>
+                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                        }),
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <IconButton onClick={() => onClickRemoveButton(i)}>
+                                                                <CloseIcon/>
+                                                            </IconButton>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </React.Fragment>
+                                        </div>
+                                    )}
+                                </div>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
+                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.messagepreview)}</span>
+                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
+                                    <div style={{height: 300, width: '100%', border: '1px solid black'}}/>
+                                </div>
                             </div>
-                        )}
-                    {(getValues("type") === "SMS" || getValues("type") === "HSM") && (
+                        </div>
+                    )}
+                    {(getValues("type") === "SMS") && (
                         <div className="row-zyx">
                             <FieldEditMulti
                                 className="col-12"
@@ -1299,116 +1317,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             />
                         </div>
                     )}
-                    {getValues("templatetype") === "MULTIMEDIA" &&
-                        getValues("footerenabled") &&
-                        getValues("type") === "HSM" && (
-                            <div className="row-zyx">
-                                <FieldEditMulti
-                                    className="col-12"
-                                    disabled={disableInput}
-                                    error={errors?.footer?.message}
-                                    label={t(langKeys.footer)}
-                                    maxLength={60}
-                                    onChange={(value) => setValue("footer", value)}
-                                    rows={2}
-                                    valueDefault={getValues("footer")}
-                                />
-                            </div>
-                        )}
-                    {getValues("templatetype") === "MULTIMEDIA" &&
-                        getValues("buttonsenabled") &&
-                        getValues("type") === "HSM" && (
-                            <div className="row-zyx" style={{ alignItems: "flex-end" }}>
-                                <FieldView className={classes.buttonTitle} label={t(langKeys.buttons)} />
-                                {getValues("buttons")?.length < 3 && (
-                                    <Button
-                                        className={classes.btnButton}
-                                        color="primary"
-                                        disabled={disableInput}
-                                        onClick={() => onClickAddButton()}
-                                        startIcon={<AddIcon color="primary" />}
-                                        style={{ margin: "10px" }}
-                                        type="button"
-                                        variant="outlined"
-                                    >
-                                        {t(langKeys.addbutton)}
-                                    </Button>
-                                )}
-                                {getValues("buttons")?.length > 0 && (
-                                    <Button
-                                        className={classes.btnButton}
-                                        color="primary"
-                                        disabled={disableInput}
-                                        onClick={() => onClickRemoveButton()}
-                                        startIcon={<RemoveIcon color="primary" />}
-                                        style={{ margin: "10px" }}
-                                        type="button"
-                                        variant="outlined"
-                                    >
-                                        {t(langKeys.removebutton)}
-                                    </Button>
-                                )}
-                            </div>
-                        )}
-                    {getValues("templatetype") === "MULTIMEDIA" &&
-                        getValues("buttonsenabled") &&
-                        getValues("type") === "HSM" && (
-                            <div className="row-zyx">
-                                <React.Fragment>
-                                    {getValues("buttons")?.map((btn: any, i: number) => {
-                                        return (
-                                            <div key={`btn-${i}`} className="col-4">
-                                                <FieldEdit
-                                                    className={classes.mb1}
-                                                    disabled={disableInput}
-                                                    error={errors?.buttons?.[i]?.title?.message}
-                                                    label={t(langKeys.title)}
-                                                    onChange={(value) => onChangeButton(i, "title", value)}
-                                                    valueDefault={btn?.title || ""}
-                                                    fregister={{
-                                                        ...register(`buttons.${i}.title`, {
-                                                            validate: (value) =>
-                                                                (value && value.length) || t(langKeys.field_required),
-                                                        }),
-                                                    }}
-                                                />
-                                                <FieldSelect
-                                                    className={classes.mb1}
-                                                    data={dataButtonType}
-                                                    disabled={disableInput}
-                                                    error={errors?.buttons?.[i]?.type?.message}
-                                                    label={t(langKeys.type)}
-                                                    onChange={(value) => onChangeButton(i, "type", value?.value)}
-                                                    optionDesc="text"
-                                                    optionValue="value"
-                                                    valueDefault={btn?.type || ""}
-                                                    fregister={{
-                                                        ...register(`buttons.${i}.type`, {
-                                                            validate: (value) =>
-                                                                (value && value.length) || t(langKeys.field_required),
-                                                        }),
-                                                    }}
-                                                />
-                                                <FieldEdit
-                                                    className={classes.mb1}
-                                                    disabled={disableInput}
-                                                    error={errors?.buttons?.[i]?.payload?.message}
-                                                    label={t(langKeys.payload)}
-                                                    onChange={(value) => onChangeButton(i, "payload", value)}
-                                                    valueDefault={btn?.payload || ""}
-                                                    fregister={{
-                                                        ...register(`buttons.${i}.payload`, {
-                                                            validate: (value) =>
-                                                                (value && value.length) || t(langKeys.field_required),
-                                                        }),
-                                                    }}
-                                                />
-                                            </div>
-                                        );
-                                    })}
-                                </React.Fragment>
-                            </div>
-                        )}
                     {(getValues("type") === "MAIL" || getValues("type") === "HTML") && (
                         <div className="row-zyx">
                             <FieldEdit
