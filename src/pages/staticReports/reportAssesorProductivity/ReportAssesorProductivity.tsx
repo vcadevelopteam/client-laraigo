@@ -124,6 +124,19 @@ const columnsTemp = [
     "groups",
 ];
 
+type TimeData = {
+    fullname: string;
+    TMEPromedio?: string;
+    TMRPromedio?: string;
+    TMOAsesorPromedio?: string;
+};
+
+type PieChartData = {
+    name: string;
+    value: number;
+};
+
+
 const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -159,14 +172,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         mintimeconnectedasesor: "",
     });
     const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
-
     const [openModal, setOpenModal] = useState(false);
     const [openModalTicket, setOpenModalTicket] = useState(false);
-
     const [view, setView] = useState("GRID");
-
-    const [dataGrid, setdataGrid] = useState<any[]>([]);
-   
+    const [dataGrid, setdataGrid] = useState<any[]>([]);   
+    
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[];
@@ -176,7 +186,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     });
 
     const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
-
 
     const cell = (props: CellProps<Dictionary>) => {
         const column = props.cell.column;
@@ -199,8 +208,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         )
     }
   
-
-
     useEffect(() => {        
         dispatch(setViewChange("report_userproductivity"));
         dispatch(getMultiCollection([
@@ -213,9 +220,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             dispatch(cleanViewChange());
         };
     }, []);
-
-
-
 
     const columns = React.useMemo(
         
@@ -325,47 +329,70 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         [isday, mainAux, desconectedmotives]
     );
 
-  
-
-    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-
-    const openDialogInteractions = useCallback((row: any) => {
-        setOpenModalTicket(true);
-        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
-    }, [mainResult]);
-
-    const columnsFulfillmentByTicket = React.useMemo(
-        () => [           
-            { 
-                Header: t(langKeys.ticket_numeroticket),
-                accessor: "numeroticket",
-                NoFilter: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;                
-                    if (row && row.numeroticket) {
-                        return (
-                            <label
-                                className={classes.labellink}
-                                onClick={() => openDialogInteractions(row)}
-                            >
-                                {row.numeroticket}
-                            </label>
-                        );
-                    } else {
-                        return "";
-                    }
-                },
-                
-            },           
+    const columnsGaugeChart = React.useMemo(
+        
+        () => [
+            {
+                Header: t(langKeys.ticket_number),
+                accessor: 'numeroticket',
+            },
+            {
+                Header: t(langKeys.agent),
+                accessor: 'asesorinicial',
+            },
+            {
+                Header: t(langKeys.channel),
+                accessor: 'personcommunicationchannel',
+            },          
+            {
+                Header: t(langKeys.closedby),
+                accessor: 'asesorfinal',               
+            },
+            {
+                Header: t(langKeys.tme),
+                accessor: 'tiempoprimerarespuesta',              
+            },
+            {
+                Header: t(langKeys.tmeAgent),
+                accessor: 'tiempoprimerarespuestaasesor',              
+            },
+            {
+                Header: t(langKeys.tme_help),
+                accessor: 'duraciontotal',             
+            },
             {
                 Header: t(langKeys.tmo),
-                accessor: 'duraciontotal',
-                NoFilter: true,
-                Cell: cell
+                accessor: 'tmoasesor',
+            },
+            {
+                Header: t(langKeys.tmo_help),
+                accessor: 'duracionpausa',
+            },
+            {
+                Header: t(langKeys.tmoasesorobj),
+                accessor: 'supervisionduration',
             },          
+            {
+                Header: t(langKeys.tmrAgent),
+                accessor: 'tiempopromediorespuesta',
+            },
+            {
+                Header: t(langKeys.tmr),
+                accessor: 'tiempopromediorespuestaasesor',
+            },
+            {
+                Header: t(langKeys.tmrClient),
+                accessor: 'tiempopromediorespuestapersona',
+            },           
         ],
         []
     );
+
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModalTicket(true);
+        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
+    }, [mainResult]); 
 
     const getColumns = (tabIndex: any) => {
         switch (tabIndex) {
@@ -439,7 +466,107 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                 return [];
         }
     };
-   
+
+
+    const columnsFulfillmentByTicket = (tabIndex: any) => {
+        switch (tabIndex) {
+            case 0: // TMO
+                return [
+                    { 
+                        Header: t(langKeys.ticket_numeroticket),
+                        accessor: "numeroticket",
+                        NoFilter: true,
+                        Cell: (props: CellProps<Dictionary>) => {
+                            const row = props.cell.row.original;                
+                            if (row && row.numeroticket) {
+                                return (
+                                    <label
+                                        className={classes.labellink}
+                                        onClick={() => openDialogInteractions(row)}
+                                    >
+                                        {row.numeroticket}
+                                    </label>
+                                );
+                            } else {
+                                return "";
+                            }
+                        },
+                        
+                    },
+                    {
+                        Header: t(langKeys.tmo),
+                        accessor: 'duraciontotal',
+                        NoFilter: true,
+                        Cell: cell
+                    }
+                ];
+            case 1: // TME
+                return [
+                    { 
+                        Header: t(langKeys.ticket_numeroticket),
+                        accessor: "numeroticket",
+                        NoFilter: true,
+                        Cell: (props: CellProps<Dictionary>) => {
+                            const row = props.cell.row.original;                
+                            if (row && row.numeroticket) {
+                                return (
+                                    <label
+                                        className={classes.labellink}
+                                        onClick={() => openDialogInteractions(row)}
+                                    >
+                                        {row.numeroticket}
+                                    </label>
+                                );
+                            } else {
+                                return "";
+                            }
+                        },
+                        
+                    },
+                    {
+                        Header: t(langKeys.tme),
+                        accessor: 'tiempopromediorespuesta',
+                        NoFilter: true,
+                        Cell: cell
+                    }
+                ];
+            case 2: // TMR
+                return [
+                    { 
+                        Header: t(langKeys.ticket_numeroticket),
+                        accessor: "numeroticket",
+                        NoFilter: true,
+                        Cell: (props: CellProps<Dictionary>) => {
+                            const row = props.cell.row.original;                
+                            if (row && row.numeroticket) {
+                                return (
+                                    <label
+                                        className={classes.labellink}
+                                        onClick={() => openDialogInteractions(row)}
+                                    >
+                                        {row.numeroticket}
+                                    </label>
+                                );
+                            } else {
+                                return "";
+                            }
+                        },
+                        
+                    },
+                    {
+                        Header: t(langKeys.tmr),
+                        accessor: 'tiempopromediorespuestapersona',
+                        NoFilter: true,
+                        Cell: cell
+                    }
+                ];
+            default:
+                return [];
+        }
+    };
+
+
+
     
     useEffect(() => {
         if (allFilters) {
@@ -534,7 +661,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         });
     }, [dateRange]);
 
-    console.log(mainPaginated.data)
     const fetchData = () => {
         const stardate = dateRange.startDate
             ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
@@ -555,7 +681,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             enddate: enddate,
             take: 10,
             skip: 0,
-            sorts: {},
+            sorts: {duraciontotal : "desc"},
             filters: {},
             ...allParameters
         })))
@@ -616,33 +742,62 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const [orderType, setOrderType] = useState("");
     const [sortBy, setSortBy] = useState("");
 
-    const dataforRechart = dataGrid.map(item => ({
+    const dataForClosedTickets = dataGrid.map(item => ({
         name: item.fullname,
         value: parseInt(item.closedtickets)
     }));
 
-    const dataforPie = [
-        { name: 'Cumple', value: 40 },
-        { name: 'No Cumple', value: 60 },
-      
-    ];
 
-    // console.log(dataGrid.map(item => ({     
-    //     fullname: item.fullname,
-    //     TMEPromedio: item.avgfirstreplytime,
-    //     TMRPromedio: item.tmravg,
-    //     TMOAsesorPromedio: item.avgtotalasesorduration,
-    // })))
+  
+
+
+   
 
     const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
 
-    //sacar el promedio TMO TMR TME
-    type TimeData = {
-        fullname: string;
-        TMEPromedio?: string;
-        TMRPromedio?: string;
-        TMOAsesorPromedio?: string;
+    const [tabIndex, setTabIndex] = useState(0);
+    const [tabTexts] = useState([
+        { label: 'TMO', title: 'Tiempo Medio de la Operación' },
+        { label: 'TME', title: 'Tiempo de primera respuesta' },
+        { label: 'TMR', title: 'Tiempo promedio de respuesta' }
+    ]);
+
+    const handleChangeTab = (event, newValue) => {
+        setTabIndex(newValue);
     };
+
+
+    let valueKey;
+    switch (tabIndex) {
+        case 0:
+            valueKey = "avgtotalasesorduration";
+            break;
+        case 1:
+            valueKey = "avgfirstreplytime";
+            break;
+        case 2:
+            valueKey = "tmravg";
+            break;
+        default:
+            valueKey = "tmravg";
+            break;
+    }
+
+    const dataForAvgAgent = dataGrid.map(item => ({
+        name: item.fullname,
+        value: item[valueKey]
+    }));
+
+    const timeToSeconds = (timeString: any) => {
+        const [hours, minutes, seconds] = timeString.split(':').map(Number);
+        return hours * 3600 + minutes * 60 + seconds;
+    };
+    
+    const dataForAvgAgentInSeconds = dataForAvgAgent.map(item => ({
+        name: item.name,
+        value: timeToSeconds(item.value)
+    }));
+
     
     function calculateAverageTime(data: TimeData[], timeKey: keyof TimeData) {
         const totalSeconds = data.reduce((totalSeconds, item) => {
@@ -673,7 +828,24 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const tmoValues = dataGrid.map(item => ({ TMOAsesorPromedio: item.avgtotalasesorduration }));
     const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
 
-    const sortedData = dataforRechart.slice().sort((a, b) => {
+    const sortedData = dataForClosedTickets.slice().sort((a, b) => {
+        if (sortBy === "value") {
+            if (orderType === "asc") {
+                return a.value - b.value;
+            } else if (orderType === "desc") {
+                return b.value - a.value;
+            }
+        } else if (sortBy === "name") {
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+        }
+        return 0;
+    });
+
+    const sortedDataForAvgAgent = dataForAvgAgentInSeconds.slice().sort((a, b) => {
         if (sortBy === "value") {
             if (orderType === "asc") {
                 return a.value - b.value;
@@ -691,21 +863,92 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     });
 
     const [openExpectedValueModal, setOpenExpectedValueModal] = useState(false);
+    const [errorText, setErrorText] = useState('');
+
     const [hour, setHour] = useState('00');
     const [minute, setMinute] = useState('00');
     const [second, setSecond] = useState('00');
-    const [errorText, setErrorText] = useState('');
-    const [expectedValue, setExpectedValue] = useState('00:00:00');
+    const [dataForPie, setDataForPie] = useState<PieChartData[]>([]);
+
+    const [expectedTMOValue, setExpectedTMOValue] = useState(localStorage.getItem('expectedTMOValue') || '00:00:00');
+    const [expectedTMEValue, setExpectedTMEValue] = useState(localStorage.getItem('expectedTMEValue') || '00:00:00');
+    const [expectedTMRValue, setExpectedTMRValue] = useState(localStorage.getItem('expectedTMRValue') || '00:00:00');
+    const [expectedValue, setExpectedValue] = useState(expectedTMOValue);
+
+    useEffect(() => {
+        switch (tabIndex) {
+            case 0:
+                setExpectedValue(expectedTMOValue);
+                break;
+            case 1:
+                setExpectedValue(expectedTMEValue);
+                break;
+            case 2:
+                setExpectedValue(expectedTMRValue);
+                break;
+            default:
+                setExpectedValue(expectedTMOValue);
+                break;
+        }
+    }, [tabIndex, expectedTMOValue, expectedTMEValue, expectedTMRValue]);
+    
+    useEffect(() => {
+        localStorage.setItem('expectedTMOValue', expectedTMOValue);
+    }, [expectedTMOValue]);
+
+    useEffect(() => {
+        localStorage.setItem('expectedTMEValue', expectedTMEValue);
+    }, [expectedTMEValue]);
+
+    useEffect(() => {
+        localStorage.setItem('expectedTMRValue', expectedTMRValue);
+    }, [expectedTMRValue]);
 
     const handleAccept = () => {
-        setOpenExpectedValueModal(false);
         if (validateTime()) {
             const newValue = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
-            setExpectedValue(newValue);
-            console.log('Nuevo valor esperado:', newValue);
+            switch (tabIndex) {
+                case 0:
+                    setExpectedTMOValue(newValue);
+                    break;
+                case 1:
+                    setExpectedTMEValue(newValue);
+                    break;
+                case 2:
+                    setExpectedTMRValue(newValue);
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
+
+
+  
+
+    useEffect(() => {
+        console.log('Nuevo tabIndex:', tabIndex);
+        switch (tabIndex) {
+            case 0:
+                console.log('Valor esperado de TMO:', expectedTMOValue);
+                setExpectedValue(expectedTMOValue);
+                break;
+            case 1:
+                console.log('Valor esperado de TME:', expectedTMEValue);
+                setExpectedValue(expectedTMEValue);
+                break;
+            case 2:
+                console.log('Valor esperado de TMR:', expectedTMRValue);
+                setExpectedValue(expectedTMRValue);
+                break;
+            default:
+                console.log('Valor esperado de TMO:', expectedTMOValue);
+                setExpectedValue(expectedTMOValue);
+                break;
+        }
+    }, [tabIndex, expectedTMOValue, expectedTMEValue, expectedTMRValue]);
+    
     const validateTime = () => {
         const h = parseInt(hour, 10);
         const m = parseInt(minute, 10);
@@ -719,33 +962,68 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         return true;
     };
 
-
-    //para manejo de tabs
-    const [tabIndex, setTabIndex] = useState(0);
-    const [tabTexts] = useState([
-        { label: 'TMO', title: 'Tiempo Medio de la Operación' },
-        { label: 'TME', title: 'Tiempo de primera respuesta' },
-        { label: 'TMR', title: 'Tiempo promedio de respuesta' }
+   const updateDataForPie = (tabIndex: number, data: { duraciontotal: string }[]) => {
+    let expectedValue: string = '00:00:00';
+    if (tabIndex === 0) {
+        expectedValue = expectedTMOValue;
+    } else if (tabIndex === 1) {
+        expectedValue = expectedTMEValue;
+    } else if (tabIndex === 2) {
+        expectedValue = expectedTMRValue;
+    }
+    const top10 = data.slice(0, 10);
+    const belowOrEqualToExpected = top10.filter(item => item.duraciontotal <= expectedValue).length;
+    const percentageBelowOrEqualToExpected = (belowOrEqualToExpected / 10) * 100;
+    const percentageAboveExpected = 100 - percentageBelowOrEqualToExpected;
+    setDataForPie([
+        { name: 'Cumple', value: percentageBelowOrEqualToExpected },
+        { name: 'No Cumple', value: percentageAboveExpected },
     ]);
+};
 
-    const handleChangeTab = (event, newValue) => {
-        setTabIndex(newValue);
-    };
+    useEffect(() => {
+        const duracionesTotales = mainPaginated.data.map(item => ({
+            duraciontotal: item.duraciontotal,
+            TME: item.tiempopromediorespuesta,
+            TMR: item.tiempopromediorespuestapersona
+        }));
 
-    //para morevert functionality
+        updateDataForPie(tabIndex, duracionesTotales);
+    }, [mainPaginated.data, tabIndex]);
+
+    
+
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
     };
 
-    //para garfico barras
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
+    const itemsPerPage = 5;
 
     const slicedData = sortedData.slice(
         currentPage * itemsPerPage,
-        (currentPage + 1) * itemsPerPage
+        (currentPage + 1) * itemsPerPage        
     );
+
+    const [currentPageAsesor, setCurrentPageAsesor] = useState(0);
+    const itemsPerPageAsesor = 5;
+
+    const handlePrevPageAsesor = () => {
+        setCurrentPageAsesor((prevPage) => Math.max(prevPage - 1, 0));
+    };
+
+    const handleNextPageAsesor = () => {
+        setCurrentPageAsesor((prevPage) => prevPage + 1);
+    };
+
+    const slicedDataAsesor = sortedDataForAvgAgent.slice(
+        currentPageAsesor * itemsPerPageAsesor,
+        (currentPageAsesor + 1) * itemsPerPageAsesor        
+    );
+
+
+
 
     const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
 
@@ -787,16 +1065,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         );
     };
 
-
- // Para el graphic velocimetro
-    // Función para determinar si el valor promedio es menor o mayor que el valor esperado
     const isPromedioMenorEsperado = (avg: string) => {
         const avgSeconds = getSecondsFromTimeString(avg);
         const expectedSeconds = getSecondsFromTimeString(expectedValue);
         return avgSeconds < expectedSeconds;
     };
 
-    // Función para obtener la cantidad de segundos de una cadena de tiempo en formato HH:mm:ss
     const getSecondsFromTimeString = (timeString: string) => {
         const [hours, minutes, seconds] = timeString.split(':').map(Number);
         return hours * 3600 + minutes * 60 + seconds;
@@ -936,7 +1210,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                 <Typography>{tabTexts[tabIndex].title}</Typography>
                             </div>
                             <div style={{ display: 'flex', gap: 5 }}>
-                                <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))} />
+                                <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: any) => (!x.isComponent && !x.activeOnHover)))} />
                                 <SettingsIcon style={{ color: "#2E2C34", cursor: "pointer" }} onClick={() => setOpenExpectedValueModal(true)} />
                             </div>
                         </div>
@@ -950,7 +1224,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                 style={{ width: '450px' }}
                                 id="gauge-chart"
                                 arcsLength={gaugeArcs}
-                                colors={isPromedioMenorEsperado(avgTMO) ? ['#FF0000', '#00B050']:['#00B050', '#FF0000'] }
+                                colors={isPromedioMenorEsperado(avgTMO) ? ['#00B050', '#FF0000']: ['#FF0000', '#00B050'] }
                                 needleColor="#783BA5"
                                 needleBaseColor="#783BA5"
                                 textColor="#000000"
@@ -1018,20 +1292,22 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                         <Button onClick={() => setOpenExpectedValueModal(false)} color="default">
                             Cancelar
                         </Button>
-                        <Button onClick={handleAccept} color="primary" disabled={!!errorText}>
+                        <Button 
+                            onClick={() => {                                
+                                handleAccept()
+                                setOpenExpectedValueModal(false)
+                                fetchData()
+                            }}
+                            
+                            color="primary" 
+                            disabled={Boolean(errorText)}>
                             Aceptar
                         </Button>
                     </DialogActions>
                 </DialogZyx>
-
-
-            </div>
-
-                      
-
+            </div>                    
 
             <Grid container spacing={3} className={classes.containerDetails}>
-
                 {/* Card Asesor con TMO Promedio  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
                     <Card style={{height:'25rem', margin:0}}>
@@ -1102,7 +1378,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                         </Popper>
                                     </div>
 
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: any) => (!x.isComponent && !x.activeOnHover)))} />
                                             
                                 </div>
                             </div>
@@ -1114,26 +1390,27 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
                                         <Button
                                             color="primary"
-                                            onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
-                                            disabled={currentPage === 0}
+                                            onClick={handlePrevPageAsesor}
+                                            disabled={currentPageAsesor === 0}
                                         >
                                             <KeyboardArrowLeftIcon />
                                         </Button>
                                         <div>
-                                            {`${currentPage + 1} de ${Math.ceil(dataforRechart.length / itemsPerPage)}`}
+                                            {`${currentPageAsesor + 1} de ${Math.ceil(dataForClosedTickets.length / itemsPerPageAsesor)}`}
                                         </div>
                                         <Button
                                             color="primary"
-                                            onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                                            disabled={(currentPage + 1) * itemsPerPage >= dataforRechart.length}
+                                            onClick={handleNextPageAsesor}
+                                            disabled={(currentPageAsesor + 1) * itemsPerPageAsesor >= dataForClosedTickets.length}
                                         >
                                             <KeyboardArrowRightIcon />
                                         </Button>
+
                                     </div>
 
                                     <ResponsiveContainer height={300}>
                                         <BarChart
-                                            data={slicedData}
+                                            data={slicedDataAsesor}
                                             margin={{top: 20, right: 30, left: 20, bottom: 5}}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -1143,7 +1420,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
                                                 <LabelList dataKey="summary" position="top" />
                                                 {
-                                                    dataforRechart.map((entry: any, index: any) => (
+                                                    dataForClosedTickets.map((entry: any, index: any) => (
                                                         <Cell key={`cell-${index}`} fill={"#7721AD"} />
                                                     ))
                                                 }    
@@ -1151,43 +1428,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                         </BarChart>
                                     </ResponsiveContainer>
 
-                                    {/* <ResponsiveContainer height={300} width="100%" minHeight={dataforRechart.length*60||300}>
-                                        <BarChart
-                                            data={slicedData}
-                                            layout="vertical"
-                                            margin={{top: 20, right: 30, left: 20, bottom: 5}}
-                                            barSize={40}
-                                        >
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={150} dy={5} dx={-5} />
-                                            <YAxis />
-                                            <ChartTooltip formatter={(name:any, value:any)=> [t(name), value]} />
-                                            <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
-                                                <LabelList dataKey="summary" position="top" />
-                                                {
-                                                    dataforRechart.map((entry: any, index: any) => (
-                                                        <Cell key={`cell-${index}`} fill={"#7721AD"} />
-                                                    ))
-                                                }    
-                                            </Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer> */}
-
-                                    {/* <ResponsiveContainer width="100%" minHeight={dataAppRank.length*60||300}>
-                                        <BarChart data={dataAppRank} layout="vertical"  barSize={40}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis type="number" height={50} domain={[0, 'dataMax']}  label={{ value: `${t(langKeys.quantity)}`, position: 'insideBottom' }}/>
-                                            <YAxis domain={["",""]} type="category" dataKey="tag"  label={{ width:80, value: `Tags`, angle: -90, position: 'insideLeft' }}
-                                                width={dataAppRank?.map((x:any)=> x.tag.length).length>0?Math.max(...dataAppRank?.map((x:any)=> x.tag.length))*11:10}
-                                            />
-                                            <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
-                                            <Bar dataKey="quantity" fill="#8884d8">
-                                                {dataAppRank?.map((entry: any, index: number) => (
-                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                                ))}
-                                            </Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer> */}
+                                    
 
                                 
                                 </div>
@@ -1217,7 +1458,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                     <PieChart>
                                         <ChartTooltip />
                                         <Pie
-                                            data={dataforPie}
+                                            data={dataForPie}
                                             dataKey="value"
                                             labelLine={false}
                                             label={RenderCustomizedLabel}
@@ -1227,7 +1468,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             innerRadius={40}
                                             fill="#7721AD"
                                         >
-                                             {dataforRechart.map((entry, index) => (
+                                             {dataForClosedTickets.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
                                             ))}
                                         </Pie>
@@ -1235,7 +1476,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                 </ResponsiveContainer>
                                 <div style={{ overflowX: 'auto', width:'40vw', marginRight:'3rem' }}>
                                     <TableZyx
-                                        columns={columnsFulfillmentByTicket}
+                                        columns={columnsFulfillmentByTicket(tabIndex)}
                                         filterGeneral={false}
                                         data={mainPaginated.data}
                                         download={false}
@@ -1367,12 +1608,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             <KeyboardArrowLeftIcon />
                                         </Button>
                                         <div>
-                                            {`${currentPage + 1} de ${Math.ceil(dataforRechart.length / itemsPerPage)}`}
+                                            {`${currentPage + 1} de ${Math.ceil(dataForClosedTickets.length / itemsPerPage)}`}
                                         </div>
                                         <Button
                                             color="primary"
                                             onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                                            disabled={(currentPage + 1) * itemsPerPage >= dataforRechart.length}
+                                            disabled={(currentPage + 1) * itemsPerPage >= dataForClosedTickets.length}
                                         >
                                             <KeyboardArrowRightIcon />
                                         </Button>
@@ -1380,7 +1621,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
                                     <ResponsiveContainer height={300}>
                                         <BarChart
-                                            data={slicedData} //sortedData
+                                            data={slicedData} 
                                             margin={{top: 0, right: 20, left: 0, bottom: 0}}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -1390,7 +1631,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
                                                 <LabelList dataKey="summary" position="top" />
                                                 {
-                                                    dataforRechart.map((entry: any, index: any) => (
+                                                    dataForClosedTickets.map((entry: any, index: any) => (
                                                         <Cell key={`cell-${index}`} fill={"#7721AD"} />
                                                     ))
                                                 }    
