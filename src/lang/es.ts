@@ -6079,6 +6079,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   contextperconversation: 'Contexto por conversación',
   firstinteraction: 'Primera interacción usuario',
   conector: 'Conector',
+  app_orders_in_attention: 'Pedidos en atención',
+  app_order_list: 'Lista de pedidos',
+  app_orders_in_store: 'Pedidos en tienda',
 };
 
 const esResource: ResourceLanguage = {

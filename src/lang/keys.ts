@@ -1,3 +1,5 @@
+import { Orders } from "pages/orders";
+
 export const langKeys = {
   english: 'english',
   spanish: 'spanish',
@@ -6075,6 +6077,9 @@ export const langKeys = {
   contextperconversation: 'contextperconversation',
   firstinteraction: 'firstinteraction',
   conector: 'conector',
+  app_orders_in_attention: 'app_orders_in_attention',
+  app_order_list: 'app_order_list',
+  app_orders_in_store: 'app_orders_in_store',
 };
 
 export type LangKeys = typeof langKeys;

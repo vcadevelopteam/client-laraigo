@@ -185,6 +185,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         loading: false,
         data: [],
     });
+    const [isStore, setIsStore] = useState(false)
+    const [isWarehouse, setIsWarehouse] = useState(false)
 
     const {
         register,
@@ -419,7 +421,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         setValue("roledesc", value.map((o: Dictionary) => o.roledesc).join());
         setValue("redirect", "");
         updatefield("redirect", "");
-        switch (value.slice(-1)[0].roldesc) {
+        switch (value.slice(-1)[0]?.roldesc) {
             case "GESTOR DE SEGURIDAD":
             case "GESTOR DE CAMPAÑAS":
             case "VISOR SD":
@@ -432,7 +434,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 break;
             default:
 
-                if (value.slice(-1)[0].roldesc.includes("ASESOR")) {
+                if (value.slice(-1)[0]?.roldesc.includes("ASESOR")) {
                     if (activateSwitchBots) setValue("showbots", true)
                     setValue("type", "ASESOR")
                     updatefield("type", "ASESOR");
@@ -468,6 +470,26 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             );
         } else {
             setDataApplications({ loading: false, data: [] });
+        }
+
+        if(value.length > 0) {
+            if(value.some((v: Dictionary) => v.roleid === 51) || value.some((v: Dictionary) => v.roleid === 53)) {
+                setIsStore(true)
+            } else {
+                setIsStore(false)
+                setValue('storeid', 0)
+            }
+            if(value.some((v: Dictionary) => v.roleid === 50)) {
+                setIsWarehouse(true)
+            } else {
+                setIsWarehouse(false)
+                setValue('warehouseid', 0)
+            }
+        } else {
+            setIsStore(false);
+            setIsWarehouse(false)
+            setValue('storeid', 0)
+            setValue('warehouseid', 0)
         }
     };
     return (
@@ -534,7 +556,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 }
 
                             </div>
-                            {(getValues('rolegroups')?.includes('53') || getValues('rolegroups')?.includes('51')) && (
+                            {isStore && (
                                 <FieldSelect
                                     label={t(langKeys.store)}
                                     className={classes.mb2}
@@ -617,7 +639,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
                             />
-                            {getValues('rolegroups')?.includes('50') && (
+                            {isWarehouse && (
                                 <FieldSelect
                                     label={t(langKeys.warehouse)}
                                     className={classes.mb2}

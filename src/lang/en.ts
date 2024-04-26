@@ -6132,6 +6132,9 @@ const translation: LangKeys = {
   contextperconversation: 'Context per conversation',
   firstinteraction: 'First user interaction',
   conector: 'Conector',
+  app_orders_in_attention: 'Orders in attention',
+  app_order_list: 'Order list',
+  app_orders_in_store: 'Orders in store',
 };
 
 const enResource: ResourceLanguage = {
