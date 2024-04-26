@@ -1702,7 +1702,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
 
                 <>
                     <div style={{margin: '1rem 0'}}>
-                        <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>
+                        {/* <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>
                          
                                 <TableZyx
                                     columns={columns}
@@ -1736,7 +1736,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                     )}
                                 />
                            
-                        </Card>
+                        </Card> */}
 
                       
 
