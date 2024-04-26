@@ -20,7 +20,7 @@ import { getCollection, getCollectionAux, execute, resetMain, getCollectionPagin
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
-import AssesorProductivityReport from 'pages/staticReports/ReportAssesorProductivity';
+import AssesorProductivityReport from 'pages/staticReports/reportAssesorProductivity/ReportAssesorProductivity';
 import DetailReportDesigner from 'pages/ReportTemplate';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
