@@ -176,7 +176,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [bodyObject, setBodyObject] = useState<Descendant[]>(
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
     );
-    const [category, setCategory] = useState('')
+    const [category, setCategory] = useState(row ? row.category : '')
 
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -282,6 +282,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const dataTemplateType = [
         { value: "MULTIMEDIA", text: t(langKeys.messagetemplate_multimedia) },
         { value: "STANDARD", text: t(langKeys.messagetemplate_standard) },
+        { value: "CAROUSEL", text: t(langKeys.messagetemplate_carousel) },
     ];
 
     const dataHeaderType = [
@@ -340,7 +341,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             priority: row?.priority || 2,
             servicecredentials: row?.communicationchannelservicecredentials || "",
             status: row?.status || "ACTIVO",
-            templatetype: row?.templatetype || "STANDARD",
+            templatetype: row?.templatetype || "",
             type: row?.type || "",
             typeattachment: row?.typeattachment || "",
         },
@@ -688,6 +689,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue("integrationid", "");
         setValue("servicecredentials", "");
         setValue("type", data?.value || "");
+        setValue("category", '');
+        setCategory('')
 
         trigger("body");
         trigger("category");
@@ -1005,7 +1008,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <span>Elige la categoría que mejor describa tu plantilla de mensaje.</span>
                             </div>
                             <div style={{display: 'flex', flexDirection: 'row', gap: '0.5rem'}}>
-                                <div className={classes.categoryOption} onClick={() => setCategory('MARKETING')}>
+                                <div className={classes.categoryOption} onClick={() => {
+                                    setCategory('MARKETING')
+                                    setValue('category', 'MARKETING')
+                                }}>
                                     <input type="checkbox" checked={category === 'MARKETING'} className={classes.checkbox}/>
                                     <VolumeUpIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1013,7 +1019,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <span>Envía promociones o información sobre tus productos, servicios o negocio.</span>
                                     </div>
                                 </div>
-                                <div className={classes.categoryOption} onClick={() => setCategory('UTILITY')}>
+                                <div className={classes.categoryOption} onClick={() => {
+                                    setCategory('UTILITY')
+                                    setValue('category', 'UTILITY')
+                                }}>
                                     <input type="checkbox" checked={category === 'UTILITY'} className={classes.checkbox}/>
                                     <NotificationsIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1021,7 +1030,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <span>Envía mensajes sobre un pedido o cuenta existentes.</span>
                                     </div>
                                 </div>
-                                <div className={classes.categoryOption} onClick={() => setCategory('AUTHENTICATION')}>
+                                <div className={classes.categoryOption} onClick={() => {
+                                    setCategory('AUTHENTICATION')
+                                    setValue('category', 'AUTHENTICATION')
+                                }}>
                                     <input type="checkbox" checked={category === 'AUTHENTICATION'} className={classes.checkbox}/>
                                     <VpnKeyIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1047,41 +1059,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             />
                         )}
                     </div>
-                    <div className="row-zyx">
-                        {getValues("type") === "HSM" && (
-                            <>  
-                                {isNew && (
-                                    <FieldSelect
-                                        className="col-6"
-                                        data={dataNewCategory}
-                                        disabled={disableInput}
-                                        error={errors?.category?.message}
-                                        label={t(langKeys.category)}
-                                        onChange={(value) => setValue("category", value?.value)}
-                                        optionDesc="description"
-                                        optionValue="value"
-                                        valueDefault={getValues("category")}
-                                    />
-                                )}
-                                {!isNew && (
-                                    <FieldView
-                                        className="col-6"
-                                        label={t(langKeys.category)}
-                                        value={row ? t(`TEMPLATE_${row.category}`) : ""}
-                                    />
-                                )}
-                            </>
-                        )}
-                    </div>
-                    <div className="row-zyx">
+                    {getValues("type") === "HSM" && (
+                        <div style={{display: 'flex', marginBottom: 10}}>
+                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
+                                <span style={{fontWeight: 'bold'}}>{t(langKeys.name)}</span>
+                                <span>Asigna un nombre a la plantilla de mensaje</span>
+                            </div>
+                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
+                                <span style={{fontWeight: 'bold'}}>{t(langKeys.language)}</span>
+                                <span>Elige idiomas para tu plantilla de mensaje</span>
+                            </div>
+                        </div>
+                    )}
+                    <div className="row-zyx" style={{marginBottom: 0}}>
                         {getValues('type') !== '' &&(
                             <FieldEdit
                                 className="col-6"
                                 disabled={disableInput}
                                 error={errors?.name?.message}
-                                label={t(langKeys.name)}
                                 onChange={(value) => setValue("name", value)}
                                 valueDefault={getValues("name")}
+                                maxLength={512}
+                                variant="outlined"
                             />
                         )}
                         {isProvider && (
@@ -1109,17 +1108,29 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         data={dataLanguage}
                                         disabled={disableInput}
                                         error={errors?.language?.message}
-                                        label={t(langKeys.language)}
                                         onChange={(value) => setValue("language", value?.domainvalue)}
                                         optionDesc="domaindesc"
                                         optionValue="domainvalue"
                                         uset={true}
                                         valueDefault={getValues("language")}
+                                        variant="outlined"
                                     />
                                 )}
                             </>
                         )}
                     </div>
+                    {getValues("type") === "HSM" && (
+                        <div style={{display: 'flex', marginBottom: 10}}>
+                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
+                                <span style={{fontWeight: 'bold'}}>{t(langKeys.templatetype)}</span>
+                                <span>Seleccione el tipo de plantilla que utilizarás</span>
+                            </div>
+                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
+                                <span style={{fontWeight: 'bold'}}>{t(langKeys.channel)}</span>
+                                <span>Seleccione el canal en el que registrarás tu plantilla</span>
+                            </div>
+                        </div>
+                    )}
                     <div className="row-zyx">
                         {getValues("type") !== '' && (
                             <>
@@ -1128,18 +1139,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     data={dataTemplateType}
                                     disabled={templateTypeDisabled || disableInput}
                                     error={errors?.templatetype?.message}
-                                    label={t(langKeys.templatetype)}
                                     onChange={onChangeTemplateType}
                                     optionDesc="text"
                                     optionValue="value"
                                     valueDefault={getValues("templatetype")}
+                                    variant="outlined"
                                 />
                                 <FieldSelect
                                     className="col-6"
                                     data={[]}
-                                    label={t(langKeys.channel)}
                                     optionDesc="text"
                                     optionValue="value"
+                                    variant="outlined"
                                 />
                             </>
                         )}
@@ -1147,7 +1158,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     {getValues("type") === 'HSM' && (
                         <div>
                             <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{`${t(langKeys.edit)} ${t(langKeys.template)}`}</span>
+                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
                             </div>
                         </div>
                     )}

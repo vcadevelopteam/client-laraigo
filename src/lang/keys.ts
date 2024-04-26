@@ -6037,6 +6037,8 @@ export const langKeys = {
   messageslimit: 'messageslimit',
   templatesdeletemessage: 'templatesdeletemessage',
   messagetypetext: 'messagetypetext',
+  messagetemplate_carousel: 'messagetemplate_carousel',
+  templateedition: 'templateedition',
 };
 
 export type LangKeys = typeof langKeys;

@@ -6041,6 +6041,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   messageslimit: 'Limite Mensajes',
   templatesdeletemessage: 'Si eliminas las plantillas seleccionadas, se eliminarán también en Meta, ten en cuenta que no podrás volver a recuperar dicha plantilla y tendrás que volver a crear una.',
   messagetypetext: 'Selecciona el tipo de mensaje que utilizaras como plantilla.',
+  messagetemplate_carousel: 'Carrusel',
+  templateedition: 'Edición plantilla',
 };
 
 const esResource: ResourceLanguage = {
