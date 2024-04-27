@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState, FC, useCallback } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState, FC, useCallback } from 'react';
 import { FieldEdit, FieldEditWithSelect, FieldView, FieldSelect } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';

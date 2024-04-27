@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx } from 'components';
@@ -15,6 +14,9 @@ import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { FrameProps } from './CampaignDetail';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -500,6 +502,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     const AdditionalButtons = () => {
+       
         if (detaildata.source === 'EXTERNAL') {
             return (
                 <React.Fragment>
@@ -536,7 +539,40 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         else {
             return <>
-                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
+                <Button                
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AssignmentIcon style={{ color: 'white' }} />}
+                    style={{ width: 250, backgroundColor: "#55BD84", marginLeft:'0.5rem' }}
+                    //onClick={() => fetchData(fetchDataAux)}
+                >
+                    Descargar formato de carga
+                </Button>
+                <Button                
+                    variant="contained"
+                    color="primary"
+                    startIcon={<CloudDownloadIcon style={{ color: 'white' }} />}
+                    style={{ width: 150, backgroundColor: "#55BD84" }}
+                >
+                    {t(langKeys.import)} Base
+                </Button>
+                <Button        
+                    disabled={ Object.keys(selectedColumns).length === 0}        
+                    variant="contained"
+                    color="primary"
+                    startIcon={<DeleteIcon style={{ color: 'white' }} />}
+                    style={{ width: 110, backgroundColor: "#55BD84" }}
+                >
+                    {t(langKeys.delete)} 
+                </Button>
+                <Button                
+                    variant="contained"
+                    color="primary"
+                    style={{ width: 110, backgroundColor: "#53A6FB" }}
+                >
+                    {t(langKeys.clean)} 
+                </Button>
+                
             </>
         }
     }
@@ -572,7 +608,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             data={jsonData}
                             download={false}
                             loading={detaildata.source === 'INTERNAL' && auxResult.loading}
-                            filterGeneral={false}
+                            filterGeneral={true}
                             ButtonsElement={AdditionalButtons}
                             useSelection={true}
                             selectionKey={selectionKey}

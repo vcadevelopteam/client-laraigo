@@ -13,7 +13,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { CampaignDetail } from './CampaignDetail';
 import { Blacklist } from './Blacklist';
 import { CampaignReport } from '../staticReports/ReportCampaign';
-import { Box, IconButton, ListItemIcon } from '@material-ui/core';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, ListItemIcon, Paper, Popper, Typography } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -26,11 +26,19 @@ import { DateRangePicker } from 'components';
 import { CalendarIcon } from 'icons';
 import { Range } from "react-date-range";
 import { Search as SearchIcon } from '@material-ui/icons';
-
+import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import BlockIcon from '@material-ui/icons/Block';
 
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
+}
+
+interface IModalProps {
+    name: string;
+    open: boolean;
+    payload: Dictionary | null;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -163,6 +171,12 @@ export const Campaign: FC = () => {
             })
         );
     };
+
+    const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
+    
+    const handleCloseConfirmationDialog = () => {
+        setOpenConfirmationDialog(false);
+    };    
     
 
     const columns = React.useMemo(
@@ -313,18 +327,26 @@ export const Campaign: FC = () => {
                             );
                         } else if (status === 'ACTIVO') {
                             return (
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleStart(id);
-                                    }}
-                                    style={{ backgroundColor: "#55bd84" }}
-                                >
-                                    <Trans i18nKey={langKeys.execute} />
-                                </Button>
+                                <>
+                              
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setOpenConfirmationDialog(true);     
+                                            //handleStart(id);                                        
+                                        }}
+                                        style={{ backgroundColor: "#55bd84" }}
+                                    >
+                                        <Trans i18nKey={langKeys.ready_to_close} />
+                                    </Button>
+
+                                  
+
+                                   
+                                </>
                             );
                         } else {
                             return null;
@@ -338,6 +360,28 @@ export const Campaign: FC = () => {
         ],
         []
     )
+
+    // {openConfirmationDialog && (
+    //     <Dialog open={openConfirmationDialog} onClose={handleCloseConfirmationDialog} maxWidth="xl">
+    //         <DialogTitle>
+    //             <Trans i18nKey={langKeys.confirmation} />
+    //         </DialogTitle>
+    //         <DialogContent>                   
+    //             ¿Seguro?
+    //         </DialogContent>
+    //         <DialogActions>
+    //             <Button color="primary">
+    //                 <Trans i18nKey={langKeys.continue} />
+    //             </Button>
+    //             <Button color="primary" onClick={() => {
+    //                 console.log("Botón de cancelar clickeado");
+    //                 setOpenConfirmationDialog(false);
+    //             }}>
+    //                 <Trans i18nKey={langKeys.cancel} />
+    //             </Button>
+    //         </DialogActions>
+    //     </Dialog>
+    // )}
 
     const fetchData = () => dispatch(getCollection(getCampaignLst()));
 
@@ -514,6 +558,8 @@ export const Campaign: FC = () => {
         key: "selection",
     });
 
+  
+
     const AdditionalButtons = () => {
         return (
             <React.Fragment>        
@@ -600,6 +646,44 @@ export const Campaign: FC = () => {
                 >
                     <MoreVertIcon />
                 </IconButton>
+
+                <div style={{ display: 'flex', gap: 8 }}>                               
+                    <Popper
+                        open={openSeButtons}
+                        anchorEl={anchorElSeButtons}
+                        placement="bottom"
+                        transition
+                        style={{marginRight:'1rem'}}
+                    >
+                        {({ TransitionProps }) => (
+                            <Paper {...TransitionProps} elevation={5}>
+
+                                <MenuItem 
+                                    disabled={mainResult.mainData.loading}
+                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                    //style={{ backgroundColor: "#ea2e49" }}
+                                    onClick={() => setViewSelected("blacklist")}
+                                >
+                                    <ListItemIcon>
+                                        <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                    </ListItemIcon>
+                                    <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
+                                </MenuItem>                             
+                                <Divider />
+                                <MenuItem 
+                                    disabled={mainResult.mainData.loading}
+                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                    //nClick={() => setViewSelected("blacklist")}
+                                >
+                                    <ListItemIcon>
+                                        <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                    </ListItemIcon>
+                                    <Typography variant="inherit">{t(langKeys.download)}</Typography>
+                                </MenuItem>                               
+                            </Paper>
+                        )}
+                    </Popper>
+                </div> 
                 
             </React.Fragment>
         )
@@ -619,10 +703,10 @@ export const Campaign: FC = () => {
                 useSelection={true}
                 setSelectedRows={setSelectedRows}
                 onClickRow={handleEdit}
-                loading={mainResult.mainData.loading}
-                // register={true}
-                // handleRegister={handleRegister}
-                ButtonsElement={AdditionalButtons}               
+                loading={mainResult.mainData.loading}                
+                ButtonsElement={AdditionalButtons}     
+                filterGeneral={true}
+             
             />
         )
     }

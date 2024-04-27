@@ -385,12 +385,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     return (
         <React.Fragment>
-            <div className={classes.containerDetail}>
+           <div style={{display:'flex', gap: '1rem', width:'100%'}}>
+                <div className={classes.containerDetail}  style={{width:'50%'}}>
+
                 <div className="row-zyx">
                     {edit ?
                         <FieldEdit
                             label={t(langKeys.title)}
-                            className="col-6"
+                            className="col-12"
                             valueDefault={getValues('title')}
                             onChange={(value) => setValue('title', value)}
                             error={errors?.title?.message}
@@ -399,13 +401,13 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldView
                             label={t(langKeys.title)}
                             value={row?.title || ""}
-                            className="col-6"
+                            className="col-12"
                         />
                     }
                     {edit ?
                         <FieldEdit
                             label={t(langKeys.description)}
-                            className="col-6"
+                            className="col-12"
                             valueDefault={getValues('description')}
                             onChange={(value) => setValue('description', value)}
                             error={errors?.description?.message}
@@ -414,16 +416,17 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldView
                             label={t(langKeys.description)}
                             value={row?.description || ""}
-                            className="col-6"
+                            className="col-12"
                         />
                     }
                 </div>
+
                 <div className="row-zyx">
                     {edit ?
                         <FieldEdit
                             type="date"
                             label={t(langKeys.startdate)}
-                            className="col-4"
+                            className="col-6"
                             valueDefault={getValues('startdate')}
                             onChange={(value) => setValue('startdate', value)}
                             error={errors?.startdate?.message}
@@ -432,14 +435,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldView
                             label={t(langKeys.startdate)}
                             value={row?.startdate || ""}
-                            className="col-4"
+                            className="col-6"
                         />
                     }
                     {edit ?
                         <FieldEdit
                             type="date"
                             label={t(langKeys.enddate)}
-                            className="col-4"
+                            className="col-6"
                             valueDefault={getValues('enddate')}
                             onChange={(value) => setValue('enddate', value)}
                             error={errors?.enddate?.message}
@@ -448,11 +451,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldView
                             label={t(langKeys.enddate)}
                             value={row?.enddate || ""}
-                            className="col-4"
+                            className="col-6"
                         />
                     }
                     {edit ?
-                        <div className="col-4" style={{ display: 'flex' }}>
+                        <div className="col-6" style={{ display: 'flex' }}>
                             <FieldSelect
                                 uset={true}
                                 label={t(langKeys.executiontype)}
@@ -482,7 +485,25 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldView
                             label={t(langKeys.executiontype)}
                             value={t(dataExecutionType[row?.executiontype]) || ""}
-                            className="col-4"
+                            className="col-6"
+                        />
+                    }
+                     {edit ?
+                        <FieldSelect
+                            label={t(langKeys.group)}
+                            className="col-6"
+                            valueDefault={getValues('usergroup')}
+                            onChange={onChangeGroup}
+                            error={errors?.usergroup?.message}
+                            data={dataGroup}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.group)}
+                            value={dataGroup.filter(d => d.domainvalue === row?.usergroup)[0].domaindesc || ""}
+                            className="col-6"
                         />
                     }
                 </div>
@@ -490,7 +511,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     {edit ?
                         <FieldSelect
                             label={t(langKeys.channel)}
-                            className="col-8"
+                            className="col-12"
                             valueDefault={getValues('communicationchannelid') as any}
                             disabled={!getValues('isnew')}
                             onChange={onChangeChannel}
@@ -503,52 +524,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldView
                             label={t(langKeys.type)}
                             value={dataChannel.filter(d => d.communicationchannelid === row?.communicationchannelid)[0].communicationchanneldesc || ""}
-                            className="col-8"
+                            className="col-12"
                         />
                     }
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.group)}
-                            className="col-4"
-                            valueDefault={getValues('usergroup')}
-                            onChange={onChangeGroup}
-                            error={errors?.usergroup?.message}
-                            data={dataGroup}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.group)}
-                            value={dataGroup.filter(d => d.domainvalue === row?.usergroup)[0].domaindesc || ""}
-                            className="col-4"
-                        />
-                    }
-                </div>
-                <div className="row-zyx">
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.status)}
-                            className="col-4"
-                            valueDefault={getValues('status')}
-                            onChange={onChangeStatus}
-                            error={errors?.status?.message}
-                            data={dataStatus}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.status)}
-                            value={dataGroup.filter(d => d.domainvalue === row?.status)[0].domaindesc || ""}
-                            className="col-4"
-                        />
-                    }
-                    {edit ?
+                      {edit ?
                         <FieldSelect
                             uset={true}
                             label={t(langKeys.source)}
-                            className="col-4"
+                            className="col-12"
                             valueDefault={getValues('source')}
                             onChange={onChangeSource}
                             error={errors?.source?.message}
@@ -560,14 +543,36 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldView
                             label={t(langKeys.source)}
                             value={t(dataSource[row?.source]) || ""}
-                            className="col-4"
+                            className="col-12"
                         />
                     }
+                   
+                </div>
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-6"
+                            valueDefault={getValues('status')}
+                            onChange={onChangeStatus}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.status)}
+                            value={dataGroup.filter(d => d.domainvalue === row?.status)[0].domaindesc || ""}
+                            className="col-6"
+                        />
+                    }
+                   
                     {edit ?
                         <FieldSelect
                             uset={true}
                             label={t(langKeys.messagetype)}
-                            className="col-4"
+                            className="col-6"
                             valueDefault={getValues('type')}
                             disabled={!getValues('isnew')}
                             onChange={onChangeType}
@@ -580,9 +585,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldView
                             label={t(langKeys.messagetype)}
                             value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
-                            className="col-4"
+                            className="col-6"
                         />
                     }
+                   
                 </div>
                 {['HSM'].includes(getValues('type')) ?
                     <div className="row-zyx">
@@ -661,7 +667,21 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         }
                     </div>
                     : null}
-            </div>
+                </div>
+
+                <div className={classes.containerDetail} style={{width:'50%'}}>
+                    Previsualización de la plantilla     
+                    <div style={{display:'flex', justifyContent:'center', alignContent:'center'}}>
+                        <div style={{backgroundColor:'red'}}> 
+                            <p>Previsualización</p>
+                        </div>
+                    </div>    
+              
+                </div>
+
+           </div>
+
+
             <ModalCampaignSchedule
                 openModal={openModal}
                 setOpenModal={setOpenModal}
