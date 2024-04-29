@@ -52,6 +52,7 @@ import React, { FC, Suspense, useCallback, useEffect, useState } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
+import { AddButtonMenu } from "../components/components";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -1329,25 +1330,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                 id="fileInput"
                                                             />
                                                         )}
-                                                        <label htmlFor="fileInput">
-                                                            <Button
-                                                                startIcon={<ImageIcon/>}
-                                                                variant="outlined"
-                                                                style={{backgroundColor: '#F5F5F5'}}
-                                                                component="span" // Esto es necesario para que el botón funcione como un input de tipo file
-                                                            >
-                                                                {headerMedia === 'image' ? (selectedFile ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): headerMedia === 'video' ? 'Elegir archivo MP4' : 'Elegir un documento'}
-                                                            </Button>
-                                                        </label>
+                                                        {!selectedFile ? (
+                                                            <label htmlFor="fileInput">
+                                                                <Button
+                                                                    startIcon={<ImageIcon/>}
+                                                                    variant="outlined"
+                                                                    style={{backgroundColor: '#F5F5F5'}}
+                                                                    component="span" // Esto es necesario para que el botón funcione como un input de tipo file
+                                                                >
+                                                                    {headerMedia === 'image' ? (selectedFile ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): headerMedia === 'video' ? 'Elegir archivo MP4' : 'Elegir un documento'}
+                                                                </Button>
+                                                            </label>
+                                                        ) : (
+                                                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                                                <div style={{padding: 10, border: '1px solid #888888', borderRadius: 4, width: 'fit-content', maxWidth: '100%'}}>
+                                                                    {selectedFile.name}
+                                                                </div>
+                                                                <IconButton onClick={() => setSelectedFile(null)}>
+                                                                    <ClearIcon />
+                                                                </IconButton>
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    {selectedFile && (
-                                                        <div style={{padding: '5px 5px 5px 10px', marginTop: 10, border: '1px solid #888888', width: 'fit-content', maxWidth: '100%'}}>
-                                                            {selectedFile.name}
-                                                            <IconButton onClick={() => setSelectedFile(null)} style={{marginLeft: 10}}>
-                                                                <ClearIcon />
-                                                            </IconButton>
-                                                        </div>
-                                                    )}
                                                     {!selectedFile && (
                                                         <div style={{ backgroundColor: '#FFD9D9', padding: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
                                                             <WarningIcon style={{ color: '#FF7575' }} />
@@ -1360,13 +1364,36 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     )}
                                     <span style={{fontWeight: 'bold'}}>{t(langKeys.body)}</span>
                                     <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
-                                    <FieldEditMulti
-                                        error={errors?.body?.message}
-                                        maxLength={getValues("type") === "SMS" ? 160 : 1024}
-                                        onChange={(value) => setValue("body", value)}
-                                        valueDefault={getValues("body")}
-                                    />
-                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.footer)}</span>
+                                    <div style={{maxWidth: '100%'}}>
+                                        <React.Fragment>
+                                            <RichText
+                                                spellCheck
+                                                emoji={true}
+                                                value={bodyObject}
+                                                onChange={(value) => {
+                                                    setBodyObject(value);
+                                                }}
+                                                positionEditable="top"
+                                                style={{
+                                                    borderColor: "#762AA9",
+                                                    borderRadius: "4px",
+                                                    borderStyle: "solid",
+                                                    borderWidth: "1px",
+                                                    padding: "10px",
+                                                }}
+                                            />
+                                        </React.Fragment>
+                                    </div>
+                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
+                                        <Button
+                                            className={classes.button}
+                                            startIcon={<AddIcon />}
+                                            onClick={() => setIsHeaderVariable(!isHeaderVariable)}
+                                        >
+                                            Añadir variable
+                                        </Button>
+                                    </div>
+                                    <span style={{fontWeight: 'bold', marginTop: 20}}>{t(langKeys.footer)}</span>
                                     <span style={{marginBottom: 5}}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
                                     <FieldEditMulti
                                         error={errors?.footer?.message}
@@ -1380,16 +1407,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <div style={{display: 'flex'}}>
                                         {getValues("buttons")?.length < 3 && (
                                             <div>
-                                                <Button
-                                                    color="primary"
-                                                    onClick={() => onClickAddButton()}
-                                                    startIcon={<AddIcon color="primary" />}
-                                                    style={{ margin: "10px" }}
-                                                    type="button"
-                                                    variant="outlined"
-                                                >
-                                                    {t(langKeys.addbutton)}
-                                                </Button>
+                                                <AddButtonMenu fastAnswer={onClickAddButton} urlWeb={onClickAddButton} callNumber={onClickAddButton}/>
                                             </div>
                                         )}
                                     </div>

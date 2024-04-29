@@ -6097,6 +6097,9 @@ const translation: LangKeys = {
   messagetemplate_carousel: 'Carousel',
   templateedition: 'Template edition',
   messagepreview: 'Message preview',
+  fastanswer: 'Fast answer',
+  gotothewebsite: 'Go to the Website',
+  callnumber: 'Call a phone number',
 };
 
 const enResource: ResourceLanguage = {

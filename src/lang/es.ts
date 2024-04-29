@@ -6044,6 +6044,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   messagetemplate_carousel: 'Carrusel',
   templateedition: 'Edición plantilla',
   messagepreview: 'Previsualización del mensaje',
+  fastanswer: 'Respuesta rápida',
+  gotothewebsite: 'Ir al sitio Web',
+  callnumber: 'Llamar al número de teléfono',
 };
 
 const esResource: ResourceLanguage = {

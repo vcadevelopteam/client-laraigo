@@ -34,7 +34,7 @@ import React, { FC, useEffect, useMemo, useState } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
-import DetailMessageTemplates from "./components/MessageTemplatesDetail";
+import DetailMessageTemplates from "./views/MessageTemplatesDetail";
 
 interface RowSelected {
     edit: boolean;

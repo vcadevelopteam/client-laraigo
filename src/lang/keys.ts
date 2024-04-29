@@ -6040,6 +6040,9 @@ export const langKeys = {
   messagetemplate_carousel: 'messagetemplate_carousel',
   templateedition: 'templateedition',
   messagepreview: 'messagepreview',
+  fastanswer: 'fastanswer',
+  gotothewebsite: 'gotothewebsite',
+  callnumber: 'callnumber',
 };
 
 export type LangKeys = typeof langKeys;
