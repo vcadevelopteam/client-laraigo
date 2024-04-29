@@ -18,6 +18,9 @@ import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import CloseIcon from '@material-ui/icons/Close';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+import ImageIcon from '@material-ui/icons/Image';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 import {
     execute,
@@ -143,6 +146,38 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: '#7721AD'
         }
     },
+    checkboxHeadOption: {
+        backgroundColor: 'white',
+        cursor: 'pointer',
+        borderRadius: '50%',
+        height: '1.1rem',
+        width: '1.1rem',
+        appearance: 'none',
+        border: '1px solid #A0A0A0',
+        verticalAlign: 'middle',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        transform: 'translate(-50%, -50%)',
+        "&:checked": {
+            backgroundColor: '#0E60A0'
+        }
+    },
+    headerOption: {
+        display: 'flex',
+        padding: '20px 30px 20px 20px',
+        border: '1px solid #E4E4E4',
+        borderRadius: 10,
+        cursor: 'pointer',
+    },
+    headerOptionSelected: {
+        display: 'flex',
+        padding: '20px 30px 20px 20px',
+        border: '1px solid #0E60A0',
+        borderRadius: 10,
+        cursor: 'pointer',
+        backgroundColor: '#F3F7FF'
+    }
 }));
 
 const DetailMessageTemplates: React.FC<DetailProps> = ({
@@ -180,6 +215,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
     );
     const [category, setCategory] = useState(row ? row.category : '')
+    const [headerMedia, setHeaderMedia] = useState('')
+    const [selectedFile, setSelectedFile] = useState<Dictionary | null>(null)
+    const [isHeaderVariable, setIsHeaderVariable] = useState(false)
 
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -289,10 +327,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     ];
 
     const dataHeaderType = [
-        { value: "document", text: t(langKeys.messagetemplate_document) },
-        { value: "image", text: t(langKeys.messagetemplate_image) },
+        { value: "none", text: t(langKeys.none) },
         { value: "text", text: t(langKeys.messagetemplate_text) },
-        { value: "video", text: t(langKeys.messagetemplate_video) },
+        { value: "multimedia", text: t(langKeys.messagetemplate_multimedia) },
     ];
 
     const dataButtonType = [
@@ -334,7 +371,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             fromprovider: row?.fromprovider || false,
             header: row?.header || "",
             headerenabled: ![null, undefined].includes(row?.headerenabled) ? row?.headerenabled : false,
-            headertype: row?.headertype || "text",
+            headertype: row?.headertype || "none",
             id: row ? row.id : 0,
             integrationid: row?.communicationchannelintegrationid || "",
             language: row?.language || "",
@@ -696,7 +733,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue("category", '');
         setCategory('')
 
-        trigger("body");
+        //trigger("body");
         trigger("category");
         trigger("communicationchannelid");
         trigger("communicationchanneltype");
@@ -708,7 +745,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("header");
         trigger("integrationid");
         trigger("language");
-        trigger("name");
+        //trigger("name");
         trigger("namespace");
         trigger("servicecredentials");
         trigger("templatetype");
@@ -783,7 +820,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const onChangeHeaderType = async (data: Dictionary) => {
         setValue("headertype", data?.value || "");
-
+        setHeaderMedia('')
+        setIsHeaderVariable(false)
         trigger("headertype");
     };
 
@@ -926,6 +964,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("typeattachment");
     };
 
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+        }
+    };
+    
     return (
         <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
@@ -1102,6 +1147,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         optionDesc="description"
                                         optionValue="value"
                                         valueDefault={getValues("language")}
+                                        size="normal"
                                     />
                                 )}
                             </>
@@ -1121,6 +1167,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         valueDefault={getValues("language")}
                                         label={getValues('type') !== 'HSM' ? t(langKeys.language) : ''}
                                         variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
+                                        size="normal"
                                     />
                                 )}
                             </>
@@ -1152,6 +1199,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     valueDefault={getValues("templatetype")}
                                     label={getValues('type') !== 'HSM' ? t(langKeys.templatetype) : ''}
                                     variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
+                                    size="normal"
                                 />
                                 <FieldSelect
                                     className="col-6"
@@ -1164,6 +1212,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     valueDefault={getValues("communicationchannelid")}
                                     label={getValues('type') !== 'HSM' ? t(langKeys.channel) : ''}
                                     variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
+                                    size="normal"
                                 />
                             </>
                         )}
@@ -1178,16 +1227,137 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
                                     <span style={{fontWeight: 'bold'}}>{t(langKeys.header)}</span>
                                     <span style={{marginBottom: 10}}>Añade un título o elige qué tipo de contenido usarás para este encabezado.</span>
-                                    <div style={{width: 150, marginBottom: 20}}>
-                                        <FieldSelect
-                                            data={dataHeaderType}
-                                            onChange={onChangeHeaderType}
-                                            optionDesc="text"
-                                            optionValue="value"
-                                            valueDefault={getValues("headertype")}
-                                            variant="outlined"
-                                        />
+                                    <div style={{display: 'flex', gap: 10}}>
+                                        <div style={{width: 180, marginBottom: 20}}>
+                                            <FieldSelect
+                                                data={dataHeaderType}
+                                                onChange={onChangeHeaderType}
+                                                optionDesc="text"
+                                                optionValue="value"
+                                                valueDefault={getValues("headertype")}
+                                                variant="outlined"
+                                            />
+                                        </div>
+                                        {getValues('headertype') === 'text' && (
+                                            <div style={{flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
+                                                <FieldEdit
+                                                    variant="outlined"
+                                                    size="small"
+                                                    maxLength={60}
+                                                />
+                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
+                                                    <Button
+                                                        className={classes.button}
+                                                        startIcon={isHeaderVariable ? <ClearIcon /> : <AddIcon />}
+                                                        onClick={() => setIsHeaderVariable(!isHeaderVariable)}
+                                                    >
+                                                        {isHeaderVariable ? 'Quitar variable' : 'Añadir variable'}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
+                                    {getValues('headertype') === 'text' && isHeaderVariable && (
+                                        <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
+                                            <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
+                                            <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
+                                                <span>{'{{'}1{'}}'}</span>
+                                                <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                    <FieldEdit
+                                                        variant="outlined"
+                                                        size="small"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div style={{backgroundColor: '#FFD9D9', padding: 10, display: 'flex', alignItems: 'center', gap: 10}}>
+                                                <WarningIcon style={{color: '#FF7575'}}/>
+                                                Añade texto de ejemplo
+                                            </div>
+                                        </div>
+                                    )}
+                                    {getValues('headertype') === 'multimedia' && (
+                                        <div style={{display: 'flex', flexDirection: 'column'}}>
+                                            <div style={{display: 'flex', gap: 20, marginBottom: 20}}>
+                                                <div className={headerMedia === 'image' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
+                                                    setHeaderMedia('image')
+                                                    setSelectedFile(null)
+                                                }}>
+                                                    <div style={{ position: 'relative', marginRight: 10 }}>
+                                                        <input type="checkbox" checked={headerMedia === 'image'} className={classes.checkboxHeadOption}/>
+                                                    </div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                        <ImageIcon style={{ height: 80, width: 'auto', color: headerMedia === 'image' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: headerMedia === 'image' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
+                                                    </div>
+                                                </div>
+                                                <div className={headerMedia === 'video' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
+                                                    setHeaderMedia('video')
+                                                    setSelectedFile(null)
+                                                }}>
+                                                    <div style={{ position: 'relative', marginRight: 10 }}>
+                                                        <input type="checkbox" checked={headerMedia === 'video'} className={classes.checkboxHeadOption} />
+                                                    </div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                        <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: headerMedia === 'video' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: headerMedia === 'video' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
+                                                    </div>
+                                                </div>
+                                                <div className={headerMedia === 'document' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
+                                                    setHeaderMedia('document')
+                                                    setSelectedFile(null)
+                                                }}>
+                                                    <div style={{ position: 'relative', marginRight: 10 }}>
+                                                        <input type="checkbox" checked={headerMedia === 'document'} className={classes.checkboxHeadOption} />
+                                                    </div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: headerMedia === 'document' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: headerMedia === 'document' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {headerMedia !== '' && (
+                                                <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
+                                                    <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
+                                                    <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
+                                                        {t(langKeys[headerMedia])}
+                                                        {(headerMedia === 'image' || headerMedia === 'video') && (
+                                                            <input
+                                                                type="file"
+                                                                accept={headerMedia === 'image' ? '.jpg,.png' : headerMedia === 'video' ? '.mp4' : ''}
+                                                                onChange={handleFileChange}
+                                                                style={{ display: 'none' }}
+                                                                id="fileInput"
+                                                            />
+                                                        )}
+                                                        <label htmlFor="fileInput">
+                                                            <Button
+                                                                startIcon={<ImageIcon/>}
+                                                                variant="outlined"
+                                                                style={{backgroundColor: '#F5F5F5'}}
+                                                                component="span" // Esto es necesario para que el botón funcione como un input de tipo file
+                                                            >
+                                                                {headerMedia === 'image' ? (selectedFile ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): headerMedia === 'video' ? 'Elegir archivo MP4' : 'Elegir un documento'}
+                                                            </Button>
+                                                        </label>
+                                                    </div>
+                                                    {selectedFile && (
+                                                        <div style={{padding: '5px 5px 5px 10px', marginTop: 10, border: '1px solid #888888', width: 'fit-content', maxWidth: '100%'}}>
+                                                            {selectedFile.name}
+                                                            <IconButton onClick={() => setSelectedFile(null)} style={{marginLeft: 10}}>
+                                                                <ClearIcon />
+                                                            </IconButton>
+                                                        </div>
+                                                    )}
+                                                    {!selectedFile && (
+                                                        <div style={{ backgroundColor: '#FFD9D9', padding: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                            <WarningIcon style={{ color: '#FF7575' }} />
+                                                            Añade contenido multimedia de ejemplo
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                     <span style={{fontWeight: 'bold'}}>{t(langKeys.body)}</span>
                                     <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
                                     <FieldEditMulti
