@@ -3,24 +3,39 @@ import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Button, Menu, MenuItem, makeStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import { Dictionary } from "@types";
 
 const useStyles = makeStyles(() => ({
-	main : {
+	main: {
 		whiteSpace: "nowrap",
 		display: "flex"
-	}
+	},
+    button: {
+        margin: "10px",
+        backgroundColor: '#F3F3F3',
+        "&:hover": {
+            backgroundColor: '#E6E6E6'
+        }
+    }
 }));
 
 interface TemplateIconsProps {
     fastAnswer: () => void;
     urlWeb: () => void;
     callNumber: () => void;
+    textbtn: Dictionary[];
+    urlbtn: Dictionary[];
+    phonebtn: Dictionary[];
 }
 
 export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
     fastAnswer,
     urlWeb,
     callNumber,
+    textbtn,
+    urlbtn,
+    phonebtn
 }) => {
     const classes = useStyles();
     const { t } = useTranslation();
@@ -46,14 +61,14 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
         e.stopPropagation();
         setAnchorEl(null);
     };
-
+    
     return (
         <div className={classes.main}>
             <Button
-                color="primary"
                 onClick={handleClickTyping}
-                startIcon={<AddIcon color="primary" />}
-                style={{ margin: "10px" }}
+                startIcon={<AddIcon />}
+                endIcon={<ArrowDropDownIcon />}
+                className={classes.button}
                 type="button"
                 variant="outlined"
             >
@@ -74,15 +89,23 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleMenuFastAnswer}>
-                    <Trans i18nKey={langKeys.fastanswer} />
-                </MenuItem>
-                <MenuItem onClick={handleMenuUrlWeb}>
-                    <Trans i18nKey={langKeys.gotothewebsite} />
-                </MenuItem>
-                <MenuItem onClick={handleMenuCallNumber}>
-                    <Trans i18nKey={langKeys.callnumber} />
-                </MenuItem>
+                {textbtn?.length < 7 && (
+                    <MenuItem onClick={handleMenuFastAnswer}>
+                        <span style={{fontWeight: 'bold'}}>{t(langKeys.fastanswer)}</span>
+                    </MenuItem>
+                )}
+                {urlbtn?.length < 2 && (
+                    <MenuItem onClick={handleMenuUrlWeb} style={{display: 'flex', flexDirection: 'column', alignItems: 'start'}}>
+                        <span style={{fontWeight: 'bold'}}>{t(langKeys.gotothewebsite)}</span>
+                        <span style={{fontSize: 13}}>2 botones como máximo</span>
+                    </MenuItem>
+                )}
+                {phonebtn?.length < 1 && (
+                    <MenuItem onClick={handleMenuCallNumber} style={{display: 'flex', flexDirection: 'column', alignItems: 'start'}}>
+                        <span style={{fontWeight: 'bold'}}>{t(langKeys.callnumber)}</span>
+                        <span style={{fontSize: 13}}>1 botón como máximo</span>
+                    </MenuItem>
+                )}
             </Menu>
         </div>
     );

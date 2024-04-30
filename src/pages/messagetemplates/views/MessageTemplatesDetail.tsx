@@ -21,6 +21,7 @@ import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ImageIcon from '@material-ui/icons/Image';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import DescriptionIcon from '@material-ui/icons/Description';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
 
 import {
     execute,
@@ -137,9 +138,9 @@ const useStyles = makeStyles((theme) => ({
     checkbox: {
         backgroundColor: 'white',
         cursor: 'pointer',
-        borderRadius: '50%',
-        height: '1.1rem',
-        width: '1.1rem',
+        borderRadius: 30,
+        height: 20,
+        width: 20,
         appearance: 'none',
         border: '1px solid #A0A0A0',
         verticalAlign: 'middle',
@@ -359,6 +360,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             attachment: row?.attachment || "",
             body: row?.body || "",
             buttons: row ? row.buttons || [] : [],
+            buttonstext: row ? row.buttonstext || [] : [],
+            buttonsphone: row ? row.buttonsphone || [] : [],
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : false,
             category: row?.category || "",
             communicationchannelid: row?.communicationchannelid || 0,
@@ -829,13 +832,30 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onChangeButton = (index: number, param: string, value: string) => {
         setValue(`buttons.${index}.${param}`, value);
     };
+    const onChangeButtonText = (index: number, param: string, value: string) => {
+        setValue(`buttonstext.${index}.${param}`, value);
+    };
+    const onChangeButtonPhone = (index: number, param: string, value: string) => {
+        setValue(`buttonsphone.${index}.${param}`, value);
+    };
 
     const onClickAddButton = async () => {
-        if (getValues("buttons") && getValues("buttons").length < 3) {
-            setValue("buttons", [...getValues("buttons"), { title: "", type: "", payload: "" }]);
+        if (getValues("buttons") && getValues("buttons").length < 2) {
+            setValue("buttons", [...getValues("buttons"), { text: "", type: "", url: "" }]);
         }
-
         trigger("buttons");
+    };
+    const onClickAddButtonText = async () => {
+        if (getValues("buttonstext") && getValues("buttonstext").length < 7) {
+            setValue("buttonstext", [...getValues("buttonstext"), { text: "" }]);
+        }
+        trigger("buttonstext");
+    };
+    const onClickAddButtonPhone = async () => {
+        if (getValues("buttonsphone") && getValues("buttonsphone").length < 1) {
+            setValue("buttonsphone", [...getValues("buttonsphone"), { text: "", code: "", number: "" }]);
+        }
+        trigger("buttonsphone");
     };
 
     const onClickRemoveButton = async (index: number) => {
@@ -848,8 +868,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 btns.filter((x: any, i: number) => i !== index)
             );
         }
+    };
+    const onClickRemoveButtonText = async (index: number) => {
+        const btns = getValues("buttonstext");
 
-        trigger("buttons");
+        if (btns && btns.length > 0) {
+            unregister(`buttonstext.${index}`);
+            setValue(
+                "buttonstext",
+                btns.filter((x: any, i: number) => i !== index)
+            );
+        }
+    };
+    const onClickRemoveButtonPhone = async (index: number) => {
+        const btns = getValues("buttonsphone");
+
+        if (btns && btns.length > 0) {
+            unregister(`buttonsphone.${index}`);
+            setValue(
+                "buttonsphone",
+                btns.filter((x: any, i: number) => i !== index)
+            );
+        }
     };
 
     const onClickAttachment = useCallback(() => {
@@ -1405,9 +1445,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span style={{fontWeight: 'bold'}}>{t(langKeys.buttons)}</span>
                                     <span style={{marginBottom: 5}}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
                                     <div style={{display: 'flex'}}>
-                                        {getValues("buttons")?.length < 3 && (
+                                        {(getValues("buttons")?.length + getValues("buttonstext")?.length + getValues("buttonsphone")?.length) < 10 && (
                                             <div>
-                                                <AddButtonMenu fastAnswer={onClickAddButton} urlWeb={onClickAddButton} callNumber={onClickAddButton}/>
+                                                <AddButtonMenu fastAnswer={onClickAddButtonText} urlWeb={onClickAddButton} callNumber={onClickAddButtonPhone} textbtn={getValues('buttonstext')} urlbtn={getValues('buttons')} phonebtn={getValues('buttonsphone')}/>
                                             </div>
                                         )}
                                     </div>
@@ -1419,6 +1459,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     getValues("type") === "HSM" &&
                                     getValues('buttons')?.length > 0 && (
                                         <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
+                                            <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
+                                                <ImportExportIcon style={{color: '#0049CF'}} />
+                                                <span style={{fontWeight: 'bold'}}>Llamada a la acción</span>
+                                            </div>
                                             <React.Fragment>
                                                 {getValues("buttons")?.map((btn: any, i: number) => {
                                                     return (
@@ -1428,13 +1472,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                 <FieldEdit
                                                                     className={classes.mb1}
                                                                     disabled={disableInput}
-                                                                    error={errors?.buttons?.[i]?.title?.message}
-                                                                    label={t(langKeys.title)}
+                                                                    label={t(langKeys.text)}
                                                                     onChange={(value) => onChangeButton(i, "title", value)}
-                                                                    valueDefault={btn?.title || ""}
+                                                                    valueDefault={btn?.text || ""}
                                                                     variant="outlined"
                                                                     fregister={{
-                                                                        ...register(`buttons.${i}.title`, {
+                                                                        ...register(`buttons.${i}.text`, {
                                                                             validate: (value) =>
                                                                                 (value && value.length) || t(langKeys.field_required),
                                                                         }),
@@ -1444,7 +1487,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     className={classes.mb1}
                                                                     data={dataButtonType}
                                                                     disabled={disableInput}
-                                                                    error={errors?.buttons?.[i]?.type?.message}
                                                                     label={t(langKeys.type)}
                                                                     onChange={(value) => onChangeButton(i, "type", value?.value)}
                                                                     optionDesc="text"
@@ -1461,13 +1503,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                 <FieldEdit
                                                                     className={classes.mb1}
                                                                     disabled={disableInput}
-                                                                    error={errors?.buttons?.[i]?.payload?.message}
-                                                                    label={t(langKeys.payload)}
-                                                                    onChange={(value) => onChangeButton(i, "payload", value)}
-                                                                    valueDefault={btn?.payload || ""}
+                                                                    label={t(langKeys.url)}
+                                                                    onChange={(value) => onChangeButton(i, "url", value)}
+                                                                    valueDefault={btn?.url || ""}
                                                                     variant="outlined"
                                                                     fregister={{
-                                                                        ...register(`buttons.${i}.payload`, {
+                                                                        ...register(`buttons.${i}.url`, {
                                                                             validate: (value) =>
                                                                                 (value && value.length) || t(langKeys.field_required),
                                                                         }),
