@@ -35,6 +35,7 @@ import LinkIcon from '@material-ui/icons/Link';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
 import { sendHSM } from 'store/inbox/actions';
 
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { Controller } from "react-hook-form";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import MailIcon from '@material-ui/icons/Mail';
@@ -2485,7 +2486,13 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
                             {!!person.personid &&
                                 <Tab
                                     className={clsx(classes.tab, classes.label, tabIndex === "5" && classes.activetab)}
-                                    label={<Trans i18nKey={langKeys.customvariables} />}
+                                    label={
+                                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                            <Trans i18nKey={langKeys.customvariables} />
+                                            <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                            </Tooltip>
+                                        </div>}
                                     value="5"
                                 />
                             }
