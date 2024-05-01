@@ -6043,6 +6043,15 @@ export const langKeys = {
   fastanswer: 'fastanswer',
   gotothewebsite: 'gotothewebsite',
   callnumber: 'callnumber',
+  buttontext: 'buttontext',
+  urltype: 'urltype',
+  urlwebsite: 'urlwebsite',
+  calltoaction: 'calltoaction',
+  addvariable: 'addvariable',
+  addexampletext: 'addexampletext',
+  deletevariable: 'deletevariable',
+  static: 'static',
+  dynamic: 'dynamic',
 };
 
 export type LangKeys = typeof langKeys;

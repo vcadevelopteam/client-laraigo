@@ -6047,6 +6047,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   fastanswer: 'Respuesta rápida',
   gotothewebsite: 'Ir al sitio Web',
   callnumber: 'Llamar al número de teléfono',
+  buttontext: 'Texto del botón',
+  urltype: 'Tipo de URL',
+  urlwebsite: 'URL del sitio web',
+  calltoaction: 'Llamada a la acción',
+  addvariable: 'Añadir variable',
+  addexampletext: 'Añade texto de ejemplo',
+  deletevariable: 'Quitar variable',
+  static: 'Estático',
+  dynamic: 'Dinámico',
 };
 
 const esResource: ResourceLanguage = {

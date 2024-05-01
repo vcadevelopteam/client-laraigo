@@ -6100,6 +6100,15 @@ const translation: LangKeys = {
   fastanswer: 'Fast answer',
   gotothewebsite: 'Go to the Website',
   callnumber: 'Call a phone number',
+  buttontext: 'Button text',
+  urltype: 'URL type',
+  urlwebsite: 'URL website',
+  calltoaction: 'Call to action',
+  addvariable: 'Add variable',
+  addexampletext: 'Add example text',
+  deletevariable: 'Delete variable',
+  static: 'Static',
+  dynamic: 'Dynamic',
 };
 
 const enResource: ResourceLanguage = {
