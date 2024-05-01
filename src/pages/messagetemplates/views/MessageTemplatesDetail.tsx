@@ -220,6 +220,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [headerMedia, setHeaderMedia] = useState('')
     const [selectedFile, setSelectedFile] = useState<Dictionary | null>(null)
     const [isHeaderVariable, setIsHeaderVariable] = useState(false)
+    const [bodyVariables, setBodyVariables] = useState<string[]>([])
 
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -736,6 +737,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue("category", '');
         setCategory('')
 
+        setBodyVariables([])
+        setValue("headertype", "none");
+        setHeaderMedia('')
+        setIsHeaderVariable(false)
+        setSelectedFile(null)
+        trigger("headertype");
+        setValue('buttons', [])
+        setValue('buttonstext', [])
+        setValue('buttonsphone', [])
+
         //trigger("body");
         trigger("category");
         trigger("communicationchannelid");
@@ -1013,6 +1024,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setSelectedFile(file);
         }
     };
+
+    const changeCategory = (categoryText: string) => {
+        setCategory(categoryText)
+        setValue('category', categoryText)
+
+        setBodyVariables([])
+        setValue("headertype", "none");
+        setHeaderMedia('')
+        setIsHeaderVariable(false)
+        setSelectedFile(null)
+        trigger("headertype");
+        setValue('buttons', [])
+        setValue('buttonstext', [])
+        setValue('buttonsphone', [])
+    }
     
     return (
         <div style={{ width: "100%" }}>
@@ -1100,10 +1126,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <span>Elige la categoría que mejor describa tu plantilla de mensaje.</span>
                             </div>
                             <div style={{display: 'flex', flexDirection: 'row', gap: '0.5rem'}}>
-                                <div className={classes.categoryOption} onClick={() => {
-                                    setCategory('MARKETING')
-                                    setValue('category', 'MARKETING')
-                                }}>
+                                <div className={classes.categoryOption} onClick={() => changeCategory('MARKETING')}>
                                     <input type="checkbox" checked={category === 'MARKETING'} className={classes.checkbox}/>
                                     <VolumeUpIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1111,10 +1134,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <span>Envía promociones o información sobre tus productos, servicios o negocio.</span>
                                     </div>
                                 </div>
-                                <div className={classes.categoryOption} onClick={() => {
-                                    setCategory('UTILITY')
-                                    setValue('category', 'UTILITY')
-                                }}>
+                                <div className={classes.categoryOption} onClick={() => changeCategory('UTILITY')}>
                                     <input type="checkbox" checked={category === 'UTILITY'} className={classes.checkbox}/>
                                     <NotificationsIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1122,10 +1142,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <span>Envía mensajes sobre un pedido o cuenta existentes.</span>
                                     </div>
                                 </div>
-                                <div className={classes.categoryOption} onClick={() => {
-                                    setCategory('AUTHENTICATION')
-                                    setValue('category', 'AUTHENTICATION')
-                                }}>
+                                <div className={classes.categoryOption} onClick={() => changeCategory('AUTHENTICATION')}>
                                     <input type="checkbox" checked={category === 'AUTHENTICATION'} className={classes.checkbox}/>
                                     <VpnKeyIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1427,14 +1444,46 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </React.Fragment>
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
+                                        {bodyVariables.length < 20 &&(
+                                            <Button
+                                                className={classes.button}
+                                                startIcon={<AddIcon />}
+                                                onClick={() => setBodyVariables([...bodyVariables, ''])}
+                                            >
+                                                {t(langKeys.addvariable)}
+                                            </Button>
+                                        )}
                                         <Button
                                             className={classes.button}
-                                            startIcon={<AddIcon />}
-                                            onClick={() => setIsHeaderVariable(!isHeaderVariable)}
+                                            startIcon={<CloseIcon />}
+                                            onClick={() => setBodyVariables(bodyVariables.slice(0,-1))}
                                         >
-                                            {t(langKeys.addvariable)}
+                                            {t(langKeys.deletevariable)}
                                         </Button>
                                     </div>
+                                    {bodyVariables.length > 0 && (
+                                        <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
+                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
+                                            {bodyVariables.map((v: string, index: number) => {
+                                                return (
+                                                    <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
+                                                        <span>{'{{'}{index + 1}{'}}'}</span>
+                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                            <FieldEdit
+                                                                variant="outlined"
+                                                                size="small"
+                                                                valueDefault={v}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                            <div style={{backgroundColor: '#FFD9D9', padding: 10, display: 'flex', alignItems: 'center', gap: 10}}>
+                                                <WarningIcon style={{color: '#FF7575'}}/>
+                                                {t(langKeys.addexampletext)}
+                                            </div>
+                                        </div>
+                                    )}
                                     <span style={{fontWeight: 'bold', marginTop: 20}}>{t(langKeys.footer)}</span>
                                     <span style={{marginBottom: 5}}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
                                     <FieldEditMulti
@@ -1663,6 +1712,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
                                     <div style={{height: 300, width: '100%', border: '1px solid black'}}/>
                                 </div>
+                            </div>
+                        </div>
+                    )}
+                    {(getValues("type") === 'HSM' && getValues('category') === 'AUTHENTICATION' && getValues('name') !== '' && getValues('language') !== '') && (
+                        <div>
+                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
+                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
                             </div>
                         </div>
                     )}
