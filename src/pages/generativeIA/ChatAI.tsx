@@ -159,6 +159,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [waitSaveThread, setWaitSaveThread] = useState(false);
     const [waitSaveThreadDelete, setWaitSaveThreadDelete] = useState(false);
     const [waitSaveMessage, setWaitSaveMessage] = useState(false);
+    const [waitSaveMessage1, setWaitSaveMessage1] = useState(false);
+    const [waitSaveMessage2, setWaitSaveMessage2] = useState(false);
+    const [waitSaveMessage3, setWaitSaveMessage3] = useState(false);
     const [waitSaveMessageLlama, setWaitSaveMessageLlama] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
     const executeThreads = useSelector((state) => state.gpt.gptResult);
@@ -168,6 +171,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const dataThreads = useSelector(state => state.main.mainAux);
     const messages = useSelector(state => state.main.mainAux2);
     const [messageText, setMessageText] = useState('');
+    const [messageAux, setMessageAux] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [cardDelete, setCardDelete] = useState<Dictionary | null>(null);
     const [waitSaveMessageAux, setWaitSaveMessageLlamaAux] = useState(false);
@@ -295,33 +299,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             }
         }
     }, [llamaResult, waitSaveThreadDeleteLlama]);
-
-    useEffect(() => {
-        if (waitSaveMessage) {
-            if (!executeThreads.loading && !executeThreads.error) {
-                setWaitSaveMessage(false);
-                dispatch(execute(insMessageAi({
-                    assistantaiid: row?.assistantaiid,
-                    threadid: selectedChat?.threadid,
-                    assistantaidocumentid: 0,
-                    id: 0,
-                    messagetext: executeThreads.data.response,
-                    infosource: '',
-                    type: 'BOT',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                })))
-                setIsLoading(false);
-                fetchThreadMessages(selectedChat?.threadid);
-            } else if (executeThreads.error) {
-                const errormessage = t(executeThreads.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setWaitSaveMessage(false);
-            }
-        }
-    }, [executeThreads, waitSaveMessage]);
     
     useEffect(() => {
         if (waitSaveMessageLlama) {
@@ -411,18 +388,91 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 })
             )
         );
-        const message = messageText
+        setMessageAux(messageText)
         setMessageText('');
-        fetchThreadMessages(selectedChat?.threadid);
-        dispatch(sendMessages({
-            text: message,
-            assistant_id: row?.code,
-            thread_id: selectedChat?.code,
-            sources: false,
-            apikey: row?.apikey,
-        }))
-        setWaitSaveMessage(true)
+        setWaitSaveMessage1(true)
     };
+
+    useEffect(() => {
+        if (waitSaveMessage1) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveMessage1(false);
+                fetchThreadMessages(selectedChat?.threadid);
+                setWaitSaveMessage2(true)
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessage1(false);
+            }
+        }
+    }, [executeResult, waitSaveMessage1]);
+
+    useEffect(() => {
+        if (waitSaveMessage2) {
+            if (!messages.loading && !messages.error) {
+                setWaitSaveMessage2(false);
+                dispatch(sendMessages({
+                    text: messageAux,
+                    assistant_id: row?.code,
+                    thread_id: selectedChat?.code,
+                    sources: false,
+                    apikey: row?.apikey,
+                }))
+                setMessageAux('')
+                setWaitSaveMessage(true)
+            } else if (messages.error) {
+                const errormessage = t(messages.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessage2(false);
+            }
+        }
+    }, [messages, waitSaveMessage2]);
+
+    useEffect(() => {
+        if (waitSaveMessage) {
+            if (!executeThreads.loading && !executeThreads.error) {
+                setWaitSaveMessage(false);
+                dispatch(execute(insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: selectedChat?.threadid,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: executeThreads.data.response,
+                    infosource: '',
+                    type: 'BOT',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })))
+                setWaitSaveMessage3(true)
+            } else if (executeThreads.error) {
+                const errormessage = t(executeThreads.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessage(false);
+            }
+        }
+    }, [executeThreads, waitSaveMessage]);
+
+    useEffect(() => {
+        if (waitSaveMessage3) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveMessage3(false);
+                fetchThreadMessages(selectedChat?.threadid);
+                setIsLoading(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessage3(false);
+            }
+        }
+    }, [executeResult, waitSaveMessage3]);
 
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
