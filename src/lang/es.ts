@@ -6036,6 +6036,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   deliverytypeerror: 'Uno de los pedidos seleccionados tiene el tipo de entrega Recojo en tienda',
   allmustbesameorder: 'Los registros seleccionados deben pertenecer a la misma orden',
   needtopay: 'Falta confirmar el pago',
+
+  maxTMR: 'TMR máximo',
+  minTMR: 'TMR mínimo',
+
+
+
 };
 
 const esResource: ResourceLanguage = {

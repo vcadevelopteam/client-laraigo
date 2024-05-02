@@ -11,7 +11,7 @@ import { Box, Button, DialogActions, Divider, ListItemIcon, MenuItem, Paper, Pop
 import { CalendarIcon, DownloadIcon } from "icons";
 import { Range } from "react-date-range";
 import TableZyx from "components/fields/table-simple";
-import { convertLocalDate, exportExcel } from "common/helpers";
+import { exportExcel } from "common/helpers";
 import { langKeys } from "lang/keys";
 import { Dictionary } from "@types";
 import { useForm } from "react-hook-form";
@@ -23,32 +23,20 @@ import {  Card, CardContent, Grid } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SubjectIcon from '@material-ui/icons/Subject';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, Tooltip as RechartsTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList, Tooltip } from 'recharts';
 import GaugeChart from "react-gauge-chart";
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import { CellProps } from 'react-table';
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
+import PersonIcon from '@material-ui/icons/Person';
+import TrendingDownIcon from '@material-ui/icons/TrendingDown';import { CellProps } from 'react-table';
 import DialogInteractions from "components/inbox/DialogInteractions";
 interface Assessor {
     row: Dictionary | null;
     allFilters: Dictionary[];
 }
 
-const useStyles = makeStyles((theme) => ({
-    containerFilter: {
-        width: "100%",
-        padding: "10px",
-        marginBottom: "10px",
-        display: "flex",
-        gap: 8,
-        flexWrap: "wrap",
-        backgroundColor: "white",
-        justifyContent: "space-between",
-    },
-    filterComponent: {
-        minWidth: "220px",
-        maxWidth: "260px",
-    },
+const useStyles = makeStyles((theme) => ({      
     containerHeader: {
         display: "flex",
         flexWrap: "wrap",
@@ -65,18 +53,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: "14px",
         textTransform: "initial",
-    },
-    BackGrRed: {
-        backgroundColor: "#fb5f5f",
-    },
-    BackGrGreen: {
-        backgroundColor: "#55bd84",
-    },
-    iconHelpText: {
-        width: 15,
-        height: 15,
-        cursor: "pointer",
-    },
+    },       
     containerHeaderItem: {
         backgroundColor: "#FFF",
         padding: 8,
@@ -124,14 +101,12 @@ const columnsTemp = [
     "groups",
 ];
 
-
 type PieChartData = {
     name: string;
-    value: number;
+    value: number; 
 };
 
-
-const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
+const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -139,8 +114,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const mainAux = useSelector((state) => state.main.mainAux);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const mainResult = useSelector(state => state.main);
-
-    const [groupsdata, setgroupsdata] = useState<Dictionary>([]);
+    const [, setgroupsdata] = useState<Dictionary>([]);
     const [allParameters, setAllParameters] = useState({});
     const [dateRange, setdateRange] = useState<Range>({
         startDate: new Date(new Date().setDate(1)),
@@ -169,6 +143,10 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const [openModalTicket, setOpenModalTicket] = useState(false);
     const [view, setView] = useState("GRID");
     const [dataGrid, setdataGrid] = useState<Dictionary[]>([]);   
+
+    const [gaugeArcs, ] = useState([100, 100]);     
+    const formatTooltip = (value: number) => `${value}%`;
+    
     
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
@@ -178,7 +156,43 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         data: [],
     });
 
-    
+    const [orderType, setOrderType] = useState("");
+    const [sortBy, setSortBy] = useState("");
+
+    const dataForClosedTickets = dataGrid.map(item => ({
+        name: item.fullname,
+        value: parseInt(item.closedtickets)
+    })); 
+
+    const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
+
+    const [tabIndex, setTabIndex] = useState(0);
+    const [tabTexts] = useState([
+        { label: 'TMO', title: 'Tiempo Medio de la Operación' },
+        { label: 'TME', title: 'Tiempo de primera respuesta' },
+        { label: 'TMR', title: 'Tiempo promedio de respuesta' }
+    ]);
+
+    const handleChangeTab = (event: Dictionary, newValue: any) => {
+        setTabIndex(newValue);
+    };
+
+    let valueKey;
+    switch (tabIndex) {
+        case 0:
+            valueKey = "avgtotalasesorduration";
+            break;
+        case 1:
+            valueKey = "avgfirstreplytime";
+            break;
+        case 2:
+            valueKey = "tmravg";
+            break;
+        default:
+            valueKey = "tmravg";
+            break;
+    }
+
     useEffect(() => {        
         dispatch(setViewChange("report_userproductivity"));
         dispatch(getMultiCollection([
@@ -192,8 +206,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         };
     }, []);
 
-    const columns = React.useMemo(
-        
+    const columns = React.useMemo(        
         () => [
             {
                 Header: t(langKeys.report_userproductivity_user),
@@ -242,7 +255,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             {
                 Header: t(langKeys.report_userproductivity_minfirstreplytime),
                 accessor: 'minfirstreplytime',
-            },          
+            },  
+            {
+                Header: t(langKeys.report_userproductivity_avgtotalduration),
+                accessor: 'tiempoprimerarespuesta',
+            },        
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
@@ -286,16 +303,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             {
                 Header: t(langKeys.report_userproductivity_groups),
                 accessor: 'groups',
-            },
-            ...(mainAux.data.length > 0 ?
-                [...desconectedmotives.map((d: Dictionary) =>
-                ({
-                    Header: d,
-                    accessor: d,
-                })
-                )
-                ] : []
-            )
+            },           
         ],
         [isday, mainAux, desconectedmotives]
     );
@@ -324,11 +332,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                 accessor: 'tiempoprimerarespuesta',              
             },
             {
-                Header: t(langKeys.tmeAgent),
+                Header: t(langKeys.propertytmemaximo),
                 accessor: 'tiempoprimerarespuestaasesor',              
             },
             {
-                Header: t(langKeys.tme_help),
+                Header: t(langKeys.propertytmeminimo),
                 accessor: 'duraciontotal',             
             },
             {
@@ -336,23 +344,23 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                 accessor: 'tmoasesor',
             },
             {
-                Header: t(langKeys.tmo_help),
+                Header: t(langKeys.propertytmomaximo),
                 accessor: 'duracionpausa',
             },
             {
-                Header: t(langKeys.tmoasesorobj),
+                Header: t(langKeys.propertytmominimo),
                 accessor: 'supervisionduration',
             },          
             {
-                Header: t(langKeys.tmrAgent),
+                Header: t(langKeys.tmr),
                 accessor: 'tiempopromediorespuesta',
             },
             {
-                Header: t(langKeys.tmr),
+                Header: t(langKeys.maxTMR),
                 accessor: 'tiempopromediorespuestaasesor',
             },
             {
-                Header: t(langKeys.tmrClient),
+                Header: t(langKeys.minTMR),
                 accessor: 'tiempopromediorespuestapersona',
             },           
         ],
@@ -364,6 +372,15 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         setOpenModalTicket(true);
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
     }, [mainResult]); 
+
+    const convertMinutesToHHMMSS = (minutes: number) => {
+        const hours = Math.floor(minutes / 60);    
+        const remainingMinutes = minutes % 60;    
+        const formattedHours = String(hours).padStart(2, '0');
+        const formattedMinutes = String(remainingMinutes).padStart(2, '0');
+        const formattedSeconds = '00';     
+        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    };    
 
     const getColumns = (tabIndex: any) => {
         switch (tabIndex) {
@@ -383,10 +400,10 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                         accessor: 'mintotalduration',
                     },
                     {
-                        Header: t(langKeys.report_userproductivity_userconnectedduration),
+                        Header: t(langKeys.timeconnected),                      
                         accessor: 'userconnectedduration',
-                        type: "number",
-                        sortType: 'number',
+                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
+                        sortType: 'basic',
                     },
                 ];
             case 1: // TME
@@ -405,10 +422,10 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                         accessor: 'minfirstreplytime',
                     },
                     {
-                        Header: t(langKeys.report_userproductivity_userconnectedduration),
+                        Header: t(langKeys.timeconnected),                      
                         accessor: 'userconnectedduration',
-                        type: "number",
-                        sortType: 'number',
+                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
+                        sortType: 'basic',
                     },
                 ];
             case 2: // TMR
@@ -427,17 +444,16 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                         accessor: 'tmradvisermin',
                     },                   
                     {
-                        Header: t(langKeys.report_userproductivity_userconnectedduration),
+                        Header: t(langKeys.timeconnected),                      
                         accessor: 'userconnectedduration',
-                        type: "number",
-                        sortType: 'number',
+                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
+                        sortType: 'basic',
                     },
                 ];
             default:
                 return [];
         }
     };
-
 
     const columnsFulfillmentByTicket = (tabIndex: any) => {
         switch (tabIndex) {
@@ -490,8 +506,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                             } else {
                                 return "";
                             }
-                        },
-                        
+                        },                        
                     },
                     {
                         Header: t(langKeys.tme),
@@ -534,9 +549,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                 return [];
         }
     };
-
-
-
     
     useEffect(() => {
         if (allFilters) {
@@ -558,6 +570,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             }
         }
     }, [multiData, allFilters]);
+    
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
             setDetailCustomReport(mainAux);
@@ -708,51 +721,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             document.removeEventListener("click", handleClickOutside);
         };
     }, [anchorElSeButtons, setOpenSeButtons]);
-
-    const [orderType, setOrderType] = useState("");
-    const [sortBy, setSortBy] = useState("");
-
-    const dataForClosedTickets = dataGrid.map(item => ({
-        name: item.fullname,
-        value: parseInt(item.closedtickets)
-    }));
-
-
   
-
-
-   
-
-    const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
-
-    const [tabIndex, setTabIndex] = useState(0);
-    const [tabTexts] = useState([
-        { label: 'TMO', title: 'Tiempo Medio de la Operación' },
-        { label: 'TME', title: 'Tiempo de primera respuesta' },
-        { label: 'TMR', title: 'Tiempo promedio de respuesta' }
-    ]);
-
-    const handleChangeTab = (event: Dictionary, newValue: any) => {
-        setTabIndex(newValue);
-    };
-
-
-    let valueKey;
-    switch (tabIndex) {
-        case 0:
-            valueKey = "avgtotalasesorduration";
-            break;
-        case 1:
-            valueKey = "avgfirstreplytime";
-            break;
-        case 2:
-            valueKey = "tmravg";
-            break;
-        default:
-            valueKey = "tmravg";
-            break;
-    }
-
     const dataForAvgAgent = dataGrid.map(item => ({
         name: item.fullname,
         value: item[valueKey]
@@ -763,14 +732,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         const minutes = Number(timeString.minutes || 0);
         const seconds = Number(timeString.seconds || 0);
         return hours * 3600 + minutes * 60 + seconds;
-    };
-    
+    };    
     
     const dataForAvgAgentInSeconds = dataForAvgAgent.map(item => ({
         name: item.name,
         value: timeToSeconds(item.value)
     }));
-
     
     function calculateAverageTime(data: { [key: string]: string }[], key: string) {
         const totalSeconds = data.reduce((totalSeconds, item) => {
@@ -790,21 +757,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         const avgSecondsFinal = avgRemainingSeconds % 60;
     
         return `${String(avgHours).padStart(2, '0')}:${String(avgMinutes).padStart(2, '0')}:${String(avgSecondsFinal).padStart(2, '0')}`;
-    }
+    }    
     
-    
-
     const tmeValues = dataGrid.map(item => ({ TMEPromedio: item.avgfirstreplytime }));
     const tmrValues = dataGrid.map(item => ({ TMRPromedio: item.tmravg }));
     const tmoValues = dataGrid.map(item => ({ TMOAsesorPromedio: item.avgtotalasesorduration }));
-
     const avgTME = calculateAverageTime(tmeValues, 'TMEPromedio');   
     const avgTMR = calculateAverageTime(tmrValues, 'TMRPromedio');
     const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
-
-
-
-
 
     const sortedData = dataForClosedTickets.slice().sort((a, b) => {
         if (sortBy === "value") {
@@ -882,7 +842,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         localStorage.setItem('expectedTMRValue', expectedTMRValue);
     }, [expectedTMRValue]);
 
-
     const validateTime = (h: any, m: any, s: any): boolean => {
         const hourInt = parseInt(h, 10);
         const minuteInt = parseInt(m, 10);
@@ -899,15 +858,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             setErrorText('');
             return true;
         }
-    };
-
-    function formatTime(seconds: any) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const remainingSeconds = seconds % 60;
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-    }
-    
+    };    
 
     const handleAccept = () => {
         let accepted = false; 
@@ -929,43 +880,56 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
             accepted = true; 
         }
         return accepted;
-    };
-      
+    };      
 
-   
+    const updateDataForPie = (tabIndex: number, data: { duraciontotal: string, TME: string, TMR: string }[]) => {
+        let expectedValue: number = 0; 
+        if (tabIndex === 0) { expectedValue = getSecondsFromTimeString(expectedTMOValue); } 
+        else if (tabIndex === 1) { expectedValue = getSecondsFromTimeString(expectedTMEValue); } 
+        else if (tabIndex === 2) { expectedValue = getSecondsFromTimeString(expectedTMRValue); }
     
-  
-
-    const updateDataForPie = (tabIndex: any, data: { duraciontotal: string }[]) => {
-        let expectedValue: string = '00:00:00';
-        if (tabIndex === 0) {
-            expectedValue = expectedTMOValue;
-        } else if (tabIndex === 1) {
-            expectedValue = expectedTMEValue;
-        } else if (tabIndex === 2) {
-            expectedValue = expectedTMRValue;
-        }
-        const top10 = data.slice(0, 10);
-        const belowOrEqualToExpected = top10.filter(item => item.duraciontotal <= expectedValue).length;
-        const percentageBelowOrEqualToExpected = (belowOrEqualToExpected / 10) * 100;
-        const percentageAboveExpected = 100 - percentageBelowOrEqualToExpected;
+        const totalTickets = data.length;    
+        const ticketsMeetingExpectation = [];
+        const ticketsNotMeetingExpectation = [];
+    
+        data.forEach(item => {
+            let durationSeconds: number | undefined;
+            if (tabIndex === 0) {
+                durationSeconds = getSecondsFromTimeString(item.duraciontotal);
+            } else if (tabIndex === 1) {
+                durationSeconds = getSecondsFromTimeString(item.TME);
+            } else if (tabIndex === 2) {
+                durationSeconds = getSecondsFromTimeString(item.TMR);
+            }
+            
+            if (durationSeconds !== undefined) {
+                const meetsExpectation = durationSeconds <= expectedValue;
+                if (meetsExpectation) {
+                    ticketsMeetingExpectation.push(item);
+                } else {
+                    ticketsNotMeetingExpectation.push(item);
+                }
+            }
+        });
+    
+        const percentageMeetingExpectation = (ticketsMeetingExpectation.length / totalTickets) * 100;
+        const percentageNotMeetingExpectation = 100 - percentageMeetingExpectation;
+    
         setDataForPie([
-            { name: 'Cumple', value: percentageBelowOrEqualToExpected },
-            { name: 'No Cumple', value: percentageAboveExpected },
+            { name: 'Cumple', value: percentageMeetingExpectation },
+            { name: 'No Cumple', value: percentageNotMeetingExpectation },
         ]);
-    };
-
+    }; 
+    
     useEffect(() => {
         const duracionesTotales = mainPaginated.data.map(item => ({
             duraciontotal: item.duraciontotal,
             TME: item.tiempopromediorespuesta,
             TMR: item.tiempopromediorespuestapersona
         }));
-
-        updateDataForPie(tabIndex, duracionesTotales);
-    }, [mainPaginated.data, tabIndex]);
-
     
+        updateDataForPie(tabIndex, duracionesTotales);
+    }, [mainPaginated.data, tabIndex]);   
 
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
@@ -973,7 +937,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     };
 
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
 
     const slicedData = sortedData.slice(
         currentPage * itemsPerPage,
@@ -994,39 +958,9 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
     const slicedDataAsesor = sortedDataForAvgAgent.slice(
         currentPageAsesor * itemsPerPageAsesor,
         (currentPageAsesor + 1) * itemsPerPageAsesor        
-    );
+    );    
 
-
-
-
-    const generateRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-
-    const getNextColorGenerator = (): (() => string) => {
-        const predefinedColors = ["#7721AD", "#B41A1A", "#9DABBD", "#FFA000", "#50AE54", "#001AFF", "#2BD37B", "#FFA34F", "#FC0D1B", "#FFBF00", "#0F7F13", "#00CFE5", "#1D1856", "#FB5F5F", "#B061E1"];
-        let currentIndex = 0;
-        const usedColors = [...predefinedColors];
-    
-        return () => {
-            if (currentIndex < predefinedColors.length) {
-                const color = predefinedColors[currentIndex];
-                currentIndex++;
-                return color;
-            } else {
-                const randomColor = generateRandomColor();
-                if (!usedColors.includes(randomColor)) {
-                    usedColors.push(randomColor);
-                    return randomColor;
-                } else {
-                    return getNextColorGenerator()();
-                }
-            }
-        };
-    };    
-    const randomColorGenerator = getNextColorGenerator();
-
-    
-
-    const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, summary, ...rest }: Dictionary) => {
+    const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, summary }: Dictionary) => {
         const RADIAN = Math.PI / 180;
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -1078,27 +1012,19 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
         default:
             avg = '';
             tabExpectedValue = '';
-    }
-    
-    const [detaildata, ] = useState<Dictionary>({
-        previousvalue: getRandomInt(0, 100),
-        currentvalue: getRandomInt(0, 100),
-        updatedate: new Date().toISOString(),
-        target: isPromedioMenorEsperado(avgTME, expectedTMEValue) ? getRandomInt(50, 100) : getRandomInt(0, 50),
-        cautionat: isPromedioMenorEsperado(avgTME, expectedTMEValue) ? getRandomInt(30, 70) : getRandomInt(0, 30),
-        alertat: isPromedioMenorEsperado(avgTME, expectedTMEValue) ? getRandomInt(0, 30) : getRandomInt(70, 100)
-    });
-    
-    const [gaugeArcs, ] = useState([100, 100]);
-         
-    function getRandomInt(min: number, max: number) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }      
+
+    function formatTime(timeString: string) {
+        const timeParts = timeString.split(':');
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        const seconds = parseInt(timeParts[2]);
+        return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
     }
 
     return (
         <>
         {/* Inicio de la Cabezera 1 ----------------------------------------------------*/}
-
             <div style={{ display: "flex", gap: 8, marginBottom: '1rem', marginTop: '0.5rem' }}>
                 <div style={{ display: "flex" }}>
                     <Box width={1}>
@@ -1185,10 +1111,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                 </div>
             </div>
 
-
-
             {/* Tabs TMO TME TMR ----------------------------------------------------*/}
-
             <Tabs
                 value={tabIndex}
                 onChange={handleChangeTab}
@@ -1201,7 +1124,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                     <AntTab key={index} label={tab.label} />
                 ))}
             </Tabs>
-
 
             {/* Card Velocimetro TMO  ----------------------------------------------------*/}
             <div style={{margin: '0.5rem 0'}}>
@@ -1234,17 +1156,17 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                 animate={false}                               
                                 percent={
                                     isPromedioMenorEsperado(avg, tabExpectedValue) 
-                                    ? detaildata.currentvalue / (Math.max(detaildata.currentvalue, Math.ceil(detaildata.alertat * (isPromedioMenorEsperado(avg, tabExpectedValue) ? 3.2 : 1.4) / 10) * 10))
-                                    : detaildata.currentvalue / (Math.max(detaildata.currentvalue, Math.ceil(detaildata.target * 3.2 / 10) * 10))
+                                    ? 4.3
+                                    : 8.8
                                 }
                                 formatTextValue={() => ``}
                             />
                             <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', margin: '0', textAlign: 'center' }}>
                                 <div>{tabTexts[tabIndex].label} Promedio</div>
                                 <div style={{ fontWeight: 'normal' }}>
-                                    {tabIndex === 0 && avgTMO}
-                                    {tabIndex === 1 && avgTME}
-                                    {tabIndex === 2 && avgTMR}
+                                    {tabIndex === 0 && !isNaN(parseFloat(avgTMO)) ? formatTime(avgTMO) : tabIndex === 0 ? '00:00:00' : ''}
+                                    {tabIndex === 1 && !isNaN(parseFloat(avgTME)) ? formatTime(avgTME) : tabIndex === 1 ? '00:00:00' : ''}
+                                    {tabIndex === 2 && !isNaN(parseFloat(avgTMR)) ? formatTime(avgTMR) : tabIndex === 2 ? '00:00:00' : ''}
                                 </div>
                             </div>
                         </div>
@@ -1322,14 +1244,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                 <div>
                                     <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> Asesor con {tabTexts[tabIndex].label} Promedio</Typography>
                                 </div>
-
                                 <div style={{ display: 'flex', gap: 5 }}>
-                                
-                                    
-
-                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />
-                       
-                                
+                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />                      
                                     <div style={{ display: 'flex', gap: 8 }}>
                                         <Popper
                                             open={openSeButtons}
@@ -1342,22 +1258,19 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                 <Paper {...TransitionProps} elevation={5}>
                                                     <MenuItem
                                                         style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                    
                                                     >
                                                         <ListItemIcon>
-                                                            <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                            <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
                                                         </ListItemIcon>
                                                         <Typography variant="inherit">Mayor a Menor</Typography>
                                                     </MenuItem>
-                                                    <Divider />
-                                                
-
+                                                    <Divider />                                               
                                                     <div>
                                                         <MenuItem
                                                             style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
                                                         >
                                                             <ListItemIcon>
-                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                                <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                             </ListItemIcon>
                                                             <Typography variant="inherit">Menor a Mayor</Typography>
                                                         </MenuItem>
@@ -1370,29 +1283,21 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                             onClick={() => setOrderType("asc")}
                                                         >
                                                             <ListItemIcon>
-                                                                <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                                <PersonIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
                                                             </ListItemIcon>
                                                             <Typography variant="inherit">Por Nombre de Asesor</Typography>
                                                         </MenuItem>
-
                                                         <Divider />
-                                                    </div>
-                                            
-                                                
+                                                    </div>                                    
                                                 </Paper>
                                             )}
                                         </Popper>
                                     </div>
-
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
-                                            
                                 </div>
                             </div>
-
-                            <div style={{ margin: '1rem 0' }}>
-                                                                                 
+                            <div style={{ margin: '1rem 0' }}>                                                                                 
                                 <div style={{ }}>   
-
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
                                         <Button
                                             color="primary"
@@ -1411,9 +1316,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                         >
                                             <KeyboardArrowRightIcon />
                                         </Button>
-
                                     </div>
-
                                     <ResponsiveContainer height={300}>
                                         <BarChart
                                             data={slicedDataAsesor}
@@ -1432,18 +1335,9 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                 }    
                                             </Bar>
                                         </BarChart>
-                                    </ResponsiveContainer>
-
-                                    
-
-                                
-                                </div>
-
-
-
-                                  
+                                    </ResponsiveContainer>         
+                                </div>    
                             </div>
-
                         </CardContent>
                     </Card>
                 </Grid>
@@ -1455,14 +1349,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
                                     <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>Cumplimiento {tabTexts[tabIndex].label} por Ticket</Typography>
-                                </div>
-                              
+                                </div>                              
                             </div>
-
                             <div style={{ margin: '1rem 0',  display: 'flex' }}>
                                 <ResponsiveContainer height={300}>
                                     <PieChart>
-                                        <ChartTooltip />
+                                        <Tooltip formatter={formatTooltip} />
                                         <Pie
                                             data={dataForPie}
                                             dataKey="value"
@@ -1474,8 +1366,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             innerRadius={40}
                                             fill="#7721AD"
                                         >
-                                             {dataForClosedTickets.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={randomColorGenerator()} />
+                                            {dataForClosedTickets.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#7721AD" : "#B41A1A"} />
                                             ))}
                                         </Pie>
                                     </PieChart>
@@ -1490,35 +1382,21 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                         register={false}     
                                         toolsFooter={false}   
                                         pageSizeDefault={10}                                                                     
-                                    />
-                           
+                                    />                           
                                 </div>
                             </div>
-
-                          
-                            
-
                         </CardContent>
                     </Card>
-
                     <DialogInteractions
                         openModal={openModalTicket}
                         setOpenModal={setOpenModalTicket}
                         ticket={rowSelected}
                     />
-
-
                 </Grid>
-
             </Grid>
 
-
-
-
-            <Grid container spacing={3} className={classes.containerDetails}>
-                
+            <Grid container spacing={3} className={classes.containerDetails}>                
                 {/* Card N° Tickets Cerrados  ----------------------------------------------------*/}
-
                 <Grid item xs={12} md={6} lg={6}>
                     <Card style={{height:'32rem'}}>
                         <CardContent >
@@ -1527,12 +1405,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                     <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Tickets Cerrados</Typography>
                                     <Typography style={{  fontSize: '1.3rem' }}>{totalClosedTickets}</Typography>
                                 </div>
-
-                                <div style={{ display: 'flex', gap: 5 }}>                               
-                                    
-                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />
-                       
-                                
+                                <div style={{ display: 'flex', gap: 5 }}>                             
+                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />                      
                                     <div style={{ display: 'flex', gap: 8 }}>
                                     <Popper
                                         open={openSeButtons}
@@ -1551,7 +1425,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                     }}
                                                 >
                                                     <ListItemIcon>
-                                                        <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                        <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
                                                     </ListItemIcon>
                                                     <Typography variant="inherit">Mayor a Menor</Typography>
                                                 </MenuItem>
@@ -1567,7 +1441,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                         }}
                                                     >
                                                         <ListItemIcon>
-                                                            <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                         </ListItemIcon>
                                                         <Typography variant="inherit">Menor a Mayor</Typography>
                                                     </MenuItem>
@@ -1583,7 +1457,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                         }}
                                                     >
                                                         <ListItemIcon>
-                                                            <SubjectIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            <PersonIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                         </ListItemIcon>
                                                         <Typography variant="inherit">Por Nombre de Asesor</Typography>
                                                     </MenuItem>
@@ -1593,18 +1467,13 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                             </Paper>
                                         )}
                                     </Popper>
-
                                     </div>
-
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("closedTicketsReport" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
-                                            
                                 </div>
                             </div>
-
-                            <div style={{ margin: '1rem 0' }}>
-                                                                                 
-                                <div >   
-
+                            
+                            <div style={{ margin: '1rem 0' }}>                                                                                 
+                                <div>   
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
                                     <Button
                                             color="primary"
@@ -1643,20 +1512,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                                 }    
                                             </Bar>
                                         </BarChart>
-                                    </ResponsiveContainer>
-
-                                    
-
-                                
+                                    </ResponsiveContainer>   
                                 </div>                                  
                             </div>
-
                         </CardContent>
                     </Card>
                 </Grid>
 
                 {/* Card N° Asesores  ----------------------------------------------------*/}
-
                 <Grid item xs={12} md={6} lg={6}>
                     <Card style={{height:'32rem'}}>
                         <CardContent >                          
@@ -1677,264 +1540,26 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters, row }) => {
                                 download={false}
                                 loading={detailCustomReport.loading}
                                 register={false}
-                                pageSizeDefault={10}
-                           
-                               
+                                pageSizeDefault={10}                          
                             />
-
                         </CardContent>
                     </Card>
                 </Grid>
-
             </Grid>
 
-
-
-
-
-
-
-           
-
-
-
-
-
-
-        
-       
-
-            {view === "GRID" ? (
-
-                <>
-                    <div style={{margin: '1rem 0'}}>
-                        <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>
-                         
-                                <TableZyx
-                                    columns={columns}
-                                    filterGeneral={false}
-                                    data={dataGrid}
-                                    download={false}
-                                    loading={detailCustomReport.loading}
-                                    register={false}
-                                    ButtonsElement={() => (
-                                        <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                                            <Button
-                                                className={classes.button}
-                                                variant="contained"
-                                                color="primary"
-                                                disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
-                                                onClick={() => setOpenModal(true)}
-                                                startIcon={<AssessmentIcon />}
-                                            >
-                                                {t(langKeys.graphic_view)}
-                                            </Button>
-                                            <Button
-                                                className={classes.button}
-                                                variant="contained"
-                                                color="primary"
-                                                disabled={detailCustomReport.loading}
-                                                onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))}
-                                                startIcon={<DownloadIcon />}
-                                            >{t(langKeys.download)}
-                                            </Button>
-                                        </Box>
-                                    )}
-                                />
-                           
-                        </Card>
-
-                      
-
-                    </div>    
-                
-                </>
-               
-            ) : (
-                <div>
-                    <Box
-                        style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}
-                        className={classes.containerHeaderItem}
-                    >
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
-                            onClick={() => setOpenModal(true)}
-                            startIcon={<Settings />}
-                        >
-                            {t(langKeys.configuration)}
-                        </Button>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setView("GRID")}
-                            startIcon={<ListIcon />}
-                        >
-                            {t(langKeys.grid_view)}
-                        </Button>
-                    </Box>
-                    <Graphic
-                        graphicType={view.split("-")?.[1] || "BAR"}
-                        column={view.split("-")?.[2] || "summary"}
-                        openModal={openModal}
-                        setOpenModal={setOpenModal}
-                        daterange={{
-                            startDate: dateRange.startDate?.toISOString().substring(0, 10),
-                            endDate: dateRange.endDate?.toISOString().substring(0, 10),
-                        }}
-                        withFilters={false}
-                        setView={setView}
-                        withButtons={false}
-                        row={{ origin: "userproductivity" }}
-                        handlerSearchGraphic={handlerSearchGraphic}
-                    />
-                </div>
-            )}
-
-            <SummaryGraphic
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                setColumnGraphic={setColumnGraphic}
-                setView={setView}
-                daterange={dateRange}
-                filters={allParameters}
-                columns={[
-                    ...columnsTemp.map((c) => ({
-                        key: c,
-                        value: `report_userproductivity_${c}`,
-                    })),
-                    ...desconectedmotives.map((d: Dictionary) => ({
-                        key: `desconectedtimejson::json->>'${d}'`,
-                        value: d,
-                    })),
-                ]}
-            />          
+            <div style={{margin: '1rem 0'}}>
+                <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>                         
+                        <TableZyx
+                            columns={columns}
+                            filterGeneral={false}
+                            data={dataGrid}
+                            download={false}
+                            loading={detailCustomReport.loading}
+                            register={false}                                   
+                        />                           
+                </Card>
+            </div>                          
         </>
     );
 };
-
-interface SummaryGraphicProps {
-    openModal: boolean;
-    setOpenModal: (value: boolean) => void;
-    setView: (value: string) => void;
-    setColumnGraphic: (value: string) => void;
-    row?: Dictionary | null;
-    daterange: Dictionary;
-    filters?: Dictionary;
-    columns: Dictionary[];
-    columnsprefix?: string;
-}
-
-const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
-    openModal,
-    setOpenModal,
-    setView,  
-    filters,
-    columns,
-    setColumnGraphic,
-}) => {
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        getValues,
-        formState: { errors },
-    } = useForm<Dictionary>({
-        defaultValues: {
-            graphictype: "BAR",
-            column: "chamare",
-        },
-    });
-
-    useEffect(() => {
-        register("graphictype", { validate: (value: Dictionary) => (value && value.length) || t(langKeys.field_required) });
-        register("column", { validate: (value: Dictionary) => (value && value.length) || t(langKeys.field_required) });
-    }, [register]);
-
-    const handleCancelModal = () => {
-        setOpenModal(false);
-    };
-
-    const handleAcceptModal = handleSubmit((data) => {
-        triggerGraphic(data);
-    });
-
-    const triggerGraphic = (data: Dictionary) => {
-        setView(`CHART-${data.graphictype}-${data.column?.split("::")[0]}`);
-        setOpenModal(false);
-        setColumnGraphic(data.column);
-        dispatch(
-            getMainGraphic(
-                getUserProductivityGraphic({
-                    ...filters,
-                    column: data.column,
-                    summarization: "COUNT",
-                })
-            )
-        );
-    };
-    const excludeUserProductivity = [
-        "hourfirstlogin",
-        "avgfirstreplytime",
-        "maxfirstreplytime",
-        "minfirstreplytime",
-        "avgtotalasesorduration",
-        "groups",
-    ];
-
-    const filteredColumns = columns.filter((column) => !excludeUserProductivity.includes(column.key));
-
-    return (
-        <DialogZyx
-            open={openModal}
-            title={t(langKeys.graphic_configuration)}
-            button1Type="button"
-            buttonText1={t(langKeys.cancel)}
-            handleClickButton1={handleCancelModal}
-            button2Type="button"
-            buttonText2={t(langKeys.accept)}
-            handleClickButton2={handleAcceptModal}
-        >
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.graphic_type)}
-                    className="col-12"
-                    valueDefault={getValues("graphictype")}
-                    error={errors?.graphictype?.message}
-                    onChange={(value) => setValue("graphictype", value?.key)}
-                    data={[
-                        { key: "BAR", value: "BAR" },
-                        { key: "PIE", value: "PIE" },
-                        { key: "LINE", value: "LINEA" },
-                    ]}
-                    uset={true}
-                    prefixTranslation="graphic_"
-                    optionDesc="value"
-                    optionValue="key"
-                />
-            </div>
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.graphic_view_by)}
-                    className="col-12"
-                    valueDefault={getValues("column")}
-                    error={errors?.column?.message}
-                    onChange={(value) => setValue("column", value?.key)}
-                    data={filteredColumns}
-                    optionDesc="value"
-                    optionValue="key"
-                    uset={true}
-                    prefixTranslation=""
-                />
-            </div>
-        </DialogZyx>
-    );
-};
-
 export default AssesorProductivityReport;

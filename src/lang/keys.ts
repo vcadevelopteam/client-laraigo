@@ -6032,6 +6032,14 @@ export const langKeys = {
   deliverytypeerror: 'deliverytypeerror',
   allmustbesameorder: 'allmustbesameorder',
   needtopay: 'needtopay',
+
+  maxTMR: 'maxTMR',
+  minTMR: 'minTMR',
+
+
+
+
+
 };
 
 export type LangKeys = typeof langKeys;
