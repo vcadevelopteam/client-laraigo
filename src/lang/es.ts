@@ -6082,6 +6082,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   app_orders_in_attention: 'Pedidos en atención',
   app_order_list: 'Lista de pedidos',
   app_orders_in_store: 'Pedidos en tienda',
+
+  maxTMR: 'TMR máximo',
+  minTMR: 'TMR mínimo',
+
+
+
 };
 
 const esResource: ResourceLanguage = {

@@ -6135,6 +6135,11 @@ const translation: LangKeys = {
   app_orders_in_attention: 'Orders in attention',
   app_order_list: 'Order list',
   app_orders_in_store: 'Orders in store',
+
+  maxTMR: 'TMR maximum',
+  minTMR: 'TMR minimum',
+
+
 };
 
 const enResource: ResourceLanguage = {

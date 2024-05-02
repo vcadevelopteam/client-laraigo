@@ -6080,6 +6080,14 @@ export const langKeys = {
   app_orders_in_attention: 'app_orders_in_attention',
   app_order_list: 'app_order_list',
   app_orders_in_store: 'app_orders_in_store',
+
+  maxTMR: 'maxTMR',
+  minTMR: 'minTMR',
+
+
+
+
+
 };
 
 export type LangKeys = typeof langKeys;
