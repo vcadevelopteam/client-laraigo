@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { Button, Menu, MenuItem, makeStyles } from "@material-ui/core";
+import { Button, Menu, MenuItem, Tooltip, makeStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Dictionary } from "@types";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 
 const useStyles = makeStyles(() => ({
 	main: {
@@ -17,7 +18,16 @@ const useStyles = makeStyles(() => ({
         "&:hover": {
             backgroundColor: '#E6E6E6'
         }
-    }
+    },
+    subtittles: {
+        fontSize: '1rem', 
+        fontWeight:"bold",
+    },   
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    },
 }));
 
 interface TemplateIconsProps {
@@ -108,5 +118,24 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
                 )}
             </Menu>
         </div>
+    );
+};
+
+interface CustomTitleHelperProps {
+    title: string;
+    helperText?: string; 
+}
+  
+export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
+    const classes = useStyles();
+    return (
+        <span className={classes.subtittles}>
+            {title}
+            {helperText ? (
+                <Tooltip title={helperText} arrow placement="top" >
+                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                </Tooltip>
+            ) : ""}
+        </span>
     );
 };

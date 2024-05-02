@@ -6052,6 +6052,21 @@ export const langKeys = {
   deletevariable: 'deletevariable',
   static: 'static',
   dynamic: 'dynamic',
+  heading: 'heading',
+  messagecontent: 'messagecontent',
+  authenticationmessagecontent: 'authenticationmessagecontent',
+  addsecurityadvice: 'addsecurityadvice',
+  addlastdatecode: 'addlastdatecode',
+  introudceavalue: 'introudceavalue',
+  expiresin: 'expiresin',
+  buttontextauth: 'buttontextauth',
+  advanceconfig: 'advanceconfig',
+  validityperiodmessages: 'validityperiodmessages',
+  validityperiodtext: 'validityperiodtext',
+  configvalidityperiod: 'configvalidityperiod',
+  validityperiodconfigcondition: 'validityperiodconfigcondition',
+  validityperiod: 'validityperiod',
+  validityperiodhelptext: 'validityperiodhelptext',
 };
 
 export type LangKeys = typeof langKeys;

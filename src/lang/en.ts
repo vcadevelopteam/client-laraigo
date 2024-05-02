@@ -6109,6 +6109,21 @@ const translation: LangKeys = {
   deletevariable: 'Delete variable',
   static: 'Static',
   dynamic: 'Dynamic',
+  heading: 'Header',
+  messagecontent: 'Message content',
+  authenticationmessagecontent: 'Basic authentication with quick configuration. Your customers copy and paste the code into your application.',
+  addsecurityadvice: 'Add safety recommendation',
+  addlastdatecode: 'Add expiration date for the code',
+  introudceavalue: 'Enter a value between 1 and 90',
+  expiresin: 'Expires in',
+  buttontextauth: 'You can customize the button text both to autofill and to copy code.',
+  advanceconfig: 'Advanced Configuration',
+  validityperiodmessages: 'Validity period of messages',
+  validityperiodtext: 'It is recommended to set a custom validity period in which your authentication message must be delivered before it expires. If the message is not delivered within that interval, you will not be charged and your customer will not see it.',
+  configvalidityperiod: 'Configure the custom validity period of your authentication message',
+  validityperiodconfigcondition: 'If you do not set a custom validity period, the standard validity period for WhatsApp messages, which is 30 days, will apply.',
+  validityperiod: 'Validity period',
+  validityperiodhelptext: 'It is recommended to set a validity period that is equal to or less than the expiration time of the code to ensure that the code can still be used when users receive the message.',
 };
 
 const enResource: ResourceLanguage = {

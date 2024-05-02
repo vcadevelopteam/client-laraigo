@@ -53,7 +53,7 @@ import React, { FC, Suspense, useCallback, useEffect, useState } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
-import { AddButtonMenu } from "../components/components";
+import { AddButtonMenu, CustomTitleHelper } from "../components/components";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -179,6 +179,18 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 10,
         cursor: 'pointer',
         backgroundColor: '#F3F7FF'
+    },
+    warningContainer: {
+        backgroundColor: '#FFD9D9',
+        padding: 10,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        borderRadius: 5
+    },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 20
     }
 }));
 
@@ -221,6 +233,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [selectedFile, setSelectedFile] = useState<Dictionary | null>(null)
     const [isHeaderVariable, setIsHeaderVariable] = useState(false)
     const [bodyVariables, setBodyVariables] = useState<string[]>([])
+    const [addSafetyAdvice, setAddSafetyAdvice] = useState(false)
+    const [addLastDateCode, setAddLastDateCode] = useState(false)
 
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -345,6 +359,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: 2, text: t(langKeys.messagetemplate_medium) },
         { value: 3, text: t(langKeys.messagetemplate_high) },
     ];
+
+    const dataValidityPeriod = [
+        { value: 1, text: `1 ${t(langKeys.minutes)}`},
+        { value: 2, text: `2 ${t(langKeys.minutes)}`},
+        { value: 3, text: `3 ${t(langKeys.minutes)}`},
+        { value: 5, text: `5 ${t(langKeys.minutes)}`},
+        { value: 10, text: `10 ${t(langKeys.minutes)}`},
+    ]
 
     const {
         formState: { errors },
@@ -1095,7 +1117,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messagetype)}</span>
                         <span>{t(langKeys.messagetypetext)}</span>
                     </div>
-                    <div className="row-zyx">
+                    <div className="row-zyx" style={{display: 'flex', alignItems: 'center'}}>
                         <FieldSelect
                             className="col-4"
                             data={dataMessageType}
@@ -1109,8 +1131,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         />
                         {getValues("type") === '' && (
                             <div className="col-4">
-                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFDEDE', borderRadius: 5, width: 220, height: '100%', gap: '1rem'}}>
-                                    <WarningIcon style={{color: 'red'}}/>
+                                <div className={classes.warningContainer} style={{width: 220}}>
+                                    <WarningIcon style={{color: '#FF7575'}}/>
                                     Selecciona una opción
                                 </div>
                             </div>
@@ -1187,7 +1209,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 disabled={disableInput}
                                 error={errors?.name?.message}
                                 label={getValues('type') !== 'HSM' ? t(langKeys.name) : ''}
-                                onChange={(value) => setValue("name", value)}
+                                onChange={(value) => {
+                                    setValue("name", value)
+                                    trigger('name')
+                                }}
                                 valueDefault={getValues("name")}
                                 maxLength={512}
                                 variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
@@ -1203,7 +1228,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         error={errors?.language?.message}
                                         label={getValues('type') !== 'HSM' ? t(langKeys.language) : ''}
                                         variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
-                                        onChange={(value) => setValue("language", value?.value)}
+                                        onChange={(value) => {
+                                            if(value) {
+                                                setValue("language", value.value)
+                                                trigger("language")
+                                            } else {
+                                                setValue("language", '')
+                                                trigger("language")
+                                            }
+                                        }}
                                         optionDesc="description"
                                         optionValue="value"
                                         valueDefault={getValues("language")}
@@ -1220,7 +1253,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         data={dataLanguage}
                                         disabled={disableInput}
                                         error={errors?.language?.message}
-                                        onChange={(value) => setValue("language", value?.domainvalue)}
+                                        onChange={(value) => {
+                                            if(value) {
+                                                setValue("language", value.value)
+                                                trigger("language")
+                                            } else {
+                                                setValue("language", '')
+                                                trigger("language")
+                                            }
+                                        }}
                                         optionDesc="domaindesc"
                                         optionValue="domainvalue"
                                         uset={true}
@@ -1235,10 +1276,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     </div>
                     {getValues("type") === "HSM" && (
                         <div style={{display: 'flex', marginBottom: 10}}>
-                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                <span style={{fontWeight: 'bold'}}>{t(langKeys.templatetype)}</span>
-                                <span>Seleccione el tipo de plantilla que utilizarás</span>
-                            </div>
+                            {getValues("category") !== 'AUTHENTICATION' && (
+                                <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
+                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.templatetype)}</span>
+                                    <span>Seleccione el tipo de plantilla que utilizarás</span>
+                                </div>
+                            )}
                             <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
                                 <span style={{fontWeight: 'bold'}}>{t(langKeys.channel)}</span>
                                 <span>Seleccione el canal en el que registrarás tu plantilla</span>
@@ -1248,19 +1291,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     <div className="row-zyx">
                         {getValues("type") !== '' && (
                             <>
-                                <FieldSelect
-                                    className="col-6"
-                                    data={getValues("type") !== 'HSM' ? dataTemplateType : dataTemplateType.filter((x: Dictionary) => {return x.value !== 'STANDARD'})}
-                                    disabled={templateTypeDisabled || disableInput}
-                                    error={errors?.templatetype?.message}
-                                    onChange={onChangeTemplateType}
-                                    optionDesc="text"
-                                    optionValue="value"
-                                    valueDefault={getValues("templatetype")}
-                                    label={getValues('type') !== 'HSM' ? t(langKeys.templatetype) : ''}
-                                    variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
-                                    size="normal"
-                                />
+                                {getValues("category") !== 'AUTHENTICATION' && (
+                                    <FieldSelect
+                                        className="col-6"
+                                        data={getValues("type") !== 'HSM' ? dataTemplateType : dataTemplateType.filter((x: Dictionary) => {return x.value !== 'STANDARD'})}
+                                        disabled={templateTypeDisabled || disableInput}
+                                        error={errors?.templatetype?.message}
+                                        onChange={onChangeTemplateType}
+                                        optionDesc="text"
+                                        optionValue="value"
+                                        valueDefault={getValues("templatetype")}
+                                        label={getValues('type') !== 'HSM' ? t(langKeys.templatetype) : ''}
+                                        variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
+                                        size="normal"
+                                    />
+                                )}
                                 <FieldSelect
                                     className="col-6"
                                     data={dataChannel}
@@ -1281,11 +1326,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
                         <div>
                             <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
+                                <span className={classes.title}>{t(langKeys.templateedition)}</span>
                             </div>
                             <div style={{display: 'flex'}}>
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
-                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.header)}</span>
+                                    <span className={classes.title}>{t(langKeys.heading)}</span>
                                     <span style={{marginBottom: 10}}>Añade un título o elige qué tipo de contenido usarás para este encabezado.</span>
                                     <div style={{display: 'flex', gap: 10}}>
                                         <div style={{width: 180, marginBottom: 20}}>
@@ -1329,7 +1374,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     />
                                                 </div>
                                             </div>
-                                            <div style={{backgroundColor: '#FFD9D9', padding: 10, display: 'flex', alignItems: 'center', gap: 10}}>
+                                            <div className={classes.warningContainer}>
                                                 <WarningIcon style={{color: '#FF7575'}}/>
                                                 {t(langKeys.addexampletext)}
                                             </div>
@@ -1412,7 +1457,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         )}
                                                     </div>
                                                     {!selectedFile && (
-                                                        <div style={{ backgroundColor: '#FFD9D9', padding: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                        <div className={classes.warningContainer}>
                                                             <WarningIcon style={{ color: '#FF7575' }} />
                                                             Añade contenido multimedia de ejemplo
                                                         </div>
@@ -1421,7 +1466,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             )}
                                         </div>
                                     )}
-                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.body)}</span>
+                                    <span className={classes.title}>{t(langKeys.body)}</span>
                                     <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
                                     <div style={{maxWidth: '100%'}}>
                                         <React.Fragment>
@@ -1478,13 +1523,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     </div>
                                                 );
                                             })}
-                                            <div style={{backgroundColor: '#FFD9D9', padding: 10, display: 'flex', alignItems: 'center', gap: 10}}>
+                                            <div className={classes.warningContainer}>
                                                 <WarningIcon style={{color: '#FF7575'}}/>
                                                 {t(langKeys.addexampletext)}
                                             </div>
                                         </div>
                                     )}
-                                    <span style={{fontWeight: 'bold', marginTop: 20}}>{t(langKeys.footer)}</span>
+                                    <span className={classes.title} style={{marginTop: 20}}>{t(langKeys.footer)}</span>
                                     <span style={{marginBottom: 5}}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
                                     <FieldEditMulti
                                         error={errors?.footer?.message}
@@ -1493,7 +1538,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         rows={2}
                                         valueDefault={getValues("footer")}
                                     />
-                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.buttons)}</span>
+                                    <span className={classes.title}>{t(langKeys.buttons)}</span>
                                     <span style={{marginBottom: 5}}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
                                     <div style={{display: 'flex'}}>
                                         {(getValues("buttons")?.length + getValues("buttonstext")?.length + getValues("buttonsphone")?.length) < 10 && (
@@ -1630,7 +1675,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                             />
                                                                         </div>
                                                                     </div>
-                                                                    <div style={{backgroundColor: '#FFD9D9', padding: 10, display: 'flex', alignItems: 'center', gap: 10}}>
+                                                                    <div className={classes.warningContainer}>
                                                                         <WarningIcon style={{color: '#FF7575'}}/>
                                                                         {t(langKeys.addexampletext)}
                                                                     </div>
@@ -1708,7 +1753,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     )}
                                 </div>
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
-                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.messagepreview)}</span>
+                                    <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
                                     <div style={{height: 300, width: '100%', border: '1px solid black'}}/>
                                 </div>
@@ -1719,6 +1764,104 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         <div>
                             <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
                                 <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
+                            </div>
+                            <div style={{display: 'flex'}}>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
+                                    <span className={classes.title}>{t(langKeys.messagecontent)}</span>
+                                    <span style={{marginBottom: 10}}>{t(langKeys.authenticationmessagecontent)}</span>
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                        <Checkbox
+                                            checked={addSafetyAdvice}
+                                            color="primary"
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setAddSafetyAdvice(true);
+                                                } else {
+                                                    setAddSafetyAdvice(false);
+                                                }
+                                            }}
+                                        />
+                                        <span>{t(langKeys.addsecurityadvice)}</span>
+                                    </div>
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                        <Checkbox
+                                            checked={addLastDateCode}
+                                            color="primary"
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setAddLastDateCode(true);
+                                                } else {
+                                                    setAddLastDateCode(false);
+                                                }
+                                            }}
+                                        />
+                                        <span>{t(langKeys.addlastdatecode)}</span>
+                                    </div>
+                                    <div style={{display: 'flex', flexDirection: 'column', border: '1px solid #B4B4B4', backgroundColor: '#F1F1F1', padding: 15, borderRadius: 10, marginTop: 10, marginBottom: 20}}>
+                                        <span style={{fontWeight: 'bold', marginBottom: 8}}>{t(langKeys.expiresin)}</span>
+                                        <div style={{display: 'flex', gap: 20, alignItems: 'center'}}>
+                                            <FieldEdit
+                                                type="number"
+                                                label={t(langKeys.minutes)}
+                                                variant="outlined"
+                                                size="small"
+                                            />
+                                            <div className={classes.warningContainer}>
+                                                <WarningIcon style={{color: '#FF7575'}}/>
+                                                <span>{t(langKeys.introudceavalue)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span className={classes.title}>{t(langKeys.buttontext)}</span>
+                                    <span style={{marginBottom: 10}}>{t(langKeys.buttontextauth)}</span>
+                                    <div style={{width: '50%', marginBottom: 20}}>
+                                        <FieldEdit
+                                            label={t(langKeys.code)}
+                                            maxLength={25}
+                                            size="small"
+                                            variant="outlined"
+                                        />
+                                    </div>
+                                    <span className={classes.title} style={{marginBottom: 10}}>{t(langKeys.advanceconfig)}</span>
+                                    <span className={classes.title}>{t(langKeys.validityperiodmessages)}</span>
+                                    <span style={{marginBottom: 10}}>{t(langKeys.validityperiodtext)}</span>
+                                    <div style={{display: 'flex', alignItems: 'start', marginTop: 10}}>
+                                        <Checkbox
+                                            checked={addLastDateCode}
+                                            color="primary"
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setAddLastDateCode(true);
+                                                } else {
+                                                    setAddLastDateCode(false);
+                                                }
+                                            }}
+                                        />
+                                        <div style={{display: 'flex', flexDirection: 'column'}}>
+                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.configvalidityperiod)}</span>
+                                            <span>{t(langKeys.validityperiodconfigcondition)}</span>
+                                        </div>
+                                    </div>
+                                    <div style={{display: 'flex', flexDirection: 'column', padding: '15px 25px', backgroundColor: '#F5F5F5', border: '1px solid #ACACAC', borderRadius: 10, marginTop: 10}}>
+                                        <CustomTitleHelper
+                                            title={t(langKeys.validityperiod) + ' '}
+                                            helperText={t(langKeys.test)}
+                                        /> 
+                                        <div style={{backgroundColor: 'white', width: 250, marginTop: 5}}>
+                                            <FieldSelect
+                                                data={dataValidityPeriod}
+                                                optionDesc="text"
+                                                optionValue="data"
+                                                variant="outlined"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
+                                    <span className={classes.title}>{t(langKeys.messagepreview)}</span>
+                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
+                                    <div style={{height: 300, width: '100%', border: '1px solid black'}}/>
+                                </div>
                             </div>
                         </div>
                     )}
