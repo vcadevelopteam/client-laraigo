@@ -233,6 +233,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [selectedFile, setSelectedFile] = useState<Dictionary | null>(null)
     const [isHeaderVariable, setIsHeaderVariable] = useState(false)
     const [bodyVariables, setBodyVariables] = useState<string[]>([])
+    const [bubbleVariables, setBubbleVariables] = useState<string[]>([])
     const [addSafetyAdvice, setAddSafetyAdvice] = useState(false)
     const [addLastDateCode, setAddLastDateCode] = useState(false)
 
@@ -1051,6 +1052,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setCategory(categoryText)
         setValue('category', categoryText)
 
+        setValue('templatetype', '')
+        setValue('name', '')
+        setValue('language', '')
+        trigger('templatetype')
+        trigger('name')
+        trigger('language')
         setBodyVariables([])
         setValue("headertype", "none");
         setHeaderMedia('')
@@ -1856,6 +1863,88 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             />
                                         </div>
                                     </div>
+                                </div>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
+                                    <span className={classes.title}>{t(langKeys.messagepreview)}</span>
+                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
+                                    <div style={{height: 300, width: '100%', border: '1px solid black'}}/>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {getValues("type") === 'HSM' &&
+                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) &&(
+                        <div>
+                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
+                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
+                            </div>
+                            <div style={{display: 'flex'}}>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
+                                    <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
+                                    <span style={{marginBottom: 10}}>{t(langKeys.bubblemessagetext)}</span>
+                                    <div style={{maxWidth: '100%'}}>
+                                        <React.Fragment>
+                                            <RichText
+                                                spellCheck
+                                                emoji={true}
+                                                value={bodyObject}
+                                                onChange={(value) => {
+                                                    setBodyObject(value);
+                                                }}
+                                                positionEditable="top"
+                                                style={{
+                                                    borderColor: "#762AA9",
+                                                    borderRadius: "4px",
+                                                    borderStyle: "solid",
+                                                    borderWidth: "1px",
+                                                    padding: "10px",
+                                                }}
+                                            />
+                                        </React.Fragment>
+                                    </div>
+                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
+                                        {bubbleVariables.length < 20 &&(
+                                            <Button
+                                                className={classes.button}
+                                                startIcon={<AddIcon />}
+                                                onClick={() => setBubbleVariables([...bubbleVariables, ''])}
+                                            >
+                                                {t(langKeys.addvariable)}
+                                            </Button>
+                                        )}
+                                        <Button
+                                            className={classes.button}
+                                            startIcon={<CloseIcon />}
+                                            onClick={() => setBubbleVariables(bubbleVariables.slice(0,-1))}
+                                        >
+                                            {t(langKeys.deletevariable)}
+                                        </Button>
+                                    </div>
+                                    {bubbleVariables.length > 0 && (
+                                        <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
+                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
+                                            {bubbleVariables.map((v: string, index: number) => {
+                                                return (
+                                                    <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
+                                                        <span>{'{{'}{index + 1}{'}}'}</span>
+                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                            <FieldEdit
+                                                                variant="outlined"
+                                                                size="small"
+                                                                valueDefault={v}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                            <div className={classes.warningContainer}>
+                                                <WarningIcon style={{color: '#FF7575'}}/>
+                                                {t(langKeys.addexampletext)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    <span className={classes.title}>{t(langKeys.messagetemplate_carousel)}</span>
+                                    <span style={{marginBottom: 10}}>Configura tus cards de carrusel añadiendo imágenes, texto, variables y botones</span>
                                 </div>
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>

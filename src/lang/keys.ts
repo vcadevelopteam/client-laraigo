@@ -6067,6 +6067,8 @@ export const langKeys = {
   validityperiodconfigcondition: 'validityperiodconfigcondition',
   validityperiod: 'validityperiod',
   validityperiodhelptext: 'validityperiodhelptext',
+  bubblemessage: 'bubblemessage',
+  bubblemessagetext: 'bubblemessagetext',
 };
 
 export type LangKeys = typeof langKeys;

@@ -6071,6 +6071,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   validityperiodconfigcondition: 'Si no estableces un periodo de validez personalizado, se aplicará el periodo de validez estándar para los mensajes de WhatsApp, que es de 30 días.',
   validityperiod: 'Periodo de validez',
   validityperiodhelptext: 'Se recomienda configurar un periodo de validez que sea igual o inferior al tiempo de expiración del código para garantizar que este aún pueda usarse cuando los usuarios reciban el mensaje.',
+  bubblemessage: 'Burbuja de mensaje',
+  bubblemessagetext: 'Introduce el texto de tu mensaje en el idioma que has seleccionado',
 };
 
 const esResource: ResourceLanguage = {

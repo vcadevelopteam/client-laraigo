@@ -6124,6 +6124,8 @@ const translation: LangKeys = {
   validityperiodconfigcondition: 'If you do not set a custom validity period, the standard validity period for WhatsApp messages, which is 30 days, will apply.',
   validityperiod: 'Validity period',
   validityperiodhelptext: 'It is recommended to set a validity period that is equal to or less than the expiration time of the code to ensure that the code can still be used when users receive the message.',
+  bubblemessage: 'Message bubble',
+  bubblemessagetext: 'Enter the text of your message in the language you have selected',
 };
 
 const enResource: ResourceLanguage = {
