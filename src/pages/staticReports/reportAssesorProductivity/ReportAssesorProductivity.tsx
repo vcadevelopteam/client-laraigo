@@ -4,21 +4,17 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { cleanViewChange, getCollectionAux, getCollectionPaginated, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
 import { getPaginatedTicket, getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
-import { AntTab, DateRangePicker, DialogZyx, FieldSelect, IOSSwitch } from "components";
+import { AntTab, DateRangePicker, DialogZyx, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import { Box, Button, DialogActions, Divider, ListItemIcon, MenuItem, Paper, Popper, Tabs, TextField, Typography } from "@material-ui/core";
-import { CalendarIcon, DownloadIcon } from "icons";
+import { CalendarIcon } from "icons";
 import { Range } from "react-date-range";
 import TableZyx from "components/fields/table-simple";
 import { exportExcel } from "common/helpers";
 import { langKeys } from "lang/keys";
 import { Dictionary } from "@types";
-import { useForm } from "react-hook-form";
-import Graphic from "components/fields/Graphic";
-import AssessmentIcon from "@material-ui/icons/Assessment";
-import ListIcon from "@material-ui/icons/List";
-import { Settings } from "@material-ui/icons";
+
 import {  Card, CardContent, Grid } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -31,6 +27,7 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import PersonIcon from '@material-ui/icons/Person';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';import { CellProps } from 'react-table';
 import DialogInteractions from "components/inbox/DialogInteractions";
+import { nextDay } from "date-fns";
 interface Assessor {
     row: Dictionary | null;
     allFilters: Dictionary[];
@@ -125,7 +122,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);
     const [isday, setisday] = useState(false);
-    const [columnGraphic, setColumnGraphic] = useState("");
+    const [columnGraphic, ] = useState("");
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
     const [, setmaxmin] = useState({
@@ -139,15 +136,16 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         mintimeconnectedasesor: "",
     });
     const [desconectedmotives, setDesconectedmotives] = useState<Dictionary[]>([]);
-    const [openModal, setOpenModal] = useState(false);
     const [openModalTicket, setOpenModalTicket] = useState(false);
-    const [view, setView] = useState("GRID");
+    const [view, ] = useState("GRID");
     const [dataGrid, setdataGrid] = useState<Dictionary[]>([]);   
+    
 
     const [gaugeArcs, ] = useState([100, 100]);     
     const formatTooltip = (value: number) => `${value}%`;
     
-    
+    const formatTooltipAgentAvg = (value: number) => `${convertSecondsToHHMMSS(value)}`;
+
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[];
@@ -164,6 +162,10 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         value: parseInt(item.closedtickets)
     })); 
 
+
+
+    
+
     const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -173,7 +175,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         { label: 'TMR', title: 'Tiempo promedio de respuesta' }
     ]);
 
-    const handleChangeTab = (event: Dictionary, newValue: any) => {
+    const handleChangeTab = (event: Dictionary, newValue: number) => {
         setTabIndex(newValue);
     };
 
@@ -205,6 +207,15 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             dispatch(cleanViewChange());
         };
     }, []);
+
+    const convertMinutesToHHMMSS = (minutes: number) => {
+        const hours = Math.floor(minutes / 60);    
+        const remainingMinutes = minutes % 60;    
+        const formattedHours = String(hours).padStart(2, '0');
+        const formattedMinutes = String(remainingMinutes).padStart(2, '0');
+        const formattedSeconds = '00';     
+        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    };   
 
     const columns = React.useMemo(        
         () => [
@@ -258,7 +269,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             },  
             {
                 Header: t(langKeys.report_userproductivity_avgtotalduration),
-                accessor: 'tiempoprimerarespuesta',
+                accessor: 'avgtotalduration',
             },        
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
@@ -291,10 +302,10 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 helpText: t(langKeys.report_userproductivity_tmradviseravg_help),
             },
             {
-                Header: t(langKeys.report_userproductivity_userconnectedduration),
+                Header: t(langKeys.timeconnected),                      
                 accessor: 'userconnectedduration',
-                type: "number",
-                sortType: 'number',
+                Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
+                sortType: 'basic',
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
@@ -373,16 +384,9 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
     }, [mainResult]); 
 
-    const convertMinutesToHHMMSS = (minutes: number) => {
-        const hours = Math.floor(minutes / 60);    
-        const remainingMinutes = minutes % 60;    
-        const formattedHours = String(hours).padStart(2, '0');
-        const formattedMinutes = String(remainingMinutes).padStart(2, '0');
-        const formattedSeconds = '00';     
-        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-    };    
+     
 
-    const getColumns = (tabIndex: any) => {
+    const getColumns = (tabIndex: number) => {
         switch (tabIndex) {
             case 0: // TMO
                 return [
@@ -455,7 +459,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         }
     };
 
-    const columnsFulfillmentByTicket = (tabIndex: any) => {
+    const columnsFulfillmentByTicket = (tabIndex: number) => {
         switch (tabIndex) {
             case 0: // TMO
                 return [
@@ -694,19 +698,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
 
     const format = (date: Date) => date.toISOString().split("T")[0];
 
-    const handlerSearchGraphic = (daterange: Dictionary, column: string) => {
-        dispatch(
-            getMainGraphic(
-                getUserProductivityGraphic({
-                    ...allParameters,
-                    startdate: daterange?.startDate!,
-                    enddate: daterange?.endDate!,
-                    column,
-                    summarization: "COUNT",
-                })
-            )
-        );
-    };
+    
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -722,23 +714,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         };
     }, [anchorElSeButtons, setOpenSeButtons]);
   
-    const dataForAvgAgent = dataGrid.map(item => ({
-        name: item.fullname,
-        value: item[valueKey]
-    }));
-
-    const timeToSeconds = (timeString: Dictionary) => {
-        const hours = Number(timeString.hours || 0);
-        const minutes = Number(timeString.minutes || 0);
-        const seconds = Number(timeString.seconds || 0);
-        return hours * 3600 + minutes * 60 + seconds;
-    };    
-    
-    const dataForAvgAgentInSeconds = dataForAvgAgent.map(item => ({
-        name: item.name,
-        value: timeToSeconds(item.value)
-    }));
-    
+ 
+  
     function calculateAverageTime(data: { [key: string]: string }[], key: string) {
         const totalSeconds = data.reduce((totalSeconds, item) => {
             const timeValue = item[key];
@@ -766,6 +743,73 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const avgTMR = calculateAverageTime(tmrValues, 'TMRPromedio');
     const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
 
+    function convertHHMMSStoSeconds(hora: string): number {
+        const partes = hora.split(":");
+        const horas = parseInt(partes[0]);
+        const minutos = parseInt(partes[1]);
+        const segundos = parseInt(partes[2]);
+        
+        const segundosTotales = horas * 3600 + minutos * 60 + segundos;
+        
+        return segundosTotales;
+    }
+
+    function convertSecondsToHHMMSS(totalSeconds: number): string {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+    
+        const paddedHours = hours.toString().padStart(2, '0');
+        const paddedMinutes = minutes.toString().padStart(2, '0');
+        const paddedSeconds = seconds.toString().padStart(2, '0');
+    
+        return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+    }
+    
+    
+    
+    
+
+    const [dataForAgentAvg, setDataForAgentAvg] = useState<{ name: string; value: number; }[]>([]);
+
+    // console.log(dataGrid.map(item => ({
+    //     name: item.fullname,
+    //     value: item.avgtotalduration
+    // })))
+
+    useEffect(() => {
+        switch (tabIndex) {
+            case 0:
+                setDataForAgentAvg(
+                    dataGrid.map(item => ({
+                        name: item.fullname,
+                        value: convertHHMMSStoSeconds(item.avgtotalduration)
+                    }))
+                );
+                break;
+            case 1:
+                setDataForAgentAvg(
+                    dataGrid.map(item => ({
+                        name: item.fullname,
+                        value: convertHHMMSStoSeconds(item.avgfirstreplytime)                  
+                    }))
+                );
+                break;
+            case 2:
+                setDataForAgentAvg(
+                    dataGrid.map(item => ({
+                        name: item.fullname,
+                        value: convertHHMMSStoSeconds(item.tmravg) 
+                       
+                    }))
+                );
+                break;
+            default:
+                setDataForAgentAvg([]);
+                break;
+        }
+    }, [tabIndex, dataGrid]);
+
     const sortedData = dataForClosedTickets.slice().sort((a, b) => {
         if (sortBy === "value") {
             if (orderType === "asc") {
@@ -783,7 +827,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         return 0;
     });
 
-    const sortedDataForAvgAgent = dataForAvgAgentInSeconds.slice().sort((a, b) => {
+    const sortedDataForAvgAgent = dataForAgentAvg.slice().sort((a, b) => {
         if (sortBy === "value") {
             if (orderType === "asc") {
                 return a.value - b.value;
@@ -798,7 +842,23 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             return 0;
         }
         return 0;
-    });
+    });   
+
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 10;
+
+    const slicedData = sortedData.slice(
+        currentPage * itemsPerPage,
+        (currentPage + 1) * itemsPerPage        
+    );
+
+    const [currentPageAsesor, setCurrentPageAsesor] = useState(0);
+    const itemsPerPageAsesor = 10;  
+
+    const slicedDataAsesor = sortedDataForAvgAgent.slice(
+        currentPageAsesor * itemsPerPageAsesor,
+        (currentPageAsesor + 1) * itemsPerPageAsesor        
+    );  
 
     const [openExpectedValueModal, setOpenExpectedValueModal] = useState(false);
     const [errorText, setErrorText] = useState('');
@@ -842,7 +902,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         localStorage.setItem('expectedTMRValue', expectedTMRValue);
     }, [expectedTMRValue]);
 
-    const validateTime = (h: any, m: any, s: any): boolean => {
+    const validateTime = (h: string, m: string, s: string): boolean => {
         const hourInt = parseInt(h, 10);
         const minuteInt = parseInt(m, 10);
         const secondInt = parseInt(s, 10);
@@ -936,29 +996,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         setOpenSeButtons((prevOpen) => !prevOpen);
     };
 
-    const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
+   
+    
+  
 
-    const slicedData = sortedData.slice(
-        currentPage * itemsPerPage,
-        (currentPage + 1) * itemsPerPage        
-    );
 
-    const [currentPageAsesor, setCurrentPageAsesor] = useState(0);
-    const itemsPerPageAsesor = 5;
 
-    const handlePrevPageAsesor = () => {
-        setCurrentPageAsesor((prevPage) => Math.max(prevPage - 1, 0));
-    };
-
-    const handleNextPageAsesor = () => {
-        setCurrentPageAsesor((prevPage) => prevPage + 1);
-    };
-
-    const slicedDataAsesor = sortedDataForAvgAgent.slice(
-        currentPageAsesor * itemsPerPageAsesor,
-        (currentPageAsesor + 1) * itemsPerPageAsesor        
-    );    
 
     const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, summary }: Dictionary) => {
         const RADIAN = Math.PI / 180;
@@ -973,7 +1016,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         );
     };
 
-    const isPromedioMenorEsperado = (avg: any, expected: any) => {
+    const isPromedioMenorEsperado = (avg: string, expected: string) => {
         const avgSeconds = getSecondsFromTimeString(avg);
         const expectedSeconds = getSecondsFromTimeString(expected);    
         const toleranceThreshold = 0.5;          
@@ -983,12 +1026,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         return avgSeconds < expectedSeconds;
     };    
 
-    const getSecondsFromTimeString = (timeString: any) => {
+    const getSecondsFromTimeString = (timeString: string) => {
         if (typeof timeString === 'string') {
             const [hours, minutes, seconds] = timeString.split(':').map(Number);
             return hours * 3600 + minutes * 60 + seconds;
-        } else {
-           
+        } else {           
             return 0; 
         }
     }; 
@@ -1238,7 +1280,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             <Grid container spacing={3} className={classes.containerDetails}>
                 {/* Card Asesor con TMO Promedio  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'25rem', margin:0}}>
+                    <Card style={{height:'30rem', margin:0}}>
                         <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
@@ -1296,47 +1338,52 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                 </div>
                             </div>
-                            <div style={{ margin: '1rem 0' }}>                                                                                 
-                                <div style={{ }}>   
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-                                        <Button
-                                            color="primary"
-                                            onClick={handlePrevPageAsesor}
-                                            disabled={currentPageAsesor === 0}
-                                        >
-                                            <KeyboardArrowLeftIcon />
-                                        </Button>
-                                        <div>
-                                            {`${currentPageAsesor + 1} de ${Math.ceil(dataForClosedTickets.length / itemsPerPageAsesor)}`}
-                                        </div>
-                                        <Button
-                                            color="primary"
-                                            onClick={handleNextPageAsesor}
-                                            disabled={(currentPageAsesor + 1) * itemsPerPageAsesor >= dataForClosedTickets.length}
-                                        >
-                                            <KeyboardArrowRightIcon />
-                                        </Button>
+                                                                                                     
+                            <div>
+                                {/* Botones de navegación de página */}
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
+                                    <Button
+                                        color="primary"
+                                        onClick={() => setCurrentPageAsesor((prevPage) => Math.max(prevPage - 1, 0))}
+                                        disabled={currentPageAsesor === 0}
+                                    >
+                                        <KeyboardArrowLeftIcon />
+                                    </Button>
+                                    <div>
+                                        {`${currentPageAsesor + 1} de ${Math.ceil(dataForAgentAvg.length / itemsPerPageAsesor)}`}
                                     </div>
-                                    <ResponsiveContainer height={300}>
-                                        <BarChart
-                                            data={slicedDataAsesor}
-                                            margin={{top: 20, right: 30, left: 20, bottom: 5}}
-                                        >
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={150} dy={5} dx={-5} />
-                                            <YAxis />
-                                            <ChartTooltip formatter={(value:number, name:string)=> [value,t(name)]} />
-                                            <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
-                                                <LabelList dataKey="summary" position="top" />
-                                                {
-                                                    dataForClosedTickets.map((entry: Dictionary, index: number) => (
-                                                        <Cell key={`cell-${index}`} fill={"#7721AD"} />
-                                                    ))
-                                                }    
-                                            </Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer>         
-                                </div>    
+                                    <Button
+                                        color="primary"
+                                        onClick={() => setCurrentPageAsesor((prevPage) => prevPage + 1)}
+                                        disabled={(currentPageAsesor + 1) * itemsPerPageAsesor >= dataForAgentAvg.length}
+                                    >
+                                        <KeyboardArrowRightIcon />
+                                    </Button>
+
+                                    </div>
+
+                                {/* Gráfico de barras */}
+                                <ResponsiveContainer width="100%" height={itemsPerPage * 50}>
+                                <BarChart
+                                    data={slicedDataAsesor}
+                                    layout="horizontal"
+                                    margin={{top: 20, right: 50, left: 50, bottom: 10}}
+                                    >
+                                    <Tooltip formatter={formatTooltipAgentAvg} />
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={330} dy={5} dx={-5} />
+                                 
+                                    <ChartTooltip formatter={(value:number, name:string)=> [value,t(name)]} />
+                                    <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
+                                        <LabelList dataKey="summary" position="top" />
+                                        {
+                                            dataForAgentAvg.map((entry: Dictionary, index: number) => (
+                                                <Cell key={`cell-${index}`} fill={"#7721AD"} />
+                                            ))
+                                        }    
+                                    </Bar>
+                                </BarChart>
+                                </ResponsiveContainer>
                             </div>
                         </CardContent>
                     </Card>
@@ -1344,7 +1391,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
 
                 {/* Card Cumplimiento TMO por Ticket  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'25rem'}}>
+                    <Card style={{height:'30rem'}}>
                         <CardContent style={{ paddingBottom: 10 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
@@ -1474,7 +1521,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                             
                             <div style={{ margin: '1rem 0' }}>                                                                                 
                                 <div>   
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <Button
                                             color="primary"
                                             onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
@@ -1493,18 +1540,17 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                             <KeyboardArrowRightIcon />
                                         </Button>
                                     </div>                                 
-
-                                    <ResponsiveContainer height={300}>
+                                    <ResponsiveContainer height={350}>
                                         <BarChart
                                             data={slicedData} 
-                                            margin={{top: 0, right: 20, left: 0, bottom: 0}}
+                                            margin={{top: 20, right: 50, left: 50, bottom: 40}}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={160} dy={5} dx={-5} />
-                                            <YAxis />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={120} dy={5} dx={-5} />
+                                            
                                             <ChartTooltip formatter={(value:number, name:string)=> [value,t(name)]} />
                                             <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
-                                                <LabelList dataKey="summary" position="top" />
+                                                <LabelList position="top" />
                                                 {
                                                     dataForClosedTickets.map((entry: Dictionary, index: number) => (
                                                         <Cell key={`cell-${index}`} fill={"#7721AD"} />
