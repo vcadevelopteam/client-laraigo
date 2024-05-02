@@ -320,7 +320,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                         onChange={handleChange('predefineda')} 
                                         name="predef" 
                                     />}
-                                label={t(langKeys.default2)}
+                                label={t(langKeys.default)}
                             />
                             <FormControlLabel
                                 className={classes.formControlLabelPointer}
