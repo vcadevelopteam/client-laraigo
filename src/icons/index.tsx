@@ -352,3 +352,6 @@ export {ReactComponent as ChatGPTImage} from './chatgpt.svg'
 export {ReactComponent as Llama3Image} from './meta.svg'
 export {ReactComponent as MistralImage} from './mistral.svg'
 export {ReactComponent as ActionsImage} from './actions_wat.svg'
+
+export {ReactComponent as GoogleDriveIcon} from './google-drive.svg';
+export {ReactComponent as ExcelFileIcon} from './excel-file.svg';
