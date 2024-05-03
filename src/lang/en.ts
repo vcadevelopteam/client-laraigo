@@ -6137,12 +6137,7 @@ const translation: LangKeys = {
   app_orders_in_store: 'Orders in store',
 
   maxTMR: 'TMR maximum',
-  minTMR: 'TMR minimum',
-
-
-
-  maxTMR: 'TMR maximum',
-  minTMR: 'TMR minimum',
+  minTMR: 'TMR minimum'
 
 
 };
