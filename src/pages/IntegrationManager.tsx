@@ -28,6 +28,7 @@ import {
    deldataIntegrationManager,
    getdataIntegrationManager,
    uploadExcelBuffer,
+   stringBDTimestampToLocalDate12hr,
 } from "common/helpers";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -58,7 +59,7 @@ import { resetRequest } from "store/integrationmanager/actions";
 import { dictToArrayKV, extractVariables, isJson } from "common/helpers";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { TextField } from "@material-ui/core";
+import { TextField, Tooltip, Typography } from "@material-ui/core";
 import { CellProps } from "react-table";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import GoogleLogIn from "components/fields/GoogleLogIn";
@@ -2611,6 +2612,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                importDataFunction={handleUpload}
                deleteDataFunction={onDeleteData} 
                waitImport={waitImport}
+               row={row}
             />
          )}
       </div>
@@ -3053,6 +3055,11 @@ interface ViewTableModalProps {
    importDataFunction: (files: any) => Promise<void>
    deleteDataFunction: ()=> void;
    waitImport: boolean;
+   row?: Dictionary | null;
+}
+
+interface ILangKeys {
+   [key: string]: string;
 }
 
 const ModalViewTable: React.FC<ViewTableModalProps> = ({
@@ -3063,7 +3070,8 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    formId,
    importDataFunction,
    deleteDataFunction,
-   waitImport
+   waitImport,
+   row
 }) => {
    const { t } = useTranslation();
    const dispatch = useDispatch();
@@ -3127,7 +3135,28 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
          handleClickButton1={handleCancelModal}
       >
          {
-           
+            <>
+               {row?.datasource && (
+                  <div style={{ display: 'block', fontSize: '12px', position: 'absolute' }}>
+                     <div style={{ display: 'flex', gap: '1.5rem'}}>
+                        <div>Origen: <span><b>{row?.datasource || t(langKeys.file).toUpperCase()}</b></span></div>
+                        <div>Archivo: <span><b>{row?.datasource_config?.filename}</b></span></div>
+                     </div>
+                     <div style={{ display: 'flex'}}>
+                        <div>
+                           Ult. sincronización: <span style={{ fontWeight: 'bold' }}>
+                              <span style={{ marginRight: '0.5rem' }}>{stringBDTimestampToLocalDate12hr(row?.datasource_syncinfo?.last_sync)}</span>
+                              <span style={{ color: row?.datasource_syncinfo?.last_sync_result === 'SUCCESS' ? 'green' : 'red' }}>
+                                 (<Tooltip title={row?.datasource_syncinfo?.last_sync_message} arrow>
+                                    <Typography component="span" style={{ fontSize: '12px' }}><b>{t((langKeys as ILangKeys)[String(row?.datasource_syncinfo?.last_sync_result).toLowerCase()])}</b></Typography>
+                                 </Tooltip>)
+                              </span>
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+               )}
+
                <TableZyx
                   columns={columnsData}
                   data={tableData}
@@ -3139,6 +3168,7 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
                   deleteData={true}
                   deleteDataFunction={deleteDataFunction}
                />
+            </>
          }
       </DialogZyx>
    );
