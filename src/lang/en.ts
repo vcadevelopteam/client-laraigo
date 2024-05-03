@@ -1489,6 +1489,8 @@ const translation: LangKeys = {
   field_duplicate: 'Field duplicate',
   field_startwithchar: 'Field must start with a letter',
   field_basiclatinlowercase: 'Field must contain only basic Latin lowercase or digits',
+  importfield_basiclatinlowercasenospaces: 'Headers must contain only basic Latin lowercase or digits without spaces',
+  keyfield_duplicate: 'Key field has duplicate values',
   field_afterstart: 'Field must be after start',
   affirmative: 'Yes',
   negative: 'No',

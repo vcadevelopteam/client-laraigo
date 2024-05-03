@@ -1711,6 +1711,8 @@ const translation: LangKeys = {
   field_duplicate: 'Campo duplicado',
   field_startwithchar: 'El campo debe comenzar con una letra',
   field_basiclatinlowercase: 'El campo debe contener únicamente mínusculas de latín básico o dígitos',
+  importfield_basiclatinlowercasenospaces: 'Las cabeceras deben contener únicamente mínusculas de latín básico o dígitos sin espacios',
+  keyfield_duplicate: 'Campo llave tiene valores duplicados',
   field_afterstart: 'El campo debe ser posterio al inicio.',
   affirmative: 'Si',
   negative: 'No',

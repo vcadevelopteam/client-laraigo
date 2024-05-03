@@ -2197,6 +2197,8 @@ export const langKeys = {
   field_duplicate: 'field_duplicate',
   field_startwithchar: 'field_startwithchar',
   field_basiclatinlowercase: 'field_basiclatinlowercase',
+  importfield_basiclatinlowercasenospaces: 'importfield_basiclatinlowercasenospaces',
+  keyfield_duplicate: 'keyfield_duplicate',
   field_afterstart: 'field_afterstart',
   affirmative: 'affirmative',
   negative: 'negative',

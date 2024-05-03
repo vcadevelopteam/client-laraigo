@@ -597,6 +597,23 @@ export function uploadExcel(file: any, owner: any = {}) {
     });
 }
 
+export const uploadExcelBuffer = (buffer: any) => {
+    return new Promise((res, rej) => {
+        import('xlsx').then(XLSX => {
+            const workbook = XLSX.read(buffer, { type: "array", });
+            const sheetName = workbook.SheetNames[0];
+            const rowsx = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
+                .map((row: any) =>
+                    Object.keys(row).reduce((obj: any, key: any) => {
+                        obj[key.trim()] = row[key];
+                        return obj;
+                    }, {})
+                );
+            res(rowsx)
+        })      
+    })
+}
+
 export const dateToLocalDate = (date: string, returnType = 'string'): string | Date => {
     if (!date) return new Date().toLocaleDateString();
     const nn = new Date(date)
