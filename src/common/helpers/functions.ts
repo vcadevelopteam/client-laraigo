@@ -1060,6 +1060,22 @@ export const getFormattedDate = (date: Date) => {
     return date.toISOString().split('T')[0];
 }
 
+export const stringBDTimestampToLocalDate12hr = (timestamp: string) => {
+    const date = new Date(timestamp);
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const period = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours % 12 || 12;
+
+    const formattedDate = `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year} ${displayHours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds} ${period}`;
+    return formattedDate;
+}
+
 const transDayLocal = (day: Date) => day.getDay() - 1 < 0 ? 6 : day.getDay() - 1;
 
 export const calculateDateFromWeek = (datex: Date) => {

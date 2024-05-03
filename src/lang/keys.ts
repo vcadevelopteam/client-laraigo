@@ -2117,6 +2117,7 @@ export const langKeys = {
   rundate: 'rundate',
   total: 'total',
   success: 'success',
+  error: 'error',
   success_percent: 'success_percent',
   satisfactory: 'satisfactory',
   satisfactory_percent: 'satisfactory_percent',
