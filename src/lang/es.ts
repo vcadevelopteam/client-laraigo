@@ -6088,6 +6088,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
 
 
+
+  maxTMR: 'TMR máximo',
+  minTMR: 'TMR mínimo',
+
+
+
 };
 
 const esResource: ResourceLanguage = {

@@ -6088,6 +6088,14 @@ export const langKeys = {
 
 
 
+
+  maxTMR: 'maxTMR',
+  minTMR: 'minTMR',
+
+
+
+
+
 };
 
 export type LangKeys = typeof langKeys;

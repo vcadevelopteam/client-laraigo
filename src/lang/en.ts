@@ -6140,6 +6140,11 @@ const translation: LangKeys = {
   minTMR: 'TMR minimum',
 
 
+
+  maxTMR: 'TMR maximum',
+  minTMR: 'TMR minimum',
+
+
 };
 
 const enResource: ResourceLanguage = {
