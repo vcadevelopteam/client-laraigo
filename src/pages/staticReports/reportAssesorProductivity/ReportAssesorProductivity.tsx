@@ -1390,29 +1390,29 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
 
                                 {/* Gráfico de barras */}
                                 <ResponsiveContainer width="100%" height={itemsPerPage * 50}>
-                                <BarChart
-                                    data={slicedDataAsesor}
-                                    layout="horizontal"
-                                    margin={{top: 20, right: 50, left: 50, bottom: 10}}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={330} dy={5} dx={-5} />
-                                    <Tooltip
-                                        labelFormatter={(name) => {
-                                            const email = dataGridAgentAvg.find(item => item.fullname.toLowerCase() === name.toLowerCase())?.email;
-                                            return email ? email : name;
-                                        }}
-                                        formatter={(value:number, name:string)=> [convertSecondsToHHMMSS(value) ,t(name)]}
-                                    />
-                                    <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
-                                        <LabelList dataKey="summary" position="top" />
-                                        {
-                                            dataForAgentAvg.map((entry: Dictionary, index: number) => (
-                                                <Cell key={`cell-${index}`} fill={"#7721AD"} />
-                                            ))
-                                        }    
-                                    </Bar>
-                                </BarChart>
+                                    <BarChart
+                                        data={slicedDataAsesor}
+                                        layout="horizontal"
+                                        margin={{top: 20, right: 50, left: 50, bottom: 10}}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={330} dy={5} dx={-5} />
+                                        <Tooltip
+                                            labelFormatter={(name) => {
+                                                const email = dataGrid.find(item => item.fullname.toLowerCase() === name.toLowerCase())?.email;
+                                                return email ? email : name;
+                                            }}
+                                            formatter={(value:number, name:string)=> [convertSecondsToHHMMSS(value) ,t(name)]}
+                                        />
+                                        <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
+                                            <LabelList dataKey="summary" position="top" />
+                                            {
+                                                dataForAgentAvg.map((entry: Dictionary, index: number) => (
+                                                    <Cell key={`cell-${index}`} fill={"#7721AD"} />
+                                                ))
+                                            }    
+                                        </Bar>
+                                    </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         </CardContent>
