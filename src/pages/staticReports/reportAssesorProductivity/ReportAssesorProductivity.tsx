@@ -14,12 +14,11 @@ import TableZyx from "components/fields/table-simple";
 import { exportExcel } from "common/helpers";
 import { langKeys } from "lang/keys";
 import { Dictionary } from "@types";
-
 import {  Card, CardContent, Grid } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SubjectIcon from '@material-ui/icons/Subject';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList, Tooltip } from 'recharts';
+import { XAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList, Tooltip } from 'recharts';
 import GaugeChart from "react-gauge-chart";
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -27,7 +26,8 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import PersonIcon from '@material-ui/icons/Person';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';import { CellProps } from 'react-table';
 import DialogInteractions from "components/inbox/DialogInteractions";
-import { nextDay } from "date-fns";
+import FileSaver from 'file-saver';
+import i18n from 'i18next';
 interface Assessor {
     row: Dictionary | null;
     allFilters: Dictionary[];
@@ -77,31 +77,18 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const columnsTemp = [
-    "usr",
-    "fullname",
-    "hourfirstlogin",
-    "totaltickets",
-    "closedtickets",
-    "asignedtickets",
-    "suspendedtickets",
-    "avgfirstreplytime",
-    "maxfirstreplytime",
-    "minfirstreplytime",
-    "maxtotalduration",
-    "mintotalduration",
-    "avgtotalasesorduration",
-    "maxtotalasesorduration",
-    "mintotalasesorduration",
-    "userconnectedduration",
-    "userstatus",
-    "groups",
-];
 
 type PieChartData = {
     name: string;
     value: number; 
 };
+
+type ColumnTmp = {
+    Header: string;
+    accessor: string;
+    prefixTranslation?: string;
+    type?: string
+}
 
 const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const { t } = useTranslation();
@@ -139,12 +126,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const [openModalTicket, setOpenModalTicket] = useState(false);
     const [view, ] = useState("GRID");
     const [dataGrid, setdataGrid] = useState<Dictionary[]>([]);   
-    
+    const [dataGridAgentAvg, setdataGridAgentAvg] = useState<Dictionary[]>([]);
+
 
     const [gaugeArcs, ] = useState([100, 100]);     
     const formatTooltip = (value: number) => `${value}%`;
-    
-    const formatTooltipAgentAvg = (value: number) => `${convertSecondsToHHMMSS(value)}`;
 
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
@@ -162,12 +148,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         value: parseInt(item.closedtickets)
     })); 
 
-
-
-    
-
     const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
-
     const [tabIndex, setTabIndex] = useState(0);
     const [tabTexts] = useState([
         { label: 'TMO', title: 'Tiempo Medio de la Operación' },
@@ -382,9 +363,35 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const openDialogInteractions = useCallback((row: Dictionary) => {
         setOpenModalTicket(true);
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
-    }, [mainResult]); 
+    }, [mainResult]);   
 
-     
+    function exportExcelPersonalized(filename: string, csvData: Dictionary[], columnsexport?: ColumnTmp[]): void {
+        import('xlsx').then(XLSX => {
+            const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+            const fileExtension = '.xlsx';
+            let datafromtable = csvData;
+            if (columnsexport) {
+                datafromtable = csvData.map((x: Dictionary) => {
+                    const newx: Dictionary = {};
+                    columnsexport.forEach((y: ColumnTmp) => {
+                        if (y.accessor === 'userconnectedduration') {
+                            newx[y.Header] = convertMinutesToHHMMSS(Number(x[y.accessor]));
+                        } else {
+                            newx[y.Header] = y.prefixTranslation !== undefined ? i18n.t(`${y.prefixTranslation}${x[y.accessor]?.toLowerCase()}`).toUpperCase() : (
+                                y.type === "porcentage" ? `${(Number(x[y.accessor]) * 100).toFixed(0)}%` :
+                                    x[y.accessor])
+                        }
+                    });
+                    return newx;
+                });
+            }
+            const ws = XLSX.utils.json_to_sheet(datafromtable);
+            const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const data = new Blob([excelBuffer], { type: fileType });
+            FileSaver.saveAs(data, filename + fileExtension);
+        });
+    }
 
     const getColumns = (tabIndex: number) => {
         switch (tabIndex) {
@@ -696,26 +703,10 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         setcheckedA(event.target.checked);
     };
 
-    const format = (date: Date) => date.toISOString().split("T")[0];
+    const format = (date: Date) => date.toISOString().split("T")[0];    
 
-    
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node;
-            if (anchorElSeButtons && !anchorElSeButtons.contains(target)) {
-                setAnchorElSeButtons(null);
-                setOpenSeButtons(false);
-            }
-        };
-        document.addEventListener("click", handleClickOutside);
-        return () => {
-            document.removeEventListener("click", handleClickOutside);
-        };
-    }, [anchorElSeButtons, setOpenSeButtons]);
-  
  
-  
+     
     function calculateAverageTime(data: { [key: string]: string }[], key: string) {
         const totalSeconds = data.reduce((totalSeconds, item) => {
             const timeValue = item[key];
@@ -725,14 +716,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             } else {
                 return totalSeconds;
             }
-        }, 0);
-    
+        }, 0);    
         const avgSeconds = Math.round(totalSeconds / data.length);
         const avgHours = Math.floor(avgSeconds / 3600);
         const avgRemainingSeconds = avgSeconds % 3600;
         const avgMinutes = Math.floor(avgRemainingSeconds / 60);
-        const avgSecondsFinal = avgRemainingSeconds % 60;
-    
+        const avgSecondsFinal = avgRemainingSeconds % 60;    
         return `${String(avgHours).padStart(2, '0')}:${String(avgMinutes).padStart(2, '0')}:${String(avgSecondsFinal).padStart(2, '0')}`;
     }    
     
@@ -747,35 +736,22 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         const partes = hora.split(":");
         const horas = parseInt(partes[0]);
         const minutos = parseInt(partes[1]);
-        const segundos = parseInt(partes[2]);
-        
-        const segundosTotales = horas * 3600 + minutos * 60 + segundos;
-        
+        const segundos = parseInt(partes[2]);        
+        const segundosTotales = horas * 3600 + minutos * 60 + segundos;        
         return segundosTotales;
     }
 
     function convertSecondsToHHMMSS(totalSeconds: number): string {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-    
+        const seconds = totalSeconds % 60;    
         const paddedHours = hours.toString().padStart(2, '0');
         const paddedMinutes = minutes.toString().padStart(2, '0');
-        const paddedSeconds = seconds.toString().padStart(2, '0');
-    
+        const paddedSeconds = seconds.toString().padStart(2, '0');    
         return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
-    }
+    }    
     
-    
-    
-    
-
     const [dataForAgentAvg, setDataForAgentAvg] = useState<{ name: string; value: number; }[]>([]);
-
-    // console.log(dataGrid.map(item => ({
-    //     name: item.fullname,
-    //     value: item.avgtotalduration
-    // })))
 
     useEffect(() => {
         switch (tabIndex) {
@@ -827,14 +803,17 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         return 0;
     });
 
+    const [orderTypeAvgAgent, setOrderTypevgAgent] = useState("");
+    const [sortByvgAgent, setSortByvgAgent] = useState("");
+
     const sortedDataForAvgAgent = dataForAgentAvg.slice().sort((a, b) => {
-        if (sortBy === "value") {
-            if (orderType === "asc") {
+        if (sortByvgAgent === "value") {
+            if (orderTypeAvgAgent === "asc") {
                 return a.value - b.value;
-            } else if (orderType === "desc") {
+            } else if (orderTypeAvgAgent === "desc") {
                 return b.value - a.value;
             }
-        } else if (sortBy === "name") {
+        } else if (sortByvgAgent === "name") {
             const nameA = a.name.toLowerCase();
             const nameB = b.name.toLowerCase();
             if (nameA < nameB) return -1;
@@ -842,7 +821,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             return 0;
         }
         return 0;
-    });   
+    });    
 
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
@@ -991,24 +970,26 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         updateDataForPie(tabIndex, duracionesTotales);
     }, [mainPaginated.data, tabIndex]);   
 
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
-        setOpenSeButtons((prevOpen) => !prevOpen);
-    };
-
-   
+    const [openSeButtonsAgent, setOpenSeButtonsAgent] = useState(false);
+    const [anchorElSeButtonsAgent, setAnchorElSeButtonsAgent] = useState<null | HTMLElement>(null);    
+    const [openSeButtonsTickets, setOpenSeButtonsTickets] = useState(false);
+    const [anchorElSeButtonsTickets, setAnchorElSeButtonsTickets] = useState<null | HTMLElement>(null);
     
-  
-
-
-
+    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>, type: string) => {
+        if (type === 'agent') {
+            setAnchorElSeButtonsAgent(anchorElSeButtonsAgent ? null : event.currentTarget);
+            setOpenSeButtonsAgent((prevOpen) => !prevOpen);
+        } else if (type === 'tickets') {
+            setAnchorElSeButtonsTickets(anchorElSeButtonsTickets ? null : event.currentTarget);
+            setOpenSeButtonsTickets((prevOpen) => !prevOpen);
+        }
+    };
 
     const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, summary }: Dictionary) => {
         const RADIAN = Math.PI / 180;
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
-        const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    
+        const y = cy + radius * Math.sin(-midAngle * RADIAN);    
         return (
             <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
                 {summary}
@@ -1034,6 +1015,34 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             return 0; 
         }
     }; 
+
+    useEffect(() => {
+        const handleClickOutsideAgent = (event: MouseEvent) => {
+            const target = event.target as Node;
+            if (anchorElSeButtonsAgent && !anchorElSeButtonsAgent.contains(target)) {
+                setAnchorElSeButtonsAgent(null);
+                setOpenSeButtonsAgent(false);
+            }
+        };
+        document.addEventListener("click", handleClickOutsideAgent);
+        return () => {
+            document.removeEventListener("click", handleClickOutsideAgent);
+        };
+    }, [anchorElSeButtonsAgent, setOpenSeButtonsAgent]);
+    
+    useEffect(() => {
+        const handleClickOutsideTickets = (event: MouseEvent) => {
+            const target = event.target as Node;
+            if (anchorElSeButtonsTickets && !anchorElSeButtonsTickets.contains(target)) {
+                setAnchorElSeButtonsTickets(null);
+                setOpenSeButtonsTickets(false);
+            }
+        };
+        document.addEventListener("click", handleClickOutsideTickets);
+        return () => {
+            document.removeEventListener("click", handleClickOutsideTickets);
+        };
+    }, [anchorElSeButtonsTickets, setOpenSeButtonsTickets]);
 
     let avg: string;
     let tabExpectedValue: string;
@@ -1287,19 +1296,26 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                     <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> Asesor con {tabTexts[tabIndex].label} Promedio</Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>
-                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />                      
+                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event, 'agent')} />                      
+                                   
                                     <div style={{ display: 'flex', gap: 8 }}>
-                                        <Popper
-                                            open={openSeButtons}
-                                            anchorEl={anchorElSeButtons}
+                                        <Popper 
+                                            open={openSeButtonsAgent}
+                                            anchorEl={anchorElSeButtonsAgent}
                                             placement="bottom"
                                             transition
                                             style={{ marginRight: '1rem' }}
                                         >
                                             {({ TransitionProps }) => (
                                                 <Paper {...TransitionProps} elevation={5}>
+                                                    {/* Contenido para ASESORES */}
                                                     <MenuItem
                                                         style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                        onClick={() => {
+                                                            setOrderTypevgAgent("desc");
+                                                            setSortByvgAgent("value");
+                                                            event.stopPropagation();
+                                                        }}
                                                     >
                                                         <ListItemIcon>
                                                             <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
@@ -1310,6 +1326,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                                     <div>
                                                         <MenuItem
                                                             style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                            onClick={() => {
+                                                                setOrderTypevgAgent("asc");
+                                                                setSortByvgAgent("value");
+                                                                event.stopPropagation();
+                                                            }}
                                                         >
                                                             <ListItemIcon>
                                                                 <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
@@ -1318,11 +1339,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                                         </MenuItem>
                                                         <Divider />
                                                     </div>
-
                                                     <div>
                                                         <MenuItem
                                                             style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                            onClick={() => setOrderType("asc")}
+                                                            onClick={() => {
+                                                                setOrderTypevgAgent("asc");
+                                                                setSortByvgAgent("name");
+                                                                event.stopPropagation();
+                                                            }}
                                                         >
                                                             <ListItemIcon>
                                                                 <PersonIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
@@ -1335,6 +1359,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                             )}
                                         </Popper>
                                     </div>
+
+
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                 </div>
                             </div>
@@ -1368,12 +1394,16 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                     data={slicedDataAsesor}
                                     layout="horizontal"
                                     margin={{top: 20, right: 50, left: 50, bottom: 10}}
-                                    >
-                                    <Tooltip formatter={formatTooltipAgentAvg} />
+                                >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={330} dy={5} dx={-5} />
-                                 
-                                    <ChartTooltip formatter={(value:number, name:string)=> [value,t(name)]} />
+                                    <Tooltip
+                                        labelFormatter={(name) => {
+                                            const email = dataGridAgentAvg.find(item => item.fullname.toLowerCase() === name.toLowerCase())?.email;
+                                            return email ? email : name;
+                                        }}
+                                        formatter={(value:number, name:string)=> [convertSecondsToHHMMSS(value) ,t(name)]}
+                                    />
                                     <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
                                         <LabelList dataKey="summary" position="top" />
                                         {
@@ -1453,69 +1483,76 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                     <Typography style={{  fontSize: '1.3rem' }}>{totalClosedTickets}</Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>                             
-                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event)} />                      
+                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event, 'tickets')} />
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcelPersonalized("closedTicketsReport" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                               
                                     <div style={{ display: 'flex', gap: 8 }}>
-                                    <Popper
-                                        open={openSeButtons}
-                                        anchorEl={anchorElSeButtons}
-                                        placement="bottom"
-                                        transition
-                                        style={{ marginRight: '1rem' }}
-                                    >
-                                        {({ TransitionProps }) => (
-                                            <Paper {...TransitionProps} elevation={5}>
-                                                <MenuItem
-                                                    style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                    onClick={() => {
-                                                        setOrderType("desc");
-                                                        setSortBy("value");
-                                                    }}
-                                                >
-                                                    <ListItemIcon>
-                                                        <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
-                                                    </ListItemIcon>
-                                                    <Typography variant="inherit">Mayor a Menor</Typography>
-                                                </MenuItem>
-
-                                                <Divider />
-
-                                                <div>
+                                        <Popper 
+                                            open={openSeButtonsTickets}
+                                            anchorEl={anchorElSeButtonsTickets}
+                                            placement="bottom"
+                                            transition
+                                            style={{ marginRight: '1rem' }}
+                                        >
+                                            {({ TransitionProps }) => (
+                                                <Paper {...TransitionProps} elevation={5}>
+                                                    {/* Contenido para TICKETS */}
                                                     <MenuItem
                                                         style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
                                                         onClick={() => {
-                                                            setOrderType("asc");
+                                                            setOrderType("desc");
                                                             setSortBy("value");
+                                                            event.stopPropagation();
                                                         }}
                                                     >
                                                         <ListItemIcon>
-                                                            <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
                                                         </ListItemIcon>
-                                                        <Typography variant="inherit">Menor a Mayor</Typography>
+                                                        <Typography variant="inherit">Mayor a Menor</Typography>
                                                     </MenuItem>
                                                     <Divider />
-                                                </div>
 
-                                                <div>
-                                                    <MenuItem
-                                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                        onClick={() => {
-                                                            setOrderType("asc");
-                                                            setSortBy("name");
-                                                        }}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <PersonIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit">Por Nombre de Asesor</Typography>
-                                                    </MenuItem>
-                                                    <Divider />
-                                                </div>
+                                                    <div>
+                                                        <MenuItem
+                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                            onClick={() => {
+                                                                setOrderType("asc");
+                                                                setSortBy("value");
+                                                                event.stopPropagation();
+                                                            }}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            </ListItemIcon>
+                                                            <Typography variant="inherit">Menor a Mayor</Typography>
+                                                        </MenuItem>
+                                                        <Divider />
+                                                    </div>
 
-                                            </Paper>
-                                        )}
-                                    </Popper>
+                                                    <div>
+                                                        <MenuItem
+                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                            onClick={() => {
+                                                                setOrderType("asc");
+                                                                setSortBy("name");
+                                                                event.stopPropagation();
+                                                            }}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <PersonIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                            </ListItemIcon>
+                                                            <Typography variant="inherit">Por Nombre de Asesor</Typography>
+                                                        </MenuItem>
+                                                        <Divider />
+                                                    </div>
+
+                                                </Paper>
+                                            )}
+                                        </Popper>
                                     </div>
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("closedTicketsReport" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+
+
+
                                 </div>
                             </div>
                             
@@ -1575,7 +1612,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                 <Typography style={{  fontSize: '1.3rem' }}>{dataGrid.length}</Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>                            
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcelPersonalized("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                 </div>
                             </div>                           
 
@@ -1592,8 +1629,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                     </Card>
                 </Grid>
             </Grid>
-
-            <div style={{margin: '1rem 0'}}>
+            {/* <div style={{margin: '1rem 0'}}>
                 <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>                         
                         <TableZyx
                             columns={columns}
@@ -1604,7 +1640,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                             register={false}                                   
                         />                           
                 </Card>
-            </div>                          
+            </div>                           */}
         </>
     );
 };
