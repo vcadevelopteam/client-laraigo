@@ -1,39 +1,54 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { cleanViewChange, getCollectionAux, getCollectionPaginated, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
-import { getPaginatedTicket, getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
-import { AntTab, DateRangePicker, DialogZyx, IOSSwitch } from "components";
+import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
+import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
+import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
-import { Box, Button, DialogActions, Divider, ListItemIcon, MenuItem, Paper, Popper, Tabs, TextField, Typography } from "@material-ui/core";
-import { CalendarIcon } from "icons";
+import { Box, Button, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { CalendarIcon, DownloadIcon } from "icons";
 import { Range } from "react-date-range";
+import CategoryIcon from "@material-ui/icons/Category";
 import TableZyx from "components/fields/table-simple";
 import { exportExcel } from "common/helpers";
 import { langKeys } from "lang/keys";
 import { Dictionary } from "@types";
-import {  Card, CardContent, Grid } from "@material-ui/core";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import SettingsIcon from '@material-ui/icons/Settings';
-import SubjectIcon from '@material-ui/icons/Subject';
-import { XAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList, Tooltip } from 'recharts';
-import GaugeChart from "react-gauge-chart";
-import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import TrendingUpIcon from '@material-ui/icons/TrendingUp';
-import PersonIcon from '@material-ui/icons/Person';
-import TrendingDownIcon from '@material-ui/icons/TrendingDown';import { CellProps } from 'react-table';
-import DialogInteractions from "components/inbox/DialogInteractions";
-import FileSaver from 'file-saver';
-import i18n from 'i18next';
+import { useForm } from "react-hook-form";
+import Graphic from "components/fields/Graphic";
+import AssessmentIcon from "@material-ui/icons/Assessment";
+import ListIcon from "@material-ui/icons/List";
+import { Settings } from "@material-ui/icons";
+import InfoIcon from '@material-ui/icons/Info';
+import {  Card, CardContent, Grid, Tooltip } from "@material-ui/core";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import clsx from 'clsx';
+import ThumbDownIcon from '@material-ui/icons/ThumbDown';
+import ThumbUpIcon from '@material-ui/icons/ThumbUp';
+import { MultiData } from "@types";
+import IndicatorPanel from "components/report/IndicatorPanel";
+
 interface Assessor {
     row: Dictionary | null;
     allFilters: Dictionary[];
 }
 
-const useStyles = makeStyles((theme) => ({      
+const useStyles = makeStyles((theme) => ({
+    containerFilter: {
+        width: "100%",
+        padding: "10px",
+        marginBottom: "10px",
+        display: "flex",
+        gap: 8,
+        flexWrap: "wrap",
+        backgroundColor: "white",
+        justifyContent: "space-between",
+    },
+    filterComponent: {
+        minWidth: "220px",
+        maxWidth: "260px",
+    },
     containerHeader: {
         display: "flex",
         flexWrap: "wrap",
@@ -50,7 +65,18 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: "14px",
         textTransform: "initial",
-    },       
+    },
+    BackGrRed: {
+        backgroundColor: "#fb5f5f",
+    },
+    BackGrGreen: {
+        backgroundColor: "#55bd84",
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: "pointer",
+    },
     containerHeaderItem: {
         backgroundColor: "#FFF",
         padding: 8,
@@ -61,34 +87,28 @@ const useStyles = makeStyles((theme) => ({
             display: "flex",
         },
     },
-    tabs: {
-        color: "#989898",
-        backgroundColor: "white",
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        width: "inherit",
-        
-    },
-    labellink: {
-        color: '#7721ad',
-        textDecoration: 'underline',
-        cursor: 'pointer'
-    },
 }));
 
-
-type PieChartData = {
-    name: string;
-    value: number; 
-};
-
-type ColumnTmp = {
-    Header: string;
-    accessor: string;
-    prefixTranslation?: string;
-    type?: string
-}
+const columnsTemp = [
+    "usr",
+    "fullname",
+    "hourfirstlogin",
+    "totaltickets",
+    "closedtickets",
+    "asignedtickets",
+    "suspendedtickets",
+    "avgfirstreplytime",
+    "maxfirstreplytime",
+    "minfirstreplytime",
+    "maxtotalduration",
+    "mintotalduration",
+    "avgtotalasesorduration",
+    "maxtotalasesorduration",
+    "mintotalasesorduration",
+    "userconnectedduration",
+    "userstatus",
+    "groups",
+];
 
 const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const { t } = useTranslation();
@@ -96,9 +116,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
     const mainAux = useSelector((state) => state.main.mainAux);
-    const mainPaginated = useSelector(state => state.main.mainPaginated);
-    const mainResult = useSelector(state => state.main);
-    const [, setgroupsdata] = useState<Dictionary>([]);
+    const [groupsdata, setgroupsdata] = useState<any>([]);
     const [allParameters, setAllParameters] = useState({});
     const [dateRange, setdateRange] = useState<Range>({
         startDate: new Date(new Date().setDate(1)),
@@ -109,10 +127,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);
     const [isday, setisday] = useState(false);
-    const [columnGraphic, ] = useState("");
+    const [columnGraphic, setColumnGraphic] = useState("");
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const [openSeButtons, setOpenSeButtons] = useState(false);
-    const [, setmaxmin] = useState({
+    const [, setOpenSeButtons] = useState(false);
+    const [openFilterModal, setOpenFilterModal] = useState(false);
+    const [maxmin, setmaxmin] = useState({
         maxticketsclosed: 0,
         maxticketsclosedasesor: "",
         minticketsclosed: 0,
@@ -122,16 +141,13 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         mintimeconnected: "0",
         mintimeconnectedasesor: "",
     });
-    const [desconectedmotives, setDesconectedmotives] = useState<Dictionary[]>([]);
-    const [openModalTicket, setOpenModalTicket] = useState(false);
-    const [view, ] = useState("GRID");
-    const [dataGrid, setdataGrid] = useState<Dictionary[]>([]);   
-    const [dataGridAgentAvg, setdataGridAgentAvg] = useState<Dictionary[]>([]);
+    const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
 
+    const [openModal, setOpenModal] = useState(false);
+    const [view, setView] = useState("GRID");
 
-    const [gaugeArcs, ] = useState([100, 100]);     
-    const formatTooltip = (value: number) => `${value}%`;
-
+    const [dataGrid, setdataGrid] = useState<any[]>([]);
+   
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[];
@@ -139,42 +155,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         loading: false,
         data: [],
     });
-
-    const [orderType, setOrderType] = useState("");
-    const [sortBy, setSortBy] = useState("");
-
-    const dataForClosedTickets = dataGrid.map(item => ({
-        name: item.fullname,
-        value: parseInt(item.closedtickets)
-    })); 
-
-    const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
-    const [tabIndex, setTabIndex] = useState(0);
-    const [tabTexts] = useState([
-        { label: 'TMO', title: 'Tiempo Medio de la Operación' },
-        { label: 'TME', title: 'Tiempo de primera respuesta' },
-        { label: 'TMR', title: 'Tiempo promedio de respuesta' }
-    ]);
-
-    const handleChangeTab = (event: Dictionary, newValue: number) => {
-        setTabIndex(newValue);
-    };
-
-    let valueKey;
-    switch (tabIndex) {
-        case 0:
-            valueKey = "avgtotalasesorduration";
-            break;
-        case 1:
-            valueKey = "avgfirstreplytime";
-            break;
-        case 2:
-            valueKey = "tmravg";
-            break;
-        default:
-            valueKey = "tmravg";
-            break;
-    }
 
     useEffect(() => {        
         dispatch(setViewChange("report_userproductivity"));
@@ -189,16 +169,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         };
     }, []);
 
-    const convertMinutesToHHMMSS = (minutes: number) => {
-        const hours = Math.floor(minutes / 60);    
-        const remainingMinutes = minutes % 60;    
-        const formattedHours = String(hours).padStart(2, '0');
-        const formattedMinutes = String(remainingMinutes).padStart(2, '0');
-        const formattedSeconds = '00';     
-        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-    };   
-
-    const columns = React.useMemo(        
+    const columns = React.useMemo(
         () => [
             {
                 Header: t(langKeys.report_userproductivity_user),
@@ -247,11 +218,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_minfirstreplytime),
                 accessor: 'minfirstreplytime',
-            },  
-            {
-                Header: t(langKeys.report_userproductivity_avgtotalduration),
-                accessor: 'avgtotalduration',
-            },        
+            },
+            // {
+            //     Header: t(langKeys.report_userproductivity_avgtotalduration),
+            //     accessor: 'avgtotalduration',
+            //     NoFilter: false
+            // },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
@@ -283,10 +255,10 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 helpText: t(langKeys.report_userproductivity_tmradviseravg_help),
             },
             {
-                Header: t(langKeys.timeconnected),                      
+                Header: t(langKeys.report_userproductivity_userconnectedduration),
                 accessor: 'userconnectedduration',
-                Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
-                sortType: 'basic',
+                type: "number",
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
@@ -295,271 +267,19 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_groups),
                 accessor: 'groups',
-            },           
+            },
+            ...(mainAux.data.length > 0 ?
+                [...desconectedmotives.map((d: any) =>
+                ({
+                    Header: d,
+                    accessor: d,
+                })
+                )
+                ] : []
+            )
         ],
         [isday, mainAux, desconectedmotives]
     );
-
-    const columnsGaugeChart = React.useMemo(
-        
-        () => [
-            {
-                Header: t(langKeys.ticket_number),
-                accessor: 'numeroticket',
-            },
-            {
-                Header: t(langKeys.agent),
-                accessor: 'asesorinicial',
-            },
-            {
-                Header: t(langKeys.channel),
-                accessor: 'personcommunicationchannel',
-            },          
-            {
-                Header: t(langKeys.closedby),
-                accessor: 'asesorfinal',               
-            },
-            {
-                Header: t(langKeys.tme),
-                accessor: 'tiempoprimerarespuesta',              
-            },
-            {
-                Header: t(langKeys.propertytmemaximo),
-                accessor: 'tiempoprimerarespuestaasesor',              
-            },
-            {
-                Header: t(langKeys.propertytmeminimo),
-                accessor: 'duraciontotal',             
-            },
-            {
-                Header: t(langKeys.tmo),
-                accessor: 'tmoasesor',
-            },
-            {
-                Header: t(langKeys.propertytmomaximo),
-                accessor: 'duracionpausa',
-            },
-            {
-                Header: t(langKeys.propertytmominimo),
-                accessor: 'supervisionduration',
-            },          
-            {
-                Header: t(langKeys.tmr),
-                accessor: 'tiempopromediorespuesta',
-            },
-            {
-                Header: t(langKeys.maxTMR),
-                accessor: 'tiempopromediorespuestaasesor',
-            },
-            {
-                Header: t(langKeys.minTMR),
-                accessor: 'tiempopromediorespuestapersona',
-            },           
-        ],
-        []
-    );
-
-    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-    const openDialogInteractions = useCallback((row: Dictionary) => {
-        setOpenModalTicket(true);
-        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
-    }, [mainResult]);   
-
-    function exportExcelPersonalized(filename: string, csvData: Dictionary[], columnsexport?: ColumnTmp[]): void {
-        import('xlsx').then(XLSX => {
-            const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-            const fileExtension = '.xlsx';
-            let datafromtable = csvData;
-            if (columnsexport) {
-                datafromtable = csvData.map((x: Dictionary) => {
-                    const newx: Dictionary = {};
-                    columnsexport.forEach((y: ColumnTmp) => {
-                        if (y.accessor === 'userconnectedduration') {
-                            newx[y.Header] = convertMinutesToHHMMSS(Number(x[y.accessor]));
-                        } else {
-                            newx[y.Header] = y.prefixTranslation !== undefined ? i18n.t(`${y.prefixTranslation}${x[y.accessor]?.toLowerCase()}`).toUpperCase() : (
-                                y.type === "porcentage" ? `${(Number(x[y.accessor]) * 100).toFixed(0)}%` :
-                                    x[y.accessor])
-                        }
-                    });
-                    return newx;
-                });
-            }
-            const ws = XLSX.utils.json_to_sheet(datafromtable);
-            const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            const data = new Blob([excelBuffer], { type: fileType });
-            FileSaver.saveAs(data, filename + fileExtension);
-        });
-    }
-
-    const getColumns = (tabIndex: number) => {
-        switch (tabIndex) {
-            case 0: // TMO
-                return [
-                    {
-                        Header: t(langKeys.report_userproductivity_fullname),
-                        accessor: 'fullname',
-                        NoFilter: false,
-                    },
-                    {
-                        Header: t(langKeys.report_userproductivity_maxtotalduration),
-                        accessor: 'maxtotalduration',
-                    },
-                    {
-                        Header: t(langKeys.report_userproductivity_mintotalduration),
-                        accessor: 'mintotalduration',
-                    },
-                    {
-                        Header: t(langKeys.timeconnected),                      
-                        accessor: 'userconnectedduration',
-                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
-                        sortType: 'basic',
-                    },
-                ];
-            case 1: // TME
-                return [
-                    {
-                        Header: t(langKeys.report_userproductivity_fullname),
-                        accessor: 'fullname',
-                        NoFilter: false,
-                    },
-                    {
-                        Header: t(langKeys.report_userproductivity_maxfirstreplytime),
-                        accessor: 'maxfirstreplytime',
-                    },
-                    {
-                        Header: t(langKeys.report_userproductivity_minfirstreplytime),
-                        accessor: 'minfirstreplytime',
-                    },
-                    {
-                        Header: t(langKeys.timeconnected),                      
-                        accessor: 'userconnectedduration',
-                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
-                        sortType: 'basic',
-                    },
-                ];
-            case 2: // TMR
-                return [
-                    {
-                        Header: t(langKeys.report_userproductivity_fullname),
-                        accessor: 'fullname',
-                        NoFilter: false,
-                    },
-                    {
-                        Header: 'TMR máximo',
-                        accessor: 'tmradvisermax',
-                    },
-                    {
-                        Header: 'TMR mínimo',
-                        accessor: 'tmradvisermin',
-                    },                   
-                    {
-                        Header: t(langKeys.timeconnected),                      
-                        accessor: 'userconnectedduration',
-                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
-                        sortType: 'basic',
-                    },
-                ];
-            default:
-                return [];
-        }
-    };
-
-    const columnsFulfillmentByTicket = (tabIndex: number) => {
-        switch (tabIndex) {
-            case 0: // TMO
-                return [
-                    { 
-                        Header: t(langKeys.ticket_numeroticket),
-                        accessor: "numeroticket",
-                        NoFilter: true,
-                        Cell: (props: CellProps<Dictionary>) => {
-                            const row = props.cell.row.original;                
-                            if (row && row.numeroticket) {
-                                return (
-                                    <label
-                                        className={classes.labellink}
-                                        onClick={() => openDialogInteractions(row)}
-                                    >
-                                        {row.numeroticket}
-                                    </label>
-                                );
-                            } else {
-                                return "";
-                            }
-                        },
-                        
-                    },
-                    {
-                        Header: t(langKeys.tmo),
-                        accessor: 'duraciontotal',
-                        NoFilter: true,                       
-                    }
-                ];
-            case 1: // TME
-                return [
-                    { 
-                        Header: t(langKeys.ticket_numeroticket),
-                        accessor: "numeroticket",
-                        NoFilter: true,
-                        Cell: (props: CellProps<Dictionary>) => {
-                            const row = props.cell.row.original;                
-                            if (row && row.numeroticket) {
-                                return (
-                                    <label
-                                        className={classes.labellink}
-                                        onClick={() => openDialogInteractions(row)}
-                                    >
-                                        {row.numeroticket}
-                                    </label>
-                                );
-                            } else {
-                                return "";
-                            }
-                        },                        
-                    },
-                    {
-                        Header: t(langKeys.tme),
-                        accessor: 'tiempopromediorespuesta',
-                        NoFilter: true,
-                       
-                    }
-                ];
-            case 2: // TMR
-                return [
-                    { 
-                        Header: t(langKeys.ticket_numeroticket),
-                        accessor: "numeroticket",
-                        NoFilter: true,
-                        Cell: (props: CellProps<Dictionary>) => {
-                            const row = props.cell.row.original;                
-                            if (row && row.numeroticket) {
-                                return (
-                                    <label
-                                        className={classes.labellink}
-                                        onClick={() => openDialogInteractions(row)}
-                                    >
-                                        {row.numeroticket}
-                                    </label>
-                                );
-                            } else {
-                                return "";
-                            }
-                        },
-                        
-                    },
-                    {
-                        Header: t(langKeys.tmr),
-                        accessor: 'tiempopromediorespuestapersona',
-                        NoFilter: true,
-                       
-                    }
-                ];
-            default:
-                return [];
-        }
-    };
     
     useEffect(() => {
         if (allFilters) {
@@ -581,7 +301,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             }
         }
     }, [multiData, allFilters]);
-    
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
             setDetailCustomReport(mainAux);
@@ -599,8 +318,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             if (mainAux.data.length > 0) {
                 const desconedtedmotives = Array.from(
                     new Set(
-                        (mainAux.data as Dictionary).reduce(
-                            (ac: string[], x: Dictionary) =>
+                        (mainAux.data as any).reduce(
+                            (ac: string[], x: any) =>
                                 x.desconectedtimejson ? [...ac, ...Object.keys(JSON.parse(x.desconectedtimejson))] : ac,
                             []
                         )
@@ -670,21 +389,13 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             
         })));
 
-        dispatch(getCollectionPaginated(getPaginatedTicket({
-            startdate: stardate,
-            enddate: enddate,
-            take: 10,
-            skip: 0,
-            sorts: {duraciontotal : "desc"},
-            filters: {},
-            ...allParameters
-        })))
-
         if (view !== "GRID") {
             dispatch(
                 getMainGraphic(
                     getUserProductivityGraphic({
-                        ...allParameters,                      
+                        ...allParameters,
+                        // startdate: daterange?.startDate!,
+                        // enddate: daterange?.endDate!,
                         column: columnGraphic,
                         summarization: "COUNT",
                     })
@@ -693,389 +404,49 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         }
     };
 
-    const setValue = (parameterName: string, value: string) => {
+    const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     };
 
-    const handleChange = (event: Dictionary) => {
+    const handleChange = (event: any) => {
         setState({ ...state, [event.target.name]: event.target.checked });
         setValue("bot", event.target.checked);
         setcheckedA(event.target.checked);
     };
 
-    const format = (date: Date) => date.toISOString().split("T")[0];    
+    const format = (date: Date) => date.toISOString().split("T")[0];
 
- 
-     
-    function calculateAverageTime(data: { [key: string]: string }[], key: string) {
-        const totalSeconds = data.reduce((totalSeconds, item) => {
-            const timeValue = item[key];
-            if (typeof timeValue === 'string') {
-                const [hours, minutes, seconds] = timeValue.split(':').map(Number);
-                return totalSeconds + (hours * 3600) + (minutes * 60) + seconds;
-            } else {
-                return totalSeconds;
-            }
-        }, 0);    
-        const avgSeconds = Math.round(totalSeconds / data.length);
-        const avgHours = Math.floor(avgSeconds / 3600);
-        const avgRemainingSeconds = avgSeconds % 3600;
-        const avgMinutes = Math.floor(avgRemainingSeconds / 60);
-        const avgSecondsFinal = avgRemainingSeconds % 60;    
-        return `${String(avgHours).padStart(2, '0')}:${String(avgMinutes).padStart(2, '0')}:${String(avgSecondsFinal).padStart(2, '0')}`;
-    }    
-    
-    const tmeValues = dataGrid.map(item => ({ TMEPromedio: item.avgfirstreplytime }));
-    const tmrValues = dataGrid.map(item => ({ TMRPromedio: item.tmravg }));
-    const tmoValues = dataGrid.map(item => ({ TMOAsesorPromedio: item.avgtotalasesorduration }));
-    const avgTME = calculateAverageTime(tmeValues, 'TMEPromedio');   
-    const avgTMR = calculateAverageTime(tmrValues, 'TMRPromedio');
-    const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
-
-    function convertHHMMSStoSeconds(hora: string): number {
-        const partes = hora.split(":");
-        const horas = parseInt(partes[0]);
-        const minutos = parseInt(partes[1]);
-        const segundos = parseInt(partes[2]);        
-        const segundosTotales = horas * 3600 + minutos * 60 + segundos;        
-        return segundosTotales;
-    }
-
-    function convertSecondsToHHMMSS(totalSeconds: number): string {
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;    
-        const paddedHours = hours.toString().padStart(2, '0');
-        const paddedMinutes = minutes.toString().padStart(2, '0');
-        const paddedSeconds = seconds.toString().padStart(2, '0');    
-        return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
-    }    
-    
-    const [dataForAgentAvg, setDataForAgentAvg] = useState<{ name: string; value: number; }[]>([]);
-
-    useEffect(() => {
-        switch (tabIndex) {
-            case 0:
-                setDataForAgentAvg(
-                    dataGrid.map(item => ({
-                        name: item.fullname,
-                        value: convertHHMMSStoSeconds(item.avgtotalduration)
-                    }))
-                );
-                break;
-            case 1:
-                setDataForAgentAvg(
-                    dataGrid.map(item => ({
-                        name: item.fullname,
-                        value: convertHHMMSStoSeconds(item.avgfirstreplytime)                  
-                    }))
-                );
-                break;
-            case 2:
-                setDataForAgentAvg(
-                    dataGrid.map(item => ({
-                        name: item.fullname,
-                        value: convertHHMMSStoSeconds(item.tmravg) 
-                       
-                    }))
-                );
-                break;
-            default:
-                setDataForAgentAvg([]);
-                break;
-        }
-    }, [tabIndex, dataGrid]);
-
-    const sortedData = dataForClosedTickets.slice().sort((a, b) => {
-        if (sortBy === "value") {
-            if (orderType === "asc") {
-                return a.value - b.value;
-            } else if (orderType === "desc") {
-                return b.value - a.value;
-            }
-        } else if (sortBy === "name") {
-            const nameA = a.name.toLowerCase();
-            const nameB = b.name.toLowerCase();
-            if (nameA < nameB) return -1;
-            if (nameA > nameB) return 1;
-            return 0;
-        }
-        return 0;
-    });
-
-    const [orderTypeAvgAgent, setOrderTypevgAgent] = useState("");
-    const [sortByvgAgent, setSortByvgAgent] = useState("");
-
-    const sortedDataForAvgAgent = dataForAgentAvg.slice().sort((a, b) => {
-        if (sortByvgAgent === "value") {
-            if (orderTypeAvgAgent === "asc") {
-                return a.value - b.value;
-            } else if (orderTypeAvgAgent === "desc") {
-                return b.value - a.value;
-            }
-        } else if (sortByvgAgent === "name") {
-            const nameA = a.name.toLowerCase();
-            const nameB = b.name.toLowerCase();
-            if (nameA < nameB) return -1;
-            if (nameA > nameB) return 1;
-            return 0;
-        }
-        return 0;
-    });    
-
-    const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
-
-    const slicedData = sortedData.slice(
-        currentPage * itemsPerPage,
-        (currentPage + 1) * itemsPerPage        
-    );
-
-    const [currentPageAsesor, setCurrentPageAsesor] = useState(0);
-    const itemsPerPageAsesor = 10;  
-
-    const slicedDataAsesor = sortedDataForAvgAgent.slice(
-        currentPageAsesor * itemsPerPageAsesor,
-        (currentPageAsesor + 1) * itemsPerPageAsesor        
-    );  
-
-    const [openExpectedValueModal, setOpenExpectedValueModal] = useState(false);
-    const [errorText, setErrorText] = useState('');
-
-    const [hour, setHour] = useState('00');
-    const [minute, setMinute] = useState('00');
-    const [second, setSecond] = useState('00');
-    const [dataForPie, setDataForPie] = useState<PieChartData[]>([]);
-
-    const [expectedTMOValue, setExpectedTMOValue] = useState(localStorage.getItem('expectedTMOValue') || '00:00:00');
-    const [expectedTMEValue, setExpectedTMEValue] = useState(localStorage.getItem('expectedTMEValue') || '00:00:00');
-    const [expectedTMRValue, setExpectedTMRValue] = useState(localStorage.getItem('expectedTMRValue') || '00:00:00');
-    const [expectedValue, setExpectedValue] = useState(expectedTMOValue);
-
-    useEffect(() => {
-        switch (tabIndex) {
-            case 0:
-                setExpectedValue(expectedTMOValue);
-                break;
-            case 1:
-                setExpectedValue(expectedTMEValue);
-                break;
-            case 2:
-                setExpectedValue(expectedTMRValue);
-                break;
-            default:
-                setExpectedValue(expectedTMOValue);
-                break;
-        }
-    }, [tabIndex, expectedTMOValue, expectedTMEValue, expectedTMRValue]);
-    
-    useEffect(() => {
-        localStorage.setItem('expectedTMOValue', expectedTMOValue);
-    }, [expectedTMOValue]);
-
-    useEffect(() => {
-        localStorage.setItem('expectedTMEValue', expectedTMEValue);
-    }, [expectedTMEValue]);
-
-    useEffect(() => {
-        localStorage.setItem('expectedTMRValue', expectedTMRValue);
-    }, [expectedTMRValue]);
-
-    const validateTime = (h: string, m: string, s: string): boolean => {
-        const hourInt = parseInt(h, 10);
-        const minuteInt = parseInt(m, 10);
-        const secondInt = parseInt(s, 10);
-    
-        if (
-            isNaN(hourInt) || isNaN(minuteInt) || isNaN(secondInt) || 
-            hourInt < 0 || minuteInt < 0 || minuteInt > 59 || 
-            secondInt < 0 || secondInt > 59
-        ) {
-            setErrorText('Por favor, ingrese una hora válida.');
-            return false;
-        } else {
-            setErrorText('');
-            return true;
-        }
-    };    
-
-    const handleAccept = () => {
-        let accepted = false; 
-        if (validateTime(hour, minute, second)) {
-            const newValue = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
-            switch (tabIndex) {
-                case 0:
-                    setExpectedTMOValue(newValue);
-                    break;
-                case 1:
-                    setExpectedTMEValue(newValue);
-                    break;
-                case 2:
-                    setExpectedTMRValue(newValue);
-                    break;
-                default:
-                    break;
-            }
-            accepted = true; 
-        }
-        return accepted;
-    };      
-
-    const updateDataForPie = (tabIndex: number, data: { duraciontotal: string, TME: string, TMR: string }[]) => {
-        let expectedValue: number = 0; 
-        if (tabIndex === 0) { expectedValue = getSecondsFromTimeString(expectedTMOValue); } 
-        else if (tabIndex === 1) { expectedValue = getSecondsFromTimeString(expectedTMEValue); } 
-        else if (tabIndex === 2) { expectedValue = getSecondsFromTimeString(expectedTMRValue); }
-    
-        const totalTickets = data.length;    
-        const ticketsMeetingExpectation = [];
-        const ticketsNotMeetingExpectation = [];
-    
-        data.forEach(item => {
-            let durationSeconds: number | undefined;
-            if (tabIndex === 0) {
-                durationSeconds = getSecondsFromTimeString(item.duraciontotal);
-            } else if (tabIndex === 1) {
-                durationSeconds = getSecondsFromTimeString(item.TME);
-            } else if (tabIndex === 2) {
-                durationSeconds = getSecondsFromTimeString(item.TMR);
-            }
-            
-            if (durationSeconds !== undefined) {
-                const meetsExpectation = durationSeconds <= expectedValue;
-                if (meetsExpectation) {
-                    ticketsMeetingExpectation.push(item);
-                } else {
-                    ticketsNotMeetingExpectation.push(item);
-                }
-            }
-        });
-    
-        const percentageMeetingExpectation = (ticketsMeetingExpectation.length / totalTickets) * 100;
-        const percentageNotMeetingExpectation = 100 - percentageMeetingExpectation;
-    
-        setDataForPie([
-            { name: 'Cumple', value: percentageMeetingExpectation },
-            { name: 'No Cumple', value: percentageNotMeetingExpectation },
-        ]);
-    }; 
-    
-    useEffect(() => {
-        const duracionesTotales = mainPaginated.data.map(item => ({
-            duraciontotal: item.duraciontotal,
-            TME: item.tiempopromediorespuesta,
-            TMR: item.tiempopromediorespuestapersona
-        }));
-    
-        updateDataForPie(tabIndex, duracionesTotales);
-    }, [mainPaginated.data, tabIndex]);   
-
-    const [openSeButtonsAgent, setOpenSeButtonsAgent] = useState(false);
-    const [anchorElSeButtonsAgent, setAnchorElSeButtonsAgent] = useState<null | HTMLElement>(null);    
-    const [openSeButtonsTickets, setOpenSeButtonsTickets] = useState(false);
-    const [anchorElSeButtonsTickets, setAnchorElSeButtonsTickets] = useState<null | HTMLElement>(null);
-    
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>, type: string) => {
-        if (type === 'agent') {
-            setAnchorElSeButtonsAgent(anchorElSeButtonsAgent ? null : event.currentTarget);
-            setOpenSeButtonsAgent((prevOpen) => !prevOpen);
-        } else if (type === 'tickets') {
-            setAnchorElSeButtonsTickets(anchorElSeButtonsTickets ? null : event.currentTarget);
-            setOpenSeButtonsTickets((prevOpen) => !prevOpen);
-        }
-    };
-
-    const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, summary }: Dictionary) => {
-        const RADIAN = Math.PI / 180;
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-        const y = cy + radius * Math.sin(-midAngle * RADIAN);    
-        return (
-            <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-                {summary}
-            </text>
+    const handlerSearchGraphic = (daterange: any, column: string) => {
+        dispatch(
+            getMainGraphic(
+                getUserProductivityGraphic({
+                    ...allParameters,
+                    startdate: daterange?.startDate!,
+                    enddate: daterange?.endDate!,
+                    column,
+                    summarization: "COUNT",
+                })
+            )
         );
     };
 
-    const isPromedioMenorEsperado = (avg: string, expected: string) => {
-        const avgSeconds = getSecondsFromTimeString(avg);
-        const expectedSeconds = getSecondsFromTimeString(expected);    
-        const toleranceThreshold = 0.5;          
-        if (Math.abs(avgSeconds - expectedSeconds) <= toleranceThreshold) {
-            return true;
-        }    
-        return avgSeconds < expectedSeconds;
-    };    
-
-    const getSecondsFromTimeString = (timeString: string) => {
-        if (typeof timeString === 'string') {
-            const [hours, minutes, seconds] = timeString.split(':').map(Number);
-            return hours * 3600 + minutes * 60 + seconds;
-        } else {           
-            return 0; 
-        }
-    }; 
-
     useEffect(() => {
-        const handleClickOutsideAgent = (event: MouseEvent) => {
+        const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node;
-            if (anchorElSeButtonsAgent && !anchorElSeButtonsAgent.contains(target)) {
-                setAnchorElSeButtonsAgent(null);
-                setOpenSeButtonsAgent(false);
+            if (anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null);
+                setOpenSeButtons(false);
             }
         };
-        document.addEventListener("click", handleClickOutsideAgent);
+        document.addEventListener("click", handleClickOutside);
         return () => {
-            document.removeEventListener("click", handleClickOutsideAgent);
+            document.removeEventListener("click", handleClickOutside);
         };
-    }, [anchorElSeButtonsAgent, setOpenSeButtonsAgent]);
+    }, [anchorElSeButtons, setOpenSeButtons]);
     
-    useEffect(() => {
-        const handleClickOutsideTickets = (event: MouseEvent) => {
-            const target = event.target as Node;
-            if (anchorElSeButtonsTickets && !anchorElSeButtonsTickets.contains(target)) {
-                setAnchorElSeButtonsTickets(null);
-                setOpenSeButtonsTickets(false);
-            }
-        };
-        document.addEventListener("click", handleClickOutsideTickets);
-        return () => {
-            document.removeEventListener("click", handleClickOutsideTickets);
-        };
-    }, [anchorElSeButtonsTickets, setOpenSeButtonsTickets]);
-
-    let avg: string;
-    let tabExpectedValue: string;
-    
-    switch (tabIndex) {
-        case 0:
-            avg = avgTMO;
-            tabExpectedValue = expectedTMOValue;
-            break;
-        case 1:
-            avg = avgTME;
-            tabExpectedValue = expectedTMEValue;
-            break;
-        case 2:
-            avg = avgTMR;
-            tabExpectedValue = expectedTMRValue;
-            break;
-        default:
-            avg = '';
-            tabExpectedValue = '';
-    }      
-
-    function formatTime(timeString: string) {
-        const timeParts = timeString.split(':');
-        const hours = parseInt(timeParts[0]);
-        const minutes = parseInt(timeParts[1]);
-        const seconds = parseInt(timeParts[2]);
-        return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-    }
-
     return (
         <>
-        {/* Inicio de la Cabezera 1 ----------------------------------------------------*/}
+
             <div style={{ display: "flex", gap: 8, marginBottom: '1rem', marginTop: '0.5rem' }}>
                 <div style={{ display: "flex" }}>
                     <Box width={1}>
@@ -1107,7 +478,6 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                     </Button>
                                 </DateRangePicker>
                             </div>
-                            
                         </Box>
                     </Box>
                 </div>
@@ -1118,7 +488,53 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                             justifyContent="space-between"
                             alignItems="center"
                         >
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: '0 15px' }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                <FieldSelect                                                    
+                                    label={t("report_userproductivity_filter_channels")}
+                                    className={classes.filterComponent}
+                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
+                                    valueDefault={allParameters?.channel || "ayuda"}
+                                    onChange={(value) =>
+                                        setValue("channel", value?.typedesc || "ayuda2")
+                                    }
+                                    variant="outlined"
+                                    data={
+                                        multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
+                                    }
+                                    loading={multiData.loading}
+                                    optionDesc={"type"}
+                                    optionValue={"typedesc"}
+                                />
+                                <FieldMultiSelect
+                                    limitTags={1}
+                                    label={t("report_userproductivity_filter_group")}
+                                    className={classes.filterComponent + " col-6"}
+                                    valueDefault={allParameters?.usergroup || ""}
+                                    key={"UFN_DOMAIN_LST_VALORES_GRUPOS"}
+                                    onChange={(value) =>
+                                        setValue("usergroup", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
+                                    }
+                                    variant="outlined"
+                                    data={groupsdata}
+                                    optionDesc={"domaindesc"}
+                                    optionValue={"domainvalue"}
+                                />
+
+                                <FieldMultiSelect
+                                    limitTags={1}
+                                    label={t("report_userproductivity_filter_status")}
+                                    className={classes.filterComponent + " col-6"}
+                                    key={"UFN_DOMAIN_LST_VALORES_ESTADOORGUSER"}
+                                    valueDefault={allParameters?.userstatus || ""}
+                                    onChange={(value) =>
+                                        setValue("userstatus", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
+                                    }
+                                    variant="outlined"
+                                    data={multiData?.data?.find(x=>x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data||[]}
+                                    loading={multiData.loading}
+                                    optionDesc={"domaindesc"}
+                                    optionValue={"domainvalue"}
+                                />
                                 <div style={{ alignItems: 'center' }}>
                                     <div>
                                         <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
@@ -1162,486 +578,413 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 </div>
             </div>
 
-            {/* Tabs TMO TME TMR ----------------------------------------------------*/}
-            <Tabs
-                value={tabIndex}
-                onChange={handleChangeTab}
-                className={classes.tabs}
-                textColor="primary"
-                indicatorColor="primary"
-                variant="fullWidth"
-            >
-               {tabTexts.map((tab, index) => (
-                    <AntTab key={index} label={tab.label} />
-                ))}
-            </Tabs>
 
-            {/* Card Velocimetro TMO  ----------------------------------------------------*/}
-            <div style={{margin: '0.5rem 0'}}>
-                <Card style={{ margin: '0',  padding: 0}}>
-                    <CardContent>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div>
-                                <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>{tabTexts[tabIndex].label}</Typography>
-                                <Typography>{tabTexts[tabIndex].title}</Typography>
-                            </div>
-                            <div style={{ display: 'flex', gap: 5 }}>
-                                <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
-                                <SettingsIcon style={{ color: "#2E2C34", cursor: "pointer" }} onClick={() => setOpenExpectedValueModal(true)} />
-                            </div>
-                        </div>
+            <Grid container spacing={3}>
+                
+                <Grid item xs={12} md={6} lg={6}>
+                    <div>
+                        <Grid container spacing={1} >
 
-                        <div style={{ width: '85vw', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-                            <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>
-                                <div>{tabTexts[tabIndex].label} Esperado</div>
-                                <div style={{ fontWeight: 'normal' }}>{expectedValue}</div>
-                            </div>
-                            <GaugeChart
-                                style={{ width: '450px' }}
-                                id="gauge-chart"
-                                arcsLength={gaugeArcs}
-                                colors={['#00B050', '#FF0000']} 
-                                needleColor="#783BA5"
-                                needleBaseColor="#783BA5"
-                                textColor="#000000"
-                                animate={false}                               
-                                percent={
-                                    isPromedioMenorEsperado(avg, tabExpectedValue) 
-                                    ? 4.3
-                                    : 8.8
-                                }
-                                formatTextValue={() => ``}
-                            />
-                            <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', margin: '0', textAlign: 'center' }}>
-                                <div>{tabTexts[tabIndex].label} Promedio</div>
-                                <div style={{ fontWeight: 'normal' }}>
-                                    {tabIndex === 0 && !isNaN(parseFloat(avgTMO)) ? formatTime(avgTMO) : tabIndex === 0 ? '00:00:00' : ''}
-                                    {tabIndex === 1 && !isNaN(parseFloat(avgTME)) ? formatTime(avgTME) : tabIndex === 1 ? '00:00:00' : ''}
-                                    {tabIndex === 2 && !isNaN(parseFloat(avgTMR)) ? formatTime(avgTMR) : tabIndex === 2 ? '00:00:00' : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                            <Grid item xs={12} md={12} lg={12}>
+                                <Card className={clsx({
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
+                                })} style={{ color: "white" }}>
+                                    <CardContent style={{ paddingBottom: 10 }}>
+                                        <Typography variant="h5">
+                                            {t(langKeys.report_userproductivity_cardtme)}
+                                            <Tooltip title={`${t(langKeys.tmetooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </Typography>
+                                        <Typography variant="h5" component="div" align="center">
+                                            {detailCustomReport.data[0]?.cardavgavgtme}
+                                        </Typography>
+                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
+                                            {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral || ""}`}
+                                            {(detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
 
-                <DialogZyx
-                    open={openExpectedValueModal}
-                    title="Configuración del valor esperado"
-                >
-                    <div style={{ marginBottom: '1rem', display: 'flex', gap: 10 }}>
-                        <TextField
-                            label="HH"
-                            variant="outlined"
-                            value={hour}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, '').slice(0, 2);
-                                setHour(value);
-                                validateTime(value, minute, second); 
-                            }}
-                            fullWidth
-                            inputProps={{ maxLength: 2 }}
-                        />
-                       <TextField
-                            label="MM"
-                            variant="outlined"
-                            value={minute}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, '').slice(0, 2);
-                                setMinute(value);
-                                validateTime(hour, value, second); 
-                            }}
-                            fullWidth
-                            inputProps={{ maxLength: 2 }}
-                        />
-                        <TextField
-                            label="SS"
-                            variant="outlined"
-                            value={second}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, '').slice(0, 2);
-                                setSecond(value);
-                                validateTime(hour, minute, value); 
-                            }}
-                            fullWidth
-                            inputProps={{ maxLength: 2 }}
-                        />
+
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardavgmax_tme)}
+                                    value={detailCustomReport.data[0]?.cardavgmaxtme}
+                                    value2={detailCustomReport.data[0]?.cardavgmaxtmeuser || "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
+                                    value={detailCustomReport.data[0]?.cardmaxmaxtme}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})` : "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardavgmin_tme)}
+                                    value={detailCustomReport.data[0]?.cardavgmintme}
+                                    value2={detailCustomReport.data[0]?.cardavgmintmeuser || "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardminmin_tme)}
+                                    value={detailCustomReport.data[0]?.cardminmintme}
+                                    value2={detailCustomReport.data[0]?.cardminmintmeuser ? `#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})` : "-"}
+                                />
+                            </Grid>
+                        </Grid>
                     </div>
-                    {errorText && <div style={{ color: 'red', textAlign: 'center' }}>{errorText}</div>}
-                    <DialogActions>
-                        <Button onClick={() => setOpenExpectedValueModal(false)} color="default">
-                            Cancelar
-                        </Button>
-                        <Button 
-                            onClick={() => {                                
-                                handleAccept()
-                                setOpenExpectedValueModal(false)
-                                fetchData()
-                            }}
-                            
-                            color="primary" 
-                            disabled={Boolean(errorText)}>
-                            Aceptar
-                        </Button>
-                    </DialogActions>
-                </DialogZyx>
-            </div>                    
+                </Grid>
 
-            <Grid container spacing={3} className={classes.containerDetails}>
-                {/* Card Asesor con TMO Promedio  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'30rem', margin:0}}>
-                        <CardContent >
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div>
-                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> Asesor con {tabTexts[tabIndex].label} Promedio</Typography>
-                                </div>
-                                <div style={{ display: 'flex', gap: 5 }}>
-                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event, 'agent')} />                      
-                                   
-                                    <div style={{ display: 'flex', gap: 8 }}>
-                                        <Popper 
-                                            open={openSeButtonsAgent}
-                                            anchorEl={anchorElSeButtonsAgent}
-                                            placement="bottom"
-                                            transition
-                                            style={{ marginRight: '1rem' }}
-                                        >
-                                            {({ TransitionProps }) => (
-                                                <Paper {...TransitionProps} elevation={5}>
-                                                    {/* Contenido para ASESORES */}
-                                                    <MenuItem
-                                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                        onClick={() => {
-                                                            setOrderTypevgAgent("desc");
-                                                            setSortByvgAgent("value");
-                                                            event.stopPropagation();
-                                                        }}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit">Mayor a Menor</Typography>
-                                                    </MenuItem>
-                                                    <Divider />                                               
-                                                    <div>
-                                                        <MenuItem
-                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                            onClick={() => {
-                                                                setOrderTypevgAgent("asc");
-                                                                setSortByvgAgent("value");
-                                                                event.stopPropagation();
-                                                            }}
-                                                        >
-                                                            <ListItemIcon>
-                                                                <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
-                                                            </ListItemIcon>
-                                                            <Typography variant="inherit">Menor a Mayor</Typography>
-                                                        </MenuItem>
-                                                        <Divider />
-                                                    </div>
-                                                    <div>
-                                                        <MenuItem
-                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                            onClick={() => {
-                                                                setOrderTypevgAgent("asc");
-                                                                setSortByvgAgent("name");
-                                                                event.stopPropagation();
-                                                            }}
-                                                        >
-                                                            <ListItemIcon>
-                                                                <PersonIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
-                                                            </ListItemIcon>
-                                                            <Typography variant="inherit">Por Nombre de Asesor</Typography>
-                                                        </MenuItem>
-                                                        <Divider />
-                                                    </div>                                    
-                                                </Paper>
-                                            )}
-                                        </Popper>
-                                    </div>
+                    <div>
+                        <Grid container spacing={1}>
+
+                            <Grid item xs={12} md={12} lg={12}>
+                                <Card className={clsx({
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
+                                })} style={{ color: "white" }}>
+                                    <CardContent style={{ paddingBottom: 10 }}>
+                                        <Typography variant="h5">
+                                            {t(langKeys.report_userproductivity_cardtmo)}
+                                            <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </Typography>
+                                        <Typography variant="h5" component="div" align="center">
+                                            {detailCustomReport.data[0]?.cardavgavgtmo}
+                                        </Typography>
+                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
+                                            {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral || ""}`}
+                                            {(detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+
+                            
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardavgmax_tmo)}
+                                    value={detailCustomReport.data[0]?.cardavgmaxtmo}
+                                    value2={detailCustomReport.data[0]?.cardavgmaxtmouser || "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
+                                    value={detailCustomReport.data[0]?.cardmaxmaxtmo}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})` : "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardavgmin_tmo)}
+                                    value={detailCustomReport.data[0]?.cardavgmintmo}
+                                    value2={detailCustomReport.data[0]?.cardavgmintmouser || "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardminmin_tmo)}
+                                    value={detailCustomReport.data[0]?.cardminmintmo}
+                                    value2={detailCustomReport.data[0]?.cardminmintmouser ? `#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})` : "-"}
+                                />
+                            </Grid>
+                        </Grid>
+                    </div>
+                </Grid>
+            </Grid>
+           
 
 
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
-                                </div>
+
+
+
+
+
+            <Grid container spacing={3} className={classes.containerDetails} style={{paddingTop:10}}>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card>
+                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
+                            <div style={{ flex: 1 }}>
+                                <Typography variant="body2">
+                                    {t(langKeys.report_userproductivity_totalclosedtickets)}
+                                </Typography>
+                                <Typography variant="h5" component="div" align="center">
+                                    {detailCustomReport.data[0]?.totalclosedtickets}
+                                </Typography>
                             </div>
-                                                                                                     
-                            <div>
-                                {/* Botones de navegación de página */}
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-                                    <Button
-                                        color="primary"
-                                        onClick={() => setCurrentPageAsesor((prevPage) => Math.max(prevPage - 1, 0))}
-                                        disabled={currentPageAsesor === 0}
-                                    >
-                                        <KeyboardArrowLeftIcon />
-                                    </Button>
-                                    <div>
-                                        {`${currentPageAsesor + 1} de ${Math.ceil(dataForAgentAvg.length / itemsPerPageAsesor)}`}
-                                    </div>
-                                    <Button
-                                        color="primary"
-                                        onClick={() => setCurrentPageAsesor((prevPage) => prevPage + 1)}
-                                        disabled={(currentPageAsesor + 1) * itemsPerPageAsesor >= dataForAgentAvg.length}
-                                    >
-                                        <KeyboardArrowRightIcon />
-                                    </Button>
-
-                                    </div>
-
-                                {/* Gráfico de barras */}
-                                <ResponsiveContainer width="100%" height={itemsPerPage * 50}>
-                                    <BarChart
-                                        data={slicedDataAsesor}
-                                        layout="horizontal"
-                                        margin={{top: 20, right: 50, left: 50, bottom: 10}}
-                                    >
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={330} dy={5} dx={-5} />
-                                        <Tooltip
-                                            labelFormatter={(name) => {
-                                                const email = dataGrid.find(item => item.fullname.toLowerCase() === name.toLowerCase())?.email;
-                                                return email ? email : name;
-                                            }}
-                                            formatter={(value:number, name:string)=> [convertSecondsToHHMMSS(value) ,t(name)]}
-                                        />
-                                        <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
-                                            <LabelList dataKey="summary" position="top" />
-                                            {
-                                                dataForAgentAvg.map((entry: Dictionary, index: number) => (
-                                                    <Cell key={`cell-${index}`} fill={"#7721AD"} />
-                                                ))
-                                            }    
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
+                            <div style={{ flex: 1 }}>
+                                <Typography variant="subtitle1" >
+                                    {maxmin.maxticketsclosedasesor} ({maxmin.maxticketsclosed})
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxticketsclosedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {maxmin.minticketsclosedasesor} ({maxmin.minticketsclosed})
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_minticketsclosedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </Typography>
                             </div>
                         </CardContent>
                     </Card>
                 </Grid>
-
-                {/* Card Cumplimiento TMO por Ticket  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'30rem'}}>
-                        <CardContent style={{ paddingBottom: 10 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div>
-                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>Cumplimiento {tabTexts[tabIndex].label} por Ticket</Typography>
-                                </div>                              
+                    <Card>
+                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
+                            <div style={{ flex: 1 }}>
+                                <Typography variant="body2">
+                                    N° {t(langKeys.report_userproductivity_usersconnected)}
+                                </Typography>
+                                <Typography variant="h5" component="div" align="center">
+                                    {detailCustomReport.data[0]?.usersconnected}
+                                </Typography>
                             </div>
-                            <div style={{ margin: '1rem 0',  display: 'flex' }}>
-                                <ResponsiveContainer height={300}>
-                                    <PieChart>
-                                        <Tooltip formatter={formatTooltip} />
-                                        <Pie
-                                            data={dataForPie}
-                                            dataKey="value"
-                                            labelLine={false}
-                                            label={RenderCustomizedLabel}
-                                            nameKey="name"
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={40}
-                                            fill="#7721AD"
-                                        >
-                                            {dataForClosedTickets.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#7721AD" : "#B41A1A"} />
-                                            ))}
-                                        </Pie>
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div style={{ overflowX: 'auto', width:'40vw', marginRight:'3rem' }}>
-                                    <TableZyx
-                                        columns={columnsFulfillmentByTicket(tabIndex)}
-                                        filterGeneral={false}
-                                        data={mainPaginated.data}
-                                        download={false}
-                                        loading={detailCustomReport.loading}
-                                        register={false}     
-                                        toolsFooter={false}   
-                                        pageSizeDefault={10}                                                                     
-                                    />                           
-                                </div>
+                            <div style={{ flex: 1 }}>
+                                <Typography variant="subtitle1">
+                                    {maxmin.maxtimeconnectedasesor} ({maxmin.maxtimeconnected} m)
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxtimeconnectedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {maxmin.mintimeconnectedasesor} ({maxmin.mintimeconnected} m)
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_mintimeconnectedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </Typography>
                             </div>
                         </CardContent>
                     </Card>
-                    <DialogInteractions
-                        openModal={openModalTicket}
-                        setOpenModal={setOpenModalTicket}
-                        ticket={rowSelected}
+                </Grid>
+            </Grid>
+
+            {view === "GRID" ? (                                     
+                <TableZyx
+                    columns={columns}
+                    filterGeneral={false}
+                    data={dataGrid}
+                    download={false}
+                    loading={detailCustomReport.loading}
+                    register={false}
+                    ButtonsElement={() => (
+                        <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
+                                onClick={() => setOpenModal(true)}
+                                startIcon={<AssessmentIcon />}
+                            >
+                                {t(langKeys.graphic_view)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={detailCustomReport.loading}
+                                onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                                startIcon={<DownloadIcon />}
+                            >{t(langKeys.download)}
+                            </Button>
+                        </Box>
+                    )}
+                />                    
+            ) : (
+                <div>
+                    <Box
+                        style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}
+                        className={classes.containerHeaderItem}
+                    >
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
+                            onClick={() => setOpenModal(true)}
+                            startIcon={<Settings />}
+                        >
+                            {t(langKeys.configuration)}
+                        </Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setView("GRID")}
+                            startIcon={<ListIcon />}
+                        >
+                            {t(langKeys.grid_view)}
+                        </Button>
+                    </Box>
+                    <Graphic
+                        graphicType={view.split("-")?.[1] || "BAR"}
+                        column={view.split("-")?.[2] || "summary"}
+                        openModal={openModal}
+                        setOpenModal={setOpenModal}
+                        daterange={{
+                            startDate: dateRange.startDate?.toISOString().substring(0, 10),
+                            endDate: dateRange.endDate?.toISOString().substring(0, 10),
+                        }}
+                        withFilters={false}
+                        setView={setView}
+                        withButtons={false}
+                        row={{ origin: "userproductivity" }}
+                        handlerSearchGraphic={handlerSearchGraphic}
                     />
-                </Grid>
-            </Grid>
+                </div>
+            )}
 
-            <Grid container spacing={3} className={classes.containerDetails}>                
-                {/* Card N° Tickets Cerrados  ----------------------------------------------------*/}
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'32rem'}}>
-                        <CardContent >
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{display:'flex', gap: 40}}>
-                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Tickets Cerrados</Typography>
-                                    <Typography style={{  fontSize: '1.3rem' }}>{totalClosedTickets}</Typography>
-                                </div>
-                                <div style={{ display: 'flex', gap: 5 }}>                             
-                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event, 'tickets')} />
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcelPersonalized("closedTicketsReport" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
-                               
-                                    <div style={{ display: 'flex', gap: 8 }}>
-                                        <Popper 
-                                            open={openSeButtonsTickets}
-                                            anchorEl={anchorElSeButtonsTickets}
-                                            placement="bottom"
-                                            transition
-                                            style={{ marginRight: '1rem' }}
-                                        >
-                                            {({ TransitionProps }) => (
-                                                <Paper {...TransitionProps} elevation={5}>
-                                                    {/* Contenido para TICKETS */}
-                                                    <MenuItem
-                                                        style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                        onClick={() => {
-                                                            setOrderType("desc");
-                                                            setSortBy("value");
-                                                            event.stopPropagation();
-                                                        }}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
-                                                        </ListItemIcon>
-                                                        <Typography variant="inherit">Mayor a Menor</Typography>
-                                                    </MenuItem>
-                                                    <Divider />
-
-                                                    <div>
-                                                        <MenuItem
-                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                            onClick={() => {
-                                                                setOrderType("asc");
-                                                                setSortBy("value");
-                                                                event.stopPropagation();
-                                                            }}
-                                                        >
-                                                            <ListItemIcon>
-                                                                <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
-                                                            </ListItemIcon>
-                                                            <Typography variant="inherit">Menor a Mayor</Typography>
-                                                        </MenuItem>
-                                                        <Divider />
-                                                    </div>
-
-                                                    <div>
-                                                        <MenuItem
-                                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
-                                                            onClick={() => {
-                                                                setOrderType("asc");
-                                                                setSortBy("name");
-                                                                event.stopPropagation();
-                                                            }}
-                                                        >
-                                                            <ListItemIcon>
-                                                                <PersonIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
-                                                            </ListItemIcon>
-                                                            <Typography variant="inherit">Por Nombre de Asesor</Typography>
-                                                        </MenuItem>
-                                                        <Divider />
-                                                    </div>
-
-                                                </Paper>
-                                            )}
-                                        </Popper>
-                                    </div>
-
-
-
-                                </div>
-                            </div>
-                            
-                            <div style={{ margin: '1rem 0' }}>                                                                                 
-                                <div>   
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Button
-                                            color="primary"
-                                            onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
-                                            disabled={currentPage === 0}
-                                        >
-                                            <KeyboardArrowLeftIcon />
-                                        </Button>
-                                        <div>
-                                            {`${currentPage + 1} de ${Math.ceil(dataForClosedTickets.length / itemsPerPage)}`}
-                                        </div>
-                                        <Button
-                                            color="primary"
-                                            onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                                            disabled={(currentPage + 1) * itemsPerPage >= dataForClosedTickets.length}
-                                        >
-                                            <KeyboardArrowRightIcon />
-                                        </Button>
-                                    </div>                                 
-                                    <ResponsiveContainer height={350}>
-                                        <BarChart
-                                            data={slicedData} 
-                                            margin={{top: 20, right: 50, left: 50, bottom: 40}}
-                                        >
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={120} dy={5} dx={-5} />
-                                            
-                                            <ChartTooltip formatter={(value:number, name:string)=> [value,t(name)]} />
-                                            <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
-                                                <LabelList position="top" />
-                                                {
-                                                    dataForClosedTickets.map((entry: Dictionary, index: number) => (
-                                                        <Cell key={`cell-${index}`} fill={"#7721AD"} />
-                                                    ))
-                                                }    
-                                            </Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer>   
-                                </div>                                  
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* Card N° Asesores  ----------------------------------------------------*/}
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'32rem'}}>
-                        <CardContent >                          
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{display:'flex', gap: 40}}>
-                                <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Asesores</Typography>
-                                <Typography style={{  fontSize: '1.3rem' }}>{dataGrid.length}</Typography>
-                                </div>
-                                <div style={{ display: 'flex', gap: 5 }}>                            
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcelPersonalized("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
-                                </div>
-                            </div>                           
-
-                            <TableZyx
-                                columns={getColumns(tabIndex)}
-                                filterGeneral={false}
-                                data={dataGrid}
-                                download={false}
-                                loading={detailCustomReport.loading}
-                                register={false}
-                                pageSizeDefault={10}                          
-                            />
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-            {/* <div style={{margin: '1rem 0'}}>
-                <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>                         
-                        <TableZyx
-                            columns={columns}
-                            filterGeneral={false}
-                            data={dataGrid}
-                            download={false}
-                            loading={detailCustomReport.loading}
-                            register={false}                                   
-                        />                           
-                </Card>
-            </div>                           */}
+            <SummaryGraphic
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                setColumnGraphic={setColumnGraphic}
+                setView={setView}
+                daterange={dateRange}
+                filters={allParameters}
+                columns={[
+                    ...columnsTemp.map((c) => ({
+                        key: c,
+                        value: `report_userproductivity_${c}`,
+                    })),
+                    ...desconectedmotives.map((d: any) => ({
+                        key: `desconectedtimejson::json->>'${d}'`,
+                        value: d,
+                    })),
+                ]}
+            />          
         </>
     );
 };
+
+interface SummaryGraphicProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    setView: (value: string) => void;
+    setColumnGraphic: (value: string) => void;
+    row?: Dictionary | null;
+    daterange: any;
+    filters?: Dictionary;
+    columns: any[];
+    columnsprefix?: string;
+}
+
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
+    openModal,
+    setOpenModal,
+    setView,  
+    filters,
+    columns,
+    setColumnGraphic,
+}) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        getValues,
+        formState: { errors },
+    } = useForm<any>({
+        defaultValues: {
+            graphictype: "BAR",
+            column: "chamare",
+        },
+    });
+
+    useEffect(() => {
+        register("graphictype", { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register("column", { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    };
+
+    const handleAcceptModal = handleSubmit((data) => {
+        triggerGraphic(data);
+    });
+
+    const triggerGraphic = (data: any) => {
+        setView(`CHART-${data.graphictype}-${data.column?.split("::")[0]}`);
+        setOpenModal(false);
+        setColumnGraphic(data.column);
+        dispatch(
+            getMainGraphic(
+                getUserProductivityGraphic({
+                    ...filters,
+                    column: data.column,
+                    summarization: "COUNT",
+                })
+            )
+        );
+    };
+    const excludeUserProductivity = [
+        "hourfirstlogin",
+        "avgfirstreplytime",
+        "maxfirstreplytime",
+        "minfirstreplytime",
+        "avgtotalasesorduration",
+        "groups",
+    ];
+
+    const filteredColumns = columns.filter((column) => !excludeUserProductivity.includes(column.key));
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.graphic_configuration)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.accept)}
+            handleClickButton2={handleAcceptModal}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_type)}
+                    className="col-12"
+                    valueDefault={getValues("graphictype")}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue("graphictype", value?.key)}
+                    data={[
+                        { key: "BAR", value: "BAR" },
+                        { key: "PIE", value: "PIE" },
+                        { key: "LINE", value: "LINEA" },
+                    ]}
+                    uset={true}
+                    prefixTranslation="graphic_"
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_view_by)}
+                    className="col-12"
+                    valueDefault={getValues("column")}
+                    error={errors?.column?.message}
+                    onChange={(value) => setValue("column", value?.key)}
+                    data={filteredColumns}
+                    optionDesc="value"
+                    optionValue="key"
+                    uset={true}
+                    prefixTranslation=""
+                />
+            </div>
+        </DialogZyx>
+    );
+};
+
 export default AssesorProductivityReport;
