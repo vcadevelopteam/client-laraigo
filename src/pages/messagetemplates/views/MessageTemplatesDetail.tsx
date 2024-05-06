@@ -385,6 +385,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             buttons: row ? row.buttons || [] : [],
             buttonstext: row ? row.buttonstext || [] : [],
             buttonsphone: row ? row.buttonsphone || [] : [],
+            carouselcards: row ? row.carouselcards || [] : [],
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : false,
             category: row?.category || "",
             communicationchannelid: row?.communicationchannelid || 0,
@@ -769,6 +770,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('buttons', [])
         setValue('buttonstext', [])
         setValue('buttonsphone', [])
+        setValue('carouselcards', [])
 
         //trigger("body");
         trigger("category");
@@ -893,7 +895,73 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         }
         trigger("buttonsphone");
     };
+    const onClickAddCard = async () => {
+        if(getValues("carouselcards") && getValues('carouselcards').length < 10) {
+            setValue('carouselcards', [...getValues('carouselcards'), { image: null, body: '', buttonstext: [], buttonslink: [], buttonsphone: [] }])
+        }
+        trigger("carouselcards");
+    }
+    const onClickAddButtonTCard = async (index: number) => {
+        const currentCards = getValues('carouselcards');
+        if (currentCards && currentCards.length > index) {
+            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+                if (i === index) {
+                    return {
+                        ...card,
+                        buttonstext: [...card.buttonstext, {text: ''}]
+                    };
+                }
+                return card;
+            });
+            setValue('carouselcards', updatedCards);
+            trigger('carouselcards');
+        }
+    }
+    console.log(getValues('carouselcards'))
+    const onClickAddButtonLCard = async (index: number) => {
+        const currentCards = getValues('carouselcards');
+        if (currentCards && currentCards.length > index) {
+            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+                if (i === index) {
+                    return {
+                        ...card,
+                        buttonslink: [...card.buttonslink, { text: "", type: "", url: "" }]
+                    };
+                }
+                return card;
+            });
+            setValue('carouselcards', updatedCards);
+            trigger('carouselcards');
+        }
+    }
+    const onClickAddButtonPCard = async (index: number) => {
+        const currentCards = getValues('carouselcards');
+        if (currentCards && currentCards.length > index) {
+            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+                if (i === index) {
+                    return {
+                        ...card,
+                        buttonsphone: [...card.buttonsphone, { text: "", code: "", number: "" }]
+                    };
+                }
+                return card;
+            });
+            setValue('carouselcards', updatedCards);
+            trigger('carouselcards');
+        }
+    }
 
+    const onClickRemoveCard = async (index: number) => {
+        const cards = getValues('carouselcards');
+
+        if (cards && cards.length > 0) {
+            unregister(`carouselcards.${index}`);
+            setValue(
+                'carouselcards',
+                cards.filter((x: any, i: number) => i !== index)
+            )
+        }
+    }
     const onClickRemoveButton = async (index: number) => {
         const btns = getValues("buttons");
 
@@ -1067,6 +1135,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('buttons', [])
         setValue('buttonstext', [])
         setValue('buttonsphone', [])
+        setValue('carouselcards', [])
     }
     
     return (
@@ -1945,6 +2014,70 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     )}
                                     <span className={classes.title}>{t(langKeys.messagetemplate_carousel)}</span>
                                     <span style={{marginBottom: 10}}>Configura tus cards de carrusel añadiendo imágenes, texto, variables y botones</span>
+                                    {getValues('carouselcards')?.length > 0 ? (
+                                        <div className="row-zyx">
+                                            <React.Fragment>
+                                                {getValues("carouselcards")?.map((card: any, i: number) => {
+                                                    return (
+                                                        <div key={`card-${i}`} className="col-4" style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', padding: '0px 8px 0px 8px'}}>
+                                                            <div style={{display: 'flex', width: '100%', justifyContent: 'end'}}>
+                                                                <IconButton onClick={() => onClickRemoveCard(i)} style={{padding: 0}}>
+                                                                    <ClearIcon style={{color: 'red', height: 20, width: 'auto', border: '1px solid red', borderRadius: 10}}/>
+                                                                </IconButton>
+                                                            </div>
+                                                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #003170', borderRadius: 10, padding: '2px 20px', gap: 8, backgroundColor: '#EAF4FF'}}>
+                                                                <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
+                                                                <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
+                                                                <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
+                                                            </div>
+                                                            <div style={{width: '90%', fontWeight: 'bold'}}>
+                                                                {t(langKeys.body)}
+                                                                <FieldEdit
+                                                                    variant="outlined"
+                                                                    InputProps={{
+                                                                        multiline: true,
+                                                                    }}
+                                                                    maxLength={160}
+                                                                    valueDefault={card?.body || ""}
+                                                                    fregister={{
+                                                                        ...register(`carouselcards.${i}.body`, {
+                                                                            validate: (value) =>
+                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                        }),
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <AddButtonMenu fastAnswer={() => onClickAddButtonTCard(i)} urlWeb={() => onClickAddButtonLCard(i)} callNumber={() => onClickAddButtonPCard(i)} textbtn={getValues(`carouselcards.${i}.buttonstext`)} urlbtn={getValues(`carouselcards.${i}.buttonslink`)} phonebtn={getValues(`carouselcards.${i}.buttonsphone`)}/>
+                                                            </div>
+                                                            {getValues(`carouselcards.${i}.buttonstext`)?.map(() => {
+                                                                <div>
+                                                                    <span>{t(langKeys.fastanswer)}</span>
+                                                                    <FieldEdit
+                                                                        variant="outlined"
+                                                                    />
+                                                                </div>
+                                                            })}
+                                                        </div>
+                                                    );
+                                                })}
+                                                <div 
+                                                    style={{display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer'}}
+                                                    onClick={onClickAddCard}
+                                                    className="col-4"
+                                                >
+                                                    <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
+                                                </div>
+                                            </React.Fragment>
+                                        </div>
+                                    ) : (
+                                        <div 
+                                            style={{display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer'}}
+                                            onClick={onClickAddCard}
+                                        >
+                                            <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
+                                        </div>
+                                    )}
                                 </div>
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
