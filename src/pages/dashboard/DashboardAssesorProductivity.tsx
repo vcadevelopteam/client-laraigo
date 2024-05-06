@@ -1628,19 +1628,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                         </CardContent>
                     </Card>
                 </Grid>
-            </Grid>
-            {/* <div style={{margin: '1rem 0'}}>
-                <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>                         
-                        <TableZyx
-                            columns={columns}
-                            filterGeneral={false}
-                            data={dataGrid}
-                            download={false}
-                            loading={detailCustomReport.loading}
-                            register={false}                                   
-                        />                           
-                </Card>
-            </div>                           */}
+            </Grid>          
         </>
     );
 };
