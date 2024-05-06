@@ -509,7 +509,7 @@ export const CalendarEvent: FC = () => {
     }
 
     if (!resMain.error && !resMain.loading && resMain.key === "UFN_CALENDARYBOOKING_INS") {
-        window.opener.postMessage(resMain.data[0].calendarbookingid, '*');      
+        window.opener && window.opener.postMessage(resMain.data[0].calendarbookingid, '*')      
         return (
             <div className={classes.back}>
                 <div className={classes.containerSuccess}>
