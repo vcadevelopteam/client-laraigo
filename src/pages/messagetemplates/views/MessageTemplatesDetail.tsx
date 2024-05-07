@@ -917,7 +917,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('carouselcards');
         }
     }
-    console.log(getValues('carouselcards'))
     const onClickAddButtonLCard = async (index: number) => {
         const currentCards = getValues('carouselcards');
         if (currentCards && currentCards.length > index) {
@@ -948,6 +947,39 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             });
             setValue('carouselcards', updatedCards);
             trigger('carouselcards');
+        }
+    }
+    const onClickRemoveTButtonCard = async (cindex: number, bindex: number) => {
+        const buttonstext = getValues(`carouselcards.${cindex}.buttonstext`);
+
+        if (buttonstext && buttonstext.length > 0) {
+            unregister(`carouselcards.${cindex}.buttonstext.${bindex}`);
+            setValue(
+                `carouselcards.${cindex}.buttonstext`,
+                buttonstext.filter((x: any, i: number) => i !== bindex)
+            );
+        }
+    }
+    const onClickRemoveLButtonCard = async (cindex: number, bindex: number) => {
+        const buttonslink = getValues(`carouselcards.${cindex}.buttonslink`);
+
+        if (buttonslink && buttonslink.length > 0) {
+            unregister(`carouselcards.${cindex}.buttonslink.${bindex}`);
+            setValue(
+                `carouselcards.${cindex}.buttonslink`,
+                buttonslink.filter((x: any, i: number) => i !== bindex)
+            );
+        }
+    }
+    const onClickRemovePButtonCard = async (cindex: number, bindex: number) => {
+        const buttonsphone = getValues(`carouselcards.${cindex}.buttonsphone`);
+
+        if (buttonsphone && buttonsphone.length > 0) {
+            unregister(`carouselcards.${cindex}.buttonsphone.${bindex}`);
+            setValue(
+                `carouselcards.${cindex}.buttonsphone`,
+                buttonsphone.filter((x: any, i: number) => i !== bindex)
+            );
         }
     }
 
@@ -2050,13 +2082,91 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                             <div>
                                                                 <AddButtonMenu fastAnswer={() => onClickAddButtonTCard(i)} urlWeb={() => onClickAddButtonLCard(i)} callNumber={() => onClickAddButtonPCard(i)} textbtn={getValues(`carouselcards.${i}.buttonstext`)} urlbtn={getValues(`carouselcards.${i}.buttonslink`)} phonebtn={getValues(`carouselcards.${i}.buttonsphone`)}/>
                                                             </div>
-                                                            {getValues(`carouselcards.${i}.buttonstext`)?.map(() => {
-                                                                <div>
-                                                                    <span>{t(langKeys.fastanswer)}</span>
-                                                                    <FieldEdit
-                                                                        variant="outlined"
-                                                                    />
-                                                                </div>
+                                                            {getValues(`carouselcards.${i}.buttonstext`)?.map((btn: any, btni: number) => {
+                                                                return (
+                                                                    <div key={`btn-${btni}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5}}>
+                                                                        <span style={{fontWeight: 'bold'}}>{t(langKeys.fastanswer)}</span>
+                                                                        <div style={{width: '100%'}}>
+                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
+                                                                        </div>
+                                                                        <div style={{display: 'flex'}}>
+                                                                            <div style={{backgroundColor: 'white'}}>
+                                                                                <FieldEdit
+                                                                                    variant="outlined"
+                                                                                    size="small"
+                                                                                    maxLength={25}
+                                                                                />
+                                                                            </div>
+                                                                            <IconButton style={{padding: 0}} onClick={() => onClickRemoveTButtonCard(i, btni)}>
+                                                                                <ClearIcon />
+                                                                            </IconButton>
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                            {getValues(`carouselcards.${i}.buttonslink`)?.map((btn: any, btni: number) => {
+                                                                return (
+                                                                    <div key={`btn-${btni}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5}}>
+                                                                        <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
+                                                                        <div style={{width: '100%'}}>
+                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
+                                                                        </div>
+                                                                        <div style={{display: 'flex'}}>
+                                                                            <div style={{backgroundColor: 'white'}}>
+                                                                                <FieldEdit
+                                                                                    variant="outlined"
+                                                                                    size="small"
+                                                                                    maxLength={25}
+                                                                                />
+                                                                            </div>
+                                                                            <IconButton style={{padding: 0}} onClick={() => onClickRemoveLButtonCard(i, btni)}>
+                                                                                <ClearIcon />
+                                                                            </IconButton>
+                                                                        </div>
+                                                                        <div style={{width: '100%'}}>
+                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
+                                                                        </div>
+                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                            <FieldEdit
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                            {getValues(`carouselcards.${i}.buttonsphone`)?.map((btn: any, btni: number) => {
+                                                                return (
+                                                                    <div key={`btn-${btni}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5}}>
+                                                                        <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
+                                                                        <div style={{width: '100%'}}>
+                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
+                                                                        </div>
+                                                                        <div style={{display: 'flex'}}>
+                                                                            <div style={{backgroundColor: 'white'}}>
+                                                                                <FieldEdit
+                                                                                    variant="outlined"
+                                                                                    size="small"
+                                                                                    maxLength={25}
+                                                                                />
+                                                                            </div>
+                                                                            <IconButton style={{padding: 0}} onClick={() => onClickRemovePButtonCard(i, btni)}>
+                                                                                <ClearIcon />
+                                                                            </IconButton>
+                                                                        </div>
+                                                                        <div style={{width: '100%'}}>
+                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.telephonenumber)}</span>
+                                                                        </div>
+                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                            <FieldEdit
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                type="number"
+                                                                                maxLength={20}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                )
                                                             })}
                                                         </div>
                                                     );
