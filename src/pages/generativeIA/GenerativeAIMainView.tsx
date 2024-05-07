@@ -314,7 +314,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                   const row = props.cell.row.original;
                   return (
                     <TemplateIcons
-                      deleteFunction={() => handleDelete(row)}
                       editFunction={() => handleEdit(row)}
                     />
                   );

@@ -446,7 +446,9 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     }, [executeAssistant, waitSaveCreateAssistantAssignFile]);
 
 	const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
-        setTabIndex(newIndex);
+        if(!isDisabled()) {
+            setTabIndex(newIndex);
+        }
     };
 
     const onMainSubmitMeta = handleSubmit(async (data) => {
