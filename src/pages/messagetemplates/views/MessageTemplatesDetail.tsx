@@ -237,7 +237,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [addSafetyAdvice, setAddSafetyAdvice] = useState(false)
     const [addLastDateCode, setAddLastDateCode] = useState(false)
     const [cardsVariables, setCardsVariables] = useState<Dictionary[]>([])
-
+    
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
         { value: "MARKETING", description: t(langKeys.TEMPLATE_MARKETING) },
@@ -1660,7 +1660,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <FieldEditMulti
                                         error={errors?.footer?.message}
                                         maxLength={60}
-                                        onChange={(value) => setValue("footer", value)}
+                                        onChange={(value) => {
+                                            setValue("footer", value)
+                                            trigger('footer')
+                                        }}
                                         rows={2}
                                         valueDefault={getValues("footer")}
                                     />
@@ -1882,7 +1885,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
                                     <div style={{height: 500, width: '100%', border: '1px solid black'}}>
-                                        <MessagePreview headerType={getValues('headertype')} header={getValues('header')} selectedFile={selectedFile}/>
+                                        <MessagePreview
+                                            headerType={getValues('headertype')}
+                                            header={getValues('header')}
+                                            selectedFile={selectedFile}
+                                            bodyObject={bodyObject}
+                                            footer={getValues('footer')}
+                                            buttonstext={getValues('buttonstext').map((btn: Dictionary) => { return btn.text })}
+                                            buttonslink={getValues('buttons').map((btn: Dictionary) => { return btn.text })}
+                                            buttonsphone={getValues('buttonsphone').map((btn: Dictionary) => { return btn.text })}
+                                        />
                                     </div>
                                 </div>
                             </div>

@@ -7,6 +7,11 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Dictionary } from "@types";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import messageImage from '../../../icons/wsp_fondo.jpg'
+import { Descendant } from "slate";
+import ReplyIcon from '@material-ui/icons/Reply';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import PhoneIcon from '@material-ui/icons/Phone';
+import ListIcon from '@material-ui/icons/List';
 
 const useStyles = makeStyles(() => ({
 	main: {
@@ -35,7 +40,8 @@ const useStyles = makeStyles(() => ({
         padding: 10,
         backgroundColor: 'white',
         borderRadius: 10,
-        width: '40%'
+        width: '40%',
+        gap: 10,
     },
     messagePrevContainer: {
         height: '100%',
@@ -48,11 +54,34 @@ const useStyles = makeStyles(() => ({
     headerText: {
         wordWrap: 'break-word',
         fontWeight: 'bold',
+        fontSize: 18,
     },
     media: {
       maxWidth: '100%',
       maxHeight: '100%',
     },
+    body: {
+        wordWrap: 'break-word',
+        whiteSpace: 'pre-line',
+    },
+    footer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        fontSize: 12,
+        color: 'grey'
+    },
+    cardButton: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 10,
+        color: '#009C8F',
+        borderTop: '1px solid #DDDDDD',
+        gap: 6,
+    },
+    icon: {
+        color: '#009C8F'
+,    },
 }));
 
 interface TemplateIconsProps {
@@ -168,11 +197,23 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
 interface MessagePreviewProps {
     headerType: string;
     header: string;
-    selectedFile?: File;
+    selectedFile: File | null;
+    bodyObject: Descendant[];
+    footer: string;
+    buttonstext: string[];
+    buttonslink: string[];
+    buttonsphone: string[];
 }
 
-export const MessagePreview: React.FC<MessagePreviewProps> = ({headerType, header, selectedFile}) => {
+export const MessagePreview: React.FC<MessagePreviewProps> = ({headerType, header, selectedFile, bodyObject, footer, buttonstext, buttonslink, buttonsphone}) => {
     const classes = useStyles();
+    const concatenatedText = bodyObject.map((obj) => obj?.children?.[0]?.text).join('\n\n');
+    const combinedButtons = [
+        ...buttonstext.map(text => ({ type: 'text', text })),
+        ...buttonslink.map(text => ({ type: 'link', text })),
+        ...buttonsphone.map(text => ({ type: 'phone', text }))
+    ];
+
     return (
         <div className={classes.messagePrevContainer}>
             <div className={classes.messageCard}>
@@ -196,6 +237,45 @@ export const MessagePreview: React.FC<MessagePreviewProps> = ({headerType, heade
                 ) : (
                     <></>
                 )}
+                <div className={classes.body}>{concatenatedText}</div>
+                <div className={classes.footer}>
+                    {footer}
+                    <span style={{fontSize: 10, color: 'black', textAlign: 'end', marginTop: 10}}>16:59</span>
+                </div>
+                <div>
+                    {combinedButtons.map((btn, index) => {
+                        let icon;
+                        switch (btn.type) {
+                            case 'text':
+                                icon = <ReplyIcon className={classes.icon} />;
+                                break;
+                            case 'link':
+                                icon = <OpenInNewIcon className={classes.icon} />;
+                                break;
+                            case 'phone':
+                                icon = <PhoneIcon className={classes.icon} />;
+                                break;
+                            default:
+                                icon = null;
+                        }
+                        return (
+                            <div key={index}>
+                                {((index <= 2 && combinedButtons.length === 3) || (index < 2 && combinedButtons.length !== 3)) && (
+                                    <div className={classes.cardButton}>
+                                        {icon}
+                                        <span>{btn.text}</span>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                    {combinedButtons.length > 3 &&(
+                        <div className={classes.cardButton}>
+                            <ListIcon className={classes.icon}/>
+                            <span>See all options</span>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
