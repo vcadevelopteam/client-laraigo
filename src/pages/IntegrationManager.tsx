@@ -614,7 +614,15 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                }))
 
                const driveFileUrl = "https://www.googleapis.com/drive/v3/files";
-               const response = await fetch(`${driveFileUrl}/${data.docs[0].id}?alt=media`, fetchOptions);
+               const fileId = data.docs[0].id
+               const fileMimeType = data.docs[0].mimeType
+               let exportUrl = ''
+               if (fileMimeType === 'application/vnd.google-apps.spreadsheet')
+                  exportUrl = `${driveFileUrl}/${fileId}/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`;
+               else {
+                  exportUrl = `${driveFileUrl}/${fileId}?alt=media`;
+               }
+               const response = await fetch(exportUrl, fetchOptions);
                const resBuffer = await response.arrayBuffer();
                const dataFromBuffer = new Uint8Array( resBuffer );
                const outputData = await uploadExcelBuffer(dataFromBuffer ) as Dictionary[]
@@ -652,10 +660,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    const resetFields = (level: string) => {
       const newFields: FieldType[] = []
-      if (level === "CORPORATION") {
-         newFields.push({ name: "corpid", key: true, id: 'newCorpid' })
-      }
-
+      newFields.push({ name: "corpid", key: true, id: 'newCorpid' })
       if (level === "ORGANIZATION") {
          newFields.push({ name: "orgid", key: true })
       }
