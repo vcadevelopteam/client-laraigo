@@ -105,12 +105,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [provider, setProvider] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid)?.provider : '')
     const [firstData, setFirstData] = useState<Dictionary>({
-        name: '',
-        description: '',
-        basemodel: '',
-        intelligentmodelsid: 0
+        name: row ? row.name : '',
+        description: row ? row.description : '',
+        basemodel: row ? row.basemodel : '',
+        intelligentmodelsid: row ? row.intelligentmodelsid : 0
     })
-    const [validatePrompt, setValidatePrompt] = useState('')
+    const [validatePrompt, setValidatePrompt] = useState(row ? row.prompt : '')
 
     useEffect(() => {
         if (waitSave) {
