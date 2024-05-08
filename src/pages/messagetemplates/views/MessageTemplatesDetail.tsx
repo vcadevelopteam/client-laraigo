@@ -230,7 +230,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     );
     const [category, setCategory] = useState(row ? row.category : '')
     const [headerMedia, setHeaderMedia] = useState('')
-    const [selectedFile, setSelectedFile] = useState<Dictionary | null>(null)
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [isHeaderVariable, setIsHeaderVariable] = useState(false)
     const [bodyVariables, setBodyVariables] = useState<string[]>([])
     const [bubbleVariables, setBubbleVariables] = useState<string[]>([])
@@ -1882,7 +1882,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
                                     <div style={{height: 500, width: '100%', border: '1px solid black'}}>
-                                        <MessagePreview headerType="test" header={getValues('header')}/>
+                                        <MessagePreview headerType={getValues('headertype')} header={getValues('header')} selectedFile={selectedFile}/>
                                     </div>
                                 </div>
                             </div>

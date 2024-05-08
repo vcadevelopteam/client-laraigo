@@ -49,6 +49,10 @@ const useStyles = makeStyles(() => ({
         wordWrap: 'break-word',
         fontWeight: 'bold',
     },
+    media: {
+      maxWidth: '100%',
+      maxHeight: '100%',
+    },
 }));
 
 interface TemplateIconsProps {
@@ -164,14 +168,34 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
 interface MessagePreviewProps {
     headerType: string;
     header: string;
+    selectedFile?: File;
 }
 
-export const MessagePreview: React.FC<MessagePreviewProps> = ({headerType, header}) => {
+export const MessagePreview: React.FC<MessagePreviewProps> = ({headerType, header, selectedFile}) => {
     const classes = useStyles();
     return (
         <div className={classes.messagePrevContainer}>
             <div className={classes.messageCard}>
-                <span className={classes.headerText}>{header}</span>
+                {headerType === 'text' ? (
+                    <span className={classes.headerText}>{header}</span>
+                ) : headerType === 'multimedia' ? (
+                    <>
+                       {selectedFile && selectedFile.type && selectedFile.type.startsWith('image/') ? (
+                            <img src={URL.createObjectURL(selectedFile)} alt="Selected Image" className={classes.media} />
+                        ) : (
+                            selectedFile && selectedFile.type && selectedFile.type.startsWith('video/') ? (
+                                <video controls className={classes.media}>
+                                    <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type} />
+                                    Your browser does not support the video tag.
+                                </video>
+                            ) : (
+                                <span>No media selected</span>
+                            )
+                        )}
+                    </>
+                ) : (
+                    <></>
+                )}
             </div>
         </div>
     );
