@@ -2018,7 +2018,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                     <div className={classes.column}>
                                         <div className={clsx(classes.row, classes.centerRow)}>
                                             <span className={classes.activityDate}>
-                                                {`${t(langKeys.duein)} ${formatDate(activity.duedate, { withTime: true })}`}
+                                                {`${t(langKeys.duein)} ${formatDate(activity.duedate, { withTime: true, modhours: -5 })}`}
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityName}>
@@ -3264,13 +3264,14 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
 }
 interface Options {
     withTime?: boolean;
+    modhours?:number
 }
 
-const formatDate = (strDate: string = "", options: Options = { withTime: true }) => {
+const formatDate = (strDate: string = "", options: Options = { withTime: true, modhours: 0 }) => {
     if (!strDate || strDate === '') return '';
 
     const date = new Date(typeof strDate === "number" ? strDate : strDate.replace("Z", ""));
-    // date.setHours(date.getHours() + 5);
+    date.setHours(date.getHours() + (options?.modhours||0));
     const day = date.toLocaleDateString("en-US", { day: '2-digit' });
     const month = date.toLocaleDateString("en-US", { month: '2-digit' });
     const year = date.toLocaleDateString("en-US", { year: 'numeric' });
