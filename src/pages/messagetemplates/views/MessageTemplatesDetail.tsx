@@ -236,6 +236,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [bubbleVariables, setBubbleVariables] = useState<string[]>([])
     const [addSafetyAdvice, setAddSafetyAdvice] = useState(false)
     const [addLastDateCode, setAddLastDateCode] = useState(false)
+    const [cardsVariables, setCardsVariables] = useState<Dictionary[]>([])
 
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -876,6 +877,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue(`buttonsphone.${index}.${param}`, value);
         trigger('buttonsphone')
     };
+    const onChangeCardsButtonText = (cindex: number, bindex: number, param: string, value: string) => {
+        setValue(`carouselcards.${cindex}.buttonstext.${bindex}.${param}`, value);
+        trigger('carouselcards')
+    }
 
     const onClickAddButton = async () => {
         if (getValues("buttons") && getValues("buttons").length < 2) {
@@ -2078,10 +2083,23 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         }),
                                                                     }}
                                                                 />
+                                                                {cardsVariables.filter((card) => { return card.cindex === i }).length < 7 &&(
+                                                                    <div style={{display: 'flex', justifyContent: 'end'}}>
+                                                                        <Button
+                                                                            className={classes.button}
+                                                                            startIcon={<AddIcon />}
+                                                                            onClick={() => setCardsVariables([...cardsVariables, { cindex: i, value: ''}])}
+                                                                        >
+                                                                            {t(langKeys.addvariable)}
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                            <div>
-                                                                <AddButtonMenu fastAnswer={() => onClickAddButtonTCard(i)} urlWeb={() => onClickAddButtonLCard(i)} callNumber={() => onClickAddButtonPCard(i)} textbtn={getValues(`carouselcards.${i}.buttonstext`)} urlbtn={getValues(`carouselcards.${i}.buttonslink`)} phonebtn={getValues(`carouselcards.${i}.buttonsphone`)}/>
-                                                            </div>
+                                                            {((getValues(`carouselcards.${i}.buttonstext`)?.length + getValues(`carouselcards.${i}.buttonslink`)?.length + getValues(`carouselcards.${i}.buttonsphone`)?.length) < 2) && (
+                                                                <div>
+                                                                    <AddButtonMenu fastAnswer={() => onClickAddButtonTCard(i)} urlWeb={() => onClickAddButtonLCard(i)} callNumber={() => onClickAddButtonPCard(i)} textbtn={getValues(`carouselcards.${i}.buttonstext`)} urlbtn={getValues(`carouselcards.${i}.buttonslink`)} phonebtn={getValues(`carouselcards.${i}.buttonsphone`)}/>
+                                                                </div>
+                                                            )}
                                                             {getValues(`carouselcards.${i}.buttonstext`)?.map((btn: any, btni: number) => {
                                                                 return (
                                                                     <div key={`btn-${btni}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5}}>
@@ -2124,6 +2142,24 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                             </IconButton>
                                                                         </div>
                                                                         <div style={{width: '100%'}}>
+                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urltype)}</span>
+                                                                        </div>
+                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                            <FieldSelect
+                                                                                data={dataURLType}
+                                                                                variant="outlined"
+                                                                                optionDesc="text"
+                                                                                optionValue="value"
+                                                                                onChange={(value) => onChangeCardsButtonText(i, btni, "type", value?.value)}
+                                                                                fregister={{
+                                                                                    ...register(`carouselcards.${i}.buttonslink.${btni}.type`, {
+                                                                                        validate: (value) =>
+                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                    }),
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                        <div style={{width: '100%'}}>
                                                                             <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
                                                                         </div>
                                                                         <div style={{backgroundColor: 'white', width: '100%'}}>
@@ -2155,6 +2191,24 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                             </IconButton>
                                                                         </div>
                                                                         <div style={{width: '100%'}}>
+                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.country)}</span>
+                                                                        </div>
+                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                            <FieldSelect
+                                                                                data={dataURLType}
+                                                                                variant="outlined"
+                                                                                optionDesc="text"
+                                                                                optionValue="value"
+                                                                                onChange={(value) => onChangeCardsButtonText(i, btni, "code", value?.value)}
+                                                                                fregister={{
+                                                                                    ...register(`carouselcards.${i}.buttonslink.${btni}.code`, {
+                                                                                        validate: (value) =>
+                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                    }),
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                        <div style={{width: '100%'}}>
                                                                             <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.telephonenumber)}</span>
                                                                         </div>
                                                                         <div style={{backgroundColor: 'white', width: '100%'}}>
@@ -2179,6 +2233,35 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
                                                 </div>
                                             </React.Fragment>
+                                            {cardsVariables.length > 0 && (
+                                                <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
+                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
+                                                    {cardsVariables.map((cv: Dictionary, index: number) => {
+                                                        return (
+                                                            <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
+                                                                <span>{'{{'}{index + 1}{'}}'}</span>
+                                                                <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                    <FieldEdit
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        valueDefault={cv.value}
+                                                                    />
+                                                                </div>
+                                                                <IconButton style={{margin: 0}} onClick={() => {
+                                                                    const newVariables = cardsVariables.filter((_, i) => i !== index)
+                                                                    setCardsVariables(newVariables)
+                                                                }}>
+                                                                    <ClearIcon/>
+                                                                </IconButton>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    <div className={classes.warningContainer}>
+                                                        <WarningIcon style={{color: '#FF7575'}}/>
+                                                        {t(langKeys.addexampletext)}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ) : (
                                         <div 
