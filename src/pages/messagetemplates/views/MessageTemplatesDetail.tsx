@@ -53,7 +53,7 @@ import React, { FC, Suspense, useCallback, useEffect, useState } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
-import { AddButtonMenu, CustomTitleHelper } from "../components/components";
+import { AddButtonMenu, CustomTitleHelper, MessagePreview } from "../components/components";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -862,6 +862,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue("headertype", data?.value || "");
         setHeaderMedia('')
         setIsHeaderVariable(false)
+        setValue('header', '')
+        trigger("header")
         trigger("headertype");
     };
 
@@ -877,8 +879,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue(`buttonsphone.${index}.${param}`, value);
         trigger('buttonsphone')
     };
-    const onChangeCardsButtonText = (cindex: number, bindex: number, param: string, value: string) => {
-        setValue(`carouselcards.${cindex}.buttonstext.${bindex}.${param}`, value);
+    const onChangeCardsButton = (cindex: number, bindex: number, param: string, value: string, buttontype: string) => {
+        setValue(`carouselcards.${cindex}.buttons${buttontype}.${bindex}.${param}`, value);
         trigger('carouselcards')
     }
 
@@ -1462,6 +1464,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     variant="outlined"
                                                     size="small"
                                                     maxLength={60}
+                                                    valueDefault={getValues('header')}
+                                                    onChange={(value) => {
+                                                        setValue('header', value)
+                                                        trigger('header')
+                                                    }}
                                                 />
                                                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
                                                     <Button
@@ -1484,6 +1491,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     <FieldEdit
                                                         variant="outlined"
                                                         size="small"
+                                                        maxLength={60}
+                                                        valueDefault={getValues('header')}
+                                                        onChange={(value) => {
+                                                            setValue('header', value)
+                                                            trigger('header')
+                                                        }}
                                                     />
                                                 </div>
                                             </div>
@@ -1868,7 +1881,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 300, width: '100%', border: '1px solid black'}}/>
+                                    <div style={{height: 500, width: '100%', border: '1px solid black'}}>
+                                        <MessagePreview headerType="test" header={getValues('header')}/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2144,13 +2159,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         <div style={{width: '100%'}}>
                                                                             <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urltype)}</span>
                                                                         </div>
-                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                        <div style={{width: '100%', backgroundColor: 'white'}}>
                                                                             <FieldSelect
                                                                                 data={dataURLType}
                                                                                 variant="outlined"
                                                                                 optionDesc="text"
                                                                                 optionValue="value"
-                                                                                onChange={(value) => onChangeCardsButtonText(i, btni, "type", value?.value)}
+                                                                                valueDefault={btn?.type}
+                                                                                onChange={(value) => onChangeCardsButton(i, btni, "type", value?.value, 'link')}
                                                                                 fregister={{
                                                                                     ...register(`carouselcards.${i}.buttonslink.${btni}.type`, {
                                                                                         validate: (value) =>
@@ -2159,14 +2175,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                 }}
                                                                             />
                                                                         </div>
-                                                                        <div style={{width: '100%'}}>
+                                                                        <div style={{width: '100%', display:'flex'}}>
                                                                             <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
                                                                         </div>
-                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                            <FieldEdit
-                                                                                variant="outlined"
-                                                                                size="small"
-                                                                            />
+                                                                        <div style={{width: '100%', display: 'flex'}}>
+                                                                            <div style={{flex: 1, backgroundColor: 'white'}}>
+                                                                                <FieldEdit
+                                                                                    variant="outlined"
+                                                                                    size="small"
+                                                                                />
+                                                                            </div>
+                                                                            {btn?.type === 'dynamic' &&(
+                                                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{'{{'}1{'}}'}</div>
+                                                                            )}
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -2199,13 +2220,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                 variant="outlined"
                                                                                 optionDesc="text"
                                                                                 optionValue="value"
-                                                                                onChange={(value) => onChangeCardsButtonText(i, btni, "code", value?.value)}
-                                                                                fregister={{
-                                                                                    ...register(`carouselcards.${i}.buttonslink.${btni}.code`, {
-                                                                                        validate: (value) =>
-                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                    }),
-                                                                                }}
                                                                             />
                                                                         </div>
                                                                         <div style={{width: '100%'}}>

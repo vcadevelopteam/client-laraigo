@@ -6,6 +6,7 @@ import AddIcon from "@material-ui/icons/Add";
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Dictionary } from "@types";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import messageImage from '../../../icons/wsp_fondo.jpg'
 
 const useStyles = makeStyles(() => ({
 	main: {
@@ -27,6 +28,26 @@ const useStyles = makeStyles(() => ({
         width: 15,
         height: 15,
         cursor: 'pointer',
+    },
+    messageCard: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 10,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        width: '40%'
+    },
+    messagePrevContainer: {
+        height: '100%',
+        width: '100%',
+        backgroundImage: `url(${messageImage})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        padding: 25,
+    },
+    headerText: {
+        wordWrap: 'break-word',
+        fontWeight: 'bold',
     },
 }));
 
@@ -137,5 +158,21 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
                 </Tooltip>
             ) : ""}
         </span>
+    );
+};
+
+interface MessagePreviewProps {
+    headerType: string;
+    header: string;
+}
+
+export const MessagePreview: React.FC<MessagePreviewProps> = ({headerType, header}) => {
+    const classes = useStyles();
+    return (
+        <div className={classes.messagePrevContainer}>
+            <div className={classes.messageCard}>
+                <span className={classes.headerText}>{header}</span>
+            </div>
+        </div>
     );
 };
