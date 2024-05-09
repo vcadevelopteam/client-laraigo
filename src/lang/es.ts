@@ -1518,6 +1518,7 @@ const translation: LangKeys = {
   standard: 'Estándar',
   custom: 'Personalizado',
   data_table: 'Tabla de Datos',
+  code_binding: "Vinculación de códigos",
   requesttype: 'Tipo de solicitud',
   url: 'Url',
   authorization: 'Autorización',

@@ -1167,6 +1167,7 @@ const translation: LangKeys = {
   standard: 'Standard',
   custom: 'Custom',
   data_table: 'Data table',
+  code_binding: "Code binding",
   requesttype: 'Request Type',
   url: 'Url',
   pollsanswered: "Polls {{survey}} answered",

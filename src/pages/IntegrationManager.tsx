@@ -77,6 +77,27 @@ const useStyles = makeStyles((theme) => ({
       padding: theme.spacing(2),
       background: "#fff",
    },
+   containerClaro: {
+       display: 'flex',
+       flexDirection: 'row',
+       gap: theme.spacing(2),
+       [theme.breakpoints.down('sm')]: {
+         flexWrap: 'wrap',
+       },
+   },
+   containerDetailClaro: {
+      marginTop: theme.spacing(2),
+      padding: theme.spacing(2),
+      background: '#fff',
+      border: '1px solid #7721ad',
+      borderRadius: '10px',
+      [theme.breakpoints.up('sm')]: {
+          width: '50%', 
+      },
+      [theme.breakpoints.down('sm')]: {
+          width: '100%', 
+      },
+   },
    button: {
       padding: 12,
       fontWeight: 500,
@@ -126,6 +147,12 @@ const useStyles = makeStyles((theme) => ({
 const dataIntegrationType: Dictionary = {
    API_TEMPLATE: "api_template",
    DATA_TABLE: "data_table",
+};
+
+const dataIntegrationTypeClaro: Dictionary = {
+   API_TEMPLATE: "api_template",
+   DATA_TABLE: "data_table",
+   CODE_BINDING: "code_binding",
 };
 
 const dataMethodType: Dictionary = {
@@ -427,6 +454,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const [openTestModal, setOpenTestModal] = useState(false);
    const [openResponseModal, setOpenResponseModal] = useState(false);
    const [responseData, setResponseData] = useState<any>();
+   const [dataIntType, setDataIntType] = useState<Dictionary>([]);
 
    const dataKeys = new Set([
       ...dataLevelKeys,
@@ -541,6 +569,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             (value && value.length) || t(langKeys.field_required),
       });
    }, [edit, register]);
+
+   useEffect(() => {
+      setDataIntType(user?.properties.environment === "CLARO"?dataIntegrationTypeClaro: dataIntegrationType)
+   }, [user])
 
    useEffect(() => {
       if (waitSave) {
@@ -1256,20 +1288,40 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         valueDefault={getValues("type")}
                         onChange={onChangeType}
                         error={errors?.type?.message}
-                        data={dictToArrayKV(dataIntegrationType)}
+                        data={dictToArrayKV(dataIntType)}
                         optionDesc="value"
                         optionValue="key"
                      />
                   ) : (
                      <FieldView
                         label={t(langKeys.type)}
-                        value={t(dataIntegrationType[row?.type]) || ""}
+                        value={t(dataIntType[row?.type]) || ""}
                         className="col-12"
                      />
                   )}
                </div>
-
-               {getValues("type") === "API_TEMPLATE" ? (
+               {getValues("type") === "CODE_BINDING" &&
+                  <FieldSelect
+                     uset={true}
+                     fregister={{
+                        ...register(`level`, {
+                           validate: (value: any) =>
+                              (value && value.length) ||
+                              t(langKeys.field_required),
+                        }),
+                     }}
+                     label={t(langKeys.level)}
+                     className="col-4"
+                     valueDefault={getValues("level")}
+                     onChange={onChangeLevel}
+                     error={errors?.level?.message}
+                     data={dictToArrayKV(dataLevel)}
+                     optionDesc="value"
+                     optionValue="key"
+                  />
+                  
+               }
+               {getValues("type") === "API_TEMPLATE" &&
                   <div className="row-zyx">
                      {edit ? (
                         <React.Fragment>
@@ -1313,7 +1365,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         />
                      )}
                   </div>
-               ) : <div className="row-zyx">
+               } 
+               {getValues("type") === "DATA_TABLE" && <div className="row-zyx">
                {edit && getValues("isnew") ? (
                   <React.Fragment>
                      <FieldEdit
@@ -2356,7 +2409,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                ) : null}
             
          </form>
-
+         {getValues("type") === "CODE_BINDING" && <div className={classes.containerClaro}>
+            <div className={classes.containerDetailClaro}>
+               <div>{langKeys.key}</div>
+            </div>
+            <div className={classes.containerDetailClaro}></div>
+         </div>}
          {openResponseModal && (
             <ModalIntegrationManager
                data={responseData}
