@@ -6138,10 +6138,24 @@ const translation: LangKeys = {
   app_order_list: 'Order list',
   app_orders_in_store: 'Orders in store',
 
+
+
+
+
   maxTMR: 'TMR maximum',
-  minTMR: 'TMR minimum'
-
-
+  minTMR: 'TMR minimum',
+  agentNumber: 'N° Agent',
+  byAdvisorName: 'By Advisor Name',
+  minorToMajor: 'Minor to Major',
+  majorToMinor: 'Major to Minor',
+  closedTicketsNum: 'N° Closed Tickets',
+  byTicket: 'by Ticket', 
+  agentWith: 'Agent with',
+  expectedValueConfig: 'Expected value Configuration',
+  expected: 'Expected',
+  tmoDescription: 'Average Operation Time',
+  tmeDescription: 'First Response Time',
+  tmrDescription: 'Average Response Time',
 };
 
 const enResource: ResourceLanguage = {

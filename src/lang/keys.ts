@@ -6086,9 +6086,18 @@ export const langKeys = {
 
   maxTMR: 'maxTMR',
   minTMR: 'minTMR',
-
-
-
+  agentNumber: 'agentNumber',
+  byAdvisorName: 'byAdvisorName',
+  minorToMajor: 'minorToMajor',
+  majorToMinor: 'majorToMinor',
+  closedTicketsNum: 'closedTicketsNum',
+  byTicket: 'byTicket', 
+  agentWith: 'agentWith',
+  expectedValueConfig: 'expectedValueConfig',
+  expected: 'expected',
+  tmoDescription: 'tmoDescription',
+  tmeDescription: 'tmeDescription',
+  tmrDescription: 'tmrDescription',
 
 };
 

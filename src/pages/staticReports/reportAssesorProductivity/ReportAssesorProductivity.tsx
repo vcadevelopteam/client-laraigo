@@ -768,38 +768,41 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 </Grid>
             </Grid>
 
-            {view === "GRID" ? (                                     
-                <TableZyx
-                    columns={columns}
-                    filterGeneral={false}
-                    data={dataGrid}
-                    download={false}
-                    loading={detailCustomReport.loading}
-                    register={false}
-                    ButtonsElement={() => (
-                        <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
-                                onClick={() => setOpenModal(true)}
-                                startIcon={<AssessmentIcon />}
-                            >
-                                {t(langKeys.graphic_view)}
-                            </Button>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                disabled={detailCustomReport.loading}
-                                onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                                startIcon={<DownloadIcon />}
-                            >{t(langKeys.download)}
-                            </Button>
-                        </Box>
-                    )}
-                />                    
+            {view === "GRID" ? (
+                <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>                         
+                     <TableZyx
+                        columns={columns}
+                        filterGeneral={false}
+                        data={dataGrid}
+                        download={false}
+                        loading={detailCustomReport.loading}
+                        register={false}
+                        ButtonsElement={() => (
+                            <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
+                                    onClick={() => setOpenModal(true)}
+                                    startIcon={<AssessmentIcon />}
+                                >
+                                    {t(langKeys.graphic_view)}
+                                </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={detailCustomReport.loading}
+                                    onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                                    startIcon={<DownloadIcon />}
+                                >{t(langKeys.download)}
+                                </Button>
+                            </Box>
+                        )}
+                    />                        
+                </Card>
+               
             ) : (
                 <div>
                     <Box
@@ -941,6 +944,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
     const filteredColumns = columns.filter((column) => !excludeUserProductivity.includes(column.key));
 
     return (
+        
         <DialogZyx
             open={openModal}
             title={t(langKeys.graphic_configuration)}
@@ -981,7 +985,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
                     optionValue="key"
                     uset={true}
                     prefixTranslation=""
-                />
+                />           
             </div>
         </DialogZyx>
     );

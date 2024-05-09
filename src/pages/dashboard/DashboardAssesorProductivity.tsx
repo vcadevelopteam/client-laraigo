@@ -110,8 +110,6 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     const [checkedA, setcheckedA] = useState(false);
     const [isday, setisday] = useState(false);
     const [columnGraphic, ] = useState("");
-    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
-    const [openSeButtons, setOpenSeButtons] = useState(false);
     const [, setmaxmin] = useState({
         maxticketsclosed: 0,
         maxticketsclosedasesor: "",
@@ -126,8 +124,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     const [openModalTicket, setOpenModalTicket] = useState(false);
     const [view, ] = useState("GRID");
     const [dataGrid, setdataGrid] = useState<Dictionary[]>([]);   
-    const [dataGridAgentAvg, setdataGridAgentAvg] = useState<Dictionary[]>([]);
-
+    //const [dataGridAgentAvg, setdataGridAgentAvg] = useState<Dictionary[]>([]);
 
     const [gaugeArcs, ] = useState([100, 100]);     
     const formatTooltip = (value: number) => `${value}%`;
@@ -151,9 +148,9 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
     const [tabIndex, setTabIndex] = useState(0);
     const [tabTexts] = useState([
-        { label: 'TMO', title: 'Tiempo Medio de la Operación' },
-        { label: 'TME', title: 'Tiempo de primera respuesta' },
-        { label: 'TMR', title: 'Tiempo promedio de respuesta' }
+        { label: 'TMO', title:  t(langKeys.tmoDescription) },
+        { label: 'TME', title: t(langKeys.tmeDescription)},
+        { label: 'TMR', title: t(langKeys.tmrDescription) }
     ]);
 
     const handleChangeTab = (event: Dictionary, newValue: number) => {
@@ -277,10 +274,19 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                 accessor: 'tmravg',
                 helpText: t(langKeys.report_userproductivity_tmravg_help),
             },
+
+            {
+                Header: t(langKeys.maxTMR),
+                accessor: 'tmradvisermax',              
+            },
+            {
+                Header: t(langKeys.minTMR),
+                accessor: 'tmradvisermin',                
+            },
+            
             {
                 Header: t(langKeys.report_userproductivity_tmradviseravg),
-                accessor: 'tmradviseravg',
-                helpText: t(langKeys.report_userproductivity_tmradviseravg_help),
+                accessor: 'tmradviseravg',              
             },
             {
                 Header: t(langKeys.timeconnected),                      
@@ -329,11 +335,11 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             },
             {
                 Header: t(langKeys.propertytmeminimo),
-                accessor: 'duraciontotal',             
+                accessor: 'tmoasesor',             
             },
             {
                 Header: t(langKeys.tmo),
-                accessor: 'tmoasesor',
+                accessor: 'duraciontotal',
             },
             {
                 Header: t(langKeys.propertytmomaximo),
@@ -724,13 +730,14 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
         const avgSecondsFinal = avgRemainingSeconds % 60;    
         return `${String(avgHours).padStart(2, '0')}:${String(avgMinutes).padStart(2, '0')}:${String(avgSecondsFinal).padStart(2, '0')}`;
     }    
+
+    const tmoValues = mainPaginated.data.map(item => ({ TMOAsesorPromedio: item.duraciontotal }));
+    const tmeValues = mainPaginated.data.map(item => ({ TMEPromedio: item.tiempopromediorespuesta }));
+    const tmrValues = mainPaginated.data.map(item => ({ TMRPromedio: item.tiempopromediorespuestapersona }));
     
-    const tmeValues = dataGrid.map(item => ({ TMEPromedio: item.avgfirstreplytime }));
-    const tmrValues = dataGrid.map(item => ({ TMRPromedio: item.tmravg }));
-    const tmoValues = dataGrid.map(item => ({ TMOAsesorPromedio: item.avgtotalasesorduration }));
+    const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
     const avgTME = calculateAverageTime(tmeValues, 'TMEPromedio');   
     const avgTMR = calculateAverageTime(tmrValues, 'TMRPromedio');
-    const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
 
     function convertHHMMSStoSeconds(hora: string): number {
         const partes = hora.split(":");
@@ -1193,7 +1200,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
                         <div style={{ width: '85vw', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
                             <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>
-                                <div>{tabTexts[tabIndex].label} Esperado</div>
+                                <div>{tabTexts[tabIndex].label} {' '} {t(langKeys.expected)}</div>
                                 <div style={{ fontWeight: 'normal' }}>{expectedValue}</div>
                             </div>
                             <GaugeChart
@@ -1213,7 +1220,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                 formatTextValue={() => ``}
                             />
                             <div style={{ color: '#783BA5', fontSize: '12px', fontWeight: 'bold', margin: '0', textAlign: 'center' }}>
-                                <div>{tabTexts[tabIndex].label} Promedio</div>
+                                <div>{tabTexts[tabIndex].label} {t(langKeys.function_average)}</div>
                                 <div style={{ fontWeight: 'normal' }}>
                                     {tabIndex === 0 && !isNaN(parseFloat(avgTMO)) ? formatTime(avgTMO) : tabIndex === 0 ? '00:00:00' : ''}
                                     {tabIndex === 1 && !isNaN(parseFloat(avgTME)) ? formatTime(avgTME) : tabIndex === 1 ? '00:00:00' : ''}
@@ -1226,7 +1233,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
                 <DialogZyx
                     open={openExpectedValueModal}
-                    title="Configuración del valor esperado"
+                    title={t(langKeys.expectedValueConfig)}
                 >
                     <div style={{ marginBottom: '1rem', display: 'flex', gap: 10 }}>
                         <TextField
@@ -1269,7 +1276,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                     {errorText && <div style={{ color: 'red', textAlign: 'center' }}>{errorText}</div>}
                     <DialogActions>
                         <Button onClick={() => setOpenExpectedValueModal(false)} color="default">
-                            Cancelar
+                            {t(langKeys.cancel)}
                         </Button>
                         <Button 
                             onClick={() => {                                
@@ -1280,7 +1287,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                             
                             color="primary" 
                             disabled={Boolean(errorText)}>
-                            Aceptar
+                            {t(langKeys.accept)}
                         </Button>
                     </DialogActions>
                 </DialogZyx>
@@ -1293,7 +1300,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                         <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
-                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> Asesor con {tabTexts[tabIndex].label} Promedio</Typography>
+                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> {t(langKeys.agentWith)} {' '}  {tabTexts[tabIndex].label} {' '} {t(langKeys.function_average)} </Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>
                                     <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event, 'agent')} />                      
@@ -1307,8 +1314,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                             style={{ marginRight: '1rem' }}
                                         >
                                             {({ TransitionProps }) => (
-                                                <Paper {...TransitionProps} elevation={5}>
-                                                    {/* Contenido para ASESORES */}
+                                                <Paper {...TransitionProps} elevation={5}>                                           
                                                     <MenuItem
                                                         style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
                                                         onClick={() => {
@@ -1320,7 +1326,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                         <ListItemIcon>
                                                             <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
                                                         </ListItemIcon>
-                                                        <Typography variant="inherit">Mayor a Menor</Typography>
+                                                        <Typography variant="inherit">{t(langKeys.majorToMinor)}</Typography>
                                                     </MenuItem>
                                                     <Divider />                                               
                                                     <div>
@@ -1335,7 +1341,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                             <ListItemIcon>
                                                                 <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                             </ListItemIcon>
-                                                            <Typography variant="inherit">Menor a Mayor</Typography>
+                                                            <Typography variant="inherit">{t(langKeys.minorToMajor)}</Typography>
                                                         </MenuItem>
                                                         <Divider />
                                                     </div>
@@ -1351,7 +1357,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                             <ListItemIcon>
                                                                 <PersonIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
                                                             </ListItemIcon>
-                                                            <Typography variant="inherit">Por Nombre de Asesor</Typography>
+                                                            <Typography variant="inherit">{t(langKeys.byAdvisorName)} </Typography>
                                                         </MenuItem>
                                                         <Divider />
                                                     </div>                                    
@@ -1360,13 +1366,11 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                         </Popper>
                                     </div>
 
-
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                 </div>
                             </div>
                                                                                                      
                             <div>
-                                {/* Botones de navegación de página */}
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
                                     <Button
                                         color="primary"
@@ -1385,10 +1389,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                     >
                                         <KeyboardArrowRightIcon />
                                     </Button>
-
                                     </div>
-
-                                {/* Gráfico de barras */}
                                 <ResponsiveContainer width="100%" height={itemsPerPage * 50}>
                                     <BarChart
                                         data={slicedDataAsesor}
@@ -1425,7 +1426,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                         <CardContent style={{ paddingBottom: 10 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
-                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>Cumplimiento {tabTexts[tabIndex].label} por Ticket</Typography>
+                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>{t(langKeys.compliance)} {' '} {tabTexts[tabIndex].label}{' '} {t(langKeys.byTicket)} </Typography>
                                 </div>                              
                             </div>
                             <div style={{ margin: '1rem 0',  display: 'flex' }}>
@@ -1479,7 +1480,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                         <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{display:'flex', gap: 40}}>
-                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Tickets Cerrados</Typography>
+                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> {t(langKeys.closedTicketsNum)}</Typography>
                                     <Typography style={{  fontSize: '1.3rem' }}>{totalClosedTickets}</Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>                             
@@ -1496,7 +1497,6 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                         >
                                             {({ TransitionProps }) => (
                                                 <Paper {...TransitionProps} elevation={5}>
-                                                    {/* Contenido para TICKETS */}
                                                     <MenuItem
                                                         style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
                                                         onClick={() => {
@@ -1508,7 +1508,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                         <ListItemIcon>
                                                             <TrendingDownIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
                                                         </ListItemIcon>
-                                                        <Typography variant="inherit">Mayor a Menor</Typography>
+                                                        <Typography variant="inherit">{t(langKeys.majorToMinor)}r</Typography>
                                                     </MenuItem>
                                                     <Divider />
 
@@ -1524,7 +1524,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                             <ListItemIcon>
                                                                 <TrendingUpIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                             </ListItemIcon>
-                                                            <Typography variant="inherit">Menor a Mayor</Typography>
+                                                            <Typography variant="inherit">{t(langKeys.minorToMajor)}</Typography>
                                                         </MenuItem>
                                                         <Divider />
                                                     </div>
@@ -1541,7 +1541,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                             <ListItemIcon>
                                                                 <PersonIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                             </ListItemIcon>
-                                                            <Typography variant="inherit">Por Nombre de Asesor</Typography>
+                                                            <Typography variant="inherit">{t(langKeys.byAdvisorName)}</Typography>
                                                         </MenuItem>
                                                         <Divider />
                                                     </div>
@@ -1608,7 +1608,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                         <CardContent >                          
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{display:'flex', gap: 40}}>
-                                <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> N° Asesores</Typography>
+                                <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> {t(langKeys.agentNumber)}</Typography>
                                 <Typography style={{  fontSize: '1.3rem' }}>{dataGrid.length}</Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>                            

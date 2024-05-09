@@ -6087,7 +6087,18 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   maxTMR: 'TMR máximo',
   minTMR: 'TMR mínimo',
-
+  agentNumber: 'N° Asesores',
+  byAdvisorName: 'Por Nombre de Asesor',
+  minorToMajor: 'Menor a Mayor',
+  majorToMinor: 'Mayor a Menor',
+  closedTicketsNum: 'N° Tickets Cerrados',
+  byTicket: 'por Ticket', 
+  agentWith: 'Asesor con',
+  expectedValueConfig: 'Configuración del valor esperado',
+  expected: 'Esperado',
+  tmoDescription: 'Tiempo Medio de la Operación',
+  tmeDescription: 'Tiempo de Primera Respuesta',
+  tmrDescription: 'Tiempo Promedio de Respuesta',
 
 
 };
