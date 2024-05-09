@@ -25,6 +25,8 @@ interface DetailProps {
     setSave: (value: any) => void;
     messageVariables: any[];
     setMessageVariables: (value: any[]) => void;
+    dataButtons: any[];
+    setDataButtons: (value: any[]) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -68,14 +70,13 @@ class VariableHandler {
     }
 }
 
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables }) => {
+export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, dataButtons, setDataButtons }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-
+    console.log(row)
     const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
 
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
-
     useEffect(() => {
         if (frameProps.checkPage) {
             setFrameProps({ ...frameProps, executeSave: false, checkPage: false });
@@ -85,6 +86,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
     }, [frameProps.checkPage])
+    useEffect(() => {
+        const newData = (detaildata?.messagetemplatebuttons||[]).map(item => 
+            item.payload.match(/{{(.*?)}}/) ? { ...item, variables: Object.fromEntries(item.payload.match(/{{(.*?)}}/g).map(variable => [variable.slice(2, -2), ""])) } : item
+        );
+        setDataButtons(newData)
+    }, [detaildata.messagetemplatebuttons])
 
     const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: ({ ...param }) => void, filter = true) => {
         let elem = e.target;
@@ -287,7 +294,30 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     value={btn?.payload || ""}
                                     className={classes.mb1}
                                 />
-                            </div>)
+                                {(!row?.id &&btn?.type === "url") && 
+                                <div className='row-zyx'>
+                                    {btn?.payload.match(/{{(.*?)}}/g)?.map((palabra:string, index:number) => (
+                                        <FieldSelect
+                                            label={palabra.slice(2, -2)}
+                                            data={detaildata?.headers||[]}
+                                            className={"col-12"}
+                                            valueDefault={dataButtons?.[i]?.variables?.[palabra.slice(2, -2)]||""}
+                                            onChange={(value) => {
+                                                let auxbut = dataButtons
+                                                auxbut[i].variables[palabra.slice(2, -2)] = value?.accessor || ""
+                                                setDataButtons(auxbut)
+                                            }}
+                                            optionDesc="Header"
+                                            optionValue="accessor"
+                                            orderbylabel={true}
+                                            key={index}
+                                        />
+                                    ))}
+                                </div>
+                            }
+                            </div>
+
+                        )
                         })}
                     </React.Fragment>
                 </div>}
