@@ -1,15 +1,12 @@
 export const columnsHideGraphic = {
-    interaction: {
-        interactiondatehour: true,
-        channel: true,  
-        agent: true,
-        ticketgroup: true,
-        person: true,
-        originalname: true,
-        clientnumber: true,
-        email: true,
-        personcommunicationchannel: true,
-        countdistinct: true,   
+    interaction: {      
+        email: true,         
+        countdistinct: true,  
+        interactiondatehour: true,     
+        ticketdatehour: true,
+        interactionid: true,
+        interactiontext: true,
+        originalname: true,      
     },
     userproductivityhours: {
         busytimewithinwork: true,
@@ -38,7 +35,22 @@ export const columnsHideGraphic = {
         countdistinct: true,      
     },
     productivity: {
-        countdistinct: true,   
+        countdistinct: true,  
+        email: true,  
+        starttime:true,  
+        endtime: true,  
+        derivationdate:true,  
+        derivationtime: true,       
+        firstinteractiontime: true,  
+        tmo: true,  
+        tmoagent: true,
+        tmeagent: true,
+        holdingholdtime: true,
+        suspensiontime: true,
+        avgagentresponse: true,
+        swingingtimes: true,
+        tags: true,
+        firstinteractiondateagent: true,   
     }
 };
 

@@ -214,8 +214,6 @@ function createTicket2(callback) {
             } else {
                 identifier = result.Result.identifier || result.Result.split("#")[0];
                 personName = result.Result.personname || result.Result.split("#")[1];
-                identifier = result.Result.split("#")[0];
-                personName = result.Result.split("#")[1];
 
                 conversationid = identifier?.split("-")[3];
 
@@ -335,7 +333,7 @@ function handleInboundCall(e) {
         origin = origin || "INBOUND";
         originalCall = e.call; // Call del cliente
         callerid = e.callerid;
-        site = "51976386169";
+        site = e.destination;
         // Add event listeners
         e.call.addEventListener(CallEvents.Connected, handleCallConnected);
         e.call.addEventListener(CallEvents.PlaybackFinished, handlePlaybackFinished);

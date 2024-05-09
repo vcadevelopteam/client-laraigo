@@ -95,6 +95,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const [messageVariables, setMessageVariables] = useState<any[]>([]);
 
+    const [dataButtons, setDataButtons] = useState<any[]>([])
+
     const arrayBread = [
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
@@ -453,7 +455,19 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         setSave('SUBMIT');
     }
 
-    const saveCampaign = (data: any) => dispatch(execute(insCampaign(data)));
+    const saveCampaign = (data: any) => {        
+        const newData = dataButtons.map(item => {
+            if (item.variables) {
+                let newPayload = item.payload;
+                for (const [key, value] of Object.entries(item.variables)) {
+                    newPayload = newPayload.replace(new RegExp(`{{\\b${key}\\b}}`, 'g'), `{{${value}}}`);
+                }
+                return { ...item, payload: newPayload, variables: undefined };
+            }
+            return item;
+        });        
+        dispatch(execute(insCampaign({...data, messagetemplatebuttons:newData})));
+    }
     const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
         header: null,
         detail: [...data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }))]
@@ -466,6 +480,17 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             saveCampaign(detaildata);
         }
         let errormessage = false
+        let errorFound = false;
+
+        dataButtons.forEach(item => {
+            if (item.variables) {
+                const hasEmptyValues = Object.values(item.variables).some(value => value === "");
+                if (hasEmptyValues) {
+                    errorFound = true;
+                    return;
+                }
+            }
+        });
         if(detaildata.operation ==="UPDATE"){
             if(row?.startdate !== detaildata.startdate){
                 if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
@@ -479,6 +504,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
         if(errormessage){
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }))
+        }else if(errorFound){
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_btn_variables) }))
         }else{
             dispatch(manageConfirmation({
                 visible: true,
@@ -697,6 +724,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setSave={setSave}
                     messageVariables={messageVariables}
                     setMessageVariables={setMessageVariables}
+                    dataButtons={dataButtons}
+                    setDataButtons={setDataButtons}
                 />
                 : null}
         </div>

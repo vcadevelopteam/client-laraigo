@@ -4549,6 +4549,7 @@ const translation: LangKeys = {
   automaticpayment: 'Automatic Payment',
   error_alternativeemail_exists: "The alternative email has already been registered",
   error_campaign_date: "The start and end dates of the campaigns must not be greater than one year from the current date.",
+  error_campaign_btn_variables: "All button variables must have a value",
   error_alternativephone_exists: "The alternative phone has already been registered",
   error_email_exists: "The email has already been registered",
   error_phone_exists: "The phone has already been registered",
@@ -6122,25 +6123,6 @@ const translation: LangKeys = {
   transactionnumber: 'Transaction Number',
   conversationTMO: 'Conversation TMO',
   numbers: 'Numbers',
-  corporate: 'CORPORATE',
-  cancelassistantcreation: 'Are you sure to cancel the creation of the assistant?',
-  cancelassistantedit: 'Are you sure to cancel the edit of the assistant?',
-  personality_table: 'Help Desk Clerk',
-  personality_client: 'Customer Service',
-  personality_sales: 'Sales Expert',
-  personality_tech: 'Technical Support',
-  personality_ai: 'AI Base',
-  personality_personalized: 'Custom Mode',
-  contextperconversation: 'Context per conversation',
-  firstinteraction: 'First user interaction',
-  conector: 'Conector',
-  app_orders_in_attention: 'Orders in attention',
-  app_order_list: 'Order list',
-  app_orders_in_store: 'Orders in store',
-
-
-
-
 
   maxTMR: 'TMR maximum',
   minTMR: 'TMR minimum',
@@ -6156,6 +6138,21 @@ const translation: LangKeys = {
   tmoDescription: 'Average Operation Time',
   tmeDescription: 'First Response Time',
   tmrDescription: 'Average Response Time',
+  corporate: 'CORPORATE',
+  cancelassistantcreation: 'Are you sure to cancel the creation of the assistant?',
+  cancelassistantedit: 'Are you sure to cancel the edit of the assistant?',
+  personality_table: 'Help Desk Clerk',
+  personality_client: 'Customer Service',
+  personality_sales: 'Sales Expert',
+  personality_tech: 'Technical Support',
+  personality_ai: 'AI Base',
+  personality_personalized: 'Custom Mode',
+  contextperconversation: 'Context per conversation',
+  firstinteraction: 'First user interaction',
+  conector: 'Conector',
+  app_orders_in_attention: 'Orders in attention',
+  app_order_list: 'Order list',
+  app_orders_in_store: 'Orders in store',
 };
 
 const enResource: ResourceLanguage = {
