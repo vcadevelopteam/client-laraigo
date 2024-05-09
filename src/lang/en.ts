@@ -6091,6 +6091,17 @@ const translation: LangKeys = {
   allmustbesameorder: 'The selected records must belong to the same order',
   needtopay: 'Payment to be confirmed',
   numbers: 'Numbers',
+  codes_table: 'Codes table',
+  codes_table_helper: 'Create your table of codes that will be linked to the people who are registered.',
+  add_expiration_date_to_code:'Add expiration date to code',
+  tracking_fields:'Tracking fields',
+  tracking_fields_helper:'Add the fields from the people table that you want, the fields related to the code will be shown, for greater traceability.',
+  people_table: 'People table',
+  people_table_helper: 'Create your table of people who can be linked to the registered codes.',
+  expiration_date: 'Expiration date',
+  add_expiration_date_to_code_helper: 'Add an expiration date field for your code, after this date the record will be deleted.',
+  add_expiration_date_to_person:'Add expiration date of the person',
+  add_expiration_date_to_person_helper: 'Add an expiration date field for your person, after this date the record will be deleted.',
 };
 
 const enResource: ResourceLanguage = {

@@ -13,6 +13,7 @@ import {
    FieldCheckbox,
    DialogZyx,
    RadioGroudFieldEdit,
+   IOSSwitch,
 } from "components";
 import {
    getIntegrationManagerSel,
@@ -76,6 +77,25 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
       padding: theme.spacing(2),
       background: "#fff",
+   },
+   addField: {
+      display: 'flex',
+      marginTop: theme.spacing(2),
+      justifyContent: "end"
+   },
+   addFieldTracking: {
+      display: 'flex',
+      marginTop: theme.spacing(4),
+      justifyContent: "space-between"
+   },
+   switchStyle: {
+      marginTop: theme.spacing(1),
+   },
+   switchContainer: {
+      display: 'flex',
+      gap: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
    },
    containerClaro: {
        display: 'flex',
@@ -419,6 +439,10 @@ type FormFields = {
    bodytype: string;
    body: string;
    url_params: Dictionary[];
+   code_params: Dictionary[];
+   person_params: Dictionary[];
+   code_params_tracking: Dictionary[];
+   person_params_tracking: Dictionary[];
    parameters: Dictionary[];
    variables: string[];
    level: string;
@@ -455,6 +479,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const [openResponseModal, setOpenResponseModal] = useState(false);
    const [responseData, setResponseData] = useState<any>();
    const [dataIntType, setDataIntType] = useState<Dictionary>([]);
+   const [codeExpiration, setCodeExpiration] = useState(false);
+   const [personExpiration, setPersonExpiration] = useState(false);
 
    const dataKeys = new Set([
       ...dataLevelKeys,
@@ -517,6 +543,40 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    } = useFieldArray({
       control,
       name: "url_params",
+   });
+   const {
+      fields: codeParams,
+      append: codeParamsAppend,
+      remove: codeParamsRemove,
+   } = useFieldArray({
+      control,
+      name: "code_params",
+   });
+   
+   const {
+      fields: personParams,
+      append: personParamsAppend,
+      remove: personParamsRemove,
+   } = useFieldArray({
+      control,
+      name: "person_params",
+   });
+   const {
+      fields: codeTrackingParams,
+      append: codeTrackingParamsAppend,
+      remove: codeTrackingParamsRemove,
+   } = useFieldArray({
+      control,
+      name: "code_params_tracking",
+   });
+
+   const {
+      fields: personTrackingParams,
+      append: personTrackingParamsAppend,
+      remove: personTrackingParamsRemove,
+   } = useFieldArray({
+      control,
+      name: "person_params_tracking",
    });
 
    const {
@@ -2411,9 +2471,305 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
          </form>
          {getValues("type") === "CODE_BINDING" && <div className={classes.containerClaro}>
             <div className={classes.containerDetailClaro}>
-               <div>{langKeys.key}</div>
+               <div>
+                  <FieldView
+                     label={t(langKeys.codes_table)}
+                     tooltip={t(langKeys.codes_table_helper)}
+                     className="col-6"
+                  />
+               </div>
+               <FieldEdit
+                  valueDefault={"Código"}
+                  className="col-12"
+                  disabled
+               />  
+               <div className={classes.switchContainer}>
+                  <div className={classes.switchStyle}>
+                     <IOSSwitch checked={codeExpiration} onChange={()=>{
+                        setCodeExpiration(!codeExpiration)
+                     }} name="codeExpiration" />
+                  </div>
+                  <FieldView
+                     label={t(langKeys.add_expiration_date_to_code)}
+                     tooltip={t(langKeys.codes_table_helper)}
+                  />
+               </div>   
+               {codeExpiration &&
+                  <FieldEdit
+                     valueDefault={t(langKeys.expiration_date)}
+                     className="col-12"
+                     disabled
+                  />  
+               }   
+               <div className={classes.addField}>
+                  {edit ? (
+                     <Button
+                        variant="outlined"
+                        type="button"
+                        color="primary"
+                        disabled={codeParams.length>=10}
+                        className={classes.labelButton2}
+                        startIcon={<AddIcon color="primary" />}
+                        onClick={() => {codeParamsAppend({ key: "" });}}
+                     >
+                        {t(langKeys.addUrlParam)}
+                     </Button>
+                  ) : null}
+               </div> 
+               {codeParams.map((x:Dictionary,i:number)=>{
+                  return <div className="row-zyx" key={"extraparamscode" + i}>
+                     <FieldEdit
+                        fregister={{
+                           ...register(
+                              `code_params.${i}.key` as const,
+                              {
+                                 validate: (value: string) =>
+                                    value !== "" ||
+                                    (t(
+                                       langKeys.field_required
+                                    ) as string),
+                              }
+                           ),
+                        }}
+                        label={t(langKeys.columntitle)}
+                        className={classes.fieldRow}
+                        valueDefault={x?.key || ""}
+                        onChange={(value) => {
+                           setValue(`code_params.${i}.key`, value);
+                        }}
+                        error={
+                           errors?.code_params?.[i]?.key?.message
+                        }
+                     />
+                     <IconButton
+                        size="small"
+                        className={classes.fieldButton}
+                        onClick={() => {codeParamsRemove(i)}}
+                     >
+                        <DeleteIcon
+                           style={{
+                              color: "#000000",
+                           }}
+                        />
+                     </IconButton>
+                  </div>
+               })}    
+                 
+               <div className={classes.addFieldTracking}>
+                  <FieldView
+                     label={t(langKeys.tracking_fields)}
+                     tooltip={t(langKeys.tracking_fields_helper)}
+                  />
+                  {edit ? (
+                     <Button
+                        variant="outlined"
+                        type="button"
+                        color="primary"
+                        disabled={codeTrackingParams.length>=10}
+                        className={classes.labelButton2}
+                        startIcon={<AddIcon color="primary" />}
+                        onClick={() => {codeTrackingParamsAppend({ key: "" });}}
+                     >
+                        {t(langKeys.addUrlParam)}
+                     </Button>
+                  ) : null}
+               </div> 
+               {codeTrackingParams.map((x:Dictionary,i:number)=>{
+                  return <div className="row-zyx" key={"extraparamscode" + i}>
+                     <FieldSelect
+                        fregister={{
+                           ...register(
+                              `code_params_tracking.${i}.key` as const,
+                              {
+                                 validate: (value: string) =>
+                                    value !== "" ||
+                                    (t(
+                                       langKeys.field_required
+                                    ) as string),
+                              }
+                           ),
+                        }}
+                        data={[
+                          { key: "Persona" },
+                          ...getValues('person_params'),
+                          ...(personExpiration ? [{ key: "Fecha de caducidad" }] : [])
+                        ]}
+                        optionValue="key"
+                        optionDesc="key"
+                        label={t(langKeys.columntitle)}
+                        className={classes.fieldRow}
+                        valueDefault={x?.key || ""}
+                        onChange={(value) => {
+                           setValue(`code_params_tracking.${i}.key`, value);
+                        }}
+                        error={
+                           errors?.code_params_tracking?.[i]?.key?.message
+                        }
+                     />
+                     <IconButton
+                        size="small"
+                        className={classes.fieldButton}
+                        onClick={() => {codeTrackingParamsRemove(i)}}
+                     >
+                        <DeleteIcon
+                           style={{
+                              color: "#000000",
+                           }}
+                        />
+                     </IconButton>
+                  </div>
+               })}   
             </div>
-            <div className={classes.containerDetailClaro}></div>
+            <div className={classes.containerDetailClaro}>
+               <div>
+                  <FieldView
+                     label={t(langKeys.people_table)}
+                     tooltip={t(langKeys.people_table_helper)}
+                     className="col-6"
+                  />
+               </div>
+               <FieldEdit
+                  valueDefault={"Persona"}
+                  className="col-12"
+                  disabled
+               />  
+               <div className={classes.switchContainer}>
+                  <div className={classes.switchStyle}>
+                     <IOSSwitch checked={personExpiration} onChange={()=>{
+                        setPersonExpiration(!personExpiration)
+                     }} name="personExpiration" />
+                  </div>
+                  <FieldView
+                     label={t(langKeys.add_expiration_date_to_person)}
+                     tooltip={t(langKeys.add_expiration_date_to_person_helper)}
+                  />
+               </div>    
+               {personExpiration &&
+                  <FieldEdit
+                     valueDefault={t(langKeys.expiration_date)}
+                     className="col-12"
+                     disabled
+                  />  
+               }   
+               <div className={classes.addField}>
+                  {edit ? (
+                     <Button
+                        variant="outlined"
+                        type="button"
+                        color="primary"
+                        disabled={personParams.length>=10}
+                        className={classes.labelButton2}
+                        startIcon={<AddIcon color="primary" />}
+                        onClick={() => {personParamsAppend({ key: "" });}}
+                     >
+                        {t(langKeys.addUrlParam)}
+                     </Button>
+                  ) : null}
+               </div> 
+               {personParams.map((x:Dictionary,i:number)=>{
+                  return <div className="row-zyx" key={"extraparamsperson" + i}>
+                     <FieldEdit
+                        fregister={{
+                           ...register(
+                              `person_params.${i}.key` as const,
+                              {
+                                 validate: (value: string) =>
+                                    value !== "" ||
+                                    (t(
+                                       langKeys.field_required
+                                    ) as string),
+                              }
+                           ),
+                        }}
+                        label={t(langKeys.columntitle)}
+                        className={classes.fieldRow}
+                        valueDefault={x?.key || ""}
+                        onChange={(value) => {
+                           setValue(`person_params.${i}.key`, value);
+                        }}
+                        error={
+                           errors?.person_params?.[i]?.key?.message
+                        }
+                     />
+                     <IconButton
+                        size="small"
+                        className={classes.fieldButton}
+                        onClick={() => {personParamsRemove(i)}}
+                     >
+                        <DeleteIcon
+                           style={{
+                              color: "#000000",
+                           }}
+                        />
+                     </IconButton>
+                  </div>
+               })}    
+                 
+               <div className={classes.addFieldTracking}>
+                  <FieldView
+                     label={t(langKeys.tracking_fields)}
+                     tooltip={t(langKeys.tracking_fields_helper)}
+                  />
+                  {edit ? (
+                     <Button
+                        variant="outlined"
+                        type="button"
+                        color="primary"
+                        disabled={personTrackingParams.length>=10}
+                        className={classes.labelButton2}
+                        startIcon={<AddIcon color="primary" />}
+                        onClick={() => {personTrackingParamsAppend({ key: "" });}}
+                     >
+                        {t(langKeys.addUrlParam)}
+                     </Button>
+                  ) : null}
+               </div> 
+               {personTrackingParams.map((x:Dictionary,i:number)=>{
+                  return <div className="row-zyx" key={"extraparamsperson" + i}>
+                     <FieldSelect
+                        fregister={{
+                           ...register(
+                              `person_params_tracking.${i}.key` as const,
+                              {
+                                 validate: (value: string) =>
+                                    value !== "" ||
+                                    (t(
+                                       langKeys.field_required
+                                    ) as string),
+                              }
+                           ),
+                        }}
+                        data={[
+                          { key: "Código" },
+                          ...getValues('code_params'),
+                          ...(codeExpiration ? [{ key: "Fecha de caducidad" }] : []) 
+                        ]}
+                        optionValue="key"
+                        optionDesc="key"
+                        label={t(langKeys.columntitle)}
+                        className={classes.fieldRow}
+                        valueDefault={x?.key || ""}
+                        onChange={(value) => {
+                           setValue(`person_params_tracking.${i}.key`, value);
+                        }}
+                        error={
+                           errors?.person_params_tracking?.[i]?.key?.message
+                        }
+                     />
+                     <IconButton
+                        size="small"
+                        className={classes.fieldButton}
+                        onClick={() => {personTrackingParamsRemove(i)}}
+                     >
+                        <DeleteIcon
+                           style={{
+                              color: "#000000",
+                           }}
+                        />
+                     </IconButton>
+                  </div>
+               })}   
+            </div>
          </div>}
          {openResponseModal && (
             <ModalIntegrationManager
