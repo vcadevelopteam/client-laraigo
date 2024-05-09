@@ -20,14 +20,6 @@ import Graphic from "components/fields/Graphic";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import ListIcon from "@material-ui/icons/List";
 import { Settings } from "@material-ui/icons";
-import InfoIcon from '@material-ui/icons/Info';
-import {  Card, CardContent, Grid, Tooltip } from "@material-ui/core";
-import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import clsx from 'clsx';
-import ThumbDownIcon from '@material-ui/icons/ThumbDown';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import { MultiData } from "@types";
-import IndicatorPanel from "components/report/IndicatorPanel";
 
 interface Assessor {
     row: Dictionary | null;
@@ -131,7 +123,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [, setOpenSeButtons] = useState(false);
     const [openFilterModal, setOpenFilterModal] = useState(false);
-    const [maxmin, setmaxmin] = useState({
+    const [, setmaxmin] = useState({
         maxticketsclosed: 0,
         maxticketsclosedasesor: "",
         minticketsclosed: 0,
@@ -173,110 +165,158 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         () => [
             {
                 Header: t(langKeys.report_userproductivity_user),
-                accessor: 'usr',
+                accessor: "usr",
+                showColumn: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_fullname),
-                accessor: 'fullname',
+                accessor: "fullname",         
+                showGroupedBy: true, 
+                fixed: true,
             },
-            ...(isday ? [{
-                Header: t(langKeys.report_userproductivity_hourfirstlogin),
-                accessor: 'hourfirstlogin',
-            }] : []),
+            ...(isday
+                ? [
+                      {
+                          Header: t(langKeys.report_userproductivity_hourfirstlogin),
+                          accessor: "hourfirstlogin",                       
+                      },
+                  ]
+                : []),
             {
                 Header: t(langKeys.report_userproductivity_totaltickets),
-                accessor: 'totaltickets',
+                accessor: "totaltickets",
                 type: "number",
-                sortType: 'number',
+                sortType: "number",
+                helpText: t(langKeys.report_userproductivity_totaltickets_help),             
+                showGroupedBy: true, 
+                fixed: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_closedtickets),
-                accessor: 'closedtickets',
+                accessor: "closedtickets",
                 type: "number",
-                sortType: 'number',
+                sortType: "number",
+                helpText: t(langKeys.report_userproductivity_closedtickets_help),            
+                showGroupedBy: true, 
+                fixed: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_asignedtickets),
-                accessor: 'asignedtickets',
+                accessor: "asignedtickets",
                 type: "number",
-                sortType: 'number',
+                sortType: "number",
+                helpText: t(langKeys.report_userproductivity_asignedtickets_help),              
+                showGroupedBy: true, 
+                fixed: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_suspendedtickets),
-                accessor: 'suspendedtickets',
+                accessor: "suspendedtickets",
                 type: "number",
-                sortType: 'number',
+                sortType: "number",
+                helpText: t(langKeys.report_userproductivity_suspendedtickets_help),               
+                showGroupedBy: true, 
+                fixed: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_avgfirstreplytime),
-                accessor: 'avgfirstreplytime',
+                accessor: "avgfirstreplytime",
+                helpText: t(langKeys.report_userproductivity_avgfirstreplytime_help),
+                showColumn: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_maxfirstreplytime),
-                accessor: 'maxfirstreplytime',
+                accessor: "maxfirstreplytime",
+                helpText: t(langKeys.report_userproductivity_maxfirstreplytime_help),
+                showColumn: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_minfirstreplytime),
-                accessor: 'minfirstreplytime',
+                accessor: "minfirstreplytime",
+                helpText: t(langKeys.report_userproductivity_minfirstreplytime_help),
+                showColumn: true,
             },
-            // {
-            //     Header: t(langKeys.report_userproductivity_avgtotalduration),
-            //     accessor: 'avgtotalduration',
-            //     NoFilter: false
-            // },
+            {
+                Header: t(langKeys.report_userproductivity_avgtotalduration),
+                accessor: "avgtotalduration",
+                NoFilter: false,
+                helpText: t(langKeys.report_userproductivity_avgtotalduration_help),
+                showColumn: true,
+            },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
-                accessor: 'maxtotalduration',
+                accessor: "maxtotalduration",
+                helpText: t(langKeys.report_userproductivity_maxtotalduration_help),
+                showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalduration),
-                accessor: 'mintotalduration',
+                accessor: "mintotalduration",
+                helpText: t(langKeys.report_userproductivity_mintotalduration_help),
+                showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_avgtotalasesorduration),
-                accessor: 'avgtotalasesorduration',
+                accessor: "avgtotalasesorduration",
+                helpText: t(langKeys.report_userproductivity_avgtotalasesorduration_help),
+                showColumn: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalasesorduration),
-                accessor: 'maxtotalasesorduration',
+                accessor: "maxtotalasesorduration",
+                helpText: t(langKeys.report_userproductivity_maxtotalasesorduration_help),
+                showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalasesorduration),
-                accessor: 'mintotalasesorduration',
+                accessor: "mintotalasesorduration",
+                helpText: t(langKeys.report_userproductivity_mintotalasesorduration_help),
+                showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_tmravg),
-                accessor: 'tmravg',
+                accessor: "tmravg",
                 helpText: t(langKeys.report_userproductivity_tmravg_help),
+                showColumn: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_tmradviseravg),
-                accessor: 'tmradviseravg',
+                accessor: "tmradviseravg",
                 helpText: t(langKeys.report_userproductivity_tmradviseravg_help),
+                showColumn: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_userconnectedduration),
-                accessor: 'userconnectedduration',
+                accessor: "userconnectedduration",
                 type: "number",
-                sortType: 'number',
+                sortType: "number",
+                showColumn: true,
+                showGroupedBy: true, 
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
-                accessor: 'userstatus',
+                accessor: "userstatus",              
+                showGroupedBy: true, 
+                fixed: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_groups),
-                accessor: 'groups',
+                accessor: "groups",
+                showColumn: true,
             },
-            ...(mainAux.data.length > 0 ?
-                [...desconectedmotives.map((d: any) =>
-                ({
-                    Header: d,
-                    accessor: d,
-                })
-                )
-                ] : []
-            )
+            ...(mainAux.data.length > 0
+                ? [
+                      ...desconectedmotives.map((d: any) => ({
+                          Header: d,
+                          accessor: d,
+                          showColumn: true,
+                      })),
+                  ]
+                : []),
         ],
         [isday, mainAux, desconectedmotives]
     );
@@ -446,359 +486,158 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     
     return (
         <>
-
-            <div style={{ display: "flex", gap: 8, marginBottom: '1rem', marginTop: '0.5rem' }}>
-                <div style={{ display: "flex" }}>
-                    <Box width={1}>
-                        <Box
-                            className={classes.containerHeader}
-                            justifyContent="space-between"
-                            alignItems="center"
-                        >
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                <DateRangePicker
-                                    open={openDateRangeModal}
-                                    setOpen={setOpenDateRangeModal}
-                                    range={dateRange}
-                                    onSelect={setdateRange}
-                                >
-                                    <Button
-                                        disabled={detailCustomReport.loading}
-                                        style={{
-                                            border: "1px solid #bfbfc0",
-                                            borderRadius: 4,
-                                            color: "rgb(143, 146, 161)",
-                                        }}
-                                        startIcon={<CalendarIcon />}
-                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                                    >
-                                        {format(dateRange.startDate!) +
-                                            " - " +
-                                            format(dateRange.endDate!)}
-                                    </Button>
-                                </DateRangePicker>
-                            </div>
-                        </Box>
-                    </Box>
-                </div>
-                <div style={{ display: "flex" }}>
-                    <Box width={1}>
-                        <Box
-                            className={classes.containerHeader}
-                            justifyContent="space-between"
-                            alignItems="center"
-                        >
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                <FieldSelect                                                    
-                                    label={t("report_userproductivity_filter_channels")}
-                                    className={classes.filterComponent}
-                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
-                                    valueDefault={allParameters?.channel || "ayuda"}
-                                    onChange={(value) =>
-                                        setValue("channel", value?.typedesc || "ayuda2")
-                                    }
-                                    variant="outlined"
-                                    data={
-                                        multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
-                                    }
-                                    loading={multiData.loading}
-                                    optionDesc={"type"}
-                                    optionValue={"typedesc"}
-                                />
-                                <FieldMultiSelect
-                                    limitTags={1}
-                                    label={t("report_userproductivity_filter_group")}
-                                    className={classes.filterComponent + " col-6"}
-                                    valueDefault={allParameters?.usergroup || ""}
-                                    key={"UFN_DOMAIN_LST_VALORES_GRUPOS"}
-                                    onChange={(value) =>
-                                        setValue("usergroup", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
-                                    }
-                                    variant="outlined"
-                                    data={groupsdata}
-                                    optionDesc={"domaindesc"}
-                                    optionValue={"domainvalue"}
-                                />
-
-                                <FieldMultiSelect
-                                    limitTags={1}
-                                    label={t("report_userproductivity_filter_status")}
-                                    className={classes.filterComponent + " col-6"}
-                                    key={"UFN_DOMAIN_LST_VALORES_ESTADOORGUSER"}
-                                    valueDefault={allParameters?.userstatus || ""}
-                                    onChange={(value) =>
-                                        setValue("userstatus", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
-                                    }
-                                    variant="outlined"
-                                    data={multiData?.data?.find(x=>x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data||[]}
-                                    loading={multiData.loading}
-                                    optionDesc={"domaindesc"}
-                                    optionValue={"domainvalue"}
-                                />
-                                <div style={{ alignItems: 'center' }}>
-                                    <div>
-                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
-                                        <FormControlLabel
-                                            style={{ paddingLeft: 10 }}
-                                            control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
-                                            label={checkedA ? t(langKeys.yes) : "No"}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </Box>
-                    </Box>
-                </div>
-                <div style={{ display: "flex" }}>
-                    <Box width={1}>
-                        <Box
-                            className={classes.containerHeader}
-                            justifyContent="space-between"
-                            alignItems="center"
-                        >
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                <Button
-                                    disabled={detailCustomReport.loading}
-                                    variant="contained"
-                                    color="primary"
-                                    style={{ backgroundColor: "#55BD84", width: 120 }}
-                                    onClick={() => {
-                                        setDetailCustomReport({
-                                            loading: true,
-                                            data: [],
-                                        });
-                                        fetchData();
-                                    }}
-                                >
-                                    {t(langKeys.refresh)}
-                                </Button>
-                            </div>
-                        </Box>
-                    </Box>
-                </div>
-            </div>
-
-
-            <Grid container spacing={3}>
-                
-                <Grid item xs={12} md={6} lg={6}>
-                    <div>
-                        <Grid container spacing={1} >
-
-                            <Grid item xs={12} md={12} lg={12}>
-                                <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
-                                })} style={{ color: "white" }}>
-                                    <CardContent style={{ paddingBottom: 10 }}>
-                                        <Typography variant="h5">
-                                            {t(langKeys.report_userproductivity_cardtme)}
-                                            <Tooltip title={`${t(langKeys.tmetooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
-                                            </Tooltip>
-                                        </Typography>
-                                        <Typography variant="h5" component="div" align="center">
-                                            {detailCustomReport.data[0]?.cardavgavgtme}
-                                        </Typography>
-                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
-                                            {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral || ""}`}
-                                            {(detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-
-
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax_tme)}
-                                    value={detailCustomReport.data[0]?.cardavgmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmeuser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
-                                    value={detailCustomReport.data[0]?.cardmaxmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})` : "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin_tme)}
-                                    value={detailCustomReport.data[0]?.cardavgmintme}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmeuser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin_tme)}
-                                    value={detailCustomReport.data[0]?.cardminmintme}
-                                    value2={detailCustomReport.data[0]?.cardminmintmeuser ? `#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})` : "-"}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </Grid>
-
-                <Grid item xs={12} md={6} lg={6}>
-                    <div>
-                        <Grid container spacing={1}>
-
-                            <Grid item xs={12} md={12} lg={12}>
-                                <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
-                                })} style={{ color: "white" }}>
-                                    <CardContent style={{ paddingBottom: 10 }}>
-                                        <Typography variant="h5">
-                                            {t(langKeys.report_userproductivity_cardtmo)}
-                                            <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
-                                            </Tooltip>
-                                        </Typography>
-                                        <Typography variant="h5" component="div" align="center">
-                                            {detailCustomReport.data[0]?.cardavgavgtmo}
-                                        </Typography>
-                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
-                                            {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral || ""}`}
-                                            {(detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-
-                            
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax_tmo)}
-                                    value={detailCustomReport.data[0]?.cardavgmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmouser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
-                                    value={detailCustomReport.data[0]?.cardmaxmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})` : "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin_tmo)}
-                                    value={detailCustomReport.data[0]?.cardavgmintmo}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmouser || "-"}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin_tmo)}
-                                    value={detailCustomReport.data[0]?.cardminmintmo}
-                                    value2={detailCustomReport.data[0]?.cardminmintmouser ? `#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})` : "-"}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </Grid>
-            </Grid>
-           
-
-
-
-
-
-
-
-            <Grid container spacing={3} className={classes.containerDetails} style={{paddingTop:10}}>
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card>
-                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="body2">
-                                    {t(langKeys.report_userproductivity_totalclosedtickets)}
-                                </Typography>
-                                <Typography variant="h5" component="div" align="center">
-                                    {detailCustomReport.data[0]?.totalclosedtickets}
-                                </Typography>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="subtitle1" >
-                                    {maxmin.maxticketsclosedasesor} ({maxmin.maxticketsclosed})
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxticketsclosedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    {maxmin.minticketsclosedasesor} ({maxmin.minticketsclosed})
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_minticketsclosedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                    <Card>
-                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="body2">
-                                    N° {t(langKeys.report_userproductivity_usersconnected)}
-                                </Typography>
-                                <Typography variant="h5" component="div" align="center">
-                                    {detailCustomReport.data[0]?.usersconnected}
-                                </Typography>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Typography variant="subtitle1">
-                                    {maxmin.maxtimeconnectedasesor} ({maxmin.maxtimeconnected} m)
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxtimeconnectedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    {maxmin.mintimeconnectedasesor} ({maxmin.mintimeconnected} m)
-                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_mintimeconnectedasesorhelptext)}</div>} arrow placement="top" >
-                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                    </Tooltip>
-                                </Typography>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-
             {view === "GRID" ? (
                 <TableZyx
                     columns={columns}
                     filterGeneral={false}
                     data={dataGrid}
                     download={false}
+                    showHideColumns={true}
+                    groupedBy={true}
                     loading={detailCustomReport.loading}
                     register={false}
-                    ButtonsElement={() => (
-                        <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
-                                onClick={() => setOpenModal(true)}
-                                startIcon={<AssessmentIcon />}
-                            >
-                                {t(langKeys.graphic_view)}
-                            </Button>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                disabled={detailCustomReport.loading}
-                                onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                                startIcon={<DownloadIcon />}
-                            >{t(langKeys.download)}
-                            </Button>
-                        </Box>
-                    )}
+                    ButtonsElement={
+                        <div className={classes.containerFilter}>
+                            <div style={{ display: "flex", gap: 8 }}>
+                                <div style={{ display: "flex" }}>
+                                    <Box width={1}>
+                                        <Box
+                                            className={classes.containerHeader}
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                        >
+                                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                                <DateRangePicker
+                                                    open={openDateRangeModal}
+                                                    setOpen={setOpenDateRangeModal}
+                                                    range={dateRange}
+                                                    onSelect={setdateRange}
+                                                >
+                                                    <Button
+                                                        disabled={detailCustomReport.loading}
+                                                        style={{
+                                                            border: "1px solid #bfbfc0",
+                                                            borderRadius: 4,
+                                                            color: "rgb(143, 146, 161)",
+                                                        }}
+                                                        startIcon={<CalendarIcon />}
+                                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                                    >
+                                                        {format(dateRange.startDate!) +
+                                                            " - " +
+                                                            format(dateRange.endDate!)}
+                                                    </Button>
+                                                </DateRangePicker>
+                                            </div>
+                                        </Box>
+                                    </Box>
+                                </div>
+                                <div style={{ display: "flex" }}>
+                                    <Box width={1}>
+                                        <Box
+                                            className={classes.containerHeader}
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                        >
+                                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                                <FieldSelect
+                                                    
+                                                    label={t("report_userproductivity_filter_channels")}
+                                                    className={classes.filterComponent}
+                                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
+                                                    valueDefault={allParameters?.channel || "ayuda"}
+                                                    onChange={(value) =>
+                                                        setValue("channel", value?.typedesc || "ayuda2")
+                                                    }
+                                                    variant="outlined"
+                                                    data={
+                                                        multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
+                                                    }
+                                                    loading={multiData.loading}
+                                                    optionDesc={"type"}
+                                                    optionValue={"typedesc"}
+                                                />
+                                            </div>
+                                        </Box>
+                                    </Box>
+                                </div>
+                                <div style={{ display: "flex" }}>
+                                    <Box width={1}>
+                                        <Box
+                                            className={classes.containerHeader}
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                        >
+                                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                                <Button
+                                                    disabled={detailCustomReport.loading}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    style={{ backgroundColor: "#55BD84", width: 120 }}
+                                                    onClick={() => {
+                                                        setDetailCustomReport({
+                                                            loading: true,
+                                                            data: [],
+                                                        });
+                                                        fetchData();
+                                                    }}
+                                                >
+                                                    {t(langKeys.search)}
+                                                </Button>
+                                            </div>
+                                        </Box>
+                                    </Box>
+                                </div>
+                            </div>
+                            <div>
+                                <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                                    {view === "GRID" && (
+                                        <>
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={
+                                                    detailCustomReport.loading || !(detailCustomReport.data.length > 0)
+                                                }
+                                                onClick={() => setOpenModal(true)}
+                                                startIcon={<AssessmentIcon />}
+                                            >
+                                                {t(langKeys.graphic_view)}
+                                            </Button>
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={detailCustomReport.loading}
+                                                onClick={() =>
+                                                    exportExcel(
+                                                        "report" + new Date().toISOString(),
+                                                        dataGrid,
+                                                        columns.filter((x: any) => !x.isComponent && !x.activeOnHover)
+                                                    )
+                                                }
+                                                startIcon={<DownloadIcon />}
+                                            >
+                                                {t(langKeys.download)}
+                                            </Button>
+                                        </>
+                                    )}
+                                </Box>
+                            </div>
+                        </div>
+                    }
+                    ExtraMenuOptions={
+                        <MenuItem
+                            style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
+                            onClick={() => setOpenFilterModal(true)}
+                        >
+                            <ListItemIcon>
+                                <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
+                            </ListItemIcon>
+                            <Typography variant="inherit">{t(langKeys.filters) + " - " + t(langKeys.report_userproductivity)}</Typography>
+                        </MenuItem>
+                    }
                 />
             ) : (
                 <div>
@@ -861,7 +700,69 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                         value: d,
                     })),
                 ]}
-            />          
+            />
+            <DialogZyx
+                open={openFilterModal}
+                title={t(langKeys.filters)}
+                buttonText1={t(langKeys.close)}
+                buttonText2={t(langKeys.apply)}
+                handleClickButton1={() => setOpenFilterModal(false)}
+                handleClickButton2={() => {
+                    setOpenFilterModal(false);
+                    fetchData();
+                }}
+                maxWidth="sm"
+                buttonStyle1={{ marginBottom: "0.3rem" }}
+                buttonStyle2={{ marginRight: "1rem", marginBottom: "0.3rem" }}
+            >
+                <div className="row-zyx" style={{marginBottom: 0, paddingBottom: 0}}>                    
+                    <FieldMultiSelect
+                        limitTags={1}
+                        label={t("report_userproductivity_filter_group")}
+                        className={classes.filterComponent + " col-6"}
+                        valueDefault={allParameters?.usergroup || ""}
+                        key={"UFN_DOMAIN_LST_VALORES_GRUPOS"}
+                        onChange={(value) =>
+                            setValue("usergroup", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
+                        }
+                        variant="outlined"
+                        data={groupsdata}
+                        optionDesc={"domaindesc"}
+                        optionValue={"domainvalue"}
+                    />
+
+                    <FieldMultiSelect
+                        limitTags={1}
+                        label={t("report_userproductivity_filter_status")}
+                        className={classes.filterComponent + " col-6"}
+                        key={"UFN_DOMAIN_LST_VALORES_ESTADOORGUSER"}
+                        valueDefault={allParameters?.userstatus || ""}
+                        onChange={(value) =>
+                            setValue("userstatus", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
+                        }
+                        variant="outlined"
+                        data={multiData?.data?.find(x=>x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data||[]}
+                        loading={multiData.loading}
+                        optionDesc={"domaindesc"}
+                        optionValue={"domainvalue"}
+                    />
+
+                    <div style={{ alignItems: "center" }} className="col-6">
+                        <div>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={16} color="textPrimary" padding="10px 0 8px 2px">
+                                {t(langKeys.report_userproductivity_filter_includebot)}
+                            </Box>
+                            <FormControlLabel
+                                style={{ paddingLeft: 10, paddingBottom: 0 }}
+                                control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
+                                label={checkedA ? t(langKeys.yes) : "No"}
+                            />
+                        </div>
+                    </div>
+
+                </div>
+
+            </DialogZyx>
         </>
     );
 };
