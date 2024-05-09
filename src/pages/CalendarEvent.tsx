@@ -202,12 +202,12 @@ const FormToSend: FC<{
     const classes = useStyles();
     const [phoneCountry, setPhoneCountry] = useState('');
     const dispatch = useDispatch();
-
+    const url = new URLSearchParams(window.location.search);
     const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm({
         defaultValues: {
-            name: event?.personname,
-            email: event?.email,
-            phone: event?.phone,
+            name: url.get("n") || event?.personname,
+            email: url.get("c") || event?.email,
+            phone: url.get("t") || event?.phone,
             notes: '',
         }
     })
@@ -347,6 +347,10 @@ export const CalendarEvent: FC = () => {
     const classes = useStyles();
     const { t } = useTranslation();
     const { orgid, eventcode }: any = useParams();
+    /**
+            name: event?.personname,
+            email: event?.email,
+            phone: event?.phone, */
     const [event, setEvent] = useState<Dictionary | null>(null);
     const resMain = useSelector(state => state.main.mainEventBooking);
     const [daySelected, setDaySelected] = useState<IDay | null>(null);
@@ -505,6 +509,7 @@ export const CalendarEvent: FC = () => {
     }
 
     if (!resMain.error && !resMain.loading && resMain.key === "UFN_CALENDARYBOOKING_INS") {
+        window.opener && window.opener.postMessage(resMain.data[0].calendarbookingid, '*')      
         return (
             <div className={classes.back}>
                 <div className={classes.containerSuccess}>
