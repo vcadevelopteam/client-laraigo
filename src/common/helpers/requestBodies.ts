@@ -5044,3 +5044,8 @@ export const getDomainByDomainName = (domainname: string) => ({
     key: "UFN_DOMAIN_BY_DOMAINNAME",
     parameters: { domainname },
 });
+export const editCalendarBooking = ({calendarbookingid,personmail,personname,notes,comments}:Dictionary) => ({
+    method: "UFN_CALENDARBOOKING_EDIT",
+    key: "UFN_CALENDARBOOKING_EDIT",
+    parameters: { calendarbookingid,personmail,personname,notes,comments },
+});

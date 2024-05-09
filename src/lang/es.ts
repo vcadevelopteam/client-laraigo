@@ -3516,6 +3516,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   invitation_date: "{{day}} {{date}} de {{month}} de {{year}}",
 
+  type_activitylead_appointment: 'CREAR CITA DE CALENDARIO',
   type_activitylead_call: 'Llamada',
   'type_activitylead_call for demo': 'Demo de llamada',
   'type_activitylead_email: welcome demo': 'Correo: Demostración de bienvenida',

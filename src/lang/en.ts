@@ -3718,6 +3718,7 @@ const translation: LangKeys = {
   userlimit: 'Reached maximum number of users({{limit}}), upgrade your plan to continue',
   max_limit: 'Max limit {{n}}',
   max_limit_file_per_upload: 'Max limit {{n}} files per upload',
+  type_activitylead_appointment: 'CREATE CALENDAR APPOINTMENT',
   type_activitylead_call: 'Call',
   type_activitylead_automated: 'Automate message',
   type_activitylead_automatedmail: 'Automate message email',
