@@ -703,6 +703,22 @@ export const getDomainSel = (domainname: string): IRequestBody => ({
         all: true
     }
 })
+export const getCustomVariableSel = (): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
+    key: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
+    parameters: {}
+})
+export const getCustomVariableSelByTableName = (tablename:string, customvariableapplicationid:number=0): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_SEL",
+    key: "UFN_CUSTOM_VARIABLE_SEL",
+    parameters: {tablename, customvariableapplicationid}
+})
+export const insCustomVariable = ({id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname=""}:Dictionary): IRequestBody => ({
+    method: "UFN_CUSTOM_VARIABLE_INS",
+    key: "UFN_CUSTOM_VARIABLE_INS",
+    parameters: {id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname}
+})
+
 export const getDocumentLibrary = (): IRequestBody => ({
     method: "UFN_DOCUMENTLIBRARY_SEL",
     key: "UFN_DOCUMENTLIBRARY_SEL",
@@ -5043,6 +5059,11 @@ export const getDomainByDomainName = (domainname: string) => ({
     method: "UFN_DOMAIN_BY_DOMAINNAME",
     key: "UFN_DOMAIN_BY_DOMAINNAME",
     parameters: { domainname },
+});
+export const getDomainByDomainNameList = (domainnamelist:string) => ({
+    method: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
+    key: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
+    parameters: { domainnamelist },
 });
 export const editCalendarBooking = ({calendarbookingid,personmail,personname,notes,comments}:Dictionary) => ({
     method: "UFN_CALENDARBOOKING_EDIT",

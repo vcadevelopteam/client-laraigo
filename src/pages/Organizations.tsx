@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, IOSSwitch } from 'components';
-import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
+import { appsettingInvoiceSelCombo, getCityBillingList, getCorpSel, getCustomVariableSelByTableName, getDomainByDomainNameList, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,16 +11,18 @@ import SaveIcon from '@material-ui/icons/Save';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, resetAllMain, uploadFile, resetUploadFile } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, resetAllMain, uploadFile, resetUploadFile, getCollectionAux2 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
-import { Box, Grid, IconButton, InputAdornment, Tabs, FormControlLabel } from '@material-ui/core';
+import { Box, Grid, IconButton, InputAdornment, Tabs, FormControlLabel, Tooltip } from '@material-ui/core';
 import { Close, CloudUpload, Visibility, VisibilityOff, Refresh as RefreshIcon, CompareArrows } from '@material-ui/icons';
 import { getCountryList } from 'store/signup/actions';
 import { formatNumber } from 'common/helpers';
 import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updateScenario } from "store/voximplant/actions";
 import { CellProps } from 'react-table';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import CustomTableZyxEditable from 'components/fields/customtable-editable';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -100,6 +102,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
     const roledesc = user?.roledesc || "";
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveUpload, setWaitSaveUpload] = useState(false);
@@ -497,6 +500,43 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             return t(langKeys.emailverification) as string;
         }
     }
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: true,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: true,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: true,
+                sortType: 'string',
+                prefixTranslation: 'datatype_',
+                Cell: (props: any) => {
+                    const { variabletype } = props.cell.row.original || {}; 
+                    return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
 
     return (
         <div style={{ width: '100%' }}>
@@ -548,6 +588,15 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     <AntTab label={t(langKeys.emailconfiguration)} />
                     {roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
                     {false && <AntTab label={t(langKeys.chatimages)} />}
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.customvariables} />
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
+                            </div>
+                        )} value={4}/>
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
@@ -1225,6 +1274,19 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         </Box>
                     </Grid>
                 </div>}
+                {pageSelected === 4 && <div className={classes.containerDetail}>                    
+                    <CustomTableZyxEditable
+                        columns={columns}
+                        data={tableDataVariables}
+                        download={false}
+                        dataDomains={domainsCustomTable?.data||[]}
+                        //loading={multiData.loading}
+                        register={false}
+                        filterGeneral={false}
+                        updateCell={updateCell}
+                        skipAutoReset={skipAutoReset}
+                    />
+                </div>}
             </form>
         </div>
     );
@@ -1325,6 +1387,12 @@ const Organizations: FC = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if(!mainResult.multiData.loading && !mainResult.multiData.error && mainResult.multiData.data?.[12]){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(mainResult.multiData?.data?.[12]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [mainResult.multiData]);
+    
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {

@@ -1,5 +1,5 @@
 import { addTemplate, deleteTemplate, synchronizeTemplate } from "store/channel/actions";
-import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
+import { Box, CircularProgress, IconButton, Paper, Tabs, Tooltip } from "@material-ui/core";
 import { Close, Delete, FileCopy, GetApp, Search } from "@material-ui/icons";
 import { Descendant } from "slate";
 import { Dictionary, IFetchData, MultiData } from "@types";
@@ -11,11 +11,12 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import {
     execute,
     exportData,
+    getCollectionAux2,
     getCollectionPaginated,
     getMultiCollection,
     resetAllMain,
@@ -35,6 +36,8 @@ import {
 
 import {
     dateToLocalDate,
+    getCustomVariableSelByTableName,
+    getDomainByDomainNameList,
     getMessageTemplateExport,
     getPaginatedMessageTemplate,
     getValuesFromDomain,
@@ -56,6 +59,8 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import CustomTableZyxEditable from "components/fields/customtable-editable";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -121,6 +126,11 @@ const useStyles = makeStyles((theme) => ({
             opacity: 1,
         },
     },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    }
 }));
 
 const MessageTemplates: FC = () => {
@@ -272,6 +282,12 @@ const MessageTemplates: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+
+    useEffect(() => {
+        if(!mainResult.multiData.loading && !mainResult.multiData.error && mainResult.multiData.data?.[3]){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(mainResult.multiData?.data?.[3]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [mainResult.multiData]);
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
@@ -615,6 +631,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
@@ -1381,6 +1398,44 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("type");
         trigger("typeattachment");
     };
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: true,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: true,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: true,
+                sortType: 'string',
+                prefixTranslation: 'datatype_',
+                Cell: (props: any) => {
+                    const { variabletype } = props.cell.row.original || {}; 
+                    return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
+
 
     return (
         <div style={{ width: "100%" }}>
@@ -1423,7 +1478,26 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </Button>
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.templateinformation)} />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.customvariables} />
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
+                            </div>
+                        )}/>
+                </Tabs>
+                {pageSelected === 0 && <div className={classes.containerDetail}>
                     {row?.showid && (
                         <div className="row-zyx">
                             <FieldView
@@ -1931,7 +2005,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </React.Fragment>
                         </div>
                     )}
-                </div>
+                </div>}
+                {pageSelected === 1 &&
+                <div className={classes.containerDetail}>                    
+                    <CustomTableZyxEditable
+                        columns={columns}
+                        data={tableDataVariables}
+                        download={false}
+                        dataDomains={domainsCustomTable?.data||[]}
+                        //loading={multiData.loading}
+                        register={false}
+                        filterGeneral={false}
+                        updateCell={updateCell}
+                        skipAutoReset={skipAutoReset}
+                    />
+                </div>}
             </form>
         </div>
     );
