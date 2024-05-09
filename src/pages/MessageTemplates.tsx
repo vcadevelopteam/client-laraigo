@@ -25,6 +25,7 @@ import {
 } from "store/main/actions";
 
 import {
+    AntTab,
     FieldEdit,
     FieldEditMulti,
     FieldSelect,
@@ -274,6 +275,7 @@ const MessageTemplates: FC = () => {
                 getValuesFromDomain("MESSAGETEMPLATECATEGORY"),
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
+                getCustomVariableSelByTableName("messagetemplate")
             ])
         );
 
@@ -634,6 +636,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const domainsCustomTable = useSelector((state) => state.main.mainAux2);
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
+
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
+        setSkipAutoReset(true);
+        const auxTableData = tableDataVariables
+        auxTableData[rowIndex][columnId] = value
+        setTableDataVariables(auxTableData)
+        setUpdatingDataTable(!updatingDataTable);
+    }
+
 
     const dataChannel =
         multiData[2] && multiData[2].success
@@ -653,6 +667,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [pageSelected, setPageSelected] = useState(0);
+    useEffect(() => {
+        if (multiData[3]) {
+            const variableDataList = multiData[3].data ||[]
+            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+        }
+    }, [multiData]);
 
     const [bodyObject, setBodyObject] = useState<Descendant[]>(
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
@@ -1127,7 +1148,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyObject })));
+                dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyObject,
+                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             };
