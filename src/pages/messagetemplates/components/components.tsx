@@ -12,6 +12,7 @@ import ReplyIcon from '@material-ui/icons/Reply';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
 import ListIcon from '@material-ui/icons/List';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 const useStyles = makeStyles(() => ({
 	main: {
@@ -39,9 +40,7 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         padding: 10,
         backgroundColor: 'white',
-        borderRadius: 10,
-        width: '40%',
-        gap: 10,
+        borderRadius: '0px 10px 10px 10px',
     },
     messagePrevContainer: {
         height: '100%',
@@ -55,12 +54,18 @@ const useStyles = makeStyles(() => ({
         wordWrap: 'break-word',
         fontWeight: 'bold',
         fontSize: 18,
+        marginBottom: 8,
     },
     media: {
       maxWidth: '100%',
       maxHeight: '100%',
     },
     body: {
+        wordWrap: 'break-word',
+        whiteSpace: 'pre-line',
+        marginBottom: 10,
+    },
+    bodyCar: {
         wordWrap: 'break-word',
         whiteSpace: 'pre-line',
     },
@@ -79,9 +84,28 @@ const useStyles = makeStyles(() => ({
         borderTop: '1px solid #DDDDDD',
         gap: 6,
     },
+    cardButton2: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '10px 10px 0px 10px',
+        color: '#009C8F',
+        borderTop: '1px solid #DDDDDD',
+        gap: 6,
+    },
     icon: {
         color: '#009C8F'
-,    },
+    },
+    container: {
+        backgroundColor: '#DFD6C6',
+        padding: '5px 5px 5px 10px',
+        width: '40%',
+        borderRadius: 5,
+    },
+    chatTime: {
+        textAlign: 'end',
+        fontSize: 10,
+    },
 }));
 
 interface TemplateIconsProps {
@@ -194,7 +218,7 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
     );
 };
 
-interface MessagePreviewProps {
+interface MessagePreviewMultimediaProps {
     headerType: string;
     header: string;
     selectedFile: File | null;
@@ -205,7 +229,7 @@ interface MessagePreviewProps {
     buttonsphone: string[];
 }
 
-export const MessagePreview: React.FC<MessagePreviewProps> = ({headerType, header, selectedFile, bodyObject, footer, buttonstext, buttonslink, buttonsphone}) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({headerType, header, selectedFile, bodyObject, footer, buttonstext, buttonslink, buttonsphone}) => {
     const classes = useStyles();
     const concatenatedText = bodyObject.map((obj) => obj?.children?.[0]?.text).join('\n\n');
     const combinedButtons = [
@@ -216,63 +240,124 @@ export const MessagePreview: React.FC<MessagePreviewProps> = ({headerType, heade
 
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.messageCard}>
-                {headerType === 'text' ? (
-                    <span className={classes.headerText}>{header}</span>
-                ) : headerType === 'multimedia' ? (
-                    <>
-                       {selectedFile && selectedFile.type && selectedFile.type.startsWith('image/') ? (
-                            <img src={URL.createObjectURL(selectedFile)} alt="Selected Image" className={classes.media} />
-                        ) : (
-                            selectedFile && selectedFile.type && selectedFile.type.startsWith('video/') ? (
-                                <video controls className={classes.media}>
-                                    <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type} />
-                                    Your browser does not support the video tag.
-                                </video>
+            <div className={classes.container}>
+                <div className={classes.messageCard}>
+                    {headerType === 'text' ? (
+                        <span className={classes.headerText}>{header}</span>
+                    ) : headerType === 'multimedia' ? (
+                        <>
+                        {selectedFile && selectedFile.type && selectedFile.type.startsWith('image/') ? (
+                                <img src={URL.createObjectURL(selectedFile)} alt="Selected Image" className={classes.media} />
                             ) : (
-                                <span>No media selected</span>
-                            )
+                                selectedFile && selectedFile.type && selectedFile.type.startsWith('video/') ? (
+                                    <video controls className={classes.media}>
+                                        <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type} />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                ) : (
+                                    <span>No media selected</span>
+                                )
+                            )}
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                    {concatenatedText !== '' && (
+                        <div className={classes.body}>{concatenatedText}</div>
+                    )}
+                    <div className={classes.footer}>
+                        {footer !== '' ? (
+                            <span>{footer}</span>
+                        ) : (
+                            <div></div>
                         )}
-                    </>
-                ) : (
-                    <></>
-                )}
-                <div className={classes.body}>{concatenatedText}</div>
-                <div className={classes.footer}>
-                    {footer}
-                    <span style={{fontSize: 10, color: 'black', textAlign: 'end', marginTop: 10}}>16:59</span>
-                </div>
-                <div>
-                    {combinedButtons.map((btn, index) => {
-                        let icon;
-                        switch (btn.type) {
-                            case 'text':
-                                icon = <ReplyIcon className={classes.icon} />;
-                                break;
-                            case 'link':
-                                icon = <OpenInNewIcon className={classes.icon} />;
-                                break;
-                            case 'phone':
-                                icon = <PhoneIcon className={classes.icon} />;
-                                break;
-                            default:
-                                icon = null;
-                        }
-                        return (
-                            <div key={index}>
-                                {((index <= 2 && combinedButtons.length === 3) || (index < 2 && combinedButtons.length !== 3)) && (
-                                    <div className={classes.cardButton}>
-                                        {icon}
-                                        <span>{btn.text}</span>
-                                    </div>
-                                )}
+                        <span className={classes.chatTime} style={{color: 'black', marginTop: 10}}>16:59</span>
+                    </div>
+                    <div>
+                        {combinedButtons.map((btn, index) => {
+                            let icon;
+                            switch (btn.type) {
+                                case 'text':
+                                    icon = <ReplyIcon className={classes.icon} />;
+                                    break;
+                                case 'link':
+                                    icon = <OpenInNewIcon className={classes.icon} />;
+                                    break;
+                                case 'phone':
+                                    icon = <PhoneIcon className={classes.icon} />;
+                                    break;
+                                default:
+                                    icon = null;
+                            }
+                            return (
+                                <div key={index}>
+                                    {((index <= 2 && combinedButtons.length === 3) || (index < 2 && combinedButtons.length !== 3)) && (
+                                        <div className={index === combinedButtons.length - 1 ? classes.cardButton2 : classes.cardButton}>
+                                            {icon}
+                                            <span>{btn.text}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                        {combinedButtons.length > 3 &&(
+                            <div className={classes.cardButton2}>
+                                <ListIcon className={classes.icon}/>
+                                <span>See all options</span>
                             </div>
-                        );
-                    })}
-                    {combinedButtons.length > 3 &&(
-                        <div className={classes.cardButton}>
-                            <ListIcon className={classes.icon}/>
-                            <span>See all options</span>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+interface MessagePreviewCarouselProps {
+    bodyObject: Descendant[];
+}
+
+export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({bodyObject}) => {
+    const classes = useStyles();
+    const concatenatedText = bodyObject.map((obj) => obj?.children?.[0]?.text).join('\n\n');
+
+    return (
+        <div className={classes.messagePrevContainer}>
+            <div className={classes.container}>
+                <div className={classes.messageCard}>
+                    {concatenatedText !== '' && (
+                        <div className={classes.bodyCar}>{concatenatedText}</div>
+                    )}
+                    <span className={classes.chatTime}>11:54</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+interface MessagePreviewAuthenticationProps {
+    buttontext: string;
+    safetyAdvice: boolean;
+    dateAdvice: boolean;
+    expiresValue: number;
+}
+
+export const MessagePreviewAuthentication: React.FC<MessagePreviewAuthenticationProps> = ({buttontext, safetyAdvice, dateAdvice, expiresValue}) => {
+    const classes = useStyles();
+    
+    return (
+        <div className={classes.messagePrevContainer}>
+            <div className={classes.container}>
+                <div className={classes.messageCard}>
+                    <div>Tu código de verificación es 123456.{safetyAdvice ? ' Por tu seguridad, no lo compartas' : ''}</div>
+                    {dateAdvice && (
+                        <span style={{color: 'grey', fontSize: 13, marginTop: 5}}>Este código caduca en {expiresValue} minutos.</span>
+                    )}
+                    <span className={classes.chatTime}>11:54</span>
+                    {buttontext !== '' && (
+                        <div className={classes.cardButton2}>
+                            <FileCopyIcon className={classes.icon}/>
+                            <span>{buttontext}</span>
                         </div>
                     )}
                 </div>

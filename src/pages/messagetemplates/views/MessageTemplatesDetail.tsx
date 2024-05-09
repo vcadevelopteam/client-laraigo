@@ -53,7 +53,7 @@ import React, { FC, Suspense, useCallback, useEffect, useState } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
-import { AddButtonMenu, CustomTitleHelper, MessagePreview } from "../components/components";
+import { AddButtonMenu, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -228,6 +228,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [bodyObject, setBodyObject] = useState<Descendant[]>(
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
     );
+    const [bodyObjectCar, setBodyObjectCar] = useState<Descendant[]>(
+        row?.bodyobjectcar || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
+    );
     const [category, setCategory] = useState(row ? row.category : '')
     const [headerMedia, setHeaderMedia] = useState('')
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -237,6 +240,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [addSafetyAdvice, setAddSafetyAdvice] = useState(false)
     const [addLastDateCode, setAddLastDateCode] = useState(false)
     const [cardsVariables, setCardsVariables] = useState<Dictionary[]>([])
+    const [authButtonText, setAuthButtonText] = useState('')
+    const [expiresValue, setExpiresValue] = useState(0)
+    const [validatePeriod, setValidatePeriod] = useState(false)
     
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -1159,12 +1165,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setCategory(categoryText)
         setValue('category', categoryText)
 
-        setValue('templatetype', '')
-        setValue('name', '')
-        setValue('language', '')
-        trigger('templatetype')
-        trigger('name')
-        trigger('language')
+        setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
+        setValue('footer', '')
+        trigger('footer')
         setBodyVariables([])
         setValue("headertype", "none");
         setHeaderMedia('')
@@ -1175,6 +1178,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('buttonstext', [])
         setValue('buttonsphone', [])
         setValue('carouselcards', [])
+        setAddSafetyAdvice(false)
+        setAddLastDateCode(false)
+        setExpiresValue(0)
+        setAuthButtonText('')
+        setValidatePeriod(false)
     }
     
     return (
@@ -1885,7 +1893,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
                                     <div style={{height: 500, width: '100%', border: '1px solid black'}}>
-                                        <MessagePreview
+                                        <MessagePreviewMultimedia
                                             headerType={getValues('headertype')}
                                             header={getValues('header')}
                                             selectedFile={selectedFile}
@@ -1942,6 +1950,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <div style={{display: 'flex', gap: 20, alignItems: 'center'}}>
                                             <FieldEdit
                                                 type="number"
+                                                valueDefault={expiresValue}
+                                                onChange={(value) => setExpiresValue(value)}
                                                 label={t(langKeys.minutes)}
                                                 variant="outlined"
                                                 size="small"
@@ -1957,6 +1967,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <div style={{width: '50%', marginBottom: 20}}>
                                         <FieldEdit
                                             label={t(langKeys.code)}
+                                            valueDefault={authButtonText}
+                                            onChange={(value) => setAuthButtonText(value)}
                                             maxLength={25}
                                             size="small"
                                             variant="outlined"
@@ -1967,13 +1979,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span style={{marginBottom: 10}}>{t(langKeys.validityperiodtext)}</span>
                                     <div style={{display: 'flex', alignItems: 'start', marginTop: 10}}>
                                         <Checkbox
-                                            checked={addLastDateCode}
+                                            checked={validatePeriod}
                                             color="primary"
                                             onChange={(e) => {
                                                 if (e.target.checked) {
-                                                    setAddLastDateCode(true);
+                                                    setValidatePeriod(true);
                                                 } else {
-                                                    setAddLastDateCode(false);
+                                                    setValidatePeriod(false);
                                                 }
                                             }}
                                         />
@@ -1982,25 +1994,34 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <span>{t(langKeys.validityperiodconfigcondition)}</span>
                                         </div>
                                     </div>
-                                    <div style={{display: 'flex', flexDirection: 'column', padding: '15px 25px', backgroundColor: '#F5F5F5', border: '1px solid #ACACAC', borderRadius: 10, marginTop: 10}}>
-                                        <CustomTitleHelper
-                                            title={t(langKeys.validityperiod) + ' '}
-                                            helperText={t(langKeys.test)}
-                                        /> 
-                                        <div style={{backgroundColor: 'white', width: 250, marginTop: 5}}>
-                                            <FieldSelect
-                                                data={dataValidityPeriod}
-                                                optionDesc="text"
-                                                optionValue="data"
-                                                variant="outlined"
-                                            />
+                                    {validatePeriod && (
+                                        <div style={{display: 'flex', flexDirection: 'column', padding: '15px 25px', backgroundColor: '#F5F5F5', border: '1px solid #ACACAC', borderRadius: 10, marginTop: 10}}>
+                                            <CustomTitleHelper
+                                                title={t(langKeys.validityperiod) + ' '}
+                                                helperText={t(langKeys.test)}
+                                            /> 
+                                            <div style={{backgroundColor: 'white', width: 250, marginTop: 5}}>
+                                                <FieldSelect
+                                                    data={dataValidityPeriod}
+                                                    optionDesc="text"
+                                                    optionValue="data"
+                                                    variant="outlined"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 300, width: '100%', border: '1px solid black'}}/>
+                                    <div style={{height: 500, width: '100%', border: '1px solid black'}}>
+                                        <MessagePreviewAuthentication
+                                            buttontext={authButtonText}
+                                            safetyAdvice={addSafetyAdvice}
+                                            dateAdvice={addLastDateCode}
+                                            expiresValue={expiresValue}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2020,9 +2041,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <RichText
                                                 spellCheck
                                                 emoji={true}
-                                                value={bodyObject}
+                                                value={bodyObjectCar}
                                                 onChange={(value) => {
-                                                    setBodyObject(value);
+                                                    setBodyObjectCar(value);
                                                 }}
                                                 positionEditable="top"
                                                 style={{
@@ -2301,7 +2322,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 300, width: '100%', border: '1px solid black'}}/>
+                                    <div style={{height: 500, width: '100%', border: '1px solid black'}}>
+                                        <MessagePreviewCarousel
+                                            bodyObject={bodyObjectCar}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
