@@ -1,3 +1,4 @@
+import React from 'react';
 import { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { Box, Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, IconButton, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
 import { Add as AddIcon, MoreVert as MoreVertIcon } from '@material-ui/icons';
@@ -11,6 +12,7 @@ import { default as DashboardProductivity } from './DashboardProductivity';
 import { default as DashboardOperationalPush } from './DashboardOperationalPush';
 import { default as DashboardTagRanking } from './DashboardTagRanking';
 import { default as DashboardDisconnections } from './DashboardDisconnections';
+import DashboardAssesorProductivity from './DashBoardAssesorProductivity';
 import { SearchField, TemplateBreadcrumbs } from 'components';
 import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
@@ -21,6 +23,10 @@ import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/das
 import DashboardKPI from './DashboardKPI';
 import DashboardKPIMonthly from './DashboardKPIMonthly';
 const isIncremental = window.location.href.includes("incremental")
+import productivity_advisors from 'icons/reports_productivity_advisors.svg';
+import { Dictionary } from "@types";
+
+
 
 const arrayBread = [
     { id: "view-1", name: "Dashboard" }
@@ -76,8 +82,12 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(4),
     }
 }));
+interface ItemProps {   
+    row: Dictionary | null;   
+    allFilters: Dictionary[];   
+}
 
-const Dashboard: FC = () => {
+const Dashboard: React.FC<ItemProps> = ({ row, allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -158,7 +168,6 @@ const Dashboard: FC = () => {
                 })));
             },
         }))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch]);
 
     const goToDashboardLayout = useCallback((dashboardtemplateid: number) => {
@@ -356,6 +365,26 @@ const Dashboard: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>}
+                        {t(langKeys.report_userproductivity).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card>
+                                <CardActionArea onClick={() => handleSelected("dashboardassesorproductivity")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image={productivity_advisors}
+                                        title={t(langKeys.report_userproductivity)}
+                                        style={{ objectFit: 'contain'}} 
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.report_userproductivity)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>}
+
                         {allDashboardsToShow.map((e:any, i:number) => (
                             <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
                                 <DashboardCard
@@ -475,6 +504,23 @@ const Dashboard: FC = () => {
                         handleClick={handleSelected}
                     />
                     <DashboardKPIMonthly/>
+                </div>
+            </Fragment>
+        )
+    }    
+    else if(viewSelected === "dashboardassesorproductivity"){
+        return(
+            
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={[...arrayBread, {id: 'dashboardassesorproductivity', name: t(langKeys.report_userproductivity) }]}
+                        handleClick={handleSelected}
+                    />
+                    <DashboardAssesorProductivity
+                      row={row}
+                      allFilters={allFilters}
+                    />
                 </div>
             </Fragment>
         )

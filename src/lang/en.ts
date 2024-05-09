@@ -6111,6 +6111,21 @@ const translation: LangKeys = {
   transactionnumber: 'Transaction Number',
   conversationTMO: 'Conversation TMO',
   numbers: 'Numbers',
+
+  maxTMR: 'TMR maximum',
+  minTMR: 'TMR minimum',
+  agentNumber: 'N° Agent',
+  byAdvisorName: 'By Advisor Name',
+  minorToMajor: 'Minor to Major',
+  majorToMinor: 'Major to Minor',
+  closedTicketsNum: 'N° Closed Tickets',
+  byTicket: 'by Ticket', 
+  agentWith: 'Agent with',
+  expectedValueConfig: 'Expected value Configuration',
+  expected: 'Expected',
+  tmoDescription: 'Average Operation Time',
+  tmeDescription: 'First Response Time',
+  tmrDescription: 'Average Response Time',
 };
 
 const enResource: ResourceLanguage = {

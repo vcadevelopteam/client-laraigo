@@ -639,6 +639,364 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                         </MenuItem>
                     }
                 />
+
+            <div style={{ display: "flex", gap: 8, marginBottom: '1rem', marginTop: '0.5rem' }}>
+                <div style={{ display: "flex" }}>
+                    <Box width={1}>
+                        <Box
+                            className={classes.containerHeader}
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                <DateRangePicker
+                                    open={openDateRangeModal}
+                                    setOpen={setOpenDateRangeModal}
+                                    range={dateRange}
+                                    onSelect={setdateRange}
+                                >
+                                    <Button
+                                        disabled={detailCustomReport.loading}
+                                        style={{
+                                            border: "1px solid #bfbfc0",
+                                            borderRadius: 4,
+                                            color: "rgb(143, 146, 161)",
+                                        }}
+                                        startIcon={<CalendarIcon />}
+                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                    >
+                                        {format(dateRange.startDate!) +
+                                            " - " +
+                                            format(dateRange.endDate!)}
+                                    </Button>
+                                </DateRangePicker>
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+                <div style={{ display: "flex" }}>
+                    <Box width={1}>
+                        <Box
+                            className={classes.containerHeader}
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                <FieldSelect                                                    
+                                    label={t("report_userproductivity_filter_channels")}
+                                    className={classes.filterComponent}
+                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
+                                    valueDefault={allParameters?.channel || "ayuda"}
+                                    onChange={(value) =>
+                                        setValue("channel", value?.typedesc || "ayuda2")
+                                    }
+                                    variant="outlined"
+                                    data={
+                                        multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
+                                    }
+                                    loading={multiData.loading}
+                                    optionDesc={"type"}
+                                    optionValue={"typedesc"}
+                                />
+                                <FieldMultiSelect
+                                    limitTags={1}
+                                    label={t("report_userproductivity_filter_group")}
+                                    className={classes.filterComponent + " col-6"}
+                                    valueDefault={allParameters?.usergroup || ""}
+                                    key={"UFN_DOMAIN_LST_VALORES_GRUPOS"}
+                                    onChange={(value) =>
+                                        setValue("usergroup", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
+                                    }
+                                    variant="outlined"
+                                    data={groupsdata}
+                                    optionDesc={"domaindesc"}
+                                    optionValue={"domainvalue"}
+                                />
+
+                                <FieldMultiSelect
+                                    limitTags={1}
+                                    label={t("report_userproductivity_filter_status")}
+                                    className={classes.filterComponent + " col-6"}
+                                    key={"UFN_DOMAIN_LST_VALORES_ESTADOORGUSER"}
+                                    valueDefault={allParameters?.userstatus || ""}
+                                    onChange={(value) =>
+                                        setValue("userstatus", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
+                                    }
+                                    variant="outlined"
+                                    data={multiData?.data?.find(x=>x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data||[]}
+                                    loading={multiData.loading}
+                                    optionDesc={"domaindesc"}
+                                    optionValue={"domainvalue"}
+                                />
+                                <div style={{ alignItems: 'center' }}>
+                                    <div>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
+                                        <FormControlLabel
+                                            style={{ paddingLeft: 10 }}
+                                            control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
+                                            label={checkedA ? t(langKeys.yes) : "No"}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+                <div style={{ display: "flex" }}>
+                    <Box width={1}>
+                        <Box
+                            className={classes.containerHeader}
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                <Button
+                                    disabled={detailCustomReport.loading}
+                                    variant="contained"
+                                    color="primary"
+                                    style={{ backgroundColor: "#55BD84", width: 120 }}
+                                    onClick={() => {
+                                        setDetailCustomReport({
+                                            loading: true,
+                                            data: [],
+                                        });
+                                        fetchData();
+                                    }}
+                                >
+                                    {t(langKeys.search)}
+                                </Button>
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            </div>
+
+
+            <Grid container spacing={3}>
+                
+                <Grid item xs={12} md={6} lg={6}>
+                    <div>
+                        <Grid container spacing={1} >
+
+                            <Grid item xs={12} md={12} lg={12}>
+                                <Card className={clsx({
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
+                                })} style={{ color: "white" }}>
+                                    <CardContent style={{ paddingBottom: 10 }}>
+                                        <Typography variant="h5">
+                                            {t(langKeys.report_userproductivity_cardtme)}
+                                            <Tooltip title={`${t(langKeys.tmetooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </Typography>
+                                        <Typography variant="h5" component="div" align="center">
+                                            {detailCustomReport.data[0]?.cardavgavgtme}
+                                        </Typography>
+                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
+                                            {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral || ""}`}
+                                            {(detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+
+
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardavgmax_tme)}
+                                    value={detailCustomReport.data[0]?.cardavgmaxtme}
+                                    value2={detailCustomReport.data[0]?.cardavgmaxtmeuser || "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
+                                    value={detailCustomReport.data[0]?.cardmaxmaxtme}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})` : "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardavgmin_tme)}
+                                    value={detailCustomReport.data[0]?.cardavgmintme}
+                                    value2={detailCustomReport.data[0]?.cardavgmintmeuser || "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardminmin_tme)}
+                                    value={detailCustomReport.data[0]?.cardminmintme}
+                                    value2={detailCustomReport.data[0]?.cardminmintmeuser ? `#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})` : "-"}
+                                />
+                            </Grid>
+                        </Grid>
+                    </div>
+                </Grid>
+
+                <Grid item xs={12} md={6} lg={6}>
+                    <div>
+                        <Grid container spacing={1}>
+
+                            <Grid item xs={12} md={12} lg={12}>
+                                <Card className={clsx({
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
+                                })} style={{ color: "white" }}>
+                                    <CardContent style={{ paddingBottom: 10 }}>
+                                        <Typography variant="h5">
+                                            {t(langKeys.report_userproductivity_cardtmo)}
+                                            <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </Typography>
+                                        <Typography variant="h5" component="div" align="center">
+                                            {detailCustomReport.data[0]?.cardavgavgtmo}
+                                        </Typography>
+                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
+                                            {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral || ""}`}
+                                            {(detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+
+                            
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardavgmax_tmo)}
+                                    value={detailCustomReport.data[0]?.cardavgmaxtmo}
+                                    value2={detailCustomReport.data[0]?.cardavgmaxtmouser || "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
+                                    value={detailCustomReport.data[0]?.cardmaxmaxtmo}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})` : "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardavgmin_tmo)}
+                                    value={detailCustomReport.data[0]?.cardavgmintmo}
+                                    value2={detailCustomReport.data[0]?.cardavgmintmouser || "-"}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={6}>
+                                <IndicatorPanel
+                                    title={t(langKeys.report_userproductivity_cardminmin_tmo)}
+                                    value={detailCustomReport.data[0]?.cardminmintmo}
+                                    value2={detailCustomReport.data[0]?.cardminmintmouser ? `#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})` : "-"}
+                                />
+                            </Grid>
+                        </Grid>
+                    </div>
+                </Grid>
+            </Grid>
+           
+
+
+
+
+
+
+
+            <Grid container spacing={3} className={classes.containerDetails} style={{paddingTop:10}}>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card>
+                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
+                            <div style={{ flex: 1 }}>
+                                <Typography variant="body2">
+                                    {t(langKeys.report_userproductivity_totalclosedtickets)}
+                                </Typography>
+                                <Typography variant="h5" component="div" align="center">
+                                    {detailCustomReport.data[0]?.totalclosedtickets}
+                                </Typography>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <Typography variant="subtitle1" >
+                                    {maxmin.maxticketsclosedasesor} ({maxmin.maxticketsclosed})
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxticketsclosedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {maxmin.minticketsclosedasesor} ({maxmin.minticketsclosed})
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_minticketsclosedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </Typography>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card>
+                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
+                            <div style={{ flex: 1 }}>
+                                <Typography variant="body2">
+                                    N° {t(langKeys.report_userproductivity_usersconnected)}
+                                </Typography>
+                                <Typography variant="h5" component="div" align="center">
+                                    {detailCustomReport.data[0]?.usersconnected}
+                                </Typography>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <Typography variant="subtitle1">
+                                    {maxmin.maxtimeconnectedasesor} ({maxmin.maxtimeconnected} m)
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxtimeconnectedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {maxmin.mintimeconnectedasesor} ({maxmin.mintimeconnected} m)
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_mintimeconnectedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </Typography>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
+
+            {view === "GRID" ? (
+                <Card style={{ margin: '0', boxShadow: 'none', background:'#F9F9FA' }}>                         
+                     <TableZyx
+                        columns={columns}
+                        filterGeneral={false}
+                        data={dataGrid}
+                        download={false}
+                        loading={detailCustomReport.loading}
+                        register={false}
+                        ButtonsElement={() => (
+                            <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
+                                    onClick={() => setOpenModal(true)}
+                                    startIcon={<AssessmentIcon />}
+                                >
+                                    {t(langKeys.graphic_view)}
+                                </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={detailCustomReport.loading}
+                                    onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                                    startIcon={<DownloadIcon />}
+                                >{t(langKeys.download)}
+                                </Button>
+                            </Box>
+                        )}
+                    />                        
+                </Card>
+               
+>>>>>>> origin/feature/RLA501:src/pages/staticReports/reportAssesorProductivity/ReportAssesorProductivity.tsx
             ) : (
                 <div>
                     <Box
@@ -842,6 +1200,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
     const filteredColumns = columns.filter((column) => !excludeUserProductivity.includes(column.key));
 
     return (
+        
         <DialogZyx
             open={openModal}
             title={t(langKeys.graphic_configuration)}
@@ -882,7 +1241,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
                     optionValue="key"
                     uset={true}
                     prefixTranslation=""
-                />
+                />           
             </div>
         </DialogZyx>
     );
