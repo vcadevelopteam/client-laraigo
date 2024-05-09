@@ -191,7 +191,42 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontWeight: 'bold',
         fontSize: 20
-    }
+    },
+    uploadImage: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        border: '1px solid #003170',
+        borderRadius: 10,
+        padding: '2px 20px',
+        gap: 8,
+        cursor: 'pointer',
+        backgroundColor: '#EAF4FF',
+    },
+    uploadedImage: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        border: '1px solid #003170',
+        borderRadius: 10,
+        padding: '2px 20px',
+        gap: 8,
+        backgroundColor: '#EAF4FF',
+    },
+    imageName: {
+        color: '#004DB1',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        maxWidth: '120px',
+    },
+    closeIcon: {
+        color: 'red',
+        height: 20,
+        width: 'auto',
+        border: '1px solid red',
+        borderRadius: 10
+    },
 }));
 
 const DetailMessageTemplates: React.FC<DetailProps> = ({
@@ -1184,6 +1219,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setAuthButtonText('')
         setValidatePeriod(false)
     }
+
+    const handleImageRemove = (index: number) => {
+        const newCards = [...getValues("carouselcards")];
+        newCards[index].image = null;
+        setValue(`carouselcards.${index}.image`, null);
+        trigger('carouselcards')
+    };
+
+    const handleFileChangeAux = (event, index: number) => {
+        const file = event.target.files[0];
+        if (file) {
+            setValue(`carouselcards.${index}.image`, file)
+            trigger('carouselcards')
+        }
+    };
     
     return (
         <div style={{ width: "100%" }}>
@@ -2107,14 +2157,35 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         <div key={`card-${i}`} className="col-4" style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', padding: '0px 8px 0px 8px'}}>
                                                             <div style={{display: 'flex', width: '100%', justifyContent: 'end'}}>
                                                                 <IconButton onClick={() => onClickRemoveCard(i)} style={{padding: 0}}>
-                                                                    <ClearIcon style={{color: 'red', height: 20, width: 'auto', border: '1px solid red', borderRadius: 10}}/>
+                                                                    <ClearIcon className={classes.closeIcon}/>
                                                                 </IconButton>
                                                             </div>
-                                                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #003170', borderRadius: 10, padding: '2px 20px', gap: 8, backgroundColor: '#EAF4FF'}}>
-                                                                <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
-                                                                <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
-                                                                <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
-                                                            </div>
+                                                            {card.image ? (
+                                                                <div className={classes.uploadedImage}>
+                                                                    <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
+                                                                    <div style={{display: 'flex', gap: 10}}>
+                                                                        <span className={classes.imageName}>{card.image.name}</span>
+                                                                        <IconButton onClick={() => handleImageRemove(i)} style={{padding: 0}}>
+                                                                            <ClearIcon className={classes.closeIcon}/>
+                                                                        </IconButton>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className={classes.uploadImage} >
+                                                                    <input
+                                                                        type="file"
+                                                                        accept={'.jpg,.png'}
+                                                                        onChange={(e) => handleFileChangeAux(e, i)}
+                                                                        style={{ display: 'none' }}
+                                                                        id="fileInput2"
+                                                                    />
+                                                                    <label htmlFor="fileInput2">
+                                                                        <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
+                                                                    </label>
+                                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
+                                                                    <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
+                                                                </div>
+                                                            )}
                                                             <div style={{width: '90%', fontWeight: 'bold'}}>
                                                                 {t(langKeys.body)}
                                                                 <FieldEdit
@@ -2124,6 +2195,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     }}
                                                                     maxLength={160}
                                                                     valueDefault={card?.body || ""}
+                                                                    onChange={(value) => {
+                                                                        setValue(`carouselcards.${i}.body`, value)
+                                                                        trigger('carouselcards')
+                                                                    }}
                                                                     fregister={{
                                                                         ...register(`carouselcards.${i}.body`, {
                                                                             validate: (value) =>
@@ -2325,6 +2400,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <div style={{height: 500, width: '100%', border: '1px solid black'}}>
                                         <MessagePreviewCarousel
                                             bodyObject={bodyObjectCar}
+                                            carouselCards={getValues('carouselcards')}
                                         />
                                     </div>
                                 </div>

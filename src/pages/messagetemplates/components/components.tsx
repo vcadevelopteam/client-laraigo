@@ -13,6 +13,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
 import ListIcon from '@material-ui/icons/List';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import NoImage from '../../../icons/noimage.jpg'
 
 const useStyles = makeStyles(() => ({
 	main: {
@@ -42,6 +43,16 @@ const useStyles = makeStyles(() => ({
         backgroundColor: 'white',
         borderRadius: '0px 10px 10px 10px',
     },
+    messageCard2: {
+        display: 'flex',
+        width: 300,
+        flexDirection: 'column',
+        padding: 10,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        border: '1px solid black',
+        gap: 10,
+    },
     messagePrevContainer: {
         height: '100%',
         width: '100%',
@@ -59,6 +70,21 @@ const useStyles = makeStyles(() => ({
     media: {
       maxWidth: '100%',
       maxHeight: '100%',
+    },
+    cardMediaContainer: {
+        height: 200,
+        width: '100%',
+        backgroundColor: '#DFCFE9',
+        borderRadius: 8,
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    cardMedia: {
+        width: 'auto',
+        objectFit: 'cover',
+        height: '100%',
     },
     body: {
         wordWrap: 'break-word',
@@ -99,7 +125,6 @@ const useStyles = makeStyles(() => ({
     container: {
         backgroundColor: '#DFD6C6',
         padding: '5px 5px 5px 10px',
-        width: '40%',
         borderRadius: 5,
     },
     chatTime: {
@@ -315,15 +340,16 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
 
 interface MessagePreviewCarouselProps {
     bodyObject: Descendant[];
+    carouselCards: Dictionary[];
 }
 
-export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({bodyObject}) => {
+export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({bodyObject, carouselCards}) => {
     const classes = useStyles();
     const concatenatedText = bodyObject.map((obj) => obj?.children?.[0]?.text).join('\n\n');
 
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.container}>
+            <div className={classes.container} style={{width: '40%'}}>
                 <div className={classes.messageCard}>
                     {concatenatedText !== '' && (
                         <div className={classes.bodyCar}>{concatenatedText}</div>
@@ -331,6 +357,21 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
                     <span className={classes.chatTime}>11:54</span>
                 </div>
             </div>
+            <div style={{height: 6}}/>
+            {carouselCards.length > 0 && (
+                <div className={classes.container} style={{overflowX: 'auto', display: 'flex', width: 'fit-content', maxWidth: '80%', marginBottom: 0, maxHeight: '80%'}}>
+                    {carouselCards.map((card, index) => {
+                        return (
+                            <div key={index} className={classes.messageCard2}>
+                                <div className={classes.cardMediaContainer}>
+                                    <img src={card.image ? URL.createObjectURL(card.image) : NoImage} alt="Selected Image" className={classes.cardMedia}/>
+                                </div>
+                                <div className={classes.bodyCar}>{card.body}</div>
+                            </div>
+                        )
+                    })}
+                </div>
+            )}
         </div>
     );
 };
