@@ -162,7 +162,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     data={
                         conector?.provider === 'Open AI' ? retrievalbasemodels :
                         conector?.provider === 'Meta' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('meta')) :
-                        conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('ibm')) : []
+                        conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral')) : []
                     }
                     valueDefault={getValues('basemodel')}
                     onChange={(value) => {
