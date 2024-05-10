@@ -46,6 +46,7 @@ const useStyles = makeStyles(() => ({
     messageCard2: {
         display: 'flex',
         width: 300,
+        height: 'fit-content',
         flexDirection: 'column',
         padding: 10,
         backgroundColor: 'white',
@@ -265,14 +266,16 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
 
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.container}>
+            <div className={classes.container} style={{width: 350}}>
                 <div className={classes.messageCard}>
                     {headerType === 'text' ? (
                         <span className={classes.headerText}>{header}</span>
                     ) : headerType === 'multimedia' ? (
                         <>
                         {selectedFile && selectedFile.type && selectedFile.type.startsWith('image/') ? (
-                                <img src={URL.createObjectURL(selectedFile)} alt="Selected Image" className={classes.media} />
+                                <div className={classes.cardMediaContainer}>
+                                    <img src={URL.createObjectURL(selectedFile)} alt="Selected Image" className={classes.cardMedia} />
+                                </div>
                             ) : (
                                 selectedFile && selectedFile.type && selectedFile.type.startsWith('video/') ? (
                                     <video controls className={classes.media}>
@@ -288,7 +291,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                         <></>
                     )}
                     {concatenatedText !== '' && (
-                        <div className={classes.body}>{concatenatedText}</div>
+                        <div className={classes.body} style={{marginTop: 10}}>{concatenatedText}</div>
                     )}
                     <div className={classes.footer}>
                         {footer !== '' ? (
@@ -349,7 +352,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
 
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.container} style={{width: '40%'}}>
+            <div className={classes.container} style={{width: '50%'}}>
                 <div className={classes.messageCard}>
                     {concatenatedText !== '' && (
                         <div className={classes.bodyCar}>{concatenatedText}</div>
@@ -359,7 +362,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
             </div>
             <div style={{height: 6}}/>
             {carouselCards.length > 0 && (
-                <div className={classes.container} style={{overflowX: 'auto', display: 'flex', width: 'fit-content', maxWidth: '80%', marginBottom: 0, maxHeight: '80%'}}>
+                <div className={classes.container} style={{overflowX: 'auto', display: 'flex', width: 'fit-content', height: 'fit-content', maxWidth: 640}}>
                     {carouselCards.map((card, index) => {
                         return (
                             <div key={index} className={classes.messageCard2}>
@@ -367,6 +370,42 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
                                     <img src={card.image ? URL.createObjectURL(card.image) : NoImage} alt="Selected Image" className={classes.cardMedia}/>
                                 </div>
                                 <div className={classes.bodyCar}>{card.body}</div>
+                                {card.buttonstext.length > 0 && (
+                                    <>
+                                        {card.buttonstext.map((btn, i) => {
+                                            return (
+                                                <div key={i} className={classes.cardButton2}>
+                                                    <ReplyIcon className={classes.icon}/>
+                                                    <span>{btn.text}</span>
+                                                </div>
+                                            )
+                                        })}
+                                    </>
+                                )}
+                                {card.buttonslink.length > 0 && (
+                                    <>
+                                        {card.buttonslink.map((btn, i) => {
+                                            return (
+                                                <div key={i} className={classes.cardButton2}>
+                                                    <OpenInNewIcon className={classes.icon}/>
+                                                    <span>{btn.text}</span>
+                                                </div>
+                                            )
+                                        })}
+                                    </>
+                                )}
+                                {card.buttonsphone.length > 0 && (
+                                    <>
+                                        {card.buttonsphone.map((btn, i) => {
+                                            return (
+                                                <div key={i} className={classes.cardButton2}>
+                                                    <PhoneIcon className={classes.icon}/>
+                                                    <span>{btn.text}</span>
+                                                </div>
+                                            )
+                                        })}
+                                    </>
+                                )}
                             </div>
                         )
                     })}
@@ -388,7 +427,7 @@ export const MessagePreviewAuthentication: React.FC<MessagePreviewAuthentication
     
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.container}>
+            <div className={classes.container} style={{width: 350}}>
                 <div className={classes.messageCard}>
                     <div>Tu código de verificación es 123456.{safetyAdvice ? ' Por tu seguridad, no lo compartas' : ''}</div>
                     {dateAdvice && (

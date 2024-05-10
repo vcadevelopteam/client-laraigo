@@ -1201,6 +1201,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('category', categoryText)
 
         setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
+        setBodyObjectCar(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
         setValue('footer', '')
         trigger('footer')
         setBodyVariables([])
@@ -1942,7 +1943,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 500, width: '100%', border: '1px solid black'}}>
+                                    <div style={{height: 'fit-content', width: '100%', border: '1px solid black'}}>
                                         <MessagePreviewMultimedia
                                             headerType={getValues('headertype')}
                                             header={getValues('header')}
@@ -2236,6 +2237,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                     variant="outlined"
                                                                                     size="small"
                                                                                     maxLength={25}
+                                                                                    valueDefault={btn?.text}
+                                                                                    onChange={(value) => {
+                                                                                        setValue(`carouselcards.${i}.buttonstext.${btni}.text`, value)
+                                                                                        trigger('carouselcards')
+                                                                                    }}
                                                                                 />
                                                                             </div>
                                                                             <IconButton style={{padding: 0}} onClick={() => onClickRemoveTButtonCard(i, btni)}>
@@ -2258,6 +2264,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                     variant="outlined"
                                                                                     size="small"
                                                                                     maxLength={25}
+                                                                                    valueDefault={btn?.text}
+                                                                                    onChange={(value) => {
+                                                                                        setValue(`carouselcards.${i}.buttonslink.${btni}.text`, value)
+                                                                                        trigger('carouselcards')
+                                                                                    }}
                                                                                 />
                                                                             </div>
                                                                             <IconButton style={{padding: 0}} onClick={() => onClickRemoveLButtonCard(i, btni)}>
@@ -2313,6 +2324,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                     variant="outlined"
                                                                                     size="small"
                                                                                     maxLength={25}
+                                                                                    valueDefault={btn?.text}
+                                                                                    onChange={(value) => {
+                                                                                        setValue(`carouselcards.${i}.buttonsphone.${btni}.text`, value)
+                                                                                        trigger('carouselcards')
+                                                                                    }}
                                                                                 />
                                                                             </div>
                                                                             <IconButton style={{padding: 0}} onClick={() => onClickRemovePButtonCard(i, btni)}>
@@ -2397,7 +2413,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 500, width: '100%', border: '1px solid black'}}>
+                                    <div style={{height: 'fit-content', width: '100%', border: '1px solid black'}}>
                                         <MessagePreviewCarousel
                                             bodyObject={bodyObjectCar}
                                             carouselCards={getValues('carouselcards')}
