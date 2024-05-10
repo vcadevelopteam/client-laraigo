@@ -1241,7 +1241,9 @@ const DetailUsers: React.FC<DetailProps> = ({
                 dispatch(
                     saveUser(
                         {
-                            header: insUser({ ...data, language: t(langKeys.currentlanguage) }),
+                            header: insUser({ ...data, language: t(langKeys.currentlanguage),
+                                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                            }),
                             detail: [
                                 ...dataOrganizations.filter((x) => x && x?.operation).map((x) => x && insOrgUser(x)),
                                 ...orgsToDelete.map((x) => insOrgUser(x)),
