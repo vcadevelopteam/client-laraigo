@@ -235,10 +235,10 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
     parameters: { type, classificationid }
 });
 
-export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS" }: Dictionary): IRequestBody => ({
+export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS", variablecontext={}  }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key,
-    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
+    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language, variablecontext }
 });
 
 export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect, storeid, warehouseid, showbots }: Dictionary): IRequestBody => ({
