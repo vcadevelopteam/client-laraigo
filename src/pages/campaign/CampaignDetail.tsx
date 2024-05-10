@@ -95,6 +95,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const [messageVariables, setMessageVariables] = useState<any[]>([]);
 
+    const [dataButtons, setDataButtons] = useState<any[]>([])
+
     const arrayBread = [
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }

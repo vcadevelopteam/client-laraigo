@@ -65,6 +65,7 @@ export interface ICrmLead {
     ticketnum?: string;
     estimatedimplementationdate?: string;
     estimatedbillingdate?: string;
+    variablecontext?:any;
 }
 export interface IServiceDeskLead2 {
     leadid: number;
