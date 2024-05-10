@@ -471,6 +471,35 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     }
+    if (interactiontype === "contacts") {
+        let contacttext = "";
+        const contactdata = JSON.parse(interactiontext);
+        if (contactdata) {
+            contacttext = `${contacttext}${(contactdata?.name?.formatted_name || contactdata?.name?.first_name) || t(langKeys.contact)}`;
+            if (contactdata.phones) {
+                for (const phonedata of contactdata.phones) {
+                    if (phonedata) {
+                        if (phonedata.phone) {
+                            contacttext = `${contacttext}\n• ${phonedata.type ? phonedata.type : t(langKeys.phone)}: ${phonedata.phone}`;
+                        }
+                    }
+                }
+            }
+        }
+        return (
+            <div
+                title={convertLocalDate(createdate).toLocaleString()}
+                className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client'
+                })}
+                style={{ marginLeft: reply ? 24 : 0 }}
+            >
+                <span dangerouslySetInnerHTML={{ __html: validateIsUrl(contacttext) }}></span>
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        );
+    }
     else if (interactiontype === "html")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
@@ -787,26 +816,38 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             />
         )
     } else if (interactiontype === "location") {
-
         return (
-            <div
-                title={convertLocalDate(createdate).toLocaleString()}
-                className={clsx(classes.interactionText, {
-                    [classes.interactionTextAgent]: userType !== 'client',
-                })}
-            >
-                <div style={{ width: "300px" }} className="interaction-gmap">
-                    <MapLeaflet
-                        coordinatedString={interactiontext}
-                        height={300}
-                    />
+            <>
+                <div
+                    title={convertLocalDate(createdate).toLocaleString()}
+                    className={clsx(classes.interactionText, {
+                        [classes.interactionTextAgent]: userType !== 'client',
+                    })}
+                    style={{ marginBottom: '6px' }}
+                >
+                    <span dangerouslySetInnerHTML={{ __html: validateIsUrl(interactiontext) }}></span>
+                    <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                    <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
                 </div>
-                <div style={{ display: "none" }} className="interaction-gmap-text">
-                    {interactiontext}
+                <div
+                    title={convertLocalDate(createdate).toLocaleString()}
+                    className={clsx(classes.interactionText, {
+                        [classes.interactionTextAgent]: userType !== 'client',
+                    })}
+                >
+                    <div style={{ width: "300px" }} className="interaction-gmap">
+                        <MapLeaflet
+                            coordinatedString={interactiontext}
+                            height={300}
+                        />
+                    </div>
+                    <div style={{ display: "none" }} className="interaction-gmap-text">
+                        {interactiontext}
+                    </div>
+                    <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                    <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
                 </div>
-                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
-            </div>
+            </>
         )
     }
     return (
