@@ -439,7 +439,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
     const personTypeDomain = useSelector(state => state.lead.personTypeDomain);
-    const domains = useSelector(state => state.person.editableDomains);
     
     const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
@@ -462,18 +461,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, []);
     
     useEffect(() => {
-        if (domains) {
-            if (domains.value?.customVariablesLead && lead) {
-                setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
-            }
+        if (domains.value?.customVariablesLead && lead) {
+            setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
         }
     }, [lead,domains]);
 
     useEffect(() => {
-        if (domains) {
-            if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
-                dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
-            }
+        if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
         }
     }, [domains]);
 

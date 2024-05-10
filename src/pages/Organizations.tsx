@@ -123,6 +123,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const transferBalanceResult = useSelector(state => state.voximplant.requestTransferAccountBalance);
     const [doctype, setdoctype] = useState(row?.doctype || "");
     const [idUpload, setIdUpload] = useState('');
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
         iconbot: row?.iconbot || "",
@@ -204,6 +207,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
 
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
+        setSkipAutoReset(true);
+        const auxTableData = tableDataVariables
+        auxTableData[rowIndex][columnId] = value
+        setTableDataVariables(auxTableData)
+        setUpdatingDataTable(!updatingDataTable);
+    }
+
     React.useEffect(() => {
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -255,6 +266,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [row])
+
+    useEffect(() => {
+        if (multiData[12]) {
+            const variableDataList = multiData[12].data ||[]
+            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+        }
+    }, [multiData]);
 
     useEffect(() => {
         if (waitSave) {
@@ -383,7 +401,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insOrg({ ...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient })));
+            dispatch(execute(insOrg({ ...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient,
+                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+            })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -1381,6 +1401,7 @@ const Organizations: FC = () => {
             getPropertySelByNameOrg("VOXIMPLANTADDITIONALPERCHANNEL", 0, "_CHANNEL"),
             appsettingInvoiceSelCombo(),
             getCityBillingList(),
+            getCustomVariableSelByTableName("org")
         ]));
         return () => {
             dispatch(resetAllMain());
