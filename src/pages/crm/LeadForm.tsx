@@ -439,7 +439,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
     const personTypeDomain = useSelector(state => state.lead.personTypeDomain);
-
+    const domains = useSelector(state => state.person.editableDomains);
+    
     const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
@@ -447,7 +448,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [openModal, setOpenModal] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-    
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
+    const domains = useSelector(state => state.person.editableDomains);
+        
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
         phone: lead.value?.phone || '',
@@ -459,14 +462,18 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, []);
     
     useEffect(() => {
-        if (domains.value?.customVariablesLead && lead) {
-            setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
+        if (domains) {
+            if (domains.value?.customVariablesLead && lead) {
+                setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
+            }
         }
     }, [lead,domains]);
 
     useEffect(() => {
-        if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
-            dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        if (domains) {
+            if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
+                dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+            }
         }
     }, [domains]);
 
@@ -550,7 +557,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 }
                 if (edit) {
                     dispatch(saveLeadAction([
-                        insLead2(data, data.operation),
+                        insLead2({...data,
+                            variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                        }, data.operation),
                         ...leadProductsChanges.current.map(leadHistoryIns),
                         ...leadTagsChanges.current.map(leadHistoryIns),
                     ], false));
@@ -570,7 +579,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         }
 
                         return {
-                            header: insLead2(data, data.operation),
+                            header: insLead2({...data,
+                                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                            }, data.operation),
                             detail: [
                                 ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
                                 ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
@@ -1559,6 +1570,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         onClick={onClickSelectPersonModal}
                     />
                 )}
+                <AntTabPanel index={3} currentIndex={tabIndex}>
+                    <TabCustomVariables
+                        tableData={tableDataVariables} 
+                        setTableData={setTableDataVariables}
+                    />
+                </AntTabPanel>
                 <DialogSendTemplate
                     openModal={openDialogTemplate}
                     setOpenModal={setOpenDialogTemplate}

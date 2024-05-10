@@ -2063,6 +2063,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     const [payloadTemp, setpayloadTemp] = useState<any>(null)
     const [valuestosend, setvaluestosend] = useState<any>(null)
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
         phone: person?.phone || '',
@@ -2070,6 +2071,13 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     })
 
     const user = useSelector(state => state.login.validateToken.user);
+
+    useEffect(() => {
+        if (domains.value?.customVariables && person) {
+            console.log(person)
+            setTableDataVariables(domains.value.customVariables.map(x=>({...x,value: person?.variablecontext?.[x?.variablename]||""})))
+        }
+    }, [person, domains]);
 
     const { setValue, getValues, trigger, register, control, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -2213,7 +2221,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     const editperson = () => {
         dispatch(showBackdrop(true));
         dispatch(editPerson(payloadTemp.parameters.personid ? payloadTemp : {
-            header: editPersonBody({ ...person, ...valuestosend }),
+            header: editPersonBody({ ...person, ...valuestosend,
+                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+            }),
             detail: []
         }, !payloadTemp.parameters.personid));
 
@@ -2226,7 +2236,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
         if (allOk) {
             const values = getValues();
             const callback = () => {
-                const payload = editPersonBody(values);
+                const payload = editPersonBody({...values, 
+                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                });
                 setpayloadTemp(payload)
                 setvaluestosend(values)
                 dispatch(execute(personInsValidation({
@@ -2521,6 +2533,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
                     <TabPanel value="4" index={tabIndex}>
                         <AuditTab person={person} />
                     </TabPanel>
+                    <TabPanel value="5" index={tabIndex}>
+                        <CustomVariableTab tableData={tableDataVariables} setTableData={setTableDataVariables}/>
+                    </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
                 <Divider style={{ backgroundColor: '#EBEAED' }} orientation="vertical" flexItem />
@@ -2680,7 +2695,6 @@ const PersonDetail: FC = () => {
             setWaitLoading(true)
             dispatch(execute(getPersonOne({ personid: match.params.id })));
             setrefresh(false)
-            //agregale la candicion para que llame al person sel
         }
     }, [person, refresh]);
 
