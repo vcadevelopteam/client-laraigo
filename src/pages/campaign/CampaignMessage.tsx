@@ -9,6 +9,7 @@ import { filterPipe } from 'common/helpers';
 import { FrameProps } from './CampaignDetail';
 import { CircularProgress, IconButton, Paper, Box } from '@material-ui/core';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
+import FieldEditWithSelectCampaign from './FieldEditWithSelectCampaign';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -73,7 +74,6 @@ class VariableHandler {
 export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, dataButtons, setDataButtons }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-    console.log(row)
     const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
 
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
@@ -92,8 +92,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         );
         setDataButtons(newData)
     }, [detaildata.messagetemplatebuttons])
-
     const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: ({ ...param }) => void, filter = true) => {
+        
         let elem = e.target;
         if (elem) {
             let selectionStart = elem.selectionStart || 0;
@@ -289,31 +289,29 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     value={t(`messagetemplate_${btn?.type || ""}`)}
                                     className={classes.mb1}
                                 />
+                                {(btn?.type === "url") ? 
+                                <div className="row-zyx">
+                                    <FieldEditWithSelectCampaign 
+                                        title={t(langKeys.payload)}
+                                        rows={1}
+                                        message={detaildata?.messagetemplatebuttons?.[i]?.payload}
+                                        onChange={(value) => {
+                                            let auxdetail = detaildata
+                                            auxdetail.messagetemplatebuttons[i].payload = value
+                                            setDetaildata(auxdetail)
+                                        }}
+                                        readOnly={['HSM', 'SMS', 'MAIL'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0}
+                                        tablevariable={tablevariable}
+                                        detaildata={detaildata}
+                                        field={`messagetemplatebuttons[${i}].payload`}
+                                        setDetaildata={setDetaildata}
+                                    />
+                                </div>:
                                 <FieldView
                                     label={t(langKeys.payload)}
                                     value={btn?.payload || ""}
                                     className={classes.mb1}
                                 />
-                                {(!row?.id &&btn?.type === "url") && 
-                                <div className='row-zyx'>
-                                    {btn?.payload.match(/{{(.*?)}}/g)?.map((palabra:string, index:number) => (
-                                        <FieldSelect
-                                            label={palabra.slice(2, -2)}
-                                            data={detaildata?.headers||[]}
-                                            className={"col-12"}
-                                            valueDefault={dataButtons?.[i]?.variables?.[palabra.slice(2, -2)]||""}
-                                            onChange={(value) => {
-                                                let auxbut = dataButtons
-                                                auxbut[i].variables[palabra.slice(2, -2)] = value?.accessor || ""
-                                                setDataButtons(auxbut)
-                                            }}
-                                            optionDesc="Header"
-                                            optionValue="accessor"
-                                            orderbylabel={true}
-                                            key={index}
-                                        />
-                                    ))}
-                                </div>
                             }
                             </div>
 
