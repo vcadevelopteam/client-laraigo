@@ -97,10 +97,10 @@ const useStyles = makeStyles(() => ({
         whiteSpace: 'pre-line',
     },
     footer: {
-        display: 'flex',
-        justifyContent: 'space-between',
         fontSize: 12,
-        color: 'grey'
+        color: 'grey',
+        wordWrap: 'break-word',
+        whiteSpace: 'pre-line'
     },
     cardButton: {
         display: 'flex',
@@ -293,14 +293,10 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                     {concatenatedText !== '' && (
                         <div className={classes.body} style={{marginTop: 10}}>{concatenatedText}</div>
                     )}
-                    <div className={classes.footer}>
-                        {footer !== '' ? (
-                            <span>{footer}</span>
-                        ) : (
-                            <div></div>
-                        )}
-                        <span className={classes.chatTime} style={{color: 'black', marginTop: 10}}>16:59</span>
-                    </div>
+                    {footer !== '' && (
+                        <span className={classes.footer}>{footer}</span>
+                    )}
+                    <span className={classes.chatTime} style={{color: 'black', marginTop: 10}}>16:59</span>
                     <div>
                         {combinedButtons.map((btn, index) => {
                             let icon;
@@ -352,7 +348,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
 
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.container} style={{width: '50%'}}>
+            <div className={classes.container} style={{width: 350}}>
                 <div className={classes.messageCard}>
                     {concatenatedText !== '' && (
                         <div className={classes.bodyCar}>{concatenatedText}</div>

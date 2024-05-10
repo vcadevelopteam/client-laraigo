@@ -859,8 +859,24 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const onChangeTemplateType = async (data: Dictionary) => {
         setValue("templatetype", data?.value || "");
-
         trigger("templatetype");
+
+        setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
+        setBodyObjectCar(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
+        setValue('header', '')
+        setValue('footer', '')
+        setValue('buttons', [])
+        setValue('buttonstext', [])
+        setValue('buttonsphone', [])
+        setValue("headertype", "none");
+        setValue('carouselcards', [])
+        trigger('carouselcards');
+        trigger("headertype");
+        trigger("header");
+        trigger("footer");
+        trigger('buttons');
+        trigger('buttonstext');
+        trigger('buttonsphone');
     };
 
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
@@ -1503,7 +1519,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <span className={classes.title}>{t(langKeys.templateedition)}</span>
                             </div>
                             <div style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%'}}>
                                     <span className={classes.title}>{t(langKeys.heading)}</span>
                                     <span style={{marginBottom: 10}}>Añade un título o elige qué tipo de contenido usarás para este encabezado.</span>
                                     <div style={{display: 'flex', gap: 10}}>
@@ -1653,26 +1669,24 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     )}
                                     <span className={classes.title}>{t(langKeys.body)}</span>
                                     <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
-                                    <div style={{maxWidth: '100%'}}>
-                                        <React.Fragment>
-                                            <RichText
-                                                spellCheck
-                                                emoji={true}
-                                                value={bodyObject}
-                                                onChange={(value) => {
-                                                    setBodyObject(value);
-                                                }}
-                                                positionEditable="top"
-                                                style={{
-                                                    borderColor: "#762AA9",
-                                                    borderRadius: "4px",
-                                                    borderStyle: "solid",
-                                                    borderWidth: "1px",
-                                                    padding: "10px",
-                                                }}
-                                            />
-                                        </React.Fragment>
-                                    </div>
+                                    <React.Fragment>
+                                        <RichText
+                                            spellCheck
+                                            emoji={true}
+                                            value={bodyObject}
+                                            onChange={(value) => {
+                                                setBodyObject(value);
+                                            }}
+                                            positionEditable="top"
+                                            style={{
+                                                borderColor: "#762AA9",
+                                                borderRadius: "4px",
+                                                borderStyle: "solid",
+                                                borderWidth: "1px",
+                                                padding: "10px",
+                                            }}
+                                        />
+                                    </React.Fragment>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
                                         {bodyVariables.length < 20 &&(
                                             <Button
@@ -1759,6 +1773,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         onChange={(value) => onChangeButtonText(i, "text", value)}
                                                                         valueDefault={btn?.text || ""}
                                                                         variant="outlined"
+                                                                        maxLength={25}
                                                                         fregister={{
                                                                             ...register(`buttonstext.${i}.text`, {
                                                                                 validate: (value) =>
@@ -1799,6 +1814,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                             onChange={(value) => onChangeButton(i, "text", value)}
                                                                             valueDefault={btn?.text || ""}
                                                                             variant="outlined"
+                                                                            maxLength={25}
                                                                             fregister={{
                                                                                 ...register(`buttons.${i}.text`, {
                                                                                     validate: (value) =>
@@ -1886,6 +1902,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         onChange={(value) => onChangeButtonPhone(i, "text", value)}
                                                                         valueDefault={btn?.text || ""}
                                                                         variant="outlined"
+                                                                        maxLength={25}
                                                                         fregister={{
                                                                             ...register(`buttonsphone.${i}.text`, {
                                                                                 validate: (value) =>
@@ -2084,29 +2101,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
                             </div>
                             <div style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%'}}>
                                     <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
                                     <span style={{marginBottom: 10}}>{t(langKeys.bubblemessagetext)}</span>
-                                    <div style={{maxWidth: '100%'}}>
-                                        <React.Fragment>
-                                            <RichText
-                                                spellCheck
-                                                emoji={true}
-                                                value={bodyObjectCar}
-                                                onChange={(value) => {
-                                                    setBodyObjectCar(value);
-                                                }}
-                                                positionEditable="top"
-                                                style={{
-                                                    borderColor: "#762AA9",
-                                                    borderRadius: "4px",
-                                                    borderStyle: "solid",
-                                                    borderWidth: "1px",
-                                                    padding: "10px",
-                                                }}
-                                            />
-                                        </React.Fragment>
-                                    </div>
+                                    <React.Fragment>
+                                        <RichText
+                                            spellCheck
+                                            emoji={true}
+                                            value={bodyObjectCar}
+                                            onChange={(value) => {
+                                                setBodyObjectCar(value);
+                                            }}
+                                            positionEditable="top"
+                                            style={{
+                                                borderColor: "#762AA9",
+                                                borderRadius: "4px",
+                                                borderStyle: "solid",
+                                                borderWidth: "1px",
+                                                padding: "10px",
+                                            }}
+                                        />
+                                    </React.Fragment>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
                                         {bubbleVariables.length < 20 &&(
                                             <Button
