@@ -449,7 +449,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const [openModal, setOpenModal] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
-    const domains = useSelector(state => state.person.editableDomains);
         
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
