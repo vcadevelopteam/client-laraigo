@@ -439,7 +439,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
     const personTypeDomain = useSelector(state => state.lead.personTypeDomain);
-
+    const domains = useSelector(state => state.person.editableDomains);
+    
     const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
@@ -448,8 +449,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const [openModal, setOpenModal] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
-    const domains = useSelector(state => state.person.editableDomains);
-    
+        
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
         phone: lead.value?.phone || '',
@@ -461,14 +461,18 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, []);
     
     useEffect(() => {
-        if (domains.value?.customVariablesLead && lead) {
-            setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
+        if (domains) {
+            if (domains.value?.customVariablesLead && lead) {
+                setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
+            }
         }
     }, [lead,domains]);
 
     useEffect(() => {
-        if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
-            dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        if (domains) {
+            if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
+                dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+            }
         }
     }, [domains]);
 
