@@ -15,7 +15,7 @@ import TextField from '@material-ui/core/TextField';
 
 import { AntTab, FieldSelect, SearchField } from 'components';
 import { Avatar, Fab, makeStyles, MenuItem, Typography } from "@material-ui/core";
-import { conversationOutboundValidate, selCommunicationChannelWhatsApp } from 'common/helpers';
+import { conversationOutboundValidate, selCommunicationChannelVoice } from 'common/helpers';
 import { createStyles, Theme } from '@material-ui/core/styles';
 import { Dictionary } from "@types";
 import { execute, resetExecute, getMultiCollectionAux2 } from 'store/main/actions';
@@ -306,7 +306,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (waiting1) {
             dispatch(getMultiCollectionAux2([
-                selCommunicationChannelWhatsApp(),
+                selCommunicationChannelVoice(),
             ]))
         }
     }, [waiting1])
