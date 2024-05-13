@@ -244,12 +244,13 @@ const MakeCall: React.FC = () => {
     const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
     const [filter, setfilter] = useState("");
     const [numberVox, setNumberVox] = useState("");
-    const [numberChannel, setNumberChannel] = useState("");
     const [pageSelected, setPageSelected] = useState(1);
     const [waiting1, setwaiting1] = useState(false);
     const [waiting2, setwaiting2] = useState(false);
 
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
+
+    const [numberChannel, setNumberChannel] = useState(ccidvoxi || null);
 
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
@@ -329,7 +330,7 @@ const MakeCall: React.FC = () => {
 
             setwaiting2(false);
             setNumberVox(transferAction ? "" : personData?.data?.phone || phonenumber || "");
-            setNumberChannel("");
+            setNumberChannel(ccidvoxi || null);
             dispatch(setPhoneNumber(""));
         } else {
             setPageSelected(1);
@@ -351,7 +352,7 @@ const MakeCall: React.FC = () => {
                     <IconButton aria-label="close" className={classes.closeButton} onClick={() => {
                         dispatch(setModalCall(false));
                         setNumberVox("");
-                        setNumberChannel("");
+                        setNumberChannel(ccidvoxi || null);
                     }}>
                         <HighlightOffIcon style={{ width: 30, height: 30 }} />
                     </IconButton>
@@ -421,10 +422,10 @@ const MakeCall: React.FC = () => {
                                     label={t(langKeys.communicationchannel)}
                                     optionDesc="communicationchanneldesc"
                                     optionValue="communicationchannelid"
-                                    style={{ marginRight: "auto", marginLeft: "auto", width: "300px", marginBottom: 2, marginTop: 10 }}
+                                    style={{ marginRight: "auto", marginLeft: "auto", width: "300px", marginBottom: 10, marginTop: 10 }}
                                     variant="outlined"
                                     valueDefault={numberChannel}
-                                    onChange={(e) => setNumberChannel(e.target.value)}
+                                    onChange={(value) => setNumberChannel(value?.communicationchannelid || null)}
                                 />
                             </div>
                             <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
@@ -432,7 +433,7 @@ const MakeCall: React.FC = () => {
                                     label={t(langKeys.phone)}
                                     value={numberVox}
                                     disabled={resExecute.loading || callInLine}
-                                    style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
+                                    style={{ marginRight: "auto", marginLeft: "auto", width: "300px", marginBottom: 25 }}
                                     onInput={(e: any) => {
                                         const val = e.target.value.replace(/[^0-9*#]/g, "");
                                         e.target.value = String(val);
