@@ -290,9 +290,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             },
             {
                 Header: t(langKeys.timeconnected),                      
-                accessor: 'userconnectedduration',
-                Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
-                sortType: 'basic',
+                accessor: 'conectadotime',                    
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
@@ -371,33 +369,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
     }, [mainResult]);   
 
-    function exportExcelPersonalized(filename: string, csvData: Dictionary[], columnsexport?: ColumnTmp[]): void {
-        import('xlsx').then(XLSX => {
-            const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-            const fileExtension = '.xlsx';
-            let datafromtable = csvData;
-            if (columnsexport) {
-                datafromtable = csvData.map((x: Dictionary) => {
-                    const newx: Dictionary = {};
-                    columnsexport.forEach((y: ColumnTmp) => {
-                        if (y.accessor === 'userconnectedduration') {
-                            newx[y.Header] = convertMinutesToHHMMSS(Number(x[y.accessor]));
-                        } else {
-                            newx[y.Header] = y.prefixTranslation !== undefined ? i18n.t(`${y.prefixTranslation}${x[y.accessor]?.toLowerCase()}`).toUpperCase() : (
-                                y.type === "porcentage" ? `${(Number(x[y.accessor]) * 100).toFixed(0)}%` :
-                                    x[y.accessor])
-                        }
-                    });
-                    return newx;
-                });
-            }
-            const ws = XLSX.utils.json_to_sheet(datafromtable);
-            const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            const data = new Blob([excelBuffer], { type: fileType });
-            FileSaver.saveAs(data, filename + fileExtension);
-        });
-    }
+  
 
     const getColumns = (tabIndex: number) => {
         switch (tabIndex) {
@@ -418,9 +390,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                     },
                     {
                         Header: t(langKeys.timeconnected),                      
-                        accessor: 'userconnectedduration',
-                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
-                        sortType: 'basic',
+                        accessor: 'conectadotime',                    
                     },
                 ];
             case 1: // TME
@@ -440,9 +410,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                     },
                     {
                         Header: t(langKeys.timeconnected),                      
-                        accessor: 'userconnectedduration',
-                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
-                        sortType: 'basic',
+                        accessor: 'conectadotime',                    
                     },
                 ];
             case 2: // TMR
@@ -462,9 +430,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                     },                   
                     {
                         Header: t(langKeys.timeconnected),                      
-                        accessor: 'userconnectedduration',
-                        Cell: ({ value }) => convertMinutesToHHMMSS(Number(value)),
-                        sortType: 'basic',
+                        accessor: 'conectadotime',                    
                     },
                 ];
             default:
@@ -1485,7 +1451,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>                             
                                     <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event, 'tickets')} />
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcelPersonalized("closedTicketsReport" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("closedTicketsReport" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                
                                     <div style={{ display: 'flex', gap: 8 }}>
                                         <Popper 
@@ -1612,7 +1578,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                 <Typography style={{  fontSize: '1.3rem' }}>{dataGrid.length}</Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>                            
-                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcelPersonalized("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
+                                    <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                 </div>
                             </div>                           
 
