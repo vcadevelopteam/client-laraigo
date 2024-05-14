@@ -1067,7 +1067,9 @@ export const insIntegrationManager = ({
     apikey,
     operation,
     results,
-    orgid
+    orgid,
+    code_table= {},
+    person_table={}
 }: Dictionary): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_INS",
     parameters: {
@@ -1091,6 +1093,8 @@ export const insIntegrationManager = ({
         operation,
         orgid,
         results: JSON.stringify(results),
+        code_table,
+        person_table
     }
 });
 

@@ -172,7 +172,7 @@ const dataIntegrationType: Dictionary = {
 const dataIntegrationTypeClaro: Dictionary = {
    API_TEMPLATE: "api_template",
    DATA_TABLE: "data_table",
-   CODE_BINDING: "code_binding",
+   CODE_PERSON: "code_binding",
 };
 
 const dataMethodType: Dictionary = {
@@ -440,6 +440,8 @@ type FormFields = {
    body: string;
    url_params: Dictionary[];
    code_params: Dictionary[];
+   code_table: any;
+   person_table: any;
    person_params: Dictionary[];
    code_params_tracking: Dictionary[];
    person_params_tracking: Dictionary[];
@@ -471,6 +473,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const mainAuxRes = useSelector((state) => state.main.mainAux);
    const [waitView, setWaitView] = useState(false);
    const [openViewTableModal, setOpenViewTableModal] = useState(false);
+   const [openVinculationTableModal, setOpenVinculationTableModal] = useState("");
    const [tableData, setTableData] = useState<any[]>([]);
    const [columnData, setColumnData] = useState<any[]>([]);
 
@@ -523,6 +526,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             : [{ name: "corpid", key: true }],
          operation: row ? "EDIT" : "INSERT",
          results: row ? row.results || [] : [],
+         code_table: {},
+
       },
    });
 
@@ -682,6 +687,32 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             v = extractVariablesFromArray(data.parameters, "value", v);
          }
          data.variables = v;
+      }else if (data.type === "CODE_PERSON"){
+         debugger
+         const codecolumnstrack = data.code_params_tracking.map((item) => item.key);
+         const personcolumnstrack = data.person_params_tracking.map((item) => item.key);
+         const codecolumns = ['Codigo']
+         data.code_params.forEach((item) => {
+            codecolumns.push(item.key);
+            if (codeExpiration) {
+               codecolumns.splice(1, 0, 'Fecha de caducidad');
+            }
+          });
+         const personcolumns = ['Persona']
+         data.person_params.forEach((item) => {
+            personcolumns.push(item.key);
+            if (personExpiration) {
+               personcolumns.splice(1, 0, 'Fecha de caducidad');
+            }
+         });
+         data.code_table={
+            "columnas": codecolumns,
+            "columnas_rastreo": codecolumnstrack
+         }
+         data.person_table={
+            "columnas": personcolumns,
+            "columnas_rastreo": personcolumnstrack
+         }
       } else if (data.isnew && data.type === "DATA_TABLE") {
          if (
             data.fields.filter(
@@ -1360,7 +1391,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                      />
                   )}
                </div>
-               {getValues("type") === "CODE_BINDING" &&
+               {getValues("type") === "CODE_PERSON" &&
                   <FieldSelect
                      uset={true}
                      fregister={{
@@ -2469,17 +2500,29 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                ) : null}
             
          </form>
-         {getValues("type") === "CODE_BINDING" && <div className={classes.containerClaro}>
+         {getValues("type") === "CODE_PERSON" && <div className={classes.containerClaro}>
             <div className={classes.containerDetailClaro}>
-               <div>
+               <div style={{display:"flex", justifyContent:"space-between"}}>
                   <FieldView
                      label={t(langKeys.codes_table)}
                      tooltip={t(langKeys.codes_table_helper)}
                      className="col-6"
-                  />
+                  />                  
+                  {edit ? (
+                     <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        disabled={codeParams.length>=10}
+                        className={classes.labelButton2}
+                        onClick={() => {setOpenVinculationTableModal("codes_table")}}
+                     >
+                        {t(langKeys.view_table)}
+                     </Button>
+                  ) : null}
                </div>
                <FieldEdit
-                  valueDefault={"Código"}
+                  valueDefault={"Codigo"}
                   className="col-12"
                   disabled
                />  
@@ -2510,7 +2553,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         disabled={codeParams.length>=10}
                         className={classes.labelButton2}
                         startIcon={<AddIcon color="primary" />}
-                        onClick={() => {codeParamsAppend({ key: "" });}}
+                        onClick={() => {codeParamsAppend({ key: "" });
+                     }}
                      >
                         {t(langKeys.addUrlParam)}
                      </Button>
@@ -2568,7 +2612,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         disabled={codeTrackingParams.length>=10}
                         className={classes.labelButton2}
                         startIcon={<AddIcon color="primary" />}
-                        onClick={() => {codeTrackingParamsAppend({ key: "" });}}
+                        onClick={() => {codeTrackingParamsAppend({ key: codeTrackingParams.length?"":"Persona" });}}
                      >
                         {t(langKeys.addUrlParam)}
                      </Button>
@@ -2621,12 +2665,24 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                })}   
             </div>
             <div className={classes.containerDetailClaro}>
-               <div>
+               <div style={{display:"flex", justifyContent:"space-between"}}>
                   <FieldView
                      label={t(langKeys.people_table)}
                      tooltip={t(langKeys.people_table_helper)}
                      className="col-6"
                   />
+                  {edit ? (
+                     <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        disabled={codeParams.length>=10}
+                        className={classes.labelButton2}
+                        onClick={() => {setOpenVinculationTableModal("people_table")}}
+                     >
+                        {t(langKeys.view_table)}
+                     </Button>
+                  ) : null}
                </div>
                <FieldEdit
                   valueDefault={"Persona"}
@@ -2718,7 +2774,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         disabled={personTrackingParams.length>=10}
                         className={classes.labelButton2}
                         startIcon={<AddIcon color="primary" />}
-                        onClick={() => {personTrackingParamsAppend({ key: "" });}}
+                        onClick={() => {personTrackingParamsAppend({ key: personTrackingParams.length?"":"Codigo" });}}
                      >
                         {t(langKeys.addUrlParam)}
                      </Button>
@@ -2740,7 +2796,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                            ),
                         }}
                         data={[
-                          { key: "Código" },
+                          { key: "Codigo" },
                           ...getValues('code_params'),
                           ...(codeExpiration ? [{ key: "Fecha de caducidad" }] : []) 
                         ]}
@@ -2794,6 +2850,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             <ModalViewTable
                openModal={openViewTableModal}
                setOpenModal={setOpenViewTableModal}
+               columns={columnData}
+               data={tableData}
+               formId={getValues("id")}
+               importDataFunction={handleUpload}
+               deleteDataFunction={onDeleteData} 
+               waitImport={waitImport}
+            />
+         )}
+         {Boolean(openVinculationTableModal) && (
+            <ModalVinculationTable
+               openModal={openVinculationTableModal}
+               setOpenModal={setOpenVinculationTableModal}
                columns={columnData}
                data={tableData}
                formId={getValues("id")}
@@ -3310,6 +3378,106 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
       <DialogZyx
          title=""
          open={openModal}
+         maxWidth="lg"
+         button1Type="button"
+         buttonText1={t(langKeys.close)}
+         handleClickButton1={handleCancelModal}
+      >
+         {
+           
+               <TableZyx
+                  columns={columnsData}
+                  data={tableData}
+                  download={true}
+                  pageSizeDefault={20}
+                  filterGeneral={false}
+                  importData={true}
+                  importDataFunction={importDataFunction}
+                  deleteData={true}
+                  deleteDataFunction={deleteDataFunction}
+               />
+         }
+      </DialogZyx>
+   );
+};
+
+interface VinculationTableModalProps {
+   openModal: string;
+   setOpenModal: (value: string) => any;
+   columns: Dictionary[];
+   data: Dictionary[];
+   formId: number;
+   importDataFunction: (files: any) => Promise<void>
+   deleteDataFunction: ()=> void;
+   waitImport: boolean;
+}
+
+const ModalVinculationTable: React.FC<VinculationTableModalProps> = ({
+   openModal,
+   setOpenModal,
+   columns = [],
+   data = [],
+   formId,
+   importDataFunction,
+   deleteDataFunction,
+   waitImport
+}) => {
+   const { t } = useTranslation();
+   const dispatch = useDispatch();
+   const handleCancelModal = () => {
+      setOpenModal("");
+   };
+   const mainAuxRes = useSelector((state) => state.main.mainAux);
+   const executeRes = useSelector((state) => state.main.execute);
+   
+
+   useEffect(() => {
+      if(data.length < 0){
+         
+      }
+      return () => {
+         dispatch(resetMainAux());
+      };
+   }, []);
+
+   useEffect(() => {
+      if(waitImport){
+         if (!executeRes.loading && !executeRes.error) {
+            dispatch(getCollectionAux(getdataIntegrationManager(formId)));
+         }
+      }
+      // if (data.length > 0) {
+      // }
+      return () => {
+         dispatch(resetMainAux());
+      }
+   }, [waitImport, executeRes]);
+
+   const tableData = useMemo(() => {
+      if (mainAuxRes.data.length === 0 || mainAuxRes.data[0]?.data === null) {
+        return [];
+      }
+      return mainAuxRes.data[0]?.data ?? [];
+    }, [mainAuxRes.data]);
+    
+    const columnsData = useMemo(() => {
+      if (mainAuxRes.data.length === 0 || mainAuxRes.data[0]?.data === null || mainAuxRes.data[0]?.data.length === 0) {
+        return [];
+      }
+      return Object.keys(mainAuxRes.data[0]?.data[0]).map((c) => ({
+        Header: c,
+        accessor: c,
+      }));
+    }, [mainAuxRes.data]);
+    
+
+  
+ 
+
+   return (
+      <DialogZyx
+         title={t(openModal)}
+         open={!!openModal}
          maxWidth="lg"
          button1Type="button"
          buttonText1={t(langKeys.close)}
