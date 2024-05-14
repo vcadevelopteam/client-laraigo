@@ -37,6 +37,7 @@ export interface IState {
     multiData: IListStatePaginated<MultiData>;
     multiDataAux: IListStatePaginated<itemMulti>;
     multiDataAux2: IListStatePaginated<itemMulti>;
+    multiDataAux3: IListStatePaginated<itemMulti>;
     execute: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
     mainAux: IListStatePaginated<Dictionary> & { key?: string };
     mainAux2: IListStatePaginated<Dictionary> & { key?: string };
@@ -58,6 +59,7 @@ export const initialState: IState = {
     multiData: initialListPaginatedState,
     multiDataAux: initialListPaginatedState,
     multiDataAux2: initialListPaginatedState,
+    multiDataAux3: initialListPaginatedState,
     execute: { success: undefined, ...initialListPaginatedState },
     mainAux: initialListPaginatedState,
     mainAux2: initialListPaginatedState,
@@ -92,7 +94,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.EXECUTE_MAIN_SUCCESS]: caseFunctions.executeSuccess,
     [actionTypes.EXECUTE_MAIN_FAILURE]: caseFunctions.executeFailure,
     [actionTypes.EXECUTE_MAIN_RESET]: caseFunctions.executeReset,
-    
+
     [actionTypes.TEST_REQUEST]: caseFunctions.testRequest,
     [actionTypes.TEST_REQUEST_SUCCESS]: caseFunctions.testRequestSuccess,
     [actionTypes.TEST_REQUEST_FAILURE]: caseFunctions.testRequestFailure,
@@ -117,6 +119,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.AUX2_MULTI_MAIN_SUCCESS]: caseFunctions.aux2MultiMainSuccess,
     [actionTypes.AUX2_MULTI_MAIN_FAILURE]: caseFunctions.aux2MultiMainFailure,
     [actionTypes.AUX2_MULTI_MAIN_RESET]: caseFunctions.aux2MultiMainReset,
+
+    [actionTypes.AUX3_MULTI_MAIN]: caseFunctions.aux3MultiMain,
+    [actionTypes.AUX3_MULTI_MAIN_SUCCESS]: caseFunctions.aux3MultiMainSuccess,
+    [actionTypes.AUX3_MULTI_MAIN_FAILURE]: caseFunctions.aux3MultiMainFailure,
+    [actionTypes.AUX3_MULTI_MAIN_RESET]: caseFunctions.aux3MultiMainReset,
 
     [actionTypes.PAGINATED_MAIN]: caseFunctions.mainPaginated,
     [actionTypes.PAGINATED_MAIN_SUCCESS]: caseFunctions.mainPaginatedSuccess,
