@@ -3141,7 +3141,7 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
       >
          {
             <>
-               {row?.datasource && (
+               {row?.datasource && row?.datasource_syncinfo && (
                   <div style={{ display: 'block', fontSize: '12px', position: 'absolute' }}>
                      <div style={{ display: 'flex', gap: '1.5rem'}}>
                         <div>Origen: <span><b>{row?.datasource || t(langKeys.file).toUpperCase()}</b></span></div>
