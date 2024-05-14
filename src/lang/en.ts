@@ -4549,8 +4549,8 @@ const translation: LangKeys = {
   automaticpayment: 'Automatic Payment',
   error_alternativeemail_exists: "The alternative email has already been registered",
   error_campaign_date: "The start and end dates of the campaigns must not be greater than one year from the current date.",
-  error_campaign_btn_variables: "All button variables must have a value",
   
+  error_campaign_btn_variables: "All button variables must have a value",
   error_alternativephone_exists: "The alternative phone has already been registered",
   error_email_exists: "The email has already been registered",
   error_phone_exists: "The phone has already been registered",
