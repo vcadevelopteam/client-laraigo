@@ -1445,7 +1445,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         error={errors?.language?.message}
                                         onChange={(value) => {
                                             if(value) {
-                                                setValue("language", value.value)
+                                                setValue("language", value.domainvalue)
                                                 trigger("language")
                                             } else {
                                                 setValue("language", '')
