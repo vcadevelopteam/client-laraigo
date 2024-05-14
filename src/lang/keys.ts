@@ -478,6 +478,7 @@ export const langKeys = {
   uppercaseletterspwd: "uppercaseletterspwd",
   lowercaseletterspwd: "lowercaseletterspwd",
   error_campaign_date: "error_campaign_date",
+  error_campaign_btn_variables: "error_campaign_btn_variables",
   error_alternativeemail_exists: "error_alternativeemail_exists",
   error_alternativephone_exists: "error_alternativephone_exists",
   error_email_exists: "error_email_exists",

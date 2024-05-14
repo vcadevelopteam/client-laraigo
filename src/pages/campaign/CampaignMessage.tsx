@@ -9,6 +9,7 @@ import { filterPipe } from 'common/helpers';
 import { FrameProps } from './CampaignDetail';
 import { CircularProgress, IconButton, Paper, Box } from '@material-ui/core';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
+import FieldEditWithSelectCampaign from './FieldEditWithSelectCampaign';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -25,6 +26,8 @@ interface DetailProps {
     setSave: (value: any) => void;
     messageVariables: any[];
     setMessageVariables: (value: any[]) => void;
+    dataButtons: any[];
+    setDataButtons: (value: any[]) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -68,14 +71,12 @@ class VariableHandler {
     }
 }
 
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables }) => {
+export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, dataButtons, setDataButtons }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-
     const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
 
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
-
     useEffect(() => {
         if (frameProps.checkPage) {
             setFrameProps({ ...frameProps, executeSave: false, checkPage: false });
@@ -85,8 +86,14 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
     }, [frameProps.checkPage])
-
+    useEffect(() => {
+        const newData = (detaildata?.messagetemplatebuttons||[]).map(item => 
+            item.payload.match(/{{(.*?)}}/) ? { ...item, variables: Object.fromEntries(item.payload.match(/{{(.*?)}}/g).map(variable => [variable.slice(2, -2), ""])) } : item
+        );
+        setDataButtons(newData)
+    }, [detaildata.messagetemplatebuttons])
     const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: ({ ...param }) => void, filter = true) => {
+        
         let elem = e.target;
         if (elem) {
             let selectionStart = elem.selectionStart || 0;
@@ -282,12 +289,33 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     value={t(`messagetemplate_${btn?.type || ""}`)}
                                     className={classes.mb1}
                                 />
+                                {(btn?.type === "url") ? 
+                                <div className="row-zyx">
+                                    <FieldEditWithSelectCampaign 
+                                        title={t(langKeys.payload)}
+                                        rows={1}
+                                        message={detaildata?.messagetemplatebuttons?.[i]?.payload}
+                                        onChange={(value) => {
+                                            let auxdetail = detaildata
+                                            auxdetail.messagetemplatebuttons[i].payload = value
+                                            setDetaildata(auxdetail)
+                                        }}
+                                        readOnly={['HSM', 'SMS', 'MAIL'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0}
+                                        tablevariable={tablevariable}
+                                        detaildata={detaildata}
+                                        field={`messagetemplatebuttons[${i}].payload`}
+                                        setDetaildata={setDetaildata}
+                                    />
+                                </div>:
                                 <FieldView
                                     label={t(langKeys.payload)}
                                     value={btn?.payload || ""}
                                     className={classes.mb1}
                                 />
-                            </div>)
+                            }
+                            </div>
+
+                        )
                         })}
                     </React.Fragment>
                 </div>}
