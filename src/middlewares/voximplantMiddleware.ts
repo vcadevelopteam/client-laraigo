@@ -426,7 +426,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         // const number = cleanNumber(payload.number);
         call?.unmuteMicrophone();
         return
-    } else if (type === typeVoximplant.TRANSFER_CALL ) {
+    } else if (type === typeVoximplant.TRANSFER_CALL) {
         const { url, number, transfernumber, transfername, conversationid } = payload;
         const cleannumber = cleanNumber(number);
         transferdata[`${conversationid}`] = transfernumber;
@@ -440,7 +440,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         })
         fetch(url, { method: 'GET' })
             .catch(x => {
-            console.log(x)
+                console.log(x)
             })
             .then(() => {
                 dispatch(execute(

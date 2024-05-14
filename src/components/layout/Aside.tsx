@@ -92,7 +92,7 @@ const PopperContent: React.FC<{ classes: ClassNameMap, config: ViewsClassificati
     const navigationRoutes = useMemo(() => config.options.map((option: string) => routes.find(route => route?.key === option || route?.path === option)).filter((x: RouteConfig) => x), [config.options]);
 
     const columnCount = useMemo(() => getColumnCount(navigationRoutes.length, screenWidth), [navigationRoutes.length, screenWidth]);
-    
+
     return (
         <div>
             <Typography variant="h6" className={classes.drawerItemActive} style={{ paddingTop: 10, textAlign: 'start', paddingLeft: 23, backgroundColor: '#F9F9FA' }}>
@@ -185,7 +185,7 @@ const Aside = ({ classes, headerHeight }: IProps) => {
     const userConnected = useSelector(state => state.inbox.userConnected);
     const userData = useSelector(state => state.login.validateToken.user);
     const [showViews, setShowViews] = useState<ViewsClassificationConfig[]>([])
-    
+
     useEffect(() => {
         setShowViews(
             viewsClassifications.reduce((acc: ViewsClassificationConfig[], view) => {
@@ -213,7 +213,7 @@ const Aside = ({ classes, headerHeight }: IProps) => {
             }, [])
         )
     }, [])
-    
+
     return (
         <Drawer
             className={clsx(classes.drawer, {
@@ -248,7 +248,7 @@ const Aside = ({ classes, headerHeight }: IProps) => {
                         className={clsx(classes.drawerItemActive)}
                         component="div"
                     >
-                        <Tooltip title={"Teléfono"}>
+                        <Tooltip title={t(langKeys.phone)}>
                             <ListItemIcon
                                 onClick={() => dispatch(setModalCall(true))}
                             >
