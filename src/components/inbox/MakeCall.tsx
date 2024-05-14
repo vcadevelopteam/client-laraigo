@@ -250,6 +250,7 @@ const MakeCall: React.FC = () => {
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
     const [numberChannel, setNumberChannel] = useState(ccidvoxi || null);
+    const [numberSite, setNumberSite] = useState(sitevoxi || null);
 
     React.useEffect(() => {
         dispatch(getMultiCollectionAux3([
@@ -267,7 +268,11 @@ const MakeCall: React.FC = () => {
                 const { v_voximplantrecording } = resExecute.data[0];
 
                 dispatch(setModalCall(false));
-                const identifier = `${corpid}-${orgid}-${numberChannel || ccidvoxi}-0-0-.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+                let identifier = `${corpid}-${orgid}-${ccidvoxi}-0-0-.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+
+                if (numberChannel && numberSite) {
+                    identifier = `${corpid}-${orgid}-${numberChannel}-0-0-.${numberSite}.${userid}.${v_voximplantrecording}`;
+                }
 
                 dispatch(resetExecute());
                 dispatch(makeCall({ number: numberVox, site: identifier }));
@@ -328,6 +333,7 @@ const MakeCall: React.FC = () => {
             setwaiting2(false);
             setNumberVox(transferAction ? "" : personData?.data?.phone || phonenumber || "");
             setNumberChannel(ccidvoxi || null);
+            setNumberSite(sitevoxi || null);
             dispatch(setPhoneNumber(""));
         } else {
             setPageSelected(1);
@@ -350,6 +356,7 @@ const MakeCall: React.FC = () => {
                         dispatch(setModalCall(false));
                         setNumberVox("");
                         setNumberChannel(ccidvoxi || null);
+                        setNumberSite(sitevoxi || null);
                     }}>
                         <HighlightOffIcon style={{ width: 30, height: 30 }} />
                     </IconButton>
@@ -422,7 +429,8 @@ const MakeCall: React.FC = () => {
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "300px", marginBottom: 10, marginTop: 10 }}
                                     variant="outlined"
                                     valueDefault={numberChannel}
-                                    onChange={(value) => setNumberChannel(value?.communicationchannelid || null)}
+                                    onChange={(value) => { setNumberChannel(value?.communicationchannelid || null); setNumberSite(value?.communicationchannelsite || null); }}
+                                    orderbylabel={true}
                                 />
                             </div>
                             <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
