@@ -399,7 +399,38 @@ export const aux2MultiMainReset = (state: IState): IState => ({
     multiDataAux2: initialState.multiDataAux2,
 });
 
+export const aux3MultiMain = (state: IState): IState => ({
+    ...state,
+    multiDataAux3: { ...state.multiDataAux3, loading: true, error: false }
+});
 
+export const aux3MultiMainSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        multiDataAux3: {
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const aux3MultiMainFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    multiDataAux3: {
+        ...state.multiDataAux3,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const aux3MultiMainReset = (state: IState): IState => ({
+    ...state,
+    multiDataAux3: initialState.multiDataAux3,
+});
 
 export const execute = (state: IState): IState => ({
     ...state,
@@ -462,16 +493,17 @@ export const testRequestSuccess = (state: IState, action: IAction): IState => {
 
 export const testRequestFailure = (state: IState, action: IAction): IState => {
     return {
-    ...state,
-    testRequest: {
-        ...state.execute,
-        data: action.payload || [],
-        loading: false,
-        error: (action.payload.data !== undefined) ? false : true,
-        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
-        message: action.payload.message || 'error_unexpected_error',
+        ...state,
+        testRequest: {
+            ...state.execute,
+            data: action.payload || [],
+            loading: false,
+            error: (action.payload.data !== undefined) ? false : true,
+            code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+            message: action.payload.message || 'error_unexpected_error',
+        }
     }
-}};
+};
 
 export const testRequestReset = (state: IState): IState => ({
     ...state,

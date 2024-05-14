@@ -18,7 +18,7 @@ import { Avatar, Fab, makeStyles, MenuItem, Typography } from "@material-ui/core
 import { conversationOutboundValidate, selCommunicationChannelVoice } from 'common/helpers';
 import { createStyles, Theme } from '@material-ui/core/styles';
 import { Dictionary } from "@types";
-import { execute, resetExecute, getMultiCollectionAux2 } from 'store/main/actions';
+import { execute, resetExecute, getMultiCollectionAux3, resetMultiMainAux3 } from 'store/main/actions';
 import { IconButton, Tabs } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { ListItemSkeleton } from 'components';
@@ -231,7 +231,7 @@ const MakeCall: React.FC = () => {
     const calls = useSelector(state => state.voximplant.calls);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const history = useHistory();
-    const multiData = useSelector(state => state.main.multiDataAux2);
+    const multiData = useSelector(state => state.main.multiDataAux3);
     const personData = useSelector(state => state.inbox.person);
     const phonenumber = useSelector(state => state.voximplant.phoneNumber);
     const resExecute = useSelector(state => state.main.execute);
@@ -245,12 +245,21 @@ const MakeCall: React.FC = () => {
     const [filter, setfilter] = useState("");
     const [numberVox, setNumberVox] = useState("");
     const [pageSelected, setPageSelected] = useState(1);
-    const [waiting1, setwaiting1] = useState(false);
     const [waiting2, setwaiting2] = useState(false);
 
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
     const [numberChannel, setNumberChannel] = useState(ccidvoxi || null);
+
+    React.useEffect(() => {
+        dispatch(getMultiCollectionAux3([
+            selCommunicationChannelVoice(),
+        ]))
+
+        return () => {
+            dispatch(resetMultiMainAux3());
+        }
+    }, [])
 
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
@@ -273,14 +282,12 @@ const MakeCall: React.FC = () => {
     }, [resExecute])
 
     React.useEffect(() => {
-        if (waiting1) {
-            if (multiData.data.length > 0) {
-                if (multiData.data[0] && multiData.data[0].success) {
-                    setCommunicationChannelList(multiData.data[0].data || []);
-                }
+        if (multiData.data.length > 0) {
+            if (multiData.data[0] && multiData.data[0].success) {
+                setCommunicationChannelList(multiData.data[0].data || []);
             }
         }
-    }, [waiting1, multiData.data]);
+    }, [multiData.data]);
 
     //Ring when the customer calls
     React.useEffect(() => {
@@ -305,14 +312,6 @@ const MakeCall: React.FC = () => {
     }, [calls])
 
     React.useEffect(() => {
-        if (waiting1) {
-            dispatch(getMultiCollectionAux2([
-                selCommunicationChannelVoice(),
-            ]))
-        }
-    }, [waiting1])
-
-    React.useEffect(() => {
         if (showcall && pageSelected === 2) {
             dispatch(getHistory());
         }
@@ -326,8 +325,6 @@ const MakeCall: React.FC = () => {
 
     React.useEffect(() => {
         if (showcall) {
-            setwaiting1(true);
-
             setwaiting2(false);
             setNumberVox(transferAction ? "" : personData?.data?.phone || phonenumber || "");
             setNumberChannel(ccidvoxi || null);
