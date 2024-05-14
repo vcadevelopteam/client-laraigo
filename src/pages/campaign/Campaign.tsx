@@ -123,7 +123,7 @@ export const Campaign: FC = () => {
     const [waitStart, setWaitStart] = useState(false);
     const [waitStatus, setWaitStatus] = useState(false);
     const [waitStop, setWaitStop] = useState(false);
-
+    const selectionKey = "id";    
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
 
@@ -132,8 +132,8 @@ export const Campaign: FC = () => {
             setRowWithDataSelected((p) =>
                 Object.keys(selectedRows).map(
                     (x) =>
-                        mainResult.mainData?.data.find((y) => y.assistantaiid === parseInt(x)) ??
-                        p.find((y) => y.assistantaiid === parseInt(x)) ??
+                        mainResult.mainData?.data.find((y) => y.id === parseInt(x)) ??
+                        p.find((y) => y.id === parseInt(x)) ??
                         {}
                 )
             );
@@ -142,27 +142,14 @@ export const Campaign: FC = () => {
 
     const handleDeleteSelection = async (dataSelected: Dictionary[]) => {
         const callback = async () => {
-            dispatch(showBackdrop(true));  
-            const codes = dataSelected.map(obj=> obj.code)
-            // dispatch(deleteMassiveAssistant({
-            //     ids: codes,
-            //     apikey: dataSelected[0].apikey,            
-            // }))    
-
-            dataSelected.map(async (row) => {          
-                // dispatch(
-                //     execute(insAssistantAi({
-                //         ...row,
-                //         id: row.assistantaiid,
-                //         operation: "DELETE",
-                //         status: "ELIMINADO",
-                //         type: "NINGUNO" 
-                //     }))
-                // );
+            dispatch(showBackdrop(true));       
+            dataSelected.map(async (row) => {     
+                console.log(row)         
+                dispatch(execute(delCampaign({ ...row, operation: 'DELETE', status: 'ELIMINADO', type: "NINGUNO", id: row.id })));
             });
             setWaitSave(true);
         }
-
+        
         dispatch(
             manageConfirmation({
               visible: true,
@@ -171,14 +158,7 @@ export const Campaign: FC = () => {
             })
         );
     };
-
-    const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
     
-    const handleCloseConfirmationDialog = () => {
-        setOpenConfirmationDialog(false);
-    };    
-    
-
     const columns = React.useMemo(
         () => [
             {
@@ -617,7 +597,7 @@ export const Campaign: FC = () => {
                     disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0 }
                     startIcon={<DeleteIcon color="secondary" />}
                     onClick={() => {
-                    handleDeleteSelection(rowWithDataSelected);
+                        handleDeleteSelection(rowWithDataSelected);
                     }}
                     style={{ 
                         backgroundColor: mainResult.mainData.loading || Object.keys(selectedRows).length === 0 ? undefined : "#FB5F5F" 
@@ -702,6 +682,7 @@ export const Campaign: FC = () => {
                 data={mainResult.mainData.data}              
                 useSelection={true}
                 setSelectedRows={setSelectedRows}
+                selectionKey={selectionKey}
                 onClickRow={handleEdit}
                 loading={mainResult.mainData.loading}                
                 ButtonsElement={AdditionalButtons}     

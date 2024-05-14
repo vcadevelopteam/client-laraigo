@@ -6033,6 +6033,21 @@ export const langKeys = {
   allmustbesameorder: 'allmustbesameorder',
   needtopay: 'needtopay',
   numbers: 'numbers',
+
+  campaign_title_desc: 'campaign_title_desc',
+  campaign_description_desc: 'campaign_description_desc',
+  campaign_startdate_desc: 'campaign_startdate_desc',
+  campaign_enddate_desc: 'campaign_enddate_desc',
+  campaign_origin_desc: 'campaign_origin_desc',
+  campaign_executiontype_desc: 'campaign_executiontype_desc',
+  campaign_group_desc: 'campaign_group_desc',
+  campaign_channel_desc: 'campaign_channel_desc',
+  campaign_comunicationtemplate_desc: 'campaign_comunicationtemplate_desc',
+  campaign_status_desc: 'campaign_status_desc',
+  campaign_messagetype_desc: 'campaign_messagetype_desc',
+
+  campaign_templatepreview: 'campaign_templatepreview'
+
 };
 
 export type LangKeys = typeof langKeys;

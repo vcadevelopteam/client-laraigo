@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'; 
 import IconButton from '@material-ui/core/IconButton';
-import { FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray } from 'components';
+import { FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray, ManageOrganization } from 'components';
 import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
 import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Event as EventIcon } from '@material-ui/icons';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
@@ -44,6 +44,15 @@ const useStyles = makeStyles((theme) => ({
     },
     flexgrow1: {
         flexGrow: 1
+    },
+    subtitle: {
+        fontSize: '0.9rem',       
+        color: 'grey', 
+        marginBottom:'0.5rem',
+    },
+    title: {
+       fontSize: '1rem', 
+       color: 'black' 
     }
 }));
 
@@ -390,13 +399,17 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                 <div className="row-zyx">
                     {edit ?
-                        <FieldEdit
-                            label={t(langKeys.title)}
-                            className="col-12"
-                            valueDefault={getValues('title')}
-                            onChange={(value) => setValue('title', value)}
-                            error={errors?.title?.message}
-                        />
+                        <FormControl className="col-12">                          
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.title)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_title_desc)} </div>                        
+                            <FieldEdit                      
+                                variant="outlined"
+                                className="col-12"
+                                valueDefault={getValues('title')}
+                                onChange={(value) => setValue('title', value)}
+                                error={errors?.title?.message}
+                            />                   
+                        </FormControl>                                          
                         :
                         <FieldView
                             label={t(langKeys.title)}
@@ -405,13 +418,18 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                     {edit ?
-                        <FieldEdit
-                            label={t(langKeys.description)}
+                      
+                    <FormControl className="col-12" >                     
+                        <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.description)} </div>
+                        <div className={classes.subtitle}> {t(langKeys.campaign_description_desc)} </div>                    
+                        <FieldEdit   
+                            variant="outlined"                 
                             className="col-12"
                             valueDefault={getValues('description')}
                             onChange={(value) => setValue('description', value)}
                             error={errors?.description?.message}
-                        />
+                        />               
+                    </FormControl>  
                         :
                         <FieldView
                             label={t(langKeys.description)}
@@ -422,15 +440,19 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 </div>
 
                 <div className="row-zyx">
-                    {edit ?
-                        <FieldEdit
-                            type="date"
-                            label={t(langKeys.startdate)}
-                            className="col-6"
-                            valueDefault={getValues('startdate')}
-                            onChange={(value) => setValue('startdate', value)}
-                            error={errors?.startdate?.message}
-                        />
+                    {edit ?                            
+                        <FormControl className="col-6">                          
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.startdate)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_startdate_desc)} </div>
+                            <FieldEdit   
+                                variant="outlined"                 
+                                type="date"                               
+                                className="col-6"
+                                valueDefault={getValues('startdate')}
+                                onChange={(value) => setValue('startdate', value)}
+                                error={errors?.startdate?.message}
+                            />      
+                        </FormControl>                         
                         :
                         <FieldView
                             label={t(langKeys.startdate)}
@@ -439,14 +461,18 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                     {edit ?
-                        <FieldEdit
-                            type="date"
-                            label={t(langKeys.enddate)}
-                            className="col-6"
-                            valueDefault={getValues('enddate')}
-                            onChange={(value) => setValue('enddate', value)}
-                            error={errors?.enddate?.message}
-                        />
+                        <FormControl className="col-6">                          
+                            <div className={classes.title}> {t(langKeys.report_tipification_enddate)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_enddate_desc)} </div>
+                            <FieldEdit   
+                                variant="outlined"                 
+                                type="date"                            
+                                className="col-6"
+                                valueDefault={getValues('enddate')}
+                                onChange={(value) => setValue('enddate', value)}
+                                error={errors?.enddate?.message}
+                            />         
+                        </FormControl>                          
                         :
                         <FieldView
                             label={t(langKeys.enddate)}
@@ -455,10 +481,35 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                     {edit ?
-                        <div className="col-6" style={{ display: 'flex' }}>
+                        <FormControl className="col-12" >                      
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.source)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_origin_desc)} </div>                          
                             <FieldSelect
+                                variant="outlined"       
+                                uset={true}                            
+                                className="col-12"
+                                valueDefault={getValues('source')}
+                                onChange={onChangeSource}
+                                error={errors?.source?.message}
+                                data={filterDataSource()}
+                                optionDesc="value"
+                                optionValue="key"
+                            />
+                        </FormControl>                       
+                        :
+                        <FieldView
+                            label={t(langKeys.source)}
+                            value={t(dataSource[row?.source]) || ""}
+                            className="col-12"
+                        />
+                    }
+                    {edit ?
+                       <FormControl className="col-6" >                       
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.executiontype)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_executiontype_desc)} </div>
+                            <FieldSelect
+                                variant="outlined"       
                                 uset={true}
-                                label={t(langKeys.executiontype)}
                                 className={classes.flexgrow1}
                                 valueDefault={getValues('executiontype')}
                                 onChange={onChangeExecutionType}
@@ -466,7 +517,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 data={dictToArrayKV(dataExecutionType)}
                                 optionDesc="value"
                                 optionValue="key"
-                            />
+                            />                       
                             {getValues('executiontype') === 'SCHEDULED' ?
                                 <IconButton
                                     style={{ flexGrow: 0 }}
@@ -477,10 +528,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     onClick={(e) => setOpenModal(true)}
                                 >
                                     <EventIcon style={{ color: '#777777' }} />
-                                </IconButton>
+                                </IconButton>                                
                                 :
-                                null}
-                        </div>
+                                null}                                 
+                        </FormControl>
                         :
                         <FieldView
                             label={t(langKeys.executiontype)}
@@ -488,17 +539,21 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             className="col-6"
                         />
                     }
-                     {edit ?
-                        <FieldSelect
-                            label={t(langKeys.group)}
-                            className="col-6"
-                            valueDefault={getValues('usergroup')}
-                            onChange={onChangeGroup}
-                            error={errors?.usergroup?.message}
-                            data={dataGroup}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
+                    {edit ?
+                        <FormControl className="col-6" >                      
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.group)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_group_desc)} </div>                           
+                            <FieldSelect
+                                variant="outlined"       
+                                className="col-6"
+                                valueDefault={getValues('usergroup')}
+                                onChange={onChangeGroup}
+                                error={errors?.usergroup?.message}
+                                data={dataGroup}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                        </FormControl>                       
                         :
                         <FieldView
                             label={t(langKeys.group)}
@@ -509,106 +564,53 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 </div>
                 <div className="row-zyx">
                     {edit ?
-                        <FieldSelect
-                            label={t(langKeys.channel)}
-                            className="col-12"
-                            valueDefault={getValues('communicationchannelid') as any}
-                            disabled={!getValues('isnew')}
-                            onChange={onChangeChannel}
-                            error={errors?.communicationchannelid?.message}
-                            data={dataChannel}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                        />
+                        <FormControl className="col-12" >                      
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.channel)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_channel_desc)} </div>
+                            <FieldSelect
+                                variant="outlined"      
+                                className="col-12"
+                                valueDefault={getValues('communicationchannelid') as any}
+                                disabled={!getValues('isnew')}
+                                onChange={onChangeChannel}
+                                error={errors?.communicationchannelid?.message}
+                                data={dataChannel}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
+                            />
+                        </FormControl>                       
                         :
                         <FieldView
                             label={t(langKeys.type)}
                             value={dataChannel.filter(d => d.communicationchannelid === row?.communicationchannelid)[0].communicationchanneldesc || ""}
                             className="col-12"
                         />
-                    }
-                      {edit ?
-                        <FieldSelect
-                            uset={true}
-                            label={t(langKeys.source)}
-                            className="col-12"
-                            valueDefault={getValues('source')}
-                            onChange={onChangeSource}
-                            error={errors?.source?.message}
-                            data={filterDataSource()}
-                            optionDesc="value"
-                            optionValue="key"
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.source)}
-                            value={t(dataSource[row?.source]) || ""}
-                            className="col-12"
-                        />
-                    }
-                   
-                </div>
-                <div className="row-zyx">
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.status)}
-                            className="col-6"
-                            valueDefault={getValues('status')}
-                            onChange={onChangeStatus}
-                            error={errors?.status?.message}
-                            data={dataStatus}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.status)}
-                            value={dataGroup.filter(d => d.domainvalue === row?.status)[0].domaindesc || ""}
-                            className="col-6"
-                        />
-                    }
-                   
-                    {edit ?
-                        <FieldSelect
-                            uset={true}
-                            label={t(langKeys.messagetype)}
-                            className="col-6"
-                            valueDefault={getValues('type')}
-                            disabled={!getValues('isnew')}
-                            onChange={onChangeType}
-                            error={errors?.type?.message}
-                            data={filterDataCampaignType()}
-                            optionDesc="value"
-                            optionValue="key"
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.messagetype)}
-                            value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
-                            className="col-6"
-                        />
-                    }
-                   
-                </div>
+                    }                 
+                </div>               
                 {['HSM'].includes(getValues('type')) ?
                     <div className="row-zyx">
                         {edit ?
-                            <FieldSelect
-                                fregister={{
-                                    ...register(`messagetemplateid`, {
-                                        validate: (value: any) => (value) || t(langKeys.field_required)
-                                    })
-                                }}
-                                label={t(langKeys.messagetemplate)}
-                                className="col-6"
-                                valueDefault={getValues('messagetemplateid') as any}
-                                disabled={!getValues('isnew')}
-                                onChange={onChangeMessageTemplateId}
-                                error={errors?.messagetemplateid?.message}
-                                data={filterMessageTemplate()}
-                                optionDesc="name"
-                                optionValue="id"
-                            />
+                            <FormControl className="col-6" >                       
+                              
+                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.messagetemplate)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_comunicationtemplate_desc)} </div>
+                                
+                                <FieldSelect
+                                    fregister={{
+                                        ...register(`messagetemplateid`, {
+                                            validate: (value: any) => (value) || t(langKeys.field_required)
+                                        })
+                                    }}
+                                    variant="outlined"                                       
+                                    valueDefault={getValues('messagetemplateid') as any}
+                                    disabled={!getValues('isnew')}
+                                    onChange={onChangeMessageTemplateId}
+                                    error={errors?.messagetemplateid?.message}
+                                    data={filterMessageTemplate()}
+                                    optionDesc="name"
+                                    optionValue="id"
+                                />
+                            </FormControl>                              
                             :
                             <FieldView
                                 label={t(langKeys.messagetemplate)}
@@ -617,19 +619,26 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             />
                         }
                         {edit ?
-                            <FieldEdit
-                                fregister={{
-                                    ...register(`messagetemplatenamespace`, {
-                                        validate: (value: any) => (getValues('type') !== 'HSM' ? true : value && value.length) || t(langKeys.field_required)
-                                    })
-                                }}
-                                label={t(langKeys.namespace)}
-                                className="col-6"
-                                valueDefault={getValues('messagetemplatenamespace')}
-                                onChange={(value) => setValue('messagetemplatenamespace', value)}
-                                disabled={!getValues('isnew') || getValues('messagetemplateid') !== 0}
-                                error={errors?.messagetemplatenamespace?.message}
-                            />
+                            <FormControl className="col-6" >                       
+                               
+                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.namespace)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_comunicationtemplate_desc)} </div>
+                               
+                                <FieldEdit
+                                    fregister={{
+                                        ...register(`messagetemplatenamespace`, {
+                                            validate: (value: any) => (getValues('type') !== 'HSM' ? true : value && value.length) || t(langKeys.field_required)
+                                        })
+                                    }}
+                                    variant="outlined"      
+                                    className="col-6"
+                                    valueDefault={getValues('messagetemplatenamespace')}
+                                    onChange={(value) => setValue('messagetemplatenamespace', value)}
+                                    disabled={!getValues('isnew') || getValues('messagetemplateid') !== 0}
+                                    error={errors?.messagetemplatenamespace?.message}
+                                />
+                            </FormControl>  
+                           
                             :
                             <FieldView
                                 label={t(langKeys.namespace)}
@@ -667,14 +676,70 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         }
                     </div>
                     : null}
-                </div>
 
-                <div className={classes.containerDetail} style={{width:'50%'}}>
-                    Previsualización de la plantilla     
+                <div className="row-zyx">
+                    {edit ?
+                        <FormControl className="col-6" >                      
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.status)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_status_desc)} </div>                          
+                            <FieldSelect
+                                variant="outlined"    
+                                valueDefault={getValues('status')}
+                                onChange={onChangeStatus}
+                                error={errors?.status?.message}
+                                data={dataStatus}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                        </FormControl>  
+                       
+                        :
+                        <FieldView
+                            label={t(langKeys.status)}
+                            value={dataGroup.filter(d => d.domainvalue === row?.status)[0].domaindesc || ""}
+                            className="col-6"
+                        />
+                    }
+                   
+                    {edit ?
+                        <FormControl className="col-6" >                       
+                           
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.messagetype)} </div>
+                            <div className={classes.subtitle}> {t(langKeys.campaign_messagetype_desc)} </div>
+                           
+                            <FieldSelect
+                                variant="outlined"       
+                                uset={true}                              
+                                className="col-6"
+                                valueDefault={getValues('type')}
+                                disabled={!getValues('isnew')}
+                                onChange={onChangeType}
+                                error={errors?.type?.message}
+                                data={filterDataCampaignType()}
+                                optionDesc="value"
+                                optionValue="key"
+                            />
+                        </FormControl>                       
+                        :
+                        <FieldView
+                            label={t(langKeys.messagetype)}
+                            value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
+                            className="col-6"
+                        />
+                    }
+                   
+                </div>
+                </div>
+                <div className={classes.containerDetail} style={{width:'50%'}}>             
+                    {t(langKeys.campaign_templatepreview)}   
                     <div style={{display:'flex', justifyContent:'center', alignContent:'center'}}>
-                        <div style={{backgroundColor:'red'}}> 
-                            <p>Previsualización</p>
+                        
+                        <div style={{ borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem' }}> 
+                            <div className='container'>
+                                Communication Template
+                            </div>
                         </div>
+                        
                     </div>    
               
                 </div>

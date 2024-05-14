@@ -6037,6 +6037,20 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   allmustbesameorder: 'Los registros seleccionados deben pertenecer a la misma orden',
   needtopay: 'Falta confirmar el pago',
   numbers: 'Números',
+
+  campaign_title_desc: 'Asigna un nombre a tu campaña',
+  campaign_description_desc: 'Asigna una breve descripción del uso de tu campaña',
+  campaign_startdate_desc: 'Selecciona la fecha inicio de vigencia de tu campaña',
+  campaign_enddate_desc: 'Selecciona la fecha fin de vigencia de tu campaña',
+  campaign_origin_desc: 'Elige la fuente de origen de datos con la cual se completará a los destinatarios de tu campaña',
+  campaign_executiontype_desc: 'Define la programación de ejecución de tu campaña',
+  campaign_group_desc: 'Asigna un grupo de atención de asesores a tu campaña',
+  campaign_channel_desc: 'Selecciona el canal de envío de tu campaña',
+  campaign_comunicationtemplate_desc: 'Selecciona la plantilla de mensaje que se enviará en tu campaña',
+  campaign_status_desc: 'Selecciona el estado de tu campaña',
+  campaign_messagetype_desc: 'Selecciona el tipo de mensaje que se enviará por tu canal asignado',
+  campaign_templatepreview: 'Previsualización de la plantilla'
+
 };
 
 const esResource: ResourceLanguage = {
