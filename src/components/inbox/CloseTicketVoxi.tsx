@@ -157,7 +157,7 @@ const CloseTicketVoxi: React.FC = () => {
                         parameters: {
                             firstname: ticketToClose?.displayname,
                             lastname: "",
-                            phone: ticketToClose?.personcommunicationchannel.split(':')[1].split("@")[0],
+                            phone: `${ticketToClose?.personcommunicationchannel}`.includes(':') ? ticketToClose?.personcommunicationchannel.split(':')[1].split("@")[0] : ticketToClose?.personcommunicationchannel.split('_')[0],
                             communicationchannelid: ticketToClose?.communicationchannelid,
                             datetime: new Date(data.reschedulingdate).getTime()
                         }
