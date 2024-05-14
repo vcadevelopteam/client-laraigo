@@ -375,7 +375,7 @@ const MakeCall: React.FC = () => {
                         <AntTab label={<PhoneCallbackIcon style={{ color: pageSelected === 2 ? "gold" : "white" }} />} />
                     </Tabs>
                 </DialogContent>
-                <div style={{ height: 560 }}>
+                <div style={{ height: (Object.keys(communicationChannelList || []).length > 1) ? 560 : 500 }}>
                     {pageSelected === 0 &&
                         <div style={{ width: "100%", height: '100%', overflow: 'overlay' }}>
                             <div style={{ padding: "12px 24px 0" }}>
@@ -420,7 +420,7 @@ const MakeCall: React.FC = () => {
                     }
                     {pageSelected === 1 &&
                         <div className={classes.tabs}>
-                            <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
+                            {(Object.keys(communicationChannelList || []).length > 1) && <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
                                 <FieldSelect
                                     data={communicationChannelList}
                                     label={t(langKeys.communicationchannel)}
@@ -432,7 +432,7 @@ const MakeCall: React.FC = () => {
                                     onChange={(value) => { setNumberChannel(value?.communicationchannelid || null); setNumberSite(value?.communicationchannelsite || null); }}
                                     orderbylabel={true}
                                 />
-                            </div>
+                            </div>}
                             <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
                                 <TextField
                                     label={t(langKeys.phone)}
