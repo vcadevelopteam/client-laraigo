@@ -106,8 +106,6 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         dispatch(resetMainAux());
     }, [register]);
 
-    console.log(storeAreaCoordinates)
-
     const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));

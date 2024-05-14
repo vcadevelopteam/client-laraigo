@@ -54,15 +54,11 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
     const classes = useStyles();
     const [inStore, setInStore] = useState(row?.warehouseinstore || false);
     const multiData = useSelector(state => state.main.multiData);
-
     function handleSwitchChange (event: React.ChangeEvent<HTMLInputElement>) {
         setValue('warehouseinstore', event.target.checked)
         setInStore(event.target.checked)
     }
-
-
     const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>(row?.coveragearea?.slice(0,-1) || [{ latitude: 0, longitude: 0 }]);  
-
     useEffect(() => {
         setDuplicatedCoord(coordinates[0]);
         setStoreAreaCoordinates([...coordinates, duplicatedCoord]);
@@ -77,9 +73,8 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
     const handleCoordinatesChange = (newCoordinates: Array<{ latitude: number; longitude: number }>) => {
         setCoordinates(newCoordinates);
     }; 
-
     const [duplicatedCoord, setDuplicatedCoord] = useState<{ latitude: number; longitude: number } | null>(row?.coveragearea?.[row?.coveragearea?.length-1] || null);
-    console.log(duplicatedCoord)
+    const [warehouse, setWarehouse] = useState(row ? row?.warehouseid : 0)
  
     useEffect(() => {
         setStoreAreaCoordinates([...coordinates, duplicatedCoord]);
@@ -126,16 +121,26 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                 />
-                <FieldSelect
-                    label={t(langKeys.warehouse)}
-                    className="col-6"
-                    valueDefault={getValues('warehouseid')}
-                    data={multiData?.data?.[0]?.data || []}
-                    onChange={(value) => setValue('warehouseid', value?.warehouseid)}
-                    error={typeof errors?.warehouseid?.message === 'string' ? errors?.warehouseid?.message : ''}
-                    optionValue="warehouseid"
-                    optionDesc="name"
-                />
+                {!inStore && (
+                    <FieldSelect
+                        label={t(langKeys.warehouse)}
+                        className="col-6"
+                        valueDefault={getValues('warehouseid')}
+                        data={multiData?.data?.[0]?.data || []}
+                        onChange={(value) => {
+                            if(value) {
+                                setValue('warehouseid', value?.warehouseid)
+                                setWarehouse(value?.warehouseid)
+                            } else {
+                                setValue('warehouseid', 0)
+                                setWarehouse(0)
+                            }
+                        }}
+                        error={typeof errors?.warehouseid?.message === 'string' ? errors?.warehouseid?.message : ''}
+                        optionValue="warehouseid"
+                        optionDesc="name"
+                    />
+                )}
                 <FormControlLabel 
                     style={{paddingLeft:"10px"}}
                     control={
@@ -143,11 +148,11 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
                             checked={inStore}
                             onChange={(event) => handleSwitchChange(event)}
                             color='primary'
+                            disabled={warehouse !== 0}
                         />}
                     label={t(langKeys.instorewarehouse)}
                     className="col-5"
-                />        
-
+                />
                 <div /*agregacion mapa*/>
                     <Typography className={classes.subtitle}>{t(langKeys.coveragearea)}</Typography>
                     <div className="row-zyx" style={{ justifyContent: 'center' }}>
@@ -173,7 +178,7 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
                     {coordinates.map((coord, index) => (
                         <div key={index} className="row-zyx">
                             <div className="col-1">
-                                <IconButton onClick={() => handleDeleteCoordinate(index)}>
+                                <IconButton onClick={() => handleDeleteCoordinate(index)} disabled={coordinates.length === 1}>
                                     <DeleteIcon />
                                 </IconButton>
                             </div>

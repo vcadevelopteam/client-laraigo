@@ -761,6 +761,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         data={selectedRow}   
                         fetchVehicles={fetchVehicles}
                         vehicleTypes={vehicleTypes}
+                        alreadyDrivers={mainVehicles.data.map(vehicle => vehicle.userid)}
                     />
                 </div>
                 <div className='row-zyx'>                
