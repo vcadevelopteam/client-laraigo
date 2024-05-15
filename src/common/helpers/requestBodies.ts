@@ -5048,3 +5048,13 @@ export const getDomainByDomainName = (domainname: string) => ({
     key: "UFN_DOMAIN_BY_DOMAINNAME",
     parameters: { domainname },
 });
+export const integrationManagerBulkloadIns = ({integrationmanagerid, table, type}:Dictionary) => ({
+    method: "UFN_INTEGRATIONMANAGER_BULKLOAD_INS",
+    key: "UFN_INTEGRATIONMANAGER_BULKLOAD_INS",
+    parameters: { integrationmanagerid, table, type },
+});
+export const integrationManagerCodePersonSel = ({integrationmanagerid, type}:Dictionary) => ({
+    method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
+    key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
+    parameters: { integrationmanagerid, type },
+});

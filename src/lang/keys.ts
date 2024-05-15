@@ -6034,17 +6034,19 @@ export const langKeys = {
   allmustbesameorder: 'allmustbesameorder',
   needtopay: 'needtopay',
   numbers: 'numbers',
-  codes_table: 'codes_table',
+  code_table: 'code_table',
   codes_table_helper: 'codes_table_helper',
   tracking_fields:'tracking_fields',
   tracking_fields_helper:'tracking_fields_helper',
-  people_table: 'people_table',
+  person_table: 'person_table',
   people_table_helper: 'people_table_helper',
   expiration_date: 'expiration_date',
   add_expiration_date_to_code:'add_expiration_date_to_code',
   add_expiration_date_to_code_helper: 'add_expiration_date_to_code_helper',
   add_expiration_date_to_person:'add_expiration_date_to_person',
   add_expiration_date_to_person_helper: 'add_expiration_date_to_person_helper',
+  errorIntegrationColumnDuplicates: 'errorIntegrationColumnDuplicates',
+  errorIntegrationTrackinguplicates: 'errorIntegrationTrackinguplicates',
 };
 
 export type LangKeys = typeof langKeys;
