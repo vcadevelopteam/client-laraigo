@@ -22,6 +22,7 @@ import ImageIcon from '@material-ui/icons/Image';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
+import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd"
 
 import {
     execute,
@@ -1252,6 +1253,22 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         }
     };
     
+    const handleDragDrop = (results) => {
+        const {source, destination, type} = results;
+        if(!destination) return;
+        if(source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if(type === 'group'){
+            const reorderedItems = [...getValues('buttonstext')];
+            const sourceIndex = source.index;
+            const destinationIndex = destination.index;
+            const [removedStore] = reorderedItems.splice(sourceIndex, 1);
+            reorderedItems.splice(destinationIndex, 0, removedStore);
+
+            setValue('buttonstext', reorderedItems)
+            trigger('buttonstext')
+        }
+    }
+
     return (
         <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
@@ -1753,45 +1770,57 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <EmojiObjectsIcon />
                                         <span style={{marginLeft: 10}}>Si añades más de tres botones, se mostrarán en una lista</span>
                                     </div>
-                                    {getValues('buttonstext')?.length > 0 && (
-                                        <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
-                                            <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
-                                                <ImportExportIcon style={{color: '#0049CF'}} />
-                                                <span style={{fontWeight: 'bold'}}>{t(langKeys.fastanswer)}</span>
-                                            </div>
-                                            <React.Fragment>
-                                                {getValues("buttonstext")?.map((btn: any, i: number) => {
-                                                    return (
-                                                        <div key={`btn-${i}`} style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                                            <DragIndicatorIcon />
-                                                            <div style={{display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1}}>
-                                                                <div style={{width: '100%'}}>
-                                                                    <FieldEdit
-                                                                        disabled={disableInput}
-                                                                        label={t(langKeys.buttontext)}
-                                                                        error={errors?.buttonstext?.[i]?.text?.message}
-                                                                        onChange={(value) => onChangeButtonText(i, "text", value)}
-                                                                        valueDefault={btn?.text || ""}
-                                                                        variant="outlined"
-                                                                        maxLength={25}
-                                                                        fregister={{
-                                                                            ...register(`buttonstext.${i}.text`, {
-                                                                                validate: (value) =>
-                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                            }),
-                                                                        }}
-                                                                    />
-                                                                </div>
+                                    <DragDropContext onDragEnd={handleDragDrop}>
+                                        {getValues('buttonstext')?.length > 0 && (
+                                            <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
+                                                <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
+                                                    <ImportExportIcon style={{color: '#0049CF'}} />
+                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.fastanswer)}</span>
+                                                </div>
+                                                <React.Fragment>
+                                                    <Droppable droppableId="root" type="group">
+                                                        {(provided) => (
+                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10}}>
+                                                                {getValues("buttonstext")?.map((btn: any, i: number) => {
+                                                                    return (
+                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                            {(provided) => (
+                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                    <div style={{display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5}}>
+                                                                                        <DragIndicatorIcon />
+                                                                                        <div style={{flex: 1}}>
+                                                                                            <FieldEdit
+                                                                                                disabled={disableInput}
+                                                                                                label={t(langKeys.buttontext)}
+                                                                                                error={errors?.buttonstext?.[i]?.text?.message}
+                                                                                                onChange={(value) => onChangeButtonText(i, "text", value)}
+                                                                                                valueDefault={btn?.text || ""}
+                                                                                                variant="outlined"
+                                                                                                maxLength={25}
+                                                                                                fregister={{
+                                                                                                    ...register(`buttonstext.${i}.text`, {
+                                                                                                        validate: (value) =>
+                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                    }),
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <IconButton onClick={() => onClickRemoveButtonText(i)}>
+                                                                                            <CloseIcon/>
+                                                                                        </IconButton>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )}
+                                                                        </Draggable>
+                                                                    );
+                                                                })}
                                                             </div>
-                                                            <IconButton onClick={() => onClickRemoveButtonText(i)}>
-                                                                <CloseIcon/>
-                                                            </IconButton>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </React.Fragment>
-                                        </div>
-                                    )}
+                                                        )}
+                                                    </Droppable>
+                                                </React.Fragment>
+                                            </div>
+                                        )}
+                                    </DragDropContext>
                                     {(getValues('buttons')?.length > 0 || getValues('buttonsphone')?.length > 0) && (
                                         <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
                                             <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
