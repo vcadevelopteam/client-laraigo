@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'; 
 import IconButton from '@material-ui/core/IconButton';
-import { FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray, ManageOrganization } from 'components';
+import { FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray } from 'components';
 import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
 import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,15 +8,14 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Event as EventIcon } from '@material-ui/icons';
-import { FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
+import { FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
-import { Descendant } from "slate";
-import { MessagePreviewAuthentication, MessagePreviewMultimedia } from 'pages/messagetemplates/components/components';
+
 
 interface DetailProps {
     row: Dictionary | null,
@@ -62,6 +61,18 @@ const useStyles = makeStyles((theme) => ({
     title: {
        fontSize: '1rem', 
        color: 'black' 
+    },
+    buttonPreview: {
+        backgroundColor: '#DDDDDD',
+        borderRadius: '0.5rem',
+        padding: '0.5rem 1rem',
+        display: 'flex',
+        justifyContent: 'center',
+        textAlign: 'center',
+        cursor: 'pointer',
+        margin: '0.5rem 0',
+        textDecoration: 'none', 
+        color: '#000000'
     }
 }));
 
@@ -416,23 +427,13 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
 
-
-
-    const [bodyObject, setBodyObject] = useState<Descendant[]>(
-        row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
-    );
+  
 
     const templateId = getValues('messagetemplateid');
-    const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId);
+    const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
 
-    const headerType = selectedTemplate?.headertype || '';
-    const header = selectedTemplate?.header || '';
-    const footer = selectedTemplate?.footer || '';
-    const buttons = selectedTemplate?.buttons || [];
-    const buttonsText = buttons.map(button => ({ text: button.title }));
-    const buttonsLink = buttons.map(button => ({ text: button.payload }));
-    const buttonsPhone = getValues('buttonsphone').map((btn: any) => ({ text: btn.text }));
-    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+   
+   
 
     
     console.log(selectedTemplate)
@@ -774,31 +775,61 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                    
                 </div>
+
                 </div>
+
                 <div className={classes.containerDetail} style={{width:'50%'}}>             
                     {t(langKeys.campaign_templatepreview)}   
                     <div style={{display:'flex', justifyContent:'center', alignContent:'center'}}>
                         
-                        <div style={{ borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem' }}> 
-                            <div className='container'>
-                                {/* <MessagePreviewAuthentication
-                                    buttontext={authButtonText}
-                                    safetyAdvice={addSafetyAdvice}
-                                    dateAdvice={addLastDateCode}
-                                    expiresValue={expiresValue}
-                                /> */}
+                        <div style={{ maxWidth:'25rem', borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem' }}> 
 
-                                <MessagePreviewMultimedia
-                                    headerType={getValues('headertype')}
-                                    header={getValues('header')}
-                                    selectedFile={selectedFile}
-                                    bodyObject={bodyObject}
-                                    footer={getValues('footer')}
-                                    buttonstext={getValues('buttonstext').map((btn: any) => { return btn.text })}
-                                    buttonslink={getValues('buttons').map((btn: Dictionary) => { return btn.text })}
-                                    buttonsphone={getValues('buttonsphone').map((btn: any) => { return btn.text })}
-                                />
-                            </div>
+                        <div className='container'>
+                            {selectedTemplate?.templatetype === "MULTIMEDIA" && selectedTemplate?.category === "MARKETING" && selectedTemplate?.externalstatus === "APPROVED" ? (
+                                <div>
+                                    <img 
+                                        src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
+                                        alt="Default Image"
+                                        style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+                                    />
+                                    <p>{selectedTemplate.body}</p>
+                                    <p>{selectedTemplate.footer}</p>
+                                    {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
+                                        <div>
+                                            {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
+                                                <a className={classes.buttonPreview} key={index} href={button.payload} target="_blank" rel="noopener noreferrer">
+                                                    {button.title}
+                                                </a>
+                                            ))}
+                                        </div>                     
+
+                                    )}                                  
+                                </div>
+                            ) : selectedTemplate?.templatetype === "MULTIMEDIA" && selectedTemplate?.category === "UTILITY" && selectedTemplate?.externalstatus === "APPROVED" ? (
+                                <div>
+                                    <img 
+                                        src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
+                                        alt="Default Image"
+                                        style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+                                    />
+                                    <p>{selectedTemplate.body}</p>
+                                    <p>{selectedTemplate.footer}</p>
+                                    {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
+                                        <div>
+                                            {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
+                                                <a className={classes.buttonPreview} key={index} href={button.payload} target="_blank" rel="noopener noreferrer">
+                                                    {button.title}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    )}                                  
+                                </div>
+
+                            ) : (
+                                <p>Plantilla No Disponible</p>
+                            )}
+                        </div>
+
                         </div>
                         
                         
