@@ -13,7 +13,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { CampaignDetail } from './CampaignDetail';
 import { Blacklist } from './Blacklist';
 import { CampaignReport } from '../staticReports/ReportCampaign';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, ListItemIcon, Paper, Popper, Typography } from '@material-ui/core';
+import { Box,  Divider, IconButton, ListItemIcon, Paper, Popper, Typography } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -29,7 +29,6 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import BlockIcon from '@material-ui/icons/Block';
-import { multiMain } from 'network/service/common';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -511,8 +510,8 @@ export const Campaign: FC = () => {
     };
 
     const handleCloseSeButtons = () => {
-    setAnchorElSeButtons(null);
-    setOpenSeButtons(false);
+        setAnchorElSeButtons(null);
+        setOpenSeButtons(false);
     };
     
     useEffect(() => {
@@ -632,41 +631,40 @@ export const Campaign: FC = () => {
                 </IconButton>
 
                 <div style={{ display: 'flex', gap: 8 }}>                               
-                    <Popper
+                    <Menu
                         open={openSeButtons}
-                        anchorEl={anchorElSeButtons}
-                        placement="bottom"
-                        transition
+                        anchorEl={anchorElSeButtons}                      
+                      
                         style={{marginRight:'1rem'}}
                     >
-                        {({ TransitionProps }) => (
-                            <Paper {...TransitionProps} elevation={5}>
+                       
+                      
 
-                                <MenuItem 
-                                    disabled={mainResult.mainData.loading}
-                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                    //style={{ backgroundColor: "#ea2e49" }}
-                                    onClick={() => setViewSelected("blacklist")}
-                                >
-                                    <ListItemIcon>
-                                        <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                    </ListItemIcon>
-                                    <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
-                                </MenuItem>                             
-                                <Divider />
-                                <MenuItem 
-                                    disabled={mainResult.mainData.loading}
-                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                    //nClick={() => setViewSelected("blacklist")}
-                                >
-                                    <ListItemIcon>
-                                        <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                    </ListItemIcon>
-                                    <Typography variant="inherit">{t(langKeys.download)}</Typography>
-                                </MenuItem>                               
-                            </Paper>
-                        )}
-                    </Popper>
+                        <MenuItem 
+                            disabled={mainResult.mainData.loading}
+                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                            //style={{ backgroundColor: "#ea2e49" }}
+                            onClick={() => setViewSelected("blacklist")}
+                        >
+                            <ListItemIcon>
+                                <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                            </ListItemIcon>
+                            <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
+                        </MenuItem>                             
+                        <Divider />
+                        <MenuItem 
+                            disabled={mainResult.mainData.loading}
+                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                            //nClick={() => setViewSelected("blacklist")}
+                        >
+                            <ListItemIcon>
+                                <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                            </ListItemIcon>
+                            <Typography variant="inherit">{t(langKeys.download)}</Typography>
+                        </MenuItem>                               
+              
+                      
+                    </Menu>
                 </div> 
                 
             </React.Fragment>
