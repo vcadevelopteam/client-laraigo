@@ -499,7 +499,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             query: message,
             system_prompt: row?.generalprompt,
             model: row?.basemodel,
-            thread_id: selectedChat?.code
+            thread_id: selectedChat?.code,
+            max_new_tokens: row?.max_tokens,
+            temperature: parseFloat(row?.temperature),
+            top_p: parseFloat(row?.top_p),
         }))
         setWaitSaveMessageLlama(true)
     };
