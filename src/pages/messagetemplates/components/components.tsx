@@ -364,37 +364,19 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
                                     <img src={card.image ? URL.createObjectURL(card.image) : NoImage} alt="Selected Image" className={classes.cardMedia}/>
                                 </div>
                                 <div className={classes.bodyCar}>{card.body}</div>
-                                {card.buttonstext.length > 0 && (
+                                {card.buttons.length > 0 && (
                                     <>
-                                        {card.buttonstext.map((btn, i) => {
+                                        {card.buttons.map((btn, i) => {
                                             return (
                                                 <div key={i} className={classes.cardButton2}>
-                                                    <ReplyIcon className={classes.icon}/>
-                                                    <span>{btn.text}</span>
-                                                </div>
-                                            )
-                                        })}
-                                    </>
-                                )}
-                                {card.buttonslink.length > 0 && (
-                                    <>
-                                        {card.buttonslink.map((btn, i) => {
-                                            return (
-                                                <div key={i} className={classes.cardButton2}>
-                                                    <OpenInNewIcon className={classes.icon}/>
-                                                    <span>{btn.text}</span>
-                                                </div>
-                                            )
-                                        })}
-                                    </>
-                                )}
-                                {card.buttonsphone.length > 0 && (
-                                    <>
-                                        {card.buttonsphone.map((btn, i) => {
-                                            return (
-                                                <div key={i} className={classes.cardButton2}>
-                                                    <PhoneIcon className={classes.icon}/>
-                                                    <span>{btn.text}</span>
+                                                    {btn.type === 'text' ? (
+                                                        <ReplyIcon className={classes.icon}/>
+                                                    ) : btn.type === 'link' ? (
+                                                        <OpenInNewIcon className={classes.icon}/>
+                                                    ) : (
+                                                        <PhoneIcon className={classes.icon}/>
+                                                    )}
+                                                    <span>{btn.btn.text}</span>
                                                 </div>
                                             )
                                         })}
